@@ -22,7 +22,7 @@ async fn message_redaction() -> Result<()> {
         .await
         .expect("user should belong to convo");
     let timeline = convo.timeline_stream();
-    let stream = timeline.diff_stream();
+    let stream = timeline.messages_stream();
     pin_mut!(stream);
 
     let draft = user.text_plain_draft("Hi, everyone".to_string());

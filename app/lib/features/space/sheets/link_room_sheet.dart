@@ -1,10 +1,10 @@
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/search.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
-import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -153,7 +153,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
 //List of chats excluding DMs that can be linked according to the selected parent space
   Widget chatsList() {
     final searchValue = ref.watch(chatSearchValueProvider);
-    if (searchValue != null && searchValue.isNotEmpty) {
+    if (searchValue?.isNotEmpty == true) {
       return searchedChatsList();
     }
 
@@ -202,7 +202,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
 //List of spaces that can be linked according to the selected parent space
   Widget spacesList() {
     final searchValue = ref.watch(spaceSearchValueProvider);
-    if (searchValue != null && searchValue.isNotEmpty) {
+    if (searchValue?.isNotEmpty == true) {
       return searchedSpaceList();
     }
 

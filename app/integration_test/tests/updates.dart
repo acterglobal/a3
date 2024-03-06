@@ -105,12 +105,6 @@ extension ActerNews on ConvenientTest {
     await cancelKey.should(findsOneWidget);
     await cancelKey.tap();
   }
-
-  Future<void> trigger(Key key) async {
-    final simple = find.byKey(key);
-    await simple.should(findsOneWidget);
-    await simple.tap();
-  }
 }
 
 void updateTests() {
@@ -239,5 +233,27 @@ void updateTests() {
     // For Image
     final imageUpdateContent = find.byKey(NewsUpdateKeys.imageUpdateContent);
     await imageUpdateContent.should(findsOneWidget);
+  });
+
+  acterTestWidget('Remove Single Image News Update', (t) async {
+    final spaceId = await t.freshAccountWithSpace();
+
+    await t.openCreateNews();
+    await t.addImageSlide();
+    await t.toggleBackgroundColor();
+    await t.submitNews(spaceId);
+
+    // we expect to be thrown to the news screen and see our latest item first:
+    final imageUpdateContent = find.byKey(NewsUpdateKeys.imageUpdateContent);
+    await imageUpdateContent.should(findsOneWidget);
+
+    // open news sidebar bottom sheet for action buttons
+    await t.trigger(NewsUpdateKeys.newsSidebarActionBottomSheet);
+
+    // click on remove button for show confirm dialog
+    await t.trigger(NewsUpdateKeys.newsSidebarActionRemoveBtn);
+
+    // click on remove button
+    await t.trigger(NewsUpdateKeys.removeButton);
   });
 }

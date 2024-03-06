@@ -31,10 +31,7 @@ class SpaceChatsPage extends ConsumerWidget {
     return related.maybeWhen(
       data: (spaces) {
         bool checkPermission(String permission) {
-          if (spaces.membership != null) {
-            return spaces.membership!.canString(permission);
-          }
-          return false;
+          return spaces.membership?.canString(permission) ?? false;
         }
 
         final canLinkSpace = checkPermission('CanLinkSpaces');

@@ -1,4 +1,5 @@
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/events/pages/create_edit_event_page.dart';
 import 'package:acter/features/events/pages/events_page.dart';
 import 'package:acter/features/events/pages/event_details_page.dart';
 import 'package:acter/features/home/pages/dashboard.dart';
@@ -390,6 +391,30 @@ List<RouteBase> makeHomeShellRoutes(ref) {
         return NoTransitionPage(
           key: state.pageKey,
           child: const EventsPage(),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.createEvent.name,
+      path: Routes.createEvent.route,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: CreateEditEventPage(
+            initialSelectedSpace: state.uri.queryParameters['spaceId'],
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.editCalendarEvent.name,
+      path: Routes.editCalendarEvent.route,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: CreateEditEventPage(
+            calendarId: state.pathParameters['calendarId'],
+          ),
         );
       },
     ),

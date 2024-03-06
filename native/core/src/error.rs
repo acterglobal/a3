@@ -1,3 +1,5 @@
+use std::sync::PoisonError;
+
 use ruma_events::UnsignedRoomRedactionEvent;
 
 use crate::models::EventMeta;
@@ -21,6 +23,9 @@ pub enum Error {
 
     #[error("IO Error: {0}")]
     IoError(#[from] std::io::Error),
+
+    #[error("Store Dirty Lock Poisoned Error.")]
+    StoreDirtyPoisoned,
 
     #[error("Model not found at {0}.")]
     ModelNotFound(String),
@@ -50,8 +55,17 @@ pub enum Error {
         reason: UnsignedRoomRedactionEvent,
     },
 
+    #[error("{0:?} field is missing")]
+    MissingField(String),
+
     #[error("{0}")]
     Custom(String),
+}
+
+impl<T> From<PoisonError<T>> for Error {
+    fn from(_err: PoisonError<T>) -> Self {
+        Self::StoreDirtyPoisoned
+    }
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

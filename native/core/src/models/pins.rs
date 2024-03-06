@@ -3,10 +3,11 @@ use ruma_events::OriginalMessageLikeEvent;
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
-use super::{AnyActerModel, EventMeta};
+use super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta};
 use crate::{
     events::pins::{PinEventContent, PinUpdateBuilder, PinUpdateEventContent},
     statics::KEYS,
+    store::Store,
     Result,
 };
 
@@ -49,7 +50,7 @@ impl Pin {
     }
 }
 
-impl super::ActerModel for Pin {
+impl ActerModel for Pin {
     fn indizes(&self, _user_id: &UserId) -> Vec<String> {
         vec![
             format!("{}::{}", self.meta.room_id, KEYS::PINS),
@@ -61,18 +62,19 @@ impl super::ActerModel for Pin {
         &self.meta.event_id
     }
 
-    fn capabilities(&self) -> &[super::Capability] {
+    fn capabilities(&self) -> &[Capability] {
         &[
-            super::Capability::Commentable,
-            super::Capability::HasAttachments,
+            Capability::Commentable,
+            Capability::Attachmentable,
+            Capability::Reactable,
         ]
     }
 
-    async fn execute(self, store: &super::Store) -> Result<Vec<String>> {
-        super::default_model_execute(store, self.into()).await
+    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+        default_model_execute(store, self.into()).await
     }
 
-    fn transition(&mut self, model: &super::AnyActerModel) -> Result<bool> {
+    fn transition(&mut self, model: &AnyActerModel) -> Result<bool> {
         let AnyActerModel::PinUpdate(update) = model else {
             return Ok(false);
         };
@@ -109,7 +111,7 @@ pub struct PinUpdate {
     meta: EventMeta,
 }
 
-impl super::ActerModel for PinUpdate {
+impl ActerModel for PinUpdate {
     fn indizes(&self, _user_id: &UserId) -> Vec<String> {
         vec![format!("{:}::history", self.inner.pin.event_id)]
     }
@@ -118,8 +120,8 @@ impl super::ActerModel for PinUpdate {
         &self.meta.event_id
     }
 
-    async fn execute(self, store: &super::Store) -> Result<Vec<String>> {
-        super::default_model_execute(store, self.into()).await
+    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+        default_model_execute(store, self.into()).await
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {

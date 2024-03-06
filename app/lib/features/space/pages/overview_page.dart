@@ -66,12 +66,12 @@ class SpaceOverview extends ConsumerWidget {
                 ),
                 ActerSpaceChecker(
                   spaceId: spaceIdOrAlias,
-                  expectation: (a) => a != null ? a.events().active() : false,
+                  expectation: (a) => a?.events().active() ?? false,
                   child: EventsCard(spaceId: spaceIdOrAlias),
                 ),
                 ActerSpaceChecker(
                   spaceId: spaceIdOrAlias,
-                  expectation: (a) => a != null ? a.pins().active() : false,
+                  expectation: (a) => a?.pins().active() ?? false,
                   child: LinksCard(spaceId: spaceIdOrAlias),
                 ),
                 ChatsCard(spaceId: spaceIdOrAlias),

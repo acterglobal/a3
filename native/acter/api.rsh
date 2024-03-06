@@ -36,7 +36,7 @@ fn guest_client(base_path: string, media_cache_base_path: string, default_homese
 fn register_with_token(base_path: string, media_cache_base_path: string, username: string, password: string, registration_token: string, default_homeserver_name: string, default_homeserver_url: string, device_name: string) -> Future<Result<Client>>;
 
 /// destroy the local data of a session
-fn destroy_local_data(base_path: string, media_cache_base_path: Option<string>, userId: string, default_homeserver_name: string) -> Future<Result<bool>>;
+fn destroy_local_data(base_path: string, media_cache_base_path: Option<string>, username: string, default_homeserver_name: string) -> Future<Result<bool>>;
 
 fn duration_from_secs(secs: u64) -> EfkDuration;
 
@@ -392,16 +392,12 @@ object NewsSlideDraft {
 
 /// A news entry
 object NewsEntry {
+    /// the slides count in this news item
     fn slides_count() -> u8;
     /// The slides belonging to this news item
     fn get_slide(pos: u8) -> Option<NewsSlide>;
     /// get all slides of this news item
     fn slides() -> Vec<NewsSlide>;
-
-    /// how many comments on this news entry
-    fn comments_count() -> u32;
-    /// how many likes on this news entry
-    fn likes_count() -> u32;
 
     /// get room id
     fn room_id() -> RoomId;
@@ -411,6 +407,12 @@ object NewsEntry {
 
     /// get event id
     fn event_id() -> EventId;
+
+    /// get the reaction manager
+    fn reactions() -> Future<Result<ReactionManager>>;
+
+    /// get the comment manager
+    fn comments() -> Future<Result<CommentsManager>>;
 }
 
 object NewsEntryDraft {
@@ -574,9 +576,11 @@ object CalendarEvent {
     /// update builder
     fn update_builder() -> Result<CalendarEventUpdateBuilder>;
     /// get RSVP manager
-    fn rsvp_manager() -> Future<Result<RsvpManager>>;
+    fn rsvps() -> Future<Result<RsvpManager>>;
+    /// get the reaction manager
+    fn reactions() -> Future<Result<ReactionManager>>;
     /// get my RSVP status, one of Yes/Maybe/No or None
-    fn my_rsvp_status() -> Future<Result<OptionRsvpStatus>>;
+    fn responded_by_me() -> Future<Result<OptionRsvpStatus>>;
 }
 
 object CalendarEventUpdateBuilder {
@@ -585,6 +589,9 @@ object CalendarEventUpdateBuilder {
 
     /// set description text
     fn description_text(body: string);
+
+    /// set description html text
+    fn description_html(body: string, html_body: string);
 
     /// set utc start in rfc3339 string
     fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
@@ -610,6 +617,10 @@ object CalendarEventDraft {
 
     /// set the description for this calendar event
     fn description_text(text: string);
+
+    /// set the description html for this calendar event
+    fn description_html(text: string, html: string);
+    
     fn unset_description();
 
     /// set the utc_start for this calendar event in rfc3339 format
@@ -658,7 +669,7 @@ object RsvpManager {
     fn rsvp_entries() -> Future<Result<Vec<Rsvp>>>;
 
     /// get Yes/Maybe/No or None for the user's own status
-    fn my_status() -> Future<Result<OptionRsvpStatus>>;
+    fn responded_by_me() -> Future<Result<OptionRsvpStatus>>;
 
     /// get the count of Yes/Maybe/No
     fn count_at_status(status: string) -> Future<Result<u32>>;
@@ -670,7 +681,7 @@ object RsvpManager {
     fn rsvp_draft() -> Result<RsvpDraft>;
 
     /// get informed about changes to this manager
-    fn subscribe_stream() -> Stream<()>;
+    fn subscribe_stream() -> Stream<bool>;
 }
 
 object RsvpDraft {
@@ -691,6 +702,67 @@ object Rsvp {
     /// get status of this rsvp
     fn status() -> string;
 }
+
+//  ### ##   ### ###    ##      ## ##   #### ##    ####    ## ##   ###  ##   ## ##   
+//  ##  ##   ##  ##     ##    ##   ##  # ## ##     ##    ##   ##    ## ##  ##   ##  
+//  ##  ##   ##       ## ##   ##         ##        ##    ##   ##   # ## #  ####     
+//  ## ##    ## ##    ##  ##  ##         ##        ##    ##   ##   ## ##    #####   
+//  ## ##    ##       ## ###  ##         ##        ##    ##   ##   ##  ##      ###  
+//  ##  ##   ##  ##   ##  ##  ##   ##    ##        ##    ##   ##   ##  ##  ##   ##  
+// #### ##  ### ###  ###  ##   ## ##    ####      ####    ## ##   ###  ##   ## ## 
+
+
+object ReactionManager {
+
+    /// get count sent like by me and other people
+    fn likes_count() -> u32;
+
+    /// whether I sent like
+    fn liked_by_me() -> bool;
+
+    /// whether I reacted using symbol key
+    fn reacted_by_me() -> bool;
+
+    /// whether manager has reaction entries
+    fn has_reaction_entries() -> bool;
+
+    /// get total count of reactions
+    fn total_reaction_count() -> u32;
+
+    /// get reaction entries
+    fn reaction_entries() -> Future<Result<Vec<Reaction>>>;
+
+    /// send a like
+    fn send_like() -> Future<Result<EventId>>;
+
+    /// send the reaction using symbol key
+    fn send_reaction(key: string) -> Future<Result<EventId>>;
+
+    /// remove the like
+    fn redact_like(reason: Option<string>, txn_id: Option<string>) -> Future<Result<EventId>>;
+
+    /// get informed about changes to this manager
+    fn subscribe_stream() -> Stream<bool>;
+
+    /// get informed about changes to this manager
+    fn reload() -> Future<Result<ReactionManager>>;
+}
+
+object Reaction {
+
+    /// event id of reaction event
+    fn event_id_str() -> string;
+
+    /// get sender of this reaction
+    fn sender() -> UserId;
+
+    /// get timestamp of this reaction
+    fn origin_server_ts() -> u64;
+
+    /// the event id to which it is reacted
+    fn relates_to() -> string;
+}
+
 
 //  ########   #######   #######  ##     ##    ######## ##     ## ######## ##    ## ########  ######  
 //  ##     ## ##     ## ##     ## ###   ###    ##       ##     ## ##       ###   ##    ##    ##    ## 
@@ -833,7 +905,7 @@ object ReactionRecord {
     fn sent_by_me() -> bool;
 }
 
-object TimelineDiff {
+object RoomMessageDiff {
     /// Append/Insert/Set/Remove/PushBack/PushFront/PopBack/PopFront/Clear/Reset
     fn action() -> string;
 
@@ -990,7 +1062,7 @@ object MsgContentDraft {
 /// Timeline with Room Events
 object TimelineStream {
     /// Fires whenever new diff found
-    fn diff_stream() -> Stream<TimelineDiff>;
+    fn messages_stream() -> Stream<RoomMessageDiff>;
 
     /// Get the next count messages backwards, and return whether it has more items
     fn paginate_backwards(count: u16) -> Future<Result<bool>>;
@@ -1103,12 +1175,23 @@ object Convo {
     /// is this a direct message
     fn is_dm() -> bool;
 
+    /// is this a favorite chat
+    fn is_favorite() -> bool;
+
+    /// set this a favorite chat
+    fn set_favorite(is_favorite: bool) -> Future<Result<bool>>;
+
+    /// is this a low priority chat
+    fn is_low_priority() -> bool;
+
     /// the list of users ids if this is a direct message
     fn dm_users() -> Vec<string>;
 
     /// invite the new user to this room
     fn invite_user(user_id: string) -> Future<Result<bool>>;
 
+    /// generate the room permalink
+    fn permalink() -> Future<Result<string>>;
     /// join this room
     fn join() -> Future<Result<bool>>;
 
@@ -2331,6 +2414,9 @@ object Client {
 
     /// Fetch the calendar event or use its event_id to wait for it to come down the wire
     fn wait_for_calendar_event(key: string, timeout: Option<u8>) -> Future<Result<CalendarEvent>>;
+
+    /// Fetch the reaction event or use its event_id to wait for it to come down the wire
+    fn wait_for_reaction(key: string, timeout: Option<u8>) -> Future<Result<Reaction>>;
 
     /// Fetch the RSVP or use its event_id to wait for it to come down the wire
     fn wait_for_rsvp(key: string, timeout: Option<u8>) -> Future<Result<Rsvp>>;

@@ -1248,12 +1248,12 @@ class Api {
   Future<bool> destroyLocalData(
     String basePath,
     String? mediaCacheBasePath,
-    String userId,
+    String username,
     String defaultHomeserverName,
   ) {
     final tmp0 = basePath;
     final tmp4 = mediaCacheBasePath;
-    final tmp10 = userId;
+    final tmp10 = username;
     final tmp14 = defaultHomeserverName;
     var tmp1 = 0;
     var tmp2 = 0;
@@ -2398,6 +2398,100 @@ class Api {
     return tmp7;
   }
 
+  ReactionManager? __newsEntryReactionsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _newsEntryReactionsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_ReactionManager");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = ReactionManager._(this, tmp13_1);
+    return tmp7;
+  }
+
+  CommentsManager? __newsEntryCommentsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _newsEntryCommentsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_CommentsManager");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = CommentsManager._(this, tmp13_1);
+    return tmp7;
+  }
+
   bool? __newsEntryDraftAddSlideFuturePoll(
     int boxed,
     int postCobject,
@@ -2815,7 +2909,7 @@ class Api {
     return tmp7;
   }
 
-  RsvpManager? __calendarEventRsvpManagerFuturePoll(
+  RsvpManager? __calendarEventRsvpsFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2829,7 +2923,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _calendarEventRsvpManagerFuturePoll(
+    final tmp6 = _calendarEventRsvpsFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -2862,7 +2956,7 @@ class Api {
     return tmp7;
   }
 
-  OptionRsvpStatus? __calendarEventMyRsvpStatusFuturePoll(
+  ReactionManager? __calendarEventReactionsFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2876,7 +2970,54 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _calendarEventMyRsvpStatusFuturePoll(
+    final tmp6 = _calendarEventReactionsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_ReactionManager");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = ReactionManager._(this, tmp13_1);
+    return tmp7;
+  }
+
+  OptionRsvpStatus? __calendarEventRespondedByMeFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _calendarEventRespondedByMeFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3051,7 +3192,7 @@ class Api {
     return tmp7;
   }
 
-  OptionRsvpStatus? __rsvpManagerMyStatusFuturePoll(
+  OptionRsvpStatus? __rsvpManagerRespondedByMeFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -3065,7 +3206,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _rsvpManagerMyStatusFuturePoll(
+    final tmp6 = _rsvpManagerRespondedByMeFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3234,6 +3375,242 @@ class Api {
     final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  FfiListReaction? __reactionManagerReactionEntriesFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _reactionManagerReactionEntriesFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListReaction");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListReaction._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  EventId? __reactionManagerSendLikeFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _reactionManagerSendLikeFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __reactionManagerSendReactionFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _reactionManagerSendReactionFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __reactionManagerRedactLikeFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _reactionManagerRedactLikeFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  ReactionManager? __reactionManagerReloadFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _reactionManagerReloadFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_ReactionManager");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = ReactionManager._(this, tmp13_1);
     return tmp7;
   }
 
@@ -4730,6 +5107,50 @@ class Api {
     return tmp7;
   }
 
+  bool? __convoSetFavoriteFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _convoSetFavoriteFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   bool? __convoInviteUserFuturePoll(
     int boxed,
     int postCobject,
@@ -4771,6 +5192,68 @@ class Api {
       throw tmp9_0;
     }
     final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  String? __convoPermalinkFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _convoPermalinkFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    if (tmp14 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
+    List<int> tmp13_buf = [];
+    final tmp13_precast = tmp13_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp14; i++) {
+      int char = tmp13_precast.elementAt(i).value;
+      tmp13_buf.add(char);
+    }
+    final tmp7 = utf8.decode(tmp13_buf, allowMalformed: true);
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
+    }
     return tmp7;
   }
 
@@ -10295,6 +10778,53 @@ class Api {
     return tmp7;
   }
 
+  Reaction? __clientWaitForReactionFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientWaitForReactionFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_Reaction");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = Reaction._(this, tmp13_1);
+    return tmp7;
+  }
+
   Rsvp? __clientWaitForRsvpFuturePoll(
     int boxed,
     int postCobject,
@@ -12268,7 +12798,7 @@ class Api {
     return tmp9;
   }
 
-  void __rsvpManagerSubscribeStreamStreamPoll(
+  bool? __rsvpManagerSubscribeStreamStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -12292,14 +12822,16 @@ class Api {
       tmp5,
       tmp7,
     );
-    final tmp10 = tmp8;
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
     if (tmp10 == 0) {
       return null;
     }
-    return;
+    final tmp9 = tmp11 > 0;
+    return tmp9;
   }
 
-  TimelineDiff? __timelineStreamDiffStreamStreamPoll(
+  bool? __reactionManagerSubscribeStreamStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -12317,7 +12849,40 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     tmp7 = tmp6;
-    final tmp8 = _timelineStreamDiffStreamStreamPoll(
+    final tmp8 = _reactionManagerSubscribeStreamStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final tmp9 = tmp11 > 0;
+    return tmp9;
+  }
+
+  RoomMessageDiff? __timelineStreamMessagesStreamStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _timelineStreamMessagesStreamStreamPoll(
       tmp1,
       tmp3,
       tmp5,
@@ -12329,9 +12894,9 @@ class Api {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(this, tmp11_0, "drop_box_TimelineDiff");
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_RoomMessageDiff");
     tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
-    final tmp9 = TimelineDiff._(this, tmp11_1);
+    final tmp9 = RoomMessageDiff._(this, tmp11_1);
     return tmp9;
   }
 
@@ -14300,26 +14865,6 @@ class Api {
       int Function(
         int,
       )>();
-  late final _newsEntryCommentsCountPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Uint32 Function(
-            ffi.Int64,
-          )>>("__NewsEntry_comments_count");
-
-  late final _newsEntryCommentsCount = _newsEntryCommentsCountPtr.asFunction<
-      int Function(
-        int,
-      )>();
-  late final _newsEntryLikesCountPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Uint32 Function(
-            ffi.Int64,
-          )>>("__NewsEntry_likes_count");
-
-  late final _newsEntryLikesCount = _newsEntryLikesCountPtr.asFunction<
-      int Function(
-        int,
-      )>();
   late final _newsEntryRoomIdPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -14347,6 +14892,26 @@ class Api {
           )>>("__NewsEntry_event_id");
 
   late final _newsEntryEventId = _newsEntryEventIdPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _newsEntryReactionsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__NewsEntry_reactions");
+
+  late final _newsEntryReactions = _newsEntryReactionsPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _newsEntryCommentsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__NewsEntry_comments");
+
+  late final _newsEntryComments = _newsEntryCommentsPtr.asFunction<
       int Function(
         int,
       )>();
@@ -14984,25 +15549,34 @@ class Api {
           _CalendarEventUpdateBuilderReturn Function(
             int,
           )>();
-  late final _calendarEventRsvpManagerPtr = _lookup<
+  late final _calendarEventRsvpsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__CalendarEvent_rsvp_manager");
+          )>>("__CalendarEvent_rsvps");
 
-  late final _calendarEventRsvpManager =
-      _calendarEventRsvpManagerPtr.asFunction<
-          int Function(
-            int,
-          )>();
-  late final _calendarEventMyRsvpStatusPtr = _lookup<
+  late final _calendarEventRsvps = _calendarEventRsvpsPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _calendarEventReactionsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__CalendarEvent_my_rsvp_status");
+          )>>("__CalendarEvent_reactions");
 
-  late final _calendarEventMyRsvpStatus =
-      _calendarEventMyRsvpStatusPtr.asFunction<
+  late final _calendarEventReactions = _calendarEventReactionsPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _calendarEventRespondedByMePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__CalendarEvent_responded_by_me");
+
+  late final _calendarEventRespondedByMe =
+      _calendarEventRespondedByMePtr.asFunction<
           int Function(
             int,
           )>();
@@ -15035,6 +15609,29 @@ class Api {
   late final _calendarEventUpdateBuilderDescriptionText =
       _calendarEventUpdateBuilderDescriptionTextPtr.asFunction<
           void Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _calendarEventUpdateBuilderDescriptionHtmlPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__CalendarEventUpdateBuilder_description_html");
+
+  late final _calendarEventUpdateBuilderDescriptionHtml =
+      _calendarEventUpdateBuilderDescriptionHtmlPtr.asFunction<
+          void Function(
+            int,
+            int,
+            int,
             int,
             int,
             int,
@@ -15193,6 +15790,29 @@ class Api {
   late final _calendarEventDraftDescriptionText =
       _calendarEventDraftDescriptionTextPtr.asFunction<
           void Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _calendarEventDraftDescriptionHtmlPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__CalendarEventDraft_description_html");
+
+  late final _calendarEventDraftDescriptionHtml =
+      _calendarEventDraftDescriptionHtmlPtr.asFunction<
+          void Function(
+            int,
+            int,
+            int,
             int,
             int,
             int,
@@ -15365,16 +15985,17 @@ class Api {
       int Function(
         int,
       )>();
-  late final _rsvpManagerMyStatusPtr = _lookup<
+  late final _rsvpManagerRespondedByMePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__RsvpManager_my_status");
+          )>>("__RsvpManager_responded_by_me");
 
-  late final _rsvpManagerMyStatus = _rsvpManagerMyStatusPtr.asFunction<
-      int Function(
-        int,
-      )>();
+  late final _rsvpManagerRespondedByMe =
+      _rsvpManagerRespondedByMePtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _rsvpManagerCountAtStatusPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -15484,6 +16105,187 @@ class Api {
 
   late final _rsvpStatus = _rsvpStatusPtr.asFunction<
       _RsvpStatusReturn Function(
+        int,
+      )>();
+  late final _reactionManagerLikesCountPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint32 Function(
+            ffi.Int64,
+          )>>("__ReactionManager_likes_count");
+
+  late final _reactionManagerLikesCount =
+      _reactionManagerLikesCountPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _reactionManagerLikedByMePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__ReactionManager_liked_by_me");
+
+  late final _reactionManagerLikedByMe =
+      _reactionManagerLikedByMePtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _reactionManagerReactedByMePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__ReactionManager_reacted_by_me");
+
+  late final _reactionManagerReactedByMe =
+      _reactionManagerReactedByMePtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _reactionManagerHasReactionEntriesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__ReactionManager_has_reaction_entries");
+
+  late final _reactionManagerHasReactionEntries =
+      _reactionManagerHasReactionEntriesPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _reactionManagerTotalReactionCountPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint32 Function(
+            ffi.Int64,
+          )>>("__ReactionManager_total_reaction_count");
+
+  late final _reactionManagerTotalReactionCount =
+      _reactionManagerTotalReactionCountPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _reactionManagerReactionEntriesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__ReactionManager_reaction_entries");
+
+  late final _reactionManagerReactionEntries =
+      _reactionManagerReactionEntriesPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _reactionManagerSendLikePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__ReactionManager_send_like");
+
+  late final _reactionManagerSendLike = _reactionManagerSendLikePtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _reactionManagerSendReactionPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__ReactionManager_send_reaction");
+
+  late final _reactionManagerSendReaction =
+      _reactionManagerSendReactionPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _reactionManagerRedactLikePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__ReactionManager_redact_like");
+
+  late final _reactionManagerRedactLike =
+      _reactionManagerRedactLikePtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _reactionManagerSubscribeStreamPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__ReactionManager_subscribe_stream");
+
+  late final _reactionManagerSubscribeStream =
+      _reactionManagerSubscribeStreamPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _reactionManagerReloadPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__ReactionManager_reload");
+
+  late final _reactionManagerReload = _reactionManagerReloadPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _reactionEventIdStrPtr = _lookup<
+      ffi.NativeFunction<
+          _ReactionEventIdStrReturn Function(
+            ffi.Int64,
+          )>>("__Reaction_event_id_str");
+
+  late final _reactionEventIdStr = _reactionEventIdStrPtr.asFunction<
+      _ReactionEventIdStrReturn Function(
+        int,
+      )>();
+  late final _reactionSenderPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Reaction_sender");
+
+  late final _reactionSender = _reactionSenderPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _reactionOriginServerTsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint64 Function(
+            ffi.Int64,
+          )>>("__Reaction_origin_server_ts");
+
+  late final _reactionOriginServerTs = _reactionOriginServerTsPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _reactionRelatesToPtr = _lookup<
+      ffi.NativeFunction<
+          _ReactionRelatesToReturn Function(
+            ffi.Int64,
+          )>>("__Reaction_relates_to");
+
+  late final _reactionRelatesTo = _reactionRelatesToPtr.asFunction<
+      _ReactionRelatesToReturn Function(
         int,
       )>();
   late final _eventSendStateStatePtr = _lookup<
@@ -15893,44 +16695,44 @@ class Api {
       int Function(
         int,
       )>();
-  late final _timelineDiffActionPtr = _lookup<
+  late final _roomMessageDiffActionPtr = _lookup<
       ffi.NativeFunction<
-          _TimelineDiffActionReturn Function(
+          _RoomMessageDiffActionReturn Function(
             ffi.Int64,
-          )>>("__TimelineDiff_action");
+          )>>("__RoomMessageDiff_action");
 
-  late final _timelineDiffAction = _timelineDiffActionPtr.asFunction<
-      _TimelineDiffActionReturn Function(
+  late final _roomMessageDiffAction = _roomMessageDiffActionPtr.asFunction<
+      _RoomMessageDiffActionReturn Function(
         int,
       )>();
-  late final _timelineDiffValuesPtr = _lookup<
+  late final _roomMessageDiffValuesPtr = _lookup<
       ffi.NativeFunction<
-          _TimelineDiffValuesReturn Function(
+          _RoomMessageDiffValuesReturn Function(
             ffi.Int64,
-          )>>("__TimelineDiff_values");
+          )>>("__RoomMessageDiff_values");
 
-  late final _timelineDiffValues = _timelineDiffValuesPtr.asFunction<
-      _TimelineDiffValuesReturn Function(
+  late final _roomMessageDiffValues = _roomMessageDiffValuesPtr.asFunction<
+      _RoomMessageDiffValuesReturn Function(
         int,
       )>();
-  late final _timelineDiffIndexPtr = _lookup<
+  late final _roomMessageDiffIndexPtr = _lookup<
       ffi.NativeFunction<
-          _TimelineDiffIndexReturn Function(
+          _RoomMessageDiffIndexReturn Function(
             ffi.Int64,
-          )>>("__TimelineDiff_index");
+          )>>("__RoomMessageDiff_index");
 
-  late final _timelineDiffIndex = _timelineDiffIndexPtr.asFunction<
-      _TimelineDiffIndexReturn Function(
+  late final _roomMessageDiffIndex = _roomMessageDiffIndexPtr.asFunction<
+      _RoomMessageDiffIndexReturn Function(
         int,
       )>();
-  late final _timelineDiffValuePtr = _lookup<
+  late final _roomMessageDiffValuePtr = _lookup<
       ffi.NativeFunction<
-          _TimelineDiffValueReturn Function(
+          _RoomMessageDiffValueReturn Function(
             ffi.Int64,
-          )>>("__TimelineDiff_value");
+          )>>("__RoomMessageDiff_value");
 
-  late final _timelineDiffValue = _timelineDiffValuePtr.asFunction<
-      _TimelineDiffValueReturn Function(
+  late final _roomMessageDiffValue = _roomMessageDiffValuePtr.asFunction<
+      _RoomMessageDiffValueReturn Function(
         int,
       )>();
   late final _joinRuleBuilderJoinRulePtr = _lookup<
@@ -16388,14 +17190,14 @@ class Api {
           int Function(
             int,
           )>();
-  late final _timelineStreamDiffStreamPtr = _lookup<
+  late final _timelineStreamMessagesStreamPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__TimelineStream_diff_stream");
+          )>>("__TimelineStream_messages_stream");
 
-  late final _timelineStreamDiffStream =
-      _timelineStreamDiffStreamPtr.asFunction<
+  late final _timelineStreamMessagesStream =
+      _timelineStreamMessagesStreamPtr.asFunction<
           int Function(
             int,
           )>();
@@ -16803,6 +17605,38 @@ class Api {
       int Function(
         int,
       )>();
+  late final _convoIsFavoritePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__Convo_is_favorite");
+
+  late final _convoIsFavorite = _convoIsFavoritePtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _convoSetFavoritePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint8,
+          )>>("__Convo_set_favorite");
+
+  late final _convoSetFavorite = _convoSetFavoritePtr.asFunction<
+      int Function(
+        int,
+        int,
+      )>();
+  late final _convoIsLowPriorityPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__Convo_is_low_priority");
+
+  late final _convoIsLowPriority = _convoIsLowPriorityPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _convoDmUsersPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -16827,6 +17661,16 @@ class Api {
         int,
         int,
         int,
+        int,
+      )>();
+  late final _convoPermalinkPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Convo_permalink");
+
+  late final _convoPermalink = _convoPermalinkPtr.asFunction<
+      int Function(
         int,
       )>();
   late final _convoJoinPtr = _lookup<
@@ -21792,6 +22636,26 @@ class Api {
             int,
             int,
           )>();
+  late final _clientWaitForReactionPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Uint8,
+          )>>("__Client_wait_for_reaction");
+
+  late final _clientWaitForReaction = _clientWaitForReactionPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+      )>();
   late final _clientWaitForRsvpPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -23108,6 +23972,36 @@ class Api {
             int,
             int,
           )>();
+  late final _newsEntryReactionsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _NewsEntryReactionsFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__NewsEntry_reactions_future_poll");
+
+  late final _newsEntryReactionsFuturePoll =
+      _newsEntryReactionsFuturePollPtr.asFunction<
+          _NewsEntryReactionsFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _newsEntryCommentsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _NewsEntryCommentsFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__NewsEntry_comments_future_poll");
+
+  late final _newsEntryCommentsFuturePoll =
+      _newsEntryCommentsFuturePollPtr.asFunction<
+          _NewsEntryCommentsFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _newsEntryDraftAddSlideFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _NewsEntryDraftAddSlideFuturePollReturn Function(
@@ -23242,32 +24136,47 @@ class Api {
             int,
             int,
           )>();
-  late final _calendarEventRsvpManagerFuturePollPtr = _lookup<
+  late final _calendarEventRsvpsFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _CalendarEventRsvpManagerFuturePollReturn Function(
+          _CalendarEventRsvpsFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__CalendarEvent_rsvp_manager_future_poll");
+          )>>("__CalendarEvent_rsvps_future_poll");
 
-  late final _calendarEventRsvpManagerFuturePoll =
-      _calendarEventRsvpManagerFuturePollPtr.asFunction<
-          _CalendarEventRsvpManagerFuturePollReturn Function(
+  late final _calendarEventRsvpsFuturePoll =
+      _calendarEventRsvpsFuturePollPtr.asFunction<
+          _CalendarEventRsvpsFuturePollReturn Function(
             int,
             int,
             int,
           )>();
-  late final _calendarEventMyRsvpStatusFuturePollPtr = _lookup<
+  late final _calendarEventReactionsFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _CalendarEventMyRsvpStatusFuturePollReturn Function(
+          _CalendarEventReactionsFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__CalendarEvent_my_rsvp_status_future_poll");
+          )>>("__CalendarEvent_reactions_future_poll");
 
-  late final _calendarEventMyRsvpStatusFuturePoll =
-      _calendarEventMyRsvpStatusFuturePollPtr.asFunction<
-          _CalendarEventMyRsvpStatusFuturePollReturn Function(
+  late final _calendarEventReactionsFuturePoll =
+      _calendarEventReactionsFuturePollPtr.asFunction<
+          _CalendarEventReactionsFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _calendarEventRespondedByMeFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _CalendarEventRespondedByMeFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__CalendarEvent_responded_by_me_future_poll");
+
+  late final _calendarEventRespondedByMeFuturePoll =
+      _calendarEventRespondedByMeFuturePollPtr.asFunction<
+          _CalendarEventRespondedByMeFuturePollReturn Function(
             int,
             int,
             int,
@@ -23317,17 +24226,17 @@ class Api {
             int,
             int,
           )>();
-  late final _rsvpManagerMyStatusFuturePollPtr = _lookup<
+  late final _rsvpManagerRespondedByMeFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _RsvpManagerMyStatusFuturePollReturn Function(
+          _RsvpManagerRespondedByMeFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__RsvpManager_my_status_future_poll");
+          )>>("__RsvpManager_responded_by_me_future_poll");
 
-  late final _rsvpManagerMyStatusFuturePoll =
-      _rsvpManagerMyStatusFuturePollPtr.asFunction<
-          _RsvpManagerMyStatusFuturePollReturn Function(
+  late final _rsvpManagerRespondedByMeFuturePoll =
+      _rsvpManagerRespondedByMeFuturePollPtr.asFunction<
+          _RsvpManagerRespondedByMeFuturePollReturn Function(
             int,
             int,
             int,
@@ -23376,6 +24285,81 @@ class Api {
         int,
         int,
       )>();
+  late final _reactionManagerReactionEntriesFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ReactionManagerReactionEntriesFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__ReactionManager_reaction_entries_future_poll");
+
+  late final _reactionManagerReactionEntriesFuturePoll =
+      _reactionManagerReactionEntriesFuturePollPtr.asFunction<
+          _ReactionManagerReactionEntriesFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _reactionManagerSendLikeFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ReactionManagerSendLikeFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__ReactionManager_send_like_future_poll");
+
+  late final _reactionManagerSendLikeFuturePoll =
+      _reactionManagerSendLikeFuturePollPtr.asFunction<
+          _ReactionManagerSendLikeFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _reactionManagerSendReactionFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ReactionManagerSendReactionFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__ReactionManager_send_reaction_future_poll");
+
+  late final _reactionManagerSendReactionFuturePoll =
+      _reactionManagerSendReactionFuturePollPtr.asFunction<
+          _ReactionManagerSendReactionFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _reactionManagerRedactLikeFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ReactionManagerRedactLikeFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__ReactionManager_redact_like_future_poll");
+
+  late final _reactionManagerRedactLikeFuturePoll =
+      _reactionManagerRedactLikeFuturePollPtr.asFunction<
+          _ReactionManagerRedactLikeFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _reactionManagerReloadFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ReactionManagerReloadFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__ReactionManager_reload_future_poll");
+
+  late final _reactionManagerReloadFuturePoll =
+      _reactionManagerReloadFuturePollPtr.asFunction<
+          _ReactionManagerReloadFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _roomSetJoinRuleFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _RoomSetJoinRuleFuturePollReturn Function(
@@ -23853,6 +24837,21 @@ class Api {
             int,
             int,
           )>();
+  late final _convoSetFavoriteFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ConvoSetFavoriteFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Convo_set_favorite_future_poll");
+
+  late final _convoSetFavoriteFuturePoll =
+      _convoSetFavoriteFuturePollPtr.asFunction<
+          _ConvoSetFavoriteFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _convoInviteUserFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ConvoInviteUserFuturePollReturn Function(
@@ -23864,6 +24863,21 @@ class Api {
   late final _convoInviteUserFuturePoll =
       _convoInviteUserFuturePollPtr.asFunction<
           _ConvoInviteUserFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _convoPermalinkFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ConvoPermalinkFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Convo_permalink_future_poll");
+
+  late final _convoPermalinkFuturePoll =
+      _convoPermalinkFuturePollPtr.asFunction<
+          _ConvoPermalinkFuturePollReturn Function(
             int,
             int,
             int,
@@ -25615,6 +26629,21 @@ class Api {
             int,
             int,
           )>();
+  late final _clientWaitForReactionFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientWaitForReactionFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Client_wait_for_reaction_future_poll");
+
+  late final _clientWaitForReactionFuturePoll =
+      _clientWaitForReactionFuturePollPtr.asFunction<
+          _ClientWaitForReactionFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _clientWaitForRsvpFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ClientWaitForRsvpFuturePollReturn Function(
@@ -26288,7 +27317,7 @@ class Api {
           )>();
   late final _rsvpManagerSubscribeStreamStreamPollPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint8 Function(
+          _RsvpManagerSubscribeStreamStreamPollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
@@ -26297,24 +27326,41 @@ class Api {
 
   late final _rsvpManagerSubscribeStreamStreamPoll =
       _rsvpManagerSubscribeStreamStreamPollPtr.asFunction<
-          int Function(
+          _RsvpManagerSubscribeStreamStreamPollReturn Function(
             int,
             int,
             int,
             int,
           )>();
-  late final _timelineStreamDiffStreamStreamPollPtr = _lookup<
+  late final _reactionManagerSubscribeStreamStreamPollPtr = _lookup<
       ffi.NativeFunction<
-          _TimelineStreamDiffStreamStreamPollReturn Function(
+          _ReactionManagerSubscribeStreamStreamPollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__TimelineStream_diff_stream_stream_poll");
+          )>>("__ReactionManager_subscribe_stream_stream_poll");
 
-  late final _timelineStreamDiffStreamStreamPoll =
-      _timelineStreamDiffStreamStreamPollPtr.asFunction<
-          _TimelineStreamDiffStreamStreamPollReturn Function(
+  late final _reactionManagerSubscribeStreamStreamPoll =
+      _reactionManagerSubscribeStreamStreamPollPtr.asFunction<
+          _ReactionManagerSubscribeStreamStreamPollReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _timelineStreamMessagesStreamStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _TimelineStreamMessagesStreamStreamPollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__TimelineStream_messages_stream_stream_poll");
+
+  late final _timelineStreamMessagesStreamStreamPoll =
+      _timelineStreamMessagesStreamStreamPollPtr.asFunction<
+          _TimelineStreamMessagesStreamStreamPollReturn Function(
             int,
             int,
             int,
@@ -27381,6 +28427,55 @@ class Api {
 
   late final _ffiListPusherInsert =
       _ffiListPusherInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListReaction createFfiListReaction() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListReactionCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListReaction");
+    return FfiListReaction._(this, list_box);
+  }
+
+  late final _ffiListReactionCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListReactionCreate");
+
+  late final _ffiListReactionCreate =
+      _ffiListReactionCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListReactionLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListReactionLen");
+
+  late final _ffiListReactionLen =
+      _ffiListReactionLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListReactionElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListReactionElementAt");
+
+  late final _ffiListReactionElementAt =
+      _ffiListReactionElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListReactionRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListReactionRemove");
+
+  late final _ffiListReactionRemove =
+      _ffiListReactionRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListReactionAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListReactionAdd");
+
+  late final _ffiListReactionAdd =
+      _ffiListReactionAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListReactionInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListReactionInsert");
+
+  late final _ffiListReactionInsert =
+      _ffiListReactionInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListReactionRecord createFfiListReactionRecord() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListReactionRecordCreate());
@@ -30099,6 +31194,7 @@ class NewsEntry {
 
   NewsEntry._(this._api, this._box);
 
+  /// the slides count in this news item
   int slidesCount() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -30151,30 +31247,6 @@ class NewsEntry {
     return tmp2;
   }
 
-  /// how many comments on this news entry
-  int commentsCount() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._newsEntryCommentsCount(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final tmp2 = tmp3;
-    return tmp2;
-  }
-
-  /// how many likes on this news entry
-  int likesCount() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._newsEntryLikesCount(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final tmp2 = tmp3;
-    return tmp2;
-  }
-
   /// get room id
   RoomId roomId() {
     var tmp0 = 0;
@@ -30217,6 +31289,36 @@ class NewsEntry {
     final tmp3_1 = _Box(_api, tmp3_0, "drop_box_EventId");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = EventId._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// get the reaction manager
+  Future<ReactionManager> reactions() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsEntryReactions(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__NewsEntry_reactions_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__newsEntryReactionsFuturePoll);
+    return tmp2;
+  }
+
+  /// get the comment manager
+  Future<CommentsManager> comments() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsEntryComments(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__NewsEntry_comments_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__newsEntryCommentsFuturePoll);
     return tmp2;
   }
 
@@ -31360,36 +32462,49 @@ class CalendarEvent {
   }
 
   /// get RSVP manager
-  Future<RsvpManager> rsvpManager() {
+  Future<RsvpManager> rsvps() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._calendarEventRsvpManager(
+    final tmp1 = _api._calendarEventRsvps(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 =
-        _Box(_api, tmp3_0, "__CalendarEvent_rsvp_manager_future_drop");
+    final tmp3_1 = _Box(_api, tmp3_0, "__CalendarEvent_rsvps_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 =
-        _nativeFuture(tmp3_1, _api.__calendarEventRsvpManagerFuturePoll);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__calendarEventRsvpsFuturePoll);
+    return tmp2;
+  }
+
+  /// get the reaction manager
+  Future<ReactionManager> reactions() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._calendarEventReactions(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__CalendarEvent_reactions_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__calendarEventReactionsFuturePoll);
     return tmp2;
   }
 
   /// get my RSVP status, one of Yes/Maybe/No or None
-  Future<OptionRsvpStatus> myRsvpStatus() {
+  Future<OptionRsvpStatus> respondedByMe() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._calendarEventMyRsvpStatus(
+    final tmp1 = _api._calendarEventRespondedByMe(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
     final tmp3_1 =
-        _Box(_api, tmp3_0, "__CalendarEvent_my_rsvp_status_future_drop");
+        _Box(_api, tmp3_0, "__CalendarEvent_responded_by_me_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 =
-        _nativeFuture(tmp3_1, _api.__calendarEventMyRsvpStatusFuturePoll);
+        _nativeFuture(tmp3_1, _api.__calendarEventRespondedByMeFuturePoll);
     return tmp2;
   }
 
@@ -31455,6 +32570,49 @@ class CalendarEventUpdateBuilder {
       tmp2,
       tmp3,
       tmp4,
+    );
+    return;
+  }
+
+  /// set description html text
+  void descriptionHtml(
+    String body,
+    String htmlBody,
+  ) {
+    final tmp1 = body;
+    final tmp5 = htmlBody;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    _api._calendarEventUpdateBuilderDescriptionHtml(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
     );
     return;
   }
@@ -31832,6 +32990,49 @@ class CalendarEventDraft {
     return;
   }
 
+  /// set the description html for this calendar event
+  void descriptionHtml(
+    String text,
+    String html,
+  ) {
+    final tmp1 = text;
+    final tmp5 = html;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    _api._calendarEventDraftDescriptionHtml(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    return;
+  }
+
   void unsetDescription() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -32198,17 +33399,19 @@ class RsvpManager {
   }
 
   /// get Yes/Maybe/No or None for the user's own status
-  Future<OptionRsvpStatus> myStatus() {
+  Future<OptionRsvpStatus> respondedByMe() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._rsvpManagerMyStatus(
+    final tmp1 = _api._rsvpManagerRespondedByMe(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__RsvpManager_my_status_future_drop");
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__RsvpManager_responded_by_me_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__rsvpManagerMyStatusFuturePoll);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__rsvpManagerRespondedByMeFuturePoll);
     return tmp2;
   }
 
@@ -32312,7 +33515,7 @@ class RsvpManager {
   }
 
   /// get informed about changes to this manager
-  Stream<void> subscribeStream() {
+  Stream<bool> subscribeStream() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._rsvpManagerSubscribeStream(
@@ -32426,6 +33629,343 @@ class Rsvp {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._rsvpStatus(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class ReactionManager {
+  final Api _api;
+  final _Box _box;
+
+  ReactionManager._(this._api, this._box);
+
+  /// get count sent like by me and other people
+  int likesCount() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._reactionManagerLikesCount(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// whether I sent like
+  bool likedByMe() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._reactionManagerLikedByMe(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// whether I reacted using symbol key
+  bool reactedByMe() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._reactionManagerReactedByMe(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// whether manager has reaction entries
+  bool hasReactionEntries() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._reactionManagerHasReactionEntries(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// get total count of reactions
+  int totalReactionCount() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._reactionManagerTotalReactionCount(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// get reaction entries
+  Future<FfiListReaction> reactionEntries() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._reactionManagerReactionEntries(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__ReactionManager_reaction_entries_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__reactionManagerReactionEntriesFuturePoll);
+    return tmp2;
+  }
+
+  /// send a like
+  Future<EventId> sendLike() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._reactionManagerSendLike(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__ReactionManager_send_like_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__reactionManagerSendLikeFuturePoll);
+    return tmp2;
+  }
+
+  /// send the reaction using symbol key
+  Future<EventId> sendReaction(
+    String key,
+  ) {
+    final tmp1 = key;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._reactionManagerSendReaction(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 =
+        _Box(_api, tmp7_0, "__ReactionManager_send_reaction_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 =
+        _nativeFuture(tmp7_1, _api.__reactionManagerSendReactionFuturePoll);
+    return tmp6;
+  }
+
+  /// remove the like
+  Future<EventId> redactLike(
+    String? reason,
+    String? txnId,
+  ) {
+    final tmp1 = reason;
+    final tmp7 = txnId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    var tmp5 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    tmp0 = _box.borrow();
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      final tmp3_0 = utf8.encode(tmp3);
+      tmp5 = tmp3_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = _api.__allocate(tmp5 * 1, 1);
+      final Uint8List tmp4_1 = tmp4_0.asTypedList(tmp5);
+      tmp4_1.setAll(0, tmp3_0);
+      tmp4 = tmp4_0.address;
+      tmp6 = tmp5;
+    }
+    if (tmp7 == null) {
+      tmp8 = 0;
+    } else {
+      tmp8 = 1;
+      final tmp9 = tmp7;
+      final tmp9_0 = utf8.encode(tmp9);
+      tmp11 = tmp9_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+      final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+      tmp10_1.setAll(0, tmp9_0);
+      tmp10 = tmp10_0.address;
+      tmp12 = tmp11;
+    }
+    final tmp13 = _api._reactionManagerRedactLike(
+      tmp0,
+      tmp2,
+      tmp4,
+      tmp5,
+      tmp6,
+      tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+    );
+    final tmp15 = tmp13;
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 =
+        _Box(_api, tmp15_0, "__ReactionManager_redact_like_future_drop");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp14 =
+        _nativeFuture(tmp15_1, _api.__reactionManagerRedactLikeFuturePoll);
+    return tmp14;
+  }
+
+  /// get informed about changes to this manager
+  Stream<bool> subscribeStream() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._reactionManagerSubscribeStream(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__ReactionManager_subscribe_stream_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeStream(tmp3_1, _api.__reactionManagerSubscribeStreamStreamPoll);
+    return tmp2;
+  }
+
+  /// get informed about changes to this manager
+  Future<ReactionManager> reload() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._reactionManagerReload(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__ReactionManager_reload_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__reactionManagerReloadFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class Reaction {
+  final Api _api;
+  final _Box _box;
+
+  Reaction._(this._api, this._box);
+
+  /// event id of reaction event
+  String eventIdStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._reactionEventIdStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// get sender of this reaction
+  UserId sender() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._reactionSender(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_UserId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = UserId._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// get timestamp of this reaction
+  int originServerTs() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._reactionOriginServerTs(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// the event id to which it is reacted
+  String relatesTo() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._reactionRelatesTo(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -33454,17 +34994,17 @@ class ReactionRecord {
   }
 }
 
-class TimelineDiff {
+class RoomMessageDiff {
   final Api _api;
   final _Box _box;
 
-  TimelineDiff._(this._api, this._box);
+  RoomMessageDiff._(this._api, this._box);
 
   /// Append/Insert/Set/Remove/PushBack/PushFront/PopBack/PopFront/Clear/Reset
   String action() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._timelineDiffAction(
+    final tmp1 = _api._roomMessageDiffAction(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -33494,7 +35034,7 @@ class TimelineDiff {
   FfiListRoomMessage? values() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._timelineDiffValues(
+    final tmp1 = _api._roomMessageDiffValues(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -33514,7 +35054,7 @@ class TimelineDiff {
   int? index() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._timelineDiffIndex(
+    final tmp1 = _api._roomMessageDiffIndex(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -33530,7 +35070,7 @@ class TimelineDiff {
   RoomMessage? value() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._timelineDiffValue(
+    final tmp1 = _api._roomMessageDiffValue(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -34480,19 +36020,19 @@ class TimelineStream {
   TimelineStream._(this._api, this._box);
 
   /// Fires whenever new diff found
-  Stream<TimelineDiff> diffStream() {
+  Stream<RoomMessageDiff> messagesStream() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._timelineStreamDiffStream(
+    final tmp1 = _api._timelineStreamMessagesStream(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
     final tmp3_1 =
-        _Box(_api, tmp3_0, "__TimelineStream_diff_stream_stream_drop");
+        _Box(_api, tmp3_0, "__TimelineStream_messages_stream_stream_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 =
-        _nativeStream(tmp3_1, _api.__timelineStreamDiffStreamStreamPoll);
+        _nativeStream(tmp3_1, _api.__timelineStreamMessagesStreamStreamPoll);
     return tmp2;
   }
 
@@ -35339,6 +36879,51 @@ class Convo {
     return tmp2;
   }
 
+  /// is this a favorite chat
+  bool isFavorite() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoIsFavorite(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// set this a favorite chat
+  Future<bool> setFavorite(
+    bool isFavorite,
+  ) {
+    final tmp1 = isFavorite;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    final tmp3 = _api._convoSetFavorite(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "__Convo_set_favorite_future_drop");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(tmp5_1, _api.__convoSetFavoriteFuturePoll);
+    return tmp4;
+  }
+
+  /// is this a low priority chat
+  bool isLowPriority() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoIsLowPriority(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
   /// the list of users ids if this is a direct message
   FfiListFfiString dmUsers() {
     var tmp0 = 0;
@@ -35385,6 +36970,21 @@ class Convo {
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp6 = _nativeFuture(tmp7_1, _api.__convoInviteUserFuturePoll);
     return tmp6;
+  }
+
+  /// generate the room permalink
+  Future<String> permalink() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoPermalink(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Convo_permalink_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__convoPermalinkFuturePoll);
+    return tmp2;
   }
 
   /// join this room
@@ -44936,6 +46536,53 @@ class Client {
     return tmp10;
   }
 
+  /// Fetch the reaction event or use its event_id to wait for it to come down the wire
+  Future<Reaction> waitForReaction(
+    String key,
+    int? timeout,
+  ) {
+    final tmp1 = key;
+    final tmp5 = timeout;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    if (tmp5 == null) {
+      tmp6 = 0;
+    } else {
+      tmp6 = 1;
+      final tmp7 = tmp5;
+      tmp8 = tmp7;
+    }
+    final tmp9 = _api._clientWaitForReaction(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 =
+        _Box(_api, tmp11_0, "__Client_wait_for_reaction_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 =
+        _nativeFuture(tmp11_1, _api.__clientWaitForReactionFuturePoll);
+    return tmp10;
+  }
+
   /// Fetch the RSVP or use its event_id to wait for it to come down the wire
   Future<Rsvp> waitForRsvp(
     String key,
@@ -48439,6 +50086,24 @@ class _RsvpStatusReturn extends ffi.Struct {
   external int arg2;
 }
 
+class _ReactionEventIdStrReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _ReactionRelatesToReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
 class _EventSendStateStateReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -48699,7 +50364,7 @@ class _MsgContentGeoUriReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _TimelineDiffActionReturn extends ffi.Struct {
+class _RoomMessageDiffActionReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -48708,21 +50373,21 @@ class _TimelineDiffActionReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _TimelineDiffValuesReturn extends ffi.Struct {
+class _RoomMessageDiffValuesReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
   external int arg1;
 }
 
-class _TimelineDiffIndexReturn extends ffi.Struct {
+class _RoomMessageDiffIndexReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint64()
   external int arg1;
 }
 
-class _TimelineDiffValueReturn extends ffi.Struct {
+class _RoomMessageDiffValueReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -50066,6 +51731,36 @@ class _NewsSlideSourceBinaryFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _NewsEntryReactionsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _NewsEntryCommentsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _NewsEntryDraftAddSlideFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -50201,7 +51896,7 @@ class _PinUpdateBuilderSendFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _CalendarEventRsvpManagerFuturePollReturn extends ffi.Struct {
+class _CalendarEventRsvpsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -50216,7 +51911,22 @@ class _CalendarEventRsvpManagerFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _CalendarEventMyRsvpStatusFuturePollReturn extends ffi.Struct {
+class _CalendarEventReactionsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _CalendarEventRespondedByMeFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -50276,7 +51986,7 @@ class _RsvpManagerRsvpEntriesFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _RsvpManagerMyStatusFuturePollReturn extends ffi.Struct {
+class _RsvpManagerRespondedByMeFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -50322,6 +52032,81 @@ class _RsvpManagerUsersAtStatusFuturePollReturn extends ffi.Struct {
 }
 
 class _RsvpDraftSendFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ReactionManagerReactionEntriesFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ReactionManagerSendLikeFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ReactionManagerSendReactionFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ReactionManagerRedactLikeFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ReactionManagerReloadFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -50820,6 +52605,21 @@ class _ConvoMediaBinaryFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ConvoSetFavoriteFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
 class _ConvoInviteUserFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -50833,6 +52633,25 @@ class _ConvoInviteUserFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Uint8()
   external int arg5;
+}
+
+class _ConvoPermalinkFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+  @ffi.Uint64()
+  external int arg6;
+  @ffi.Uint64()
+  external int arg7;
 }
 
 class _ConvoJoinFuturePollReturn extends ffi.Struct {
@@ -52607,6 +54426,21 @@ class _ClientWaitForCalendarEventFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ClientWaitForReactionFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _ClientWaitForRsvpFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -53269,7 +55103,21 @@ class _ActerPinSubscribeStreamStreamPollReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _TimelineStreamDiffStreamStreamPollReturn extends ffi.Struct {
+class _RsvpManagerSubscribeStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+}
+
+class _ReactionManagerSubscribeStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+}
+
+class _TimelineStreamMessagesStreamStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -54348,6 +56196,66 @@ class FfiListPusher extends Iterable<Pusher> implements CustomIterable<Pusher> {
   /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, Pusher element) {
     _api._ffiListPusherInsert(_box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListReaction extends Iterable<Reaction>
+    implements CustomIterable<Reaction> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListReaction._(this._api, this._box);
+
+  @override
+  Iterator<Reaction> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListReactionLen(_box.borrow());
+  }
+
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  Reaction elementAt(int index) {
+    final address = _api._ffiListReactionElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return Reaction._(_api, reference);
+  }
+
+  Reaction operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  Reaction remove(int index) {
+    final address = _api._ffiListReactionRemove(_box.borrow(), index);
+    final reference =
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_Reaction");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return Reaction._(_api, reference);
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void add(Reaction element) {
+    _api._ffiListReactionAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, Reaction element) {
+    _api._ffiListReactionInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
   }
 

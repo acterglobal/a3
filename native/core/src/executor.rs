@@ -1,5 +1,5 @@
-use dashmap::{mapref::entry::Entry, DashMap};
 use ruma_events::{room::redaction::OriginalRoomRedactionEvent, UnsignedRoomRedactionEvent};
+use scc::hash_map::{Entry, HashMap};
 use std::sync::Arc;
 use tokio::sync::broadcast::{channel, Receiver, Sender};
 use tracing::{error, trace, trace_span, warn};
@@ -13,7 +13,7 @@ use crate::{
 #[derive(Clone, Debug)]
 pub struct Executor {
     store: Store,
-    notifiers: Arc<DashMap<String, Sender<()>>>,
+    notifiers: Arc<HashMap<String, Sender<()>>>,
 }
 
 impl Executor {
@@ -30,12 +30,12 @@ impl Executor {
 
     pub fn subscribe(&self, key: String) -> Receiver<()> {
         match self.notifiers.entry(key) {
-            Entry::Occupied(o) => {
-                let sender = o.get();
+            Entry::Occupied(mut o) => {
+                let sender = o.get_mut();
                 if sender.receiver_count() == 0 {
                     // replace the existing channel to reopen
                     let (sender, receiver) = channel(1);
-                    o.replace_entry(sender);
+                    o.insert(sender);
                     receiver
                 } else {
                     sender.subscribe()
@@ -43,7 +43,7 @@ impl Executor {
             }
             Entry::Vacant(v) => {
                 let (sender, receiver) = channel(1);
-                v.insert(sender);
+                v.insert_entry(sender);
                 receiver
             }
         }
@@ -72,14 +72,14 @@ impl Executor {
                 let v = o.get();
                 if v.receiver_count() == 0 {
                     trace!("No listeners. removing");
-                    o.remove();
+                    let _ = o.remove();
                     continue;
                 }
                 trace!("Broadcasting");
                 if let Err(error) = v.send(()) {
                     trace!(?error, "Notifying failed. No receivers. Clearing");
                     // we have overflow activated, this only fails because it has been closed
-                    o.remove();
+                    let _ = o.remove();
                 } else {
                     counter = counter.checked_add(1).unwrap_or(u32::MAX);
                 }
@@ -93,9 +93,17 @@ impl Executor {
     pub async fn handle(&self, model: AnyActerModel) -> Result<()> {
         let event_id = model.event_id().to_string();
         trace!(?event_id, ?model, "handle");
-        self.notify(model.execute(&self.store).await?);
-        trace!(?event_id, "handling done");
-        Ok(())
+        match model.execute(&self.store).await {
+            Err(error) => {
+                error!(?event_id, ?error, "handling failed");
+                Err(error)
+            }
+            Ok(keys) => {
+                trace!(?event_id, "handling done");
+                self.notify(keys);
+                Ok(())
+            }
+        }
     }
 
     pub async fn redact(

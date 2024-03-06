@@ -105,7 +105,6 @@ dependencies = [
  "async-stream",
  "chrono",
  "chrono-tz",
- "dashmap",
  "derive-getters",
  "derive_builder",
  "enum_dispatch",
@@ -122,6 +121,7 @@ dependencies = [
  "ruma-common",
  "ruma-events",
  "ruma-macros",
+ "scc",
  "serde",
  "serde_json",
  "serde_repr",
@@ -132,6 +132,7 @@ dependencies = [
  "toml 0.8.8",
  "tracing",
  "url",
+ "uuid 1.6.1",
 ]
 
 [[package]]
@@ -4793,6 +4794,12 @@ checksum = "b750e71aac86f4b238844ac9416e7339a8de1225eb1ebe5fba89890f634c46bf"
 dependencies = [
  "const_format",
 ]
+
+[[package]]
+name = "scc"
+version = "2.0.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1d29c0ce204821e0453e158e6f7ec8ba23cf930af1f06600818a4106f04589f9"
 
 [[package]]
 name = "schannel"

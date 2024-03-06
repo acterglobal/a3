@@ -10,6 +10,9 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::common::chat');
 
+final chatSearchValueProvider =
+    StateProvider.autoDispose<String?>((ref) => null);
+
 /// Provider the profile data of a the given space, keeps up to date with underlying client
 final convoProvider =
     AsyncNotifierProvider.family<AsyncConvoNotifier, Convo?, Convo>(

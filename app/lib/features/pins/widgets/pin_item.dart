@@ -173,7 +173,8 @@ class _PinItemState extends ConsumerState<PinItem> {
           editable: pinEdit.editMode,
           editorState: content != null
               ? EditorState(
-                  document: ActerDocumentHelpers.fromMsgContent(content),)
+                  document: ActerDocumentHelpers.fromMsgContent(content),
+                )
               : null,
           footer: pinEdit.editMode ? null : const SizedBox(),
           onCancel: () => pinEditNotifier.setEditMode(false),

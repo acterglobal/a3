@@ -3,7 +3,9 @@ import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/redact_content.dart';
+import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/report_content.dart';
+import 'package:acter/features/events/model/keys.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/skeletons/event_details_skeleton_widget.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -85,6 +87,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       if (member.canString('CanPostEvent')) {
         actions.add(
           PopupMenuItem(
+            key: EventsKeys.eventEditBtn,
             onTap: () => context.pushNamed(
               Routes.editCalendarEvent.name,
               pathParameters: {'calendarId': widget.calendarId},
@@ -106,9 +109,11 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         final roomId = event.roomIdStr();
         actions.addAll([
           PopupMenuItem(
+            key: EventsKeys.eventDeleteBtn,
             onTap: () => showAdaptiveDialog(
               context: context,
               builder: (context) => RedactContentWidget(
+                removeBtnKey: EventsKeys.eventRemoveBtn,
                 title: 'Remove this post',
                 eventId: event.eventId().toString(),
                 onSuccess: () {
@@ -169,6 +174,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     );
 
     return PopupMenuButton(
+      key: EventsKeys.appbarMenuActionBtn,
       itemBuilder: (ctx) => actions,
     );
   }
@@ -237,7 +243,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       EasyLoading.show(status: 'Updating RSVP', dismissOnTap: false);
       final event =
           await ref.read(calendarEventProvider(widget.calendarId).future);
-      final rsvpManager = await event.rsvpManager();
+      final rsvpManager = await event.rsvps();
       final draft = rsvpManager.rsvpDraft();
       switch (status) {
         case RsvpStatusTag.Yes:
@@ -293,6 +299,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       child: Row(
         children: [
           _buildEventRsvpActionItem(
+            key: EventsKeys.eventRsvpGoingBtn,
             onTap: () => onRsvp(RsvpStatusTag.Yes, ref),
             iconData: Icons.check,
             actionName: 'Going',
@@ -300,6 +307,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           ),
           _buildVerticalDivider(),
           _buildEventRsvpActionItem(
+            key: EventsKeys.eventRsvpNotGoingBtn,
             onTap: () => onRsvp(RsvpStatusTag.No, ref),
             iconData: Icons.close,
             actionName: 'Not Going',
@@ -307,6 +315,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           ),
           _buildVerticalDivider(),
           _buildEventRsvpActionItem(
+            key: EventsKeys.eventRsvpMaybeBtn,
             onTap: () => onRsvp(RsvpStatusTag.Maybe, ref),
             iconData: Icons.question_mark,
             actionName: 'Maybe',
@@ -318,6 +327,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   Widget _buildEventRsvpActionItem({
+    required Key key,
     required VoidCallback onTap,
     required IconData iconData,
     required String actionName,
@@ -325,6 +335,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }) {
     return Expanded(
       child: InkWell(
+        key: key,
         onTap: onTap,
         child: Column(
           children: [
@@ -382,11 +393,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   Widget _buildEventDescription(CalendarEvent ev) {
-    String description = '';
     TextMessageContent? content = ev.description();
-    if (content != null && content.body().isNotEmpty) {
-      description = content.body();
-    }
+    final formattedText = content?.formatted();
+    final bodyText = content?.body() ?? '';
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Column(
@@ -398,10 +408,16 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             style: Theme.of(context).textTheme.titleSmall,
           ),
           const SizedBox(height: 10),
-          Text(
-            description,
-            style: Theme.of(context).textTheme.labelMedium,
-          ),
+          if (formattedText != null)
+            RenderHtml(
+              text: formattedText,
+              defaultTextStyle: Theme.of(context).textTheme.labelMedium,
+            )
+          else
+            Text(
+              bodyText,
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
         ],
       ),
     );

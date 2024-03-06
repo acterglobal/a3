@@ -55,8 +55,15 @@ class _NewsWidgetState extends ConsumerState<NewsWidget> {
           itemCount: data.length,
           scrollDirection: Axis.vertical,
           itemBuilder: (context, index) => InkWell(
-            onDoubleTap: () {
+            onDoubleTap: () async {
               LikeAnimation.run(index);
+              final news = data[index];
+              final manager =
+                  await ref.read(newsReactionsProvider(news).future);
+              final status = manager.likedByMe();
+              if (!status) {
+                await manager.sendLike();
+              }
             },
             child: NewsItem(
               client: client,

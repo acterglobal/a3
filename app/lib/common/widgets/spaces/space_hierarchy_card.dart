@@ -166,9 +166,9 @@ class SpaceHierarchyCard extends ConsumerWidget {
     final roomId = space.roomIdStr();
     final profile = ref.watch(spaceHierarchyProfileProvider(space));
     final topic = space.topic();
-    final Widget? subtitle = topic != null && topic.isNotEmpty
+    final Widget? subtitle = topic?.isNotEmpty == true
         ? ExpandableText(
-            topic,
+            topic!,
             maxLines: 2,
             expandText: 'show more',
             collapseText: 'show less',

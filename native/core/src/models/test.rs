@@ -1,11 +1,11 @@
 use derive_builder::Builder;
-use ruma_common::{
-    event_id, room_id, user_id, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, UserId,
-};
+use ruma::OwnedRoomId;
+use ruma_common::{user_id, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, UserId};
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
-use super::EventMeta;
-use crate::{models::ActerModel, Result};
+use super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta};
+use crate::{store::Store, Result};
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize, Builder)]
 pub struct TestModel {
@@ -27,11 +27,14 @@ impl TestModelBuilder {
     }
 
     pub fn fake_meta() -> EventMeta {
+        let ev = Uuid::new_v4().hyphenated().to_string();
+        let room_id = Uuid::new_v4().hyphenated().to_string();
+
         EventMeta {
-            event_id: event_id!("$ASDas29ak").to_owned(),
+            event_id: OwnedEventId::try_from(format!("${ev}")).unwrap(),
             sender: user_id!("@test:example.org").to_owned(),
             origin_server_ts: MilliSecondsSinceUnixEpoch(123567890u32.into()),
-            room_id: room_id!("!5678ijhgasdf093:Asdfa").to_owned(),
+            room_id: OwnedRoomId::try_from(format!("!{room_id}:example.org")).unwrap(),
         }
     }
 }
@@ -41,8 +44,8 @@ impl ActerModel for TestModel {
         &self.event_id
     }
 
-    fn capabilities(&self) -> &[super::Capability] {
-        &[super::Capability::Commentable]
+    fn capabilities(&self) -> &[Capability] {
+        &[Capability::Commentable, Capability::Reactable]
     }
 
     fn indizes(&self, _user_id: &UserId) -> Vec<String> {
@@ -53,11 +56,11 @@ impl ActerModel for TestModel {
         Some(self.belongs_to.clone())
     }
 
-    fn transition(&mut self, _model: &super::AnyActerModel) -> Result<bool> {
+    fn transition(&mut self, _model: &AnyActerModel) -> Result<bool> {
         Ok(true)
     }
 
-    async fn execute(self, store: &super::Store) -> Result<Vec<String>> {
-        super::default_model_execute(store, self.into()).await
+    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+        default_model_execute(store, self.into()).await
     }
 }

@@ -17,8 +17,7 @@ class AboutCard extends ConsumerWidget {
     final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
     final invited =
         ref.watch(spaceInvitedMembersProvider(spaceId)).valueOrNull ?? [];
-    final showInviteBtn =
-        membership != null && membership.canString('CanInvite');
+    final showInviteBtn = membership?.canString('CanInvite') == true;
     return Card(
       elevation: 0,
       child: Padding(

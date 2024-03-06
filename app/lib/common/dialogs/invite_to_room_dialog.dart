@@ -108,8 +108,7 @@ final filteredSuggestedUsersProvider =
     if (element.userId.toLowerCase().contains(lowered)) {
       return true;
     }
-    return element.profile.displayName != null &&
-        element.profile.displayName!.toLowerCase().contains(lowered);
+    return element.profile.displayName?.toLowerCase().contains(lowered) == true;
   }).toList();
 });
 
@@ -167,8 +166,8 @@ class _InviteToRoomDialogState extends ConsumerState<InviteToRoomDialog>
     final searchValue = ref.watch(searchValueProvider);
     final children = [];
 
-    if (searchValue != null && searchValue.isNotEmpty) {
-      final cleaned = searchValue.trim();
+    if (searchValue?.isNotEmpty == true) {
+      final cleaned = searchValue!.trim();
       if (userNameRegExp.hasMatch(cleaned)) {
         // this is a fully qualified username we can invite;
 
@@ -194,7 +193,7 @@ class _InviteToRoomDialogState extends ConsumerState<InviteToRoomDialog>
       }
     }
 
-    if (suggestedUsers != null && suggestedUsers.isNotEmpty) {
+    if (suggestedUsers?.isNotEmpty == true) {
       children.add(
         SliverToBoxAdapter(
           child: Padding(
@@ -232,7 +231,7 @@ class _InviteToRoomDialogState extends ConsumerState<InviteToRoomDialog>
                 ),
               );
             },
-            childCount: suggestedUsers.length,
+            childCount: suggestedUsers!.length,
           ),
         ),
       );

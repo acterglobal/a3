@@ -39,18 +39,18 @@ class _TextMessageBuilderConsumerState
     final userId = client.userId().toString();
     String msgType = '';
     final metadata = widget.message.metadata;
-    if (metadata != null && metadata.containsKey('msgType')) {
-      msgType = metadata['msgType'];
+    if (metadata?.containsKey('msgType') == true) {
+      msgType = metadata!['msgType'];
     }
     final bool isNotice =
         (msgType == 'm.notice' || msgType == 'm.server_notice');
     bool enlargeEmoji = false;
-    if (metadata != null && metadata.containsKey('enlargeEmoji')) {
-      enlargeEmoji = metadata['enlargeEmoji'];
+    if (metadata?.containsKey('enlargeEmoji') == true) {
+      enlargeEmoji = metadata!['enlargeEmoji'];
     }
     bool wasEdited = false;
-    if (metadata != null && metadata.containsKey('was_edited')) {
-      wasEdited = metadata['was_edited'];
+    if (metadata?.containsKey('was_edited') == true) {
+      wasEdited = metadata!['was_edited'];
     }
     final authorId = widget.message.author.id;
 

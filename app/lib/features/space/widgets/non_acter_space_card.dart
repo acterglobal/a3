@@ -35,8 +35,7 @@ class NonActerSpaceCard extends ConsumerWidget {
           ),
           myMembership.when(
             data: (membership) {
-              if (membership != null &&
-                  membership.canString('CanUpgradeToActerSpace')) {
+              if (membership?.canString('CanUpgradeToActerSpace') == true) {
                 return OutlinedButton(
                   onPressed: () => upgradeSpace(context, ref),
                   child: const Text('Upgrade to Acter space'),
