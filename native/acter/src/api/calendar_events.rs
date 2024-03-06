@@ -6,7 +6,7 @@ use acter_core::{
     models::{self, ActerModel, AnyActerModel},
     statics::KEYS,
 };
-use anyhow::{bail, Context, Result};
+use anyhow::{bail, Context, Ok, Result};
 use chrono::DateTime;
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
@@ -220,6 +220,21 @@ impl CalendarEvent {
         let room = self.room.clone();
         let event_id = self.inner.event_id().to_owned();
         crate::ReactionManager::new(client, room, event_id).await
+    }
+
+    pub async fn participants(&self) -> Result<Vec<String>> {
+        let calendar_event = self.clone();
+        let mut user_ids = Vec::new();
+        RUNTIME
+            .spawn(async move {
+                let manager = calendar_event.rsvps().await?;
+                for u_id in manager.users_at_status("yes".to_string()).await? {
+                    let id_str = u_id.to_string();
+                    user_ids.push(id_str)
+                }
+                Ok(user_ids)
+            })
+            .await?
     }
 
     pub async fn responded_by_me(&self) -> Result<OptionRsvpStatus> {
