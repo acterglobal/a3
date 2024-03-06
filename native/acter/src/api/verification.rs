@@ -1054,7 +1054,7 @@ impl SessionManager {
             .await?
     }
 
-    pub async fn request_verification(&self, dev_id: String) -> Result<bool> {
+    pub async fn request_verification(&self, dev_id: String) -> Result<String> {
         let client = self.client.clone();
         RUNTIME
             .spawn(async move {
@@ -1070,11 +1070,12 @@ impl SessionManager {
                 };
                 let is_verified =
                     device.is_cross_signed_by_owner() || device.is_verified_with_cross_signing();
-                if !is_verified {
-                    let request = device.request_verification().await?;
-                    info!("requested verification - flow_id: {}", request.flow_id());
+                if is_verified {
+                    bail!("Device {} was already verified", dev_id);
                 }
-                Ok(true)
+                let request = device.request_verification().await?;
+                info!("requested verification - flow_id: {}", request.flow_id());
+                Ok(request.flow_id().to_owned())
             })
             .await?
     }
@@ -1095,7 +1096,7 @@ impl Client {
 }
 
 impl DeviceNewEvent {
-    pub async fn request_verification_to_user(&self) -> Result<bool> {
+    pub async fn request_verification_to_user(&self) -> Result<String> {
         let client = self.client();
         RUNTIME
             .spawn(async move {
@@ -1107,13 +1108,13 @@ impl DeviceNewEvent {
                     .get_user_identity(user_id)
                     .await?
                     .context("alice should get user identity")?;
-                user.request_verification().await?;
-                Ok(true)
+                let request = user.request_verification().await?;
+                Ok(request.flow_id().to_owned())
             })
             .await?
     }
 
-    pub async fn request_verification_to_device(&self, dev_id: String) -> Result<bool> {
+    pub async fn request_verification_to_device(&self, dev_id: String) -> Result<String> {
         let client = self.client();
         RUNTIME
             .spawn(async move {
@@ -1125,9 +1126,10 @@ impl DeviceNewEvent {
                     .get_device(user_id, device_id!(dev_id.as_str()))
                     .await?
                     .context("alice should get device")?;
-                dev.request_verification_with_methods(vec![VerificationMethod::SasV1])
+                let request = dev
+                    .request_verification_with_methods(vec![VerificationMethod::SasV1])
                     .await?;
-                Ok(true)
+                Ok(request.flow_id().to_owned())
             })
             .await?
     }
@@ -1135,7 +1137,7 @@ impl DeviceNewEvent {
     pub async fn request_verification_to_user_with_methods(
         &self,
         methods: &mut Vec<String>,
-    ) -> Result<bool> {
+    ) -> Result<String> {
         let client = self.client();
         let values = (*methods).iter().map(|e| e.as_str().into()).collect();
         RUNTIME
@@ -1148,8 +1150,8 @@ impl DeviceNewEvent {
                     .get_user_identity(user_id)
                     .await?
                     .context("alice should get user identity")?;
-                user.request_verification_with_methods(values).await?;
-                Ok(true)
+                let request = user.request_verification_with_methods(values).await?;
+                Ok(request.flow_id().to_owned())
             })
             .await?
     }
@@ -1158,7 +1160,7 @@ impl DeviceNewEvent {
         &self,
         dev_id: String,
         methods: &mut Vec<String>,
-    ) -> Result<bool> {
+    ) -> Result<String> {
         let client = self.client();
         let values = (*methods).iter().map(|e| e.as_str().into()).collect();
         RUNTIME
@@ -1171,8 +1173,8 @@ impl DeviceNewEvent {
                     .get_device(user_id, device_id!(dev_id.as_str()))
                     .await?
                     .context("alice should get device")?;
-                dev.request_verification_with_methods(values).await?;
-                Ok(true)
+                let request = dev.request_verification_with_methods(values).await?;
+                Ok(request.flow_id().to_owned())
             })
             .await?
     }
