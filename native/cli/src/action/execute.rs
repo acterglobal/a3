@@ -49,7 +49,7 @@ impl ExecuteOpts {
                     .collect::<Vec<_>>()
             };
             for (key, (is_required, is_space)) in input_values {
-                if let Some(res) = mapped_inputs.get(&key) {
+                if let Some(res) = mapped_inputs.get(key.as_str()) {
                     if !is_space {
                         bail!("{key} : non-space input values not yet supported");
                     }
