@@ -1,3 +1,4 @@
+import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -36,11 +37,35 @@ class RoomAvatar extends ConsumerWidget {
     );
   }
 
+  List<AvatarInfo> renderParentInfo(String convoId, WidgetRef ref) {
+    if (!showParent) {
+      return [];
+    }
+    final canonicalParent = ref.watch(canonicalParentProvider(convoId));
+    return canonicalParent.when(
+      data: (parent) {
+        if (parent == null) {
+          return [];
+        }
+        final space = parent.space;
+        final profile = parent.profile;
+
+        return [
+          AvatarInfo(
+            uniqueId: space.getRoomIdStr(),
+            displayName: profile.displayName ?? space.getRoomIdStr(),
+            avatar: profile.getAvatarImage(),
+          ),
+        ];
+      },
+      error: (e, s) => [],
+      loading: () => [],
+    );
+  }
+
   Widget chatAvatarUI(Convo convo, WidgetRef ref) {
     //Data Providers
     final convoProfile = ref.watch(chatProfileDataProvider(convo));
-    final canonicalParent =
-        ref.watch(canonicalParentProvider(convo.getRoomIdStr()));
 
     //Manage Avatar UI according to the avatar availability
     return convoProfile.when(
@@ -56,19 +81,7 @@ class RoomAvatar extends ConsumerWidget {
               avatar: profile.getAvatarImage(),
             ),
             size: avatarSize,
-            avatarsInfo: (showParent && canonicalParent.valueOrNull != null)
-                ? [
-                    AvatarInfo(
-                      uniqueId:
-                          canonicalParent.valueOrNull!.space.getRoomIdStr(),
-                      displayName:
-                          canonicalParent.valueOrNull!.profile.displayName ??
-                              canonicalParent.valueOrNull!.space.getRoomIdStr(),
-                      avatar:
-                          canonicalParent.valueOrNull!.profile.getAvatarImage(),
-                    ),
-                  ]
-                : [],
+            avatarsInfo: renderParentInfo(roomId, ref),
             badgeSize: avatarSize / 2,
           );
         } else if (profile.hasAvatar()) {
