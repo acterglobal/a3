@@ -79,25 +79,6 @@ class SettingsLabsPage extends ConsumerWidget {
                 ),
               ],
             ),
-            SettingsSection(
-              title: const Text('Rich Text Editor'),
-              tiles: [
-                SettingsTile.switchTile(
-                  key: SettingsLabsPage.pinsEditorLabSwitch,
-                  title: const Text('Pins'),
-                  description: const Text(
-                    'Enable this to switch default pin markdown editor to Appflowy inline editor. Please note that editor is experimental and not all features are functional.',
-                  ),
-                  initialValue:
-                      ref.watch(isActiveProvider(LabsFeature.pinsEditor)),
-                  onToggle: (newVal) => updateFeatureState(
-                    ref,
-                    LabsFeature.pinsEditor,
-                    newVal,
-                  ),
-                ),
-              ],
-            ),
           ],
         ),
       ),
