@@ -308,7 +308,6 @@ enum LabsFeature {
   cobudget,
   polls,
   discussions,
-  pinsEditor,
 
   // searchOptions
   showNotifications, // FIXME: old name for desktop notifications

@@ -4,13 +4,11 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
-import 'package:acter/common/widgets/md_editor_with_preview.dart';
 import 'package:acter/common/widgets/sliver_scaffold.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/pins/pin_utils/pin_utils.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -22,7 +20,7 @@ import 'package:go_router/go_router.dart';
 class CreatePinPage extends ConsumerStatefulWidget {
   final String? initialSelectedSpace;
   static const titleFieldKey = Key('create-pin-title-field');
-  static const contentFieldKey = Key('create-pin-content-field');
+  static const descriptionFieldKey = Key('create-pin-description-field');
   static const urlFieldKey = Key('create-pin-url-field');
   static const submitBtn = Key('create-pin-submit');
 
@@ -35,7 +33,6 @@ class CreatePinPage extends ConsumerStatefulWidget {
 class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _linkController = TextEditingController();
-  final TextEditingController _textController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   EditorState textEditorState = EditorState.blank();
 
@@ -179,8 +176,6 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
   }
 
   Widget _buildDescriptionField() {
-    final labFeature = ref.watch(featuresProvider);
-    bool isActive(f) => labFeature.isActive(f);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -188,36 +183,25 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
           padding: EdgeInsets.only(bottom: 5),
           child: Text('Description'),
         ),
-        Visibility(
-          visible: isActive(LabsFeature.pinsEditor),
-          replacement: SizedBox(
-            height: 200,
-            child: MdEditorWithPreview(
-              key: CreatePinPage.contentFieldKey,
-              validator: (value) =>
-                  hasLinkOrText() ? null : 'Text or URL must be given',
-              controller: _textController,
-            ),
+        Container(
+          height: 200,
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primaryContainer,
+            borderRadius: BorderRadius.circular(12),
           ),
-          child: Container(
-            height: 200,
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: HtmlEditor(
-              editable: true,
-              autoFocus: false,
-              editorState: textEditorState,
-              footer: const SizedBox(),
-              onChanged: (body, html) {
-                final document = html != null
-                    ? ActerDocumentHelpers.fromHtml(html)
-                    : ActerDocumentHelpers.fromMarkdown(body);
-                textEditorState = EditorState(document: document);
-              },
-            ),
+          child: HtmlEditor(
+            key: CreatePinPage.descriptionFieldKey,
+            editable: true,
+            autoFocus: false,
+            editorState: textEditorState,
+            footer: const SizedBox(),
+            onChanged: (body, html) {
+              final document = html != null
+                  ? ActerDocumentHelpers.fromHtml(html)
+                  : ActerDocumentHelpers.fromMarkdown(body);
+              textEditorState = EditorState(document: document);
+            },
           ),
         ),
       ],
@@ -228,35 +212,26 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
     final htmlText = textEditorState.intoHtml();
     final plainText = textEditorState.intoMarkdown();
     final hasEditorText = htmlText.isNotEmpty || plainText.isNotEmpty;
-    return _linkController.text.trim().isNotEmpty ||
-        _textController.text.trim().isNotEmpty ||
-        hasEditorText == true;
+    return _linkController.text.trim().isNotEmpty || hasEditorText == true;
   }
 
   void _handleCreatePin() async {
     EasyLoading.show(status: 'Creating pin...');
     try {
-      final labFeature = ref.watch(featuresProvider);
-      bool isActive(f) => labFeature.isActive(f);
       final client = ref.read(alwaysClientProvider);
       final spaceId = ref.read(selectedSpaceIdProvider);
       final space = await ref.read(spaceProvider(spaceId!).future);
       final pinDraft = space.pinDraft();
       final title = _titleController.text;
-      final text = _textController.text;
       final url = _linkController.text;
 
       if (title.trim().isNotEmpty) {
         pinDraft.title(title);
       }
 
-      if (isActive(LabsFeature.pinsEditor)) {
-        final htmlText = textEditorState.intoHtml();
-        final plainText = textEditorState.intoMarkdown();
-        pinDraft.contentHtml(plainText, htmlText);
-      } else {
-        pinDraft.contentMarkdown(text);
-      }
+      final htmlText = textEditorState.intoHtml();
+      final plainText = textEditorState.intoMarkdown();
+      pinDraft.contentHtml(plainText, htmlText);
 
       if (url.isNotEmpty) {
         pinDraft.url(url);
@@ -279,8 +254,8 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
       for (var draft in drafts) {
         await draft.send();
       }
+
       // reset controllers
-      _textController.text = '';
       _linkController.text = '';
       EasyLoading.showSuccess('Pin created successfully');
       // We are doing as expected, but the lints triggers.
