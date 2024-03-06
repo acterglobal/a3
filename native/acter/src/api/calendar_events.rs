@@ -1,6 +1,7 @@
 use acter_core::{
     events::{
         calendar::{self as calendar_events, CalendarEventBuilder},
+        rsvp::RsvpStatus,
         UtcDateTime,
     },
     models::{self, ActerModel, AnyActerModel},
@@ -224,15 +225,15 @@ impl CalendarEvent {
 
     pub async fn participants(&self) -> Result<Vec<String>> {
         let calendar_event = self.clone();
-        let mut user_ids = Vec::new();
         RUNTIME
             .spawn(async move {
                 let manager = calendar_event.rsvps().await?;
-                for u_id in manager.users_at_status("yes".to_string()).await? {
-                    let id_str = u_id.to_string();
-                    user_ids.push(id_str)
-                }
-                Ok(user_ids)
+                Ok(manager
+                    .users_at_status_typed(RsvpStatus::Yes)
+                    .await?
+                    .into_iter()
+                    .map(|u| u.to_string())
+                    .collect())
             })
             .await?
     }

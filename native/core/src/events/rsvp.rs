@@ -2,7 +2,7 @@ use derive_builder::Builder;
 use ruma_macros::EventContent;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
-use strum::Display;
+use strum::{Display, ParseError};
 
 use super::BelongsTo;
 
@@ -23,14 +23,14 @@ pub enum RsvpStatus {
 }
 
 impl FromStr for RsvpStatus {
-    type Err = ();
+    type Err = ParseError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "yes" => Ok(RsvpStatus::Yes),
             "no" => Ok(RsvpStatus::No),
             "maybe" => Ok(RsvpStatus::Maybe),
-            _ => Err(()),
+            _ => Err(ParseError::VariantNotFound),
         }
     }
 }
