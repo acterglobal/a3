@@ -75,6 +75,12 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
         }
       }
 
+      if (hasChanges) {
+        await updateBuilder.send();
+      }
+
+      // have it after pin sent over the wire, don't have attachments dependent
+      // on above api success
       final client = ref.read(alwaysClientProvider);
       final selectedAttachments = ref.read(selectedPinAttachmentsProvider);
       final manager = await pin.attachments();
@@ -92,17 +98,11 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
         for (final draft in drafts) {
           await draft.send();
         }
-        hasChanges = true;
         // reset the selected attachment UI
         ref.invalidate(selectedPinAttachmentsProvider);
       }
-
-      if (hasChanges) {
-        await updateBuilder.send();
-        await pin.refresh();
-        EasyLoading.showSuccess('Pin Updated Successfully');
-      }
-      EasyLoading.dismiss();
+      await pin.refresh();
+      EasyLoading.showSuccess('Pin Updated Successfully');
     } catch (e) {
       EasyLoading.showError('Error saving changes: ${e.toString()}');
     }
