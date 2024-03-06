@@ -48207,7 +48207,7 @@ class VerificationEvent {
   }
 
   /// Get flow id (EventId or TransactionId)
-  String? flowId() {
+  String flowId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._verificationEventFlowId(
@@ -48216,26 +48216,22 @@ class VerificationEvent {
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    if (tmp3 == 0) {
-      return null;
-    }
-    if (tmp5 == 0) {
+    if (tmp4 == 0) {
       print("returning empty string");
       return "";
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
     }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
     }
     return tmp2;
   }
@@ -51528,14 +51524,12 @@ class _VerificationEventEventTypeReturn extends ffi.Struct {
 }
 
 class _VerificationEventFlowIdReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
   @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
   external int arg1;
   @ffi.Uint64()
   external int arg2;
-  @ffi.Uint64()
-  external int arg3;
 }
 
 class _VerificationEventSenderReturn extends ffi.Struct {

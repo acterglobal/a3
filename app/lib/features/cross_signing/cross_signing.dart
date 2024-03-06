@@ -77,8 +77,8 @@ class CrossSigning {
   }
 
   void _onKeyVerificationRequest(VerificationEvent event) {
-    String? flowId = event.flowId();
-    if (flowId == null || _processMap.containsKey(flowId)) {
+    String flowId = event.flowId();
+    if (_processMap.containsKey(flowId)) {
       return;
     }
     // this case is bob side
@@ -188,10 +188,7 @@ class CrossSigning {
   }
 
   void _onKeyVerificationReady(VerificationEvent event, bool manual) {
-    String? flowId = event.flowId();
-    if (flowId == null) {
-      return;
-    }
+    String flowId = event.flowId();
     if (manual) {
       _processMap[flowId]!.stage = 'm.key.verification.ready';
     } else {
@@ -328,10 +325,7 @@ class CrossSigning {
     if (rootNavKey.currentContext?.canPop() == true) {
       rootNavKey.currentContext?.pop();
     }
-    String? flowId = event.flowId();
-    if (flowId == null) {
-      return;
-    }
+    String flowId = event.flowId();
     if (_processMap[flowId]?.stage != 'm.key.verification.request' &&
         _processMap[flowId]?.stage != 'm.key.verification.ready') {
       return;
@@ -417,10 +411,7 @@ class CrossSigning {
     if (rootNavKey.currentContext?.canPop() == true) {
       rootNavKey.currentContext?.pop();
     }
-    String? flowId = event.flowId();
-    if (flowId == null) {
-      return;
-    }
+    String flowId = event.flowId();
     _processMap[flowId]?.stage = 'm.key.verification.cancel';
     showModalBottomSheet(
       context: rootNavKey.currentContext!,
@@ -518,10 +509,7 @@ class CrossSigning {
     if (rootNavKey.currentContext?.canPop() == true) {
       rootNavKey.currentContext?.pop();
     }
-    String? flowId = event.flowId();
-    if (flowId == null) {
-      return;
-    }
+    String flowId = event.flowId();
     _processMap[flowId]?.stage = 'm.key.verification.accept';
     showModalBottomSheet(
       context: rootNavKey.currentContext!,
@@ -597,10 +585,7 @@ class CrossSigning {
     if (rootNavKey.currentContext?.canPop() == true) {
       rootNavKey.currentContext?.pop();
     }
-    String? flowId = event.flowId();
-    if (flowId == null) {
-      return;
-    }
+    String flowId = event.flowId();
     _processMap[flowId]?.stage = 'm.key.verification.key';
     event.getEmojis().then((emojis) {
       showModalBottomSheet(
@@ -765,10 +750,7 @@ class CrossSigning {
   }
 
   void _onKeyVerificationMac(VerificationEvent event) {
-    String? flowId = event.flowId();
-    if (flowId == null) {
-      return;
-    }
+    String flowId = event.flowId();
     _processMap[flowId]?.stage = 'm.key.verification.mac';
     Future.delayed(const Duration(milliseconds: 500), () async {
       await event.reviewVerificationMac();
@@ -779,10 +761,7 @@ class CrossSigning {
     if (rootNavKey.currentContext?.canPop() == true) {
       rootNavKey.currentContext?.pop();
     }
-    String? flowId = event.flowId();
-    if (flowId == null) {
-      return;
-    }
+    String flowId = event.flowId();
     _processMap[flowId]?.stage = 'm.key.verification.done';
     showModalBottomSheet(
       context: rootNavKey.currentContext!,
