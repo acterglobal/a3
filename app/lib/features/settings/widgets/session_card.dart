@@ -147,6 +147,7 @@ class SessionCard extends ConsumerWidget {
 
   Future<void> onVerify(BuildContext context, WidgetRef ref) async {
     final client = ref.read(alwaysClientProvider);
+    // ignore: unused_local_variable
     final crossSigningState = ref.read(crossSigningProvider(client));
     final manager = client.sessionManager();
     await manager.requestVerification(deviceRecord.deviceId().toString());
