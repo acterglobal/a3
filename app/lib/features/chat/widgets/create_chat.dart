@@ -152,23 +152,21 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
         config.setParent(parentId);
       }
       final client = ref.read(alwaysClientProvider);
-      final roomId = await client.createConvo(config.build());
+      final roomIdStr = (await client.createConvo(config.build())).toString();
       // add room to child of space (if given)
       if (parentId != null) {
         final space = await ref.read(spaceProvider(parentId).future);
-        await space.addChildRoom(roomId.toString());
+        await space.addChildRoom(roomIdStr);
       }
-      final convo = await client.convoWithRetry(roomId.toString(), 12);
+      final convo = await client.convoWithRetry(roomIdStr, 120);
       EasyLoading.dismiss();
-      EasyLoading.showSuccess(
-        'Chat Room Created with Room ID: ${convo.getRoomIdStr()}',
-      );
+      EasyLoading.showSuccess('Chat Room Created');
       return convo;
     } catch (e) {
       EasyLoading.dismiss();
       EasyLoading.showError(
         'Error creating chat $e',
-        duration: const Duration(seconds: 2),
+        duration: const Duration(seconds: 3),
       );
       return null;
     }
