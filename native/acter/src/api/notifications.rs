@@ -35,7 +35,11 @@ impl Notification {
         let room_message = if is_space {
             None
         } else {
-            sync_event_to_message(&notification.event, notification.room_id.clone())
+            let user_id = client
+                .user_id()
+                .expect("Client must have a valid user_id")
+                .to_owned();
+            sync_event_to_message(user_id, &notification.event, notification.room_id.clone())
         };
         Notification {
             notification,

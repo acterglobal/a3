@@ -1096,9 +1096,9 @@ impl RoomMessage {
 
     pub fn room_message_from_event(
         event: OriginalRoomMessageEvent,
-        room: Room,
-        has_editable: bool,
+        my_user_id: OwnedUserId,
     ) -> Self {
+        let room_id = event.room_id;
         let mut event_item = RoomEventItem::new(
             Some(event.event_id),
             None,
@@ -1106,80 +1106,9 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.message".to_string(),
         );
-        if (has_editable) {
-            if let Some(user_id) = room.client().user_id() {
-                if *user_id == event.sender {
-                    event_item.set_editable(true);
-                }
-            }
+        if event.sender == my_user_id {
+            event_item.set_editable(true);
         }
-        event_item.set_msg_type(event.content.msgtype().to_string());
-        let fallback = match event.content.msgtype.clone() {
-            MessageType::Audio(content) => "sent an audio.".to_string(),
-            MessageType::Emote(content) => content.body,
-            MessageType::File(content) => "sent a file.".to_string(),
-            MessageType::Image(content) => "sent an image.".to_string(),
-            MessageType::Location(content) => content.body,
-            MessageType::Notice(content) => content.body,
-            MessageType::ServerNotice(content) => content.body,
-            MessageType::Text(content) => content.body,
-            MessageType::Video(content) => "sent a video.".to_string(),
-            _ => "Unknown sync item".to_string(),
-        };
-        match event.content.msgtype {
-            MessageType::Audio(content) => {
-                let msg_content = MsgContent::from(&content);
-                event_item.set_msg_content(msg_content);
-            }
-            MessageType::Emote(content) => {
-                let msg_content = MsgContent::from(&content);
-                event_item.set_msg_content(msg_content);
-            }
-            MessageType::File(content) => {
-                let msg_content = MsgContent::from(&content);
-                event_item.set_msg_content(msg_content);
-            }
-            MessageType::Image(content) => {
-                let msg_content = MsgContent::from(&content);
-                event_item.set_msg_content(msg_content);
-            }
-            MessageType::Location(content) => {
-                let msg_content = MsgContent::from(&content);
-                event_item.set_msg_content(msg_content);
-            }
-            MessageType::Text(content) => {
-                let msg_content = MsgContent::from(&content);
-                event_item.set_msg_content(msg_content);
-            }
-            MessageType::Video(content) => {
-                let msg_content = MsgContent::from(&content);
-                event_item.set_msg_content(msg_content);
-            }
-            _ => {}
-        }
-        if event_item.msg_content.is_none() {
-            let msg_content = MsgContent::from_text(fallback);
-            event_item.set_msg_content(msg_content);
-        }
-        if let Some(Relation::Replacement(r)) = event.content.relates_to {
-            event_item.set_edited(true);
-        }
-        RoomMessage::new_event_item(room.room_id().to_owned(), event_item)
-    }
-
-    pub(crate) fn room_message_from_sync_event(
-        event: OriginalSyncRoomMessageEvent,
-        room_id: OwnedRoomId,
-        sent_by_me: bool,
-    ) -> Self {
-        let mut event_item = RoomEventItem::new(
-            Some(event.event_id),
-            None,
-            event.sender,
-            event.origin_server_ts.get().into(),
-            "m.room.message".to_string(),
-        );
-        event_item.set_editable(sent_by_me);
         event_item.set_msg_type(event.content.msgtype().to_string());
         let fallback = match event.content.msgtype.clone() {
             MessageType::Audio(content) => "sent an audio.".to_string(),
@@ -2068,12 +1997,13 @@ impl RoomMessage {
 }
 
 pub(crate) fn sync_event_to_message(
+    my_user_id: OwnedUserId,
     event: &Raw<AnySyncTimelineEvent>,
     room_id: OwnedRoomId,
 ) -> Option<RoomMessage> {
     log::debug!("raw sync event to message: {:?}", event);
     match event.deserialize() {
-        Ok(s) => any_sync_event_to_message(s, room_id),
+        Ok(s) => any_sync_event_to_message(s, room_id, my_user_id),
         Err(e) => {
             log::debug!("Parsing sync failed: $e");
             None
@@ -2083,6 +2013,7 @@ pub(crate) fn sync_event_to_message(
 pub(crate) fn any_sync_event_to_message(
     event: AnySyncTimelineEvent,
     room_id: OwnedRoomId,
+    my_user_id: OwnedUserId,
 ) -> Option<RoomMessage> {
     info!("sync event to message: {:?}", event);
     match event {
@@ -2175,7 +2106,10 @@ pub(crate) fn any_sync_event_to_message(
         )) => Some(RoomMessage::room_encrypted_from_sync_event(e, room_id)),
         AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::RoomMessage(
             SyncMessageLikeEvent::Original(m),
-        )) => Some(RoomMessage::room_message_from_sync_event(m, room_id, false)),
+        )) => Some(RoomMessage::room_message_from_event(
+            m.into_full_event(room_id),
+            my_user_id,
+        )),
         AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::RoomRedaction(r)) => {
             Some(RoomMessage::room_redaction_from_sync_event(r, room_id))
         }

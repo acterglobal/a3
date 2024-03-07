@@ -1694,7 +1694,10 @@ impl Room {
                     Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
                         MessageLikeEvent::Original(m),
                     ))) => {
-                        let msg = RoomMessage::room_message_from_event(m, r, false);
+                        let Some(user_id) = room.client().user_id().map(|u| u.to_owned()) else {
+                            bail!("User must be logged in");
+                        };
+                        let msg = RoomMessage::room_message_from_event(m, user_id);
                         Ok(msg)
                     }
                     Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomRedaction(e))) => {
