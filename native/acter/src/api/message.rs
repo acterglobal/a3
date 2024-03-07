@@ -471,25 +471,22 @@ impl RoomVirtualItem {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct RoomMessage {
     item_type: String,
-    room_id: OwnedRoomId,
     event_item: Option<RoomEventItem>,
     virtual_item: Option<RoomVirtualItem>,
 }
 
 impl RoomMessage {
-    fn new_event_item(room_id: OwnedRoomId, my_id: OwnedUserId, event: &EventTimelineItem) -> Self {
+    fn new_event_item(my_id: OwnedUserId, event: &EventTimelineItem) -> Self {
         RoomMessage {
             item_type: "event".to_string(),
-            room_id,
             event_item: Some(RoomEventItem::new(event, my_id)),
             virtual_item: None,
         }
     }
 
-    fn new_virtual_item(room_id: OwnedRoomId, event: &VirtualTimelineItem) -> Self {
+    fn new_virtual_item(event: &VirtualTimelineItem) -> Self {
         RoomMessage {
             item_type: "virtual".to_string(),
-            room_id,
             event_item: None,
             virtual_item: Some(RoomVirtualItem::new(event)),
         }
@@ -497,10 +494,6 @@ impl RoomMessage {
 
     pub fn item_type(&self) -> String {
         self.item_type.clone()
-    }
-
-    pub fn room_id(&self) -> OwnedRoomId {
-        self.room_id.clone()
     }
 
     pub fn event_item(&self) -> Option<RoomEventItem> {
@@ -527,39 +520,24 @@ impl RoomMessage {
     }
 }
 
-impl From<(Arc<TimelineItem>, Room)> for RoomMessage {
-    fn from(v: (Arc<TimelineItem>, Room)) -> RoomMessage {
-        let (item, room) = v;
-        let user_id = room
-            .client()
-            .user_id()
-            .expect("user is logged in")
-            .to_owned();
+impl From<(Arc<TimelineItem>, OwnedUserId)> for RoomMessage {
+    fn from(v: (Arc<TimelineItem>, OwnedUserId)) -> RoomMessage {
+        let (item, user_id) = v;
 
         match item.deref().deref() {
-            TimelineItemKind::Event(event_item) => {
-                RoomMessage::new_event_item(room.room_id().to_owned(), user_id, event_item)
-            }
-            TimelineItemKind::Virtual(virtual_item) => {
-                RoomMessage::new_virtual_item(room.room_id().to_owned(), virtual_item)
-            }
+            TimelineItemKind::Event(event_item) => RoomMessage::new_event_item(user_id, event_item),
+            TimelineItemKind::Virtual(virtual_item) => RoomMessage::new_virtual_item(virtual_item),
         }
     }
 }
-impl From<(EventTimelineItem, Room)> for RoomMessage {
-    fn from(v: (EventTimelineItem, Room)) -> RoomMessage {
-        let (event_item, room) = v;
-        let user_id = room
-            .client()
-            .user_id()
-            .expect("user is logged in")
-            .to_owned();
-        RoomMessage::new_event_item(room.room_id().to_owned(), user_id, &event_item)
+impl From<(EventTimelineItem, OwnedUserId)> for RoomMessage {
+    fn from(v: (EventTimelineItem, OwnedUserId)) -> RoomMessage {
+        let (event_item, user_id) = v;
+        RoomMessage::new_event_item(user_id, &event_item)
     }
 }
-impl From<(VirtualTimelineItem, Room)> for RoomMessage {
-    fn from(v: (VirtualTimelineItem, Room)) -> RoomMessage {
-        let (event_item, room) = v;
-        RoomMessage::new_virtual_item(room.room_id().to_owned(), &event_item)
+impl From<VirtualTimelineItem> for RoomMessage {
+    fn from(event_item: VirtualTimelineItem) -> RoomMessage {
+        RoomMessage::new_virtual_item(&event_item)
     }
 }

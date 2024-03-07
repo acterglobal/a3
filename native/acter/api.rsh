@@ -842,9 +842,6 @@ object RoomMessage {
     /// one of event/virtual
     fn item_type() -> string;
 
-    /// room ID of this event
-    fn room_id() -> RoomId;
-
     /// valid only if item_type is "event"
     fn event_item() -> Option<RoomEventItem>;
 

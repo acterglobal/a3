@@ -48,15 +48,20 @@ impl TimelineStream {
 
     pub fn messages_stream(&self) -> impl Stream<Item = RoomMessageDiff> {
         let timeline = self.timeline.clone();
-        let room = self.room.clone();
+        let user_id = self
+            .room
+            .client()
+            .user_id()
+            .expect("User must be logged in")
+            .to_owned();
 
         async_stream::stream! {
             let (timeline_items, mut timeline_stream) = timeline.subscribe().await;
-            yield RoomMessageDiff::current_items(timeline_items.clone().into_iter().map(|x| RoomMessage::from((x, room.clone()))).collect());
+            yield RoomMessageDiff::current_items(timeline_items.clone().into_iter().map(|x| RoomMessage::from((x, user_id.clone()))).collect());
 
             let mut remap = timeline_stream.map(|diff| remap_for_diff(
                 diff,
-                |x| RoomMessage::from((x, room.clone())),
+                |x| RoomMessage::from((x, user_id.clone())),
             ));
 
             while let Some(d) = remap.next().await {
@@ -92,14 +97,19 @@ impl TimelineStream {
         let event_id = OwnedEventId::try_from(event_id)?;
 
         let timeline = self.timeline.clone();
-        let room = self.room.clone();
+        let user_id = self
+            .room
+            .client()
+            .user_id()
+            .expect("User is logged in")
+            .to_owned();
 
         RUNTIME
             .spawn(async move {
                 let Some(tl) = timeline.item_by_event_id(&event_id).await else {
                     bail!("Event not found");
                 };
-                Ok(RoomMessage::from((tl, room)))
+                Ok(RoomMessage::from((tl, user_id)))
             })
             .await?
     }

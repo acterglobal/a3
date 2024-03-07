@@ -126,6 +126,7 @@ impl Convo {
         let has_latest_msg = latest_message_content.is_some();
         let latest_message = Arc::new(RwLock::new(latest_message_content));
 
+        let user_id = client.user_id().expect("User must be logged in").to_owned();
         let latest_msg_room = inner.clone();
         let latest_msg_client = client.clone();
         let last_msg_tl = timeline.clone();
@@ -136,7 +137,7 @@ impl Convo {
             let mut event_found = false;
             for msg in current.into_iter().rev() {
                 if msg.as_event().is_some() {
-                    let full_event = RoomMessage::from((msg, latest_msg_room.room.clone()));
+                    let full_event = RoomMessage::from((msg, user_id.clone()));
                     set_latest_msg(
                         &latest_msg_client,
                         latest_msg_room.room_id(),
@@ -159,7 +160,7 @@ impl Convo {
                 let Some(msg) = last_msg_tl.latest_event().await else {
                     continue;
                 };
-                let full_event = RoomMessage::from((msg, latest_msg_room.room.clone()));
+                let full_event = RoomMessage::from((msg, user_id.clone()));
                 set_latest_msg(
                     &latest_msg_client,
                     latest_msg_room.room_id(),
