@@ -201,7 +201,7 @@ where
             .export(passphrase)
             .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?;
         state_store
-            .set_custom_value(b"ext_media_key", key)
+            .set_custom_value_no_read(b"ext_media_key", key)
             .await
             .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?;
         cipher
@@ -508,6 +508,18 @@ where
         Ok(self
             .inner
             .set_custom_value(key, value)
+            .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
+    }
+
+    async fn set_custom_value_no_read(
+        &self,
+        key: &[u8],
+        value: Vec<u8>,
+    ) -> Result<(), Self::Error> {
+        Ok(self
+            .inner
+            .set_custom_value_no_read(key, value)
             .await
             .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
     }
