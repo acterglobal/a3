@@ -12,11 +12,11 @@ class SyncNotifier extends StateNotifier<SyncState> {
   final Ref ref;
 
   late ffi.SyncState syncState;
-  late Stream<bool> syncListener;
-  late StreamSubscription<bool> syncPoller;
-  late Stream<String> errorListener;
-  late StreamSubscription<String> errorPoller;
-  Timer? retryTimer;
+  late Stream<bool> _syncListener;
+  late StreamSubscription<bool> _syncPoller;
+  late Stream<String> _errorListener;
+  late StreamSubscription<String> _errorPoller;
+  Timer? _retryTimer;
 
   SyncNotifier(this.client, this.ref)
       : super(const SyncState(initialSync: true)) {
@@ -45,13 +45,13 @@ class SyncNotifier extends StateNotifier<SyncState> {
 
   Future<void> _restartSync() async {
     syncState = client.startSync();
-    if (retryTimer != null) {
-      retryTimer!.cancel();
-      retryTimer = null;
+    if (_retryTimer != null) {
+      _retryTimer!.cancel();
+      _retryTimer = null;
     }
 
-    syncListener = syncState.firstSyncedRx(); // keep it resident in memory
-    syncPoller = syncListener.listen((synced) {
+    _syncListener = syncState.firstSyncedRx(); // keep it resident in memory
+    _syncPoller = _syncListener.listen((synced) {
       if (synced) {
         if (mounted) {
           state = const SyncState(
@@ -61,10 +61,10 @@ class SyncNotifier extends StateNotifier<SyncState> {
         ref.invalidate(spacesProvider);
       }
     });
-    ref.onDispose(() => syncPoller.cancel());
+    ref.onDispose(() => _syncPoller.cancel());
 
-    errorListener = syncState.syncErrorRx(); // keep it resident in memory
-    errorPoller = errorListener.listen((msg) {
+    _errorListener = syncState.syncErrorRx(); // keep it resident in memory
+    _errorPoller = _errorListener.listen((msg) {
       if (mounted) {
         if (msg == 'SoftLogout' || msg == 'Unauthorized') {
           // regular logout, we do nothing here
@@ -80,13 +80,13 @@ class SyncNotifier extends StateNotifier<SyncState> {
             countDown: retry,
             nextRetry: retry,
           );
-          retryTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+          _retryTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
             _tickSyncState();
           });
           // custom errors, means we will start the retry loop
         }
       }
     });
-    ref.onDispose(() => errorPoller.cancel());
+    ref.onDispose(() => _errorPoller.cancel());
   }
 }
