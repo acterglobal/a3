@@ -334,8 +334,7 @@ impl RsvpManager {
     }
 
     pub async fn users_at_status(&self, status: String) -> Result<Vec<OwnedUserId>> {
-        self
-            .users_at_status_typed(RsvpStatus::from_str(&status)?)
+        self.users_at_status_typed(RsvpStatus::from_str(&status)?)
             .await
     }
 
