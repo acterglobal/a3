@@ -14,7 +14,6 @@ class SyncNotifier extends StateNotifier<SyncState> {
   late ffi.SyncState syncState;
   late Stream<bool> syncListener;
   late StreamSubscription<bool> syncPoller;
-  late Stream<String>? notifications;
   late Stream<String> errorListener;
   late StreamSubscription<String> errorPoller;
   Timer? retryTimer;
