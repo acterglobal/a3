@@ -1063,6 +1063,9 @@ object TimelineStream {
     /// Fires whenever new diff found
     fn messages_stream() -> Stream<RoomMessageDiff>;
 
+    /// get the specific message identified by the event_id
+    fn get_message(event_id: string) -> Future<Result<RoomMessage>>;
+
     /// Get the next count messages backwards, and return whether it has more items
     fn paginate_backwards(count: u16) -> Future<Result<bool>>;
 
@@ -1214,9 +1217,6 @@ object Convo {
 
     /// whether this room is encrypted one
     fn is_encrypted() -> Future<Result<bool>>;
-
-    /// get original of reply msg
-    fn get_message(event_id: string) -> Future<Result<RoomMessage>>;
 
     /// redact any message (including text/image/file and reaction)
     /// sender_id refers to the user that sent original msg

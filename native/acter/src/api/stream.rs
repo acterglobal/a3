@@ -88,6 +88,22 @@ impl TimelineStream {
             .await?
     }
 
+    pub async fn get_message(&self, event_id: String) -> Result<RoomMessage> {
+        let event_id = OwnedEventId::try_from(event_id)?;
+
+        let timeline = self.timeline.clone();
+        let room = self.room.clone();
+
+        Ok(RUNTIME
+            .spawn(async move {
+                let Some(tl) = timeline.item_by_event_id(&event_id).await else {
+                    bail!("Event not found");
+                };
+                Ok(RoomMessage::from((tl, room)))
+            })
+            .await??)
+    }
+
     fn is_joined(&self) -> bool {
         matches!(self.room.state(), RoomState::Joined)
     }

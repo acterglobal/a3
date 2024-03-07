@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:html';
 
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -236,7 +237,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   // fetch original content media for reply msg, i.e. text/image/file etc.
   Future<void> _fetchOriginalContent(String originalId, String replyId) async {
-    final roomMsg = await convo.getMessage(originalId);
+    final roomMsg = await timeline.getMessage(originalId);
 
     // reply is allowed for only EventItem not VirtualItem
     // user should be able to get original event as RoomMessage
