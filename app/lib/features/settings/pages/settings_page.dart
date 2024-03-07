@@ -51,28 +51,36 @@ class SettingsPage extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: ListTile(
-                onTap: () => shouldGoNotNamed
-                    ? context.goNamed(Routes.myProfile.name)
-                    : context.pushNamed(Routes.myProfile.name),
-                leading: ActerAvatar(
-                  mode: DisplayMode.DM,
-                  avatarInfo: AvatarInfo(
-                    uniqueId: userId,
-                    avatar: data.profile.getAvatarImage(),
-                    displayName: data.profile.displayName,
+              child: Column(
+                children: [
+                  ListTile(
+                    onTap: () => shouldGoNotNamed
+                        ? context.goNamed(Routes.myProfile.name)
+                        : context.pushNamed(Routes.myProfile.name),
+                    leading: ActerAvatar(
+                      mode: DisplayMode.DM,
+                      avatarInfo: AvatarInfo(
+                        uniqueId: userId,
+                        avatar: data.profile.getAvatarImage(),
+                        displayName: data.profile.displayName,
+                      ),
+                    ),
+                    title: Text(
+                      data.profile.displayName ?? '',
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    subtitle: Text(
+                      userId,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    trailing: const Icon(Icons.arrow_forward_ios),
                   ),
-                ),
-                title: Text(
-                  data.profile.displayName ?? '',
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                subtitle: Text(
-                  userId,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                trailing: const Icon(Icons.arrow_forward_ios),
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 10),
+                    child: Text('Edit Profile'),
+                  )
+                ],
               ),
             );
           },

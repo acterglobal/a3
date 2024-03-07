@@ -106,27 +106,8 @@ class MyProfilePage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const SizedBox(height: 20),
-                    GestureDetector(
-                      onTap: () => updateAvatar(data, context, ref),
-                      child: Center(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(100),
-                            border: Border.all(width: 5),
-                          ),
-                          child: ActerAvatar(
-                            mode: DisplayMode.DM,
-                            avatarInfo: AvatarInfo(
-                              uniqueId: userId,
-                              avatar: data.profile.getAvatarImage(),
-                              displayName: data.profile.displayName,
-                            ),
-                            size: 50,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
+                    _buildAvatarUI(context, ref, data),
+                    const SizedBox(height: 20),
                     _profileItem(
                       key: MyProfilePage.displayNameKey,
                       context: context,
@@ -166,6 +147,55 @@ class MyProfilePage extends StatelessWidget {
     );
   }
 
+  Widget _buildAvatarUI(BuildContext context, WidgetRef ref, data) {
+    return GestureDetector(
+      onTap: () => updateAvatar(data, context, ref),
+      child: Center(
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(100),
+            border: Border.all(
+              width: 2,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+          child: Stack(
+            children: [
+              ActerAvatar(
+                mode: DisplayMode.DM,
+                avatarInfo: AvatarInfo(
+                  uniqueId: data.account.userId().toString(),
+                  avatar: data.profile.getAvatarImage(),
+                  displayName: data.profile.displayName,
+                ),
+                size: 50,
+              ),
+              Positioned.fill(
+                child: Align(
+                  alignment: Alignment.bottomRight,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100),
+                        border: Border.all(
+                          width: 1,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                        color: Theme.of(context).colorScheme.surface),
+                    child: const Icon(
+                      Icons.edit,
+                      size: 16,
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _profileItem({
     Key? key,
     required BuildContext context,
@@ -184,6 +214,7 @@ class MyProfilePage extends StatelessWidget {
           key: key,
           controller: controller,
           readOnly: readOnly,
+          style: readOnly ? Theme.of(context).textTheme.labelLarge : null,
           decoration: const InputDecoration(
             border: InputBorder.none,
             focusedBorder: InputBorder.none,
