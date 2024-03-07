@@ -578,6 +578,8 @@ object CalendarEvent {
     fn reactions() -> Future<Result<ReactionManager>>;
     /// get my RSVP status, one of Yes/Maybe/No or None
     fn responded_by_me() -> Future<Result<OptionRsvpStatus>>;
+    /// get the user id list who have responded with `Yes` on this event
+    fn participants() -> Future<Result<Vec<string>>>;
 }
 
 object CalendarEventUpdateBuilder {

@@ -1,6 +1,7 @@
 use acter_core::{
     events::{
         calendar::{self as calendar_events, CalendarEventBuilder},
+        rsvp::RsvpStatus,
         UtcDateTime,
     },
     models::{self, ActerModel, AnyActerModel},
@@ -220,6 +221,21 @@ impl CalendarEvent {
         let room = self.room.clone();
         let event_id = self.inner.event_id().to_owned();
         crate::ReactionManager::new(client, room, event_id).await
+    }
+
+    pub async fn participants(&self) -> Result<Vec<String>> {
+        let calendar_event = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let manager = calendar_event.rsvps().await?;
+                Ok(manager
+                    .users_at_status_typed(RsvpStatus::Yes)
+                    .await?
+                    .into_iter()
+                    .map(|u| u.to_string())
+                    .collect())
+            })
+            .await?
     }
 
     pub async fn responded_by_me(&self) -> Result<OptionRsvpStatus> {
