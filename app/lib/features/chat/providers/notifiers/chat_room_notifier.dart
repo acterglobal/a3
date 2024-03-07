@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:html';
 
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/utils/utils.dart';

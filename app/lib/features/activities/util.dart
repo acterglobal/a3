@@ -13,9 +13,6 @@ NotificationBrief briefForChat(ffi.Notification notification) {
   }
 
   ffi.RoomEventItem? eventItem = message.eventItem();
-  if (eventItem == null) {
-    return const NotificationBrief(title: 'unknown chat message', route: route);
-  }
 
   // String sender = eventItem.sender();
   String eventType = eventItem.eventType();
