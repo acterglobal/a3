@@ -2107,25 +2107,6 @@ object PublicSearchResult {
 //  ##    ##  #######     ##    #### ##       ####  ######  ##     ##    ##    ####  #######  ##    ##  ######  
 
 
-object Notification {
-    fn read() -> bool;
-    // fn room_id() -> OwnedRoomId;
-    fn room_id_str() -> string;
-    fn has_room() -> bool;
-    fn is_space() -> bool;
-    fn is_acter_space() -> bool;
-    fn space() -> Future<Result<Space>>;
-    fn room_message() -> Option<RoomMessage>;
-    fn convo() -> Future<Result<Convo>>;
-}
-
-object NotificationListResult {
-    /// to be used for the next `since`
-    fn next_batch() -> Option<string>;
-    /// get the chunk of items in this response
-    fn notifications() -> Future<Result<Vec<Notification>>>;
-}
-
 object NotificationSender {
     fn user_id() -> string;
     fn display_name() -> Option<string>;
@@ -2425,12 +2406,6 @@ object Client {
 
     /// Fetch the RSVP or use its event_id to wait for it to come down the wire
     fn wait_for_rsvp(key: string, timeout: Option<u8>) -> Future<Result<Rsvp>>;
-
-    /// list the currently queued notifications
-    fn list_notifications(since: Option<string>, only: Option<string>) -> Future<Result<NotificationListResult>>;
-
-    /// listen to incoming notifications
-    fn notifications_stream() -> Stream<Notification>;
 
     /// install the default acter push rules for fallback
     fn install_default_acter_push_rules() -> Future<Result<bool>>;
