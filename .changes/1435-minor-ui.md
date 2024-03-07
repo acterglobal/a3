@@ -1,3 +1,0 @@
-- [fix] show the proper avatar for chats of spaces loaded from remote
-- [fix] load the proper avatar for spaces in the space selector (most notably within the updates creation flow)
-- [fix] only show the "empty" screen when there are indeed no chats for the space to show

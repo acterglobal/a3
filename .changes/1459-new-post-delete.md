@@ -1,1 +1,0 @@
-- [fix] Redactions are now applied to news post and no more issue related frozen UI after deletion.

@@ -1,2 +1,0 @@
-- [feature]: You can now add attachments to Pins. enhancing the ability to share additional content and resources. The main attachment is also visible from just Pin list directly.
-- [fix] occasions where create Pins page opened as sidesheet rather than from bottom.
