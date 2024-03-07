@@ -114,39 +114,34 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
 
   /// Create Room Method
   Future<ffi.Convo?> _handleCreateConvo(
-    String convoName,
-    String description,
+    String? convoName,
+    String? description,
+    List<String> selectedUsers,
   ) async {
     EasyLoading.show(status: 'Creating Chat');
     try {
       final sdk = await ref.read(sdkProvider.future);
       final config = sdk.api.newConvoSettingsBuilder();
-      final selectedUsers = ref.read(_selectedUsersProvider);
-      // we check whether user has selected participants for DM/Group DM.
-      if (selectedUsers.isNotEmpty) {
-        if (selectedUsers.length > 1) {
-          // we are creating group DM
-          for (int i = 0; i < selectedUsers.length; i++) {
-            final userId = selectedUsers[i].userId().toString();
-            config.addInvitee(userId);
-          }
-        } else {
-          // we are creating dm
-          final userId = selectedUsers[0].userId().toString();
+      // add the users
+      for (final userId in selectedUsers) {
+        config.addInvitee(userId);
+      }
 
-          config.addInvitee(userId);
-        }
-      } else {
-        // we are creating default room
+      if (convoName != null && convoName.isNotEmpty) {
+        // set the name
         config.setName(convoName);
       }
-      if (description.isNotEmpty) {
+
+      if (description != null && description.isNotEmpty) {
+        // and an optional description
         config.setTopic(description);
       }
+
       final avatarUri = ref.read(_avatarProvider);
       if (avatarUri.isNotEmpty) {
         config.setAvatarUri(avatarUri); // convo creation will upload it
       }
+
       final parentId = ref.read(selectedSpaceIdProvider);
       if (parentId != null) {
         config.setParent(parentId);
@@ -176,7 +171,8 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
 ///
 class _CreateChatWidget extends ConsumerStatefulWidget {
   final PageController controller;
-  final Future<ffi.Convo?> Function(String, String) onCreateConvo;
+  final Future<ffi.Convo?> Function(String?, String?, List<String>)
+      onCreateConvo;
 
   const _CreateChatWidget({
     required this.controller,
@@ -334,7 +330,9 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
               )
           : () async {
               if (selectedUsers.length > 1) {
-                final convo = await widget.onCreateConvo('', '');
+                final userIds =
+                    selectedUsers.map((u) => u.userId().toString()).toList();
+                final convo = await widget.onCreateConvo(null, null, userIds);
                 if (context.mounted && convo != null) {
                   Navigator.of(context).pop();
                   context.pushNamed(
@@ -343,9 +341,10 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                   );
                 }
               } else {
+                final othersUserId = selectedUsers[0].userId().toString();
                 final client = ref.read(alwaysClientProvider);
                 String? id = checkUserDMExists(
-                  selectedUsers[0].userId().toString(),
+                  othersUserId,
                   client,
                 );
                 if (id != null) {
@@ -355,7 +354,11 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                     pathParameters: {'roomId': id},
                   );
                 } else {
-                  final convo = await widget.onCreateConvo('', '');
+                  final convo = await widget.onCreateConvo(
+                    null,
+                    null,
+                    [othersUserId],
+                  );
                   if (context.mounted && convo != null) {
                     Navigator.of(context).pop();
                     context.pushNamed(
@@ -462,7 +465,8 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
 class _CreateRoomFormWidget extends ConsumerStatefulWidget {
   final String? initialSelectedSpaceId;
   final PageController controller;
-  final Future<ffi.Convo?> Function(String, String) onCreateConvo;
+  final Future<ffi.Convo?> Function(String?, String?, List<String>)
+      onCreateConvo;
 
   const _CreateRoomFormWidget({
     required this.controller,
@@ -626,6 +630,7 @@ class _CreateRoomFormWidgetConsumerState
                         final convo = await widget.onCreateConvo(
                           titleInput,
                           _descriptionController.text.trim(),
+                          [],
                         );
                         if (context.mounted && convo != null) {
                           Navigator.pop(context);
