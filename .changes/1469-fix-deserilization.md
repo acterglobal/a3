@@ -1,3 +1,0 @@
-- [fix] Do not block the app just because the server sync deserialization failed.
-- Upon initial sync and sync errors show the current state in the Activities tab
-- Implement back-off retry (with a max of 5min wait-time) for sync upon server failure

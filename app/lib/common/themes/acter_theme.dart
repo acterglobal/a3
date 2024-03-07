@@ -29,6 +29,13 @@ class ActerTheme {
     textTheme: textTheme,
     iconTheme: const IconThemeData(color: Colors.white),
     cardTheme: cardTheme,
+    searchBarTheme: SearchBarThemeData(
+      backgroundColor: MaterialStateProperty.all(darkBlueColor),
+      elevation: MaterialStateProperty.all(0),
+      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    ),
     listTileTheme: listTileTheme,
     dividerTheme: dividerTheme,
     dialogTheme: dialogTheme,

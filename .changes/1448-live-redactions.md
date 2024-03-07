@@ -1,1 +1,0 @@
-- [fix] Redactions are now applied live when they are received. No more dangeling old objects (e.g. Updates, Events, Pins) in your spaces until a proper relogin but dealing with them on the fly.
