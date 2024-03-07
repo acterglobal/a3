@@ -1375,7 +1375,7 @@ impl Room {
                     .context("Path was generated from strings. Must be string")?;
                 client
                     .store()
-                    .set_custom_value(&key, path_text.as_bytes().to_vec())
+                    .set_custom_value_no_read(&key, path_text.as_bytes().to_vec())
                     .await?;
                 Ok(OptionString::new(Some(path_text.to_string())))
             })
