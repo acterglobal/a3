@@ -204,10 +204,6 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final selectedUsers = ref.watch(_selectedUsersProvider).toList();
-    final foundUsers = ref.watch(searchResultProvider);
-    final searchCtrl = ref.watch(searchController);
-    String tileTitle = _makeTitle(ref);
     return Scaffold(
       appBar: AppBar(
         title: const Text('New Chat'),
@@ -217,208 +213,12 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
           controller: scrollController,
           children: <Widget>[
             const SizedBox(height: 15),
-            TextField(
-              controller: searchCtrl,
-              style: Theme.of(context).textTheme.labelMedium,
-              decoration: const InputDecoration(
-                hintText: 'Search Username to start a DM',
-                contentPadding: EdgeInsets.all(18),
-                hintMaxLines: 1,
-              ),
-              onChanged: (String val) =>
-                  ref.read(searchValueProvider.notifier).update((state) => val),
-            ),
+            renderSearchField(context),
             const SizedBox(height: 15),
-            Visibility(
-              visible: selectedUsers.isNotEmpty,
-              replacement: const SizedBox.shrink(),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Wrap(
-                  direction: Axis.horizontal,
-                  spacing: 5.0,
-                  runSpacing: 5.0,
-                  children: List.generate(
-                    selectedUsers.length,
-                    (index) => Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                        border: Border.all(
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
-                      child: Consumer(
-                        builder: (context, ref, child) {
-                          final avatarProv = ref
-                              .watch(userAvatarProvider(selectedUsers[index]));
-                          final displayName =
-                              selectedUsers[index].getDisplayName();
-                          final userId =
-                              selectedUsers[index].userId().toString();
-                          return Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              ActerAvatar(
-                                mode: DisplayMode.DM,
-                                avatarInfo: AvatarInfo(
-                                  uniqueId: userId,
-                                  displayName: displayName ?? userId,
-                                  avatar: avatarProv.valueOrNull,
-                                ),
-                                size: 14,
-                              ),
-                              const SizedBox(width: 5),
-                              Text(
-                                displayName ?? userId,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .labelMedium!
-                                    .copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurface,
-                                    ),
-                              ),
-                              const SizedBox(width: 10),
-                              InkWell(
-                                onTap: () => ref
-                                    .read(_selectedUsersProvider.notifier)
-                                    .update(
-                                      (state) => [
-                                        for (int j = 0; j < state.length; j++)
-                                          if (j != index) state[j],
-                                      ],
-                                    ),
-                                child: Icon(
-                                  Icons.close_outlined,
-                                  size: 18,
-                                  color:
-                                      Theme.of(context).colorScheme.onSurface,
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            ListTile(
-              onTap: selectedUsers.isEmpty
-                  ? () => widget.controller.animateToPage(
-                        1,
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.ease,
-                      )
-                  : () async {
-                      if (selectedUsers.length > 1) {
-                        final convo = await widget.onCreateConvo('', '');
-                        if (context.mounted && convo != null) {
-                          Navigator.of(context).pop();
-                          context.pushNamed(
-                            Routes.chatroom.name,
-                            pathParameters: {'roomId': convo.getRoomIdStr()},
-                          );
-                        }
-                      } else {
-                        final client = ref.read(alwaysClientProvider);
-                        String? id = checkUserDMExists(
-                          selectedUsers[0].userId().toString(),
-                          client,
-                        );
-                        if (id != null) {
-                          Navigator.of(context).pop();
-                          context.pushNamed(
-                            Routes.chatroom.name,
-                            pathParameters: {'roomId': id},
-                          );
-                        } else {
-                          final convo = await widget.onCreateConvo('', '');
-                          if (context.mounted && convo != null) {
-                            Navigator.of(context).pop();
-                            context.pushNamed(
-                              Routes.chatroom.name,
-                              pathParameters: {'roomId': convo.getRoomIdStr()},
-                            );
-                          }
-                        }
-                      }
-                    },
-              contentPadding: const EdgeInsets.only(left: 0),
-              leading: selectedUsers.isEmpty
-                  ? ActerAvatar(
-                      mode: DisplayMode.GroupChat,
-                      avatarInfo: const AvatarInfo(uniqueId: '#'),
-                      size: 48,
-                      tooltip: TooltipStyle.None,
-                    )
-                  : selectedUsers.length > 1
-                      ? CircleAvatar(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.neutral4,
-                          radius: 28,
-                          child: Icon(
-                            Atlas.team_group,
-                            color: Theme.of(context).colorScheme.neutral,
-                          ),
-                        )
-                      : ActerAvatar(
-                          mode: DisplayMode.DM,
-                          avatarInfo: AvatarInfo(
-                            uniqueId: selectedUsers[0].userId().toString(),
-                            displayName: selectedUsers[0].getDisplayName(),
-                            avatar: ref
-                                .watch(userAvatarProvider(selectedUsers[0]))
-                                .valueOrNull,
-                          ),
-                          size: 20,
-                        ),
-              title: Text(
-                tileTitle,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              trailing: const Icon(Icons.chevron_right_outlined, size: 24),
-            ),
+            renderSelectedUsers(context),
+            renderPrimaryAction(context),
             const SizedBox(height: 15),
-            Visibility(
-              visible: searchCtrl.text.isNotEmpty,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Found Users',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  foundUsers.when(
-                    data: (data) => data.isEmpty
-                        ? Center(
-                            heightFactor: 10,
-                            child: Text(
-                              'No Users found with specified search term',
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                          )
-                        : ListView.builder(
-                            physics: const NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: data.length,
-                            itemBuilder: (context, index) => _UserWidget(
-                              profile: data[index],
-                              onUp: _onUp,
-                            ),
-                          ),
-                    error: (e, st) => Text('Error loading users $e'),
-                    loading: () => const Center(
-                      heightFactor: 5,
-                      child: CircularProgressIndicator(),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            renderFoundUsers(context),
           ],
         ),
       ),
@@ -447,6 +247,217 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
     final id = client.dmWithUser(userId).text();
     if (id != null) return id;
     return null;
+  }
+
+  Widget renderSelectedUsers(BuildContext context) {
+    final selectedUsers = ref.watch(_selectedUsersProvider).toList();
+
+    return Visibility(
+      visible: selectedUsers.isNotEmpty,
+      replacement: const SizedBox.shrink(),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Wrap(
+          direction: Axis.horizontal,
+          spacing: 5.0,
+          runSpacing: 5.0,
+          children: List.generate(
+            selectedUsers.length,
+            (index) => Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+              child: Consumer(
+                builder: (context, ref, child) {
+                  final avatarProv =
+                      ref.watch(userAvatarProvider(selectedUsers[index]));
+                  final displayName = selectedUsers[index].getDisplayName();
+                  final userId = selectedUsers[index].userId().toString();
+                  return Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      ActerAvatar(
+                        mode: DisplayMode.DM,
+                        avatarInfo: AvatarInfo(
+                          uniqueId: userId,
+                          displayName: displayName ?? userId,
+                          avatar: avatarProv.valueOrNull,
+                        ),
+                        size: 14,
+                      ),
+                      const SizedBox(width: 5),
+                      Text(
+                        displayName ?? userId,
+                        style: Theme.of(context)
+                            .textTheme
+                            .labelMedium!
+                            .copyWith(
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                      ),
+                      const SizedBox(width: 10),
+                      InkWell(
+                        onTap: () =>
+                            ref.read(_selectedUsersProvider.notifier).update(
+                                  (state) => [
+                                    for (int j = 0; j < state.length; j++)
+                                      if (j != index) state[j],
+                                  ],
+                                ),
+                        child: Icon(
+                          Icons.close_outlined,
+                          size: 18,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget renderPrimaryAction(BuildContext context) {
+    final selectedUsers = ref.watch(_selectedUsersProvider).toList();
+    return ListTile(
+      onTap: selectedUsers.isEmpty
+          ? () => widget.controller.animateToPage(
+                1,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.ease,
+              )
+          : () async {
+              if (selectedUsers.length > 1) {
+                final convo = await widget.onCreateConvo('', '');
+                if (context.mounted && convo != null) {
+                  Navigator.of(context).pop();
+                  context.pushNamed(
+                    Routes.chatroom.name,
+                    pathParameters: {'roomId': convo.getRoomIdStr()},
+                  );
+                }
+              } else {
+                final client = ref.read(alwaysClientProvider);
+                String? id = checkUserDMExists(
+                  selectedUsers[0].userId().toString(),
+                  client,
+                );
+                if (id != null) {
+                  Navigator.of(context).pop();
+                  context.pushNamed(
+                    Routes.chatroom.name,
+                    pathParameters: {'roomId': id},
+                  );
+                } else {
+                  final convo = await widget.onCreateConvo('', '');
+                  if (context.mounted && convo != null) {
+                    Navigator.of(context).pop();
+                    context.pushNamed(
+                      Routes.chatroom.name,
+                      pathParameters: {'roomId': convo.getRoomIdStr()},
+                    );
+                  }
+                }
+              }
+            },
+      contentPadding: const EdgeInsets.only(left: 0),
+      leading: selectedUsers.isEmpty
+          ? ActerAvatar(
+              mode: DisplayMode.GroupChat,
+              avatarInfo: const AvatarInfo(uniqueId: '#'),
+              size: 48,
+              tooltip: TooltipStyle.None,
+            )
+          : selectedUsers.length > 1
+              ? CircleAvatar(
+                  backgroundColor: Theme.of(context).colorScheme.neutral4,
+                  radius: 28,
+                  child: Icon(
+                    Atlas.team_group,
+                    color: Theme.of(context).colorScheme.neutral,
+                  ),
+                )
+              : ActerAvatar(
+                  mode: DisplayMode.DM,
+                  avatarInfo: AvatarInfo(
+                    uniqueId: selectedUsers[0].userId().toString(),
+                    displayName: selectedUsers[0].getDisplayName(),
+                    avatar: ref
+                        .watch(userAvatarProvider(selectedUsers[0]))
+                        .valueOrNull,
+                  ),
+                  size: 20,
+                ),
+      title: Text(
+        _makeTitle(ref),
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
+      trailing: const Icon(Icons.chevron_right_outlined, size: 24),
+    );
+  }
+
+  Widget renderSearchField(BuildContext context) {
+    final searchCtrl = ref.watch(searchController);
+    return TextField(
+      controller: searchCtrl,
+      style: Theme.of(context).textTheme.labelMedium,
+      decoration: const InputDecoration(
+        hintText: 'Search Username to start a DM',
+        contentPadding: EdgeInsets.all(18),
+        hintMaxLines: 1,
+      ),
+      onChanged: (String val) =>
+          ref.read(searchValueProvider.notifier).update((state) => val),
+    );
+  }
+
+  Widget renderFoundUsers(BuildContext context) {
+    final searchCtrl = ref.watch(searchController);
+    final foundUsers = ref.watch(searchResultProvider);
+    return Visibility(
+      visible: searchCtrl.text.isNotEmpty,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Found Users',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          foundUsers.when(
+            data: (data) => data.isEmpty
+                ? Center(
+                    heightFactor: 10,
+                    child: Text(
+                      'No Users found with specified search term',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  )
+                : ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: data.length,
+                    itemBuilder: (context, index) => _UserWidget(
+                      profile: data[index],
+                      onUp: _onUp,
+                    ),
+                  ),
+            error: (e, st) => Text('Error loading users $e'),
+            loading: () => const Center(
+              heightFactor: 5,
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
