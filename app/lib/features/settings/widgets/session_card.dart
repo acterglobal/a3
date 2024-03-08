@@ -1,20 +1,15 @@
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/features/cross_signing/providers/cross_signing_provider.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:breadcrumbs/breadcrumbs.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SessionCard extends ConsumerWidget {
   final DeviceRecord deviceRecord;
 
-  const SessionCard({
-    super.key,
-    required this.deviceRecord,
-  });
+  const SessionCard({super.key, required this.deviceRecord});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -60,7 +55,7 @@ class SessionCard extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: Text(
-                      AppLocalizations.of(ctx)!.logOut,
+                      'Logout',
                       style: Theme.of(ctx).textTheme.labelSmall,
                       softWrap: false,
                     ),
@@ -76,7 +71,7 @@ class SessionCard extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: Text(
-                      AppLocalizations.of(ctx)!.verifySession,
+                      'Verify Session',
                       style: Theme.of(ctx).textTheme.labelSmall,
                       softWrap: false,
                     ),
@@ -146,10 +141,11 @@ class SessionCard extends ConsumerWidget {
   }
 
   Future<void> onVerify(BuildContext context, WidgetRef ref) async {
+    final devId = deviceRecord.deviceId().toString();
     final client = ref.read(alwaysClientProvider);
-    // ignore: unused_local_variable
-    final crossSigningState = ref.read(crossSigningProvider(client));
     final manager = client.sessionManager();
-    await manager.requestVerification(deviceRecord.deviceId().toString());
+    final notifier = ref.read(syncStateProvider.notifier);
+    final verifId = await manager.requestVerification(devId);
+    notifier.verifEmitter.emit('verification.launch', verifId);
   }
 }

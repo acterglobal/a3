@@ -4,7 +4,11 @@ import 'dart:math';
 import 'package:acter/common/models/sync_state/sync_state.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
+import 'package:events_emitter/events_emitter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::common::sync_notifier');
 
 // ignore_for_file: avoid_print
 class SyncNotifier extends StateNotifier<SyncState> {
@@ -18,18 +22,22 @@ class SyncNotifier extends StateNotifier<SyncState> {
   late StreamSubscription<String> _errorPoller;
   Timer? _retryTimer;
 
+  late EventEmitter verifEmitter;
+  String? activeVerifId;
+  late Stream<ffi.VerificationEvent>? _verifListener;
+  late StreamSubscription<ffi.VerificationEvent>? _verifPoller;
+
   SyncNotifier(this.client, this.ref)
       : super(const SyncState(initialSync: true)) {
     _startSync(ref);
   }
 
-  Future<void> _startSync(Ref ref) async {
+  void _startSync(Ref ref) {
     // on release we have a really weird behavior, where, if we schedule
     // any async call in rust too early, they just pend forever. this
     // hack unfortunately means we have two wait a bit but that means
     // we get past the threshold where it is okay to schedule...
-    await Future.delayed(const Duration(milliseconds: 1500));
-    _restartSync();
+    Future.delayed(const Duration(milliseconds: 1500), () => _restartSync());
   }
 
   void _tickSyncState() {
@@ -43,7 +51,48 @@ class SyncNotifier extends StateNotifier<SyncState> {
     }
   }
 
-  Future<void> _restartSync() async {
+  void _restartSync() {
+    _log.info('restart sync');
+    verifEmitter = EventEmitter();
+    _verifListener = client.verificationEventRx(); // keep it resident in memory
+    _verifPoller = _verifListener?.listen((event) {
+      String eventType = event.eventType();
+      _log.info('$eventType - flow_id: ${event.flowId()}');
+      switch (eventType) {
+        case 'm.key.verification.request':
+          verifEmitter.emit('verification.request', event);
+          break;
+        case 'm.key.verification.ready':
+          verifEmitter.emit('verification.ready', event);
+          break;
+        // case 'm.key.verification.start':
+        case 'SasState::Started':
+          verifEmitter.emit('verification.start', event);
+          break;
+        // case 'm.key.verification.cancel':
+        case 'SasState::Cancelled':
+          verifEmitter.emit('verification.cancel', event);
+          break;
+        // case 'm.key.verification.accept':
+        case 'SasState::Accepted':
+          verifEmitter.emit('verification.accept', event);
+          break;
+        // case 'm.key.verification.key':
+        case 'SasState::KeysExchanged':
+          verifEmitter.emit('verification.key', event);
+          break;
+        // case 'm.key.verification.mac':
+        case 'SasState::Confirmed':
+          verifEmitter.emit('verification.mac', event);
+          break;
+        // case 'm.key.verification.done':
+        case 'SasState::Done':
+          verifEmitter.emit('verification.done', event);
+          break;
+      }
+    });
+    ref.onDispose(() => _verifPoller?.cancel());
+
     syncState = client.startSync();
     if (_retryTimer != null) {
       _retryTimer!.cancel();
@@ -54,9 +103,7 @@ class SyncNotifier extends StateNotifier<SyncState> {
     _syncPoller = _syncListener.listen((synced) {
       if (synced) {
         if (mounted) {
-          state = const SyncState(
-            initialSync: false,
-          );
+          state = const SyncState(initialSync: false);
         }
         ref.invalidate(spacesProvider);
       }
@@ -88,5 +135,13 @@ class SyncNotifier extends StateNotifier<SyncState> {
       }
     });
     ref.onDispose(() => _errorPoller.cancel());
+  }
+
+  bool isActiveVerif() {
+    return activeVerifId != null;
+  }
+
+  bool isPassiveVerif() {
+    return activeVerifId == null;
   }
 }
