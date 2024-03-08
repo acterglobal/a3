@@ -209,19 +209,24 @@ class HomeBodyState extends ConsumerState<HomeBody> {
   void onVerifInit(BuildContext context) {
     _log.info('emitter verification.init');
     setState(() => verifStage = 'verification.init');
+
+    // close dialog from previous stage, ex: verification.done
+    final nav = Navigator.of(context, rootNavigator: true);
+    if (nav.canPop()) nav.pop();
   }
 
   void onVerifLaunch(BuildContext context, String verifId) {
     _log.info('emitter verification.launch');
     setState(() => verifStage = 'verification.launch');
+
     // starting of active verification
     ref.read(syncStateProvider.notifier).activeVerifId = verifId;
+
     // open verification.launch dialog
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) => VerificationLaunchPage(
         onCancel: (BuildContext context) async {
-          Navigator.of(context, rootNavigator: true).pop();
           // cancel verification request launched by this device
           final notifier = ref.read(syncStateProvider.notifier);
           if (notifier.isActiveVerif()) {
@@ -238,8 +243,10 @@ class HomeBodyState extends ConsumerState<HomeBody> {
   void onVerifRequest(BuildContext context, VerificationEvent event) {
     _log.info('emitter verification.request');
     setState(() => verifStage = 'verification.request');
+
     // starting of passive verification
     ref.read(syncStateProvider.notifier).activeVerifId = null;
+
     // open verification.request dialog
     showModalBottomSheet(
       context: context,
@@ -247,12 +254,10 @@ class HomeBodyState extends ConsumerState<HomeBody> {
         sender: event.sender(),
         passive: ref.read(syncStateProvider.notifier).isPassiveVerif(),
         onCancel: (BuildContext context) async {
-          Navigator.of(context, rootNavigator: true).pop();
           // cancel verification request from other device
           await event.cancelVerificationRequest();
         },
         onAccept: (BuildContext context) async {
-          Navigator.of(context, rootNavigator: true).pop();
           // accept verification request from other device
           await event.acceptVerificationRequest();
           // go to onReady stage and wait for other's ready
@@ -268,24 +273,21 @@ class HomeBodyState extends ConsumerState<HomeBody> {
 
   void onVerifReady(BuildContext context, VerificationEvent event) {
     _log.info('emitter verification.ready');
-    if (ref.read(syncStateProvider.notifier).isPassiveVerif()) {
-      // comes from verification.request
-    } else {
-      // comes from verification.launch
-      Navigator.of(context, rootNavigator: true).pop();
-    }
     setState(() => verifStage = 'verification.ready');
+
+    // close dialog from previous stage, ex: verification.launch
+    final nav = Navigator.of(context, rootNavigator: true);
+    if (nav.canPop()) nav.pop();
+
     // open verification.ready dialog
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) => VerificationReadyPage(
         passive: ref.read(syncStateProvider.notifier).isPassiveVerif(),
         onCancel: (BuildContext context) async {
-          Navigator.of(context, rootNavigator: true).pop();
           await event.cancelVerificationRequest();
         },
         onAccept: (BuildContext context) async {
-          Navigator.of(context, rootNavigator: true).pop();
           // start sas verification from this device
           await event.startSasVerification();
           // go to onStart stage
@@ -302,6 +304,11 @@ class HomeBodyState extends ConsumerState<HomeBody> {
   void onVerifStart(BuildContext context, VerificationEvent event) {
     _log.info('emitter verification.start');
     setState(() => verifStage = 'verification.start');
+
+    // close dialog from previous stage, ex: verification.ready
+    final nav = Navigator.of(context, rootNavigator: true);
+    if (nav.canPop()) nav.pop();
+
     // open verification.start dialog
     showModalBottomSheet(
       context: context,
@@ -324,8 +331,11 @@ class HomeBodyState extends ConsumerState<HomeBody> {
   void onVerifAccept(BuildContext context, VerificationEvent event) {
     _log.info('emitter verification.accept');
     setState(() => verifStage = 'verification.accept');
-    // close verification.start dialog
-    Navigator.of(context, rootNavigator: true).pop();
+
+    // close dialog from previous stage, ex: verification.start
+    final nav = Navigator.of(context, rootNavigator: true);
+    if (nav.canPop()) nav.pop();
+
     // open verification.accept dialog
     showModalBottomSheet(
       context: context,
@@ -340,6 +350,11 @@ class HomeBodyState extends ConsumerState<HomeBody> {
   void onVerifCancel(BuildContext context, VerificationEvent event) {
     _log.info('emitter verification.cancel');
     setState(() => verifStage = 'verification.cancel');
+
+    // close dialog from previous stage, ex: verification.key
+    final nav = Navigator.of(context, rootNavigator: true);
+    if (nav.canPop()) nav.pop();
+
     // [ref] https://spec.matrix.org/unstable/client-server-api/#mkeyverificationcancel
     var reason = event.getContent('reason');
     if (reason == 'Mismatched short authentication string') {
@@ -353,21 +368,20 @@ class HomeBodyState extends ConsumerState<HomeBody> {
         sender: event.sender(),
         passive: ref.read(syncStateProvider.notifier).isPassiveVerif(),
         message: reason,
-        onDone: (BuildContext context) async {
-          Navigator.of(context, rootNavigator: true).pop();
-          await event.cancelVerificationRequest();
-        },
+        onDone: (BuildContext context) => resetVerifStage(),
       ),
       isDismissible: false,
     );
   }
 
   void onVerifKey(BuildContext context, VerificationEvent event) {
-    // close verification.accept dialog
-    Navigator.of(context, rootNavigator: true).pop();
-
     _log.info('emitter verification.key');
     setState(() => verifStage = 'verification.key');
+
+    // close dialog from previous stage, ex: verification.start
+    final nav = Navigator.of(context, rootNavigator: true);
+    if (nav.canPop()) nav.pop();
+
     if (ref.read(syncStateProvider.notifier).isPassiveVerif()) {
       // fetch emojis
       event.getEmojis().then((emojis) {
@@ -383,12 +397,10 @@ class HomeBodyState extends ConsumerState<HomeBody> {
             },
             onMatch: (BuildContext context) async {
               _log.info('verification.key - match');
-              Navigator.of(context, rootNavigator: true).pop();
               await event.confirmSasVerification();
             },
             onMismatch: (BuildContext context) async {
               _log.info('verification.key - mismatch');
-              Navigator.of(context, rootNavigator: true).pop();
               await event.mismatchSasVerification();
             },
           ),
@@ -408,12 +420,10 @@ class HomeBodyState extends ConsumerState<HomeBody> {
           },
           onMatch: (BuildContext context) async {
             _log.info('verification.key - match');
-            Navigator.of(context, rootNavigator: true).pop();
             await event.confirmSasVerification();
           },
           onMismatch: (BuildContext context) async {
             _log.info('verification.key - mismatch');
-            Navigator.of(context, rootNavigator: true).pop();
             await event.mismatchSasVerification();
           },
         ),
@@ -425,6 +435,11 @@ class HomeBodyState extends ConsumerState<HomeBody> {
   void onVerifMac(BuildContext context, VerificationEvent event) {
     _log.info('emitter verification.mac');
     setState(() => verifStage = 'verification.mac');
+
+    // close dialog from previous stage, ex: verification.key
+    final nav = Navigator.of(context, rootNavigator: true);
+    if (nav.canPop()) nav.pop();
+
     // handle verification.mac event without dialog
     Future.delayed(const Duration(milliseconds: 500), () async {
       await event.reviewVerificationMac();
@@ -432,22 +447,27 @@ class HomeBodyState extends ConsumerState<HomeBody> {
   }
 
   void onVerifDone(BuildContext context, VerificationEvent event) {
-    // close verification.key dialog
-    Navigator.of(context, rootNavigator: true).pop();
-
     _log.info('emitter verification.done');
     setState(() => verifStage = 'verification.done');
+
+    // close dialog from previous stage, ex: verification.mac
+    final nav = Navigator.of(context, rootNavigator: true);
+    if (nav.canPop()) nav.pop();
+
     // open verification.done dialog
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) => VerificationDonePage(
         sender: event.sender(),
         passive: ref.read(syncStateProvider.notifier).isPassiveVerif(),
-        onDone: (BuildContext context) async {
-          Navigator.of(context, rootNavigator: true).pop();
-        },
+        onDone: (BuildContext context) => resetVerifStage(),
       ),
       isDismissible: false,
     );
+  }
+
+  void resetVerifStage() {
+    final notifier = ref.read(syncStateProvider.notifier);
+    notifier.verifEmitter.emit('verification.init');
   }
 }
