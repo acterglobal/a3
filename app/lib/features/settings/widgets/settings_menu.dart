@@ -32,7 +32,7 @@ class SettingsMenu extends ConsumerWidget {
       return TextStyle(color: colorSelected(route));
     }
 
-    final shouldGoNotNamed = isDesktop && size.width > 770;
+    final shouldGoNotNamed = size.width > 770;
 
     final isSuperInviteEnable =
         ref.watch(hasSuperTokensAccess).valueOrNull == true;
@@ -49,7 +49,7 @@ class SettingsMenu extends ConsumerWidget {
               iconData: Atlas.key_monitor_thin,
               iconColor: colorSelected(Routes.settingSessions),
               title: 'Sessions',
-              subTitle: 'Your active device sessions',
+              subTitle: 'Your active devices',
               titleStyles: titleStylesSelected(Routes.settingSessions),
               onTap: () => shouldGoNotNamed
                   ? context.goNamed(Routes.settingSessions.name)

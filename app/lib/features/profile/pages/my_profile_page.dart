@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
+import 'package:acter/features/profile/widgets/skeletons/my_profile_skeletons_widget.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -117,7 +118,7 @@ class MyProfilePage extends StatelessWidget {
                     const SizedBox(height: 20),
                     _profileItem(
                       context: context,
-                      title: 'User ID',
+                      title: 'Username',
                       controller: usernameController,
                       readOnly: true,
                     ),
@@ -141,7 +142,7 @@ class MyProfilePage extends StatelessWidget {
             );
           },
           error: (e, trace) => Text('error: $e'),
-          loading: () => const Text('loading'),
+          loading: () => const MyProfileSkeletonWidget(),
         );
       },
     );
@@ -181,14 +182,14 @@ class MyProfilePage extends StatelessWidget {
                           width: 1,
                           color: Theme.of(context).colorScheme.onSurface,
                         ),
-                        color: Theme.of(context).colorScheme.surface),
+                        color: Theme.of(context).colorScheme.surface,),
                     child: const Icon(
                       Icons.edit,
                       size: 16,
                     ),
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),
