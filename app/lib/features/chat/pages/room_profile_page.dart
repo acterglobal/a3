@@ -181,8 +181,11 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
               context: context,
               iconData: Atlas.user_plus_thin,
               actionName: 'Invite',
+              actionItemColor: membership!.canString('CanInvite')
+                  ? null
+                  : Theme.of(context).colorScheme.onSurface,
               onTap: () {
-                membership!.canString('CanInvite')
+                membership.canString('CanInvite')
                     ? context.pushNamed(
                         Routes.spaceInvite.name,
                         pathParameters: {'spaceId': widget.roomId},
@@ -212,7 +215,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
                     .permalink();
             Share.share(
               roomLink,
-              subject: 'Room ID',
+              subject: 'Link to Chat',
             );
           },
         ),
