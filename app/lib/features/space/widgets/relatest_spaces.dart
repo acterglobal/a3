@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -23,12 +21,14 @@ class RelatedSpaces extends StatelessWidget {
   final SpaceRelationsOverview spaces;
   final int crossAxisCount;
   final Widget fallback;
+  final bool showParents;
 
   const RelatedSpaces({
     super.key,
     required this.spaceIdOrAlias,
     required this.spaces,
     required this.fallback,
+    this.showParents = true,
     this.crossAxisCount = 1,
   });
 
@@ -96,25 +96,25 @@ class RelatedSpaces extends StatelessWidget {
   }
 
   Widget? renderParentsHeader() {
-    if (spaces.parents.isNotEmpty || spaces.mainParent != null) {
-      return const SliverToBoxAdapter(
-        child: Row(
-          children: [
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12),
-                child: Text('Parents'),
-              ),
-            ),
-          ],
-        ),
-      );
+    if (!showParents || (spaces.parents.isEmpty && spaces.mainParent != null)) {
+      return null;
     }
-    return null;
+    return const SliverToBoxAdapter(
+      child: Row(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12),
+              child: Text('Parents'),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget? renderMainParent() {
-    if (spaces.mainParent == null) {
+    if (!showParents || spaces.mainParent == null) {
       return null;
     }
     final space = spaces.mainParent!;
@@ -127,7 +127,7 @@ class RelatedSpaces extends StatelessWidget {
   }
 
   Widget? renderFurtherParent() {
-    if (spaces.parents.isEmpty) {
+    if (!showParents || spaces.parents.isEmpty) {
       return null;
     }
     return SliverGrid.builder(
@@ -325,7 +325,7 @@ class RelatedSpaces extends StatelessWidget {
     ];
 
     if (items.isNotEmpty) {
-      return CustomScrollView(slivers: items);
+      return SliverMainAxisGroup(slivers: items);
     } else {
       return fallback;
     }

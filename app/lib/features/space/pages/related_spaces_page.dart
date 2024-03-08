@@ -24,25 +24,29 @@ class RelatedSpacesPage extends ConsumerWidget {
     // get platform of context.
     return DecoratedBox(
       decoration: const BoxDecoration(gradient: primaryGradient),
-      child: Column(
-        children: [
-          SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
-          Expanded(
-            child: spaces.when(
-              data: (spaces) {
-                final canLinkSpace =
-                    spaces.membership?.canString('CanLinkSpaces') ?? false;
-                return RelatedSpaces(
-                  spaceIdOrAlias: spaceIdOrAlias,
-                  spaces: spaces,
-                  crossAxisCount: crossAxisCount,
-                  fallback: renderFallback(context, canLinkSpace),
-                );
-              },
-              error: (error, stack) => Center(
+      child: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
+          ),
+          spaces.when(
+            data: (spaces) {
+              final canLinkSpace =
+                  spaces.membership?.canString('CanLinkSpaces') ?? false;
+              return RelatedSpaces(
+                spaceIdOrAlias: spaceIdOrAlias,
+                spaces: spaces,
+                crossAxisCount: crossAxisCount,
+                fallback: renderFallback(context, canLinkSpace),
+              );
+            },
+            error: (error, stack) => SliverToBoxAdapter(
+              child: Center(
                 child: Text('Loading failed: $error'),
               ),
-              loading: () => const Center(
+            ),
+            loading: () => const SliverToBoxAdapter(
+              child: Center(
                 child: Text('Loading'),
               ),
             ),
