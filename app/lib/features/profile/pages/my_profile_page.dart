@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
+import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/profile/widgets/skeletons/my_profile_skeletons_widget.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
@@ -10,7 +11,70 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+
+class ChangeDisplayName extends StatefulWidget {
+  final AccountProfile account;
+
+  const ChangeDisplayName({
+    super.key,
+    required this.account,
+  });
+
+  @override
+  State<ChangeDisplayName> createState() => _ChangeDisplayNameState();
+}
+
+class _ChangeDisplayNameState extends State<ChangeDisplayName> {
+  final TextEditingController newUsername = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    newUsername.text = widget.account.profile.displayName ?? '';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final account = widget.account;
+    return AlertDialog(
+      title: const Text('Change your display name'),
+      content: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(5),
+              child: TextFormField(controller: newUsername),
+            ),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Navigator.pop(context, null),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              final currentUserName = account.profile.displayName;
+              final newDisplayName = newUsername.text;
+              if (currentUserName != newDisplayName) {
+                Navigator.pop(context, newDisplayName);
+              } else {
+                Navigator.pop(context, null);
+              }
+              return;
+            }
+          },
+          child: const Text('Submit'),
+        ),
+      ],
+    );
+  }
+}
 
 class MyProfilePage extends StatelessWidget {
   static const displayNameKey = Key('my-profile-display-name');
@@ -19,25 +83,36 @@ class MyProfilePage extends StatelessWidget {
 
   Future<void> updateDisplayName(
     AccountProfile profile,
-    String displayName,
     BuildContext context,
     WidgetRef ref,
   ) async {
-    if (displayName.isNotEmpty && context.mounted) {
-      EasyLoading.show(status: 'Updating profile data');
-      await profile.account.setDisplayName(displayName);
+    final TextEditingController newName = TextEditingController();
+    newName.text = profile.profile.displayName ?? '';
+
+    final newText = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => ChangeDisplayName(account: profile),
+    );
+
+    if (newText != null && context.mounted) {
+      showAdaptiveDialog(
+        context: context,
+        builder: (context) => DefaultDialog(
+          title: Text(
+            'Updating Display Name',
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          isLoader: true,
+        ),
+      );
+      await profile.account.setDisplayName(newText);
       ref.invalidate(accountProfileProvider);
 
       if (!context.mounted) {
         return;
       }
-
-      // close loading
-      EasyLoading.dismiss();
-
-      context.pop();
-    } else {
-      customMsgSnackbar(context, 'Please enter display name!');
+      Navigator.of(context, rootNavigator: true).pop();
+      customMsgSnackbar(context, 'Display Name update submitted');
     }
   }
 
@@ -96,9 +171,6 @@ class MyProfilePage extends StatelessWidget {
           data: (data) {
             final userId = data.account.userId().toString();
             final displayName = data.profile.displayName ?? '';
-            final displayNameController =
-                TextEditingController(text: displayName);
-            final usernameController = TextEditingController(text: userId);
 
             return SingleChildScrollView(
               child: Padding(
@@ -113,27 +185,25 @@ class MyProfilePage extends StatelessWidget {
                       key: MyProfilePage.displayNameKey,
                       context: context,
                       title: 'Display Name',
-                      controller: displayNameController,
+                      subTitle: displayName,
+                      trailingIcon: Atlas.pencil_edit,
+                      onPressed: () => updateDisplayName(data, context, ref),
                     ),
                     const SizedBox(height: 20),
                     _profileItem(
                       context: context,
                       title: 'Username',
-                      controller: usernameController,
-                      readOnly: true,
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () => updateDisplayName(
-                        data,
-                        displayNameController.text,
-                        context,
-                        ref,
-                      ),
-                      child: Text(
-                        'Save',
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
+                      subTitle: userId,
+                      trailingIcon: Atlas.pages,
+                      onPressed: () {
+                        Clipboard.setData(
+                          ClipboardData(text: userId),
+                        );
+                        customMsgSnackbar(
+                          context,
+                          'Username copied to clipboard',
+                        );
+                      },
                     ),
                     const SizedBox(height: 25),
                   ],
@@ -177,12 +247,13 @@ class MyProfilePage extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(100),
-                        border: Border.all(
-                          width: 1,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                        color: Theme.of(context).colorScheme.surface,),
+                      borderRadius: BorderRadius.circular(100),
+                      border: Border.all(
+                        width: 1,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                      color: Theme.of(context).colorScheme.surface,
+                    ),
                     child: const Icon(
                       Icons.edit,
                       size: 16,
@@ -201,8 +272,9 @@ class MyProfilePage extends StatelessWidget {
     Key? key,
     required BuildContext context,
     required String title,
-    required TextEditingController controller,
-    bool readOnly = false,
+    required String subTitle,
+    required IconData trailingIcon,
+    required VoidCallback onPressed,
   }) {
     return Card(
       margin: EdgeInsets.zero,
@@ -211,32 +283,17 @@ class MyProfilePage extends StatelessWidget {
           title,
           style: Theme.of(context).textTheme.labelMedium,
         ),
-        subtitle: TextFormField(
-          key: key,
-          controller: controller,
-          readOnly: readOnly,
-          style: readOnly ? Theme.of(context).textTheme.labelLarge : null,
-          decoration: const InputDecoration(
-            border: InputBorder.none,
-            focusedBorder: InputBorder.none,
-            enabledBorder: InputBorder.none,
+        subtitle: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 10.0),
+          child: Text(
+            subTitle,
+            style: Theme.of(context).textTheme.titleSmall,
           ),
         ),
-        enabled: true,
-        trailing: readOnly
-            ? IconButton(
-                onPressed: () {
-                  Clipboard.setData(
-                    ClipboardData(text: controller.text),
-                  );
-                  customMsgSnackbar(
-                    context,
-                    'Username copied to clipboard',
-                  );
-                },
-                icon: const Icon(Atlas.pages),
-              )
-            : null,
+        trailing: IconButton(
+          onPressed: onPressed,
+          icon: Icon(trailingIcon),
+        ),
       ),
     );
   }
