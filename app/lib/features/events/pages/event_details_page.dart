@@ -5,6 +5,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/report_content.dart';
+import 'package:acter/features/chat/widgets/avatar_builder.dart';
 import 'package:acter/features/events/model/keys.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/skeletons/event_details_skeleton_widget.dart';
@@ -33,6 +34,8 @@ class EventDetailPage extends ConsumerStatefulWidget {
 }
 
 class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
+  ValueNotifier<List<String>> eventParticipantsList = ValueNotifier([]);
+
   @override
   Widget build(BuildContext context) {
     final event = ref.watch(calendarEventProvider(widget.calendarId));
@@ -40,6 +43,9 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
       body: event.when(
         data: (calendarEvent) {
+          // Update event participants list
+          updateEventParticipantsList(calendarEvent);
+
           return CustomScrollView(
             slivers: [
               _buildEventAppBar(calendarEvent),
@@ -53,22 +59,26 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     );
   }
 
+  Future<void> updateEventParticipantsList(CalendarEvent ev) async {
+    final ffiListFfiString = await ev.participants();
+    final participantsList = asDartStringList(ffiListFfiString);
+    _log.info('Event Participants => $participantsList');
+    if (!mounted) return;
+    eventParticipantsList.value = participantsList;
+  }
+
   Widget _buildEventAppBar(CalendarEvent calendarEvent) {
-    return Consumer(
-      builder: (context, ref, child) {
-        return SliverAppBar(
-          expandedHeight: 200.0,
-          pinned: true,
-          actions: [_buildActionMenu(calendarEvent)],
-          flexibleSpace: Container(
-            padding: const EdgeInsets.only(top: 20),
-            decoration: const BoxDecoration(gradient: primaryGradient),
-            child: const FlexibleSpaceBar(
-              background: Icon(Atlas.calendar_dots, size: 80),
-            ),
-          ),
-        );
-      },
+    return SliverAppBar(
+      expandedHeight: 200.0,
+      pinned: true,
+      actions: [_buildActionMenu(calendarEvent)],
+      flexibleSpace: Container(
+        padding: const EdgeInsets.only(top: 20),
+        decoration: const BoxDecoration(gradient: primaryGradient),
+        child: const FlexibleSpaceBar(
+          background: Icon(Atlas.calendar_dots, size: 80),
+        ),
+      ),
     );
   }
 
@@ -230,6 +240,20 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
                 ),
                 SpaceChip(spaceId: calendarEvent.roomIdStr()),
                 const SizedBox(height: 5),
+                Row(
+                  children: [
+                    const Icon(Atlas.accounts_group_people),
+                    const SizedBox(width: 10),
+                    ValueListenableBuilder(
+                      valueListenable: eventParticipantsList,
+                      builder: (context, eventParticipantsList, child) {
+                        return Text(
+                          '${eventParticipantsList.length} People going',
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -387,8 +411,38 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             title: Text(inDays),
             subtitle: Text('$startDate - $endDate'),
           ),
+          ListTile(
+            leading: const Icon(Atlas.accounts_group_people),
+            title: participantsListUI(ev.roomIdStr()),
+          ),
         ],
       ),
+    );
+  }
+
+  Widget participantsListUI(String roomId) {
+    return ValueListenableBuilder(
+      valueListenable: eventParticipantsList,
+      builder: (context, eventParticipantsList, child) {
+        if (eventParticipantsList.isEmpty) {
+          return const Text('No participants going');
+        }
+
+        List<Widget> avtarList = [];
+        for (final participantId in eventParticipantsList) {
+          avtarList.add(
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: AvatarBuilder(
+                roomId: roomId,
+                userId: participantId,
+              ),
+            ),
+          );
+        }
+
+        return Wrap(children: avtarList);
+      },
     );
   }
 
