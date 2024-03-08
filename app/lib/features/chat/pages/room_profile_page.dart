@@ -3,25 +3,28 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/base_body_widget.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/member_list.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
+import 'package:acter/features/chat/widgets/skeletons/action_item_skeleton_widget.dart';
+import 'package:acter/features/chat/widgets/skeletons/members_list_skeleton_widget.dart';
 import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::chat::room_profile_page');
 
-class RoomProfilePage extends ConsumerWidget {
+class RoomProfilePage extends ConsumerStatefulWidget {
   final String roomId;
 
   const RoomProfilePage({
@@ -30,24 +33,25 @@ class RoomProfilePage extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      appBar: topBar(context, ref),
-      extendBodyBehindAppBar: true,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            header(context, ref),
-            actions(context, ref),
-            description(context, ref),
-            optionsBody(context, ref),
-          ],
-        ),
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _RoomProfilePageState();
+}
+
+class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
+  @override
+  Widget build(BuildContext context) {
+    return BaseBody(
+      padding: EdgeInsets.zero,
+      child: Column(
+        children: [
+          _buildAppBar(context),
+          Expanded(child: _buildBody(context)),
+        ],
       ),
     );
   }
 
-  AppBar topBar(BuildContext context, WidgetRef ref) {
+  AppBar _buildAppBar(BuildContext context) {
     final inSideBar = ref.watch(inSideBarProvider);
     final isExpanded = ref.watch(hasExpandedPanel);
 
@@ -57,7 +61,7 @@ class RoomProfilePage extends ConsumerWidget {
         visible: inSideBar && isExpanded,
         replacement: IconButton(
           onPressed: () => context.pop(),
-          icon: const Icon(Icons.chevron_left_outlined),
+          icon: const Icon(Icons.arrow_back_ios),
         ),
         child: IconButton(
           onPressed: () =>
@@ -70,26 +74,40 @@ class RoomProfilePage extends ConsumerWidget {
     );
   }
 
-  Widget header(BuildContext context, WidgetRef ref) {
-    final convoProfile = ref.watch(chatProfileDataProviderById(roomId));
-    return Column(
-      children: [
-        Center(
-          child: Padding(
-            padding: const EdgeInsets.only(
-              top: 38,
-              bottom: 12,
-            ),
-            child: RoomAvatar(
-              roomId: roomId,
-              avatarSize: 75,
-              showParent: true,
-            ),
-          ),
+  Widget _buildBody(BuildContext context) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+        child: Column(
+          children: [
+            _header(context),
+            const SizedBox(height: 16),
+            _description(context),
+            const SizedBox(height: 16),
+            _actions(context),
+            const SizedBox(height: 20),
+            _optionsBody(context),
+          ],
         ),
+      ),
+    );
+  }
+
+  Widget _header(BuildContext context) {
+    final convoProfile = ref.watch(chatProfileDataProviderById(widget.roomId));
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        RoomAvatar(
+          roomId: widget.roomId,
+          avatarSize: 75,
+          showParent: true,
+        ),
+        const SizedBox(height: 10),
         convoProfile.when(
           data: (profile) => Text(
-            profile.displayName ?? roomId,
+            profile.displayName ?? widget.roomId,
             softWrap: true,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleMedium,
@@ -97,255 +115,273 @@ class RoomProfilePage extends ConsumerWidget {
           error: (err, stackTrace) {
             _log.severe('Error loading convo profile', err, stackTrace);
             return Text(
-              roomId,
+              widget.roomId,
               overflow: TextOverflow.clip,
               style: Theme.of(context).textTheme.titleSmall,
             );
           },
-          loading: () => Skeletonizer(child: Text(roomId)),
+          loading: () => Skeletonizer(child: Text(widget.roomId)),
         ),
       ],
     );
   }
 
-  Widget description(BuildContext context, WidgetRef ref) {
-    final convo = ref.watch(chatProvider(roomId));
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: convo.when(
-        data: (data) => RenderHtml(
-          text: data.topic() ?? '',
-          defaultTextStyle: Theme.of(context).textTheme.bodySmall,
+  Widget _description(BuildContext context) {
+    final convo = ref.watch(chatProvider(widget.roomId));
+
+    return convo.when(
+      data: (data) => RenderHtml(
+        text: data.topic() ?? '',
+        defaultTextStyle: Theme.of(context).textTheme.bodySmall,
+      ),
+      loading: () => const Skeletonizer(child: Text('loading...')),
+      error: (e, s) => Text('Error: $e'),
+    );
+  }
+
+  Widget _actions(BuildContext context) {
+    final convoLoader = ref.watch(chatProvider(widget.roomId));
+    final myMembership = ref.watch(roomMembershipProvider(widget.roomId));
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        // Bookmark
+        convoLoader.when(
+          data: (conv) {
+            final isFav = conv.isFavorite();
+            return _actionItem(
+              context: context,
+              iconData: isFav ? Icons.bookmark : Icons.bookmark_border,
+              actionName: 'Bookmark',
+              onTap: () async {
+                await conv.setFavorite(!isFav);
+              },
+            );
+          },
+          error: (e, st) => Skeletonizer(
+            child: IconButton.filled(
+              icon: const Icon(
+                Icons.bookmark_add_outlined,
+                size: 20,
+              ),
+              onPressed: () {},
+            ),
+          ),
+          loading: () => const ActionItemSkeleton(
+            iconData: Icons.bookmark_add_outlined,
+            actionName: 'Bookmark',
+          ),
         ),
-        loading: () => const Skeletonizer(child: Text('loading...')),
-        error: (e, s) => Text('Error: $e'),
+
+        // Invite
+        myMembership.when(
+          data: (membership) {
+            return _actionItem(
+              context: context,
+              iconData: Atlas.user_plus_thin,
+              actionName: 'Invite',
+              onTap: () {
+                membership!.canString('CanInvite')
+                    ? context.pushNamed(
+                        Routes.spaceInvite.name,
+                        pathParameters: {'spaceId': widget.roomId},
+                      )
+                    : customMsgSnackbar(
+                        context,
+                        'Not enough power level for invites, ask room administrator to change it',
+                      );
+              },
+            );
+          },
+          error: (e, st) => Text('Error loading tile due to $e'),
+          loading: () => const ActionItemSkeleton(
+            iconData: Atlas.user_plus_thin,
+            actionName: 'Invite',
+          ),
+        ),
+
+        // Share
+        _actionItem(
+          context: context,
+          iconData: Icons.ios_share,
+          actionName: 'Share',
+          onTap: () async {
+            final roomLink =
+                await (await ref.read(chatProvider(widget.roomId).future))
+                    .permalink();
+            Share.share(
+              roomLink,
+              subject: 'Room ID',
+            );
+          },
+        ),
+
+        // Leave room
+        _actionItem(
+          context: context,
+          iconData: Icons.exit_to_app,
+          actionName: 'Leave',
+          actionItemColor: Theme.of(context).colorScheme.error,
+          onTap: () => showLeaveRoomDialog(context: context),
+        ),
+      ],
+    );
+  }
+
+  Widget _actionItem({
+    required BuildContext context,
+    required IconData iconData,
+    required String actionName,
+    Color? actionItemColor,
+    required VoidCallback onTap,
+  }) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+        margin: const EdgeInsets.symmetric(horizontal: 5),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.background,
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: InkWell(
+          onTap: onTap,
+          child: Column(
+            children: [
+              Icon(
+                iconData,
+                color: actionItemColor,
+              ),
+              const SizedBox(height: 10),
+              Text(
+                actionName,
+                style: Theme.of(context)
+                    .textTheme
+                    .labelLarge!
+                    .copyWith(color: actionItemColor),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 
-  Widget actions(BuildContext context, WidgetRef ref) {
-    final convoLoader = ref.watch(chatProvider(roomId));
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+  Widget _optionsBody(BuildContext context) {
+    return Column(
+      children: [
+        // Notification section
+        Card(
+          margin: EdgeInsets.zero,
+          child: SettingsList(
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            darkTheme: SettingsThemeData(
+              settingsListBackground: Colors.transparent,
+              dividerColor: Colors.transparent,
+              settingsSectionBackground: Colors.transparent,
+              leadingIconsColor: Theme.of(context).colorScheme.neutral6,
+            ),
+            sections: [
+              SettingsSection(
+                tiles: [
+                  NotificationsSettingsTile(roomId: widget.roomId),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+
+        // Room members list section
+        _convoMembersList(),
+      ],
+    );
+  }
+
+  Widget _convoMembersList() {
+    final convo = ref.watch(chatProvider(widget.roomId));
+    final members = ref.watch(chatMembersProvider(widget.roomId));
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.background,
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          convoLoader.maybeWhen(
-            data: (conv) {
-              final isFav = conv.isFavorite();
-              return IconButton(
-                icon: Icon(
-                  isFav ? Icons.bookmark : Icons.bookmark_border,
-                  size: 20,
+          const SizedBox(height: 10),
+          members.when(
+            data: (list) {
+              return Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Text(
+                  'Members (${list.length})',
+                  style: Theme.of(context).textTheme.titleSmall,
                 ),
-                onPressed: () async {
-                  await conv.setFavorite(!isFav);
-                },
               );
             },
-            orElse: () => Skeletonizer(
-              child: IconButton.filled(
-                icon: const Icon(
-                  Icons.bookmark_add_outlined,
-                  size: 20,
-                ),
-                onPressed: () {},
+            loading: () => const Skeletonizer(
+              child: Text(
+                'Members (0)',
               ),
             ),
+            error: (error, stackTrace) =>
+                Text('Error loading members count $error'),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5),
-            child: IconButton.filled(
-              onPressed: () async {
-                final permaLink =
-                    await (await ref.read(chatProvider(roomId).future))
-                        .permalink();
-                Clipboard.setData(
-                  ClipboardData(
-                    text: permaLink,
-                  ),
-                );
-                EasyLoading.showToast(
-                  'Link to Room copied to clipboard',
-                );
-              },
-              tooltip: 'Copy RoomLink',
-              icon: const Icon(
-                Icons.copy_outlined,
-                size: 20,
-              ),
-            ),
+          convo.when(
+            data: (data) => MemberList(convo: data),
+            loading: () => const MembersListSkeleton(),
+            error: (e, s) => Text('Error: $e'),
           ),
         ],
       ),
     );
   }
 
-  Widget optionsBody(BuildContext context, WidgetRef ref) {
-    final convo = ref.watch(chatProvider(roomId));
-    final members = ref.watch(chatMembersProvider(roomId));
-    final myMembership = ref.watch(roomMembershipProvider(roomId));
-    final tileTextTheme = Theme.of(context).textTheme.bodySmall;
-    final Widget topMenu = members.when(
-      data: (list) {
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            'Members (${list.length})',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-        );
-      },
-      error: (error, stackTrace) => Text('Error loading members count $error'),
-      loading: () => const Skeletonizer(
-        child: Text(
-          '100 members',
+  Future<void> showLeaveRoomDialog({
+    required BuildContext context,
+  }) async {
+    showAdaptiveDialog(
+      context: context,
+      builder: (ctx) => DefaultDialog(
+        title: Text(
+          'Leave Room',
+          style: Theme.of(context).textTheme.titleSmall,
         ),
-      ),
-    );
-
-    return SettingsList(
-      physics: const NeverScrollableScrollPhysics(),
-      darkTheme: SettingsThemeData(
-        settingsListBackground: Colors.transparent,
-        dividerColor: Colors.transparent,
-        settingsSectionBackground: Colors.transparent,
-        leadingIconsColor: Theme.of(context).colorScheme.neutral6,
-      ),
-      shrinkWrap: true,
-      sections: [
-        SettingsSection(
-          tiles: [
-            NotificationsSettingsTile(roomId: roomId),
-            myMembership.when(
-              data: (membership) => SettingsTile.navigation(
-                onPressed: (ctx) {
-                  membership!.canString('CanInvite')
-                      ? ctx.pushNamed(
-                          Routes.spaceInvite.name,
-                          pathParameters: {'spaceId': roomId},
-                        )
-                      : customMsgSnackbar(
-                          ctx,
-                          'Not enough power level for invites, ask room administrator to change it',
-                        );
-                },
-                title: Text(
-                  'Request and Invites',
-                  style: tileTextTheme,
-                ),
-                leading: const Icon(Atlas.user_plus_thin, size: 18),
-                trailing: Icon(
-                  Icons.chevron_right_outlined,
-                  size: 18,
-                  color: Theme.of(context).colorScheme.onBackground,
-                ),
-              ),
-              error: (e, st) => SettingsTile(
-                title: Text('Error loading tile due to $e'),
-              ),
-              loading: () => SettingsTile(
-                title: const Skeletonizer(child: Text('Loading')),
-              ),
-            ),
-            SettingsTile(
-              onPressed: (ctx) async {
-                await showAdaptiveDialog(
-                  barrierDismissible: true,
-                  context: context,
-                  useRootNavigator: false,
-                  builder: (dialogContext) => DefaultDialog(
-                    height: MediaQuery.of(dialogContext).size.height * 0.5,
-                    title: topMenu,
-                    description: convo.when(
-                      data: (data) => MemberList(convo: data),
-                      loading: () => const Skeletonizer(
-                        child: Text('loading...'),
-                      ),
-                      error: (e, s) => Text('Error: $e'),
-                    ),
-                  ),
+        subtitle: Text(
+          'Are you sure you want to leave room? This action cannot be undone',
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        actions: [
+          OutlinedButton(
+            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+            child: const Text('No'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.of(context, rootNavigator: true).pop();
+              EasyLoading.show(status: 'Leaving Room');
+              var res = await _handleLeaveRoom(ref, widget.roomId);
+              if (res) {
+                if (context.mounted) {
+                  EasyLoading.dismiss();
+                  context.goNamed(Routes.chat.name);
+                }
+              } else {
+                EasyLoading.dismiss();
+                EasyLoading.showError(
+                  'Some error occurred leaving room',
                 );
-              },
-              title: Text(
-                'Members',
-                style: tileTextTheme,
-              ),
-              leading: const Icon(
-                Atlas.accounts_group_people_thin,
-                size: 18,
-              ),
-              trailing: Icon(
-                Icons.chevron_right_outlined,
-                size: 18,
-                color: Theme.of(context).colorScheme.onBackground,
-              ),
-            ),
-          ],
-        ),
-        SettingsSection(
-          title: Text(
-            'Danger Zone',
-            style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                  color: Theme.of(context).colorScheme.badgeUrgent,
-                ),
+              }
+            },
+            child: const Text('Yes'),
           ),
-          tiles: [
-            SettingsTile(
-              onPressed: (ctx) => showAdaptiveDialog(
-                context: ctx,
-                builder: (ctx) => DefaultDialog(
-                  title: Text(
-                    'Leave Room',
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  subtitle: Text(
-                    'Are you sure you want to leave room? This action cannot be undone',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  actions: [
-                    OutlinedButton(
-                      onPressed: () =>
-                          Navigator.of(context, rootNavigator: true).pop(),
-                      child: const Text('No'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        Navigator.of(context, rootNavigator: true).pop();
-                        EasyLoading.show(status: 'Leaving Room');
-                        var res = await _handleLeaveRoom(ref, roomId);
-                        if (res) {
-                          if (context.mounted) {
-                            EasyLoading.dismiss();
-                            context.goNamed(Routes.chat.name);
-                          }
-                        } else {
-                          EasyLoading.dismiss();
-                          EasyLoading.showError(
-                            'Some error occurred leaving room',
-                          );
-                        }
-                      },
-                      child: const Text('Yes'),
-                    ),
-                  ],
-                ),
-              ),
-              title: Text(
-                'Leave Room',
-                style: tileTextTheme!.copyWith(
-                  color: Theme.of(context).colorScheme.badgeUrgent,
-                ),
-              ),
-              leading: Icon(
-                Atlas.trash_thin,
-                size: 18,
-                color: Theme.of(context).colorScheme.badgeUrgent,
-              ),
-            ),
-          ],
-        ),
-      ],
+        ],
+      ),
     );
   }
 
