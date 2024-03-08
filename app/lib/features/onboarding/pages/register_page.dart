@@ -240,7 +240,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                   TextSpan(
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () {
-                                        debugPrint('Terms of Service"');
+                                        _log.info('Terms of Service"');
                                       },
                                     text: AppLocalizations.of(context)!
                                         .termsText2,
@@ -252,7 +252,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                   TextSpan(
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () {
-                                        debugPrint('policy"');
+                                        _log.info('policy"');
                                       },
                                     text: AppLocalizations.of(context)!
                                         .termsText4,

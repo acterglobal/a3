@@ -8,11 +8,11 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:logging/logging.dart';
 import 'package:package_info/package_info.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:logging/logging.dart';
 
 export './acter_flutter_sdk_ffi.dart' show Client;
 
@@ -160,7 +160,7 @@ Future<ImageProvider<Object>?> remapToImage(
     }
     return image;
   } catch (e) {
-    debugPrint('Error fetching avatar: $e');
+    _log.severe('Error fetching avatar: $e');
     return null;
   }
 }
@@ -372,20 +372,20 @@ class ActerSdk {
       // android api 30 is working here
       return DynamicLibrary.open(libName);
     } catch (e1) {
-      debugPrint('DynamicLibrary.open by lib name failed: $e1');
+      _log.severe('DynamicLibrary.open by lib name failed: $e1');
       try {
         // android api 23 is working here
         final String nativeLibDir = await _getNativeLibraryDirectory();
         return DynamicLibrary.open('$nativeLibDir/$libName');
       } catch (e2) {
-        debugPrint('DynamicLibrary.open from /data/app failed: $e2');
+        _log.severe('DynamicLibrary.open from /data/app failed: $e2');
         try {
           // android api 8 (2010) is working here
           final PackageInfo pkgInfo = await PackageInfo.fromPlatform();
           final String pkgName = pkgInfo.packageName;
           return DynamicLibrary.open('/data/data/$pkgName/$libName');
         } catch (e3) {
-          debugPrint('DynamicLibrary.open from /data/data failed: $e3');
+          _log.severe('DynamicLibrary.open from /data/data failed: $e3');
           rethrow;
         }
       }
