@@ -2,8 +2,8 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
+import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
-import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -68,7 +68,7 @@ class BlockedUsersPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final users = ref.watch(ignoredUsersProvider);
     return WithSidebar(
-      sidebar: const SettingsMenu(),
+      sidebar: const SettingsPage(),
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: const AppBarTheme().backgroundColor,

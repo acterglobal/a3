@@ -2,8 +2,8 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/settings/widgets/email_address_card.dart';
-import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -72,7 +72,7 @@ class EmailAddressesPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final emailAddresses = ref.watch(emailAddressesProvider);
     return WithSidebar(
-      sidebar: const SettingsMenu(),
+      sidebar: const SettingsPage(),
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: const AppBarTheme().backgroundColor,

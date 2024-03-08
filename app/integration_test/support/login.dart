@@ -2,8 +2,8 @@ import 'package:acter/common/models/keys.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/onboarding/pages/register_page.dart';
-import 'package:acter/features/profile/pages/my_profile_page.dart';
 import 'package:acter/features/search/model/keys.dart';
+import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:uuid/uuid.dart';
@@ -88,11 +88,11 @@ extension ActerLogin on ConvenientTest {
     await quickJumpKey.should(findsOneWidget);
     await quickJumpKey.tap();
 
-    final profileKey = find.byKey(QuickJumpKeys.profile);
-    await profileKey.should(findsOneWidget);
-    await profileKey.tap();
+    final settingsKey = find.byKey(QuickJumpKeys.settings);
+    await settingsKey.should(findsOneWidget);
+    await settingsKey.tap();
 
-    final logoutKey = find.byKey(MyProfilePage.logoutKey);
+    final logoutKey = find.byKey(SettingsMenu.logoutAccount);
     await logoutKey.should(findsOneWidget);
     await logoutKey.tap();
 

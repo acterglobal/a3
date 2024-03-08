@@ -2,7 +2,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/settings/widgets/labs_notifications_settings_tile.dart';
-import 'package:acter/features/settings/widgets/settings_menu.dart';
+import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter/material.dart';
@@ -17,7 +17,7 @@ class SettingsLabsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return WithSidebar(
-      sidebar: const SettingsMenu(),
+      sidebar: const SettingsPage(),
       child: Scaffold(
         appBar: AppBar(title: const Text('Acter Labs')),
         body: SettingsList(
