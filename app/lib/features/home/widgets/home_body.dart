@@ -26,6 +26,7 @@ final _log = Logger('a3::home::home_body');
 
 ScreenshotController screenshotController = ScreenshotController();
 
+// we use ConsumerStatefulWidget, because we don't call setState here but we need dispose fn
 class HomeBody extends ConsumerStatefulWidget {
   final StatefulNavigationShell navigationShell;
   final bool keyboardVisible;
@@ -44,28 +45,22 @@ class HomeBody extends ConsumerStatefulWidget {
 
 class HomeBodyState extends ConsumerState<HomeBody> {
   final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
-  String verifStage = 'verification.init';
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   void dispose() {
     super.dispose();
 
-    final notifier = ref.read(syncStateProvider.notifier);
-    notifier.verifEmitter.off(type: 'verification.init');
-    notifier.verifEmitter.off(type: 'verification.launch');
-    notifier.verifEmitter.off(type: 'verification.request');
-    notifier.verifEmitter.off(type: 'verification.ready');
-    notifier.verifEmitter.off(type: 'verification.start');
-    notifier.verifEmitter.off(type: 'verification.accept');
-    notifier.verifEmitter.off(type: 'verification.cancel');
-    notifier.verifEmitter.off(type: 'verification.key');
-    notifier.verifEmitter.off(type: 'verification.mac');
-    notifier.verifEmitter.off(type: 'verification.done');
+    final verifEmitter = ref.read(syncStateProvider.notifier).verifEmitter;
+    verifEmitter.off(type: 'verification.init');
+    verifEmitter.off(type: 'verification.launch');
+    verifEmitter.off(type: 'verification.request');
+    verifEmitter.off(type: 'verification.ready');
+    verifEmitter.off(type: 'verification.start');
+    verifEmitter.off(type: 'verification.accept');
+    verifEmitter.off(type: 'verification.cancel');
+    verifEmitter.off(type: 'verification.key');
+    verifEmitter.off(type: 'verification.mac');
+    verifEmitter.off(type: 'verification.done');
   }
 
   @override
@@ -208,7 +203,6 @@ class HomeBodyState extends ConsumerState<HomeBody> {
 
   void onVerifInit(BuildContext context) {
     _log.info('emitter verification.init');
-    setState(() => verifStage = 'verification.init');
 
     // close dialog from previous stage, ex: verification.done
     final nav = Navigator.of(context, rootNavigator: true);
@@ -217,7 +211,6 @@ class HomeBodyState extends ConsumerState<HomeBody> {
 
   void onVerifLaunch(BuildContext context, String verifId) {
     _log.info('emitter verification.launch');
-    setState(() => verifStage = 'verification.launch');
 
     // starting of active verification
     ref.read(syncStateProvider.notifier).activeVerifId = verifId;
@@ -242,7 +235,6 @@ class HomeBodyState extends ConsumerState<HomeBody> {
 
   void onVerifRequest(BuildContext context, VerificationEvent event) {
     _log.info('emitter verification.request');
-    setState(() => verifStage = 'verification.request');
 
     // starting of passive verification
     ref.read(syncStateProvider.notifier).activeVerifId = null;
@@ -273,7 +265,6 @@ class HomeBodyState extends ConsumerState<HomeBody> {
 
   void onVerifReady(BuildContext context, VerificationEvent event) {
     _log.info('emitter verification.ready');
-    setState(() => verifStage = 'verification.ready');
 
     // close dialog from previous stage, ex: verification.launch
     final nav = Navigator.of(context, rootNavigator: true);
@@ -303,7 +294,6 @@ class HomeBodyState extends ConsumerState<HomeBody> {
 
   void onVerifStart(BuildContext context, VerificationEvent event) {
     _log.info('emitter verification.start');
-    setState(() => verifStage = 'verification.start');
 
     // close dialog from previous stage, ex: verification.ready
     final nav = Navigator.of(context, rootNavigator: true);
@@ -330,7 +320,6 @@ class HomeBodyState extends ConsumerState<HomeBody> {
 
   void onVerifAccept(BuildContext context, VerificationEvent event) {
     _log.info('emitter verification.accept');
-    setState(() => verifStage = 'verification.accept');
 
     // close dialog from previous stage, ex: verification.start
     final nav = Navigator.of(context, rootNavigator: true);
@@ -349,7 +338,6 @@ class HomeBodyState extends ConsumerState<HomeBody> {
 
   void onVerifCancel(BuildContext context, VerificationEvent event) {
     _log.info('emitter verification.cancel');
-    setState(() => verifStage = 'verification.cancel');
 
     // close dialog from previous stage, ex: verification.key
     final nav = Navigator.of(context, rootNavigator: true);
@@ -376,7 +364,6 @@ class HomeBodyState extends ConsumerState<HomeBody> {
 
   void onVerifKey(BuildContext context, VerificationEvent event) {
     _log.info('emitter verification.key');
-    setState(() => verifStage = 'verification.key');
 
     // close dialog from previous stage, ex: verification.start
     final nav = Navigator.of(context, rootNavigator: true);
@@ -434,7 +421,6 @@ class HomeBodyState extends ConsumerState<HomeBody> {
 
   void onVerifMac(BuildContext context, VerificationEvent event) {
     _log.info('emitter verification.mac');
-    setState(() => verifStage = 'verification.mac');
 
     // close dialog from previous stage, ex: verification.key
     final nav = Navigator.of(context, rootNavigator: true);
@@ -448,7 +434,6 @@ class HomeBodyState extends ConsumerState<HomeBody> {
 
   void onVerifDone(BuildContext context, VerificationEvent event) {
     _log.info('emitter verification.done');
-    setState(() => verifStage = 'verification.done');
 
     // close dialog from previous stage, ex: verification.mac
     final nav = Navigator.of(context, rootNavigator: true);
