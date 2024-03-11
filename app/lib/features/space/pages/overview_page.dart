@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/features/space/widgets/about_card.dart';
@@ -12,7 +10,6 @@ import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class ActerSpaceChecker extends ConsumerWidget {
   final Widget child;
@@ -45,41 +42,43 @@ class SpaceOverview extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final widthCount = (MediaQuery.of(context).size.width ~/ 300).toInt();
-    const int minCount = 2;
     // get platform of context.
     return DecoratedBox(
       decoration: const BoxDecoration(gradient: primaryGradient),
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
-            StaggeredGrid.count(
-              axisDirection: AxisDirection.down,
-              crossAxisCount: min(widthCount, minCount),
-              children: <Widget>[
-                AboutCard(spaceId: spaceIdOrAlias),
-                ActerSpaceChecker(
-                  spaceId: spaceIdOrAlias,
-                  expectation: (a) => a == null,
-                  child: NonActerSpaceCard(spaceId: spaceIdOrAlias),
-                ),
-                ActerSpaceChecker(
-                  spaceId: spaceIdOrAlias,
-                  expectation: (a) => a?.events().active() ?? false,
-                  child: EventsCard(spaceId: spaceIdOrAlias),
-                ),
-                ActerSpaceChecker(
-                  spaceId: spaceIdOrAlias,
-                  expectation: (a) => a?.pins().active() ?? false,
-                  child: LinksCard(spaceId: spaceIdOrAlias),
-                ),
-                ChatsCard(spaceId: spaceIdOrAlias),
-                RelatedSpacesCard(spaceId: spaceIdOrAlias),
-              ],
+      child: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
+          ),
+          SliverToBoxAdapter(
+            child: AboutCard(spaceId: spaceIdOrAlias),
+          ),
+          SliverToBoxAdapter(
+            child: ActerSpaceChecker(
+              spaceId: spaceIdOrAlias,
+              expectation: (a) => a == null,
+              child: NonActerSpaceCard(spaceId: spaceIdOrAlias),
             ),
-          ],
-        ),
+          ),
+          SliverToBoxAdapter(
+            child: ActerSpaceChecker(
+              spaceId: spaceIdOrAlias,
+              expectation: (a) => a?.events().active() ?? false,
+              child: EventsCard(spaceId: spaceIdOrAlias),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: ActerSpaceChecker(
+              spaceId: spaceIdOrAlias,
+              expectation: (a) => a?.pins().active() ?? false,
+              child: LinksCard(spaceId: spaceIdOrAlias),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: ChatsCard(spaceId: spaceIdOrAlias),
+          ),
+          RelatedSpacesCard(spaceId: spaceIdOrAlias),
+        ],
       ),
     );
   }
