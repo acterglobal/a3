@@ -1,17 +1,15 @@
 import 'dart:io';
 
-import 'package:acter/common/dialogs/attachment_confirmation.dart';
+import 'package:acter/common/dialogs/attachment_selection.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
 import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/chat/chat_utils/chat_utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter/common/widgets/attachment_options.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
 import 'package:acter/features/chat/widgets/mention_profile_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -28,9 +26,7 @@ import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/parser.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
-import 'package:mime/mime.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:logging/logging.dart';
 
@@ -327,92 +323,10 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                     Padding(
                       padding: const EdgeInsets.only(right: 10),
                       child: InkWell(
-                        onTap: () => showModalBottomSheet(
-                          context: context,
-                          isDismissible: true,
-                          enableDrag: true,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(20),
-                              topLeft: Radius.circular(20),
-                            ),
-                          ),
-                          builder: (ctx) => AttachmentOptions(
-                            onTapCamera: () async {
-                              XFile? imageFile = await ImagePicker()
-                                  .pickImage(source: ImageSource.camera);
-                              if (imageFile != null) {
-                                List<File> files = [File(imageFile.path)];
-                                final mimeType =
-                                    lookupMimeType(files.first.path);
-                                if (!context.mounted) {
-                                  return;
-                                }
-                                attachmentConfirmationDialog(
-                                  context,
-                                  files,
-                                  _FileWidget(mimeType, files.first),
-                                  handleFileUpload,
-                                  AttachmentType.camera,
-                                );
-                              }
-                            },
-                            onTapImage: () async {
-                              XFile? imageFile = await ImagePicker()
-                                  .pickImage(source: ImageSource.gallery);
-                              if (imageFile != null) {
-                                List<File> files = [File(imageFile.path)];
-                                final mimeType =
-                                    lookupMimeType(files.first.path);
-                                if (!context.mounted) {
-                                  return;
-                                }
-                                attachmentConfirmationDialog(
-                                  context,
-                                  files,
-                                  _FileWidget(mimeType, files.first),
-                                  handleFileUpload,
-                                  AttachmentType.image,
-                                );
-                              }
-                            },
-                            onTapVideo: () async {
-                              XFile? imageFile = await ImagePicker()
-                                  .pickVideo(source: ImageSource.gallery);
-                              if (imageFile != null) {
-                                List<File> files = [File(imageFile.path)];
-                                final mimeType =
-                                    lookupMimeType(files.first.path);
-                                if (!context.mounted) {
-                                  return;
-                                }
-                                attachmentConfirmationDialog(
-                                  context,
-                                  files,
-                                  _FileWidget(mimeType, files.first),
-                                  handleFileUpload,
-                                  AttachmentType.video,
-                                );
-                              }
-                            },
-                            onTapFile: () async {
-                              var selectedFiles = await handleFileSelection(
-                                ctx,
-                              );
-                              final mimeType =
-                                  lookupMimeType(selectedFiles!.first.path);
-                              if (!context.mounted) {
-                                return;
-                              }
-                              attachmentConfirmationDialog(
-                                context,
-                                selectedFiles,
-                                _FileWidget(mimeType, selectedFiles.first),
-                                handleFileUpload,
-                                AttachmentType.file,
-                              );
-                            },
-                          ),
+                        onTap: () => showAttachmentSelection(
+                          context,
+                          null,
+                          widget.convo,
                         ),
                         child: const Icon(
                           Atlas.paperclip_attachment_thin,
@@ -539,85 +453,6 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
       return result.paths.map((path) => File(path!)).toList();
     }
     return null;
-  }
-
-  Future<void> handleFileUpload(
-    List<File> files,
-    AttachmentType attachmentType,
-  ) async {
-    final roomId = widget.convo.getRoomIdStr();
-    final client = ref.read(alwaysClientProvider);
-    final inputState = ref.read(chatInputProvider(roomId));
-    final stream = widget.convo.timelineStream();
-
-    try {
-      for (File file in files) {
-        String? mimeType = lookupMimeType(file.path);
-
-        if (mimeType!.startsWith('image/') &&
-            attachmentType == AttachmentType.image) {
-          final bytes = file.readAsBytesSync();
-          final image = await decodeImageFromList(bytes);
-          final imageDraft = client
-              .imageDraft(file.path, mimeType)
-              .size(file.lengthSync())
-              .width(image.width)
-              .height(image.height);
-          if (inputState.repliedToMessage != null) {
-            await stream.replyMessage(
-              inputState.repliedToMessage!.id,
-              imageDraft,
-            );
-          } else {
-            await stream.sendMessage(imageDraft);
-          }
-        } else if (mimeType.startsWith('audio/') &&
-            attachmentType == AttachmentType.audio) {
-          final audioDraft =
-              client.audioDraft(file.path, mimeType).size(file.lengthSync());
-          if (inputState.repliedToMessage != null) {
-            await stream.replyMessage(
-              inputState.repliedToMessage!.id,
-              audioDraft,
-            );
-          } else {
-            await stream.sendMessage(audioDraft);
-          }
-        } else if (mimeType.startsWith('video/') &&
-            attachmentType == AttachmentType.video) {
-          final videoDraft =
-              client.videoDraft(file.path, mimeType).size(file.lengthSync());
-          if (inputState.repliedToMessage != null) {
-            await stream.replyMessage(
-              inputState.repliedToMessage!.id,
-              videoDraft,
-            );
-          } else {
-            await stream.sendMessage(videoDraft);
-          }
-        } else {
-          final draft =
-              client.fileDraft(file.path, mimeType).size(file.lengthSync());
-          if (inputState.repliedToMessage != null) {
-            await stream.replyMessage(inputState.repliedToMessage!.id, draft);
-          } else {
-            await stream.sendMessage(draft);
-          }
-        }
-      }
-    } catch (e, s) {
-      _log.severe('error occurred', e, s);
-    }
-
-    if (inputState.repliedToMessage != null) {
-      final notifier = ref.read(chatInputProvider(roomId).notifier);
-      notifier.setRepliedToMessage(null);
-      notifier.setEditMessage(null);
-      notifier.showReplyView(false);
-      notifier.showEditView(false);
-      notifier.setReplyWidget(null);
-      notifier.setEditWidget(null);
-    }
   }
 
   Widget replyBuilder(String roomId) {
@@ -771,55 +606,6 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
       notifier.showEditView(false);
       notifier.setReplyWidget(null);
       notifier.setEditWidget(null);
-    }
-  }
-}
-
-class _FileWidget extends ConsumerWidget {
-  final String? mimeType;
-  final File file;
-
-  const _FileWidget(this.mimeType, this.file);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    if (mimeType!.startsWith('image/')) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(6),
-        child: Image.file(file, height: 200, fit: BoxFit.cover),
-      );
-    } else if (mimeType!.startsWith('audio/')) {
-      return Container(
-        height: 55,
-        width: 55,
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primaryContainer,
-          shape: BoxShape.circle,
-        ),
-        child: const Center(child: Icon(Atlas.file_sound_thin)),
-      );
-    } else if (mimeType!.startsWith('video/')) {
-      return Container(
-        height: 55,
-        width: 55,
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primaryContainer,
-          shape: BoxShape.circle,
-        ),
-        child: const Center(child: Icon(Atlas.file_video_thin)),
-      );
-    }
-    //FIXME: cover all mime extension cases?
-    else {
-      return Container(
-        height: 55,
-        width: 55,
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primaryContainer,
-          shape: BoxShape.circle,
-        ),
-        child: const Center(child: Icon(Atlas.plus_file_thin)),
-      );
     }
   }
 }

@@ -1,7 +1,7 @@
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/attachments/attachment_item.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
-import 'package:acter/features/pins/widgets/attachment_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -162,10 +162,7 @@ class _PinListItemConsumerState extends ConsumerState<PinListItem> {
               attachments.when(
                 data: (list) {
                   if (list.isNotEmpty) {
-                    return AttachmentTypeHandler(
-                      attachment: list[0],
-                      pin: widget.pin,
-                    );
+                    return AttachmentItem(attachment: list[0]);
                   } else {
                     return const SizedBox.shrink();
                   }

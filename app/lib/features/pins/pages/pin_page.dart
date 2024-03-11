@@ -1,5 +1,7 @@
+import 'package:acter/common/dialogs/attachment_selection.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/widgets/attachments/attachment_item.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
@@ -11,7 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class PinPage extends ConsumerWidget {
+class PinPage extends ConsumerStatefulWidget {
   static const pinPageKey = Key('pin-page');
   static const actionMenuKey = Key('pin-action-menu');
   static const editBtnKey = Key('pin-edit-btn');
@@ -25,6 +27,11 @@ class PinPage extends ConsumerWidget {
     required this.pinId,
   });
 
+  @override
+  ConsumerState<PinPage> createState() => _PinPageConsumerState();
+}
+
+class _PinPageConsumerState extends ConsumerState<PinPage> {
   // pin actions menu builder
   Widget _buildActionMenu(
     BuildContext context,
@@ -35,7 +42,6 @@ class PinPage extends ConsumerWidget {
     List<PopupMenuEntry<String>> actions = [];
     final pinEditNotifier = ref.watch(pinEditProvider(pin).notifier);
     final membership = ref.watch(roomMembershipProvider(spaceId));
-
     if (membership.valueOrNull != null) {
       final memb = membership.requireValue!;
       if (memb.canString('CanPostPin')) {
@@ -133,7 +139,7 @@ class PinPage extends ConsumerWidget {
         title: 'Report this Pin',
         description:
             'Report this content to your homeserver administrator. Please note that your administrator won\'t be able to read or view files in encrypted spaces.',
-        eventId: pinId,
+        eventId: widget.pinId,
         roomId: pin.roomIdStr(),
         senderId: pin.sender().toString(),
         isSpace: true,
@@ -142,8 +148,8 @@ class PinPage extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final pin = ref.watch(pinProvider(pinId));
+  Widget build(BuildContext context) {
+    final pin = ref.watch(pinProvider(widget.pinId));
 
     return Scaffold(
       body: CustomScrollView(
@@ -172,7 +178,14 @@ class PinPage extends ConsumerWidget {
           ),
           SliverToBoxAdapter(
             child: pin.when(
-              data: (acterPin) => PinItem(acterPin),
+              data: (acterPin) => Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  PinItem(acterPin),
+                  const SizedBox(height: 20),
+                  _buildAttachmentList(acterPin),
+                ],
+              ),
               error: (err, st) => Text('Error loading pins ${err.toString()}'),
               loading: () => const Skeletonizer(
                 child: Card(),
@@ -201,6 +214,98 @@ class PinPage extends ConsumerWidget {
         overflow: TextOverflow.ellipsis,
         style: Theme.of(context).textTheme.titleLarge,
       ),
+    );
+  }
+
+  // attachment list UI
+  Widget _buildAttachmentList(ActerPin pin) {
+    final attachmentTitleTextStyle = Theme.of(context).textTheme.labelLarge;
+    final attachments = ref.watch(pinAttachmentsProvider(pin));
+    final membership = ref.watch(roomMembershipProvider(pin.roomIdStr()));
+    final canPostAttachments = [];
+    if (membership.valueOrNull != null) {
+      final member = membership.requireValue!;
+      if (member.canString('CanPostPin')) {
+        canPostAttachments.add(_buildAddAttachment(pin));
+      }
+    }
+
+    return attachments.when(
+      data: (list) {
+        return Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Row(
+                children: [
+                  Text('Attachments', style: attachmentTitleTextStyle),
+                  const SizedBox(width: 5),
+                  const Icon(Atlas.paperclip_attachment_thin, size: 14),
+                  const SizedBox(width: 5),
+                  Text('${list.length}'),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 5.0,
+                runSpacing: 10.0,
+                children: <Widget>[
+                  if (list.isNotEmpty)
+                    for (var item in list) AttachmentItem(attachment: item),
+                  _buildAddAttachment(pin),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+      error: (err, st) => Text('Error loading attachments $err'),
+      loading: () => const Skeletonizer(
+        child: Wrap(
+          spacing: 5.0,
+          runSpacing: 10.0,
+          children: [],
+        ),
+      ),
+    );
+  }
+
+  // add attachment container UI
+  Widget _buildAddAttachment(ActerPin pin) {
+    final containerColor = Theme.of(context).colorScheme.background;
+    final iconColor = Theme.of(context).colorScheme.secondary;
+    final iconTextStyle = Theme.of(context).textTheme.labelLarge;
+    final asyncManager = ref.watch(pinAttachmentManagerProvider(pin));
+
+    return asyncManager.when(
+      data: (manager) {
+        return InkWell(
+          onTap: () => showAttachmentSelection(context, manager, null),
+          child: Container(
+            height: 100,
+            width: 100,
+            decoration: BoxDecoration(
+              color: containerColor,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(Icons.add, color: iconColor),
+                Text('Add', style: iconTextStyle!.copyWith(color: iconColor)),
+              ],
+            ),
+          ),
+        );
+      },
+      loading: () => const Skeletonizer(
+        child: SizedBox(
+          height: 100,
+          width: 100,
+        ),
+      ),
+      error: (err, st) => Text('Error loading attachments manager: $err'),
     );
   }
 }

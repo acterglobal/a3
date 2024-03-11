@@ -7,3 +7,9 @@ final attachmentsManagerProvider = NotifierProvider.family<
     AttachmentsManagerNotifier, AttachmentsManager, AttachmentsManager>(
   () => AttachmentsManagerNotifier(),
 );
+
+/// provider for handling attachment drafts that user selected.
+final attachmentDraftsProvider = StateNotifierProvider.family<
+    AttachmentDraftsNotifier, List<AttachmentDraft>, AttachmentsManager>(
+  (ref, manager) => AttachmentDraftsNotifier(manager: manager, ref: ref),
+);
