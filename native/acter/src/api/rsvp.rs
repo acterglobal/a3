@@ -334,13 +334,18 @@ impl RsvpManager {
     }
 
     pub async fn users_at_status(&self, status: String) -> Result<Vec<OwnedUserId>> {
+        self.users_at_status_typed(RsvpStatus::from_str(&status)?)
+            .await
+    }
+
+    pub async fn users_at_status_typed(&self, status: RsvpStatus) -> Result<Vec<OwnedUserId>> {
         let manager = self.inner.clone();
         RUNTIME
             .spawn(async move {
                 let mut senders = vec![];
                 let entries = manager.rsvp_entries().await?;
                 for (user_id, entry) in entries {
-                    if entry.status.to_string() == status {
+                    if entry.status == status {
                         senders.push(user_id);
                     }
                 }

@@ -1,0 +1,1 @@
+- [fix] You will now see all subspaces (even the ones you haven't joined yet) on the Space overview page right away.

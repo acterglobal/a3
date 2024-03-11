@@ -10,7 +10,7 @@ class ProfileData {
   ProfileData(this.displayName, this.avatar, {this.isDm = false});
 
   bool hasAvatar() {
-    return avatar != null;
+    return avatarMem != null || avatar != null;
   }
 
   MemoryImage? getAvatarImage() {

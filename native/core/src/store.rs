@@ -45,7 +45,7 @@ impl Store {
         trace!(key, "set_raw");
         self.client
             .store()
-            .set_custom_value(
+            .set_custom_value_no_read(
                 format!("acter:{key}").as_bytes(),
                 serde_json::to_vec(value)?,
             )
@@ -75,13 +75,13 @@ impl Store {
             // "upgrading" by resetting
             client
                 .store()
-                .set_custom_value(ALL_MODELS_KEY.as_bytes(), vec![])
+                .set_custom_value_no_read(ALL_MODELS_KEY.as_bytes(), vec![])
                 .await
                 .map_err(|e| Error::Custom(format!("setting all models to [] failed: {e}")))?;
 
             client
                 .store()
-                .set_custom_value(
+                .set_custom_value_no_read(
                     DB_VERSION_KEY.as_bytes(),
                     CURRENT_DB_VERSION.to_le_bytes().to_vec(),
                 )
@@ -309,7 +309,10 @@ impl Store {
         trace!("store sync");
         let client_store = self.client.store();
         for (key, value) in models_to_write.into_iter() {
-            if let Err(error) = client_store.set_custom_value(key.as_bytes(), value).await {
+            if let Err(error) = client_store
+                .set_custom_value_no_read(key.as_bytes(), value)
+                .await
+            {
                 error!(?key, ?error, "syncing model failed");
             }
         }
@@ -317,7 +320,7 @@ impl Store {
 
         trace!("syncing all models");
         client_store
-            .set_custom_value(ALL_MODELS_KEY.as_bytes(), all_models)
+            .set_custom_value_no_read(ALL_MODELS_KEY.as_bytes(), all_models)
             .await?;
 
         trace!("sync done");

@@ -1,1 +1,0 @@
-- [new] : You can now include links to Events right into the Updates sent to your space members. Allowing them to easily get access and respond to any upcoming Events right from the Updates screen.

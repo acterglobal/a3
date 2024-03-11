@@ -1,21 +1,20 @@
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor.dart';
-import 'package:acter/common/widgets/md_editor_with_preview.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
+import 'package:acter/features/pins/pin_utils/pin_utils.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
+import 'package:acter/features/pins/widgets/attachment_handler.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show ActerPin;
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class PinItem extends ConsumerStatefulWidget {
   static const linkFieldKey = Key('edit-pin-link-field');
   static const descriptionFieldKey = Key('edit-pin-description-field');
-  static const markdownEditorKey = Key('edit-md-editor-field');
-  static const richTextEditorKey = Key('edit-rich-editor-field');
   static const saveBtnKey = Key('pin-edit-save');
   final ActerPin pin;
   const PinItem(this.pin, {super.key});
@@ -28,6 +27,7 @@ class _PinItemState extends ConsumerState<PinItem> {
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
   late TextEditingController _linkController;
   late TextEditingController _descriptionController;
+  int? attachmentCount;
 
   @override
   void initState() {
@@ -73,7 +73,14 @@ class _PinItemState extends ConsumerState<PinItem> {
               child: SpaceChip(spaceId: spaceId),
             ),
             if (isLink) _buildPinLink(),
-            _buildPinDescription(),
+            _PinDescriptionWidget(
+              pin: pin,
+              descriptionController: _descriptionController,
+              linkController: _linkController,
+              formkey: _formkey,
+            ),
+            const SizedBox(height: 20),
+            _buildAttachmentList(),
           ],
         ),
       ),
@@ -107,90 +114,244 @@ class _PinItemState extends ConsumerState<PinItem> {
     );
   }
 
-  // pin content widget
-  Widget _buildPinDescription() {
+// attachment list UI
+  Widget _buildAttachmentList() {
+    final noAttachmentTextStyle = Theme.of(context)
+        .textTheme
+        .labelMedium!
+        .copyWith(color: Theme.of(context).colorScheme.neutral5);
+    final attachmentTitleTextStyle = Theme.of(context).textTheme.labelLarge;
     final pinEdit = ref.watch(pinEditProvider(widget.pin));
-    final pinEditNotifier = ref.watch(pinEditProvider(widget.pin).notifier);
-    final labFeature = ref.watch(featuresProvider);
-    bool isActive(f) => labFeature.isActive(f);
+    final attachments = ref.watch(pinAttachmentsProvider(widget.pin));
+    final selectedAttachments = ref.watch(selectedPinAttachmentsProvider);
 
-    if (!isActive(LabsFeature.pinsEditor)) {
-      return Visibility(
-        visible: pinEdit.editMode,
-        replacement: Html(
-          key: PinItem.descriptionFieldKey,
-          data: _descriptionController.text,
-          renderNewlines: true,
-          padding: const EdgeInsets.all(8),
-        ),
-        child: Column(
+    return attachments.when(
+      data: (list) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            MdEditorWithPreview(
-              key: PinItem.markdownEditorKey,
-              controller: _descriptionController,
-            ),
-            Visibility(
-              visible: pinEdit.editMode,
+            Padding(
+              padding: const EdgeInsets.all(8),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  OutlinedButton(
-                    onPressed: () => pinEditNotifier.setEditMode(false),
-                    child: const Text('Cancel'),
-                  ),
+                children: [
+                  Text('Attachments', style: attachmentTitleTextStyle),
                   const SizedBox(width: 5),
-                  ElevatedButton(
-                    key: PinItem.saveBtnKey,
-                    onPressed: () async {
-                      pinEditNotifier.setEditMode(false);
-                      pinEditNotifier.setMarkdown(_descriptionController.text);
-                      pinEditNotifier.setLink(_linkController.text);
-                      await pinEditNotifier.onSave();
-                    },
-                    child: const Text('Save'),
-                  ),
+                  const Icon(Atlas.paperclip_attachment_thin, size: 14),
+                  const SizedBox(width: 5),
+                  Text('${list.length}'),
                 ],
               ),
             ),
+            Wrap(
+              spacing: 5.0,
+              runSpacing: 10.0,
+              children: <Widget>[
+                if (list.isNotEmpty)
+                  for (var item in list)
+                    AttachmentTypeHandler(
+                      attachment: item,
+                      pin: widget.pin,
+                    ),
+                for (var item in selectedAttachments)
+                  _buildSelectedAttachment(item),
+                if (pinEdit.editMode) _buildAddAttachment(),
+                Visibility(
+                  visible: list.isEmpty && !pinEdit.editMode,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('No attachments', style: noAttachmentTextStyle),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+      error: (err, st) => Text('Error loading attachments $err'),
+      loading: () => const Skeletonizer(
+        child: Wrap(
+          spacing: 5.0,
+          runSpacing: 10.0,
+          children: [],
+        ),
+      ),
+    );
+  }
+
+  // selected attachment UI
+  Widget _buildSelectedAttachment(SelectedAttachment item) {
+    final pinEdit = ref.watch(pinEditProvider(widget.pin));
+    final attachmentNotifier =
+        ref.watch(selectedPinAttachmentsProvider.notifier);
+    return Stack(
+      children: <Widget>[
+        AttachmentContainer(
+          pin: widget.pin,
+          filename: item.file.path.split('/').last,
+          child: attachmentIconHandler(item.file, 20),
+        ),
+        Visibility(
+          visible: pinEdit.editMode,
+          child: Positioned(
+            top: -15,
+            right: -15,
+            child: IconButton(
+              onPressed: () {
+                var files = ref.read(selectedPinAttachmentsProvider);
+                files.remove(item);
+                attachmentNotifier.update((state) => [...files]);
+              },
+              icon: const Icon(Atlas.xmark_circle_thin, size: 12),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // add attachment container UI
+  Widget _buildAddAttachment() {
+    final containerColor = Theme.of(context).colorScheme.background;
+    final iconColor = Theme.of(context).colorScheme.secondary;
+    final iconTextStyle = Theme.of(context).textTheme.labelLarge;
+
+    return InkWell(
+      onTap: () => PinUtils.showAttachmentSelection(context, ref),
+      child: Container(
+        height: 100,
+        width: 100,
+        decoration: BoxDecoration(
+          color: containerColor,
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(Icons.add, color: iconColor),
+            Text('Add', style: iconTextStyle!.copyWith(color: iconColor)),
           ],
         ),
-      );
+      ),
+    );
+  }
+}
+
+// pin content UI widget
+class _PinDescriptionWidget extends ConsumerStatefulWidget {
+  const _PinDescriptionWidget({
+    required this.pin,
+    required this.descriptionController,
+    required this.linkController,
+    required this.formkey,
+  });
+
+  final ActerPin pin;
+  final TextEditingController descriptionController;
+  final TextEditingController linkController;
+  final GlobalKey<FormState> formkey;
+
+  @override
+  ConsumerState<_PinDescriptionWidget> createState() =>
+      _PinDescriptionWidgetConsumerState();
+}
+
+class _PinDescriptionWidgetConsumerState
+    extends ConsumerState<_PinDescriptionWidget> {
+  late EditorState textEditorState;
+
+  @override
+  void initState() {
+    super.initState();
+    final content = widget.pin.content();
+    if (content != null) {
+      textEditorState =
+          EditorState(document: ActerDocumentHelpers.fromMsgContent(content));
     } else {
-      final content = widget.pin.content();
-      return Container(
-        height: MediaQuery.of(context).size.height * 0.6,
-        margin: const EdgeInsets.symmetric(vertical: 8),
-        decoration: BoxDecoration(
-          color: pinEdit.editMode
-              ? Theme.of(context).colorScheme.primaryContainer
-              : null,
-          borderRadius: BorderRadius.circular(12),
+      textEditorState = EditorState.blank();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final pinEdit = ref.watch(pinEditProvider(widget.pin));
+    final pinEditNotifier = ref.watch(pinEditProvider(widget.pin).notifier);
+
+    return Column(
+      children: <Widget>[
+        Container(
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: pinEdit.editMode
+                ? Theme.of(context).colorScheme.primaryContainer
+                : null,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.4,
+          ),
+          child: HtmlEditor(
+            key: PinItem.descriptionFieldKey,
+            shrinkWrap: true,
+            editable: pinEdit.editMode,
+            editorState: textEditorState,
+            onChanged: (body, html) {
+              final document = html != null
+                  ? ActerDocumentHelpers.fromHtml(html)
+                  : ActerDocumentHelpers.fromMarkdown(body);
+              textEditorState = EditorState(document: document);
+            },
+          ),
         ),
-        constraints:
-            BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
-        child: HtmlEditor(
-          key: PinItem.richTextEditorKey,
-          editable: pinEdit.editMode,
-          editorState: content != null
-              ? EditorState(
-                  document: ActerDocumentHelpers.fromMsgContent(content),
-                )
-              : null,
-          footer: pinEdit.editMode ? null : const SizedBox(),
-          onCancel: () => pinEditNotifier.setEditMode(false),
-          onSave: (plain, htmlBody) async {
-            if (_formkey.currentState!.validate()) {
+        _ActionButtonsWidget(
+          pin: widget.pin,
+          onSave: () async {
+            if (widget.formkey.currentState!.validate()) {
               pinEditNotifier.setEditMode(false);
-              pinEditNotifier.setLink(_linkController.text);
-              pinEditNotifier.setMarkdown(plain);
-              if (htmlBody != null) {
-                pinEditNotifier.setHtml(htmlBody);
-              }
+              final htmlText = textEditorState.intoHtml();
+              final plainText = textEditorState.intoMarkdown();
+              pinEditNotifier.setHtml(htmlText);
+              pinEditNotifier.setMarkdown(plainText);
+              pinEditNotifier.setLink(widget.linkController.text);
               await pinEditNotifier.onSave();
             }
           },
         ),
-      );
-    }
+      ],
+    );
+  }
+}
+
+// cancel submit buttons for create pin
+class _ActionButtonsWidget extends ConsumerWidget {
+  const _ActionButtonsWidget({
+    required this.pin,
+    required this.onSave,
+  });
+  final ActerPin pin;
+  final void Function()? onSave;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final pinEdit = ref.watch(pinEditProvider(pin));
+    final pinEditNotifier = ref.watch(pinEditProvider(pin).notifier);
+    return Visibility(
+      visible: pinEdit.editMode,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          OutlinedButton(
+            onPressed: () => pinEditNotifier.setEditMode(false),
+            child: const Text('Cancel'),
+          ),
+          const SizedBox(width: 5),
+          ElevatedButton(
+            key: PinItem.saveBtnKey,
+            onPressed: onSave,
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
   }
 }

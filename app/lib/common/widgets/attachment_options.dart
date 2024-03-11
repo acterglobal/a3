@@ -2,13 +2,13 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
-class ChatAttachmentOptions extends StatelessWidget {
+class AttachmentOptions extends StatelessWidget {
   final VoidCallback? onTapCamera;
   final VoidCallback? onTapImage;
   final VoidCallback? onTapVideo;
   final VoidCallback? onTapFile;
 
-  const ChatAttachmentOptions({
+  const AttachmentOptions({
     super.key,
     this.onTapCamera,
     this.onTapImage,

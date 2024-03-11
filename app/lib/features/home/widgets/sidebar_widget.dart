@@ -61,7 +61,7 @@ class SidebarWidget extends ConsumerWidget {
               key: Keys.avatar,
               margin: const EdgeInsets.only(top: 8),
               child: InkWell(
-                onTap: () => context.pushNamed(Routes.myProfile.name),
+                onTap: () => context.goNamed(Routes.settings.name),
                 child: const UserAvatarWidget(size: 20),
               ),
             ),

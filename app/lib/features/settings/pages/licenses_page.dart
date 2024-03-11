@@ -1,5 +1,5 @@
 import 'package:acter/common/widgets/with_sidebar.dart';
-import 'package:acter/features/settings/widgets/settings_menu.dart';
+import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:flutter/material.dart';
 
 class SettingsLicensesPage extends StatelessWidget {
@@ -7,6 +7,6 @@ class SettingsLicensesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const WithSidebar(sidebar: SettingsMenu(), child: LicensePage());
+    return const WithSidebar(sidebar: SettingsPage(), child: LicensePage());
   }
 }

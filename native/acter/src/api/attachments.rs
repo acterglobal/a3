@@ -237,6 +237,15 @@ impl AttachmentsManager {
         *self.stats().total_attachments_count()
     }
 
+    pub async fn reload(&self) -> Result<AttachmentsManager> {
+        AttachmentsManager::new(
+            self.client.clone(),
+            self.room.clone(),
+            self.inner.event_id(),
+        )
+        .await
+    }
+
     pub async fn attachments(&self) -> Result<Vec<Attachment>> {
         let manager = self.inner.clone();
         let client = self.client.clone();

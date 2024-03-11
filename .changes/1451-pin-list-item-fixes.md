@@ -1,3 +1,0 @@
-- Pins:
-  - Includes various improvements on spacing, padding on pin item card .i.e. pins overview and space pins overview.
-  - Pin item card in pins overview and space pins overview will show pin content description.

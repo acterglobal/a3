@@ -666,81 +666,19 @@ class Api {
     return tmp1;
   }
 
-  bool wouldLog(
-    String target,
-    String level,
-  ) {
-    final tmp0 = target;
-    final tmp4 = level;
-    var tmp1 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    var tmp6 = 0;
-    var tmp7 = 0;
-    final tmp0_0 = utf8.encode(tmp0);
-    tmp2 = tmp0_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
-    final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
-    tmp1_1.setAll(0, tmp0_0);
-    tmp1 = tmp1_0.address;
-    tmp3 = tmp2;
-    final tmp4_0 = utf8.encode(tmp4);
-    tmp6 = tmp4_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp5_0 = this.__allocate(tmp6 * 1, 1);
-    final Uint8List tmp5_1 = tmp5_0.asTypedList(tmp6);
-    tmp5_1.setAll(0, tmp4_0);
-    tmp5 = tmp5_0.address;
-    tmp7 = tmp6;
-    final tmp8 = _wouldLog(
-      tmp1,
-      tmp2,
-      tmp3,
-      tmp5,
-      tmp6,
-      tmp7,
-    );
-    final tmp10 = tmp8;
-    final tmp9 = tmp10 > 0;
-    return tmp9;
-  }
-
-  /// Log the entry to the rust logging
+  /// Allow flutter to call logging on rust side
   void writeLog(
-    String target,
+    String text,
     String level,
-    String message,
-    String? file,
-    int? line,
-    String? modulePath,
   ) {
-    final tmp0 = target;
+    final tmp0 = text;
     final tmp4 = level;
-    final tmp8 = message;
-    final tmp12 = file;
-    final tmp18 = line;
-    final tmp22 = modulePath;
     var tmp1 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
     var tmp5 = 0;
     var tmp6 = 0;
     var tmp7 = 0;
-    var tmp9 = 0;
-    var tmp10 = 0;
-    var tmp11 = 0;
-    var tmp13 = 0;
-    var tmp15 = 0;
-    var tmp16 = 0;
-    var tmp17 = 0;
-    var tmp19 = 0;
-    var tmp21 = 0;
-    var tmp23 = 0;
-    var tmp25 = 0;
-    var tmp26 = 0;
-    var tmp27 = 0;
     final tmp0_0 = utf8.encode(tmp0);
     tmp2 = tmp0_0.length;
 
@@ -757,70 +695,30 @@ class Api {
     tmp5_1.setAll(0, tmp4_0);
     tmp5 = tmp5_0.address;
     tmp7 = tmp6;
-    final tmp8_0 = utf8.encode(tmp8);
-    tmp10 = tmp8_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp9_0 = this.__allocate(tmp10 * 1, 1);
-    final Uint8List tmp9_1 = tmp9_0.asTypedList(tmp10);
-    tmp9_1.setAll(0, tmp8_0);
-    tmp9 = tmp9_0.address;
-    tmp11 = tmp10;
-    if (tmp12 == null) {
-      tmp13 = 0;
-    } else {
-      tmp13 = 1;
-      final tmp14 = tmp12;
-      final tmp14_0 = utf8.encode(tmp14);
-      tmp16 = tmp14_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp15_0 = this.__allocate(tmp16 * 1, 1);
-      final Uint8List tmp15_1 = tmp15_0.asTypedList(tmp16);
-      tmp15_1.setAll(0, tmp14_0);
-      tmp15 = tmp15_0.address;
-      tmp17 = tmp16;
-    }
-    if (tmp18 == null) {
-      tmp19 = 0;
-    } else {
-      tmp19 = 1;
-      final tmp20 = tmp18;
-      tmp21 = tmp20;
-    }
-    if (tmp22 == null) {
-      tmp23 = 0;
-    } else {
-      tmp23 = 1;
-      final tmp24 = tmp22;
-      final tmp24_0 = utf8.encode(tmp24);
-      tmp26 = tmp24_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp25_0 = this.__allocate(tmp26 * 1, 1);
-      final Uint8List tmp25_1 = tmp25_0.asTypedList(tmp26);
-      tmp25_1.setAll(0, tmp24_0);
-      tmp25 = tmp25_0.address;
-      tmp27 = tmp26;
-    }
-    _writeLog(
+    final tmp8 = _writeLog(
       tmp1,
       tmp2,
       tmp3,
       tmp5,
       tmp6,
       tmp7,
-      tmp9,
-      tmp10,
-      tmp11,
-      tmp13,
-      tmp15,
-      tmp16,
-      tmp17,
-      tmp19,
-      tmp21,
-      tmp23,
-      tmp25,
-      tmp26,
-      tmp27,
     );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    final tmp12 = tmp8.arg2;
+    final tmp13 = tmp8.arg3;
+    if (tmp10 == 0) {
+      debugAllocation("handle error", tmp11, tmp12);
+      final ffi.Pointer<ffi.Uint8> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+      final tmp10_0 =
+          utf8.decode(tmp11_0.asTypedList(tmp12), allowMalformed: true);
+      if (tmp12 > 0) {
+        final ffi.Pointer<ffi.Void> tmp11_0;
+        tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+        this.__deallocate(tmp11_0, tmp13, 1);
+      }
+      throw tmp10_0;
+    }
     return;
   }
 
@@ -3047,6 +2945,54 @@ class Api {
     final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionRsvpStatus");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp7 = OptionRsvpStatus._(this, tmp13_1);
+    return tmp7;
+  }
+
+  FfiListFfiString? __calendarEventParticipantsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _calendarEventParticipantsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListFfiString");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListFfiString._(this, tmp13_1);
+    final tmp7 = tmp14;
     return tmp7;
   }
 
@@ -6093,6 +6039,53 @@ class Api {
     final tmp13_1 = _Box(this, tmp13_0, "drop_box_AttachmentDraft");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp7 = AttachmentDraft._(this, tmp13_1);
+    return tmp7;
+  }
+
+  AttachmentsManager? __attachmentsManagerReloadFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _attachmentsManagerReloadFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_AttachmentsManager");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = AttachmentsManager._(this, tmp13_1);
     return tmp7;
   }
 
@@ -13034,6 +13027,39 @@ class Api {
     return tmp9;
   }
 
+  bool? __attachmentsManagerSubscribeStreamStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _attachmentsManagerSubscribeStreamStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final tmp9 = tmp11 > 0;
+    return tmp9;
+  }
+
   bool? __taskSubscribeStreamStreamPoll(
     int boxed,
     int postCobject,
@@ -13650,65 +13676,19 @@ class Api {
 
   late final _rotateLogFile =
       _rotateLogFilePtr.asFunction<_RotateLogFileReturn Function()>();
-  late final _wouldLogPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Uint8 Function(
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__would_log");
-
-  late final _wouldLog = _wouldLogPtr.asFunction<
-      int Function(
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-      )>();
   late final _writeLogPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(
+          _WriteLogReturn Function(
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-            ffi.Uint8,
-            ffi.Uint32,
-            ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
           )>>("__write_log");
 
   late final _writeLog = _writeLogPtr.asFunction<
-      void Function(
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
+      _WriteLogReturn Function(
         int,
         int,
         int,
@@ -15711,6 +15691,17 @@ class Api {
 
   late final _calendarEventRespondedByMe =
       _calendarEventRespondedByMePtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _calendarEventParticipantsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__CalendarEvent_participants");
+
+  late final _calendarEventParticipants =
+      _calendarEventParticipantsPtr.asFunction<
           int Function(
             int,
           )>();
@@ -18276,6 +18267,28 @@ class Api {
       _attachmentsManagerContentDraftPtr.asFunction<
           int Function(
             int,
+            int,
+          )>();
+  late final _attachmentsManagerReloadPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__AttachmentsManager_reload");
+
+  late final _attachmentsManagerReload =
+      _attachmentsManagerReloadPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _attachmentsManagerSubscribeStreamPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__AttachmentsManager_subscribe_stream");
+
+  late final _attachmentsManagerSubscribeStream =
+      _attachmentsManagerSubscribeStreamPtr.asFunction<
+          int Function(
             int,
           )>();
   late final _taskTitlePtr = _lookup<
@@ -24332,6 +24345,21 @@ class Api {
             int,
             int,
           )>();
+  late final _calendarEventParticipantsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _CalendarEventParticipantsFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__CalendarEvent_participants_future_poll");
+
+  late final _calendarEventParticipantsFuturePoll =
+      _calendarEventParticipantsFuturePollPtr.asFunction<
+          _CalendarEventParticipantsFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _calendarEventUpdateBuilderSendFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _CalendarEventUpdateBuilderSendFuturePollReturn Function(
@@ -25297,6 +25325,21 @@ class Api {
   late final _attachmentsManagerContentDraftFuturePoll =
       _attachmentsManagerContentDraftFuturePollPtr.asFunction<
           _AttachmentsManagerContentDraftFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _attachmentsManagerReloadFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentsManagerReloadFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__AttachmentsManager_reload_future_poll");
+
+  late final _attachmentsManagerReloadFuturePoll =
+      _attachmentsManagerReloadFuturePollPtr.asFunction<
+          _AttachmentsManagerReloadFuturePollReturn Function(
             int,
             int,
             int,
@@ -27527,6 +27570,23 @@ class Api {
   late final _timelineStreamMessagesStreamStreamPoll =
       _timelineStreamMessagesStreamStreamPollPtr.asFunction<
           _TimelineStreamMessagesStreamStreamPollReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _attachmentsManagerSubscribeStreamStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentsManagerSubscribeStreamStreamPollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__AttachmentsManager_subscribe_stream_stream_poll");
+
+  late final _attachmentsManagerSubscribeStreamStreamPoll =
+      _attachmentsManagerSubscribeStreamStreamPollPtr.asFunction<
+          _AttachmentsManagerSubscribeStreamStreamPollReturn Function(
             int,
             int,
             int,
@@ -32671,6 +32731,23 @@ class CalendarEvent {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 =
         _nativeFuture(tmp3_1, _api.__calendarEventRespondedByMeFuturePoll);
+    return tmp2;
+  }
+
+  /// get the user id list who have responded with `Yes` on this event
+  Future<FfiListFfiString> participants() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._calendarEventParticipants(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__CalendarEvent_participants_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__calendarEventParticipantsFuturePoll);
     return tmp2;
   }
 
@@ -38104,6 +38181,39 @@ class AttachmentsManager {
     final tmp4 =
         _nativeFuture(tmp5_1, _api.__attachmentsManagerContentDraftFuturePoll);
     return tmp4;
+  }
+
+  Future<AttachmentsManager> reload() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentsManagerReload(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__AttachmentsManager_reload_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__attachmentsManagerReloadFuturePoll);
+    return tmp2;
+  }
+
+  /// subscribe to the changes of this model key
+  Stream<bool> subscribeStream() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentsManagerSubscribeStream(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__AttachmentsManager_subscribe_stream_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeStream(
+        tmp3_1, _api.__attachmentsManagerSubscribeStreamStreamPoll);
+    return tmp2;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -49575,6 +49685,17 @@ class _RotateLogFileReturn extends ffi.Struct {
   external int arg6;
 }
 
+class _WriteLogReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
 class _ParseMarkdownReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -52140,6 +52261,21 @@ class _CalendarEventRespondedByMeFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _CalendarEventParticipantsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _CalendarEventUpdateBuilderSendFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -53109,6 +53245,21 @@ class _AttachmentsManagerAttachmentsFuturePollReturn extends ffi.Struct {
 }
 
 class _AttachmentsManagerContentDraftFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _AttachmentsManagerReloadFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -55355,6 +55506,13 @@ class _TimelineStreamMessagesStreamStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
+  external int arg1;
+}
+
+class _AttachmentsManagerSubscribeStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
   external int arg1;
 }
 

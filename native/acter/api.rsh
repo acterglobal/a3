@@ -17,11 +17,8 @@ fn set_proxy(proxy: Option<string>);
 /// Rotate the logging file
 fn rotate_log_file() -> Result<string>;
 
-// would this get logged?
-fn would_log(target: string, level: string) -> bool;
-
-/// Log the entry to the rust logging
-fn write_log(target: string, level: string, message: string, file: Option<string>, line: Option<u32>, module_path: Option<string>);
+/// Allow flutter to call logging on rust side
+fn write_log(text: string, level: string) -> Result<()>;
 
 /// Create a new client for homeserver at url with storage at data_path
 fn login_new_client(base_path: string, media_cache_base_path: string, username: string, password: string, default_homeserver_name: string, default_homeserver_url: string, device_name: Option<string>) -> Future<Result<Client>>;
@@ -581,6 +578,8 @@ object CalendarEvent {
     fn reactions() -> Future<Result<ReactionManager>>;
     /// get my RSVP status, one of Yes/Maybe/No or None
     fn responded_by_me() -> Future<Result<OptionRsvpStatus>>;
+    /// get the user id list who have responded with `Yes` on this event
+    fn participants() -> Future<Result<Vec<string>>>;
 }
 
 object CalendarEventUpdateBuilder {
@@ -1330,6 +1329,12 @@ object AttachmentsManager {
 
     /// create news slide for image msg
     fn content_draft(base_draft: MsgContentDraft) -> Future<Result<AttachmentDraft>>;
+
+    // inform about the changes to this manager
+    fn reload() -> Future<Result<AttachmentsManager>>;
+
+    /// subscribe to the changes of this model key
+    fn subscribe_stream() -> Stream<bool>;
 }
 
 

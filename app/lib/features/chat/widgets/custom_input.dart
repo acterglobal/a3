@@ -1,15 +1,17 @@
 import 'dart:io';
 
+import 'package:acter/common/dialogs/attachment_confirmation.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
 import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/chat/chat_utils/chat_utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter/features/chat/widgets/chat_attachment_options.dart';
+import 'package:acter/common/widgets/attachment_options.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
 import 'package:acter/features/chat/widgets/mention_profile_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -33,8 +35,6 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::chat::custom_input');
-
-enum ChatAttachmentType { camera, image, audio, video, file }
 
 // keep track of text controller values across rooms.
 final _textValuesProvider =
@@ -337,16 +337,23 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                               topLeft: Radius.circular(20),
                             ),
                           ),
-                          builder: (ctx) => ChatAttachmentOptions(
+                          builder: (ctx) => AttachmentOptions(
                             onTapCamera: () async {
                               XFile? imageFile = await ImagePicker()
                                   .pickImage(source: ImageSource.camera);
                               if (imageFile != null) {
                                 List<File> files = [File(imageFile.path)];
-                                handleAttachment(
-                                  ref,
+                                final mimeType =
+                                    lookupMimeType(files.first.path);
+                                if (!context.mounted) {
+                                  return;
+                                }
+                                attachmentConfirmationDialog(
+                                  context,
                                   files,
-                                  ChatAttachmentType.camera,
+                                  _FileWidget(mimeType, files.first),
+                                  handleFileUpload,
+                                  AttachmentType.camera,
                                 );
                               }
                             },
@@ -355,10 +362,17 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                                   .pickImage(source: ImageSource.gallery);
                               if (imageFile != null) {
                                 List<File> files = [File(imageFile.path)];
-                                handleAttachment(
-                                  ref,
+                                final mimeType =
+                                    lookupMimeType(files.first.path);
+                                if (!context.mounted) {
+                                  return;
+                                }
+                                attachmentConfirmationDialog(
+                                  context,
                                   files,
-                                  ChatAttachmentType.image,
+                                  _FileWidget(mimeType, files.first),
+                                  handleFileUpload,
+                                  AttachmentType.image,
                                 );
                               }
                             },
@@ -367,10 +381,17 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                                   .pickVideo(source: ImageSource.gallery);
                               if (imageFile != null) {
                                 List<File> files = [File(imageFile.path)];
-                                handleAttachment(
-                                  ref,
+                                final mimeType =
+                                    lookupMimeType(files.first.path);
+                                if (!context.mounted) {
+                                  return;
+                                }
+                                attachmentConfirmationDialog(
+                                  context,
                                   files,
-                                  ChatAttachmentType.video,
+                                  _FileWidget(mimeType, files.first),
+                                  handleFileUpload,
+                                  AttachmentType.video,
                                 );
                               }
                             },
@@ -378,10 +399,17 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                               var selectedFiles = await handleFileSelection(
                                 ctx,
                               );
-                              handleAttachment(
-                                ref,
+                              final mimeType =
+                                  lookupMimeType(selectedFiles!.first.path);
+                              if (!context.mounted) {
+                                return;
+                              }
+                              attachmentConfirmationDialog(
+                                context,
                                 selectedFiles,
-                                ChatAttachmentType.file,
+                                _FileWidget(mimeType, selectedFiles.first),
+                                handleFileUpload,
+                                AttachmentType.file,
                               );
                             },
                           ),
@@ -513,61 +541,9 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     return null;
   }
 
-  void handleAttachment(
-    WidgetRef ref,
-    List<File>? selectedFiles,
-    ChatAttachmentType chatAttachmentType,
-  ) async {
-    if (context.mounted) {
-      if (selectedFiles?.isNotEmpty == true) {
-        String fileName = selectedFiles!.first.path.split('/').last;
-        final mimeType = lookupMimeType(selectedFiles.first.path);
-        showAdaptiveDialog(
-          context: context,
-          builder: (ctx) => DefaultDialog(
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    'Upload Files (${selectedFiles.length})',
-                    style: Theme.of(ctx).textTheme.titleSmall,
-                  ),
-                ),
-              ],
-            ),
-            subtitle: Visibility(
-              visible: selectedFiles.length <= 5,
-              child: _FileWidget(mimeType, selectedFiles.first),
-            ),
-            description: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(fileName, style: Theme.of(ctx).textTheme.bodySmall),
-            ),
-            actions: <Widget>[
-              OutlinedButton(
-                onPressed: () =>
-                    Navigator.of(context, rootNavigator: true).pop(),
-                child: const Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  Navigator.of(context, rootNavigator: true).pop();
-                  await handleFileUpload(selectedFiles, chatAttachmentType);
-                },
-                child: const Text('Upload'),
-              ),
-            ],
-          ),
-        );
-      }
-    }
-  }
-
   Future<void> handleFileUpload(
     List<File> files,
-    ChatAttachmentType chatAttachmentType,
+    AttachmentType attachmentType,
   ) async {
     final roomId = widget.convo.getRoomIdStr();
     final client = ref.read(alwaysClientProvider);
@@ -579,7 +555,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
         String? mimeType = lookupMimeType(file.path);
 
         if (mimeType!.startsWith('image/') &&
-            chatAttachmentType == ChatAttachmentType.image) {
+            attachmentType == AttachmentType.image) {
           final bytes = file.readAsBytesSync();
           final image = await decodeImageFromList(bytes);
           final imageDraft = client
@@ -596,7 +572,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             await stream.sendMessage(imageDraft);
           }
         } else if (mimeType.startsWith('audio/') &&
-            chatAttachmentType == ChatAttachmentType.audio) {
+            attachmentType == AttachmentType.audio) {
           final audioDraft =
               client.audioDraft(file.path, mimeType).size(file.lengthSync());
           if (inputState.repliedToMessage != null) {
@@ -608,7 +584,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             await stream.sendMessage(audioDraft);
           }
         } else if (mimeType.startsWith('video/') &&
-            chatAttachmentType == ChatAttachmentType.video) {
+            attachmentType == AttachmentType.video) {
           final videoDraft =
               client.videoDraft(file.path, mimeType).size(file.lengthSync());
           if (inputState.repliedToMessage != null) {
