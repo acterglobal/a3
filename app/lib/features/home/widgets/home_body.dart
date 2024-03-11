@@ -345,9 +345,8 @@ class HomeBodyState extends ConsumerState<HomeBody> {
 
     // [ref] https://spec.matrix.org/unstable/client-server-api/#mkeyverificationcancel
     var reason = event.getContent('reason');
-    if (reason == 'Mismatched short authentication string') {
-      reason =
-          'You cancelled verification. Start verification again from the notification.';
+    if (reason == 'Unknown cancel reason') {
+      reason = null;
     }
     // open verification.cancel dialog
     showModalBottomSheet(
