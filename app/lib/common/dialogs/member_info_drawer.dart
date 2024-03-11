@@ -1,8 +1,10 @@
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/chat/providers/create_chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,12 +14,14 @@ import 'package:go_router/go_router.dart';
 class _MemberInfoDrawer extends StatelessWidget {
   final ProfileData memberProfile;
   final String memberId;
+  final Member member;
   final String roomId;
   const _MemberInfoDrawer({
     super.key,
     required this.memberProfile,
     required this.memberId,
     required this.roomId,
+    required this.member,
   });
 
   @override
@@ -129,12 +133,13 @@ class _MemberInfoDrawer extends StatelessWidget {
             child: OutlinedButton.icon(
               icon: const Icon(Atlas.chats_thin),
               onPressed: () {
+                final profile = member.getProfile();
+                ref.read(createChatSelectedUsersProvider.notifier).state = [
+                  profile,
+                ];
                 context.pop();
                 context.pushNamed(
                   Routes.createChat.name,
-                  queryParameters: {
-                    'userId': memberId,
-                  },
                 );
               },
               label: const Text('Start DM'),
@@ -232,6 +237,7 @@ Future<void> showMemberInfoDrawer({
   required BuildContext context,
   required ProfileData memberProfile,
   required String roomId,
+  required Member member,
   required String memberId,
   Key? key = memberInfoDrawer,
 }) async {
@@ -244,6 +250,7 @@ Future<void> showMemberInfoDrawer({
     builder: (context) => _MemberInfoDrawer(
       key: key,
       roomId: roomId,
+      member: member,
       memberId: memberId,
       memberProfile: memberProfile,
     ),

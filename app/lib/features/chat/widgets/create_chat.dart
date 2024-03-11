@@ -9,6 +9,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/base_body_widget.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
+import 'package:acter/features/chat/providers/create_chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
@@ -20,10 +21,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-/// saves selected users from search result
-final _selectedUsersProvider =
-    StateProvider.autoDispose<List<ffi.UserProfile>>((ref) => []);
-
 /// Room title
 final _titleProvider = StateProvider.autoDispose<String>((ref) => '');
 // upload avatar path
@@ -33,13 +30,11 @@ class CreateChatPage extends ConsumerStatefulWidget {
   static const chatTitleKey = Key('create-chat-title');
   static const submiteKey = Key('create-chat-submit');
   final String? initialSelectedSpaceId;
-  final String? initialSelectedUserId;
   final int? initialPage;
 
   const CreateChatPage({
     super.key,
     this.initialSelectedSpaceId,
-    this.initialSelectedUserId,
     this.initialPage,
   });
 
@@ -61,7 +56,6 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
     pages = [
       _CreateChatWidget(
         controller: controller,
-        initialSelectedUserId: widget.initialSelectedUserId,
         onCreateConvo: _handleCreateConvo,
       ),
       _CreateRoomFormWidget(
@@ -223,7 +217,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
   }
 
   String _makeTitle(WidgetRef ref) {
-    final selectedUsers = ref.watch(_selectedUsersProvider).toList();
+    final selectedUsers = ref.watch(createChatSelectedUsersProvider).toList();
     if (selectedUsers.isEmpty) {
       return 'Create Group Chat';
     } else if (selectedUsers.length > 1) {
@@ -247,7 +241,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
   }
 
   Widget renderSelectedUsers(BuildContext context) {
-    final selectedUsers = ref.watch(_selectedUsersProvider).toList();
+    final selectedUsers = ref.watch(createChatSelectedUsersProvider).toList();
 
     return Visibility(
       visible: selectedUsers.isNotEmpty,
@@ -298,13 +292,14 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                       ),
                       const SizedBox(width: 10),
                       InkWell(
-                        onTap: () =>
-                            ref.read(_selectedUsersProvider.notifier).update(
-                                  (state) => [
-                                    for (int j = 0; j < state.length; j++)
-                                      if (j != index) state[j],
-                                  ],
-                                ),
+                        onTap: () => ref
+                            .read(createChatSelectedUsersProvider.notifier)
+                            .update(
+                              (state) => [
+                                for (int j = 0; j < state.length; j++)
+                                  if (j != index) state[j],
+                              ],
+                            ),
                         child: Icon(
                           Icons.close_outlined,
                           size: 18,
@@ -323,7 +318,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
   }
 
   Widget renderPrimaryAction(BuildContext context) {
-    final selectedUsers = ref.watch(_selectedUsersProvider).toList();
+    final selectedUsers = ref.watch(createChatSelectedUsersProvider).toList();
     return ListTile(
       onTap: selectedUsers.isEmpty
           ? () => widget.controller.animateToPage(
@@ -685,10 +680,10 @@ class _UserWidget extends ConsumerWidget {
     final userId = profile.userId().toString();
     return ListTile(
       onTap: () {
-        final users = ref.read(_selectedUsersProvider);
+        final users = ref.read(createChatSelectedUsersProvider);
         if (!users.contains(profile)) {
           ref
-              .read(_selectedUsersProvider.notifier)
+              .read(createChatSelectedUsersProvider.notifier)
               .update((state) => [...state, profile]);
         }
         onUp();

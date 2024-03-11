@@ -561,6 +561,7 @@ class MemberListEntry extends ConsumerWidget {
         await showMemberInfoDrawer(
           context: context,
           memberProfile: memberProfile,
+          member: member,
           roomId: roomId,
           memberId: userId,
         );

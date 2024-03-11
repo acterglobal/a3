@@ -349,7 +349,6 @@ List<RouteBase> makeGeneralRoutes() {
                 barrierDismissible: false,
                 builder: (context) => CreateChatPage(
                   initialSelectedSpaceId: state.uri.queryParameters['spaceId'],
-                  initialSelectedUserId: state.uri.queryParameters['userId'],
                   initialPage: state.extra as int?,
                 ),
               )
@@ -369,7 +368,6 @@ List<RouteBase> makeGeneralRoutes() {
                 },
                 child: CreateChatPage(
                   initialSelectedSpaceId: state.uri.queryParameters['spaceId'],
-                  initialSelectedUserId: state.uri.queryParameters['userId'],
                   initialPage: state.extra as int?,
                 ),
               );
