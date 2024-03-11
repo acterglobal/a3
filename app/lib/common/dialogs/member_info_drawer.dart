@@ -1,3 +1,4 @@
+import 'package:acter/common/dialogs/block_user_dialog.dart';
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -46,6 +47,11 @@ class _MemberInfoDrawer extends StatelessWidget {
               iconData: Atlas.block_thin,
               title: 'Block User',
               withMenu: false,
+              onTap: () async {
+                await showBlockUserDialog(context, member);
+                // ignore: use_build_context_synchronously
+                context.pop();
+              },
             ),
             const SizedBox(height: 30),
           ],

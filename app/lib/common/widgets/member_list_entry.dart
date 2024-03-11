@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:acter/common/dialogs/block_user_dialog.dart';
 import 'package:acter/common/dialogs/member_info_drawer.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
@@ -190,101 +191,7 @@ class MemberListEntry extends ConsumerWidget {
   });
 
   Future<void> blockUser(BuildContext context) async {
-    final userId = member.userId().toString();
-    await showDialog(
-      context: context,
-      builder: (BuildContext ctx) {
-        return AlertDialog(
-          title: Text('Block $userId'),
-          content: RichText(
-            textAlign: TextAlign.left,
-            text: TextSpan(
-              text: 'You are about to block $userId. ',
-              style: const TextStyle(color: Colors.white, fontSize: 24),
-              children: const <TextSpan>[
-                TextSpan(
-                  text:
-                      "Once blocked you won't see their messages anymore and it will block their attempt to contact you directly. ",
-                ),
-                TextSpan(text: 'Continue?'),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => context.pop(),
-              child: const Text('No'),
-            ),
-            TextButton(
-              onPressed: () async {
-                showAdaptiveDialog(
-                  barrierDismissible: false,
-                  context: context,
-                  builder: (context) => DefaultDialog(
-                    title: Text(
-                      'Blocking User',
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                    isLoader: true,
-                  ),
-                );
-                try {
-                  await member.ignore();
-                  if (!context.mounted) {
-                    return;
-                  }
-                  context.pop();
-
-                  showAdaptiveDialog(
-                    context: context,
-                    builder: (context) => DefaultDialog(
-                      title: Text(
-                        'User blocked. It might takes a bit before the UI reflects this update.',
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
-                      actions: <Widget>[
-                        ElevatedButton(
-                          onPressed: () {
-                            // close both dialogs
-                            context.pop();
-                            context.pop();
-                          },
-                          child: const Text('Okay'),
-                        ),
-                      ],
-                    ),
-                  );
-                } catch (err) {
-                  if (!context.mounted) {
-                    return;
-                  }
-                  showAdaptiveDialog(
-                    context: context,
-                    builder: (context) => DefaultDialog(
-                      title: Text(
-                        'Block user failed: \n $err"',
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
-                      actions: <Widget>[
-                        ElevatedButton(
-                          onPressed: () {
-                            // close both dialogs
-                            context.pop();
-                            context.pop();
-                          },
-                          child: const Text('Okay'),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-              },
-              child: const Text('Yes'),
-            ),
-          ],
-        );
-      },
-    );
+    await showBlockUserDialog(context, member);
   }
 
   Future<void> unblockUser(BuildContext context) async {
