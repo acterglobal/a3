@@ -3,8 +3,8 @@ import 'dart:math';
 
 import 'package:acter/common/models/sync_state/sync_state.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/cross_signing/cross_signing.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
-import 'package:events_emitter/events_emitter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -21,11 +21,7 @@ class SyncNotifier extends StateNotifier<SyncState> {
   late Stream<String> _errorListener;
   late StreamSubscription<String> _errorPoller;
   Timer? _retryTimer;
-
-  late EventEmitter verifEmitter;
-  String? activeVerifId;
-  late Stream<ffi.VerificationEvent>? _verifListener;
-  late StreamSubscription<ffi.VerificationEvent>? _verifPoller;
+  late CrossSigning crossSigning;
 
   SyncNotifier(this.client, this.ref)
       : super(const SyncState(initialSync: true)) {
@@ -53,45 +49,8 @@ class SyncNotifier extends StateNotifier<SyncState> {
 
   void _restartSync() {
     _log.info('restart sync');
-    verifEmitter = EventEmitter();
-    _verifListener = client.verificationEventRx(); // keep it resident in memory
-    _verifPoller = _verifListener?.listen((event) {
-      String eventType = event.eventType();
-      _log.info('$eventType - flow_id: ${event.flowId()}');
-      switch (eventType) {
-        case 'm.key.verification.request':
-          verifEmitter.emit('verification.request', event);
-          break;
-        case 'm.key.verification.ready':
-          verifEmitter.emit('verification.ready', event);
-          break;
-        // case 'm.key.verification.start':
-        case 'SasState::Started':
-          verifEmitter.emit('verification.start', event);
-          break;
-        // case 'm.key.verification.cancel':
-        case 'SasState::Cancelled':
-          verifEmitter.emit('verification.cancel', event);
-          break;
-        // case 'm.key.verification.accept':
-        case 'SasState::Accepted':
-          verifEmitter.emit('verification.accept', event);
-          break;
-        // case 'm.key.verification.key':
-        case 'SasState::KeysExchanged':
-          verifEmitter.emit('verification.key', event);
-          break;
-        // case 'm.key.verification.mac':
-        case 'SasState::Confirmed':
-          verifEmitter.emit('verification.mac', event);
-          break;
-        // case 'm.key.verification.done':
-        case 'SasState::Done':
-          verifEmitter.emit('verification.done', event);
-          break;
-      }
-    });
-    ref.onDispose(() => _verifPoller?.cancel());
+
+    crossSigning = CrossSigning(client, ref);
 
     syncState = client.startSync();
     if (_retryTimer != null) {
@@ -135,13 +94,5 @@ class SyncNotifier extends StateNotifier<SyncState> {
       }
     });
     ref.onDispose(() => _errorPoller.cancel());
-  }
-
-  bool isActiveVerif() {
-    return activeVerifId != null;
-  }
-
-  bool isPassiveVerif() {
-    return activeVerifId == null;
   }
 }

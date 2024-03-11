@@ -144,8 +144,8 @@ class SessionCard extends ConsumerWidget {
     final devId = deviceRecord.deviceId().toString();
     final client = ref.read(alwaysClientProvider);
     final manager = client.sessionManager();
-    final notifier = ref.read(syncStateProvider.notifier);
+    final crossSigning = ref.read(syncStateProvider.notifier).crossSigning;
     final verifId = await manager.requestVerification(devId);
-    notifier.verifEmitter.emit('verification.launch', verifId);
+    crossSigning.emitEvent<String>('verification.launch', verifId);
   }
 }
