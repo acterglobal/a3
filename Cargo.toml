@@ -8,35 +8,35 @@ members = [
 default-members = ["native/acter"]
 
 [workspace.dependencies.matrix-sdk]
-git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "cced512ad4a5d3d9b767ac0eb7e5065ac0e773bc"
+git = "https://github.com/acterglobal/matrix-rust-sdk"
+rev = "898e8e149ca35c608fb1787ab312e05e3c2f6a5f"
 default-features = false
 features = ["experimental-sliding-sync"]
 
 [workspace.dependencies.matrix-sdk-base]
-git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "cced512ad4a5d3d9b767ac0eb7e5065ac0e773bc"
+git = "https://github.com/acterglobal/matrix-rust-sdk"
+rev = "898e8e149ca35c608fb1787ab312e05e3c2f6a5f"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-sqlite]
-git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "cced512ad4a5d3d9b767ac0eb7e5065ac0e773bc"
+git = "https://github.com/acterglobal/matrix-rust-sdk"
+rev = "898e8e149ca35c608fb1787ab312e05e3c2f6a5f"
 default-features = false
 features = ["crypto-store", "state-store"]
 
 [workspace.dependencies.matrix-sdk-store-encryption]
-git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "cced512ad4a5d3d9b767ac0eb7e5065ac0e773bc"
+git = "https://github.com/acterglobal/matrix-rust-sdk"
+rev = "898e8e149ca35c608fb1787ab312e05e3c2f6a5f"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-test]
-git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "cced512ad4a5d3d9b767ac0eb7e5065ac0e773bc"
+git = "https://github.com/acterglobal/matrix-rust-sdk"
+rev = "898e8e149ca35c608fb1787ab312e05e3c2f6a5f"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-ui]
-git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "cced512ad4a5d3d9b767ac0eb7e5065ac0e773bc"
+git = "https://github.com/acterglobal/matrix-rust-sdk"
+rev = "898e8e149ca35c608fb1787ab312e05e3c2f6a5f"
 default-features = false
 features = ["e2e-encryption"]
 

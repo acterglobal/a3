@@ -1995,6 +1995,15 @@ impl RoomMessage {
                 }
                 result
             }
+            TimelineItemContent::CallInvite => {
+                RoomEventItem::new(
+                    evt_id,
+                    txn_id,
+                    sender,
+                    origin_server_ts,
+                    "m.call.invite".to_string(),
+                )
+            }
         };
         if event.is_local_echo() {
             if let Some(send_state) = event.send_state() {
