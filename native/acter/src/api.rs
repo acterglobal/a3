@@ -30,7 +30,6 @@ mod device;
 mod invitation;
 mod message;
 mod news;
-mod notifications;
 mod pins;
 mod profile;
 mod push;
@@ -90,7 +89,6 @@ pub use device::{DeviceChangedEvent, DeviceNewEvent};
 pub use invitation::Invitation;
 pub use message::{EventSendState, RoomEventItem, RoomMessage, RoomVirtualItem};
 pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide, NewsSlideDraft};
-pub use notifications::{Notification, NotificationListResult};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::{RoomProfile, UserProfile};
 pub use push::{

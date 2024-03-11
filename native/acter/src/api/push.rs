@@ -42,10 +42,7 @@ use ruma_events::{
 };
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 
-use super::{
-    message::{any_sync_event_to_message, sync_event_to_message},
-    Client,
-};
+use super::Client;
 
 use crate::{api::api::FfiBuffer, MsgContent, RoomMessage, RUNTIME};
 
