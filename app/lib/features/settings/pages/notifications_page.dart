@@ -1,6 +1,7 @@
 import 'package:acter/common/notifications/notifications.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/settings/widgets/app_notifications_settings_tile.dart';
 import 'package:acter/features/settings/widgets/labs_notifications_settings_tile.dart';
 import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
@@ -9,7 +10,6 @@ import 'package:acter/features/settings/widgets/settings_section_with_title_acti
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
-import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -74,7 +74,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return WithSidebar(
-      sidebar: const SettingsMenu(),
+      sidebar: const SettingsPage(),
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: const AppBarTheme().backgroundColor,
