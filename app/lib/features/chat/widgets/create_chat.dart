@@ -33,11 +33,13 @@ class CreateChatPage extends ConsumerStatefulWidget {
   static const chatTitleKey = Key('create-chat-title');
   static const submiteKey = Key('create-chat-submit');
   final String? initialSelectedSpaceId;
+  final String? initialSelectedUserId;
   final int? initialPage;
 
   const CreateChatPage({
     super.key,
     this.initialSelectedSpaceId,
+    this.initialSelectedUserId,
     this.initialPage,
   });
 
@@ -59,6 +61,7 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
     pages = [
       _CreateChatWidget(
         controller: controller,
+        initialSelectedUserId: widget.initialSelectedUserId,
         onCreateConvo: _handleCreateConvo,
       ),
       _CreateRoomFormWidget(

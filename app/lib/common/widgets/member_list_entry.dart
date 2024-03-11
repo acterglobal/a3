@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:acter/common/dialogs/member_info_drawer.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
@@ -552,6 +553,18 @@ class MemberListEntry extends ConsumerWidget {
       trailing.add(submenu(context, ref));
     }
     return ListTile(
+      onTap: () async {
+        final memberProfile =
+            await ref.watch(memberProfileProvider(member).future);
+        final roomId = space?.getRoomIdStr() ?? convo!.getRoomIdStr();
+        // ignore: use_build_context_synchronously
+        await showMemberInfoDrawer(
+          context: context,
+          memberProfile: memberProfile,
+          roomId: roomId,
+          memberId: userId,
+        );
+      },
       leading: profile.when(
         data: (data) => ActerAvatar(
           mode: DisplayMode.DM,
