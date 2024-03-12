@@ -578,6 +578,8 @@ object CalendarEvent {
     fn reactions() -> Future<Result<ReactionManager>>;
     /// get my RSVP status, one of Yes/Maybe/No or None
     fn responded_by_me() -> Future<Result<OptionRsvpStatus>>;
+    /// get the user id list who have responded with `Yes` on this event
+    fn participants() -> Future<Result<Vec<string>>>;
 }
 
 object CalendarEventUpdateBuilder {
@@ -840,9 +842,6 @@ object RoomMessage {
     /// one of event/virtual
     fn item_type() -> string;
 
-    /// room ID of this event
-    fn room_id() -> RoomId;
-
     /// valid only if item_type is "event"
     fn event_item() -> Option<RoomEventItem>;
 
@@ -1061,6 +1060,9 @@ object TimelineStream {
     /// Fires whenever new diff found
     fn messages_stream() -> Stream<RoomMessageDiff>;
 
+    /// get the specific message identified by the event_id
+    fn get_message(event_id: string) -> Future<Result<RoomMessage>>;
+
     /// Get the next count messages backwards, and return whether it has more items
     fn paginate_backwards(count: u16) -> Future<Result<bool>>;
 
@@ -1212,9 +1214,6 @@ object Convo {
 
     /// whether this room is encrypted one
     fn is_encrypted() -> Future<Result<bool>>;
-
-    /// get original of reply msg
-    fn get_message(event_id: string) -> Future<Result<RoomMessage>>;
 
     /// redact any message (including text/image/file and reaction)
     /// sender_id refers to the user that sent original msg
@@ -2105,25 +2104,6 @@ object PublicSearchResult {
 //  ##    ##  #######     ##    #### ##       ####  ######  ##     ##    ##    ####  #######  ##    ##  ######  
 
 
-object Notification {
-    fn read() -> bool;
-    // fn room_id() -> OwnedRoomId;
-    fn room_id_str() -> string;
-    fn has_room() -> bool;
-    fn is_space() -> bool;
-    fn is_acter_space() -> bool;
-    fn space() -> Future<Result<Space>>;
-    fn room_message() -> Option<RoomMessage>;
-    fn convo() -> Future<Result<Convo>>;
-}
-
-object NotificationListResult {
-    /// to be used for the next `since`
-    fn next_batch() -> Option<string>;
-    /// get the chunk of items in this response
-    fn notifications() -> Future<Result<Vec<Notification>>>;
-}
-
 object NotificationSender {
     fn user_id() -> string;
     fn display_name() -> Option<string>;
@@ -2423,12 +2403,6 @@ object Client {
 
     /// Fetch the RSVP or use its event_id to wait for it to come down the wire
     fn wait_for_rsvp(key: string, timeout: Option<u8>) -> Future<Result<Rsvp>>;
-
-    /// list the currently queued notifications
-    fn list_notifications(since: Option<string>, only: Option<string>) -> Future<Result<NotificationListResult>>;
-
-    /// listen to incoming notifications
-    fn notifications_stream() -> Stream<Notification>;
 
     /// install the default acter push rules for fallback
     fn install_default_acter_push_rules() -> Future<Result<bool>>;

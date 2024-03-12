@@ -2,7 +2,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/settings/widgets/labs_notifications_settings_tile.dart';
-import 'package:acter/features/settings/widgets/settings_menu.dart';
+import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter/material.dart';
@@ -17,7 +17,7 @@ class SettingsLabsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return WithSidebar(
-      sidebar: const SettingsMenu(),
+      sidebar: const SettingsPage(),
       child: Scaffold(
         appBar: AppBar(title: const Text('Acter Labs')),
         body: SettingsList(
@@ -76,25 +76,6 @@ class SettingsLabsPage extends ConsumerWidget {
                   onToggle: (newVal) =>
                       updateFeatureState(ref, LabsFeature.cobudget, newVal),
                   enabled: false,
-                ),
-              ],
-            ),
-            SettingsSection(
-              title: const Text('Rich Text Editor'),
-              tiles: [
-                SettingsTile.switchTile(
-                  key: SettingsLabsPage.pinsEditorLabSwitch,
-                  title: const Text('Pins'),
-                  description: const Text(
-                    'Enable this to switch default pin markdown editor to Appflowy inline editor. Please note that editor is experimental and not all features are functional.',
-                  ),
-                  initialValue:
-                      ref.watch(isActiveProvider(LabsFeature.pinsEditor)),
-                  onToggle: (newVal) => updateFeatureState(
-                    ref,
-                    LabsFeature.pinsEditor,
-                    newVal,
-                  ),
                 ),
               ],
             ),

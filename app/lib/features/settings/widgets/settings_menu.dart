@@ -1,6 +1,7 @@
 import 'package:acter/common/dialogs/deactivation_confirmation.dart';
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/toolkit/menu_item_widget.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/settings/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/router/providers/router_providers.dart';
@@ -8,7 +9,6 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:settings_ui/settings_ui.dart';
 
 const defaultSettingsMenuKey = Key('settings-menu');
 
@@ -24,213 +24,175 @@ class SettingsMenu extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final currentRoute = ref.watch(currentRoutingLocation);
     final size = MediaQuery.of(context).size;
+
     Color? colorSelected(Routes route) => currentRoute == route.route
         ? AppTheme.brandColorScheme.secondary
         : null;
 
     TextStyle titleStylesSelected(Routes route) {
-      return TextStyle(
-        color: colorSelected(route),
-      );
+      return TextStyle(color: colorSelected(route));
     }
 
-    final shouldGoNotNamed = isDesktop || size.width > 770;
+    final shouldGoNotNamed = size.width > 770;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Settings',
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        centerTitle: false,
-      ),
-      body: SettingsList(
-        sections: [
-          SettingsSection(
-            title: const Text('Account'),
-            tiles: <SettingsTile>[
-              SettingsTile.navigation(
-                title: Text(
-                  'Sessions',
-                  style: titleStylesSelected(Routes.settingSessions),
-                ),
-                description: Text(
-                  'Your active device sessions',
-                  style: titleStylesSelected(Routes.settingSessions),
-                ),
-                leading: Icon(
-                  Atlas.key_monitor_thin,
-                  color: colorSelected(Routes.settingSessions),
-                ),
-                onPressed: (context) {
-                  shouldGoNotNamed
-                      ? context.goNamed(Routes.settingSessions.name)
-                      : context.pushNamed(Routes.settingSessions.name);
-                },
-              ),
-              SettingsTile.navigation(
-                title: Text(
-                  'Notifications',
-                  style: titleStylesSelected(Routes.settingNotifications),
-                ),
-                description: Text(
-                  'Notifications settings and targets',
-                  style: titleStylesSelected(Routes.settingNotifications),
-                ),
-                leading: Icon(
-                  Atlas.bell_mobile_thin,
-                  color: colorSelected(Routes.settingNotifications),
-                ),
-                onPressed: (context) {
-                  shouldGoNotNamed
-                      ? context.goNamed(Routes.settingNotifications.name)
-                      : context.pushNamed(Routes.settingNotifications.name);
-                },
-              ),
-              SettingsTile.navigation(
-                title: Text(
-                  'Email Addresses',
-                  style: titleStylesSelected(Routes.emailAddresses),
-                ),
-                description: Text(
-                  'Connected to your account',
-                  style: titleStylesSelected(Routes.emailAddresses),
-                ),
-                leading: Icon(
-                  Atlas.envelope_paper_email_thin,
-                  color: colorSelected(Routes.emailAddresses),
-                ),
-                onPressed: (context) {
-                  shouldGoNotNamed
-                      ? context.goNamed(Routes.emailAddresses.name)
-                      : context.pushNamed(Routes.emailAddresses.name);
-                },
-              ),
-              SettingsTile.navigation(
-                title: Text(
-                  'Blocked Users',
-                  style: titleStylesSelected(Routes.blockedUsers),
-                ),
-                description: Text(
-                  'Users you blocked',
-                  style: titleStylesSelected(Routes.blockedUsers),
-                ),
-                leading: Icon(
-                  Atlas.users_thin,
-                  color: colorSelected(Routes.blockedUsers),
-                ),
-                onPressed: (context) {
-                  shouldGoNotNamed
-                      ? context.goNamed(Routes.blockedUsers.name)
-                      : context.pushNamed(Routes.blockedUsers.name);
-                },
-              ),
-            ],
-          ),
-          SettingsSection(
-            title: const Text('Community'),
-            tiles: <SettingsTile>[
-              SettingsTile.navigation(
-                key: superInvitations,
-                enabled: ref.watch(hasSuperTokensAccess).valueOrNull == true,
-                title: Text(
-                  'Super Invitations',
-                  style: titleStylesSelected(Routes.settingsSuperInvites),
-                ),
-                description: Text(
-                  'Manage your invitation codes',
-                  style: titleStylesSelected(Routes.settingsSuperInvites),
-                ),
-                leading: Icon(
-                  Atlas.plus_envelope_thin,
-                  color: colorSelected(Routes.settingsSuperInvites),
-                ),
-                onPressed: (context) {
-                  shouldGoNotNamed
-                      ? context.goNamed(Routes.settingsSuperInvites.name)
-                      : context.pushNamed(Routes.settingsSuperInvites.name);
-                },
-              ),
-            ],
-          ),
-          SettingsSection(
-            title: const Text('Acter App'),
-            tiles: <SettingsTile>[
-              SettingsTile.navigation(
-                key: labs,
-                title: Text(
-                  'Labs',
-                  style: titleStylesSelected(Routes.settingsLabs),
-                ),
-                description: Text(
-                  'Experimental Acter features',
-                  style: titleStylesSelected(Routes.settingsLabs),
-                ),
-                leading: Icon(
-                  Atlas.lab_appliance_thin,
-                  color: colorSelected(Routes.settingsLabs),
-                ),
-                onPressed: (context) {
-                  shouldGoNotNamed
-                      ? context.goNamed(Routes.settingsLabs.name)
-                      : context.pushNamed(Routes.settingsLabs.name);
-                },
-              ),
-              SettingsTile(
-                title: Text('Info', style: titleStylesSelected(Routes.info)),
-                leading: Icon(
-                  Atlas.info_circle_thin,
-                  color: colorSelected(Routes.info),
-                ),
-                onPressed: (context) {
-                  shouldGoNotNamed
-                      ? context.goNamed(Routes.info.name)
-                      : context.pushNamed(Routes.info.name);
-                },
-              ),
-            ],
-          ),
-          SettingsSection(
-            title: Text(
-              'Danger Zone',
-              style: TextStyle(
-                color: AppTheme.brandColorScheme.error,
-              ),
+    final isSuperInviteEnable =
+        ref.watch(hasSuperTokensAccess).valueOrNull == true;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _settingMenuSection(
+          context: context,
+          sectionTitle: 'Account',
+          children: [
+            MenuItemWidget(
+              iconData: Atlas.key_monitor_thin,
+              iconColor: colorSelected(Routes.settingSessions),
+              title: 'Sessions',
+              subTitle: 'Your active devices',
+              titleStyles: titleStylesSelected(Routes.settingSessions),
+              onTap: () => shouldGoNotNamed
+                  ? context.goNamed(Routes.settingSessions.name)
+                  : context.pushNamed(Routes.settingSessions.name),
             ),
-            tiles: <SettingsTile>[
-              SettingsTile.navigation(
-                key: logoutAccount,
-                title: const Text('Logout'),
-                description:
-                    const Text('Close this session, deleting local data'),
-                leading: const Icon(Atlas.exit_thin),
-                onPressed: (context) {
-                  logoutConfirmationDialog(context, ref);
-                },
+            MenuItemWidget(
+              iconData: Atlas.bell_mobile_thin,
+              iconColor: colorSelected(Routes.settingNotifications),
+              title: 'Notifications',
+              subTitle: 'Notifications settings and targets',
+              titleStyles: titleStylesSelected(Routes.settingNotifications),
+              onTap: () => shouldGoNotNamed
+                  ? context.goNamed(Routes.settingNotifications.name)
+                  : context.pushNamed(Routes.settingNotifications.name),
+            ),
+            MenuItemWidget(
+              iconData: Atlas.envelope_paper_email_thin,
+              iconColor: colorSelected(Routes.emailAddresses),
+              title: 'Email Addresses',
+              subTitle: 'Connected to your account',
+              titleStyles: titleStylesSelected(Routes.emailAddresses),
+              onTap: () => shouldGoNotNamed
+                  ? context.goNamed(Routes.emailAddresses.name)
+                  : context.pushNamed(Routes.emailAddresses.name),
+            ),
+            MenuItemWidget(
+              iconData: Atlas.users_thin,
+              iconColor: colorSelected(Routes.blockedUsers),
+              title: 'Blocked Users',
+              subTitle: 'Users you blocked',
+              titleStyles: titleStylesSelected(Routes.blockedUsers),
+              onTap: () => shouldGoNotNamed
+                  ? context.goNamed(Routes.blockedUsers.name)
+                  : context.pushNamed(Routes.blockedUsers.name),
+            ),
+          ],
+        ),
+        _settingMenuSection(
+          context: context,
+          sectionTitle: 'Community',
+          children: [
+            MenuItemWidget(
+              key: SettingsMenu.superInvitations,
+              iconData: Atlas.plus_envelope_thin,
+              enabled: isSuperInviteEnable,
+              iconColor: colorSelected(Routes.settingsSuperInvites),
+              title: 'Super Invitations',
+              subTitle: 'Manage your invitation codes',
+              titleStyles: titleStylesSelected(Routes.settingsSuperInvites),
+              onTap: isSuperInviteEnable
+                  ? () => shouldGoNotNamed
+                      ? context.goNamed(Routes.settingsSuperInvites.name)
+                      : context.pushNamed(Routes.settingsSuperInvites.name)
+                  : null,
+            ),
+          ],
+        ),
+        _settingMenuSection(
+          context: context,
+          sectionTitle: 'Acter App',
+          children: [
+            MenuItemWidget(
+              key: SettingsMenu.labs,
+              iconData: Atlas.lab_appliance_thin,
+              iconColor: colorSelected(Routes.settingsLabs),
+              title: 'Labs',
+              subTitle: 'Experimental Acter features',
+              titleStyles: titleStylesSelected(Routes.settingsLabs),
+              onTap: () => shouldGoNotNamed
+                  ? context.goNamed(Routes.settingsLabs.name)
+                  : context.pushNamed(Routes.settingsLabs.name),
+            ),
+            MenuItemWidget(
+              iconData: Atlas.info_circle_thin,
+              iconColor: colorSelected(Routes.info),
+              title: 'Info',
+              titleStyles: titleStylesSelected(Routes.info),
+              onTap: () => shouldGoNotNamed
+                  ? context.goNamed(Routes.info.name)
+                  : context.pushNamed(Routes.info.name),
+            ),
+          ],
+        ),
+        _settingMenuSection(
+          context: context,
+          sectionTitle: 'Danger Zone',
+          isDanderZone: true,
+          children: [
+            MenuItemWidget(
+              key: SettingsMenu.logoutAccount,
+              iconData: Atlas.exit_thin,
+              iconColor: Theme.of(context).colorScheme.error,
+              title: 'Logout',
+              subTitle: 'Close this session, deleting local data',
+              titleStyles: TextStyle(
+                color: Theme.of(context).colorScheme.error,
               ),
-              SettingsTile.navigation(
-                key: deactivateAccount,
-                title: Text(
-                  'Deactivate Account',
-                  style: TextStyle(
-                    color: AppTheme.brandColorScheme.error,
-                    //backgroundColor: AppTheme.brandColorScheme.onError,
-                  ),
-                ),
-                description: Text(
-                  'Irreversibly deactivate this account',
-                  style: TextStyle(
-                    color: AppTheme.brandColorScheme.error,
-                  ),
-                ),
-                leading: Icon(
-                  Atlas.trash_can_thin,
-                  color: AppTheme.brandColorScheme.error,
-                ),
-                onPressed: (context) =>
-                    deactivationConfirmationDialog(context, ref),
+              onTap: () => logoutConfirmationDialog(context, ref),
+            ),
+            MenuItemWidget(
+              key: SettingsMenu.deactivateAccount,
+              iconData: Atlas.trash_can_thin,
+              iconColor: Theme.of(context).colorScheme.error,
+              title: 'Deactivate Account',
+              subTitle: 'Irreversibly deactivate this account',
+              titleStyles: TextStyle(
+                color: Theme.of(context).colorScheme.error,
               ),
-            ],
+              onTap: () => deactivationConfirmationDialog(context, ref),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+      ],
+    );
+  }
+
+  Widget _settingMenuSection({
+    required BuildContext context,
+    required String sectionTitle,
+    bool isDanderZone = false,
+    required List<Widget> children,
+  }) {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 15.0, top: 10.0),
+            child: Text(
+              sectionTitle,
+              style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                    color: isDanderZone
+                        ? Theme.of(context).colorScheme.error
+                        : null,
+                  ),
+            ),
+          ),
+          Column(
+            children: children,
           ),
         ],
       ),

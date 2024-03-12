@@ -488,7 +488,7 @@ impl Space {
                 msg_options = MessagesOptions::forward().from(from.as_deref());
                 client
                     .store()
-                    .set_custom_value(
+                    .set_custom_value_no_read(
                         custom_storage_key.as_bytes(),
                         serde_json::to_vec(&HistoryState { seen })?,
                     )

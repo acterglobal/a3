@@ -1,6 +1,6 @@
 import 'package:acter/features/bug_report/const.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
-import 'package:acter/features/settings/widgets/settings_menu.dart';
+import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -32,7 +32,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
   @override
   Widget build(BuildContext context) {
     return WithSidebar(
-      sidebar: const SettingsMenu(),
+      sidebar: const SettingsPage(),
       child: Scaffold(
         appBar: AppBar(
           title: Text(

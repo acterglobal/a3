@@ -51,7 +51,7 @@ use tokio::{
 use tokio_stream::wrappers::BroadcastStream;
 use tracing::{error, info, trace, warn};
 
-use crate::{Account, Convo, Notification, OptionString, Room, Space, ThumbnailSize, RUNTIME};
+use crate::{Account, Convo, OptionString, Room, Space, ThumbnailSize, RUNTIME};
 
 use super::{
     api::FfiBuffer, device::DeviceController, invitation::InvitationController,
@@ -90,7 +90,6 @@ pub struct Client {
     pub(crate) receipt_controller: ReceiptController,
     pub spaces: Arc<RwLock<ObservableVector<Space>>>,
     pub convos: Arc<RwLock<ObservableVector<Convo>>>,
-    pub(crate) notifications: Arc<Sender<get_notifications::v3::Notification>>,
 }
 
 impl Deref for Client {
@@ -510,7 +509,6 @@ impl Client {
             device_controller: DeviceController::new(client),
             typing_controller: TypingController::new(),
             receipt_controller: ReceiptController::new(),
-            notifications: Arc::new(channel(25).0),
         };
         cl.load_from_cache().await;
         Ok(cl)
@@ -652,7 +650,6 @@ impl Client {
 
         let mut invitation_controller = self.invitation_controller.clone();
         let mut device_controller = self.device_controller.clone();
-        let notifications = self.notifications.clone();
 
         let (first_synced_tx, first_synced_rx) = channel(1);
         let first_synced_arc = Arc::new(first_synced_tx);
@@ -677,7 +674,6 @@ impl Client {
             let history_loading = history_loading.clone();
             let first_sync_task = first_sync_task.clone();
             let room_handles = room_handles.clone();
-            let notifications = notifications.clone();
 
             // keep the sync timeout below the actual connection timeout to ensure we receive it
             // back before the server timeout occured
@@ -783,23 +779,6 @@ impl Client {
                     if let Ok(mut w) = state.try_write() {
                         if !w.is_syncing {
                             w.is_syncing = true;
-                        }
-                    }
-                    for (room_id, ev) in response.notifications {
-                        for item in ev {
-                            if let RawAnySyncOrStrippedTimelineEvent::Sync(evt) = item.event {
-                                trace!("Sending notification");
-                                let notif = get_notifications::v3::Notification::new(
-                                    item.actions.to_owned(),
-                                    evt,
-                                    false,
-                                    room_id.clone(),
-                                    MilliSecondsSinceUnixEpoch::now(),
-                                );
-                                notifications.send(notif);
-                            } else {
-                                warn!("This notification is not a sync event");
-                            }
                         }
                     }
 
@@ -947,31 +926,6 @@ impl Client {
             .get_dm_room(&user_id)
             .map(|x| x.room_id().to_string());
         Ok(OptionString::new(room_id))
-    }
-
-    pub fn notifications_stream(&self) -> impl Stream<Item = Notification> {
-        let client = self.clone();
-        BroadcastStream::new(self.notifications.subscribe())
-            .then(move |r| {
-                let client = client.clone();
-                RUNTIME.spawn(async move {
-                    let res = Notification::new(r?, client.clone()).await;
-                    anyhow::Ok(res)
-                })
-            })
-            .filter_map(|r| async {
-                match r {
-                    Ok(Ok(n)) => Some(n),
-                    Ok(Err(e)) => {
-                        error!(?e, "Failure in notifications stream");
-                        None
-                    }
-                    Err(e) => {
-                        error!(?e, "Failure in notifications stream processing");
-                        None
-                    }
-                }
-            })
     }
 
     pub fn subscribe_stream(&self, key: String) -> impl Stream<Item = bool> {

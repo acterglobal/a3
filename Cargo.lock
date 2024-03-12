@@ -34,6 +34,7 @@ dependencies = [
  "ffi-gen-macro",
  "futures",
  "futures-signals",
+ "indexmap 2.2.5",
  "infer",
  "lazy_static",
  "log",
@@ -70,7 +71,7 @@ dependencies = [
  "tracing-log",
  "tracing-subscriber",
  "tracing-wasm",
- "uniffi",
+ "uniffi 0.26.1",
  "urlencoding",
  "uuid 1.6.1",
  "wasm-bindgen-futures",
@@ -110,7 +111,7 @@ dependencies = [
  "enum_dispatch",
  "env_logger",
  "futures",
- "indexmap 2.1.0",
+ "indexmap 2.2.5",
  "matrix-sdk",
  "matrix-sdk-base",
  "matrix-sdk-sqlite",
@@ -2095,7 +2096,7 @@ dependencies = [
  "futures-sink",
  "futures-util",
  "http",
- "indexmap 2.1.0",
+ "indexmap 2.2.5",
  "slab",
  "tokio",
  "tokio-util",
@@ -2440,9 +2441,9 @@ dependencies = [
 
 [[package]]
 name = "indexmap"
-version = "2.1.0"
+version = "2.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d530e1a18b1cb4c484e6e34556a0d948706958449fca0cab753d649f2bce3d1f"
+checksum = "7b0b929d511467233429c45a44ac1dcaa21ba0f5ba11e4879e6ed28ddb4f9df4"
 dependencies = [
  "equivalent",
  "hashbrown 0.14.2",
@@ -2999,7 +3000,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk"
 version = "0.7.1"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=cced512ad4a5d3d9b767ac0eb7e5065ac0e773bc#cced512ad4a5d3d9b767ac0eb7e5065ac0e773bc"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=f14c00db82539a2e9135b73568c1f68354c47255#f14c00db82539a2e9135b73568c1f68354c47255"
 dependencies = [
  "anyhow",
  "anymap2",
@@ -3022,7 +3023,7 @@ dependencies = [
  "gloo-timers",
  "http",
  "imbl",
- "indexmap 2.1.0",
+ "indexmap 2.2.5",
  "js_int",
  "language-tags",
  "mas-oidc-client",
@@ -3054,7 +3055,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-base"
 version = "0.7.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=cced512ad4a5d3d9b767ac0eb7e5065ac0e773bc#cced512ad4a5d3d9b767ac0eb7e5065ac0e773bc"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=f14c00db82539a2e9135b73568c1f68354c47255#f14c00db82539a2e9135b73568c1f68354c47255"
 dependencies = [
  "as_variant",
  "async-trait",
@@ -3072,13 +3073,13 @@ dependencies = [
  "thiserror",
  "tokio",
  "tracing",
- "uniffi",
+ "uniffi 0.26.0",
 ]
 
 [[package]]
 name = "matrix-sdk-common"
 version = "0.7.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=cced512ad4a5d3d9b767ac0eb7e5065ac0e773bc#cced512ad4a5d3d9b767ac0eb7e5065ac0e773bc"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=f14c00db82539a2e9135b73568c1f68354c47255#f14c00db82539a2e9135b73568c1f68354c47255"
 dependencies = [
  "async-trait",
  "futures-core",
@@ -3100,7 +3101,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-crypto"
 version = "0.7.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=cced512ad4a5d3d9b767ac0eb7e5065ac0e773bc#cced512ad4a5d3d9b767ac0eb7e5065ac0e773bc"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=f14c00db82539a2e9135b73568c1f68354c47255#f14c00db82539a2e9135b73568c1f68354c47255"
 dependencies = [
  "aes",
  "as_variant",
@@ -3137,7 +3138,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-indexeddb"
 version = "0.7.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=cced512ad4a5d3d9b767ac0eb7e5065ac0e773bc#cced512ad4a5d3d9b767ac0eb7e5065ac0e773bc"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=f14c00db82539a2e9135b73568c1f68354c47255#f14c00db82539a2e9135b73568c1f68354c47255"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3162,7 +3163,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-sqlite"
 version = "0.7.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=cced512ad4a5d3d9b767ac0eb7e5065ac0e773bc#cced512ad4a5d3d9b767ac0eb7e5065ac0e773bc"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=f14c00db82539a2e9135b73568c1f68354c47255#f14c00db82539a2e9135b73568c1f68354c47255"
 dependencies = [
  "async-trait",
  "deadpool-sqlite",
@@ -3184,7 +3185,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-store-encryption"
 version = "0.7.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=cced512ad4a5d3d9b767ac0eb7e5065ac0e773bc#cced512ad4a5d3d9b767ac0eb7e5065ac0e773bc"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=f14c00db82539a2e9135b73568c1f68354c47255#f14c00db82539a2e9135b73568c1f68354c47255"
 dependencies = [
  "base64 0.21.7",
  "blake3",
@@ -3225,7 +3226,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-test"
 version = "0.7.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=cced512ad4a5d3d9b767ac0eb7e5065ac0e773bc#cced512ad4a5d3d9b767ac0eb7e5065ac0e773bc"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=f14c00db82539a2e9135b73568c1f68354c47255#f14c00db82539a2e9135b73568c1f68354c47255"
 dependencies = [
  "ctor",
  "getrandom",
@@ -3243,7 +3244,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-test-macros"
 version = "0.7.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=cced512ad4a5d3d9b767ac0eb7e5065ac0e773bc#cced512ad4a5d3d9b767ac0eb7e5065ac0e773bc"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=f14c00db82539a2e9135b73568c1f68354c47255#f14c00db82539a2e9135b73568c1f68354c47255"
 dependencies = [
  "quote 1.0.35",
  "syn 2.0.48",
@@ -3252,7 +3253,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-ui"
 version = "0.7.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=cced512ad4a5d3d9b767ac0eb7e5065ac0e773bc#cced512ad4a5d3d9b767ac0eb7e5065ac0e773bc"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=f14c00db82539a2e9135b73568c1f68354c47255#f14c00db82539a2e9135b73568c1f68354c47255"
 dependencies = [
  "as_variant",
  "async-once-cell",
@@ -3268,7 +3269,7 @@ dependencies = [
  "futures-util",
  "fuzzy-matcher",
  "imbl",
- "indexmap 2.1.0",
+ "indexmap 2.2.5",
  "itertools 0.12.0",
  "matrix-sdk",
  "matrix-sdk-base",
@@ -3566,7 +3567,7 @@ checksum = "1e32339a5dc40459130b3bd269e9892439f55b33e772d2a9d402a789baaf4e8a"
 dependencies = [
  "futures-core",
  "futures-sink",
- "indexmap 2.1.0",
+ "indexmap 2.2.5",
  "js-sys",
  "once_cell",
  "pin-project-lite",
@@ -4580,7 +4581,7 @@ dependencies = [
  "form_urlencoded",
  "getrandom",
  "http",
- "indexmap 2.1.0",
+ "indexmap 2.2.5",
  "js-sys",
  "js_int",
  "konst",
@@ -4605,7 +4606,7 @@ version = "0.27.11"
 source = "git+https://github.com/ruma/ruma?rev=68c9bb0930f2195fa8672fbef9633ef62737df5d#68c9bb0930f2195fa8672fbef9633ef62737df5d"
 dependencies = [
  "as_variant",
- "indexmap 2.1.0",
+ "indexmap 2.2.5",
  "js_int",
  "js_option",
  "percent-encoding",
@@ -4991,7 +4992,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d7d9b8af723e4199801a643c622daa7aae8cf4a772dc2b3efcb3a95add6cb91a"
 dependencies = [
  "form_urlencoded",
- "indexmap 2.1.0",
+ "indexmap 2.2.5",
  "itoa",
  "ryu",
  "serde",
@@ -5050,7 +5051,7 @@ dependencies = [
  "chrono",
  "hex",
  "indexmap 1.9.3",
- "indexmap 2.1.0",
+ "indexmap 2.2.5",
  "serde",
  "serde_json",
  "serde_with_macros",
@@ -5586,7 +5587,7 @@ version = "0.8.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a1a195ec8c9da26928f773888e0742ca3ca1040c6cd859c919c9f59c1954ab35"
 dependencies = [
- "indexmap 2.1.0",
+ "indexmap 2.2.5",
  "serde",
  "serde_spanned",
  "toml_datetime",
@@ -5608,7 +5609,7 @@ version = "0.19.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "266f016b7f039eec8a1a80dfe6156b633d208b9fccca5e4db1d6775b0c4e34a7"
 dependencies = [
- "indexmap 2.1.0",
+ "indexmap 2.2.5",
  "toml_datetime",
  "winnow 0.4.7",
 ]
@@ -5619,7 +5620,7 @@ version = "0.20.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "396e4d48bbb2b7554c944bde63101b5ae446cff6ec4a24227428f15eb72ef338"
 dependencies = [
- "indexmap 2.1.0",
+ "indexmap 2.2.5",
  "toml_datetime",
  "winnow 0.5.17",
 ]
@@ -5630,7 +5631,7 @@ version = "0.21.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d34d383cd00a163b4a5b85053df514d45bc330f6de7737edfe0a93311d1eaa03"
 dependencies = [
- "indexmap 2.1.0",
+ "indexmap 2.2.5",
  "serde",
  "serde_spanned",
  "toml_datetime",
@@ -5954,6 +5955,16 @@ checksum = "f962df74c8c05a667b5ee8bcf162993134c104e96440b663c8daa176dc772d8c"
 
 [[package]]
 name = "uniffi"
+version = "0.26.0"
+source = "git+https://github.com/mozilla/uniffi-rs?rev=0a5e2eb5760b4ce5549021ec91de546716de8db1#0a5e2eb5760b4ce5549021ec91de546716de8db1"
+dependencies = [
+ "anyhow",
+ "uniffi_core 0.26.0",
+ "uniffi_macros 0.26.0",
+]
+
+[[package]]
+name = "uniffi"
 version = "0.26.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5ad0be8bba6c242d2d16922de4a9c8f167b9491729fda552e70f8626bf7302cb"
@@ -5961,10 +5972,33 @@ dependencies = [
  "anyhow",
  "camino",
  "clap 4.4.18",
- "uniffi_bindgen",
- "uniffi_build",
- "uniffi_core",
- "uniffi_macros",
+ "uniffi_bindgen 0.26.1",
+ "uniffi_build 0.26.1",
+ "uniffi_core 0.26.1",
+ "uniffi_macros 0.26.1",
+]
+
+[[package]]
+name = "uniffi_bindgen"
+version = "0.26.0"
+source = "git+https://github.com/mozilla/uniffi-rs?rev=0a5e2eb5760b4ce5549021ec91de546716de8db1#0a5e2eb5760b4ce5549021ec91de546716de8db1"
+dependencies = [
+ "anyhow",
+ "askama",
+ "camino",
+ "cargo_metadata",
+ "fs-err",
+ "glob",
+ "goblin",
+ "heck",
+ "once_cell",
+ "paste",
+ "serde",
+ "textwrap",
+ "toml 0.5.11",
+ "uniffi_meta 0.26.0",
+ "uniffi_testing 0.26.0",
+ "uniffi_udl 0.26.0",
 ]
 
 [[package]]
@@ -5987,9 +6021,19 @@ dependencies = [
  "serde",
  "textwrap",
  "toml 0.5.11",
- "uniffi_meta",
- "uniffi_testing",
- "uniffi_udl",
+ "uniffi_meta 0.26.1",
+ "uniffi_testing 0.26.1",
+ "uniffi_udl 0.26.1",
+]
+
+[[package]]
+name = "uniffi_build"
+version = "0.26.0"
+source = "git+https://github.com/mozilla/uniffi-rs?rev=0a5e2eb5760b4ce5549021ec91de546716de8db1#0a5e2eb5760b4ce5549021ec91de546716de8db1"
+dependencies = [
+ "anyhow",
+ "camino",
+ "uniffi_bindgen 0.26.0",
 ]
 
 [[package]]
@@ -6000,7 +6044,16 @@ checksum = "4aa3a7608c6872dc1ce53199d816a24d2e19af952d82ce557ecc8692a4ae9cba"
 dependencies = [
  "anyhow",
  "camino",
- "uniffi_bindgen",
+ "uniffi_bindgen 0.26.1",
+]
+
+[[package]]
+name = "uniffi_checksum_derive"
+version = "0.26.0"
+source = "git+https://github.com/mozilla/uniffi-rs?rev=0a5e2eb5760b4ce5549021ec91de546716de8db1#0a5e2eb5760b4ce5549021ec91de546716de8db1"
+dependencies = [
+ "quote 1.0.35",
+ "syn 2.0.48",
 ]
 
 [[package]]
@@ -6011,6 +6064,21 @@ checksum = "72775b3afa6adb30e0c92b3107858d2fcb0ff1a417ac242db1f648b0e2dd0ef2"
 dependencies = [
  "quote 1.0.35",
  "syn 2.0.48",
+]
+
+[[package]]
+name = "uniffi_core"
+version = "0.26.0"
+source = "git+https://github.com/mozilla/uniffi-rs?rev=0a5e2eb5760b4ce5549021ec91de546716de8db1#0a5e2eb5760b4ce5549021ec91de546716de8db1"
+dependencies = [
+ "anyhow",
+ "bytes",
+ "camino",
+ "log",
+ "once_cell",
+ "oneshot-uniffi",
+ "paste",
+ "static_assertions",
 ]
 
 [[package]]
@@ -6031,6 +6099,24 @@ dependencies = [
 
 [[package]]
 name = "uniffi_macros"
+version = "0.26.0"
+source = "git+https://github.com/mozilla/uniffi-rs?rev=0a5e2eb5760b4ce5549021ec91de546716de8db1#0a5e2eb5760b4ce5549021ec91de546716de8db1"
+dependencies = [
+ "bincode",
+ "camino",
+ "fs-err",
+ "once_cell",
+ "proc-macro2 1.0.78",
+ "quote 1.0.35",
+ "serde",
+ "syn 2.0.48",
+ "toml 0.5.11",
+ "uniffi_build 0.26.0",
+ "uniffi_meta 0.26.0",
+]
+
+[[package]]
+name = "uniffi_macros"
 version = "0.26.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a126650799f97d97d8e38e3f10f15c65f5bc5a76b021bec21823efe9dd831a02"
@@ -6044,8 +6130,19 @@ dependencies = [
  "serde",
  "syn 2.0.48",
  "toml 0.5.11",
- "uniffi_build",
- "uniffi_meta",
+ "uniffi_build 0.26.1",
+ "uniffi_meta 0.26.1",
+]
+
+[[package]]
+name = "uniffi_meta"
+version = "0.26.0"
+source = "git+https://github.com/mozilla/uniffi-rs?rev=0a5e2eb5760b4ce5549021ec91de546716de8db1#0a5e2eb5760b4ce5549021ec91de546716de8db1"
+dependencies = [
+ "anyhow",
+ "bytes",
+ "siphasher",
+ "uniffi_checksum_derive 0.26.0",
 ]
 
 [[package]]
@@ -6057,7 +6154,19 @@ dependencies = [
  "anyhow",
  "bytes",
  "siphasher",
- "uniffi_checksum_derive",
+ "uniffi_checksum_derive 0.26.1",
+]
+
+[[package]]
+name = "uniffi_testing"
+version = "0.26.0"
+source = "git+https://github.com/mozilla/uniffi-rs?rev=0a5e2eb5760b4ce5549021ec91de546716de8db1#0a5e2eb5760b4ce5549021ec91de546716de8db1"
+dependencies = [
+ "anyhow",
+ "camino",
+ "cargo_metadata",
+ "fs-err",
+ "once_cell",
 ]
 
 [[package]]
@@ -6075,15 +6184,27 @@ dependencies = [
 
 [[package]]
 name = "uniffi_udl"
+version = "0.26.0"
+source = "git+https://github.com/mozilla/uniffi-rs?rev=0a5e2eb5760b4ce5549021ec91de546716de8db1#0a5e2eb5760b4ce5549021ec91de546716de8db1"
+dependencies = [
+ "anyhow",
+ "textwrap",
+ "uniffi_meta 0.26.0",
+ "uniffi_testing 0.26.0",
+ "weedle2 5.0.0 (git+https://github.com/mozilla/uniffi-rs?rev=0a5e2eb5760b4ce5549021ec91de546716de8db1)",
+]
+
+[[package]]
+name = "uniffi_udl"
 version = "0.26.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3f6817c15714acccd0d0459f99b524cabebfdd622376464a2c6466a6485bdb4b"
 dependencies = [
  "anyhow",
  "textwrap",
- "uniffi_meta",
- "uniffi_testing",
- "weedle2",
+ "uniffi_meta 0.26.1",
+ "uniffi_testing 0.26.1",
+ "weedle2 5.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -6377,6 +6498,14 @@ name = "weedle2"
 version = "5.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "998d2c24ec099a87daf9467808859f9d82b61f1d9c9701251aea037f514eae0e"
+dependencies = [
+ "nom",
+]
+
+[[package]]
+name = "weedle2"
+version = "5.0.0"
+source = "git+https://github.com/mozilla/uniffi-rs?rev=0a5e2eb5760b4ce5549021ec91de546716de8db1#0a5e2eb5760b4ce5549021ec91de546716de8db1"
 dependencies = [
  "nom",
 ]
