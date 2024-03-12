@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:acter/common/providers/attachment_providers.dart';
 import 'package:acter/common/widgets/attachments/attachment_draft_item.dart';
-import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
@@ -36,44 +35,60 @@ class _PostAttachmentSelectionState
   Widget build(BuildContext context) {
     final files = widget.files;
     final titleTextStyle = Theme.of(context).textTheme.titleSmall;
-    return DefaultDialog(
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              'Attachments (${files.length})',
-              style: titleTextStyle,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(12),
+          child: Text(
+            'Attachments Selected (${files.length})',
+            style: titleTextStyle,
+          ),
+        ),
+        const SizedBox(height: 15),
+        Padding(
+          padding: const EdgeInsets.all(12),
+          child: Wrap(
+            spacing: 5.0,
+            runSpacing: 10.0,
+            children: List.generate(
+              files.length,
+              (idx) => AttachmentDraftItem(file: files[idx]),
             ),
           ),
-        ],
-      ),
-      subtitle: Wrap(
-        spacing: 5.0,
-        runSpacing: 10.0,
-        children: List.generate(
-          files.length,
-          (idx) => AttachmentDraftItem(file: files[idx]),
         ),
-      ),
-      actions: <Widget>[
-        OutlinedButton(
-          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          onPressed: () async {
-            Navigator.of(context, rootNavigator: true).pop();
-            if (widget.convo != null) {
-              handleChatAttachmentSend(files);
-            } else if (widget.manager != null) {
-              handleAttachmentSend();
-            }
-            // manager not present
-            return;
-          },
-          child: Text(widget.convo != null ? 'Send' : 'Confirm'),
+        const Spacer(),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              OutlinedButton(
+                onPressed: () {
+                  // we are popping out twice to clear selection sheet too!
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  // we are popping out twice to clear selection sheet too!
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                  if (widget.convo != null) {
+                    handleChatAttachmentSend(files);
+                  } else if (widget.manager != null) {
+                    handleAttachmentSend();
+                  }
+                  // manager not present, this shouldn't lead up here
+                  return;
+                },
+                child: const Text('Send'),
+              ),
+            ],
+          ),
         ),
       ],
     );

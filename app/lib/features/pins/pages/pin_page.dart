@@ -253,7 +253,7 @@ class _PinPageConsumerState extends ConsumerState<PinPage> {
                 children: <Widget>[
                   if (list.isNotEmpty)
                     for (var item in list) AttachmentItem(attachment: item),
-                  _buildAddAttachment(pin),
+                  ...canPostAttachments,
                 ],
               ),
             ],

@@ -166,7 +166,12 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
 
       final htmlText = textEditorState.intoHtml();
       final plainText = textEditorState.intoMarkdown();
-      pinDraft.contentHtml(plainText, htmlText);
+
+      if (plainText.trim().isNotEmpty) {
+        pinDraft.contentHtml(plainText, htmlText);
+      } else {
+        pinDraft.contentMarkdown('No Description');
+      }
 
       if (url.isNotEmpty) {
         pinDraft.url(url);

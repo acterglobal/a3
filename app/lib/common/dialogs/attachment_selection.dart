@@ -26,8 +26,14 @@ void showAttachmentSelection(
                   await ImagePicker().pickImage(source: ImageSource.camera);
               if (imageFile != null) {
                 File file = File(imageFile.path);
+
                 if (context.mounted) {
-                  attachmentConfirmationDialog(context, manager, convo, [file]);
+                  attachmentConfirmationDialog(
+                    context,
+                    manager,
+                    convo,
+                    [file],
+                  );
                 }
               }
             },
@@ -37,19 +43,16 @@ void showAttachmentSelection(
 
               for (var imageFile in imageFiles) {
                 File file = File(imageFile.path);
-
                 newFiles.add(file);
               }
+
               if (context.mounted) {
-                if (manager != null) {
-                } else {
-                  attachmentConfirmationDialog(
-                    context,
-                    manager,
-                    convo,
-                    newFiles,
-                  );
-                }
+                attachmentConfirmationDialog(
+                  context,
+                  manager,
+                  convo,
+                  newFiles,
+                );
               }
             },
             onTapVideo: () async {
@@ -60,26 +63,20 @@ void showAttachmentSelection(
                 File file = File(videoFile.path);
                 newAttachments.add(file);
               }
-
               if (context.mounted) {
-                if (manager != null) {
-                } else {
-                  attachmentConfirmationDialog(
-                    context,
-                    manager,
-                    convo,
-                    newAttachments,
-                  );
-                }
+                attachmentConfirmationDialog(
+                  context,
+                  manager,
+                  convo,
+                  newAttachments,
+                );
               }
             },
-            onTapFile: () async {
-              _onTapFileSelection(
-                context,
-                manager,
-                convo,
-              );
-            },
+            onTapFile: () => _onTapFileSelection(
+              context,
+              manager,
+              convo,
+            ),
           ),
         );
 }
@@ -102,7 +99,12 @@ void _onTapFileSelection(
     }).toList();
 
     if (context.mounted) {
-      attachmentConfirmationDialog(context, manager, convo, newAttachments);
+      attachmentConfirmationDialog(
+        context,
+        manager,
+        convo,
+        newAttachments,
+      );
     }
   }
 }

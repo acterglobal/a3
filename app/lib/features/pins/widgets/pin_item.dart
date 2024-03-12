@@ -165,19 +165,38 @@ class _PinDescriptionWidgetConsumerState
           ),
           child: HtmlEditor(
             key: PinItem.descriptionFieldKey,
-            shrinkWrap: true,
             editable: pinEdit.editMode,
             editorState: textEditorState,
+            footer: const SizedBox(),
             onChanged: (body, html) {
-              final document = html != null
-                  ? ActerDocumentHelpers.fromHtml(html)
-                  : ActerDocumentHelpers.fromMarkdown(body);
-              textEditorState = EditorState(document: document);
+              if (body.trim().isNotEmpty) {
+                final document = html != null
+                    ? ActerDocumentHelpers.fromHtml(html)
+                    : ActerDocumentHelpers.fromMarkdown(body);
+                textEditorState = EditorState(document: document);
+              } else {
+                textEditorState = EditorState(
+                  document: ActerDocumentHelpers.fromMarkdown('No Description'),
+                );
+              }
             },
           ),
         ),
         _ActionButtonsWidget(
           pin: widget.pin,
+          onCancel: () {
+            final content = widget.pin.content();
+            if (content != null) {
+              textEditorState = EditorState(
+                document: ActerDocumentHelpers.fromMsgContent(content),
+              );
+            } else {
+              textEditorState = EditorState(
+                document: ActerDocumentHelpers.fromMarkdown('No Description'),
+              );
+            }
+            pinEditNotifier.setEditMode(false);
+          },
           onSave: () async {
             if (widget.formkey.currentState!.validate()) {
               pinEditNotifier.setEditMode(false);
@@ -200,21 +219,22 @@ class _ActionButtonsWidget extends ConsumerWidget {
   const _ActionButtonsWidget({
     required this.pin,
     required this.onSave,
+    required this.onCancel,
   });
   final ActerPin pin;
   final void Function()? onSave;
+  final void Function()? onCancel;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final pinEdit = ref.watch(pinEditProvider(pin));
-    final pinEditNotifier = ref.watch(pinEditProvider(pin).notifier);
     return Visibility(
       visible: pinEdit.editMode,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           OutlinedButton(
-            onPressed: () => pinEditNotifier.setEditMode(false),
+            onPressed: onCancel,
             child: const Text('Cancel'),
           ),
           const SizedBox(width: 5),

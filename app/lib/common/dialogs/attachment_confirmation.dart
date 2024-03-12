@@ -12,7 +12,7 @@ void attachmentConfirmationDialog(
   AttachmentsManager? manager,
   Convo? convo,
   List<File>? selectedFiles,
-) async {
+) {
   if (selectedFiles != null && selectedFiles.isNotEmpty) {
     isLargeScreen(ctx)
         ? showAdaptiveDialog(
