@@ -23,9 +23,7 @@ final _log = Logger('Register');
 Future<void> tryRedeem(SuperInvites superInvites, String token) async {
   // try to redeem the token in a fire-and-forget-manner
   try {
-    await superInvites.redeem(
-      token,
-    );
+    await superInvites.redeem(token);
   } catch (error) {
     _log.warning('redeeming super invite failed: $error');
   }
@@ -240,7 +238,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                   TextSpan(
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () {
-                                        _log.info('Terms of Service"');
+                                        debugPrint('Terms of Service"');
                                       },
                                     text: AppLocalizations.of(context)!
                                         .termsText2,
@@ -252,7 +250,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                   TextSpan(
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () {
-                                        _log.info('policy"');
+                                        debugPrint('policy"');
                                       },
                                     text: AppLocalizations.of(context)!
                                         .termsText4,
