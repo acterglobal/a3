@@ -140,6 +140,7 @@ impl VerificationEvent {
             .await?
     }
 
+    // alternative of terminate_verification
     pub async fn cancel_verification_request(&self) -> Result<bool> {
         let client = self.client.clone();
         let sender = self.sender.clone();
@@ -1080,6 +1081,7 @@ impl SessionManager {
             .await?
     }
 
+    // alternative of cancel_verification_request
     pub async fn terminate_verification(&self, flow_id: String) -> Result<bool> {
         let client = self.client.clone();
         RUNTIME

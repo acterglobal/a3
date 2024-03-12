@@ -47854,6 +47854,7 @@ class VerificationEvent {
   }
 
   /// Bob cancels the verification request from Alice
+  /// alternative of terminate_verification
   Future<bool> cancelVerificationRequest() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -48186,6 +48187,8 @@ class SessionManager {
   }
 
   /// Terminate verification of another device
+  /// alternative of cancel_verification_request
+  /// this fn is used in case without verification event
   Future<bool> terminateVerification(
     String flowId,
   ) {

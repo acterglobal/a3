@@ -2609,6 +2609,7 @@ object VerificationEvent {
     fn accept_verification_request() -> Future<Result<bool>>;
 
     /// Bob cancels the verification request from Alice
+    /// alternative of terminate_verification
     fn cancel_verification_request() -> Future<Result<bool>>;
 
     /// Bob accepts the verification request from Alice with specified methods
@@ -2667,6 +2668,8 @@ object SessionManager {
     fn request_verification(dev_id: string) -> Future<Result<string>>;
 
     /// Terminate verification of another device
+    /// alternative of cancel_verification_request
+    /// this fn is used in case without verification event
     fn terminate_verification(flow_id: string) -> Future<Result<bool>>;
 }
 
