@@ -372,20 +372,20 @@ class ActerSdk {
       // android api 30 is working here
       return DynamicLibrary.open(libName);
     } catch (e1) {
-      _log.severe('DynamicLibrary.open by lib name failed: $e1');
+      debugPrint('DynamicLibrary.open by lib name failed: $e1');
       try {
         // android api 23 is working here
         final String nativeLibDir = await _getNativeLibraryDirectory();
         return DynamicLibrary.open('$nativeLibDir/$libName');
       } catch (e2) {
-        _log.severe('DynamicLibrary.open from /data/app failed: $e2');
+        debugPrint('DynamicLibrary.open from /data/app failed: $e2');
         try {
           // android api 8 (2010) is working here
           final PackageInfo pkgInfo = await PackageInfo.fromPlatform();
           final String pkgName = pkgInfo.packageName;
           return DynamicLibrary.open('/data/data/$pkgName/$libName');
         } catch (e3) {
-          _log.severe('DynamicLibrary.open from /data/data failed: $e3');
+          debugPrint('DynamicLibrary.open from /data/data failed: $e3');
           rethrow;
         }
       }
