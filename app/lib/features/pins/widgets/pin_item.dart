@@ -1,6 +1,7 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor.dart';
+import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/pins/pin_utils/pin_utils.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
@@ -58,6 +59,7 @@ class _PinItemState extends ConsumerState<PinItem> {
     final pin = widget.pin;
     final spaceId = pin.roomIdStr();
     final isLink = pin.isLink();
+    final comments = pin.comments();
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -81,6 +83,7 @@ class _PinItemState extends ConsumerState<PinItem> {
             ),
             const SizedBox(height: 20),
             _buildAttachmentList(),
+            CommentsSection(manager: comments),
           ],
         ),
       ),

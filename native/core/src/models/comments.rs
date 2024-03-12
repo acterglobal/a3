@@ -87,6 +87,10 @@ impl CommentsManager {
         self.store.set_raw(&update_key, &self.stats).await?;
         Ok(update_key)
     }
+
+    pub fn event_id(&self) -> &OwnedEventId {
+        &self.event_id
+    }
 }
 
 impl Deref for CommentsManager {

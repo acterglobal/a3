@@ -1621,6 +1621,8 @@ impl Room {
             })
             .await?
     }
+
+    pub async fn 
 }
 
 impl Deref for Room {

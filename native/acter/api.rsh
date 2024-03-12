@@ -1281,6 +1281,12 @@ object CommentsManager {
 
     /// draft a new comment for this item
     fn comment_draft() -> CommentDraft;
+
+    /// subscribe to the changes this manager
+    fn subscribe_stream() -> Stream<bool>;
+
+    /// reload the data from the database
+    fn reload() -> Future<Result<CommentsManager>>;
 }
 
 

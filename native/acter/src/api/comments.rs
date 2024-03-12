@@ -152,6 +152,13 @@ impl CommentsManager {
         self.inner.stats().clone()
     }
 
+    pub async fn reload(&self) -> Result<CommentsManager> {
+        let client = self.client.clone();
+        let room = self.room.clone();
+        let event_id = self.inner.event_id().clone();
+        CommentsManager::new(client, room, event_id).await
+    }
+
     pub fn has_comments(&self) -> bool {
         *self.stats().has_comments()
     }
