@@ -40,7 +40,7 @@ pub async fn sanitize_user(
     };
 
     // fully qualified username, good to go
-    if let Ok(user_id) = UserId::parse(formatted_username.as_str()) {
+    if let Ok(user_id) = UserId::parse(formatted_username.clone()) {
         return Ok((user_id, false));
     }
 
@@ -211,7 +211,7 @@ async fn login_client(
     let name; // to capture the inner string for login-builder lifetime
     if let Some(s) = device_name {
         name = s;
-        login_builder = login_builder.initial_device_display_name(name.as_str())
+        login_builder = login_builder.initial_device_display_name(&name)
     };
     login_builder.send().await?;
     let state = ClientStateBuilder::default()
