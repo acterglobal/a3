@@ -6,7 +6,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CommentsList extends ConsumerWidget {
   final CommentsManager manager;
-  const CommentsList({super.key, required this.manager});
+  final VoidCallback? onNewTap;
+  final Widget emptyChild;
+  const CommentsList({
+    super.key,
+    required this.manager,
+    this.onNewTap,
+    required this.emptyChild,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -19,9 +26,18 @@ class CommentsList extends ConsumerWidget {
 
   Widget found(BuildContext context, List<Comment> comments) {
     if (comments.isEmpty) {
-      return const Center(
-        child: Text('No comments yet. Be the first to comment!'),
-      );
+      if (onNewTap != null) {
+        return InkWell(
+          onTap: onNewTap,
+          child: Center(
+            child: emptyChild,
+          ),
+        );
+      } else {
+        return Center(
+          child: emptyChild,
+        );
+      }
     }
     return Column(
       children: comments.map((c) => CommentWidget(comment: c)).toList(),

@@ -1,12 +1,18 @@
+import 'package:acter/features/comments/models.dart';
 import 'package:acter/features/comments/providers/comments.dart';
 import 'package:acter/features/comments/widgets/comments_list.dart';
+import 'package:acter/features/comments/widgets/create_comment.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CommentsSection extends ConsumerWidget {
   final Future<CommentsManager> manager;
-  const CommentsSection({super.key, required this.manager});
+  final NewCommentLocation newCommentLocation;
+  const CommentsSection(
+      {super.key,
+      required this.manager,
+      this.newCommentLocation = NewCommentLocation.before,});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -21,7 +27,20 @@ class CommentsSection extends ConsumerWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [const Text('Comments'), CommentsList(manager: manager)],
+      children: [
+        const Text('Comments'),
+        // create comment on top
+        if (newCommentLocation == NewCommentLocation.before)
+          CreateCommentWidget(manager: manager),
+        // the actual list
+        CommentsList(
+          manager: manager,
+          emptyChild: const SizedBox.shrink(),
+        ),
+        // create comment after
+        if (newCommentLocation == NewCommentLocation.after)
+          CreateCommentWidget(manager: manager),
+      ],
     );
   }
 
