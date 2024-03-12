@@ -1,3 +1,4 @@
+import 'package:acter/common/dialogs/member_info_drawer.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,21 @@ class AvatarBuilder extends ConsumerWidget {
         return Padding(
           padding: const EdgeInsets.only(right: 10),
           child: ActerAvatar(
+            onAvatarTap: () async {
+              final member = await ref.read(
+                memberProvider(
+                  (userId: userId, roomId: roomId),
+                ).future,
+              );
+              // ignore: use_build_context_synchronously
+              showMemberInfoDrawer(
+                context: context,
+                memberProfile: profile,
+                roomId: roomId,
+                member: member!,
+                memberId: userId,
+              );
+            },
             mode: DisplayMode.DM,
             avatarInfo: AvatarInfo(
               uniqueId: userId,

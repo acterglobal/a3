@@ -67,7 +67,9 @@ final chatProvider =
   final client = ref.watch(alwaysClientProvider);
   // FIXME: fallback to fetching a public data, if not found
   return await client.convoWithRetry(
-      roomIdOrAlias, 120,); // retrying for up to 30seconds before failing
+    roomIdOrAlias,
+    120,
+  ); // retrying for up to 30seconds before failing
 });
 
 final chatMembersProvider =
