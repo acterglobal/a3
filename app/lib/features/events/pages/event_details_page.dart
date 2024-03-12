@@ -5,7 +5,6 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/report_content.dart';
-import 'package:acter/features/chat/widgets/avatar_builder.dart';
 import 'package:acter/features/events/model/keys.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/skeletons/event_details_skeleton_widget.dart';
@@ -432,7 +431,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         List<Widget> avtarList = [];
         for (final participantId in eventParticipantsList) {
           final memberInfo = ref.watch(
-              roomMemberProvider((roomId: roomId, userId: participantId)));
+            roomMemberProvider((roomId: roomId, userId: participantId)),
+          );
           memberInfo.whenData((profileData) {
             avtarList.add(
               Padding(
