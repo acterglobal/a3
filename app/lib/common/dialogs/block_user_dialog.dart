@@ -26,7 +26,7 @@ Future<void> showBlockUserDialog(BuildContext context, Member member) async {
         ),
         actions: <Widget>[
           TextButton(
-            onPressed: () => context.pop(),
+            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
             child: const Text('No'),
           ),
           TextButton(
