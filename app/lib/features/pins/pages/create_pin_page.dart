@@ -113,8 +113,6 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
           key: CreatePinPage.urlFieldKey,
           textInputType: TextInputType.url,
           controller: _linkController,
-          validator: (value) =>
-              hasLinkOrText() ? null : 'Text or URL must be given',
         ),
       ],
     );
@@ -151,13 +149,6 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
         ),
       ],
     );
-  }
-
-  bool hasLinkOrText() {
-    final htmlText = textEditorState.intoHtml();
-    final plainText = textEditorState.intoMarkdown();
-    final hasEditorText = htmlText.isNotEmpty || plainText.isNotEmpty;
-    return _linkController.text.trim().isNotEmpty || hasEditorText == true;
   }
 
   void _handleCreatePin() async {
