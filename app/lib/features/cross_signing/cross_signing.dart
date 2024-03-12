@@ -38,8 +38,8 @@ class CrossSigning {
         case 'm.key.verification.ready':
           _verifEmitter.emit('verification.ready', event);
           break;
-        // case 'm.key.verification.start':
-        case 'SasState::Started':
+        case 'm.key.verification.start': // when start button was clicked by other
+        case 'SasState::Started': // when start button was clicked by me
           _verifEmitter.emit('verification.start', event);
           break;
         // case 'm.key.verification.cancel':
