@@ -34,6 +34,7 @@ dependencies = [
  "ffi-gen-macro",
  "futures",
  "futures-signals",
+ "indexmap 2.2.5",
  "infer",
  "lazy_static",
  "log",
@@ -110,7 +111,7 @@ dependencies = [
  "enum_dispatch",
  "env_logger",
  "futures",
- "indexmap 2.1.0",
+ "indexmap 2.2.5",
  "matrix-sdk",
  "matrix-sdk-base",
  "matrix-sdk-sqlite",
@@ -2095,7 +2096,7 @@ dependencies = [
  "futures-sink",
  "futures-util",
  "http",
- "indexmap 2.1.0",
+ "indexmap 2.2.5",
  "slab",
  "tokio",
  "tokio-util",
@@ -2440,9 +2441,9 @@ dependencies = [
 
 [[package]]
 name = "indexmap"
-version = "2.1.0"
+version = "2.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d530e1a18b1cb4c484e6e34556a0d948706958449fca0cab753d649f2bce3d1f"
+checksum = "7b0b929d511467233429c45a44ac1dcaa21ba0f5ba11e4879e6ed28ddb4f9df4"
 dependencies = [
  "equivalent",
  "hashbrown 0.14.2",
@@ -3022,7 +3023,7 @@ dependencies = [
  "gloo-timers",
  "http",
  "imbl",
- "indexmap 2.1.0",
+ "indexmap 2.2.5",
  "js_int",
  "language-tags",
  "mas-oidc-client",
@@ -3268,7 +3269,7 @@ dependencies = [
  "futures-util",
  "fuzzy-matcher",
  "imbl",
- "indexmap 2.1.0",
+ "indexmap 2.2.5",
  "itertools 0.12.0",
  "matrix-sdk",
  "matrix-sdk-base",
@@ -3566,7 +3567,7 @@ checksum = "1e32339a5dc40459130b3bd269e9892439f55b33e772d2a9d402a789baaf4e8a"
 dependencies = [
  "futures-core",
  "futures-sink",
- "indexmap 2.1.0",
+ "indexmap 2.2.5",
  "js-sys",
  "once_cell",
  "pin-project-lite",
@@ -4580,7 +4581,7 @@ dependencies = [
  "form_urlencoded",
  "getrandom",
  "http",
- "indexmap 2.1.0",
+ "indexmap 2.2.5",
  "js-sys",
  "js_int",
  "konst",
@@ -4605,7 +4606,7 @@ version = "0.27.11"
 source = "git+https://github.com/ruma/ruma?rev=68c9bb0930f2195fa8672fbef9633ef62737df5d#68c9bb0930f2195fa8672fbef9633ef62737df5d"
 dependencies = [
  "as_variant",
- "indexmap 2.1.0",
+ "indexmap 2.2.5",
  "js_int",
  "js_option",
  "percent-encoding",
@@ -4991,7 +4992,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d7d9b8af723e4199801a643c622daa7aae8cf4a772dc2b3efcb3a95add6cb91a"
 dependencies = [
  "form_urlencoded",
- "indexmap 2.1.0",
+ "indexmap 2.2.5",
  "itoa",
  "ryu",
  "serde",
@@ -5050,7 +5051,7 @@ dependencies = [
  "chrono",
  "hex",
  "indexmap 1.9.3",
- "indexmap 2.1.0",
+ "indexmap 2.2.5",
  "serde",
  "serde_json",
  "serde_with_macros",
@@ -5586,7 +5587,7 @@ version = "0.8.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a1a195ec8c9da26928f773888e0742ca3ca1040c6cd859c919c9f59c1954ab35"
 dependencies = [
- "indexmap 2.1.0",
+ "indexmap 2.2.5",
  "serde",
  "serde_spanned",
  "toml_datetime",
@@ -5608,7 +5609,7 @@ version = "0.19.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "266f016b7f039eec8a1a80dfe6156b633d208b9fccca5e4db1d6775b0c4e34a7"
 dependencies = [
- "indexmap 2.1.0",
+ "indexmap 2.2.5",
  "toml_datetime",
  "winnow 0.4.7",
 ]
@@ -5619,7 +5620,7 @@ version = "0.20.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "396e4d48bbb2b7554c944bde63101b5ae446cff6ec4a24227428f15eb72ef338"
 dependencies = [
- "indexmap 2.1.0",
+ "indexmap 2.2.5",
  "toml_datetime",
  "winnow 0.5.17",
 ]
@@ -5630,7 +5631,7 @@ version = "0.21.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d34d383cd00a163b4a5b85053df514d45bc330f6de7737edfe0a93311d1eaa03"
 dependencies = [
- "indexmap 2.1.0",
+ "indexmap 2.2.5",
  "serde",
  "serde_spanned",
  "toml_datetime",

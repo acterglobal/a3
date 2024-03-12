@@ -4,7 +4,6 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/device.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/activities/providers/notifications_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/providers/navigation.dart';
 import 'package:acter/features/home/widgets/sidebar_widget.dart';
@@ -99,11 +98,6 @@ class HomeShellState extends ConsumerState<HomeShell> {
     final syncState = ref.watch(syncStateProvider);
     final hasFirstSynced = !syncState.initialSync;
     final errorMsg = syncState.errorMsg;
-
-    // we also need to globally hook the notifications list so it can issue
-    // desktop notifications if configured.
-    // ignore: unused_local_variable
-    final notifications = ref.watch(notificationsListProvider);
     final keyboardVisibility = ref.watch(keyboardVisibleProvider);
 
     if (errorMsg != null) {
