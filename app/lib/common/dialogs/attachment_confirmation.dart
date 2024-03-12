@@ -13,14 +13,24 @@ void attachmentConfirmationDialog(
   Convo? convo,
   List<File>? selectedFiles,
 ) {
+  final size = MediaQuery.of(ctx).size;
   if (selectedFiles != null && selectedFiles.isNotEmpty) {
     isLargeScreen(ctx)
         ? showAdaptiveDialog(
             context: ctx,
-            builder: (ctx) => PostAttachmentSelection(
-              files: selectedFiles,
-              manager: manager,
-              convo: convo,
+            builder: (ctx) => Dialog(
+              insetPadding: const EdgeInsets.all(8),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: size.width * 0.5,
+                  maxHeight: size.height * 0.5,
+                ),
+                child: PostAttachmentSelection(
+                  files: selectedFiles,
+                  manager: manager,
+                  convo: convo,
+                ),
+              ),
             ),
           )
         : showModalBottomSheet(

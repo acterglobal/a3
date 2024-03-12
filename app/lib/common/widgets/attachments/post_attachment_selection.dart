@@ -47,50 +47,54 @@ class _PostAttachmentSelectionState
           ),
         ),
         const SizedBox(height: 15),
-        Padding(
-          padding: const EdgeInsets.all(12),
-          child: Wrap(
-            spacing: 5.0,
-            runSpacing: 10.0,
-            children: List.generate(
-              files.length,
-              (idx) => AttachmentDraftItem(file: files[idx]),
-            ),
-          ),
-        ),
+        _buildSelectedDrafts(),
         const Spacer(),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              OutlinedButton(
-                onPressed: () {
-                  // we are popping out twice to clear selection sheet too!
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  // we are popping out twice to clear selection sheet too!
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
-                  if (widget.convo != null) {
-                    handleChatAttachmentSend(files);
-                  } else if (widget.manager != null) {
-                    handleAttachmentSend();
-                  }
-                  // manager not present, this shouldn't lead up here
-                  return;
-                },
-                child: const Text('Send'),
-              ),
-            ],
+        _buildActionButtons(),
+      ],
+    );
+  }
+
+  Widget _buildSelectedDrafts() => Padding(
+        padding: const EdgeInsets.all(12),
+        child: Wrap(
+          spacing: 5.0,
+          runSpacing: 10.0,
+          children: List.generate(
+            widget.files.length,
+            (idx) => AttachmentDraftItem(file: widget.files[idx]),
           ),
         ),
-      ],
+      );
+
+  // send/cancel buttons
+  Widget _buildActionButtons() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          OutlinedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              // we are popping out twice to clear selection sheet too!
+              Navigator.of(context).pop();
+              if (widget.convo != null) {
+                handleChatAttachmentSend(widget.files);
+              } else if (widget.manager != null) {
+                handleAttachmentSend();
+              }
+              // manager not present, this shouldn't lead up here
+              return;
+            },
+            child: const Text('Send'),
+          ),
+        ],
+      ),
     );
   }
 
