@@ -1,16 +1,11 @@
-import 'package:acter/common/dialogs/attachment_selection.dart';
-import 'package:acter/common/providers/attachment_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/sliver_scaffold.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
-import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -65,8 +60,6 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
                   const SizedBox(height: 15),
                   _buildLinkField(),
                   const SizedBox(height: 15),
-                  _buildAttachmentField(),
-                  const SizedBox(height: 15),
                   _buildDescriptionField(),
                 ],
               ),
@@ -104,41 +97,6 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
               : 'Please enter a title',
         ),
       ],
-    );
-  }
-
-  Widget _buildAttachmentField() {
-    return InkWell(
-      onTap: () => showAttachmentSelection(context, null, null),
-      child: Container(
-        height: 100,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primaryContainer,
-          border: Border.all(
-            color: Theme.of(context).colorScheme.primary,
-            strokeAlign: BorderSide.strokeAlignOutside,
-          ),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(
-              Atlas.file_arrow_up_thin,
-              size: 14,
-              color: Theme.of(context).colorScheme.neutral5,
-            ),
-            Text(
-              'Upload Attachment',
-              style: Theme.of(context)
-                  .textTheme
-                  .labelLarge!
-                  .copyWith(color: Theme.of(context).colorScheme.neutral5),
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -224,10 +182,6 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
       }
       final pinId = await pinDraft.send();
 
-      // pin sent okay, lets send attachments too.
-      final pin = await ref.read(pinProvider(pinId.toString()).future);
-      final manager = await pin.attachments();
-      _handleSendAttachments(manager);
       // reset controllers
       _linkController.text = '';
       EasyLoading.showSuccess('Pin created successfully');
@@ -251,20 +205,6 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
         return;
       }
       EasyLoading.showError('An error occured creating pin $e');
-    }
-  }
-
-  Future<void> _handleSendAttachments(AttachmentsManager manager) async {
-    final attachmentDrafts = ref.read(attachmentDraftsProvider(manager));
-    final attachmentDraftsNotifier =
-        ref.read(attachmentDraftsProvider(manager).notifier);
-    if (attachmentDrafts.isNotEmpty) {
-      EasyLoading.show(status: 'Sending attachments...', dismissOnTap: false);
-      for (var draft in attachmentDrafts) {
-        await draft.send();
-      }
-      // reset the selection
-      attachmentDraftsNotifier.resetDrafts();
     }
   }
 }
