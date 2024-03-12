@@ -1,5 +1,6 @@
 import 'package:acter/common/dialogs/block_user_dialog.dart';
 import 'package:acter/common/models/profile_data.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/toolkit/menu_item_widget.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -13,7 +14,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class _MemberInfoDrawer extends StatelessWidget {
+class _MemberInfoDrawer extends ConsumerWidget {
   final ProfileData memberProfile;
   final String memberId;
   final Member member;
@@ -27,7 +28,7 @@ class _MemberInfoDrawer extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -41,23 +42,38 @@ class _MemberInfoDrawer extends StatelessWidget {
             const SizedBox(height: 20),
             _buildUserName(context),
             const SizedBox(height: 20),
-            _buildMessageUser(),
-            const SizedBox(height: 30),
-            MenuItemWidget(
-              iconData: Atlas.block_thin,
-              title: 'Block User',
-              withMenu: false,
-              onTap: () async {
-                await showBlockUserDialog(context, member);
-                // ignore: use_build_context_synchronously
-                context.pop();
-              },
-            ),
-            const SizedBox(height: 30),
+            ..._buildMenu(context, ref),
           ],
         ),
       ),
     );
+  }
+
+  List<Widget> _buildMenu(BuildContext context, WidgetRef ref) {
+    final myUserId = ref.watch(accountProvider).userId().toString();
+    final itsMe = memberId == myUserId;
+    if (itsMe) {
+      return [
+        const Center(child: Text('This is you')),
+        const SizedBox(height: 30),
+      ];
+    }
+
+    // regular user
+    return [
+      _buildMessageUser(),
+      const SizedBox(height: 30),
+      MenuItemWidget(
+        iconData: Atlas.block_thin,
+        title: 'Block User',
+        withMenu: false,
+        onTap: () async {
+          await showBlockUserDialog(context, member);
+          // ignore: use_build_context_synchronously
+          context.pop();
+        },
+      ),
+    ];
   }
 
   Widget _buildAvatarUI(BuildContext context) {
