@@ -1,6 +1,7 @@
 import 'package:acter/common/dialogs/block_user_dialog.dart';
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
+import 'package:acter/common/toolkit/menu_item_widget.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/chat/providers/create_chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -42,8 +43,7 @@ class _MemberInfoDrawer extends StatelessWidget {
             const SizedBox(height: 20),
             _buildMessageUser(),
             const SizedBox(height: 30),
-            _actionMenuItem(
-              context: context,
+            MenuItemWidget(
               iconData: Atlas.block_thin,
               title: 'Block User',
               withMenu: false,
@@ -55,58 +55,29 @@ class _MemberInfoDrawer extends StatelessWidget {
             ),
             const SizedBox(height: 30),
           ],
-          // _profileItem(
-          //   key: MyProfilePage.displayNameKey,
-          //   context: context,
-          //   title: 'Display Name',
-          //   subTitle: displayName,
-          //   trailingIcon: Atlas.pencil_edit,
-          //   onPressed: () => updateDisplayName(data, context, ref),
-          // ),
-          // const SizedBox(height: 20),
-          // _profileItem(
-          //   context: context,
-          //   title: 'Username',
-          //   subTitle: userId,
-          //   trailingIcon: Atlas.pages,
-          //   onPressed: () {
-          //     Clipboard.setData(
-          //       ClipboardData(text: userId),
-          //     );
-          //     customMsgSnackbar(
-          //       context,
-          //       'Username copied to clipboard',
-          //     );
-          //   },
-          // ),
         ),
       ),
     );
   }
 
   Widget _buildAvatarUI(BuildContext context) {
-    return GestureDetector(
-      onTap: () async {
-        await gotoFullProfile(context);
-      },
-      child: Center(
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(100),
-            border: Border.all(
-              width: 2,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
+    return Center(
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(100),
+          border: Border.all(
+            width: 2,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
-          child: ActerAvatar(
-            mode: DisplayMode.DM,
-            avatarInfo: AvatarInfo(
-              uniqueId: memberId,
-              avatar: memberProfile.getAvatarImage(),
-              displayName: memberProfile.displayName,
-            ),
-            size: 50,
+        ),
+        child: ActerAvatar(
+          mode: DisplayMode.DM,
+          avatarInfo: AvatarInfo(
+            uniqueId: memberId,
+            avatar: memberProfile.getAvatarImage(),
+            displayName: memberProfile.displayName,
           ),
+          size: 50,
         ),
       ),
     );
@@ -118,7 +89,6 @@ class _MemberInfoDrawer extends StatelessWidget {
         final client = ref.watch(alwaysClientProvider);
         final dmId = client.dmWithUser(memberId).text();
         if (dmId != null) {
-          debugPrint('DM id; $dmId');
           return Center(
             child: OutlinedButton.icon(
               icon: const Icon(Atlas.chats_thin),
@@ -157,13 +127,8 @@ class _MemberInfoDrawer extends StatelessWidget {
   }
 
   Widget _buildDisplayName(BuildContext context) {
-    return GestureDetector(
-      onTap: () async {
-        await gotoFullProfile(context);
-      },
-      child: Center(
-        child: Text(memberProfile.displayName!), // FIXME: make this prettier
-      ),
+    return Center(
+      child: Text(memberProfile.displayName!), // FIXME: make this prettier
     );
   }
 
@@ -191,51 +156,6 @@ class _MemberInfoDrawer extends StatelessWidget {
       ),
     );
   }
-
-  Future<void> gotoFullProfile(BuildContext context) async {}
-}
-
-Widget _actionMenuItem({
-  Key? key,
-  required BuildContext context,
-  required IconData iconData,
-  Color? iconColor,
-  required String title,
-  TextStyle? titleStyles,
-  String? subTitle,
-  VoidCallback? onTap,
-  bool enable = true,
-  bool withMenu = true,
-}) {
-  return Card(
-    child: ListTile(
-      key: key,
-      onTap: onTap,
-      leading: Icon(
-        iconData,
-        color: enable ? iconColor : Theme.of(context).disabledColor,
-      ),
-      title: Text(
-        title,
-        style: titleStyles?.copyWith(
-          color: enable ? null : Theme.of(context).disabledColor,
-        ),
-      ),
-      subtitle: subTitle == null
-          ? null
-          : Text(
-              subTitle,
-              style: titleStyles?.copyWith(
-                color: enable ? null : Theme.of(context).disabledColor,
-              ),
-            ),
-      trailing: withMenu
-          ? const Icon(
-              Icons.keyboard_arrow_right_outlined,
-            )
-          : null,
-    ),
-  );
 }
 
 const Key memberInfoDrawer = Key('members-widgets-member-info-drawer');
