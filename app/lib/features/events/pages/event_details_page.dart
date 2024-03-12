@@ -20,6 +20,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:logging/logging.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 final _log = Logger('a3::event::details');
 
@@ -433,26 +434,35 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           final memberInfo = ref.watch(
             roomMemberProvider((roomId: roomId, userId: participantId)),
           );
-          memberInfo.whenData((profileData) {
-            avtarList.add(
-              Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: ActerAvatar(
-                  mode: DisplayMode.DM,
-                  avatarInfo: AvatarInfo(
-                    uniqueId: roomId,
-                    displayName: profileData.displayName ?? roomId,
-                    avatar: profileData.getAvatarImage(),
-                  ),
-                  size: 18,
+          var participant = memberInfo.when(
+            data: (profileData) {
+              return ActerAvatar(
+                mode: DisplayMode.DM,
+                avatarInfo: AvatarInfo(
+                  uniqueId: roomId,
+                  displayName: profileData.displayName ?? roomId,
+                  avatar: profileData.getAvatarImage(),
                 ),
-              ),
-            );
-          });
+                size: 18,
+              );
+            },
+            error: (err, stackTrace) => fallbackAvatar(roomId),
+            loading: () => fallbackAvatar(roomId),
+          );
+          avtarList.add(
+            Padding(padding: const EdgeInsets.all(5.0), child: participant),
+          );
         }
 
         return Wrap(children: avtarList);
       },
+    );
+  }
+
+  ActerAvatar fallbackAvatar(String roomId) {
+    return ActerAvatar(
+      mode: DisplayMode.Space,
+      avatarInfo: AvatarInfo(uniqueId: roomId),
     );
   }
 
