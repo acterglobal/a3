@@ -11,6 +11,7 @@ import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/skeletons/event_details_skeleton_widget.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -430,15 +431,24 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
 
         List<Widget> avtarList = [];
         for (final participantId in eventParticipantsList) {
-          avtarList.add(
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: AvatarBuilder(
-                roomId: roomId,
-                userId: participantId,
+          final memberInfo = ref.watch(
+              roomMemberProvider((roomId: roomId, userId: participantId)));
+          memberInfo.whenData((profileData) {
+            avtarList.add(
+              Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: ActerAvatar(
+                  mode: DisplayMode.DM,
+                  avatarInfo: AvatarInfo(
+                    uniqueId: roomId,
+                    displayName: profileData.displayName ?? roomId,
+                    avatar: profileData.getAvatarImage(),
+                  ),
+                  size: 18,
+                ),
               ),
-            ),
-          );
+            );
+          });
         }
 
         return Wrap(children: avtarList);
