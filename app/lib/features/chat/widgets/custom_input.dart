@@ -533,7 +533,6 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
       AttachmentType attachmentType,
     ) handleFileUpload,
   ) {
-    Navigator.of(context).pop();
     final size = MediaQuery.of(context).size;
     if (selectedFiles != null && selectedFiles.isNotEmpty) {
       isLargeScreen(context)

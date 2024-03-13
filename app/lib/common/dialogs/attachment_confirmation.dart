@@ -30,9 +30,6 @@ void attachmentConfirmationDialog(
         ),
       );
     } else {
-      // dialog doesn't have previous stack as bottom sheet, pop off the previous
-      // selection sheet
-      Navigator.of(ctx).pop();
       showModalBottomSheet(
         context: ctx,
         builder: (ctx) => PostAttachmentSelection(

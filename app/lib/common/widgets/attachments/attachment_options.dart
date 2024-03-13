@@ -27,6 +27,7 @@ class AttachmentOptions extends StatelessWidget {
         if (!isDesktop)
           ListTile(
             onTap: () {
+              Navigator.of(context).pop();
               if (onTapCamera != null) onTapCamera!();
             },
             leading: Icon(Atlas.camera, color: iconColor),
@@ -34,6 +35,7 @@ class AttachmentOptions extends StatelessWidget {
           ),
         ListTile(
           onTap: () {
+            Navigator.of(context).pop();
             if (onTapImage != null) onTapImage!();
           },
           leading: Icon(Atlas.file_image, color: iconColor),
@@ -41,6 +43,7 @@ class AttachmentOptions extends StatelessWidget {
         ),
         ListTile(
           onTap: () {
+            Navigator.of(context).pop();
             if (onTapVideo != null) onTapVideo!();
           },
           leading: Icon(Atlas.file_video, color: iconColor),
@@ -48,6 +51,7 @@ class AttachmentOptions extends StatelessWidget {
         ),
         ListTile(
           onTap: () {
+            Navigator.of(context).pop();
             if (onTapFile != null) onTapFile!();
           },
           leading: Icon(Atlas.file, color: iconColor),

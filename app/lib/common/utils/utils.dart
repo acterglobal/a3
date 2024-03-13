@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:acter/common/models/profile_data.dart';
@@ -299,3 +300,4 @@ typedef ChatWithProfileData = ({Convo chat, ProfileData profile});
 typedef SpaceWithProfileData = ({Space space, ProfileData profile});
 typedef MemberInfo = ({String userId, String? roomId});
 typedef ChatMessageInfo = ({String messageId, String roomId});
+typedef AttachmentInfo = ({AttachmentType type, File file});
