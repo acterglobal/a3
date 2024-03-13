@@ -1,7 +1,6 @@
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
@@ -70,10 +69,11 @@ final chatMentionsProvider =
     final data = await ref
         .watch(roomMemberProvider((roomId: roomId, userId: mId)).future);
     Map<String, String> record = {};
-    final userName = data.profile.displayName;
+    final displayName = data.profile.displayName;
     record['id'] = mId;
-    record['display'] = userName ?? simplifyUserId(mId)!;
-    record['link'] = mId;
+    record['displayName'] = '$displayName';
+    // all of our search terms:
+    record['display'] = '$displayName $mId';
     mentionRecords.add(record);
   }
   return mentionRecords;

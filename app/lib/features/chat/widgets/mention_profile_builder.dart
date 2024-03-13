@@ -10,13 +10,11 @@ final _log = Logger('a3::chat::mention_profile_builder');
 class MentionProfileBuilder extends ConsumerWidget {
   final String roomId;
   final String authorId;
-  final String title;
 
   const MentionProfileBuilder({
     super.key,
     required this.roomId,
     required this.authorId,
-    required this.title,
   });
 
   @override
@@ -29,15 +27,14 @@ class MentionProfileBuilder extends ConsumerWidget {
         avatarInfo: AvatarInfo(
           uniqueId: authorId,
           avatar: data.profile.getAvatarImage(),
-          displayName: title,
+          displayName: data.profile.displayName,
         ),
         size: 18,
       ),
       error: (e, st) {
-        _log.severe('ERROR loading avatar', e, st);
         return ActerAvatar(
           mode: DisplayMode.DM,
-          avatarInfo: AvatarInfo(uniqueId: authorId, displayName: title),
+          avatarInfo: AvatarInfo(uniqueId: authorId),
           size: 18,
         );
       },

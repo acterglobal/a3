@@ -972,18 +972,18 @@ class _TextInputWidget extends ConsumerWidget {
                   ..style = PaintingStyle.stroke,
               ),
               data: chatMentions.valueOrNull ?? [],
-              suggestionBuilder: (Map<String, dynamic> roomMember) {
-                final authorId = roomMember['link'];
-                final title = roomMember['display'] ?? authorId;
+              suggestionBuilder: (Map<String, dynamic> mentionRecord) {
+                final authorId = mentionRecord['id'];
+                final title = mentionRecord['displayName'];
                 return ListTile(
                   leading: MentionProfileBuilder(
                     roomId: roomId,
                     authorId: authorId,
-                    title: title,
                   ),
                   title: Wrap(
                     children: [
-                      Text(title, style: Theme.of(context).textTheme.bodySmall),
+                      Text(title ?? '',
+                          style: Theme.of(context).textTheme.bodySmall,),
                       const SizedBox(width: 15),
                       Text(
                         authorId,
