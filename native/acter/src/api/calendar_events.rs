@@ -142,7 +142,7 @@ impl Eq for CalendarEvent {}
 
 impl PartialOrd for CalendarEvent {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        self.inner.utc_start.partial_cmp(&other.inner.utc_start)
+        Some(self.cmp(other))
     }
 }
 
