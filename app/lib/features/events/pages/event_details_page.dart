@@ -1,3 +1,5 @@
+import 'package:acter/common/dialogs/member_info_drawer.dart';
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -437,6 +439,17 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           var participant = memberInfo.when(
             data: (profileData) {
               return ActerAvatar(
+                onAvatarTap: () async {
+                  debugPrint('onTap Avatar');
+                  // ignore: use_build_context_synchronously
+                  showMemberInfoDrawer(
+                    context: context,
+                    memberProfile: profileData,
+                    roomId: roomId,
+                    member: memberInfo!,
+                    memberId: participantId,
+                  );
+                },
                 mode: DisplayMode.DM,
                 avatarInfo: AvatarInfo(
                   uniqueId: roomId,
