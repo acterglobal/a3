@@ -491,7 +491,7 @@ impl Client {
     }
 
     pub async fn convo(&self, room_id_or_alias: String) -> Result<Convo> {
-        self.convo_str(room_id_or_alias.as_str()).await
+        self.convo_str(&room_id_or_alias).await
     }
 
     pub async fn convo_str(&self, room_id_or_alias: &str) -> Result<Convo> {
@@ -515,7 +515,7 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 let retry_strategy = FixedInterval::from_millis(250).take(10);
-                Retry::spawn(retry_strategy, || me.convo_str(room_id_or_alias.as_str())).await
+                Retry::spawn(retry_strategy, || me.convo_str(&room_id_or_alias)).await
             })
             .await?
     }
