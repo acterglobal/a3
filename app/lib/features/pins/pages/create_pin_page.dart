@@ -1,17 +1,11 @@
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/sliver_scaffold.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/pins/pin_utils/pin_utils.dart';
-import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -35,7 +29,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
   final TextEditingController _linkController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   EditorState textEditorState = EditorState.blank();
-
+  AttachmentsManager? manager;
   @override
   void initState() {
     super.initState();
@@ -47,8 +41,6 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
 
   @override
   Widget build(BuildContext context) {
-    final attachments = ref.watch(selectedPinAttachmentsProvider);
-
     return SliverScaffold(
       confirmActionKey: CreatePinPage.submitBtn,
       header: 'Create new Pin',
@@ -67,18 +59,6 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
                   _buildTitleField(),
                   const SizedBox(height: 15),
                   _buildLinkField(),
-                  const SizedBox(height: 15),
-                  _buildAttachmentField(),
-                  const SizedBox(height: 15),
-                  if (attachments.isNotEmpty)
-                    Wrap(
-                      spacing: 5.0,
-                      runSpacing: 10.0,
-                      children: <Widget>[
-                        for (var pinAttachment in attachments)
-                          _AttachmentItemWidget(pinAttachment),
-                      ],
-                    ),
                   const SizedBox(height: 15),
                   _buildDescriptionField(),
                 ],
@@ -120,41 +100,6 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
     );
   }
 
-  Widget _buildAttachmentField() {
-    return InkWell(
-      onTap: () => PinUtils.showAttachmentSelection(context, ref),
-      child: Container(
-        height: 100,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primaryContainer,
-          border: Border.all(
-            color: Theme.of(context).colorScheme.primary,
-            strokeAlign: BorderSide.strokeAlignOutside,
-          ),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(
-              Atlas.file_arrow_up_thin,
-              size: 14,
-              color: Theme.of(context).colorScheme.neutral5,
-            ),
-            Text(
-              'Upload Attachment',
-              style: Theme.of(context)
-                  .textTheme
-                  .labelLarge!
-                  .copyWith(color: Theme.of(context).colorScheme.neutral5),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildLinkField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -168,8 +113,6 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
           key: CreatePinPage.urlFieldKey,
           textInputType: TextInputType.url,
           controller: _linkController,
-          validator: (value) =>
-              hasLinkOrText() ? null : 'Text or URL must be given',
         ),
       ],
     );
@@ -208,17 +151,9 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
     );
   }
 
-  bool hasLinkOrText() {
-    final htmlText = textEditorState.intoHtml();
-    final plainText = textEditorState.intoMarkdown();
-    final hasEditorText = htmlText.isNotEmpty || plainText.isNotEmpty;
-    return _linkController.text.trim().isNotEmpty || hasEditorText == true;
-  }
-
   void _handleCreatePin() async {
-    EasyLoading.show(status: 'Creating pin...');
+    EasyLoading.show(status: 'Creating pin...', dismissOnTap: false);
     try {
-      final client = ref.read(alwaysClientProvider);
       final spaceId = ref.read(selectedSpaceIdProvider);
       final space = await ref.read(spaceProvider(spaceId!).future);
       final pinDraft = space.pinDraft();
@@ -231,29 +166,17 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
 
       final htmlText = textEditorState.intoHtml();
       final plainText = textEditorState.intoMarkdown();
-      pinDraft.contentHtml(plainText, htmlText);
+
+      if (plainText.trim().isNotEmpty) {
+        pinDraft.contentHtml(plainText, htmlText);
+      } else {
+        pinDraft.contentMarkdown(plainText);
+      }
 
       if (url.isNotEmpty) {
         pinDraft.url(url);
       }
       final pinId = await pinDraft.send();
-      // pin sent okay, lets send attachments too.
-      EasyLoading.show(status: 'Sending attachments...');
-      final pin = await ref.read(pinProvider(pinId.toString()).future);
-      final manager = await pin.attachments();
-      final selectedAttachments = ref.read(selectedPinAttachmentsProvider);
-      final List<AttachmentDraft>? drafts = await PinUtils.makeAttachmentDrafts(
-        client,
-        manager,
-        selectedAttachments,
-      );
-      if (drafts == null) {
-        EasyLoading.showError('Error occured sending attachments');
-        return;
-      }
-      for (var draft in drafts) {
-        await draft.send();
-      }
 
       // reset controllers
       _linkController.text = '';
@@ -263,8 +186,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
       if (!context.mounted) {
         return;
       }
-      // reset the selected attachment UI
-      ref.invalidate(selectedPinAttachmentsProvider);
+
       // ignore: use_build_context_synchronously
       Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
       // ignore: use_build_context_synchronously
@@ -280,54 +202,5 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
       }
       EasyLoading.showError('An error occured creating pin $e');
     }
-  }
-}
-
-// Attachment Item UI widget
-class _AttachmentItemWidget extends ConsumerWidget {
-  const _AttachmentItemWidget(this.attachment);
-
-  final SelectedAttachment attachment;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final attachmentNotifier =
-        ref.watch(selectedPinAttachmentsProvider.notifier);
-    final file = attachment.file;
-    String fileName = file.path.split('/').last;
-
-    return Container(
-      height: 30,
-      width: 100,
-      padding: const EdgeInsets.all(3),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Row(
-        children: <Widget>[
-          attachmentIconHandler(file, null),
-          const SizedBox(width: 5),
-          Flexible(
-            child: Text(
-              fileName,
-              style: Theme.of(context)
-                  .textTheme
-                  .labelSmall!
-                  .copyWith(overflow: TextOverflow.ellipsis),
-            ),
-          ),
-          const SizedBox(width: 5),
-          InkWell(
-            onTap: () {
-              var files = ref.read(selectedPinAttachmentsProvider);
-              files.remove(attachment);
-              attachmentNotifier.update((state) => [...files]);
-            },
-            child: const Icon(Icons.close, size: 12),
-          ),
-        ],
-      ),
-    );
   }
 }
