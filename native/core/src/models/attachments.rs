@@ -129,11 +129,7 @@ impl Attachment {
 
 impl ActerModel for Attachment {
     fn indizes(&self, _user_id: &UserId) -> Vec<String> {
-        self.belongs_to()
-            .expect("we always have some as attachments")
-            .into_iter()
-            .map(|v| Attachment::index_for(&v))
-            .collect()
+        vec![Attachment::index_for(&self.inner.on.event_id)]
     }
 
     fn event_id(&self) -> &EventId {
@@ -145,35 +141,34 @@ impl ActerModel for Attachment {
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<String>> {
-        let belongs_to = self
-            .belongs_to()
-            .expect("we always have some as attachments");
+        let belongs_to = self.inner.on.event_id.to_string();
         trace!(event_id=?self.event_id(), ?belongs_to, "applying attachment");
 
-        let mut managers = vec![];
-        for p in belongs_to {
-            let parent = store.get(&p).await?;
+        let manager = {
+            let parent = store.get(&belongs_to).await?;
             if !parent.capabilities().contains(&Capability::Attachmentable) {
                 error!(?parent, attachment = ?self, "doesn't support attachments. can't apply");
-                continue;
+                None
+            } else {
+                // FIXME: what if we have this twice in the same loop?
+                let mut manager =
+                    AttachmentsManager::from_store_and_event_id(store, parent.event_id()).await;
+                if manager.add_attachment(&self).await? {
+                    Some(manager)
+                } else {
+                    None
+                }
             }
-
-            // FIXME: what if we have this twice in the same loop?
-            let mut manager =
-                AttachmentsManager::from_store_and_event_id(store, parent.event_id()).await;
-            if manager.add_attachment(&self).await? {
-                managers.push(manager);
-            }
-        }
+        };
         let mut updates = store.save(self.into()).await?;
-        for manager in managers {
+        if let Some(manager) = manager {
             updates.push(manager.save().await?);
         }
         Ok(updates)
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
-        Some(vec![self.inner.on.event_id.to_string()])
+        None
     }
 
     fn transition(&mut self, model: &AnyActerModel) -> Result<bool> {

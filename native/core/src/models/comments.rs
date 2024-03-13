@@ -142,12 +142,27 @@ impl Comment {
             .reply_to(Some(self.meta.event_id.to_owned().into()))
             .to_owned()
     }
+
+    fn belongs_to_inner(&self) -> Vec<String> {
+        let mut references = self
+            .inner
+            .reply_to
+            .as_ref()
+            .map(|r| {
+                r.event_ids
+                    .iter()
+                    .map(ToString::to_string)
+                    .collect::<Vec<_>>()
+            })
+            .unwrap_or_default();
+        references.push(self.inner.on.event_id.to_string());
+        references
+    }
 }
 
 impl ActerModel for Comment {
     fn indizes(&self, _user_id: &UserId) -> Vec<String> {
-        self.belongs_to()
-            .expect("we always have some as comments")
+        self.belongs_to_inner()
             .into_iter()
             .map(|v| Comment::index_for(&v))
             .collect()
@@ -162,7 +177,7 @@ impl ActerModel for Comment {
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<String>> {
-        let belongs_to = self.belongs_to().expect("we always have some as comments");
+        let belongs_to = self.belongs_to_inner();
         trace!(event_id=?self.event_id(), ?belongs_to, "applying comment");
 
         let mut managers = vec![];
@@ -189,19 +204,8 @@ impl ActerModel for Comment {
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
-        let mut references = self
-            .inner
-            .reply_to
-            .as_ref()
-            .map(|r| {
-                r.event_ids
-                    .iter()
-                    .map(ToString::to_string)
-                    .collect::<Vec<_>>()
-            })
-            .unwrap_or_default();
-        references.push(self.inner.on.event_id.to_string());
-        Some(references)
+        // the higher ups don't need to be bothered about this
+        None
     }
 
     fn transition(&mut self, model: &AnyActerModel) -> Result<bool> {
