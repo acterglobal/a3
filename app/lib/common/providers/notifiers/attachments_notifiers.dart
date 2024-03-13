@@ -50,10 +50,10 @@ class AttachmentDraftsNotifier extends StateNotifier<List<AttachmentDraft>> {
   AttachmentDraftsNotifier({required this.manager, required this.ref})
       : super([]);
 
-  /// converts user selected media to attachment draft and adds to state list.
+  /// converts user selected media to attachment draft and sends state list.
   /// only supports image/video/audio/file.
-  Future<void> addDraft(File file) async {
-    EasyLoading.show(status: 'Adding draft');
+  Future<void> sendDrafts(File file) async {
+    EasyLoading.show(status: 'Sending attachments', dismissOnTap: false);
     final client = ref.read(alwaysClientProvider);
     try {
       final mimeType = lookupMimeType(file.path)!;
@@ -88,18 +88,6 @@ class AttachmentDraftsNotifier extends StateNotifier<List<AttachmentDraft>> {
         final attachmentDraft = await manager.contentDraft(fileDraft);
         state = [...state, attachmentDraft];
       }
-      _log.info('draft added');
-      EasyLoading.dismiss();
-    } catch (e) {
-      EasyLoading.showError('Error adding draft: $e');
-      _log.severe('failed to make attachment draft', e);
-    }
-  }
-
-  /// send attachments over the wire
-  Future<void> sendDrafts() async {
-    EasyLoading.show(status: 'Sending Attachments');
-    try {
       for (var draft in state) {
         final res = await draft.send();
         _log.info('attachment sent: $res');
@@ -108,8 +96,7 @@ class AttachmentDraftsNotifier extends StateNotifier<List<AttachmentDraft>> {
       // reset the selection
       resetDrafts();
     } catch (e) {
-      EasyLoading.showError('Failed to send attachments: $e');
-      _log.severe('failed to send attachment drafts', e);
+      _log.severe('failed to make attachment draft', e);
     }
   }
 

@@ -103,9 +103,8 @@ class _PostAttachmentSelectionState
     final attachmentDraftsNotifier =
         ref.read(attachmentDraftsProvider(widget.manager!).notifier);
     for (var file in widget.files) {
-      await attachmentDraftsNotifier.addDraft(file);
+      await attachmentDraftsNotifier.sendDrafts(file);
     }
-    await attachmentDraftsNotifier.sendDrafts();
   }
 
   // if room attachment, send via timeline stream message
