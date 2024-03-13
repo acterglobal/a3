@@ -1,4 +1,4 @@
-import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
@@ -131,20 +131,19 @@ class _UserReceiptsWidget extends ConsumerWidget {
                     Consumer(
                       builder: (context, ref, child) {
                         final memberProfile = ref.watch(
-                          memberProfileByInfoProvider(
-                            (userId: userId, roomId: roomId),
-                          ),
+                          roomMemberProvider((userId: userId, roomId: roomId)),
                         );
                         return memberProfile.when(
-                          data: (profile) {
+                          data: (data) {
                             return Padding(
                               padding: const EdgeInsets.only(right: 10),
                               child: ActerAvatar(
                                 mode: DisplayMode.DM,
                                 avatarInfo: AvatarInfo(
                                   uniqueId: userId,
-                                  displayName: profile.displayName ?? userId,
-                                  avatar: profile.getAvatarImage(),
+                                  displayName:
+                                      data.profile.displayName ?? userId,
+                                  avatar: data.profile.getAvatarImage(),
                                 ),
                                 size: 8,
                               ),
@@ -185,21 +184,21 @@ class _UserReceiptsWidget extends ConsumerWidget {
                   (idx) => Consumer(
                     builder: (context, ref, child) {
                       final memberProfile = ref.watch(
-                        memberProfileByInfoProvider(
+                        roomMemberProvider(
                           (userId: seenList[idx], roomId: roomId),
                         ),
                       );
                       final userId = seenList[idx];
                       return memberProfile.when(
-                        data: (profile) {
+                        data: (data) {
                           return Padding(
                             padding: const EdgeInsets.only(right: 10),
                             child: ActerAvatar(
                               mode: DisplayMode.DM,
                               avatarInfo: AvatarInfo(
                                 uniqueId: userId,
-                                displayName: profile.displayName ?? userId,
-                                avatar: profile.getAvatarImage(),
+                                displayName: data.profile.displayName ?? userId,
+                                avatar: data.profile.getAvatarImage(),
                               ),
                               size: 8,
                             ),
@@ -258,21 +257,22 @@ class _UserReceiptsWidget extends ConsumerWidget {
                   return Consumer(
                     builder: (context, ref, child) {
                       final member = ref.watch(
-                        memberProfileByInfoProvider(
+                        roomMemberProvider(
                           (userId: userId, roomId: roomId),
                         ),
                       );
                       return ListTile(
                         leading: member.when(
-                          data: (profile) {
+                          data: (data) {
                             return Padding(
                               padding: const EdgeInsets.only(right: 10),
                               child: ActerAvatar(
                                 mode: DisplayMode.DM,
                                 avatarInfo: AvatarInfo(
                                   uniqueId: seenList[index],
-                                  displayName: profile.displayName ?? userId,
-                                  avatar: profile.getAvatarImage(),
+                                  displayName:
+                                      data.profile.displayName ?? userId,
+                                  avatar: data.profile.getAvatarImage(),
                                 ),
                                 size: 8,
                               ),
@@ -300,7 +300,7 @@ class _UserReceiptsWidget extends ConsumerWidget {
                         ),
                         title: Text(
                           member.hasValue
-                              ? member.requireValue.displayName!
+                              ? member.requireValue.profile.displayName!
                               : userId,
                           style: Theme.of(context).textTheme.labelSmall,
                         ),

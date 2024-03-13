@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/chat_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -94,7 +95,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
     final roomId = widget.convo.getRoomIdStr();
     final inSideBar = ref.watch(inSideBarProvider);
     final convoProfile = ref.watch(chatProfileDataProvider(widget.convo));
-    final activeMembers = ref.watch(chatMembersProvider(roomId));
+    final activeMembers = ref.watch(membersIdsProvider(roomId));
     final chatState = ref.watch(chatStateProvider(widget.convo));
     final messages = chatState.messages
         .where(

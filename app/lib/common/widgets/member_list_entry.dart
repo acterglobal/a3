@@ -2,7 +2,8 @@ import 'dart:async';
 
 import 'package:acter/common/dialogs/block_user_dialog.dart';
 import 'package:acter/common/dialogs/member_info_drawer.dart';
-import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/models/profile_data.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
@@ -176,17 +177,84 @@ class _ChangePowerLevelState extends State<ChangePowerLevel> {
   }
 }
 
+class _MemberListInnerSkeleton extends StatelessWidget {
+  const _MemberListInnerSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Skeletonizer(
+        child: ActerAvatar(
+          mode: DisplayMode.DM,
+          avatarInfo: const AvatarInfo(
+            uniqueId: 'no id given',
+          ),
+          size: 18,
+        ),
+      ),
+      title: Skeletonizer(
+        child: Text(
+          'no id',
+          style: Theme.of(context).textTheme.bodyMedium,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      subtitle: Skeletonizer(
+        child: Text(
+          'no id',
+          style: Theme.of(context)
+              .textTheme
+              .labelLarge!
+              .copyWith(color: Theme.of(context).colorScheme.neutral5),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+    );
+  }
+}
+
 class MemberListEntry extends ConsumerWidget {
-  final Member member;
-  final Space? space;
-  final Convo? convo;
+  final String memberId;
+  final String roomId;
   final Member? myMembership;
 
   const MemberListEntry({
     super.key,
+    required this.memberId,
+    required this.roomId,
+    this.myMembership,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final profileData =
+        ref.watch(roomMemberProvider((userId: memberId, roomId: roomId)));
+    return profileData.when(
+      data: (data) => _MemberListEntryInner(
+        userId: memberId,
+        roomId: roomId,
+        member: data.member,
+        profile: data.profile,
+        myMembership: myMembership,
+      ),
+      error: (e, s) => Text('Error loading Profile: $e'),
+      loading: () => const _MemberListInnerSkeleton(),
+    );
+  }
+}
+
+class _MemberListEntryInner extends ConsumerWidget {
+  final Member member;
+  final ProfileData profile;
+  final String userId;
+  final String roomId;
+  final Member? myMembership;
+
+  const _MemberListEntryInner({
+    required this.userId,
     required this.member,
-    this.space,
-    this.convo,
+    required this.profile,
+    required this.roomId,
     this.myMembership,
   });
 
@@ -195,7 +263,6 @@ class MemberListEntry extends ConsumerWidget {
   }
 
   Future<void> unblockUser(BuildContext context) async {
-    final userId = member.userId().toString();
     await showDialog(
       context: context,
       builder: (BuildContext ctx) {
@@ -300,8 +367,6 @@ class MemberListEntry extends ConsumerWidget {
       ),
     );
     if (newPowerlevel != null) {
-      final userId = member.userId().toString();
-
       // We are doing as expected, but the lints triggers.
       // ignore: use_build_context_synchronously
       if (!context.mounted) {
@@ -317,9 +382,8 @@ class MemberListEntry extends ConsumerWidget {
           isLoader: true,
         ),
       );
-      space == null
-          ? await convo?.updatePowerLevel(userId, newPowerlevel)
-          : await space?.updatePowerLevel(userId, newPowerlevel);
+      final room = await ref.read(maybeRoomProvider(roomId).future);
+      await room?.updatePowerLevel(userId, newPowerlevel);
 
       // We are doing as expected, but the lints triggers.
       // ignore: use_build_context_synchronously
@@ -339,7 +403,7 @@ class MemberListEntry extends ConsumerWidget {
         onTap: () {
           Clipboard.setData(
             ClipboardData(
-              text: member.userId().toString(),
+              text: userId,
             ),
           );
           customMsgSnackbar(
@@ -422,8 +486,6 @@ class MemberListEntry extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userId = member.userId().toString();
-    final profile = ref.watch(memberProfileProvider(member));
     final memberStatus = member.membershipStatusStr();
     final List<Widget> trailing = [];
     if (member.isIgnored()) {
@@ -461,60 +523,26 @@ class MemberListEntry extends ConsumerWidget {
     }
     return ListTile(
       onTap: () async {
-        final memberProfile =
-            await ref.watch(memberProfileProvider(member).future);
-        final roomId = space?.getRoomIdStr() ?? convo!.getRoomIdStr();
         // ignore: use_build_context_synchronously
         await showMemberInfoDrawer(
           context: context,
-          memberProfile: memberProfile,
-          member: member,
           roomId: roomId,
           memberId: userId,
         );
       },
-      leading: profile.when(
-        data: (data) => ActerAvatar(
-          mode: DisplayMode.DM,
-          avatarInfo: AvatarInfo(
-            uniqueId: userId,
-            displayName: data.displayName,
-            avatar: data.getAvatarImage(),
-          ),
-          size: 18,
+      leading: ActerAvatar(
+        mode: DisplayMode.DM,
+        avatarInfo: AvatarInfo(
+          uniqueId: userId,
+          displayName: profile.displayName,
+          avatar: profile.getAvatarImage(),
         ),
-        loading: () => Skeletonizer(
-          child: ActerAvatar(
-            mode: DisplayMode.DM,
-            avatarInfo: AvatarInfo(uniqueId: userId),
-            size: 18,
-          ),
-        ),
-        error: (e, s) {
-          _log.severe('loading avatar failed:', e, s);
-          return ActerAvatar(
-            mode: DisplayMode.DM,
-            avatarInfo: AvatarInfo(uniqueId: userId),
-            size: 18,
-          );
-        },
+        size: 18,
       ),
-      title: profile.when(
-        data: (data) => Text(
-          data.displayName ?? userId,
-          style: Theme.of(context).textTheme.bodyMedium,
-          overflow: TextOverflow.ellipsis,
-        ),
-        loading: () => Skeletonizer(
-          child: Text(
-            userId,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-        ),
-        error: (e, s) {
-          _log.severe('loading Profile failed', e, s);
-          return const SizedBox.shrink();
-        },
+      title: Text(
+        profile.displayName ?? userId,
+        style: Theme.of(context).textTheme.bodyMedium,
+        overflow: TextOverflow.ellipsis,
       ),
       subtitle: Text(
         userId,

@@ -5,7 +5,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:acter/common/models/profile_data.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -319,8 +318,3 @@ enum LabsFeature {
         LabsFeature.mobilePushNotifications,
       ];
 }
-
-typedef ChatWithProfileData = ({Convo chat, ProfileData profile});
-typedef SpaceWithProfileData = ({Space space, ProfileData profile});
-typedef MemberInfo = ({String userId, String? roomId});
-typedef ChatMessageInfo = ({String messageId, String roomId});

@@ -26,18 +26,18 @@ class UserChip extends ConsumerWidget {
     final memberInfo =
         ref.watch(roomMemberProvider((roomId: roomId, userId: memberId)));
     return memberInfo.when(
-      data: (profile) => Chip(
+      data: (data) => Chip(
         visualDensity: visualDensity,
         avatar: ActerAvatar(
           mode: DisplayMode.DM,
           avatarInfo: AvatarInfo(
             uniqueId: memberId,
-            displayName: profile.displayName,
-            avatar: profile.getAvatarImage(),
+            displayName: data.profile.displayName,
+            avatar: data.profile.getAvatarImage(),
           ),
           size: 24,
         ),
-        label: Text(profile.displayName ?? memberId),
+        label: Text(data.profile.displayName ?? memberId),
         onDeleted: onDeleted,
         deleteIcon: deleteIcon,
       ),

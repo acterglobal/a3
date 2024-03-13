@@ -1,4 +1,6 @@
+import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
@@ -56,4 +58,23 @@ final isRoomEncryptedProvider =
     FutureProvider.family<bool, String>((ref, roomId) async {
   final convo = await ref.watch(chatProvider(roomId).future);
   return await convo.isEncrypted();
+});
+
+typedef Mentions = List<Map<String, String>>;
+
+final chatMentionsProvider =
+    FutureProvider.autoDispose.family<Mentions, String>((ref, roomId) async {
+  final activeMembers = await ref.read(membersIdsProvider(roomId).future);
+  List<Map<String, String>> mentionRecords = [];
+  for (final mId in activeMembers) {
+    final data = await ref
+        .watch(roomMemberProvider((roomId: roomId, userId: mId)).future);
+    Map<String, String> record = {};
+    final userName = data.profile.displayName;
+    record['id'] = mId;
+    record['display'] = userName ?? simplifyUserId(mId)!;
+    record['link'] = mId;
+    mentionRecords.add(record);
+  }
+  return mentionRecords;
 });

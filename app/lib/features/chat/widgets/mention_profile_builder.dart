@@ -1,4 +1,4 @@
-import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,14 +21,14 @@ class MentionProfileBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mentionProfile = ref
-        .watch(memberProfileByInfoProvider((userId: authorId, roomId: roomId)));
+    final mentionProfile =
+        ref.watch(roomMemberProvider((userId: authorId, roomId: roomId)));
     return mentionProfile.when(
-      data: (profile) => ActerAvatar(
+      data: (data) => ActerAvatar(
         mode: DisplayMode.DM,
         avatarInfo: AvatarInfo(
           uniqueId: authorId,
-          avatar: profile.getAvatarImage(),
+          avatar: data.profile.getAvatarImage(),
           displayName: title,
         ),
         size: 18,
