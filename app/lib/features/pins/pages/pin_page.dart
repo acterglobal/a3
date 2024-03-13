@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
-import 'package:acter/common/widgets/attachments/attachment_widget.dart';
+import 'package:acter/common/widgets/attachments/attachment_section.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
@@ -182,7 +182,7 @@ class PinPage extends ConsumerWidget {
                           ref.watch(pinAttachmentManagerProvider(acterPin));
                       return asyncManager.when(
                         data: (manager) =>
-                            AttachmentWidget(attachmentManager: manager),
+                            AttachmentSectionWidget(attachmentManager: manager),
                         error: (err, st) =>
                             Text('Error loading attachments $err'),
                         loading: () => const Skeletonizer(

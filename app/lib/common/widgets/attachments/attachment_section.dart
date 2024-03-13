@@ -9,10 +9,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 /// Attachment Section Widget
-class AttachmentWidget extends ConsumerWidget {
+class AttachmentSectionWidget extends ConsumerWidget {
   final AttachmentsManager attachmentManager;
   final bool? canPostAttachment;
-  const AttachmentWidget({
+  const AttachmentSectionWidget({
     super.key,
     required this.attachmentManager,
     this.canPostAttachment = true,
