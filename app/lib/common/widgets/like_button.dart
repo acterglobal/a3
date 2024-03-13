@@ -1,6 +1,9 @@
 import 'package:acter/common/animations/like_animation.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::common::like_button');
 
 class LikeButton extends StatefulWidget {
   final bool isLiked;
@@ -125,7 +128,7 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
                 children: [
                   InkWell(
                     onTap: () async {
-                      debugPrint('like click --------------------------------');
+                      _log.info('like click --------------------------------');
                       await widget.onTap();
                       if (!widget.isLiked) {
                         controller.reset();

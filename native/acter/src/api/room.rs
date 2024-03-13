@@ -459,7 +459,7 @@ impl JoinRuleBuilder {
         } = self;
         let allow_rules = restricted_rooms
             .iter()
-            .map(|s| RoomId::parse(s.as_str()).map(AllowRule::room_membership))
+            .map(|s| RoomId::parse(s).map(AllowRule::room_membership))
             .collect::<Result<Vec<AllowRule>, IdParseError>>()?;
         Ok(match rule.to_lowercase().as_str() {
             "private" => RoomJoinRulesEventContent::new(JoinRule::Private),
@@ -734,7 +734,7 @@ impl Room {
                 if !member.can_send_state(StateEventType::RoomTopic) {
                     bail!("No permissions to change topic of this room");
                 }
-                let response = room.set_room_topic(topic.as_str()).await?;
+                let response = room.set_room_topic(&topic).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -1093,7 +1093,7 @@ impl Room {
             .context("You must be logged in to do that")?
             .to_owned();
 
-        let user_id = UserId::parse(user_id.as_str())?;
+        let user_id = UserId::parse(&user_id)?;
 
         RUNTIME
             .spawn(async move {
@@ -1491,230 +1491,6 @@ impl Room {
             .spawn(async move {
                 let evt = room.send_state_event(join_rule).await?;
                 Ok(true)
-            })
-            .await?
-    }
-
-    pub async fn get_message(&self, event_id: String) -> Result<RoomMessage> {
-        if !self.is_joined() {
-            bail!("Unable to read message from a room we are not in");
-        }
-        let room = self.room.clone();
-        let r = self.room.clone();
-
-        let event_id = EventId::parse(event_id)?;
-
-        RUNTIME
-            .spawn(async move {
-                let evt = room.event(&event_id).await?;
-                match evt.event.deserialize() {
-                    Ok(AnyTimelineEvent::State(AnyStateEvent::PolicyRuleRoom(
-                        StateEvent::Original(e),
-                    ))) => {
-                        let msg =
-                            RoomMessage::policy_rule_room_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::State(AnyStateEvent::PolicyRuleServer(
-                        StateEvent::Original(e),
-                    ))) => {
-                        let msg =
-                            RoomMessage::policy_rule_server_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::State(AnyStateEvent::PolicyRuleUser(
-                        StateEvent::Original(e),
-                    ))) => {
-                        let msg =
-                            RoomMessage::policy_rule_user_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomAliases(
-                        StateEvent::Original(e),
-                    ))) => {
-                        let msg = RoomMessage::room_aliases_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomAvatar(
-                        StateEvent::Original(e),
-                    ))) => {
-                        let msg = RoomMessage::room_avatar_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomCanonicalAlias(
-                        StateEvent::Original(e),
-                    ))) => {
-                        let msg =
-                            RoomMessage::room_canonical_alias_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomCreate(
-                        StateEvent::Original(e),
-                    ))) => {
-                        let msg = RoomMessage::room_create_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomEncryption(
-                        StateEvent::Original(e),
-                    ))) => {
-                        let msg =
-                            RoomMessage::room_encryption_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomGuestAccess(
-                        StateEvent::Original(e),
-                    ))) => {
-                        let msg =
-                            RoomMessage::room_guest_access_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomHistoryVisibility(
-                        StateEvent::Original(e),
-                    ))) => {
-                        let msg = RoomMessage::room_history_visibility_from_event(
-                            e,
-                            r.room_id().to_owned(),
-                        );
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomJoinRules(
-                        StateEvent::Original(e),
-                    ))) => {
-                        let msg =
-                            RoomMessage::room_join_rules_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomMember(
-                        StateEvent::Original(e),
-                    ))) => {
-                        let msg = RoomMessage::room_member_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomName(StateEvent::Original(
-                        e,
-                    )))) => {
-                        let msg = RoomMessage::room_name_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomPinnedEvents(
-                        StateEvent::Original(e),
-                    ))) => {
-                        let msg =
-                            RoomMessage::room_pinned_events_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomPowerLevels(
-                        StateEvent::Original(e),
-                    ))) => {
-                        let msg =
-                            RoomMessage::room_power_levels_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomServerAcl(
-                        StateEvent::Original(e),
-                    ))) => {
-                        let msg =
-                            RoomMessage::room_server_acl_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomThirdPartyInvite(
-                        StateEvent::Original(e),
-                    ))) => {
-                        let msg = RoomMessage::room_third_party_invite_from_event(
-                            e,
-                            r.room_id().to_owned(),
-                        );
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomTombstone(
-                        StateEvent::Original(e),
-                    ))) => {
-                        let msg = RoomMessage::room_tombstone_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomTopic(
-                        StateEvent::Original(e),
-                    ))) => {
-                        let msg = RoomMessage::room_topic_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::State(AnyStateEvent::SpaceChild(
-                        StateEvent::Original(e),
-                    ))) => {
-                        let msg = RoomMessage::space_child_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::State(AnyStateEvent::SpaceParent(
-                        StateEvent::Original(e),
-                    ))) => {
-                        let msg = RoomMessage::space_parent_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::State(_)) => {
-                        bail!("Invalid AnyTimelineEvent::State: other");
-                    }
-                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::CallAnswer(
-                        MessageLikeEvent::Original(e),
-                    ))) => {
-                        let msg = RoomMessage::call_answer_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::CallCandidates(
-                        MessageLikeEvent::Original(e),
-                    ))) => {
-                        let msg =
-                            RoomMessage::call_candidates_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::CallHangup(
-                        MessageLikeEvent::Original(e),
-                    ))) => {
-                        let msg = RoomMessage::call_hangup_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::CallInvite(
-                        MessageLikeEvent::Original(e),
-                    ))) => {
-                        let msg = RoomMessage::call_invite_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::Reaction(
-                        MessageLikeEvent::Original(e),
-                    ))) => {
-                        let msg = RoomMessage::reaction_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomEncrypted(
-                        MessageLikeEvent::Original(e),
-                    ))) => {
-                        info!("RoomEncrypted: {:?}", e.content);
-                        let msg = RoomMessage::room_encrypted_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
-                        MessageLikeEvent::Original(m),
-                    ))) => {
-                        let msg = RoomMessage::room_message_from_event(m, r, false);
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomRedaction(e))) => {
-                        let msg = RoomMessage::room_redaction_from_event(e, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::Sticker(
-                        MessageLikeEvent::Original(s),
-                    ))) => {
-                        let msg = RoomMessage::sticker_from_event(s, r.room_id().to_owned());
-                        Ok(msg)
-                    }
-                    Ok(AnyTimelineEvent::MessageLike(_)) => {
-                        bail!("Invalid AnyTimelineEvent::MessageLike: other");
-                    }
-                    Err(e) => {
-                        error!("Error deserializing event {:?}", e);
-                        bail!("Invalid event deserialization error");
-                    }
-                }
             })
             .await?
     }

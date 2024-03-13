@@ -1,0 +1,1 @@
+- [enhancement] Upon clicking a users avatar in the space members list, the chat members list or within a chat directly a new drawer pulls up with more details and actions (like jump to the DM) in it for your convenience.

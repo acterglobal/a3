@@ -23,9 +23,7 @@ final _log = Logger('Register');
 Future<void> tryRedeem(SuperInvites superInvites, String token) async {
   // try to redeem the token in a fire-and-forget-manner
   try {
-    await superInvites.redeem(
-      token,
-    );
+    await superInvites.redeem(token);
   } catch (error) {
     _log.warning('redeeming super invite failed: $error');
   }
