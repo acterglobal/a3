@@ -144,6 +144,7 @@ class PinPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final pin = ref.watch(pinProvider(pinId));
+
     return Scaffold(
       body: CustomScrollView(
         slivers: <Widget>[
@@ -176,24 +177,7 @@ class PinPage extends ConsumerWidget {
                 children: <Widget>[
                   PinItem(acterPin),
                   const SizedBox(height: 20),
-                  Consumer(
-                    builder: (context, ref, child) {
-                      final asyncManager =
-                          ref.watch(pinAttachmentManagerProvider(acterPin));
-                      return asyncManager.when(
-                        data: (manager) =>
-                            AttachmentSectionWidget(attachmentManager: manager),
-                        error: (err, st) =>
-                            Text('Error loading attachments $err'),
-                        loading: () => const Skeletonizer(
-                          child: SizedBox(
-                            height: 100,
-                            width: 100,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                  _buildAttachmentBody(acterPin),
                 ],
               ),
               error: (err, st) => Text('Error loading pins ${err.toString()}'),
@@ -204,6 +188,39 @@ class PinPage extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildAttachmentBody(ActerPin pin) {
+    var canPostAttachment = false;
+    return Consumer(
+      builder: (context, ref, child) {
+        final spaceId = pin.roomIdStr();
+        final asyncManager = ref.watch(pinAttachmentManagerProvider(pin));
+        final membership = ref.watch(roomMembershipProvider(spaceId));
+        if (membership.valueOrNull != null) {
+          final memb = membership.requireValue!;
+          if (memb.canString('CanPostPin')) {
+            canPostAttachment = true;
+          }
+        }
+
+        return asyncManager.when(
+          data: (manager) {
+            return AttachmentSectionWidget(
+              attachmentManager: manager,
+              canPostAttachment: canPostAttachment,
+            );
+          },
+          error: (err, st) => Text('Error loading attachments $err'),
+          loading: () => const Skeletonizer(
+            child: SizedBox(
+              height: 100,
+              width: 100,
+            ),
+          ),
+        );
+      },
     );
   }
 

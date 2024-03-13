@@ -15,7 +15,7 @@ class AttachmentSectionWidget extends ConsumerWidget {
   const AttachmentSectionWidget({
     super.key,
     required this.attachmentManager,
-    this.canPostAttachment = true,
+    this.canPostAttachment = false,
   });
 
   @override
