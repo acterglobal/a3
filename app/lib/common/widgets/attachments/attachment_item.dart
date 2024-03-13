@@ -13,7 +13,6 @@ class AttachmentItem extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     var msgContent = attachment.msgContent();
     String type = attachment.typeStr();
-    debugPrint(type);
     if (type == 'image') {
       return AttachmentContainer(
         name: msgContent.body(),
