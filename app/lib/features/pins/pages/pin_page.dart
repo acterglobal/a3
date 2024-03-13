@@ -13,7 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class PinPage extends ConsumerStatefulWidget {
+class PinPage extends ConsumerWidget {
   static const pinPageKey = Key('pin-page');
   static const actionMenuKey = Key('pin-action-menu');
   static const editBtnKey = Key('pin-edit-btn');
@@ -27,11 +27,6 @@ class PinPage extends ConsumerStatefulWidget {
     required this.pinId,
   });
 
-  @override
-  ConsumerState<PinPage> createState() => _PinPageConsumerState();
-}
-
-class _PinPageConsumerState extends ConsumerState<PinPage> {
   // pin actions menu builder
   Widget _buildActionMenu(
     BuildContext context,
@@ -139,7 +134,7 @@ class _PinPageConsumerState extends ConsumerState<PinPage> {
         title: 'Report this Pin',
         description:
             'Report this content to your homeserver administrator. Please note that your administrator won\'t be able to read or view files in encrypted spaces.',
-        eventId: widget.pinId,
+        eventId: pinId,
         roomId: pin.roomIdStr(),
         senderId: pin.sender().toString(),
         isSpace: true,
@@ -148,8 +143,8 @@ class _PinPageConsumerState extends ConsumerState<PinPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final pin = ref.watch(pinProvider(widget.pinId));
+  Widget build(BuildContext context, WidgetRef ref) {
+    final pin = ref.watch(pinProvider(pinId));
 
     return Scaffold(
       body: CustomScrollView(
@@ -183,7 +178,7 @@ class _PinPageConsumerState extends ConsumerState<PinPage> {
                 children: <Widget>[
                   PinItem(acterPin),
                   const SizedBox(height: 20),
-                  _buildAttachmentList(acterPin),
+                  _buildAttachmentList(acterPin, context, ref),
                 ],
               ),
               error: (err, st) => Text('Error loading pins ${err.toString()}'),
@@ -218,7 +213,11 @@ class _PinPageConsumerState extends ConsumerState<PinPage> {
   }
 
   // attachment list UI
-  Widget _buildAttachmentList(ActerPin pin) {
+  Widget _buildAttachmentList(
+    ActerPin pin,
+    BuildContext context,
+    WidgetRef ref,
+  ) {
     final attachmentTitleTextStyle = Theme.of(context).textTheme.labelLarge;
     final attachments = ref.watch(pinAttachmentsProvider(pin));
     final membership = ref.watch(roomMembershipProvider(pin.roomIdStr()));
@@ -226,7 +225,7 @@ class _PinPageConsumerState extends ConsumerState<PinPage> {
     if (membership.valueOrNull != null) {
       final member = membership.requireValue!;
       if (member.canString('CanPostPin')) {
-        canPostAttachments.add(_buildAddAttachment(pin));
+        canPostAttachments.add(_buildAddAttachment(pin, context, ref));
       }
     }
 
@@ -272,7 +271,11 @@ class _PinPageConsumerState extends ConsumerState<PinPage> {
   }
 
   // add attachment container UI
-  Widget _buildAddAttachment(ActerPin pin) {
+  Widget _buildAddAttachment(
+    ActerPin pin,
+    BuildContext context,
+    WidgetRef ref,
+  ) {
     final containerColor = Theme.of(context).colorScheme.background;
     final iconColor = Theme.of(context).colorScheme.secondary;
     final iconTextStyle = Theme.of(context).textTheme.labelLarge;
