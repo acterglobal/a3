@@ -7,8 +7,15 @@ class CommentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: null,
+    final msgContent = comment.contentText();
+    return Card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ListTile(title: Text(comment.sender().toString())),
+          Text(msgContent),
+        ],
+      ),
     );
   }
 }

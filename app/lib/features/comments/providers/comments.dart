@@ -11,12 +11,14 @@ final commentsManagerProvider = AsyncNotifierProvider.autoDispose.family<
 class AsyncCommentsManagerNotifier extends AutoDisposeFamilyAsyncNotifier<
     CommentsManager, Future<CommentsManager>> {
   late Stream<bool> _listener;
+  // ignore: unused_field
+  late StreamSubscription<void> _poller;
 
   @override
   FutureOr<CommentsManager> build(Future<CommentsManager> arg) async {
     final manager = await arg;
     _listener = manager.subscribeStream(); // keep it resident in memory
-    _listener.forEach((e) async {
+    _poller = _listener.listen((e) async {
       // reset
       state = await AsyncValue.guard(() => manager.reload());
     });

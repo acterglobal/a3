@@ -6,6 +6,7 @@ use std::{collections::HashMap, ops::Deref};
 use tracing::{error, info, trace};
 
 use super::{ActerModel, AnyActerModel, Capability, EventMeta, RedactedActerModel};
+use crate::util::{is_false, is_zero};
 use crate::{store::Store, Result};
 
 // We understand all unicode [Red Heart](https://emojipedia.org/red-heart#technical) as quick-likes
@@ -31,17 +32,6 @@ pub struct ReactionStats {
     pub total_reaction_count: u32,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub user_reactions: Vec<OwnedEventId>,
-}
-/// This is only used for serialize
-#[allow(clippy::trivially_copy_pass_by_ref)]
-fn is_zero(num: &u32) -> bool {
-    *num == 0
-}
-
-/// This is only used for serialize
-#[allow(clippy::trivially_copy_pass_by_ref)]
-fn is_false(val: &bool) -> bool {
-    !(*val)
 }
 
 #[derive(Clone, Debug)]

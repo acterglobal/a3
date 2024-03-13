@@ -1,9 +1,10 @@
+use crate::util::{is_false, is_zero};
 use derive_getters::Getters;
 use ruma_common::{EventId, OwnedEventId, UserId};
 use ruma_events::OriginalMessageLikeEvent;
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
-use tracing::{error, trace};
+use tracing::{error, info, trace};
 
 use super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta};
 use crate::{
@@ -19,8 +20,10 @@ static COMMENTS_STATS_FIELD: &str = "comments_stats";
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize, Getters)]
 pub struct CommentsStats {
-    has_comments: bool,
-    total_comments_count: u32,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub has_comments: bool,
+    #[serde(default, skip_serializing_if = "is_zero")]
+    pub total_comments_count: u32,
 }
 
 #[derive(Clone, Debug)]
@@ -38,10 +41,18 @@ impl CommentsManager {
 
     pub async fn from_store_and_event_id(store: &Store, event_id: &EventId) -> CommentsManager {
         let store = store.clone();
-        let stats = store
-            .get_raw(&Self::stats_field_for(&event_id))
-            .await
-            .unwrap_or_default();
+
+        let stats = match store.get_raw(&Self::stats_field_for(&event_id)).await {
+            Ok(e) => e,
+            Err(error) => {
+                info!(
+                    ?error,
+                    ?event_id,
+                    "failed to read reaction stats. starting with default"
+                );
+                Default::default()
+            }
+        };
         CommentsManager {
             store,
             stats,
@@ -68,8 +79,8 @@ impl CommentsManager {
         Ok(true)
     }
 
-    pub fn stats(&self) -> &CommentsStats {
-        &self.stats
+    pub fn stats(&self) -> CommentsStats {
+        self.stats.clone()
     }
 
     pub fn draft_builder(&self) -> CommentBuilder {
@@ -169,7 +180,8 @@ impl ActerModel for Comment {
                 managers.push(manager);
             }
         }
-        let mut updates = store.save(self.into()).await?;
+        let mut updates = store.save(self.clone().into()).await?;
+        trace!(event_id=?self.event_id(), "saved comment");
         for manager in managers {
             updates.push(manager.save().await?);
         }
