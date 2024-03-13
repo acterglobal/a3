@@ -170,7 +170,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
       if (plainText.trim().isNotEmpty) {
         pinDraft.contentHtml(plainText, htmlText);
       } else {
-        pinDraft.contentMarkdown('No Description');
+        pinDraft.contentMarkdown(plainText);
       }
 
       if (url.isNotEmpty) {

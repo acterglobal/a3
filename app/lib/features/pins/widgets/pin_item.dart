@@ -176,7 +176,7 @@ class _PinDescriptionWidgetConsumerState
                 textEditorState = EditorState(document: document);
               } else {
                 textEditorState = EditorState(
-                  document: ActerDocumentHelpers.fromMarkdown('No Description'),
+                  document: ActerDocumentHelpers.fromMarkdown(body),
                 );
               }
             },
@@ -191,9 +191,7 @@ class _PinDescriptionWidgetConsumerState
                 document: ActerDocumentHelpers.fromMsgContent(content),
               );
             } else {
-              textEditorState = EditorState(
-                document: ActerDocumentHelpers.fromMarkdown('No Description'),
-              );
+              textEditorState = EditorState.blank();
             }
             pinEditNotifier.setEditMode(false);
           },
