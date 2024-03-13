@@ -1,0 +1,1 @@
+- [new] : Now you can see participants data on event details page
