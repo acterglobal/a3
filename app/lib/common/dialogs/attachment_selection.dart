@@ -4,7 +4,7 @@ import 'package:acter/common/dialogs/attachment_confirmation.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/attachments/attachment_options.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show AttachmentsManager, Convo;
+    show AttachmentsManager;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -12,11 +12,10 @@ import 'package:image_picker/image_picker.dart';
 // reusable dialog for attachment selection
 void showAttachmentSelection(
   BuildContext context,
-  AttachmentsManager? manager,
-  Convo? convo,
+  AttachmentsManager manager,
 ) async {
   isLargeScreen(context)
-      ? _onTapFileSelection(context, manager, convo)
+      ? _onTapFileSelection(context, manager)
       : await showModalBottomSheet(
           isDismissible: true,
           context: context,
@@ -31,7 +30,6 @@ void showAttachmentSelection(
                   attachmentConfirmationDialog(
                     context,
                     manager,
-                    convo,
                     [file],
                   );
                 }
@@ -50,7 +48,6 @@ void showAttachmentSelection(
                 attachmentConfirmationDialog(
                   context,
                   manager,
-                  convo,
                   newFiles,
                 );
               }
@@ -67,7 +64,6 @@ void showAttachmentSelection(
                 attachmentConfirmationDialog(
                   context,
                   manager,
-                  convo,
                   newAttachments,
                 );
               }
@@ -75,7 +71,6 @@ void showAttachmentSelection(
             onTapFile: () => _onTapFileSelection(
               context,
               manager,
-              convo,
             ),
           ),
         );
@@ -84,8 +79,7 @@ void showAttachmentSelection(
 // open file picker method
 void _onTapFileSelection(
   BuildContext context,
-  AttachmentsManager? manager,
-  Convo? convo,
+  AttachmentsManager manager,
 ) async {
   FilePickerResult? result = await FilePicker.platform.pickFiles(
     type: FileType.any,
@@ -102,7 +96,6 @@ void _onTapFileSelection(
       attachmentConfirmationDialog(
         context,
         manager,
-        convo,
         newAttachments,
       );
     }

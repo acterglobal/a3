@@ -1,9 +1,11 @@
 import 'dart:io';
 
-import 'package:acter/common/dialogs/attachment_selection.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/attachments/attachment_item.dart';
+import 'package:acter/common/widgets/attachments/attachment_options.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
@@ -26,7 +28,9 @@ import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/parser.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
+import 'package:mime/mime.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:logging/logging.dart';
 
@@ -323,10 +327,76 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                     Padding(
                       padding: const EdgeInsets.only(right: 10),
                       child: InkWell(
-                        onTap: () => showAttachmentSelection(
-                          context,
-                          null,
-                          widget.convo,
+                        onTap: () => showModalBottomSheet(
+                          context: context,
+                          isDismissible: true,
+                          enableDrag: true,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(20),
+                              topLeft: Radius.circular(20),
+                            ),
+                          ),
+                          builder: (ctx) => AttachmentOptions(
+                            onTapCamera: () async {
+                              XFile? imageFile = await ImagePicker()
+                                  .pickImage(source: ImageSource.camera);
+                              if (imageFile != null) {
+                                List<File> files = [File(imageFile.path)];
+
+                                if (context.mounted) {
+                                  attachmentConfirmation(
+                                    files,
+                                    AttachmentType.camera,
+                                    handleFileUpload,
+                                  );
+                                }
+                              }
+                            },
+                            onTapImage: () async {
+                              XFile? imageFile = await ImagePicker()
+                                  .pickImage(source: ImageSource.gallery);
+                              if (imageFile != null) {
+                                List<File> files = [File(imageFile.path)];
+
+                                if (context.mounted) {
+                                  attachmentConfirmation(
+                                    files,
+                                    AttachmentType.image,
+                                    handleFileUpload,
+                                  );
+                                }
+                              }
+                            },
+                            onTapVideo: () async {
+                              XFile? imageFile = await ImagePicker()
+                                  .pickVideo(source: ImageSource.gallery);
+                              if (imageFile != null) {
+                                List<File> files = [File(imageFile.path)];
+
+                                if (context.mounted) {
+                                  attachmentConfirmation(
+                                    files,
+                                    AttachmentType.video,
+                                    handleFileUpload,
+                                  );
+                                }
+                              }
+                            },
+                            onTapFile: () async {
+                              var selectedFiles = await handleFileSelection(
+                                ctx,
+                              );
+
+                              if (context.mounted) {
+                                attachmentConfirmation(
+                                  selectedFiles,
+                                  AttachmentType.file,
+                                  handleFileUpload,
+                                );
+                              }
+                            },
+                          ),
                         ),
                         child: const Icon(
                           Atlas.paperclip_attachment_thin,
@@ -453,6 +523,120 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
       return result.paths.map((path) => File(path!)).toList();
     }
     return null;
+  }
+
+  void attachmentConfirmation(
+    List<File>? selectedFiles,
+    AttachmentType type,
+    Future<void> Function(
+      List<File> files,
+      AttachmentType attachmentType,
+    ) handleFileUpload,
+  ) {
+    Navigator.of(context).pop();
+    final size = MediaQuery.of(context).size;
+    if (selectedFiles != null && selectedFiles.isNotEmpty) {
+      isLargeScreen(context)
+          ? showAdaptiveDialog(
+              context: context,
+              builder: (context) => Dialog(
+                insetPadding: const EdgeInsets.all(8),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: size.width * 0.5,
+                    maxHeight: size.height * 0.5,
+                  ),
+                  child: _FileWidget(selectedFiles, type, handleFileUpload),
+                ),
+              ),
+            )
+          : showModalBottomSheet(
+              context: context,
+              builder: (ctx) => Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: _FileWidget(selectedFiles, type, handleFileUpload),
+              ),
+            );
+    }
+  }
+
+  Future<void> handleFileUpload(
+    List<File> files,
+    AttachmentType attachmentType,
+  ) async {
+    final roomId = widget.convo.getRoomIdStr();
+    final client = ref.read(alwaysClientProvider);
+    final inputState = ref.read(chatInputProvider(roomId));
+    final stream = widget.convo.timelineStream();
+
+    try {
+      for (File file in files) {
+        String? mimeType = lookupMimeType(file.path);
+
+        if (mimeType!.startsWith('image/') &&
+            attachmentType == AttachmentType.image) {
+          final bytes = file.readAsBytesSync();
+          final image = await decodeImageFromList(bytes);
+          final imageDraft = client
+              .imageDraft(file.path, mimeType)
+              .size(file.lengthSync())
+              .width(image.width)
+              .height(image.height);
+          if (inputState.repliedToMessage != null) {
+            await stream.replyMessage(
+              inputState.repliedToMessage!.id,
+              imageDraft,
+            );
+          } else {
+            await stream.sendMessage(imageDraft);
+          }
+        } else if (mimeType.startsWith('audio/') &&
+            attachmentType == AttachmentType.audio) {
+          final audioDraft =
+              client.audioDraft(file.path, mimeType).size(file.lengthSync());
+          if (inputState.repliedToMessage != null) {
+            await stream.replyMessage(
+              inputState.repliedToMessage!.id,
+              audioDraft,
+            );
+          } else {
+            await stream.sendMessage(audioDraft);
+          }
+        } else if (mimeType.startsWith('video/') &&
+            attachmentType == AttachmentType.video) {
+          final videoDraft =
+              client.videoDraft(file.path, mimeType).size(file.lengthSync());
+          if (inputState.repliedToMessage != null) {
+            await stream.replyMessage(
+              inputState.repliedToMessage!.id,
+              videoDraft,
+            );
+          } else {
+            await stream.sendMessage(videoDraft);
+          }
+        } else {
+          final draft =
+              client.fileDraft(file.path, mimeType).size(file.lengthSync());
+          if (inputState.repliedToMessage != null) {
+            await stream.replyMessage(inputState.repliedToMessage!.id, draft);
+          } else {
+            await stream.sendMessage(draft);
+          }
+        }
+      }
+    } catch (e, s) {
+      _log.severe('error occurred', e, s);
+    }
+
+    if (inputState.repliedToMessage != null) {
+      final notifier = ref.read(chatInputProvider(roomId).notifier);
+      notifier.setRepliedToMessage(null);
+      notifier.setEditMessage(null);
+      notifier.showReplyView(false);
+      notifier.showEditView(false);
+      notifier.setReplyWidget(null);
+      notifier.setEditWidget(null);
+    }
   }
 
   Widget replyBuilder(String roomId) {
@@ -606,6 +790,91 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
       notifier.showEditView(false);
       notifier.setReplyWidget(null);
       notifier.setEditWidget(null);
+    }
+  }
+}
+
+class _FileWidget extends ConsumerWidget {
+  final List<File> selectedFiles;
+  final AttachmentType type;
+  final Future<void> Function(
+    List<File> files,
+    AttachmentType attachmentType,
+  ) handleFileUpload;
+
+  const _FileWidget(this.selectedFiles, this.type, this.handleFileUpload);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text('Attachments (${selectedFiles.length})'),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 5.0,
+            runSpacing: 10.0,
+            children: <Widget>[
+              for (var file in selectedFiles) _filePreview(context, file),
+            ],
+          ),
+          _buildActionBtns(context),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionBtns(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          OutlinedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              handleFileUpload(selectedFiles, type);
+            },
+            child: const Text('Send'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _filePreview(BuildContext context, File file) {
+    final fileName = file.path.split('/').last;
+    if (type == AttachmentType.camera || type == AttachmentType.image) {
+      return AttachmentContainer(
+        name: fileName,
+        child: Image.file(file, height: 200, fit: BoxFit.cover),
+      );
+    } else if (type == AttachmentType.audio) {
+      return AttachmentContainer(
+        name: fileName,
+        child: const Center(child: Icon(Atlas.file_sound_thin)),
+      );
+    } else if (type == AttachmentType.video) {
+      return AttachmentContainer(
+        name: fileName,
+        child: const Center(child: Icon(Atlas.file_video_thin)),
+      );
+    }
+    //FIXME: cover all mime extension cases?
+    else {
+      return AttachmentContainer(
+        name: fileName,
+        child: const Center(child: Icon(Atlas.plus_file_thin)),
+      );
     }
   }
 }

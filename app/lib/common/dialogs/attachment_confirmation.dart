@@ -3,16 +3,16 @@ import 'dart:io';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/attachments/post_attachment_selection.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show AttachmentsManager, Convo;
+    show AttachmentsManager;
 import 'package:flutter/material.dart';
 
 // reusable attachment confirmation dialog
 void attachmentConfirmationDialog(
   BuildContext ctx,
-  AttachmentsManager? manager,
-  Convo? convo,
+  AttachmentsManager manager,
   List<File>? selectedFiles,
 ) {
+  Navigator.of(ctx).pop();
   final size = MediaQuery.of(ctx).size;
   if (selectedFiles != null && selectedFiles.isNotEmpty) {
     isLargeScreen(ctx)
@@ -28,7 +28,6 @@ void attachmentConfirmationDialog(
                 child: PostAttachmentSelection(
                   files: selectedFiles,
                   manager: manager,
-                  convo: convo,
                 ),
               ),
             ),
@@ -38,7 +37,6 @@ void attachmentConfirmationDialog(
             builder: (ctx) => PostAttachmentSelection(
               files: selectedFiles,
               manager: manager,
-              convo: convo,
             ),
           );
   }

@@ -284,7 +284,7 @@ class PinPage extends ConsumerWidget {
     return asyncManager.when(
       data: (manager) {
         return InkWell(
-          onTap: () => showAttachmentSelection(context, manager, null),
+          onTap: () => showAttachmentSelection(context, manager),
           child: Container(
             height: 100,
             width: 100,

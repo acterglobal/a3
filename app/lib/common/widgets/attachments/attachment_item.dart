@@ -17,26 +17,26 @@ class AttachmentItem extends ConsumerWidget {
       return ErrorWidget(Exception('Invalid Message Content'));
     }
     if (mimeType.startsWith('image/')) {
-      return _AttachmentContainer(
+      return AttachmentContainer(
         name: msgContent.body(),
         child: _ImageAttachment(attachment: attachment),
       );
     } else if (mimeType.startsWith('video/')) {
-      return _AttachmentContainer(
+      return AttachmentContainer(
         name: msgContent.body(),
         child: const Center(
           child: Icon(Atlas.file_video_thin),
         ),
       );
     } else if (mimeType.startsWith('audio/')) {
-      return _AttachmentContainer(
+      return AttachmentContainer(
         name: msgContent.body(),
         child: const Center(
           child: Icon(Atlas.file_audio_thin),
         ),
       );
     } else {
-      return _AttachmentContainer(
+      return AttachmentContainer(
         name: msgContent.body(),
         child: const Center(child: Icon(Atlas.file_thin)),
       );
@@ -45,8 +45,12 @@ class AttachmentItem extends ConsumerWidget {
 }
 
 // outer attachment container
-class _AttachmentContainer extends ConsumerWidget {
-  const _AttachmentContainer({required this.name, required this.child});
+class AttachmentContainer extends ConsumerWidget {
+  const AttachmentContainer({
+    super.key,
+    required this.name,
+    required this.child,
+  });
   final String name;
   final Widget child;
 

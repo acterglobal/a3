@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:acter/common/widgets/attachments/attachment_item.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:mime/mime.dart';
@@ -10,21 +11,10 @@ class AttachmentDraftItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final containerTextStyle = Theme.of(context).textTheme.bodySmall;
     final fileName = file.path.split('/').last;
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        _attachmentPreview(context, file),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 6),
-          child: Text(
-            fileName,
-            style:
-                containerTextStyle!.copyWith(overflow: TextOverflow.ellipsis),
-          ),
-        ),
-      ],
+    return AttachmentContainer(
+      name: fileName,
+      child: _attachmentPreview(context, file),
     );
   }
 

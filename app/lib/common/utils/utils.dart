@@ -293,6 +293,8 @@ enum LabsFeature {
       ];
 }
 
+enum AttachmentType { camera, image, audio, video, location, file }
+
 typedef ChatWithProfileData = ({Convo chat, ProfileData profile});
 typedef SpaceWithProfileData = ({Space space, ProfileData profile});
 typedef MemberInfo = ({String userId, String? roomId});
