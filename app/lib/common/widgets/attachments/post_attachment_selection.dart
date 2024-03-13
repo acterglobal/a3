@@ -141,7 +141,7 @@ class _PostAttachmentSelectionState
         _log.info('attachment sent: $res');
       }
     } catch (e) {
-      EasyLoading.dismiss();
+      EasyLoading.showError('Error sending attachments $e');
       _log.severe('Error sending attachments', e);
     }
   }
