@@ -42,13 +42,13 @@ class AttachmentDraftItem extends StatelessWidget {
       );
     }
     if (mimeType.startsWith('audio/')) {
-      return const Center(child: Icon(Atlas.file_sound_thin));
+      return const Icon(Atlas.file_sound_thin);
     }
 
     if (mimeType.startsWith('video/')) {
-      return const Center(child: Icon(Atlas.file_video_thin));
+      return const Icon(Atlas.file_video_thin);
     } else {
-      return const Center(child: Icon(Atlas.plus_file_thin));
+      return const Icon(Atlas.plus_file_thin);
     }
   }
 }

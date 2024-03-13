@@ -38,6 +38,7 @@ class _PostAttachmentSelectionState
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Padding(
           padding: const EdgeInsets.all(12),
@@ -48,7 +49,6 @@ class _PostAttachmentSelectionState
         ),
         const SizedBox(height: 15),
         _buildSelectedDrafts(),
-        const Spacer(),
         _buildActionButtons(),
       ],
     );
