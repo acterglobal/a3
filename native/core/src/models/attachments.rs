@@ -168,6 +168,7 @@ impl ActerModel for Attachment {
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
+        // Do not trigger the parent to update, we have a manager
         None
     }
 

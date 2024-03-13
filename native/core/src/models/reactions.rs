@@ -270,6 +270,7 @@ impl ActerModel for Reaction {
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
+        // Do not trigger the parent to update, we have a manager
         None
     }
 

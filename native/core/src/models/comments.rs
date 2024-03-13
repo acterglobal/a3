@@ -204,7 +204,7 @@ impl ActerModel for Comment {
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
-        // the higher ups don't need to be bothered about this
+        // Do not trigger the parent to update, we have a manager
         None
     }
 
