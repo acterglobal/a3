@@ -12,23 +12,21 @@ class AttachmentItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var msgContent = attachment.msgContent();
-    String? mimeType = msgContent.mimetype();
-    if (mimeType == null) {
-      return ErrorWidget(Exception('Invalid Message Content'));
-    }
-    if (mimeType.startsWith('image/')) {
+    String type = attachment.typeStr();
+    debugPrint(type);
+    if (type == 'image') {
       return AttachmentContainer(
         name: msgContent.body(),
         child: _ImageAttachment(attachment: attachment),
       );
-    } else if (mimeType.startsWith('video/')) {
+    } else if (type == 'video') {
       return AttachmentContainer(
         name: msgContent.body(),
         child: const Center(
           child: Icon(Atlas.file_video_thin),
         ),
       );
-    } else if (mimeType.startsWith('audio/')) {
+    } else if (type == 'audio') {
       return AttachmentContainer(
         name: msgContent.body(),
         child: const Center(

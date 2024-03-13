@@ -1,11 +1,12 @@
-import 'dart:io';
-import 'package:acter/common/providers/attachment_providers.dart';
+import 'dart:typed_data';
+
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/attachments/attachment_draft_item.dart';
-import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show AttachmentsManager, Convo;
+    show AttachmentDraft, AttachmentsManager;
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mime/mime.dart';
@@ -13,15 +14,13 @@ import 'package:mime/mime.dart';
 final _log = Logger('a3::common::attachments');
 
 class PostAttachmentSelection extends ConsumerStatefulWidget {
-  final List<File> files;
-  final AttachmentsManager? manager;
-  final Convo? convo;
+  final List<AttachmentInfo> attachments;
+  final AttachmentsManager manager;
 
   const PostAttachmentSelection({
     super.key,
-    required this.files,
+    required this.attachments,
     required this.manager,
-    this.convo,
   });
 
   @override
@@ -33,7 +32,7 @@ class _PostAttachmentSelectionState
     extends ConsumerState<PostAttachmentSelection> {
   @override
   Widget build(BuildContext context) {
-    final files = widget.files;
+    final attachments = widget.attachments;
     final titleTextStyle = Theme.of(context).textTheme.titleSmall;
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -43,7 +42,7 @@ class _PostAttachmentSelectionState
         Padding(
           padding: const EdgeInsets.all(12),
           child: Text(
-            'Attachments Selected (${files.length})',
+            'Attachments Selected ($attachments.length})',
             style: titleTextStyle,
           ),
         ),
@@ -60,8 +59,9 @@ class _PostAttachmentSelectionState
           spacing: 5.0,
           runSpacing: 10.0,
           children: List.generate(
-            widget.files.length,
-            (idx) => AttachmentDraftItem(file: widget.files[idx]),
+            widget.attachments.length,
+            (idx) =>
+                AttachmentDraftItem(attachmentDraft: widget.attachments[idx]),
           ),
         ),
       );
@@ -81,15 +81,8 @@ class _PostAttachmentSelectionState
           ),
           ElevatedButton(
             onPressed: () async {
-              // we are popping out twice to clear selection sheet too!
               Navigator.of(context).pop();
-              if (widget.convo != null) {
-                handleChatAttachmentSend(widget.files);
-              } else if (widget.manager != null) {
-                handleAttachmentSend();
-              }
-              // manager not present, this shouldn't lead up here
-              return;
+              handleAttachmentSend();
             },
             child: const Text('Send'),
           ),
@@ -99,86 +92,57 @@ class _PostAttachmentSelectionState
   }
 
   // if generic attachment, send via manager
-  void handleAttachmentSend() async {
-    final attachmentDraftsNotifier =
-        ref.read(attachmentDraftsProvider(widget.manager!).notifier);
-    for (var file in widget.files) {
-      await attachmentDraftsNotifier.sendDrafts(file);
-    }
-  }
-
-  // if room attachment, send via timeline stream message
-  void handleChatAttachmentSend(
-    List<File> selectedAttachments,
-  ) async {
-    final roomId = widget.convo!.getRoomIdStr();
+  Future<void> handleAttachmentSend() async {
+    /// converts user selected media to attachment draft and sends state list.
+    /// only supports image/video/audio/file.
+    EasyLoading.show(status: 'Sending attachments', dismissOnTap: false);
     final client = ref.read(alwaysClientProvider);
-    final inputState = ref.read(chatInputProvider(roomId));
-    final stream = widget.convo!.timelineStream();
-
+    List<AttachmentDraft> drafts = [];
     try {
-      for (var file in selectedAttachments) {
+      for (var selected in widget.attachments) {
+        final type = selected.type;
+        final file = selected.file;
         final mimeType = lookupMimeType(file.path)!;
-        if (mimeType.startsWith('image/')) {
-          final bytes = file.readAsBytesSync();
-          final image = await decodeImageFromList(bytes);
+        final manager = widget.manager;
+        if (type == AttachmentType.camera || type == AttachmentType.image) {
+          Uint8List bytes = await file.readAsBytes();
+          final decodedImage = await decodeImageFromList(bytes);
           final imageDraft = client
               .imageDraft(file.path, mimeType)
-              .size(file.lengthSync())
-              .width(image.width)
-              .height(image.height);
-          if (inputState.repliedToMessage != null) {
-            await stream.replyMessage(
-              inputState.repliedToMessage!.id,
-              imageDraft,
-            );
-          } else {
-            await stream.sendMessage(imageDraft);
-          }
-        } else if (mimeType.startsWith('audio/')) {
+              .size(bytes.length)
+              .width(decodedImage.width)
+              .height(decodedImage.height);
+          final attachmentDraft = await manager.contentDraft(imageDraft);
+          drafts.add(attachmentDraft);
+        } else if (type == AttachmentType.audio) {
+          Uint8List bytes = await file.readAsBytes();
           final audioDraft =
-              client.audioDraft(file.path, mimeType).size(file.lengthSync());
-          if (inputState.repliedToMessage != null) {
-            await stream.replyMessage(
-              inputState.repliedToMessage!.id,
-              audioDraft,
-            );
-          } else {
-            await stream.sendMessage(audioDraft);
-          }
-        } else if (mimeType.startsWith('video/')) {
+              client.audioDraft(file.path, mimeType).size(bytes.length);
+          final attachmentDraft = await manager.contentDraft(audioDraft);
+          drafts.add(attachmentDraft);
+        } else if (type == AttachmentType.video) {
+          Uint8List bytes = await file.readAsBytes();
           final videoDraft =
-              client.videoDraft(file.path, mimeType).size(file.lengthSync());
-          if (inputState.repliedToMessage != null) {
-            await stream.replyMessage(
-              inputState.repliedToMessage!.id,
-              videoDraft,
-            );
-          } else {
-            await stream.sendMessage(videoDraft);
-          }
+              client.videoDraft(file.path, mimeType).size(bytes.length);
+          final attachmentDraft = await manager.contentDraft(videoDraft);
+          drafts.add(attachmentDraft);
         } else {
-          final draft =
-              client.fileDraft(file.path, mimeType).size(file.lengthSync());
-          if (inputState.repliedToMessage != null) {
-            await stream.replyMessage(inputState.repliedToMessage!.id, draft);
-          } else {
-            await stream.sendMessage(draft);
-          }
+          String fileName = file.path.split('/').last;
+          final fileDraft = client
+              .fileDraft(file.path, mimeType)
+              .filename(fileName)
+              .size(file.lengthSync());
+          final attachmentDraft = await manager.contentDraft(fileDraft);
+          drafts.add(attachmentDraft);
         }
       }
-    } catch (e, s) {
-      _log.severe('error occurred sending attachments', e, s);
-    }
-
-    if (inputState.repliedToMessage != null) {
-      final notifier = ref.read(chatInputProvider(roomId).notifier);
-      notifier.setRepliedToMessage(null);
-      notifier.setEditMessage(null);
-      notifier.showReplyView(false);
-      notifier.showEditView(false);
-      notifier.setReplyWidget(null);
-      notifier.setEditWidget(null);
+      for (var draft in drafts) {
+        final res = await draft.send();
+        _log.info('attachment sent: $res');
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      _log.severe('Error sending attachments', e);
     }
   }
 }

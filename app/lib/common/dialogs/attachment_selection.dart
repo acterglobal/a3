@@ -30,35 +30,35 @@ void showAttachmentSelection(
                   attachmentConfirmationDialog(
                     context,
                     manager,
-                    [file],
+                    [(type: AttachmentType.camera, file: file)],
                   );
                 }
               }
             },
             onTapImage: () async {
               List<XFile> imageFiles = await ImagePicker().pickMultiImage();
-              List<File> newFiles = [];
+              List<AttachmentInfo> newAttachments = [];
 
               for (var imageFile in imageFiles) {
                 File file = File(imageFile.path);
-                newFiles.add(file);
+                newAttachments.add((type: AttachmentType.image, file: file));
               }
 
               if (context.mounted) {
                 attachmentConfirmationDialog(
                   context,
                   manager,
-                  newFiles,
+                  newAttachments,
                 );
               }
             },
             onTapVideo: () async {
               XFile? videoFile =
                   await ImagePicker().pickVideo(source: ImageSource.gallery);
-              List<File> newAttachments = [];
+              List<AttachmentInfo> newAttachments = [];
               if (videoFile != null) {
                 File file = File(videoFile.path);
-                newAttachments.add(file);
+                newAttachments.add((type: AttachmentType.video, file: file));
               }
               if (context.mounted) {
                 attachmentConfirmationDialog(
@@ -86,10 +86,11 @@ void _onTapFileSelection(
     allowMultiple: true,
   );
   if (result != null) {
-    List<File> newAttachments = result.paths.map<File>((path) {
+    List<AttachmentInfo> newAttachments =
+        result.paths.map<AttachmentInfo>((path) {
       var file = File(path!);
-
-      return file;
+      var attachment = (type: AttachmentType.file, file: file);
+      return attachment;
     }).toList();
 
     if (context.mounted) {

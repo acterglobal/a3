@@ -1,41 +1,43 @@
-import 'dart:io';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/attachments/attachment_item.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:mime/mime.dart';
 
 // Attachment draft UI widget
 class AttachmentDraftItem extends StatelessWidget {
-  const AttachmentDraftItem({super.key, required this.file});
-  final File file;
+  const AttachmentDraftItem({super.key, required this.attachmentDraft});
+  final AttachmentInfo attachmentDraft;
 
   @override
   Widget build(BuildContext context) {
-    final fileName = file.path.split('/').last;
+    final fileName = attachmentDraft.file.path.split('/').last;
     return AttachmentContainer(
       name: fileName,
-      child: _attachmentPreview(context, file),
+      child: _attachmentPreview(context, attachmentDraft),
     );
   }
 
   // attachment preview handler
-  Widget _attachmentPreview(BuildContext context, File file) {
-    final mimeType = lookupMimeType(file.path)!;
-    if (mimeType.startsWith('image/')) {
+  Widget _attachmentPreview(
+    BuildContext context,
+    AttachmentInfo attachmentDraft,
+  ) {
+    final type = attachmentDraft.type;
+    if (type == AttachmentType.camera || type == AttachmentType.image) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(6),
         child: Image.file(
-          file,
+          attachmentDraft.file,
           height: 50,
           fit: BoxFit.cover,
         ),
       );
     }
-    if (mimeType.startsWith('audio/')) {
+    if (type == AttachmentType.audio) {
       return const Icon(Atlas.file_sound_thin);
     }
 
-    if (mimeType.startsWith('video/')) {
+    if (type == AttachmentType.video) {
       return const Icon(Atlas.file_video_thin);
     } else {
       return const Icon(Atlas.plus_file_thin);

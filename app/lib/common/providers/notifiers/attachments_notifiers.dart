@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -52,20 +53,25 @@ class AttachmentDraftsNotifier extends StateNotifier<List<AttachmentDraft>> {
 
   /// converts user selected media to attachment draft and sends state list.
   /// only supports image/video/audio/file.
-  Future<void> sendDrafts(File file) async {
+  Future<void> sendDrafts(List<AttachmentInfo> drafts) async {
     EasyLoading.show(status: 'Sending attachments', dismissOnTap: false);
     final client = ref.read(alwaysClientProvider);
     try {
-      final mimeType = lookupMimeType(file.path)!;
+      for (var draft in drafts) {
+        final type = draft.type;
+        if (type == AttachmentType.camera || type == AttachmentType.image) {
+          Uint8List bytes = await file.readAsBytes();
+          final decodedImage = await decodeImageFromList(bytes);
+          final imageDraft = client
+              .imageDraft(file.path, mimeType)
+              .size(bytes.length)
+              .width(decodedImage.width)
+              .height(decodedImage.height);
+          final attachmentDraft = await manager.contentDraft(imageDraft);
+        }
+      }
+
       if (mimeType.startsWith('image/')) {
-        Uint8List bytes = await file.readAsBytes();
-        final decodedImage = await decodeImageFromList(bytes);
-        final imageDraft = client
-            .imageDraft(file.path, mimeType)
-            .size(bytes.length)
-            .width(decodedImage.width)
-            .height(decodedImage.height);
-        final attachmentDraft = await manager.contentDraft(imageDraft);
         state = [...state, attachmentDraft];
       } else if (mimeType.startsWith('audio/')) {
         Uint8List bytes = await file.readAsBytes();
