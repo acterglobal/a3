@@ -47,10 +47,3 @@ final pinAttachmentManagerProvider =
     return liveManager;
   },
 );
-
-final pinAttachmentsProvider = FutureProvider.family
-    .autoDispose<List<Attachment>, ActerPin>((ref, acterPin) async {
-  final manager = await acterPin.attachments();
-  final liveManager = ref.watch(attachmentsManagerProvider(manager));
-  return (await liveManager.attachments()).toList();
-});

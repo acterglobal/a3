@@ -1,7 +1,6 @@
-import 'package:acter/common/dialogs/attachment_selection.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
-import 'package:acter/common/widgets/attachments/attachment_item.dart';
+import 'package:acter/common/widgets/attachments/attachment_widget.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
@@ -145,7 +144,6 @@ class PinPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final pin = ref.watch(pinProvider(pinId));
-
     return Scaffold(
       body: CustomScrollView(
         slivers: <Widget>[
@@ -178,7 +176,24 @@ class PinPage extends ConsumerWidget {
                 children: <Widget>[
                   PinItem(acterPin),
                   const SizedBox(height: 20),
-                  _buildAttachmentList(acterPin, context, ref),
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final asyncManager =
+                          ref.watch(pinAttachmentManagerProvider(acterPin));
+                      return asyncManager.when(
+                        data: (manager) =>
+                            AttachmentWidget(attachmentManager: manager),
+                        error: (err, st) =>
+                            Text('Error loading attachments $err'),
+                        loading: () => const Skeletonizer(
+                          child: SizedBox(
+                            height: 100,
+                            width: 100,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ],
               ),
               error: (err, st) => Text('Error loading pins ${err.toString()}'),
@@ -209,106 +224,6 @@ class PinPage extends ConsumerWidget {
         overflow: TextOverflow.ellipsis,
         style: Theme.of(context).textTheme.titleLarge,
       ),
-    );
-  }
-
-  // attachment list UI
-  Widget _buildAttachmentList(
-    ActerPin pin,
-    BuildContext context,
-    WidgetRef ref,
-  ) {
-    final attachmentTitleTextStyle = Theme.of(context).textTheme.labelLarge;
-    final attachments = ref.watch(pinAttachmentsProvider(pin));
-    final membership = ref.watch(roomMembershipProvider(pin.roomIdStr()));
-    final canPostAttachments = [];
-    if (membership.valueOrNull != null) {
-      final member = membership.requireValue!;
-      if (member.canString('CanPostPin')) {
-        canPostAttachments.add(_buildAddAttachment(pin, context, ref));
-      }
-    }
-
-    return attachments.when(
-      data: (list) {
-        return Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Row(
-                children: [
-                  Text('Attachments', style: attachmentTitleTextStyle),
-                  const SizedBox(width: 5),
-                  const Icon(Atlas.paperclip_attachment_thin, size: 14),
-                  const SizedBox(width: 5),
-                  Text('${list.length}'),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Wrap(
-                spacing: 5.0,
-                runSpacing: 10.0,
-                children: <Widget>[
-                  if (list.isNotEmpty)
-                    for (var item in list) AttachmentItem(attachment: item),
-                  ...canPostAttachments,
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-      error: (err, st) => Text('Error loading attachments $err'),
-      loading: () => const Skeletonizer(
-        child: Wrap(
-          spacing: 5.0,
-          runSpacing: 10.0,
-          children: [],
-        ),
-      ),
-    );
-  }
-
-  // add attachment container UI
-  Widget _buildAddAttachment(
-    ActerPin pin,
-    BuildContext context,
-    WidgetRef ref,
-  ) {
-    final containerColor = Theme.of(context).colorScheme.background;
-    final iconColor = Theme.of(context).colorScheme.secondary;
-    final iconTextStyle = Theme.of(context).textTheme.labelLarge;
-    final asyncManager = ref.watch(pinAttachmentManagerProvider(pin));
-
-    return asyncManager.when(
-      data: (manager) {
-        return InkWell(
-          onTap: () => showAttachmentSelection(context, manager),
-          child: Container(
-            height: 100,
-            width: 100,
-            decoration: BoxDecoration(
-              color: containerColor,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Icon(Icons.add, color: iconColor),
-                Text('Add', style: iconTextStyle!.copyWith(color: iconColor)),
-              ],
-            ),
-          ),
-        );
-      },
-      loading: () => const Skeletonizer(
-        child: SizedBox(
-          height: 100,
-          width: 100,
-        ),
-      ),
-      error: (err, st) => Text('Error loading attachments manager: $err'),
     );
   }
 }
