@@ -56,6 +56,16 @@ class SettingsMenu extends ConsumerWidget {
                   : context.pushNamed(Routes.settingSessions.name),
             ),
             MenuItemWidget(
+              iconData: Atlas.language_translation,
+              iconColor: colorSelected(Routes.settingLanguage),
+              title: 'Language',
+              subTitle: 'Change different languages',
+              titleStyles: titleStylesSelected(Routes.settingLanguage),
+              onTap: () => shouldGoNotNamed
+                  ? context.goNamed(Routes.settingLanguage.name)
+                  : context.pushNamed(Routes.settingLanguage.name),
+            ),
+            MenuItemWidget(
               iconData: Atlas.bell_mobile_thin,
               iconColor: colorSelected(Routes.settingNotifications),
               title: 'Notifications',

@@ -5,6 +5,7 @@ import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/models/onBoard.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
 
 class StartPage extends StatefulWidget {
@@ -16,229 +17,233 @@ class StartPage extends StatefulWidget {
 
 class _StartPageState extends State<StartPage> {
   // Variables
-  PageController _pageController = PageController(initialPage: 0);
+  final PageController _pageController = PageController(initialPage: 0);
 
   int _pageIndex = 0;
 
   // OnBoarding content list
-  final List onBoardingPages = [
-    OnBoarding(
-      image: 'assets/images/spaces_onboard.png',
-      title: RichText(
-        textAlign: TextAlign.center,
-        text: const TextSpan(
-          text: 'Organize & Collaborate Through ',
-          style: TextStyle(color: Colors.green, fontSize: 24),
-          children: <TextSpan>[
-            TextSpan(
-              text: 'Spaces',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                decoration: TextDecoration.underline,
-              ),
-            ),
-          ],
-        ),
-      ),
-      description: Column(
-        children: [
-          RichText(
-            text: const TextSpan(
-              children: [
-                TextSpan(
-                  text: 'Spaces',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
-                    fontSize: 17,
-                  ),
-                ),
-                TextSpan(
-                  text:
-                      ' are the central point of your communities where chats, events, todos, updates, and resources are.',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 17,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(
-            height: 15,
-          ),
-          const Text(
-            'Gather people in one or multiple spaces & create your own organizational structure.',
-            style: TextStyle(fontSize: 17, color: Colors.white),
-          ),
-        ],
-      ),
-    ),
-    OnBoarding(
-      image: 'assets/images/comms_onboard.png',
-      title: RichText(
-        textAlign: TextAlign.center,
-        text: const TextSpan(
-          style: TextStyle(color: Colors.green),
-          children: <TextSpan>[
-            TextSpan(
-              text: 'Communication',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                decoration: TextDecoration.underline,
-              ),
-            ),
-            TextSpan(
-              text: ' without compromise.',
-              style: TextStyle(fontSize: 24),
-            ),
-          ],
-        ),
-      ),
-      description: Column(
-        children: [
-          RichText(
-            text: const TextSpan(
-              children: [
-                TextSpan(
-                  text: 'Communicate and coordinate',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
-                    fontSize: 17,
-                  ),
-                ),
-                TextSpan(
-                  text: ' individually or across endless organizations.',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 17,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(
-            height: 15,
-          ),
-          RichText(
-            text: const TextSpan(
-              children: [
-                TextSpan(
-                  text: 'End-to-end encrypted',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
-                    fontSize: 17,
-                  ),
-                ),
-                TextSpan(
-                  text: ' by default, no ads and no data mining.',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 17,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    ),
-    OnBoarding(
-      image: 'assets/images/update_onboard.png',
-      title: RichText(
-        textAlign: TextAlign.center,
-        text: const TextSpan(
-          text: 'Reduce noise & increase engagement with ',
-          style: TextStyle(
-            color: Colors.green,
-            fontSize: 24,
-          ),
-          children: <TextSpan>[
-            TextSpan(
-              text: 'updates',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                decoration: TextDecoration.underline,
-              ),
-            ),
-          ],
-        ),
-      ),
-      description: RichText(
-        text: const TextSpan(
-          text: 'Enable people to ',
-          style: TextStyle(color: Colors.white, fontSize: 17),
-          children: <TextSpan>[
-            TextSpan(
-              text: 'see and engage with important updates',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.green,
-                fontSize: 17,
-              ),
-            ),
-            TextSpan(
-              text: ', by separating them from casual conversations.',
-              style: TextStyle(color: Colors.white, fontSize: 17),
-            ),
-          ],
-        ),
-      ),
-    ),
-    OnBoarding(
-      image: 'assets/images/modularity_onboard.png',
-      title: RichText(
-        textAlign: TextAlign.center,
-        text: const TextSpan(
-          style: TextStyle(color: Colors.green),
-          children: <TextSpan>[
-            TextSpan(
-              text: 'Simple to use',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                decoration: TextDecoration.underline,
-              ),
-            ),
-            TextSpan(
-              text: ' - add features as needed.',
-              style: TextStyle(fontSize: 24),
-            ),
-          ],
-        ),
-      ),
-      description: RichText(
-        text: const TextSpan(
-          children: [
-            TextSpan(
-              text: 'Customize Acter',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.green,
-                fontSize: 17,
-              ),
-            ),
-            TextSpan(
-              text:
-                  ' to your needs as you grow from a small group into global movement of thousands.',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 17,
-              ),
-            ),
-          ],
-        ),
-      ),
-    ),
-  ];
+  List onBoardingPages = [];
 
   @override
-  void initState() {
-    super.initState();
-    _pageController = PageController(initialPage: 0);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    onBoardingPages = [
+      OnBoarding(
+        image: 'assets/images/spaces_onboard.png',
+        title: RichText(
+          textAlign: TextAlign.center,
+          text: TextSpan(
+            text: L10n.of(context).onBoardingSpaceTitle('title1'),
+            style: const TextStyle(color: Colors.green, fontSize: 24),
+            children: <TextSpan>[
+              TextSpan(
+                text: L10n.of(context).onBoardingSpaceTitle('title2'),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+            ],
+          ),
+        ),
+        description: Column(
+          children: [
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: L10n.of(context).onBoardingSpaceDescription('desc1'),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green,
+                      fontSize: 17,
+                    ),
+                  ),
+                  TextSpan(
+                    text: L10n.of(context).onBoardingSpaceDescription('desc2'),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 17,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(
+              height: 15,
+            ),
+            Text(
+              L10n.of(context).onBoardingSpaceDescription('desc3'),
+              style: const TextStyle(fontSize: 17, color: Colors.white),
+            ),
+          ],
+        ),
+      ),
+      OnBoarding(
+        image: 'assets/images/comms_onboard.png',
+        title: RichText(
+          textAlign: TextAlign.center,
+          text: TextSpan(
+            style: const TextStyle(color: Colors.green),
+            children: <TextSpan>[
+              TextSpan(
+                text: L10n.of(context).onBoardingCommunicationTitle('title1'),
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+              TextSpan(
+                text: L10n.of(context).onBoardingCommunicationTitle('title2'),
+                style: const TextStyle(fontSize: 24),
+              ),
+            ],
+          ),
+        ),
+        description: Column(
+          children: [
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: L10n.of(context)
+                        .onBoardingCommunicationDescription('desc1'),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green,
+                      fontSize: 17,
+                    ),
+                  ),
+                  TextSpan(
+                    text: L10n.of(context)
+                        .onBoardingCommunicationDescription('desc2'),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 17,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(
+              height: 15,
+            ),
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: L10n.of(context)
+                        .onBoardingCommunicationDescription('desc3'),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green,
+                      fontSize: 17,
+                    ),
+                  ),
+                  TextSpan(
+                    text: L10n.of(context)
+                        .onBoardingCommunicationDescription('desc4'),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 17,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+      OnBoarding(
+        image: 'assets/images/update_onboard.png',
+        title: RichText(
+          textAlign: TextAlign.center,
+          text: TextSpan(
+            text: L10n.of(context).onBoardingUpdateTitle('title1'),
+            style: const TextStyle(
+              color: Colors.green,
+              fontSize: 24,
+            ),
+            children: <TextSpan>[
+              TextSpan(
+                text: L10n.of(context).onBoardingUpdateTitle('title2'),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+            ],
+          ),
+        ),
+        description: RichText(
+          text: TextSpan(
+            text: L10n.of(context).onBoardingUpdateDescription('desc1'),
+            style: const TextStyle(color: Colors.white, fontSize: 17),
+            children: <TextSpan>[
+              TextSpan(
+                text: L10n.of(context).onBoardingUpdateDescription('desc2'),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green,
+                  fontSize: 17,
+                ),
+              ),
+              TextSpan(
+                text: L10n.of(context).onBoardingUpdateDescription('desc3'),
+                style: const TextStyle(color: Colors.white, fontSize: 17),
+              ),
+            ],
+          ),
+        ),
+      ),
+      OnBoarding(
+        image: 'assets/images/modularity_onboard.png',
+        title: RichText(
+          textAlign: TextAlign.center,
+          text: TextSpan(
+            style: const TextStyle(color: Colors.green),
+            children: <TextSpan>[
+              TextSpan(
+                text: L10n.of(context).onBoardingSimpleToUseTitle('title1'),
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+              TextSpan(
+                text: L10n.of(context).onBoardingSimpleToUseTitle('title2'),
+                style: const TextStyle(fontSize: 24),
+              ),
+            ],
+          ),
+        ),
+        description: RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text:
+                    L10n.of(context).onBoardingSimpleToUseDescription('desc1'),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green,
+                  fontSize: 17,
+                ),
+              ),
+              TextSpan(
+                text:
+                    L10n.of(context).onBoardingSimpleToUseDescription('desc2'),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 17,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ];
   }
 
   @override
@@ -308,10 +313,10 @@ class _StartPageState extends State<StartPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Padding(
+                    Padding(
                       key: Keys.skipBtn,
-                      padding: EdgeInsets.only(bottom: 16.0),
-                      child: Text('Skip'),
+                      padding: const EdgeInsets.only(bottom: 16.0),
+                      child: Text(L10n.of(context).skip),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 16.0),
@@ -334,15 +339,15 @@ class _StartPageState extends State<StartPage> {
                       onTap: () {
                         next();
                       },
-                      child: const Padding(
-                        padding: EdgeInsets.only(bottom: 16.0),
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
                         child: Row(
                           children: [
-                            Text('Next'),
-                            SizedBox(
+                            Text(L10n.of(context).next),
+                            const SizedBox(
                               width: 8,
                             ),
-                            Icon(
+                            const Icon(
                               Icons.arrow_forward_ios,
                               size: 16,
                             ),
