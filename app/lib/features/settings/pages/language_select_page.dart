@@ -5,26 +5,27 @@ import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
-class LanguagePage extends ConsumerWidget {
-  const LanguagePage({super.key});
+class LanguageSelectPage extends ConsumerWidget {
+  const LanguageSelectPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return WithSidebar(
       sidebar: const SettingsPage(),
       child: Scaffold(
-        appBar: _buildAppbar(),
+        appBar: _buildAppbar(context),
         body: _buildBody(ref),
       ),
     );
   }
 
-  AppBar _buildAppbar() {
+  AppBar _buildAppbar(BuildContext context) {
     return AppBar(
       backgroundColor: const AppBarTheme().backgroundColor,
       elevation: 0.0,
-      title: const Text('Language'),
+      title:  Text(L10n.of(context).selectLanguage),
       centerTitle: true,
     );
   }
