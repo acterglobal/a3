@@ -24,6 +24,7 @@ class CrossSigning {
   final EventEmitter _verifEmitter = EventEmitter();
   bool _isVerifier = false; // whether this device requested verification
   String? _flowId; // if not null, verification flying now
+  bool _keyExchanged = false;
   Stream<VerificationEvent>? _verifListener;
   StreamSubscription<VerificationEvent>? _verifPoller;
 
@@ -262,7 +263,7 @@ class CrossSigning {
         sender: event.sender(),
         isVerifier: _isVerifier,
         message: reason,
-        onDone: (BuildContext context) => emitEvent('verification.init'),
+        onDone: (BuildContext context) => _resetStage(),
       ),
       isDismissible: false,
     );
@@ -368,7 +369,7 @@ class CrossSigning {
         sender: event.sender(),
         isVerifier: _isVerifier,
         message: reason,
-        onDone: (BuildContext context) => emitEvent('verification.init'),
+        onDone: (BuildContext context) => _resetStage(),
       ),
       isDismissible: false,
     );
@@ -376,6 +377,10 @@ class CrossSigning {
 
   void onSasKeysExchanged(BuildContext context, VerificationEvent event) {
     _log.info('emitter sas.keys_exchanged');
+    if (_keyExchanged) {
+      return; // skip 2nd occurrence of this event when other clicked match
+    }
+    _keyExchanged = true;
 
     // close dialog from previous stage, ex: sas.started
     final nav = Navigator.of(context, rootNavigator: true);
@@ -462,10 +467,15 @@ class CrossSigning {
       builder: (BuildContext context) => SasDonePage(
         sender: event.sender(),
         isVerifier: _isVerifier,
-        onDone: (BuildContext context) => emitEvent('verification.init'),
+        onDone: (BuildContext context) => _resetStage(),
       ),
       isDismissible: false,
     );
+  }
+
+  void _resetStage() {
+    _verifEmitter.emit('verification.init');
+    _keyExchanged = false;
   }
 
   void emitEvent<T>(String type, [T? data]) {
