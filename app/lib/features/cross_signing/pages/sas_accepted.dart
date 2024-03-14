@@ -14,7 +14,6 @@ class SasAcceptedPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = isVerifier ? 'Verify Other Session' : 'Verify This Session';
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
@@ -23,42 +22,37 @@ class SasAcceptedPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Flexible(
-            flex: isDesktop ? 2 : 1,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    child: Icon(isDesktop ? Atlas.laptop : Atlas.phone),
-                  ),
-                  const SizedBox(width: 5),
-                  Text(title),
-                  const Spacer(),
-                ],
-              ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5),
+            child: buildTitleBar(context),
+          ),
+          const SizedBox(height: 30),
+          const Center(
+            child: SizedBox(
+              height: 100,
+              width: 100,
+              child: CircularProgressIndicator(),
             ),
           ),
-          const Spacer(flex: 1),
-          const Flexible(
-            flex: 3,
-            child: Center(
-              child: SizedBox(
-                height: 100,
-                width: 100,
-                child: CircularProgressIndicator(),
-              ),
-            ),
-          ),
-          const Spacer(flex: 1),
-          Flexible(
-            flex: 2,
-            child: Text('Waiting for $sender'),
-          ),
-          const Spacer(flex: 1),
+          const SizedBox(height: 30),
+          Text('Waiting for $sender'),
+          const SizedBox(height: 30),
         ],
       ),
+    );
+  }
+
+  Widget buildTitleBar(BuildContext context) {
+    // has no close button
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          child: Icon(isDesktop ? Atlas.laptop : Atlas.phone),
+        ),
+        const SizedBox(width: 5),
+        Text(isVerifier ? 'Verify Other Session' : 'Verify This Session'),
+      ],
     );
   }
 }

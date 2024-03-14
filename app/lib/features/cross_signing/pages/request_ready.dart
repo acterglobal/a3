@@ -16,52 +16,28 @@ class RequestReadyPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = isVerifier ? 'Verify Other Session' : 'Verify This Session';
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Flexible(
-            flex: 1,
-            child: Padding(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    child: Icon(isDesktop ? Atlas.laptop : Atlas.phone),
-                  ),
-                  const SizedBox(width: 5),
-                  Text(title),
-                  const Spacer(),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 10),
-                    child: IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => onCancel(context),
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
+              child: buildTitleBar(context),
             ),
-          ),
-          const Flexible(
-            flex: 1,
-            child: Padding(
+            const SizedBox(height: 30),
+            const Padding(
               padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
               child: Text(
                 'Scan the code with your other device or switch and scan with this device',
               ),
             ),
-          ),
-          const Flexible(
-            flex: 2,
-            child: Center(
+            const SizedBox(height: 30),
+            const Center(
               child: Padding(
                 padding: EdgeInsets.all(25),
                 child: SizedBox(
@@ -71,26 +47,22 @@ class RequestReadyPage extends StatelessWidget {
                 ),
               ),
             ),
-          ),
-          // Flexible(
-          //   flex: 1,
-          //   child: TextButton(
-          //     onPressed: () {},
-          //     child: const Row(
-          //       mainAxisAlignment: MainAxisAlignment.center,
-          //       children: [
-          //         Padding(
-          //           padding: EdgeInsets.all(8),
-          //           child: Icon(Atlas.camera),
-          //         ),
-          //         Text('Scan with this device'),
-          //       ],
-          //     ),
-          //   ),
-          // ),
-          Flexible(
-            flex: 1,
-            child: Wrap(
+            // const SizedBox(height: 30),
+            // TextButton(
+            //   onPressed: () {},
+            //   child: const Row(
+            //     mainAxisAlignment: MainAxisAlignment.center,
+            //     children: [
+            //       Padding(
+            //         padding: EdgeInsets.all(8),
+            //         child: Icon(Atlas.camera),
+            //       ),
+            //       Text('Scan with this device'),
+            //     ],
+            //   ),
+            // ),
+            const SizedBox(height: 30),
+            Wrap(
               children: [
                 ListTile(
                   title: const Text('Can’t scan'),
@@ -100,10 +72,33 @@ class RequestReadyPage extends StatelessWidget {
                 ),
               ],
             ),
-          ),
-          const Spacer(flex: 1),
-        ],
+            const SizedBox(height: 30),
+          ],
+        ),
       ),
+    );
+  }
+
+  Widget buildTitleBar(BuildContext context) {
+    // has close button
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          child: Icon(isDesktop ? Atlas.laptop : Atlas.phone),
+        ),
+        const SizedBox(width: 5),
+        Text(isVerifier ? 'Verify Other Session' : 'Verify This Session'),
+        const Spacer(),
+        Padding(
+          padding: const EdgeInsets.only(right: 10),
+          child: IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: () => onCancel(context),
+            color: Colors.white,
+          ),
+        ),
+      ],
     );
   }
 }

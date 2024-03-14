@@ -18,7 +18,6 @@ class SasCancelledPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = isVerifier ? 'Verify Other Session' : 'Verify This Session';
     const fallbackMsg =
         'One of the following may be compromised:\n\n   - Your homeserver\n   - The homeserver the user you’re verifying is connected to\n   - Yours, or the other users’ internet connection\n   - Yours, or the other users’ device';
     return Container(
@@ -29,49 +28,42 @@ class SasCancelledPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Flexible(
-            flex: isDesktop ? 2 : 1,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    child: Icon(isDesktop ? Atlas.laptop : Atlas.phone),
-                  ),
-                  const SizedBox(width: 5),
-                  Text(title),
-                  const Spacer(),
-                ],
-              ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5),
+            child: buildTitleBar(context),
+          ),
+          const SizedBox(height: 30),
+          const Icon(Atlas.lock_keyhole),
+          const SizedBox(height: 30),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Text(message ?? fallbackMsg),
+          ),
+          const SizedBox(height: 30),
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.40,
+            child: ElevatedButton(
+              child: const Text('Got it'),
+              onPressed: () => onDone(context),
             ),
           ),
-          const Spacer(flex: 1),
-          const Flexible(
-            flex: 3,
-            child: Icon(Atlas.lock_keyhole),
-          ),
-          Flexible(
-            flex: 2,
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Text(message ?? fallbackMsg),
-            ),
-          ),
-          const Spacer(flex: 1),
-          Flexible(
-            flex: 1,
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.40,
-              child: ElevatedButton(
-                child: const Text('Got it'),
-                onPressed: () => onDone(context),
-              ),
-            ),
-          ),
-          const Spacer(flex: 1),
+          const SizedBox(height: 30),
         ],
       ),
+    );
+  }
+
+  Widget buildTitleBar(BuildContext context) {
+    // has no close button
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          child: Icon(isDesktop ? Atlas.laptop : Atlas.phone),
+        ),
+        const SizedBox(width: 5),
+        Text(isVerifier ? 'Verify Other Session' : 'Verify This Session'),
+      ],
     );
   }
 }

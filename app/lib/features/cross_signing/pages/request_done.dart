@@ -24,54 +24,51 @@ class RequestDonePage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Flexible(
-            flex: isDesktop ? 2 : 1,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    child: Icon(isDesktop ? Atlas.laptop : Atlas.phone),
-                  ),
-                  const SizedBox(width: 5),
-                  const Text('Verified!'),
-                ],
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5),
+            child: buildTitleBar(context),
+          ),
+          const SizedBox(height: 30),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Text(
+              isVerifier
+                  ? 'You’ve successfully verified $sender!'
+                  : 'Your new session is now verified. It has access to your encrypted messages, and other users will see it as trusted.',
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const SizedBox(height: 30),
+          const Center(
+            child: Icon(Atlas.lock_keyhole),
+          ),
+          const SizedBox(height: 30),
+          Center(
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.40,
+              child: ElevatedButton(
+                child: const Text('Got it'),
+                onPressed: () => onDone(context),
               ),
             ),
           ),
-          Flexible(
-            flex: 1,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                isVerifier
-                    ? 'You’ve successfully verified $sender!'
-                    : 'Your new session is now verified. It has access to your encrypted messages, and other users will see it as trusted.',
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
-          const Flexible(
-            flex: 2,
-            child: Center(
-              child: Icon(Atlas.lock_keyhole),
-            ),
-          ),
-          Flexible(
-            flex: 1,
-            child: Center(
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.40,
-                child: ElevatedButton(
-                  child: const Text('Got it'),
-                  onPressed: () => onDone(context),
-                ),
-              ),
-            ),
-          ),
+          const SizedBox(height: 30),
         ],
       ),
+    );
+  }
+
+  Widget buildTitleBar(BuildContext context) {
+    // has no close button
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          child: Icon(isDesktop ? Atlas.laptop : Atlas.phone),
+        ),
+        const SizedBox(width: 5),
+        const Text('Verified!'),
+      ],
     );
   }
 }

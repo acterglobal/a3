@@ -26,29 +26,25 @@ class VerificationRequestPage extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 5),
-            child: buildCaption(context),
+            child: buildTitleBar(context),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 30),
-            child: Text('$sender wants to verify your session'),
+          const SizedBox(height: 30),
+          Text('$sender wants to verify your session'),
+          const SizedBox(height: 30),
+          const Icon(Atlas.lock_keyhole),
+          const SizedBox(height: 30),
+          ElevatedButton(
+            child: const Text('Accept Request'),
+            onPressed: () => onAccept(context),
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 30),
-            child: Icon(Atlas.lock_keyhole),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 30),
-            child: ElevatedButton(
-              child: const Text('Accept Request'),
-              onPressed: () => onAccept(context),
-            ),
-          ),
+          const SizedBox(height: 30),
         ],
       ),
     );
   }
 
-  Widget buildCaption(BuildContext context) {
+  Widget buildTitleBar(BuildContext context) {
+    // has close button
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,

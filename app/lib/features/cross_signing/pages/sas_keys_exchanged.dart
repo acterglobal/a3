@@ -23,9 +23,6 @@ class SasKeysExchangedPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = isVerifier ? 'Verify Other Session' : 'Verify This Session';
-    List<int> codes = emojis.map((e) => e.symbol()).toList();
-    List<String> descriptions = emojis.map((e) => e.description()).toList();
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
@@ -34,93 +31,93 @@ class SasKeysExchangedPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.max,
         children: [
-          Expanded(
-            flex: isDesktop ? 1 : 2,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    child: isDesktop
-                        ? const Icon(Atlas.laptop)
-                        : const Icon(Atlas.phone),
-                  ),
-                  const SizedBox(width: 5),
-                  Text(title),
-                  const Spacer(),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 10),
-                    child: IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => onCancel(context),
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5),
+            child: buildTitleBar(context),
+          ),
+          const SizedBox(height: 30),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Text(
+              'Compare the unique emoji, ensuring they appear in the same order.',
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(height: 30),
+          Center(
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: Theme.of(context).colorScheme.neutral2,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: buildEmojis(context),
               ),
             ),
           ),
-          Expanded(
-            flex: isDesktop ? 1 : 2,
-            child: const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: Text(
-                'Compare the unique emoji, ensuring they appear in the same order.',
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ),
-          const Spacer(flex: 1),
-          Expanded(
-            flex: isDesktop ? 2 : 7,
-            child: Center(
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  color: Theme.of(context).colorScheme.neutral2,
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: GridView.count(
-                    crossAxisCount: isDesktop ? 7 : 4,
-                    children: List.generate(emojis.length, (index) {
-                      return GridTile(
-                        child: Column(
-                          children: <Widget>[
-                            Text(
-                              String.fromCharCode(codes[index]),
-                              style: const TextStyle(fontSize: 32),
-                              textAlign: TextAlign.center,
-                            ),
-                            Text(
-                              descriptions[index],
-                              maxLines: 1,
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      );
-                    }),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const Spacer(flex: 1),
-          Expanded(
-            flex: isDesktop ? 1 : 2,
-            child: buildBody(context),
-          ),
-          const Spacer(flex: 1),
+          const SizedBox(height: 30),
+          buildActionButtons(context),
+          const SizedBox(height: 30),
         ],
       ),
     );
   }
 
-  Widget buildBody(BuildContext context) {
+  Widget buildTitleBar(BuildContext context) {
+    // has close button
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          child: isDesktop ? const Icon(Atlas.laptop) : const Icon(Atlas.phone),
+        ),
+        const SizedBox(width: 5),
+        Text(isVerifier ? 'Verify Other Session' : 'Verify This Session'),
+        const Spacer(),
+        Padding(
+          padding: const EdgeInsets.only(right: 10),
+          child: IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: () => onCancel(context),
+            color: Colors.white,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildEmojis(BuildContext context) {
+    List<int> codes = emojis.map((e) => e.symbol()).toList();
+    List<String> descriptions = emojis.map((e) => e.description()).toList();
+    return GridView.count(
+      crossAxisCount: isDesktop ? 7 : 4,
+      scrollDirection: Axis.vertical,
+      shrinkWrap: true,
+      children: List.generate(emojis.length, (index) {
+        return GridTile(
+          child: Column(
+            children: <Widget>[
+              Text(
+                String.fromCharCode(codes[index]),
+                style: const TextStyle(fontSize: 32),
+                textAlign: TextAlign.center,
+              ),
+              Text(
+                descriptions[index],
+                maxLines: 1,
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget buildActionButtons(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
