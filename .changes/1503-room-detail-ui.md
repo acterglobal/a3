@@ -1,1 +1,0 @@
-- [Enhancement] : UI-UX improvement in room details page

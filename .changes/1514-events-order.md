@@ -1,1 +1,0 @@
-- [fix] Upcoming events on the Dashboard are shown in next-first-order now.

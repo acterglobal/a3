@@ -1,2 +1,0 @@
-- [fix]: Redefined attachments .i.e. due to architectural constraints, they exists just like comments/likes and can be interacted on created pins.
-- [fix]: The url field in pins create/edit is now optional.
