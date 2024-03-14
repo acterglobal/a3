@@ -132,9 +132,11 @@ impl VerificationEvent {
                     // request may be timed out
                     bail!("Could not get verification request")
                 };
-                tokio::spawn(request_verification_handler(
-                    client, controller, request, flow_id, sender, None,
-                ));
+                info!(
+                    "Accepting verification request from {}",
+                    request.other_user_id()
+                );
+                request.accept().await?;
                 Ok(true)
             })
             .await?
@@ -180,14 +182,11 @@ impl VerificationEvent {
                     // request may be timed out
                     bail!("Could not get verification request")
                 };
-                tokio::spawn(request_verification_handler(
-                    client,
-                    controller,
-                    request,
-                    flow_id,
-                    sender,
-                    Some(values),
-                ));
+                info!(
+                    "Accepting verification request from {}",
+                    request.other_user_id()
+                );
+                request.accept_with_methods(values).await?;
                 Ok(true)
             })
             .await?
@@ -228,9 +227,12 @@ impl VerificationEvent {
                     // request may be timed out
                     bail!("Could not get verification object")
                 };
-                tokio::spawn(sas_verification_handler(
-                    client, controller, sas, flow_id, sender,
-                ));
+                info!(
+                    "Starting verification with {} {}",
+                    &sas.other_device().user_id(),
+                    &sas.other_device().device_id()
+                );
+                sas.accept().await?;
                 Ok(true)
             })
             .await?
@@ -306,25 +308,6 @@ impl VerificationEvent {
             })
             .await?
     }
-
-    pub async fn review_verification_mac(&self) -> Result<bool> {
-        let client = self.client.clone();
-        let sender = self.sender.clone();
-        let flow_id = self.flow_id.clone();
-        RUNTIME
-            .spawn(async move {
-                let Some(Verification::SasV1(sas)) = client
-                    .encryption()
-                    .get_verification(&sender, &flow_id)
-                    .await
-                else {
-                    // request may be timed out
-                    bail!("Could not get verification object")
-                };
-                Ok(sas.is_done())
-            })
-            .await?
-    }
 }
 
 #[derive(Clone, Debug)]
@@ -357,20 +340,8 @@ async fn request_verification_handler(
     request: VerificationRequest,
     flow_id: String,
     sender: OwnedUserId,
-    methods: Option<Vec<VerificationMethod>>,
 ) -> Result<()> {
-    info!(
-        "Accepting verification request from {}",
-        request.other_user_id()
-    );
-    if let Some(methods) = methods {
-        request.accept_with_methods(methods).await?;
-    } else {
-        request.accept().await?;
-    }
-
     let mut stream = request.changes();
-
     while let Some(state) = stream.next().await {
         match state {
             VerificationRequestState::Created { our_methods } => {
@@ -451,15 +422,23 @@ async fn request_verification_handler(
                     error!("Dropping flow for {}: {}", flow_id, e);
                 }
             }
-            VerificationRequestState::Transitioned { verification } => match verification {
-                Verification::SasV1(s) => {
-                    // from then on, accept_sas_verification takes over
-                    break;
+            VerificationRequestState::Transitioned { verification } => {
+                if let Verification::SasV1(s) = verification {
+                    let device_id = client.device_id().expect("DeviceId needed");
+                    let event_type = "VerificationRequestState::Transitioned".to_string();
+                    info!("{} got {}", device_id, event_type);
+                    let msg = VerificationEvent::new(
+                        client.clone(),
+                        controller.clone(),
+                        event_type,
+                        flow_id.clone(),
+                        sender.clone(),
+                    );
+                    if let Err(e) = controller.event_tx.try_send(msg) {
+                        error!("Dropping flow for {}: {}", flow_id, e);
+                    }
                 }
-                _ => {
-                    continue;
-                }
-            },
+            }
             VerificationRequestState::Done => {
                 let device_id = client.device_id().expect("DeviceId needed");
                 let event_type = "VerificationRequestState::Done".to_string();
@@ -509,15 +488,7 @@ async fn sas_verification_handler(
     flow_id: String,
     sender: OwnedUserId,
 ) -> Result<()> {
-    info!(
-        "Starting verification with {} {}",
-        &sas.other_device().user_id(),
-        &sas.other_device().device_id()
-    );
-    sas.accept().await?;
-
     let mut stream = sas.changes();
-
     while let Some(state) = stream.next().await {
         match state {
             SasState::KeysExchanged { emojis, decimals } => {
@@ -1115,6 +1086,87 @@ impl Client {
     pub fn session_manager(&self) -> SessionManager {
         let client = self.core.client().clone();
         SessionManager { client }
+    }
+
+    pub async fn request_verification(&self, dev_id: String) -> Result<VerificationEvent> {
+        let client = self.core.client().clone();
+        let controller = self.verification_controller.clone();
+        RUNTIME
+            .spawn(async move {
+                let user_id = client
+                    .user_id()
+                    .context("You must be logged in to do that")?
+                    .to_owned();
+                let Some(device) = client
+                    .clone()
+                    .encryption()
+                    .get_device(&user_id, device_id!(dev_id.as_str()))
+                    .await?
+                else {
+                    bail!("Could not get device from encryption")
+                };
+                let is_verified =
+                    device.is_cross_signed_by_owner() || device.is_verified_with_cross_signing();
+                if is_verified {
+                    bail!("Device {} was already verified", dev_id);
+                }
+                let request = device.request_verification().await?;
+                let flow_id = request.flow_id().to_owned();
+                info!("requested verification - flow_id: {}", flow_id.clone());
+                let msg = VerificationEvent::new(
+                    client,
+                    controller,
+                    "VerificationRequestState::Created".to_owned(),
+                    flow_id,
+                    user_id,
+                );
+                Ok(msg)
+            })
+            .await?
+    }
+
+    pub async fn install_request_event_handler(&self, flow_id: String) -> Result<bool> {
+        let client = self.core.client().clone();
+        let controller = self.verification_controller.clone();
+        let sender = client.user_id().context("User not found")?.to_owned();
+        RUNTIME
+            .spawn(async move {
+                let Some(request) = client
+                    .encryption()
+                    .get_verification_request(&sender, &flow_id)
+                    .await
+                else {
+                    // request may be timed out
+                    bail!("Could not get verification request")
+                };
+                tokio::spawn(request_verification_handler(
+                    client, controller, request, flow_id, sender,
+                ));
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn install_sas_event_handler(&self, flow_id: String) -> Result<bool> {
+        let client = self.core.client().clone();
+        let controller = self.verification_controller.clone();
+        let sender = client.user_id().context("User not found")?.to_owned();
+        RUNTIME
+            .spawn(async move {
+                let Some(Verification::SasV1(sas)) = client
+                    .encryption()
+                    .get_verification(&sender, &flow_id)
+                    .await
+                else {
+                    // request may be timed out
+                    bail!("Could not get verification object")
+                };
+                tokio::spawn(sas_verification_handler(
+                    client, controller, sas, flow_id, sender,
+                ));
+                Ok(true)
+            })
+            .await?
     }
 }
 

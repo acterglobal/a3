@@ -2,31 +2,26 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
-class VerificationCancelPage extends StatelessWidget {
+class SasDonePage extends StatelessWidget {
+  final bool isVerifier;
   final String sender;
-  final bool passive;
-  final String? message;
   final Function(BuildContext) onDone;
 
-  const VerificationCancelPage({
+  const SasDonePage({
     super.key,
     required this.sender,
-    required this.passive,
-    this.message,
+    required this.isVerifier,
     required this.onDone,
   });
 
   @override
   Widget build(BuildContext context) {
-    final title = passive ? 'Verify This Session' : 'Verify Other Session';
-    const fallbackMsg =
-        'One of the following may be compromised:\n\n   - Your homeserver\n   - The homeserver the user you’re verifying is connected to\n   - Yours, or the other users’ internet connection\n   - Yours, or the other users’ device';
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
           Flexible(
@@ -40,36 +35,41 @@ class VerificationCancelPage extends StatelessWidget {
                     child: Icon(isDesktop ? Atlas.laptop : Atlas.phone),
                   ),
                   const SizedBox(width: 5),
-                  Text(title),
-                  const Spacer(),
+                  const Text('Verified!'),
                 ],
               ),
             ),
           ),
-          const Spacer(flex: 1),
-          const Flexible(
-            flex: 3,
-            child: Icon(Atlas.lock_keyhole),
-          ),
-          Flexible(
-            flex: 2,
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Text(message ?? fallbackMsg),
-            ),
-          ),
-          const Spacer(flex: 1),
           Flexible(
             flex: 1,
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.40,
-              child: ElevatedButton(
-                child: const Text('Got it'),
-                onPressed: () => onDone(context),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                isVerifier
+                    ? 'You’ve successfully verified $sender!'
+                    : 'Your new session is now verified. It has access to your encrypted messages, and other users will see it as trusted.',
+                textAlign: TextAlign.center,
               ),
             ),
           ),
-          const Spacer(flex: 1),
+          const Flexible(
+            flex: 2,
+            child: Center(
+              child: Icon(Atlas.lock_keyhole),
+            ),
+          ),
+          Flexible(
+            flex: 1,
+            child: Center(
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.40,
+                child: ElevatedButton(
+                  child: const Text('Got it'),
+                  onPressed: () => onDone(context),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );

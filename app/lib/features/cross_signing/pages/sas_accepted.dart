@@ -2,16 +2,19 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
-class VerificationLaunchPage extends StatelessWidget {
-  final Function(BuildContext) onCancel;
+class SasAcceptedPage extends StatelessWidget {
+  final String sender;
+  final bool isVerifier;
 
-  const VerificationLaunchPage({
+  const SasAcceptedPage({
     super.key,
-    required this.onCancel,
+    required this.sender,
+    required this.isVerifier,
   });
 
   @override
   Widget build(BuildContext context) {
+    final title = isVerifier ? 'Verify Other Session' : 'Verify This Session';
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
@@ -21,7 +24,7 @@ class VerificationLaunchPage extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Flexible(
-            flex: 1,
+            flex: isDesktop ? 2 : 1,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
               child: Row(
@@ -31,31 +34,27 @@ class VerificationLaunchPage extends StatelessWidget {
                     child: Icon(isDesktop ? Atlas.laptop : Atlas.phone),
                   ),
                   const SizedBox(width: 5),
-                  const Text('Verify Other Device'),
+                  Text(title),
                   const Spacer(),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 10),
-                    child: IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => onCancel(context),
-                      color: Colors.white,
-                    ),
-                  ),
                 ],
               ),
             ),
           ),
           const Spacer(flex: 1),
           const Flexible(
-            flex: 1,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-              child: Text(
-                'To proceed, please accept the verification request on your other device.',
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+            flex: 3,
+            child: Center(
+              child: SizedBox(
+                height: 100,
+                width: 100,
+                child: CircularProgressIndicator(),
               ),
             ),
+          ),
+          const Spacer(flex: 1),
+          Flexible(
+            flex: 2,
+            child: Text('Waiting for $sender'),
           ),
           const Spacer(flex: 1),
         ],

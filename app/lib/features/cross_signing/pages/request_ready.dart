@@ -2,21 +2,21 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
-class VerificationReadyPage extends StatelessWidget {
-  final bool passive;
+class RequestReadyPage extends StatelessWidget {
+  final bool isVerifier;
   final Function(BuildContext) onCancel;
   final Function(BuildContext) onAccept;
 
-  const VerificationReadyPage({
+  const RequestReadyPage({
     super.key,
-    required this.passive,
+    required this.isVerifier,
     required this.onCancel,
     required this.onAccept,
   });
 
   @override
   Widget build(BuildContext context) {
-    final title = passive ? 'Verify This Session' : 'Verify Other Session';
+    final title = isVerifier ? 'Verify Other Session' : 'Verify This Session';
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
@@ -72,22 +72,22 @@ class VerificationReadyPage extends StatelessWidget {
               ),
             ),
           ),
-          Flexible(
-            flex: 1,
-            child: TextButton(
-              onPressed: () {},
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.all(8),
-                    child: Icon(Atlas.camera),
-                  ),
-                  Text('Scan with this device'),
-                ],
-              ),
-            ),
-          ),
+          // Flexible(
+          //   flex: 1,
+          //   child: TextButton(
+          //     onPressed: () {},
+          //     child: const Row(
+          //       mainAxisAlignment: MainAxisAlignment.center,
+          //       children: [
+          //         Padding(
+          //           padding: EdgeInsets.all(8),
+          //           child: Icon(Atlas.camera),
+          //         ),
+          //         Text('Scan with this device'),
+          //       ],
+          //     ),
+          //   ),
+          // ),
           Flexible(
             flex: 1,
             child: Wrap(

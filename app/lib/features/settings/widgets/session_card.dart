@@ -143,9 +143,14 @@ class SessionCard extends ConsumerWidget {
   Future<void> onVerify(BuildContext context, WidgetRef ref) async {
     final devId = deviceRecord.deviceId().toString();
     final client = ref.read(alwaysClientProvider);
-    final manager = client.sessionManager();
+    // final manager = client.sessionManager();
+
+    final event = await client.requestVerification(devId);
+    // start request event loop
+    await client.installRequestEventHandler(event.flowId());
+
+    // force request.created, because above loop starts from request.ready
     final crossSigning = ref.read(syncStateProvider.notifier).crossSigning;
-    final verifId = await manager.requestVerification(devId);
-    crossSigning.emitEvent<String>('verification.launch', verifId);
+    crossSigning.emitEvent<VerificationEvent>('request.created', event);
   }
 }

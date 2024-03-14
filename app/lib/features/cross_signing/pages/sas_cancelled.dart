@@ -2,19 +2,25 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
-class VerificationAcceptPage extends StatelessWidget {
+class SasCancelledPage extends StatelessWidget {
   final String sender;
-  final bool passive;
+  final bool isVerifier;
+  final String? message;
+  final Function(BuildContext) onDone;
 
-  const VerificationAcceptPage({
+  const SasCancelledPage({
     super.key,
     required this.sender,
-    required this.passive,
+    required this.isVerifier,
+    this.message,
+    required this.onDone,
   });
 
   @override
   Widget build(BuildContext context) {
-    final title = passive ? 'Verify This Session' : 'Verify Other Session';
+    final title = isVerifier ? 'Verify Other Session' : 'Verify This Session';
+    const fallbackMsg =
+        'One of the following may be compromised:\n\n   - Your homeserver\n   - The homeserver the user you’re verifying is connected to\n   - Yours, or the other users’ internet connection\n   - Yours, or the other users’ device';
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
@@ -43,18 +49,25 @@ class VerificationAcceptPage extends StatelessWidget {
           const Spacer(flex: 1),
           const Flexible(
             flex: 3,
-            child: Center(
-              child: SizedBox(
-                height: 100,
-                width: 100,
-                child: CircularProgressIndicator(),
-              ),
+            child: Icon(Atlas.lock_keyhole),
+          ),
+          Flexible(
+            flex: 2,
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Text(message ?? fallbackMsg),
             ),
           ),
           const Spacer(flex: 1),
           Flexible(
-            flex: 2,
-            child: Text('Waiting for $sender'),
+            flex: 1,
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.40,
+              child: ElevatedButton(
+                child: const Text('Got it'),
+                onPressed: () => onDone(context),
+              ),
+            ),
           ),
           const Spacer(flex: 1),
         ],

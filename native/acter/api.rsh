@@ -2335,6 +2335,16 @@ object Client {
     /// Get session manager that returns all/verified/unverified/inactive session list
     fn session_manager() -> SessionManager;
 
+    /// Trigger verification of another device
+    /// returns flow id of verification
+    fn request_verification(dev_id: string) -> Future<Result<VerificationEvent>>;
+
+    /// install verification request event handler
+    fn install_request_event_handler(flow_id: string) -> Future<Result<bool>>;
+
+    /// install sas verification event handler
+    fn install_sas_event_handler(flow_id: string) -> Future<Result<bool>>;
+
     /// Return the event handler of device new
     fn device_new_event_rx() -> Option<Stream<DeviceNewEvent>>;
 
@@ -2632,9 +2642,6 @@ object VerificationEvent {
 
     /// Alice says to Bob that SAS verification doesn't match and vice versa
     fn mismatch_sas_verification() -> Future<Result<bool>>;
-
-    /// Alice and Bob reviews the AnyToDeviceEvent::KeyVerificationMac
-    fn review_verification_mac() -> Future<Result<bool>>;
 }
 
 object VerificationEmoji {

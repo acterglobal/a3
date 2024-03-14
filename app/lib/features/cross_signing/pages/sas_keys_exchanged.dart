@@ -3,18 +3,18 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
-class VerificationKeyPage extends StatelessWidget {
+class SasKeysExchangedPage extends StatelessWidget {
   final String sender;
-  final bool passive;
+  final bool isVerifier;
   final FfiListVerificationEmoji emojis;
   final Function(BuildContext) onCancel;
   final Function(BuildContext) onMatch;
   final Function(BuildContext) onMismatch;
 
-  const VerificationKeyPage({
+  const SasKeysExchangedPage({
     super.key,
     required this.sender,
-    required this.passive,
+    required this.isVerifier,
     required this.emojis,
     required this.onCancel,
     required this.onMatch,
@@ -23,7 +23,7 @@ class VerificationKeyPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = passive ? 'Verify This Session' : 'Verify Other Session';
+    final title = isVerifier ? 'Verify Other Session' : 'Verify This Session';
     List<int> codes = emojis.map((e) => e.symbol()).toList();
     List<String> descriptions = emojis.map((e) => e.description()).toList();
     return Container(

@@ -2,19 +2,19 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
-class VerificationStartPage extends StatelessWidget {
-  final bool passive;
+class SasStartedPage extends StatelessWidget {
+  final bool isVerifier;
   final Function(BuildContext) onCancel;
 
-  const VerificationStartPage({
+  const SasStartedPage({
     super.key,
-    required this.passive,
+    required this.isVerifier,
     required this.onCancel,
   });
 
   @override
   Widget build(BuildContext context) {
-    final title = passive ? 'Verify This Session' : 'Verify Other Session';
+    final title = isVerifier ? 'Verify Other Session' : 'Verify This Session';
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
