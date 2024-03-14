@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:acter/features/cross_signing/pages/request_cancelled.dart';
 import 'package:acter/features/cross_signing/pages/request_created.dart';
+import 'package:acter/features/cross_signing/pages/request_done.dart';
 import 'package:acter/features/cross_signing/pages/request_ready.dart';
 import 'package:acter/features/cross_signing/pages/sas_accepted.dart';
 import 'package:acter/features/cross_signing/pages/sas_cancelled.dart';
-import 'package:acter/features/cross_signing/pages/sas_done.dart';
 import 'package:acter/features/cross_signing/pages/sas_keys_exchanged.dart';
 import 'package:acter/features/cross_signing/pages/sas_started.dart';
 import 'package:acter/features/cross_signing/pages/verification_request.dart';
@@ -233,10 +233,22 @@ class CrossSigning {
 
   void onRequestDone(BuildContext context, VerificationEvent event) {
     _log.info('emitter request.done');
-    if (_flowId == null) {
-      return; // already finished due to sas.done happened just before
-    }
-    _flowId = null;
+    _flowId = null; // this event occurs before sas.done
+
+    // close dialog from previous stage, ex: sas.keys_exchanged
+    final nav = Navigator.of(context, rootNavigator: true);
+    if (nav.canPop()) nav.pop();
+
+    // open request.done dialog
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) => RequestDonePage(
+        sender: event.sender(),
+        isVerifier: _isVerifier,
+        onDone: (BuildContext context) => _resetStage(),
+      ),
+      isDismissible: false,
+    );
   }
 
   // both of verifier & verifiee get this event when verification was cancelled before start
@@ -439,38 +451,10 @@ class CrossSigning {
 
   void onSasConfirmed(BuildContext context, VerificationEvent event) {
     _log.info('emitter sas.confirmed');
-
-    // // close dialog from previous stage, ex: sas.keys_exchanged
-    // final nav = Navigator.of(context, rootNavigator: true);
-    // if (nav.canPop()) nav.pop();
-
-    // // handle sas.confirmed event without dialog
-    // Future.delayed(const Duration(milliseconds: 500), () async {
-    //   await event.reviewVerificationMac();
-    // });
   }
 
   void onSasDone(BuildContext context, VerificationEvent event) {
     _log.info('emitter sas.done');
-    if (_flowId == null) {
-      return; // already finished due to request.done happened just before
-    }
-    _flowId = null;
-
-    // close dialog from previous stage, ex: sas.confirmed
-    final nav = Navigator.of(context, rootNavigator: true);
-    if (nav.canPop()) nav.pop();
-
-    // open sas.done dialog
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) => SasDonePage(
-        sender: event.sender(),
-        isVerifier: _isVerifier,
-        onDone: (BuildContext context) => _resetStage(),
-      ),
-      isDismissible: false,
-    );
   }
 
   void _resetStage() {
