@@ -364,6 +364,7 @@ impl VerificationEvent {
             .await?
     }
 
+    #[cfg(feature = "testing")]
     pub async fn send_verification_key(&self) -> Result<bool> {
         let client = self.client.clone();
         let sender = self.sender.clone();
