@@ -21,6 +21,7 @@ lazy_static! {
 mod account;
 mod attachments;
 mod auth;
+mod backup;
 mod calendar_events;
 mod client;
 mod comments;
@@ -72,6 +73,7 @@ pub use auth::{
     login_new_client_under_config, login_with_token_under_config, make_client_config,
     register_under_config, register_with_token_under_config, sanitize_user,
 };
+pub use backup::BackupManager;
 pub use calendar_events::{CalendarEvent, CalendarEventDraft, CalendarEventUpdateBuilder};
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};

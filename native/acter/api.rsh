@@ -2484,6 +2484,9 @@ object Client {
 
     /// make draft to send location msg
     fn location_draft(body: string, source: string) -> MsgContentDraft;
+
+    /// get access to the backup manager
+    fn backup_manager() -> BackupManager;
 }
 
 object NotificationSettings {
@@ -2743,4 +2746,47 @@ object DeviceRecord {
     fn is_active() -> bool;
     /// whether it is this session
     fn is_me() -> bool;
+}
+
+
+
+//     ########     ###     ######  ##    ## ##     ## ########     ##     ##    ###    ##    ##    ###     ######   ######## ########  
+//     ##     ##   ## ##   ##    ## ##   ##  ##     ## ##     ##    ###   ###   ## ##   ###   ##   ## ##   ##    ##  ##       ##     ## 
+//     ##     ##  ##   ##  ##       ##  ##   ##     ## ##     ##    #### ####  ##   ##  ####  ##  ##   ##  ##        ##       ##     ## 
+//     ########  ##     ## ##       #####    ##     ## ########     ## ### ## ##     ## ## ## ## ##     ## ##   #### ######   ########  
+//     ##     ## ######### ##       ##  ##   ##     ## ##           ##     ## ######### ##  #### ######### ##    ##  ##       ##   ##   
+//     ##     ## ##     ## ##    ## ##   ##  ##     ## ##           ##     ## ##     ## ##   ### ##     ## ##    ##  ##       ##    ##  
+//     ########  ##     ##  ######  ##    ##  #######  ##           ##     ## ##     ## ##    ## ##     ##  ######   ######## ##     ## 
+
+
+/// Manage Encryption Backups
+object BackupManager {
+
+    /// Create a new backup version, encrypted with a new backup recovery key.
+    fn create() -> Future<Result<bool>>;
+
+    /// Disable and delete the currently active backup.
+    fn disable() -> Future<Result<bool>>;
+
+    /// Current state as a string
+    fn state_str() -> string;
+
+    /// state as a string via a stream. Issues the current state immediately
+    fn state_stream() -> Stream<string>;
+
+    /// Are backups enabled for the current Client?
+    /// This method will check if we locally have an active backup key and backup version and are ready to upload room keys to a backup.
+    fn are_enabled() -> Future<Result<bool>>;
+
+    /// Does a backup exist on the server?
+    /// This method will request info about the current backup from the homeserver and if a backup exits return true, otherwise false.
+    fn exists_on_server() -> Future<Result<bool>>;
+
+    /// Create a new, fresh secret storage and return the resulting
+    /// key
+    fn create_new_secret_store() -> Future<Result<string>>;
+
+    /// Open the existing secret store using the given key and import the keys 
+    fn open_secret_store_and_import(secret: string) -> Future<Result<bool>>;
+
 }
