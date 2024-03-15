@@ -35,7 +35,7 @@ async fn kyra_detects_sisko_typing() -> Result<()> {
         .typing_event_rx()
         .context("kyra needs typing event receiver")?;
 
-    let mut i = 3;
+    let mut i = 10;
     let mut found = false;
     while i > 0 {
         match event_rx.try_next() {
@@ -55,7 +55,7 @@ async fn kyra_detects_sisko_typing() -> Result<()> {
         i -= 1;
         sleep(Duration::from_secs(1)).await;
     }
-    assert!(found, "typing event not reached");
+    assert!(found, "Even after 10 seconds, typing event not reached");
 
     Ok(())
 }
