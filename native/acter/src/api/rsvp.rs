@@ -71,6 +71,7 @@ impl Client {
                         );
                     }
                 }
+                cal_events.sort();
                 Ok(cal_events)
             })
             .await?

@@ -7,3 +7,10 @@ final attachmentsManagerProvider = NotifierProvider.family<
     AttachmentsManagerNotifier, AttachmentsManager, AttachmentsManager>(
   () => AttachmentsManagerNotifier(),
 );
+
+/// provider for getting attachments, keeps up-to-date with live manager object
+final attachmentsProvider = FutureProvider.family
+    .autoDispose<List<Attachment>, AttachmentsManager>((ref, manager) async {
+  final liveManager = ref.watch(attachmentsManagerProvider(manager));
+  return (await liveManager.attachments()).toList();
+});

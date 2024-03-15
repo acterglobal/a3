@@ -63,7 +63,7 @@ impl ThreePidManager {
         RUNTIME
             .spawn(async move {
                 let response = account
-                    .request_3pid_email_token(&secret, email_address.as_str(), uint!(0))
+                    .request_3pid_email_token(&secret, &email_address, uint!(0))
                     .await?;
 
                 // add this record to custom data
@@ -109,7 +109,7 @@ impl ThreePidManager {
                     .deserialize()?;
                 let record = content
                     .via_email
-                    .get(email_address.as_str())
+                    .get(&email_address)
                     .context("That email address was not registered")?;
                 let user_id = client
                     .user_id()
@@ -161,7 +161,7 @@ impl ThreePidManager {
                     .deserialize()?;
                 let record = content
                     .via_email
-                    .get(email_address.as_str())
+                    .get(&email_address)
                     .context("That email address was not registered")?;
                 let session_id = record.session_id();
                 let secret = record.passphrase();
@@ -187,7 +187,7 @@ impl ThreePidManager {
                     return Ok(false);
                 }
                 let text = submit_response.text().await?;
-                let ValidateResponse { success } = serde_json::from_str(text.as_str())?;
+                let ValidateResponse { success } = serde_json::from_str(&text)?;
                 if !success {
                     return Ok(false);
                 }
@@ -228,7 +228,7 @@ impl ThreePidManager {
                     .position(|x| x.medium == Medium::Email && x.address == email_address)
                 {
                     let response = account
-                        .delete_3pid(email_address.as_str(), Medium::Email, None)
+                        .delete_3pid(&email_address, Medium::Email, None)
                         .await?;
                     match response.id_server_unbind_result {
                         ThirdPartyIdRemovalStatus::Success => {
@@ -246,8 +246,8 @@ impl ThreePidManager {
                     return Ok(false);
                 };
                 let mut content = raw_content.deserialize()?;
-                if content.via_email.contains_key(email_address.as_str()) {
-                    content.via_email.remove(email_address.as_str());
+                if content.via_email.contains_key(&email_address) {
+                    content.via_email.remove(&email_address);
                     account.set_account_data(content).await?;
                     return Ok(true);
                 }

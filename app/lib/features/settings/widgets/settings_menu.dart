@@ -1,6 +1,7 @@
 import 'package:acter/common/dialogs/deactivation_confirmation.dart';
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/toolkit/menu_item_widget.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/settings/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/router/providers/router_providers.dart';
@@ -44,8 +45,7 @@ class SettingsMenu extends ConsumerWidget {
           context: context,
           sectionTitle: 'Account',
           children: [
-            _settingMenuItem(
-              context: context,
+            MenuItemWidget(
               iconData: Atlas.key_monitor_thin,
               iconColor: colorSelected(Routes.settingSessions),
               title: 'Sessions',
@@ -55,8 +55,7 @@ class SettingsMenu extends ConsumerWidget {
                   ? context.goNamed(Routes.settingSessions.name)
                   : context.pushNamed(Routes.settingSessions.name),
             ),
-            _settingMenuItem(
-              context: context,
+            MenuItemWidget(
               iconData: Atlas.bell_mobile_thin,
               iconColor: colorSelected(Routes.settingNotifications),
               title: 'Notifications',
@@ -66,8 +65,7 @@ class SettingsMenu extends ConsumerWidget {
                   ? context.goNamed(Routes.settingNotifications.name)
                   : context.pushNamed(Routes.settingNotifications.name),
             ),
-            _settingMenuItem(
-              context: context,
+            MenuItemWidget(
               iconData: Atlas.envelope_paper_email_thin,
               iconColor: colorSelected(Routes.emailAddresses),
               title: 'Email Addresses',
@@ -77,8 +75,7 @@ class SettingsMenu extends ConsumerWidget {
                   ? context.goNamed(Routes.emailAddresses.name)
                   : context.pushNamed(Routes.emailAddresses.name),
             ),
-            _settingMenuItem(
-              context: context,
+            MenuItemWidget(
               iconData: Atlas.users_thin,
               iconColor: colorSelected(Routes.blockedUsers),
               title: 'Blocked Users',
@@ -94,11 +91,10 @@ class SettingsMenu extends ConsumerWidget {
           context: context,
           sectionTitle: 'Community',
           children: [
-            _settingMenuItem(
+            MenuItemWidget(
               key: SettingsMenu.superInvitations,
-              context: context,
               iconData: Atlas.plus_envelope_thin,
-              enable: isSuperInviteEnable,
+              enabled: isSuperInviteEnable,
               iconColor: colorSelected(Routes.settingsSuperInvites),
               title: 'Super Invitations',
               subTitle: 'Manage your invitation codes',
@@ -115,9 +111,18 @@ class SettingsMenu extends ConsumerWidget {
           context: context,
           sectionTitle: 'Acter App',
           children: [
-            _settingMenuItem(
+            MenuItemWidget(
+              iconData: Atlas.language_translation,
+              iconColor: colorSelected(Routes.settingLanguage),
+              title: 'Language',
+              subTitle: 'Change app language',
+              titleStyles: titleStylesSelected(Routes.settingLanguage),
+              onTap: () => shouldGoNotNamed
+                  ? context.goNamed(Routes.settingLanguage.name)
+                  : context.pushNamed(Routes.settingLanguage.name),
+            ),
+            MenuItemWidget(
               key: SettingsMenu.labs,
-              context: context,
               iconData: Atlas.lab_appliance_thin,
               iconColor: colorSelected(Routes.settingsLabs),
               title: 'Labs',
@@ -127,8 +132,7 @@ class SettingsMenu extends ConsumerWidget {
                   ? context.goNamed(Routes.settingsLabs.name)
                   : context.pushNamed(Routes.settingsLabs.name),
             ),
-            _settingMenuItem(
-              context: context,
+            MenuItemWidget(
               iconData: Atlas.info_circle_thin,
               iconColor: colorSelected(Routes.info),
               title: 'Info',
@@ -144,9 +148,8 @@ class SettingsMenu extends ConsumerWidget {
           sectionTitle: 'Danger Zone',
           isDanderZone: true,
           children: [
-            _settingMenuItem(
+            MenuItemWidget(
               key: SettingsMenu.logoutAccount,
-              context: context,
               iconData: Atlas.exit_thin,
               iconColor: Theme.of(context).colorScheme.error,
               title: 'Logout',
@@ -156,9 +159,8 @@ class SettingsMenu extends ConsumerWidget {
               ),
               onTap: () => logoutConfirmationDialog(context, ref),
             ),
-            _settingMenuItem(
+            MenuItemWidget(
               key: SettingsMenu.deactivateAccount,
-              context: context,
               iconData: Atlas.trash_can_thin,
               iconColor: Theme.of(context).colorScheme.error,
               title: 'Deactivate Account',
@@ -203,46 +205,6 @@ class SettingsMenu extends ConsumerWidget {
             children: children,
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _settingMenuItem({
-    Key? key,
-    required BuildContext context,
-    required IconData iconData,
-    Color? iconColor,
-    required String title,
-    TextStyle? titleStyles,
-    String? subTitle,
-    VoidCallback? onTap,
-    bool enable = true,
-  }) {
-    return Card(
-      child: ListTile(
-        key: key,
-        onTap: onTap,
-        leading: Icon(
-          iconData,
-          color: enable ? iconColor : Theme.of(context).disabledColor,
-        ),
-        title: Text(
-          title,
-          style: titleStyles?.copyWith(
-            color: enable ? null : Theme.of(context).disabledColor,
-          ),
-        ),
-        subtitle: subTitle == null
-            ? null
-            : Text(
-                subTitle,
-                style: titleStyles?.copyWith(
-                  color: enable ? null : Theme.of(context).disabledColor,
-                ),
-              ),
-        trailing: const Icon(
-          Icons.keyboard_arrow_right_outlined,
-        ),
       ),
     );
   }

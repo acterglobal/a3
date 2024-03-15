@@ -1,7 +1,6 @@
 import 'package:acter/common/providers/attachment_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/pins/models/pin_edit_state/pin_edit_state.dart';
-import 'package:acter/features/pins/pin_utils/pin_utils.dart';
 import 'package:acter/features/pins/providers/notifiers/edit_state_notifier.dart';
 import 'package:acter/features/pins/providers/notifiers/pins_notifiers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -48,13 +47,3 @@ final pinAttachmentManagerProvider =
     return liveManager;
   },
 );
-
-final pinAttachmentsProvider = FutureProvider.family
-    .autoDispose<List<Attachment>, ActerPin>((ref, acterPin) async {
-  final manager = await acterPin.attachments();
-  final liveManager = ref.watch(attachmentsManagerProvider(manager));
-  return (await liveManager.attachments()).toList();
-});
-
-final selectedPinAttachmentsProvider =
-    StateProvider.autoDispose<List<SelectedAttachment>>((ref) => []);

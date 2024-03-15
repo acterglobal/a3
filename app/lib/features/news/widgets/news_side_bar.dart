@@ -13,8 +13,8 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import 'package:logging/logging.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 final _log = Logger('a3::news::sidebar');
 
@@ -50,7 +50,7 @@ class NewsSideBar extends ConsumerWidget {
           onTap: () async {
             final manager = await ref.read(newsReactionsProvider(news).future);
             final status = manager.likedByMe();
-            debugPrint('my like status: $status');
+            _log.info('my like status: $status');
             if (!status) {
               await manager.sendLike();
             } else {
