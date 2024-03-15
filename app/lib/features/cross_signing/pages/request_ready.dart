@@ -20,61 +20,59 @@ class RequestReadyPage extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
       ),
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: buildTitleBar(context),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5),
+            child: buildTitleBar(context),
+          ),
+          const Spacer(),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15),
+            child: Text(
+              'Scan the code with your other device or switch and scan with this device',
             ),
-            const SizedBox(height: 30),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-              child: Text(
-                'Scan the code with your other device or switch and scan with this device',
+          ),
+          const Spacer(),
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(25),
+              child: SizedBox(
+                width: 50,
+                height: 50,
+                child: CircularProgressIndicator(),
               ),
             ),
-            const SizedBox(height: 30),
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.all(25),
-                child: SizedBox(
-                  width: 50,
-                  height: 50,
-                  child: CircularProgressIndicator(),
-                ),
+          ),
+          const Spacer(),
+          // TextButton(
+          //   onPressed: () {},
+          //   child: const Row(
+          //     mainAxisAlignment: MainAxisAlignment.center,
+          //     children: [
+          //       Padding(
+          //         padding: EdgeInsets.all(8),
+          //         child: Icon(Atlas.camera),
+          //       ),
+          //       Text('Scan with this device'),
+          //     ],
+          //   ),
+          // ),
+          // const Spacer(),
+          Wrap(
+            children: [
+              ListTile(
+                title: const Text('Can’t scan'),
+                subtitle: const Text('Verify by comparing emoji instead'),
+                trailing: const Icon(Icons.keyboard_arrow_right_outlined),
+                onTap: () => onAccept(context),
               ),
-            ),
-            // const SizedBox(height: 30),
-            // TextButton(
-            //   onPressed: () {},
-            //   child: const Row(
-            //     mainAxisAlignment: MainAxisAlignment.center,
-            //     children: [
-            //       Padding(
-            //         padding: EdgeInsets.all(8),
-            //         child: Icon(Atlas.camera),
-            //       ),
-            //       Text('Scan with this device'),
-            //     ],
-            //   ),
-            // ),
-            const SizedBox(height: 30),
-            Wrap(
-              children: [
-                ListTile(
-                  title: const Text('Can’t scan'),
-                  subtitle: const Text('Verify by comparing emoji instead'),
-                  trailing: const Icon(Icons.keyboard_arrow_right_outlined),
-                  onTap: () => onAccept(context),
-                ),
-              ],
-            ),
-            const SizedBox(height: 30),
-          ],
-        ),
+            ],
+          ),
+          const Spacer(),
+        ],
       ),
     );
   }

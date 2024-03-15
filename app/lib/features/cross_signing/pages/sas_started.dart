@@ -26,15 +26,15 @@ class SasStartedPage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 5),
             child: buildTitleBar(context),
           ),
-          const SizedBox(height: 30),
+          const Spacer(),
           const SizedBox(
             height: 100,
             width: 100,
             child: CircularProgressIndicator(),
           ),
-          const SizedBox(height: 30),
+          const Spacer(),
           const Text('Please wait…'),
-          const SizedBox(height: 30),
+          const Spacer(),
         ],
       ),
     );

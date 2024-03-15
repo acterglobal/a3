@@ -28,7 +28,7 @@ class RequestDonePage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 5),
             child: buildTitleBar(context),
           ),
-          const SizedBox(height: 30),
+          const Spacer(),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Text(
@@ -38,11 +38,11 @@ class RequestDonePage extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
           ),
-          const SizedBox(height: 30),
+          const Spacer(),
           const Center(
             child: Icon(Atlas.lock_keyhole),
           ),
-          const SizedBox(height: 30),
+          const Spacer(),
           Center(
             child: SizedBox(
               width: MediaQuery.of(context).size.width * 0.40,
@@ -52,7 +52,7 @@ class RequestDonePage extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 30),
+          const Spacer(),
         ],
       ),
     );

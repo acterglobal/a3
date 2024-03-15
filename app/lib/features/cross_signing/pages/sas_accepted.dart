@@ -26,7 +26,7 @@ class SasAcceptedPage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 5),
             child: buildTitleBar(context),
           ),
-          const SizedBox(height: 30),
+          const Spacer(),
           const Center(
             child: SizedBox(
               height: 100,
@@ -34,9 +34,9 @@ class SasAcceptedPage extends StatelessWidget {
               child: CircularProgressIndicator(),
             ),
           ),
-          const SizedBox(height: 30),
+          const Spacer(),
           Text('Waiting for $sender'),
-          const SizedBox(height: 30),
+          const Spacer(),
         ],
       ),
     );

@@ -24,7 +24,7 @@ class RequestCreatedPage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 5),
             child: buildTitleBar(context),
           ),
-          const SizedBox(height: 30),
+          const Spacer(),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
             child: Text(
@@ -33,7 +33,7 @@ class RequestCreatedPage extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          const SizedBox(height: 30),
+          const Spacer(),
         ],
       ),
     );

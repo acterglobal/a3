@@ -35,16 +35,16 @@ class SasKeysExchangedPage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 5),
             child: buildTitleBar(context),
           ),
-          const SizedBox(height: 30),
+          const Spacer(),
           const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            padding: EdgeInsets.symmetric(horizontal: 20),
             child: Text(
               'Compare the unique emoji, ensuring they appear in the same order.',
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          const SizedBox(height: 30),
+          const Spacer(),
           Center(
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -52,15 +52,12 @@ class SasKeysExchangedPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(15),
                 color: Theme.of(context).colorScheme.neutral2,
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: buildEmojis(context),
-              ),
+              child: buildEmojis(context),
             ),
           ),
-          const SizedBox(height: 30),
+          const Spacer(),
           buildActionButtons(context),
-          const SizedBox(height: 30),
+          const Spacer(),
         ],
       ),
     );
@@ -96,10 +93,13 @@ class SasKeysExchangedPage extends StatelessWidget {
       crossAxisCount: isDesktop ? 7 : 4,
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
+      padding: EdgeInsets.zero,
       children: List.generate(emojis.length, (index) {
         return GridTile(
           child: Column(
-            children: <Widget>[
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: [
               Text(
                 String.fromCharCode(codes[index]),
                 style: const TextStyle(fontSize: 32),
@@ -121,14 +121,21 @@ class SasKeysExchangedPage extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        ElevatedButton(
-          child: const Text('They don’t match'),
-          onPressed: () => onMismatch(context),
+        SizedBox(
+          width: 150, // use the same width
+          child: ElevatedButton(
+            onPressed: () => onMismatch(context),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('They don’t match'),
+          ),
         ),
         const SizedBox(width: 15),
-        ElevatedButton(
-          child: const Text('They match'),
-          onPressed: () => onMatch(context),
+        SizedBox(
+          width: 150, // use the same width
+          child: ElevatedButton(
+            child: const Text('They match'),
+            onPressed: () => onMatch(context),
+          ),
         ),
       ],
     );

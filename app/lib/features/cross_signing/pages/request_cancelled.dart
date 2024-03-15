@@ -32,13 +32,13 @@ class RequestCancelledPage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 5),
             child: buildTitleBar(context),
           ),
-          const SizedBox(height: 30),
+          const Spacer(),
           const Icon(Atlas.lock_keyhole),
           Padding(
             padding: const EdgeInsets.all(8),
             child: Text(message ?? fallbackMsg),
           ),
-          const SizedBox(height: 30),
+          const Spacer(),
           SizedBox(
             width: MediaQuery.of(context).size.width * 0.40,
             child: ElevatedButton(
@@ -46,7 +46,7 @@ class RequestCancelledPage extends StatelessWidget {
               onPressed: () => onDone(context),
             ),
           ),
-          const SizedBox(height: 30),
+          const Spacer(),
         ],
       ),
     );
