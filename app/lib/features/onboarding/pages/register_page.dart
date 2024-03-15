@@ -49,6 +49,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   final TextEditingController token = TextEditingController();
   final TextEditingController confirmPassword = TextEditingController();
   final TextEditingController name = TextEditingController();
+  bool _passwordVisible = false;
 
   final usernamePattern = RegExp(r'^[a-z0-9._=\-/]+$');
 
@@ -182,8 +183,20 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                               controller: password,
                               decoration: InputDecoration(
                                 hintText: L10n.of(context).password,
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _passwordVisible
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _passwordVisible = !_passwordVisible;
+                                    });
+                                  },
+                                ),
                               ),
-                              obscureText: true,
+                              obscureText: !_passwordVisible,
                               inputFormatters: [
                                 FilteringTextInputFormatter.deny(
                                   RegExp(r'\s'),
