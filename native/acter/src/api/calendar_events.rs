@@ -11,6 +11,7 @@ use anyhow::{bail, Context, Result};
 use chrono::DateTime;
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
+use ruma::serde::PartialEqAsRefStr;
 use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};
 use ruma_events::room::message::TextMessageEventContent;
 use std::{
@@ -129,6 +130,26 @@ pub struct CalendarEvent {
     client: Client,
     room: Room,
     inner: models::CalendarEvent,
+}
+
+impl PartialEq for CalendarEvent {
+    fn eq(&self, other: &Self) -> bool {
+        self.inner.event_id() == other.inner.event_id()
+    }
+}
+
+impl Eq for CalendarEvent {}
+
+impl PartialOrd for CalendarEvent {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for CalendarEvent {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.inner.utc_start.cmp(&other.inner.utc_start)
+    }
 }
 
 impl Deref for CalendarEvent {

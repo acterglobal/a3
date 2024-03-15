@@ -4,7 +4,7 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Invitation;
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -41,7 +41,7 @@ class InvitationCard extends ConsumerWidget {
                 title: Text(data.roomName ?? data.roomId),
                 subtitle: RichText(
                   text: TextSpan(
-                    text: AppLocalizations.of(context)!.invitationText2,
+                    text: L10n.of(context).invitationText2,
                     children: <TextSpan>[
                       TextSpan(text: invitation.sender().toString()),
                     ],
@@ -60,14 +60,14 @@ class InvitationCard extends ConsumerWidget {
                     // Reject Invitation Button
                     OutlinedButton(
                       onPressed: () async => await invitation.reject(),
-                      child: Text(AppLocalizations.of(context)!.decline),
+                      child: Text(L10n.of(context).decline),
                     ),
                     const SizedBox(width: 15),
                     // Accept Invitation Button
                     ElevatedButton(
                       onPressed: () =>
                           _onTapAcceptInvite(ref, context, data.roomId),
-                      child: Text(AppLocalizations.of(context)!.accept),
+                      child: Text(L10n.of(context).accept),
                     ),
                   ],
                 ),

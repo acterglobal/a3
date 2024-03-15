@@ -1,7 +1,8 @@
+import 'package:acter/common/providers/attachment_providers.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/attachments/attachment_item.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
-import 'package:acter/features/pins/widgets/attachment_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -111,7 +112,19 @@ class _PinListItemConsumerState extends ConsumerState<PinListItem> {
   Widget build(BuildContext context) {
     final isLink = widget.pin.isLink();
     final spaceId = widget.pin.roomIdStr();
-    final attachments = ref.watch(pinAttachmentsProvider(widget.pin));
+    final asyncManager = ref.watch(pinAttachmentManagerProvider(widget.pin));
+    final attachmentsWidget = [];
+
+    if (asyncManager.valueOrNull != null) {
+      final attachments =
+          ref.watch(attachmentsProvider(asyncManager.requireValue));
+      if (attachments.valueOrNull != null) {
+        final list = attachments.requireValue;
+        if (list.isNotEmpty) {
+          attachmentsWidget.add(AttachmentItem(attachment: list[0]));
+        }
+      }
+    }
 
     return InkWell(
       key: Key(widget.pin.eventIdStr()),
@@ -159,25 +172,7 @@ class _PinListItemConsumerState extends ConsumerState<PinListItem> {
                   ],
                 ),
               ),
-              attachments.when(
-                data: (list) {
-                  if (list.isNotEmpty) {
-                    return AttachmentTypeHandler(
-                      attachment: list[0],
-                      pin: widget.pin,
-                    );
-                  } else {
-                    return const SizedBox.shrink();
-                  }
-                },
-                error: (err, st) => Text('Error loading attachment $err'),
-                loading: () => const Skeletonizer(
-                  child: SizedBox(
-                    height: 100,
-                    width: 100,
-                  ),
-                ),
-              ),
+              ...attachmentsWidget,
             ],
           ),
         ),

@@ -8,7 +8,7 @@ import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -24,6 +24,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final formKey = GlobalKey<FormState>();
   final TextEditingController username = TextEditingController();
   final TextEditingController password = TextEditingController();
+  bool _passwordVisible = false;
 
   @override
   void dispose() {
@@ -74,7 +75,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             SliverAppBar(
               backgroundColor: Colors.transparent,
               title: Text(
-                AppLocalizations.of(context)!.logIn,
+                L10n.of(context).logIn,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
             ),
@@ -97,24 +98,23 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           child: SvgPicture.asset('assets/icon/acter.svg'),
                         ),
                         const SizedBox(height: 20),
-                        Text(AppLocalizations.of(context)!.welcomeBack),
+                        Text(L10n.of(context).welcomeBack),
                         const SizedBox(height: 20),
-                        Text(AppLocalizations.of(context)!.loginContinue),
+                        Text(L10n.of(context).loginContinue),
                         const SizedBox(height: 40),
                         TextFormField(
                           key: LoginPageKeys.usernameField,
                           obscureText: false,
                           controller: username,
                           decoration: InputDecoration(
-                            hintText: AppLocalizations.of(context)!.username,
+                            hintText: L10n.of(context).username,
                           ),
                           inputFormatters: [
                             FilteringTextInputFormatter.deny(RegExp(r'\s')),
                           ],
                           validator: (val) {
                             if (val == null || val.trim().isEmpty) {
-                              return AppLocalizations.of(context)!
-                                  .emptyUsername;
+                              return L10n.of(context).emptyUsername;
                             }
                             return null;
                           },
@@ -123,17 +123,28 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         TextFormField(
                           key: LoginPageKeys.passwordField,
                           controller: password,
-                          obscureText: true,
+                          obscureText: !_passwordVisible,
                           decoration: InputDecoration(
-                            hintText: AppLocalizations.of(context)!.password,
+                            hintText: L10n.of(context).password,
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _passwordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _passwordVisible = !_passwordVisible;
+                                });
+                              },
+                            ),
                           ),
                           inputFormatters: [
                             FilteringTextInputFormatter.deny(RegExp(r'\s')),
                           ],
                           validator: (val) {
                             if (val == null || val.trim().isEmpty) {
-                              return AppLocalizations.of(context)!
-                                  .emptyPassword;
+                              return L10n.of(context).emptyPassword;
                             }
                             return null;
                           },
@@ -145,21 +156,21 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                 key: LoginPageKeys.submitBtn,
                                 onPressed: () => handleSubmit(context),
                                 child: Text(
-                                  AppLocalizations.of(context)!.logIn,
+                                  L10n.of(context).logIn,
                                 ),
                               ),
                         const SizedBox(height: 40),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(AppLocalizations.of(context)!.noAccount),
+                            Text(L10n.of(context).noAccount),
                             const SizedBox(width: 2),
                             TextButton(
                               key: LoginPageKeys.signUpBtn,
                               onPressed: () =>
                                   context.goNamed(Routes.authRegister.name),
                               child: Text(
-                                AppLocalizations.of(context)!.register,
+                                L10n.of(context).register,
                               ),
                             ),
                           ],

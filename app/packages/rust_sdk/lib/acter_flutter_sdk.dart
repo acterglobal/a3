@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer' as developer;
@@ -8,11 +10,11 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:logging/logging.dart';
 import 'package:package_info/package_info.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:logging/logging.dart';
 
 export './acter_flutter_sdk_ffi.dart' show Client;
 
@@ -160,7 +162,7 @@ Future<ImageProvider<Object>?> remapToImage(
     }
     return image;
   } catch (e) {
-    debugPrint('Error fetching avatar: $e');
+    _log.severe('Error fetching avatar: $e');
     return null;
   }
 }
@@ -417,8 +419,12 @@ class ActerSdk {
 
     _clients.clear();
     await _persistSessions();
-    // and destroy everything that is left.
-    Directory(appDocPath).delete(recursive: true);
+    try {
+      // and destroy everything that is left.
+      Directory(appDocPath).delete(recursive: true);
+    } catch (e) {
+      print('Failure deleting $appDocPath: $e');
+    }
   }
 
   static Future<ActerSdk> _unrestoredInstanceInner() async {
@@ -428,34 +434,48 @@ class ActerSdk {
     String logPath = await appCacheDir();
     FileSystemEntity? latestLogPath;
 
-    // clear screenshots, and logs (but keep the latest one)
-    final entities = Directory(logPath).list(
-      recursive: false,
-      followLinks: false,
-    );
-    await for (final entity in entities) {
-      if (screenshotFileRegExp.hasMatch(entity.path)) {
-        await entity.delete(); // remove old screenshots
-      }
-      if (logFileRegExp.hasMatch(entity.path)) {
-        if (latestLogPath == null) {
-          latestLogPath = entity;
-        } else {
-          if (latestLogPath.path.compareTo(entity.path) < 0) {
-            await latestLogPath.delete();
+    try {
+      // clear screenshots, and logs (but keep the latest one)
+      final entities = Directory(logPath).list(
+        recursive: false,
+        followLinks: false,
+      );
+      await for (final entity in entities) {
+        if (screenshotFileRegExp.hasMatch(entity.path)) {
+          try {
+            await entity.delete(); // remove old screenshots
+          } catch (e) {
+            print('Ignoring failure deleting $entity: $e');
+          }
+        }
+        if (logFileRegExp.hasMatch(entity.path)) {
+          if (latestLogPath == null) {
             latestLogPath = entity;
           } else {
-            await entity.delete();
+            if (latestLogPath.path.compareTo(entity.path) < 0) {
+              try {
+                await latestLogPath.delete();
+              } catch (e) {
+                print('Ignoring failure deleting $latestLogPath: $e');
+              }
+              latestLogPath = entity;
+            } else {
+              try {
+                await entity.delete();
+              } catch (e) {
+                print('Ignoring failure deleting $entity: $e');
+              }
+            }
           }
         }
       }
+    } catch (e) {
+      print('Error reading $logPath for deleting : $e');
     }
 
     final logSettings = (await sharedPrefs()).getString(rustLogKey);
     try {
-      // ignore: avoid_print
       print('log settings: ${logSettings ?? defaultLogSetting}');
-      // ignore: avoid_print
       print('logs will be found in $logPath');
       api.initLogging(logPath, logSettings ?? defaultLogSetting);
     } catch (e) {
@@ -471,13 +491,12 @@ class ActerSdk {
 
     try {
       if (httpProxySettings.isNotEmpty) {
-        // ignore: avoid_print
         print('Setting http proxy to $httpProxySettings');
         api.setProxy(httpProxySettings);
       }
     } catch (e) {
       developer.log(
-        'Logging setup failed',
+        'Proxy setup failed',
         level: 900, // warning
         error: e,
       );

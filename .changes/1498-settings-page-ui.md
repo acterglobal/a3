@@ -1,1 +1,0 @@
-- [enhancement] : UI-UX Improvement in settings page

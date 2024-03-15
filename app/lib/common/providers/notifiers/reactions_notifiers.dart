@@ -1,10 +1,9 @@
 import 'dart:async';
 
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod/riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::common::reactions');
 
@@ -20,9 +19,9 @@ class ReactionManagerNotifier
     _listener = arg.subscribeStream(); // keep it resident in memory
     _poller = _listener.listen(
       (e) async {
-        debugPrint('attempting to reload');
+        _log.info('attempting to reload');
         final newManager = await arg.reload();
-        debugPrint('manager updated. likes: ${newManager.likesCount()}');
+        _log.info('manager updated. likes: ${newManager.likesCount()}');
         state = newManager;
       },
       onError: (e, stack) {

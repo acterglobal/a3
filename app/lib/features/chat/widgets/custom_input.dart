@@ -1,17 +1,17 @@
 import 'dart:io';
 
-import 'package:acter/common/dialogs/attachment_confirmation.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/attachments/attachment_item.dart';
+import 'package:acter/common/widgets/attachments/attachment_options.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
 import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/chat/chat_utils/chat_utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter/common/widgets/attachment_options.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
 import 'package:acter/features/chat/widgets/mention_profile_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -23,7 +23,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -343,18 +343,14 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                                   .pickImage(source: ImageSource.camera);
                               if (imageFile != null) {
                                 List<File> files = [File(imageFile.path)];
-                                final mimeType =
-                                    lookupMimeType(files.first.path);
-                                if (!context.mounted) {
-                                  return;
+
+                                if (context.mounted) {
+                                  attachmentConfirmation(
+                                    files,
+                                    AttachmentType.camera,
+                                    handleFileUpload,
+                                  );
                                 }
-                                attachmentConfirmationDialog(
-                                  context,
-                                  files,
-                                  _FileWidget(mimeType, files.first),
-                                  handleFileUpload,
-                                  AttachmentType.camera,
-                                );
                               }
                             },
                             onTapImage: () async {
@@ -362,18 +358,14 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                                   .pickImage(source: ImageSource.gallery);
                               if (imageFile != null) {
                                 List<File> files = [File(imageFile.path)];
-                                final mimeType =
-                                    lookupMimeType(files.first.path);
-                                if (!context.mounted) {
-                                  return;
+
+                                if (context.mounted) {
+                                  attachmentConfirmation(
+                                    files,
+                                    AttachmentType.image,
+                                    handleFileUpload,
+                                  );
                                 }
-                                attachmentConfirmationDialog(
-                                  context,
-                                  files,
-                                  _FileWidget(mimeType, files.first),
-                                  handleFileUpload,
-                                  AttachmentType.image,
-                                );
                               }
                             },
                             onTapVideo: () async {
@@ -381,36 +373,28 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                                   .pickVideo(source: ImageSource.gallery);
                               if (imageFile != null) {
                                 List<File> files = [File(imageFile.path)];
-                                final mimeType =
-                                    lookupMimeType(files.first.path);
-                                if (!context.mounted) {
-                                  return;
+
+                                if (context.mounted) {
+                                  attachmentConfirmation(
+                                    files,
+                                    AttachmentType.video,
+                                    handleFileUpload,
+                                  );
                                 }
-                                attachmentConfirmationDialog(
-                                  context,
-                                  files,
-                                  _FileWidget(mimeType, files.first),
-                                  handleFileUpload,
-                                  AttachmentType.video,
-                                );
                               }
                             },
                             onTapFile: () async {
                               var selectedFiles = await handleFileSelection(
                                 ctx,
                               );
-                              final mimeType =
-                                  lookupMimeType(selectedFiles!.first.path);
-                              if (!context.mounted) {
-                                return;
+
+                              if (context.mounted) {
+                                attachmentConfirmation(
+                                  selectedFiles,
+                                  AttachmentType.file,
+                                  handleFileUpload,
+                                );
                               }
-                              attachmentConfirmationDialog(
-                                context,
-                                selectedFiles,
-                                _FileWidget(mimeType, selectedFiles.first),
-                                handleFileUpload,
-                                AttachmentType.file,
-                              );
                             },
                           ),
                         ),
@@ -539,6 +523,40 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
       return result.paths.map((path) => File(path!)).toList();
     }
     return null;
+  }
+
+  void attachmentConfirmation(
+    List<File>? selectedFiles,
+    AttachmentType type,
+    Future<void> Function(
+      List<File> files,
+      AttachmentType attachmentType,
+    ) handleFileUpload,
+  ) {
+    final size = MediaQuery.of(context).size;
+    if (selectedFiles != null && selectedFiles.isNotEmpty) {
+      isLargeScreen(context)
+          ? showAdaptiveDialog(
+              context: context,
+              builder: (context) => Dialog(
+                insetPadding: const EdgeInsets.all(8),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: size.width * 0.5,
+                    maxHeight: size.height * 0.5,
+                  ),
+                  child: _FileWidget(selectedFiles, type, handleFileUpload),
+                ),
+              ),
+            )
+          : showModalBottomSheet(
+              context: context,
+              builder: (ctx) => Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: _FileWidget(selectedFiles, type, handleFileUpload),
+              ),
+            );
+    }
   }
 
   Future<void> handleFileUpload(
@@ -776,48 +794,84 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
 }
 
 class _FileWidget extends ConsumerWidget {
-  final String? mimeType;
-  final File file;
+  final List<File> selectedFiles;
+  final AttachmentType type;
+  final Future<void> Function(
+    List<File> files,
+    AttachmentType attachmentType,
+  ) handleFileUpload;
 
-  const _FileWidget(this.mimeType, this.file);
+  const _FileWidget(this.selectedFiles, this.type, this.handleFileUpload);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (mimeType!.startsWith('image/')) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(6),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text('Attachments (${selectedFiles.length})'),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 5.0,
+            runSpacing: 10.0,
+            children: <Widget>[
+              for (var file in selectedFiles) _filePreview(context, file),
+            ],
+          ),
+          _buildActionBtns(context),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionBtns(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          OutlinedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              handleFileUpload(selectedFiles, type);
+            },
+            child: const Text('Send'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _filePreview(BuildContext context, File file) {
+    final fileName = file.path.split('/').last;
+    if (type == AttachmentType.camera || type == AttachmentType.image) {
+      return AttachmentContainer(
+        name: fileName,
         child: Image.file(file, height: 200, fit: BoxFit.cover),
       );
-    } else if (mimeType!.startsWith('audio/')) {
-      return Container(
-        height: 55,
-        width: 55,
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primaryContainer,
-          shape: BoxShape.circle,
-        ),
+    } else if (type == AttachmentType.audio) {
+      return AttachmentContainer(
+        name: fileName,
         child: const Center(child: Icon(Atlas.file_sound_thin)),
       );
-    } else if (mimeType!.startsWith('video/')) {
-      return Container(
-        height: 55,
-        width: 55,
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primaryContainer,
-          shape: BoxShape.circle,
-        ),
+    } else if (type == AttachmentType.video) {
+      return AttachmentContainer(
+        name: fileName,
         child: const Center(child: Icon(Atlas.file_video_thin)),
       );
     }
     //FIXME: cover all mime extension cases?
     else {
-      return Container(
-        height: 55,
-        width: 55,
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primaryContainer,
-          shape: BoxShape.circle,
-        ),
+      return AttachmentContainer(
+        name: fileName,
         child: const Center(child: Icon(Atlas.plus_file_thin)),
       );
     }
@@ -952,7 +1006,7 @@ class _TextInputWidget extends ConsumerWidget {
             ),
             hintText: isEncrypted
                 ? 'New Encrypted Message '
-                : AppLocalizations.of(context)!.newMessage,
+                : L10n.of(context).newMessage,
             hintStyle: Theme.of(context).textTheme.labelLarge!.copyWith(
                   color: Theme.of(context).colorScheme.onSurface,
                 ),

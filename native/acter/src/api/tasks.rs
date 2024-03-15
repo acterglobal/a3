@@ -185,7 +185,7 @@ impl Space {
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
-                let mdl = client.store().get(key.as_str()).await?;
+                let mdl = client.store().get(&key).await?;
 
                 let AnyActerModel::TaskList(content) = mdl else {
                     bail!("Not a Tasklist model: {key}")

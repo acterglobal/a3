@@ -5,6 +5,7 @@ import 'package:acter/features/events/pages/event_details_page.dart';
 import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/pins/pages/pin_page.dart';
 import 'package:acter/features/pins/pages/pins_page.dart';
+import 'package:acter/features/settings/pages/language_select_page.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/profile/pages/my_profile_page.dart';
 import 'package:acter/features/settings/pages/blocked_users.dart';
@@ -137,6 +138,17 @@ List<RouteBase> makeHomeShellRoutes(ref) {
         return NoTransitionPage(
           key: state.pageKey,
           child: const SessionsPage(),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.settingLanguage.name,
+      path: Routes.settingLanguage.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: const LanguageSelectPage(),
         );
       },
     ),
