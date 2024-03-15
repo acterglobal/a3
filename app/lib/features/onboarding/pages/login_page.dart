@@ -24,6 +24,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final formKey = GlobalKey<FormState>();
   final TextEditingController username = TextEditingController();
   final TextEditingController password = TextEditingController();
+  bool _passwordVisible = false;
 
   @override
   void dispose() {
@@ -122,9 +123,21 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         TextFormField(
                           key: LoginPageKeys.passwordField,
                           controller: password,
-                          obscureText: true,
+                          obscureText: !_passwordVisible,
                           decoration: InputDecoration(
                             hintText: L10n.of(context).password,
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _passwordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _passwordVisible = !_passwordVisible;
+                                });
+                              },
+                            ),
                           ),
                           inputFormatters: [
                             FilteringTextInputFormatter.deny(RegExp(r'\s')),
