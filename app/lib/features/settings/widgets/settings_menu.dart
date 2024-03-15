@@ -46,16 +46,6 @@ class SettingsMenu extends ConsumerWidget {
           sectionTitle: 'Account',
           children: [
             MenuItemWidget(
-              iconData: Atlas.key_monitor_thin,
-              iconColor: colorSelected(Routes.settingSessions),
-              title: 'Sessions',
-              subTitle: 'Your active devices',
-              titleStyles: titleStylesSelected(Routes.settingSessions),
-              onTap: () => shouldGoNotNamed
-                  ? context.goNamed(Routes.settingSessions.name)
-                  : context.pushNamed(Routes.settingSessions.name),
-            ),
-            MenuItemWidget(
               iconData: Atlas.bell_mobile_thin,
               iconColor: colorSelected(Routes.settingNotifications),
               title: 'Notifications',
@@ -74,6 +64,32 @@ class SettingsMenu extends ConsumerWidget {
               onTap: () => shouldGoNotNamed
                   ? context.goNamed(Routes.emailAddresses.name)
                   : context.pushNamed(Routes.emailAddresses.name),
+            ),
+          ],
+        ),
+        _settingMenuSection(
+          context: context,
+          sectionTitle: 'Security & Privacy',
+          children: [
+            MenuItemWidget(
+              iconData: Atlas.key_monitor_thin,
+              iconColor: colorSelected(Routes.settingSessions),
+              title: 'Sessions',
+              subTitle: 'Your active devices',
+              titleStyles: titleStylesSelected(Routes.settingSessions),
+              onTap: () => shouldGoNotNamed
+                  ? context.goNamed(Routes.settingSessions.name)
+                  : context.pushNamed(Routes.settingSessions.name),
+            ),
+            MenuItemWidget(
+              iconData: Atlas.key_website_thin,
+              iconColor: colorSelected(Routes.settingBackup),
+              title: 'Key Backup',
+              subTitle: 'Manage the key backup',
+              titleStyles: titleStylesSelected(Routes.settingBackup),
+              onTap: () => shouldGoNotNamed
+                  ? context.goNamed(Routes.settingBackup.name)
+                  : context.pushNamed(Routes.settingBackup.name),
             ),
             MenuItemWidget(
               iconData: Atlas.users_thin,

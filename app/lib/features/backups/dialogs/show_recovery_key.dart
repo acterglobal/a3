@@ -1,4 +1,3 @@
-import 'package:acter/features/backups/providers/backup_manager_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -68,7 +67,7 @@ class _ShowRecoveryDialog extends StatelessWidget {
 }
 
 void showRecoveryKeyDialog(
-    BuildContext context, WidgetRef ref, String recoveryKey) {
+    BuildContext context, WidgetRef ref, String recoveryKey,) {
   showDialog(
     context: context,
     builder: (BuildContext ctx) => _ShowRecoveryDialog(recoveryKey),

@@ -1,22 +1,29 @@
 import 'package:acter/features/backups/dialogs/provide_recovery_key_dialog.dart';
+import 'package:acter/features/backups/dialogs/show_confirm_disabling.dart';
 import 'package:acter/features/backups/dialogs/show_recovery_key.dart';
 import 'package:acter/features/backups/providers/backup_manager_provider.dart';
 import 'package:acter/features/backups/providers/backup_state_providers.dart';
 import 'package:acter/features/backups/types.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class BackupStateWidget extends ConsumerWidget {
-  const BackupStateWidget({super.key});
+  final bool allowDisabling;
+  const BackupStateWidget({super.key, this.allowDisabling = false});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentState = ref.watch(backupStateProvider);
     if (currentState == BackupState.enabled) {
-      // nothing to see here. all good.
-      return const SizedBox.shrink();
+      if (allowDisabling) {
+        return renderCanDisableAction(context, ref);
+      } else {
+        // nothing to see here. all good.
+        return const SizedBox.shrink();
+      }
     } else if (currentState == BackupState.unknown) {
       return renderUnknown(context, ref);
     }
@@ -52,6 +59,25 @@ class BackupStateWidget extends ConsumerWidget {
     );
   }
 
+  Widget renderCanDisableAction(BuildContext context, WidgetRef ref) {
+    return Card(
+      child: ListTile(
+        leading: const Icon(Atlas.check_website_thin),
+        title: const Text('Backup enabled'),
+        subtitle: const Text(
+          'Your keys are stored in an encrypted backup on your home server',
+        ),
+        trailing: OutlinedButton.icon(
+          icon: const Icon(Icons.toggle_on_outlined),
+          onPressed: () => showConfirmDisablingDialog(context, ref),
+          label: const Text(
+            'enabled',
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget renderRecoverAction(BuildContext context, WidgetRef ref) {
     return Card(
       child: ListTile(
@@ -60,11 +86,22 @@ class BackupStateWidget extends ConsumerWidget {
         subtitle: const Text(
           'We have found an automatic encryption backup',
         ),
-        trailing: OutlinedButton(
-          onPressed: () => showProviderRecoveryKeyDialog(context, ref),
-          child: const Text(
-            'Provide Key',
-          ),
+        trailing: Wrap(
+          children: [
+            OutlinedButton(
+              onPressed: () => showProviderRecoveryKeyDialog(context, ref),
+              child: const Text(
+                'Provide Key',
+              ),
+            ),
+            if (allowDisabling)
+              OutlinedButton(
+                onPressed: () => showConfirmDisablingDialog(context, ref),
+                child: const Text(
+                  'disable',
+                ),
+              ),
+          ],
         ),
       ),
     );
