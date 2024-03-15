@@ -1,7 +1,10 @@
+import 'package:acter/features/backups/dialogs/provide_recovery_key_dialog.dart';
+import 'package:acter/features/backups/dialogs/show_recovery_key.dart';
+import 'package:acter/features/backups/providers/backup_manager_provider.dart';
 import 'package:acter/features/backups/providers/backup_state_providers.dart';
 import 'package:acter/features/backups/types.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -58,7 +61,7 @@ class BackupStateWidget extends ConsumerWidget {
           'We have found an automatic encryption backup',
         ),
         trailing: OutlinedButton(
-          onPressed: () {},
+          onPressed: () => showProviderRecoveryKeyDialog(context, ref),
           child: const Text(
             'Provide Key',
           ),
@@ -76,13 +79,33 @@ class BackupStateWidget extends ConsumerWidget {
           'If you lose access to your account, conversations might become unrecoverable. We recommend enabling automatic encryption backups.',
         ),
         trailing: OutlinedButton(
-          onPressed: () {},
+          onPressed: () => startAction(context, ref),
           child: const Text(
             'Enable Backup',
           ),
         ),
       ),
     );
+  }
+
+  void startAction(BuildContext context, WidgetRef ref) async {
+    EasyLoading.show(status: 'enabling backup');
+    String secret;
+    try {
+      final manager = ref.read(backupManagerProvider);
+      secret = await manager.createNewSecretStore();
+      print('Secret: $secret');
+      await manager.create();
+      EasyLoading.dismiss();
+    } catch (e) {
+      EasyLoading.show(status: 'enabling backup failed: $e');
+      return;
+    }
+    if (context.mounted) {
+      showRecoveryKeyDialog(context, ref, secret);
+    } else {
+      print('Dialog closed. Your backup encryption recovery key is: $secret');
+    }
   }
 
   Widget renderInProgress(
