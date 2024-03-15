@@ -573,9 +573,11 @@ async fn news_like_reaction_test() -> Result<()> {
 
     // text msg may reach via reset action or set action
     let mut i = 10;
+    let mut found = false;
     while i > 0 {
         info!("stream loop - {i}");
         if reaction_updates.try_recv().is_ok() {
+            found = true;
             break;
         }
         info!("continue loop");
@@ -583,6 +585,7 @@ async fn news_like_reaction_test() -> Result<()> {
         sleep(Duration::from_secs(1)).await;
     }
     info!("loop finished");
+    assert!(found, "Even after 10 seconds, reaction update not received");
 
     let reaction_manager = reaction_manager.reload().await?;
     info!("stats: {:#?}", reaction_manager.stats());
@@ -596,10 +599,12 @@ async fn news_like_reaction_test() -> Result<()> {
     reaction_manager.redact_like(None, None).await?;
 
     // text msg may reach via reset action or set action
-    let mut i = 10;
+    i = 10;
+    found = false;
     while i > 0 {
         info!("stream loop - {i}");
         if reaction_updates.try_recv().is_ok() {
+            found = true;
             break;
         }
         info!("continue loop");
@@ -607,6 +612,7 @@ async fn news_like_reaction_test() -> Result<()> {
         sleep(Duration::from_secs(1)).await;
     }
     info!("loop finished");
+    assert!(found, "Even after 10 seconds, reaction update not received");
 
     let reaction_manager = reaction_manager.reload().await?;
 
