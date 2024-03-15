@@ -87,26 +87,25 @@ class SasKeysExchangedPage extends StatelessWidget {
   }
 
   Widget buildEmojis(BuildContext context) {
-    List<int> codes = emojis.map((e) => e.symbol()).toList();
-    List<String> descriptions = emojis.map((e) => e.description()).toList();
     return GridView.count(
       crossAxisCount: isDesktop ? 7 : 4,
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
       padding: EdgeInsets.zero,
       children: List.generate(emojis.length, (index) {
+        final emoji = emojis.elementAt(index);
         return GridTile(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
             children: [
               Text(
-                String.fromCharCode(codes[index]),
+                String.fromCharCode(emoji.symbol()),
                 style: const TextStyle(fontSize: 32),
                 textAlign: TextAlign.center,
               ),
               Text(
-                descriptions[index],
+                emoji.description(),
                 maxLines: 1,
                 textAlign: TextAlign.center,
               ),
