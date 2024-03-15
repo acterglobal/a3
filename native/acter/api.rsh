@@ -1301,10 +1301,13 @@ object AttachmentDraft {
 
 object Attachment {
     /// Who send this attachment
-    fn sender() -> UserId;
+    fn sender() -> string;
     /// When was this attachment acknowledged by the server
     fn origin_server_ts() -> u64;
-    
+    /// unique event id associated with this attachment
+    fn attachment_id_str() -> string;
+    /// the room this attachment lives in
+    fn room_id_str() -> string;
     /// the type of attachment
     fn type_str() -> string;
     /// if this is a media, hand over the description

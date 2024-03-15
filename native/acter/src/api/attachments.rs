@@ -67,12 +67,20 @@ impl Deref for Attachment {
 }
 
 impl Attachment {
+    pub fn attachment_id_str(&self) -> String {
+        self.inner.meta.event_id.to_string()
+    }
+
+    pub fn room_id_str(&self) -> String {
+        self.room.room_id().to_string()
+    }
+
     pub fn type_str(&self) -> String {
         self.inner.content().type_str()
     }
 
-    pub fn sender(&self) -> OwnedUserId {
-        self.inner.meta.sender.clone()
+    pub fn sender(&self) -> String {
+        self.inner.meta.sender.to_string()
     }
 
     pub fn origin_server_ts(&self) -> u64 {

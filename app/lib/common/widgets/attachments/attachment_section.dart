@@ -12,10 +12,12 @@ import 'package:skeletonizer/skeletonizer.dart';
 class AttachmentSectionWidget extends ConsumerWidget {
   final AttachmentsManager attachmentManager;
   final bool? canPostAttachment;
+  final bool? canRedact;
   const AttachmentSectionWidget({
     super.key,
     required this.attachmentManager,
     this.canPostAttachment = false,
+    this.canRedact = false,
   });
 
   @override
@@ -44,7 +46,8 @@ class AttachmentSectionWidget extends ConsumerWidget {
                 runSpacing: 10.0,
                 children: <Widget>[
                   if (list.isNotEmpty)
-                    for (var item in list) AttachmentItem(attachment: item),
+                    for (var item in list)
+                      AttachmentItem(attachment: item, canRedact: canRedact!),
                   if (canPostAttachment!)
                     _buildAddAttachment(context, attachmentManager),
                 ],

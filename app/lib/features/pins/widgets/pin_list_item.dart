@@ -121,7 +121,8 @@ class _PinListItemConsumerState extends ConsumerState<PinListItem> {
       if (attachments.valueOrNull != null) {
         final list = attachments.requireValue;
         if (list.isNotEmpty) {
-          attachmentsWidget.add(AttachmentItem(attachment: list[0]));
+          attachmentsWidget
+              .add(AttachmentItem(attachment: list[0], canRedact: false));
         }
       }
     }
