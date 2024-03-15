@@ -7,7 +7,7 @@ import 'package:acter/features/home/providers/navigation.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -107,7 +107,7 @@ class SidebarWidget extends ConsumerWidget {
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 5),
                         child: Text(
-                          AppLocalizations.of(context)!.logIn,
+                          L10n.of(context).logIn,
                           style: Theme.of(context).textTheme.labelSmall,
                           softWrap: false,
                         ),

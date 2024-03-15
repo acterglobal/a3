@@ -23,7 +23,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -1006,7 +1006,7 @@ class _TextInputWidget extends ConsumerWidget {
             ),
             hintText: isEncrypted
                 ? 'New Encrypted Message '
-                : AppLocalizations.of(context)!.newMessage,
+                : L10n.of(context).newMessage,
             hintStyle: Theme.of(context).textTheme.labelLarge!.copyWith(
                   color: Theme.of(context).colorScheme.onSurface,
                 ),

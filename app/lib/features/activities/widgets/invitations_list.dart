@@ -1,6 +1,6 @@
 import 'package:acter/features/activities/providers/invitations_providers.dart';
 import 'package:acter/features/activities/widgets/invitation_card.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -20,7 +20,7 @@ class InvitationsList extends ConsumerWidget {
           alignment: Alignment.topLeft,
           padding: const EdgeInsets.only(left: 18),
           child: Text(
-            AppLocalizations.of(context)!.invitedRooms,
+            L10n.of(context).invitedRooms,
           ),
         ),
         const SizedBox(height: 10),
@@ -39,7 +39,7 @@ class InvitationsList extends ConsumerWidget {
           alignment: Alignment.topLeft,
           padding: const EdgeInsets.only(left: 18, top: 10),
           child: Text(
-            AppLocalizations.of(context)!.joinedRooms,
+            L10n.of(context).joinedRooms,
           ),
         ),
         const SizedBox(height: 10),
