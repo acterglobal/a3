@@ -4,7 +4,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:breadcrumbs/breadcrumbs.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SessionCard extends ConsumerWidget {
@@ -59,7 +59,7 @@ class SessionCard extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: Text(
-                      AppLocalizations.of(ctx)!.logOut,
+                      L10n.of(ctx).logOut,
                       style: Theme.of(ctx).textTheme.labelSmall,
                       softWrap: false,
                     ),
@@ -75,7 +75,7 @@ class SessionCard extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: Text(
-                      AppLocalizations.of(ctx)!.verifySession,
+                      L10n.of(ctx).verifySession,
                       style: Theme.of(ctx).textTheme.labelSmall,
                       softWrap: false,
                     ),
