@@ -1334,6 +1334,9 @@ object AttachmentsManager {
 
     // inform about the changes to this manager
     fn reload() -> Future<Result<AttachmentsManager>>;
+    
+    // redact attachment 
+    fn redact(attachment_id: string, reason: Option<string>, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// subscribe to the changes of this model key
     fn subscribe_stream() -> Stream<bool>;

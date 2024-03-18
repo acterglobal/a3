@@ -5,7 +5,7 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, Client as SdkClient, RoomState};
-use ruma_common::{OwnedEventId, OwnedUserId};
+use ruma_common::{OwnedEventId, OwnedTransactionId, OwnedUserId};
 use ruma_events::{
     room::message::{
         AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
@@ -13,10 +13,10 @@ use ruma_events::{
     },
     MessageLikeEventType,
 };
-use std::{ops::Deref, path::PathBuf};
+use std::{ops::Deref, path::PathBuf, str::FromStr};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::Stream;
-use tracing::warn;
+use tracing::{trace, warn};
 
 use super::{
     api::FfiBuffer, client::Client, common::ThumbnailSize, stream::MsgContentDraft, RUNTIME,
@@ -252,6 +252,37 @@ impl AttachmentsManager {
             self.inner.event_id(),
         )
         .await
+    }
+
+    pub async fn redact(
+        &self,
+        attachment_id: String,
+        reason: Option<String>,
+        txn_id: Option<String>,
+    ) -> Result<OwnedEventId> {
+        let room = self.room.clone();
+        let stats = self.inner.stats();
+        let has_entry = self
+            .stats()
+            .user_attachments
+            .into_iter()
+            .any(|inner| OwnedEventId::to_string(&inner) == attachment_id);
+
+        if !has_entry {
+            bail!("attachment doesn't exist");
+        }
+
+        let event_id = OwnedEventId::from_str(&attachment_id).expect("invalid event ID");
+        let txn_id = txn_id.map(OwnedTransactionId::from);
+
+        RUNTIME
+            .spawn(async move {
+                trace!("before redacting attachment");
+                let response = room.redact(&event_id, reason.as_deref(), txn_id).await?;
+                trace!("after redacting attachment");
+                Ok(response.event_id)
+            })
+            .await?
     }
 
     pub async fn attachments(&self) -> Result<Vec<Attachment>> {

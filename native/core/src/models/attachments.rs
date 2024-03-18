@@ -5,7 +5,9 @@ use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 use tracing::{error, trace};
 
-use super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta};
+use super::{
+    default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta, RedactedActerModel,
+};
 use crate::{
     events::attachments::{
         AttachmentBuilder, AttachmentEventContent, AttachmentUpdateBuilder,
@@ -21,9 +23,16 @@ static ATTACHMENTS_STATS_FIELD: &str = "attachments_stats";
 #[derive(Clone, Debug, Default, Deserialize, Serialize, Getters)]
 pub struct AttachmentsStats {
     has_attachments: bool,
+    #[serde(default, skip_serializing_if = "is_zero")]
     total_attachments_count: u32,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub user_attachments: Vec<OwnedEventId>,
 }
-
+/// This is only used for serialize
+#[allow(clippy::trivially_copy_pass_by_ref)]
+fn is_zero(num: &u32) -> bool {
+    *num == 0
+}
 #[derive(Clone, Debug)]
 pub struct AttachmentsManager {
     stats: AttachmentsStats,
@@ -67,9 +76,35 @@ impl AttachmentsManager {
         Ok(attachments)
     }
 
-    pub(crate) async fn add_attachment(&mut self, _attachment: &Attachment) -> Result<bool> {
+    pub(crate) fn add_attachment(&mut self, _attachment: &Attachment) -> Result<bool> {
         self.stats.has_attachments = true;
+        let is_my_attachment = self.store.user_id() == _attachment.meta.sender;
+        if is_my_attachment {
+            self.stats
+                .user_attachments
+                .push(_attachment.meta.event_id.clone())
+        }
         self.stats.total_attachments_count += 1;
+        Ok(true)
+    }
+
+    pub(crate) fn redact_attachment(
+        &mut self,
+        attachment: &Attachment,
+        _redaction: &RedactedActerModel,
+    ) -> Result<bool> {
+        let was_my_attachment = self.store.user_id() == attachment.meta.sender;
+        self.stats.total_attachments_count = self
+            .stats
+            .total_attachments_count
+            .checked_sub(1)
+            .unwrap_or_default();
+        if was_my_attachment {
+            self.stats
+                .user_attachments
+                .retain(|e| e != &attachment.meta.event_id);
+        }
+
         Ok(true)
     }
 
@@ -125,6 +160,44 @@ impl Attachment {
             .attachment(self.meta.event_id.to_owned())
             .to_owned()
     }
+
+    async fn apply(
+        &self,
+        store: &Store,
+        redaction_model: Option<RedactedActerModel>,
+    ) -> Result<Vec<String>> {
+        let belongs_to = self
+            .belongs_to()
+            .expect("we always have some as attachments");
+        trace!(event_id=?self.event_id(), ?belongs_to, "applying attachment");
+
+        let mut managers = vec![];
+        for p in belongs_to {
+            let parent = store.get(&p).await?;
+            if !parent.capabilities().contains(&Capability::Attachmentable) {
+                error!(?parent, attachment = ?self, "doesn't support attachments. can't apply");
+                continue;
+            }
+
+            // FIXME: what if we have this twice in the same loop?
+            let mut manager =
+                AttachmentsManager::from_store_and_event_id(store, parent.event_id()).await;
+            if let Some(redacted) = redaction_model.as_ref() {
+                if manager.redact_attachment(self, redacted)? {
+                    trace!(event_id=?self.event_id(), "redacted attachment");
+                    managers.push(manager);
+                }
+            } else if manager.add_attachment(&self)? {
+                trace!(event_id=?self.event_id(), "added attachment");
+                managers.push(manager);
+            }
+        }
+        let mut updates = store.save(self.clone().into()).await?;
+        for manager in managers {
+            updates.push(manager.save().await?);
+        }
+        Ok(updates)
+    }
 }
 
 impl ActerModel for Attachment {
@@ -145,31 +218,7 @@ impl ActerModel for Attachment {
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<String>> {
-        let belongs_to = self
-            .belongs_to()
-            .expect("we always have some as attachments");
-        trace!(event_id=?self.event_id(), ?belongs_to, "applying attachment");
-
-        let mut managers = vec![];
-        for p in belongs_to {
-            let parent = store.get(&p).await?;
-            if !parent.capabilities().contains(&Capability::Attachmentable) {
-                error!(?parent, attachment = ?self, "doesn't support attachments. can't apply");
-                continue;
-            }
-
-            // FIXME: what if we have this twice in the same loop?
-            let mut manager =
-                AttachmentsManager::from_store_and_event_id(store, parent.event_id()).await;
-            if manager.add_attachment(&self).await? {
-                managers.push(manager);
-            }
-        }
-        let mut updates = store.save(self.into()).await?;
-        for manager in managers {
-            updates.push(manager.save().await?);
-        }
-        Ok(updates)
+        self.apply(store, None).await
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
@@ -182,6 +231,14 @@ impl ActerModel for Attachment {
         };
 
         update.apply(&mut self.inner)
+    }
+    // custom redaction code
+    async fn redact(
+        &self,
+        store: &Store,
+        redaction_model: RedactedActerModel,
+    ) -> crate::Result<Vec<String>> {
+        self.apply(store, Some(redaction_model)).await
     }
 }
 
