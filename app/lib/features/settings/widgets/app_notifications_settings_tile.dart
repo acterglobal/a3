@@ -9,6 +9,7 @@ class _AppNotificationSettingsTile extends ConsumerWidget {
   final String appKey;
   final String? description;
   final bool? enabled;
+
   const _AppNotificationSettingsTile({
     required this.title,
     required this.appKey,
