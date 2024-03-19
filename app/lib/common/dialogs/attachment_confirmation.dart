@@ -1,5 +1,5 @@
 import 'package:acter/common/models/types.dart';
-import 'package:acter/common/utils/utils.dart';
+
 import 'package:acter/common/widgets/attachments/post_attachment_selection.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show AttachmentsManager;
@@ -13,31 +13,21 @@ void attachmentConfirmationDialog(
 ) {
   final size = MediaQuery.of(ctx).size;
   if (selectedAttachments != null && selectedAttachments.isNotEmpty) {
-    if (isLargeScreen(ctx)) {
-      showAdaptiveDialog(
-        context: ctx,
-        builder: (ctx) => Dialog(
-          insetPadding: const EdgeInsets.all(8),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: size.width * 0.5,
-              maxHeight: size.height * 0.5,
-            ),
-            child: PostAttachmentSelection(
-              attachments: selectedAttachments,
-              manager: manager,
-            ),
+    showAdaptiveDialog(
+      context: ctx,
+      builder: (ctx) => Dialog(
+        insetPadding: const EdgeInsets.all(8),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: size.width * 0.5,
+            maxHeight: size.height * 0.5,
+          ),
+          child: PostAttachmentSelection(
+            attachments: selectedAttachments,
+            manager: manager,
           ),
         ),
-      );
-    } else {
-      showModalBottomSheet(
-        context: ctx,
-        builder: (ctx) => PostAttachmentSelection(
-          attachments: selectedAttachments,
-          manager: manager,
-        ),
-      );
-    }
+      ),
+    );
   }
 }
