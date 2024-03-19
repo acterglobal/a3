@@ -24,50 +24,97 @@ class IntroProfile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 30),
       child: Column(
         children: [
-          const SizedBox(height: 80),
-          Image.asset(
-            'assets/icon/logo_foreground.png',
-            height: 100,
-            width: 100,
-          ),
+          const SizedBox(height: 100),
+          _buildLogo(),
           const SizedBox(height: 20),
-          Text(
-            L10n.of(context).acter,
-            style: const TextStyle(color: Colors.white, fontSize: 32),
-          ),
+          _buildHeadlineText(context),
+          const SizedBox(height: 10),
+          _buildPreviewLabel(context),
           const SizedBox(height: 20),
-          Text(
-            L10n.of(context).readyToOrganizeAndCollaboratingText,
-            style: const TextStyle(color: Colors.white, fontSize: 16),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            L10n.of(context).loginOrCreateProfile,
-            style: const TextStyle(color: Colors.white, fontSize: 16),
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            key: LoginPageKeys.signUpBtn,
-            onPressed: () => context.pushNamed(Routes.authRegister.name),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(L10n.of(context).createProfile),
-                const SizedBox(width: 10),
-                const Icon(Icons.arrow_forward_ios, size: 18),
-              ],
-            ),
-          ),
-          const SizedBox(height: 25),
-          OutlinedButton(
-            key: Keys.loginBtn,
-            onPressed: () => context.pushNamed(Routes.authLogin.name),
-            child: Center(
-              child: Text(L10n.of(context).logIn),
-            ),
-          ),
+          _buildDescription(context),
+          const SizedBox(height: 50),
+          _buildActionButtons(context),
         ],
       ),
+    );
+  }
+
+  Widget _buildLogo() {
+    return Image.asset(
+      'assets/icon/logo_foreground.png',
+      height: 200,
+      width: 200,
+    );
+  }
+
+  Widget _buildHeadlineText(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          L10n.of(context).makeADifference,
+          style: Theme.of(context).textTheme.headlineMedium,
+        ),
+        Text(
+          L10n.of(context).joinActer,
+          style: Theme.of(context)
+              .textTheme
+              .headlineMedium
+              ?.copyWith(color: greenColor),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPreviewLabel(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(5),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.white),
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
+      ),
+      child: Text(
+        L10n.of(context).preview,
+        style: Theme.of(context).textTheme.titleSmall,
+      ),
+    );
+  }
+
+  Widget _buildDescription(BuildContext context) {
+    return Text(
+      L10n.of(context).takeAFirstStep,
+      style: Theme.of(context).textTheme.bodyMedium,
+      textAlign: TextAlign.center,
+    );
+  }
+
+  Widget _buildActionButtons(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ElevatedButton(
+          key: LoginPageKeys.signUpBtn,
+          onPressed: () => context.pushNamed(Routes.authRegister.name),
+          child: Text(
+            L10n.of(context).signUp,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Text(
+          L10n.of(context).or,
+          style: Theme.of(context).textTheme.bodyMedium,
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 16),
+        OutlinedButton(
+          key: Keys.loginBtn,
+          onPressed: () => context.pushNamed(Routes.authLogin.name),
+          child: Text(
+            L10n.of(context).logIn,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ),
+      ],
     );
   }
 }
