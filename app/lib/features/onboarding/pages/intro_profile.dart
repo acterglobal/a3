@@ -1,6 +1,7 @@
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/onboarding/widgets/logo_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -25,7 +26,7 @@ class IntroProfile extends StatelessWidget {
       child: Column(
         children: [
           const SizedBox(height: 100),
-          _buildLogo(),
+          const LogoWidget(),
           const SizedBox(height: 20),
           _buildHeadlineText(context),
           const SizedBox(height: 10),
@@ -36,14 +37,6 @@ class IntroProfile extends StatelessWidget {
           _buildActionButtons(context),
         ],
       ),
-    );
-  }
-
-  Widget _buildLogo() {
-    return Image.asset(
-      'assets/icon/logo_foreground.png',
-      height: 200,
-      width: 200,
     );
   }
 
