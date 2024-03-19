@@ -235,7 +235,6 @@ class MemberListEntry extends ConsumerWidget {
         roomId: roomId,
         member: data.member,
         profile: data.profile,
-        myMembership: myMembership,
       ),
       error: (e, s) => Text('Error loading Profile: $e'),
       loading: () => const _MemberListInnerSkeleton(),
@@ -248,14 +247,12 @@ class _MemberListEntryInner extends ConsumerWidget {
   final ProfileData profile;
   final String userId;
   final String roomId;
-  final Member? myMembership;
 
   const _MemberListEntryInner({
     required this.userId,
     required this.member,
     required this.profile,
     required this.roomId,
-    this.myMembership,
   });
 
   Future<void> blockUser(BuildContext context) async {
@@ -359,6 +356,8 @@ class _MemberListEntryInner extends ConsumerWidget {
   }
 
   Future<void> changePowerLevel(BuildContext context, WidgetRef ref) async {
+    final myMembership = await ref.read(roomMembershipProvider(roomId).future);
+    if (!context.mounted) return;
     final newPowerlevel = await showDialog<int?>(
       context: context,
       builder: (BuildContext context) => ChangePowerLevel(
@@ -396,6 +395,7 @@ class _MemberListEntryInner extends ConsumerWidget {
   }
 
   Widget submenu(BuildContext context, WidgetRef ref) {
+    final myMembership = ref.watch(roomMembershipProvider(roomId)).valueOrNull;
     final List<PopupMenuEntry> submenu = [];
 
     submenu.add(
@@ -437,7 +437,7 @@ class _MemberListEntryInner extends ConsumerWidget {
 
     if (myMembership != null) {
       submenu.add(const PopupMenuDivider());
-      if (myMembership!.canString('CanUpdatePowerLevels')) {
+      if (myMembership.canString('CanUpdatePowerLevels')) {
         submenu.add(
           PopupMenuItem(
             onTap: () async {
@@ -448,7 +448,7 @@ class _MemberListEntryInner extends ConsumerWidget {
         );
       }
 
-      if (myMembership!.canString('CanKick')) {
+      if (myMembership.canString('CanKick')) {
         submenu.add(
           PopupMenuItem(
             onTap: () => customMsgSnackbar(
@@ -459,7 +459,7 @@ class _MemberListEntryInner extends ConsumerWidget {
           ),
         );
 
-        if (myMembership!.canString('CanBan')) {
+        if (myMembership.canString('CanBan')) {
           submenu.add(
             PopupMenuItem(
               onTap: () => customMsgSnackbar(
@@ -518,9 +518,8 @@ class _MemberListEntryInner extends ConsumerWidget {
         ),
       );
     }
-    if (myMembership != null) {
-      trailing.add(submenu(context, ref));
-    }
+    trailing.add(submenu(context, ref));
+
     return ListTile(
       onTap: () async {
         // ignore: use_build_context_synchronously

@@ -91,7 +91,6 @@ class SpaceMembersPage extends ConsumerWidget {
                   return MemberListEntry(
                     memberId: members[index],
                     roomId: space.getRoomIdStr(),
-                    myMembership: myMembership.valueOrNull,
                   );
                 },
               );

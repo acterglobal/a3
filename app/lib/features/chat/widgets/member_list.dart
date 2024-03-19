@@ -16,7 +16,6 @@ class MemberList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final roomId = convo.getRoomIdStr();
     final members = ref.watch(membersIdsProvider(roomId));
-    final myMembership = ref.watch(roomMembershipProvider(roomId));
 
     return members.when(
       data: (members) {
@@ -38,7 +37,6 @@ class MemberList extends ConsumerWidget {
               child: MemberListEntry(
                 memberId: members[index],
                 roomId: roomId,
-                myMembership: myMembership.valueOrNull,
               ),
             );
           },
