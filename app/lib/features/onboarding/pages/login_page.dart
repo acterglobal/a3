@@ -120,7 +120,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           key: LoginPageKeys.usernameField,
           controller: username,
           decoration: InputDecoration(
-            hintText: L10n.of(context).username,
+            hintText: L10n.of(context).hintMessageUsername,
           ),
           inputFormatters: [
             FilteringTextInputFormatter.deny(RegExp(r'\s')),
@@ -147,7 +147,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           controller: password,
           obscureText: !_passwordVisible,
           decoration: InputDecoration(
-            hintText: L10n.of(context).password,
+            hintText: L10n.of(context).hintMessagePassword,
             suffixIcon: IconButton(
               icon: Icon(
                 _passwordVisible ? Icons.visibility : Icons.visibility_off,
