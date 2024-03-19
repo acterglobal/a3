@@ -793,6 +793,29 @@ impl Room {
             .await?
     }
 
+    pub async fn active_members_ids(&self) -> Result<Vec<String>> {
+        let room = self.room.clone();
+
+        let is_acter_space = self.is_acter_space().await?;
+        let acter_app_settings = if is_acter_space {
+            Some(self.app_settings_content().await?)
+        } else {
+            None
+        };
+
+        RUNTIME
+            .spawn(async move {
+                let members = room
+                    .members(RoomMemberships::ACTIVE)
+                    .await?
+                    .into_iter()
+                    .map(|member| member.user_id().to_string())
+                    .collect();
+                Ok(members)
+            })
+            .await?
+    }
+
     pub async fn invited_members(&self) -> Result<Vec<Member>> {
         let room = self.room.clone();
         let is_acter_space = self.is_acter_space().await?;

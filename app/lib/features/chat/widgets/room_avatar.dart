@@ -124,7 +124,7 @@ class RoomAvatar extends ConsumerWidget {
 
   Widget dmAvatar(WidgetRef ref) {
     final client = ref.watch(alwaysClientProvider);
-    final convoMembers = ref.watch(chatMembersProvider(roomId));
+    final convoMembers = ref.watch(membersIdsProvider(roomId));
     return convoMembers.when(
       data: (members) {
         int count = members.length;
@@ -134,7 +134,7 @@ class RoomAvatar extends ConsumerWidget {
           return memberAvatar(members[0], ref);
         } else if (count == 2) {
           //Show opponent member avatar
-          if (members[0].userId().toString() != client.userId().toString()) {
+          if (members[0] != client.userId().toString()) {
             return memberAvatar(members[0], ref);
           } else {
             return memberAvatar(members[1], ref);
@@ -152,16 +152,16 @@ class RoomAvatar extends ConsumerWidget {
     );
   }
 
-  Widget memberAvatar(Member member, WidgetRef ref) {
-    final memberProfile = ref.watch(memberProfileProvider(member));
-    final userId = member.userId().toString();
+  Widget memberAvatar(String userId, WidgetRef ref) {
+    final memberProfile =
+        ref.watch(roomMemberProvider((userId: userId, roomId: roomId)));
     return memberProfile.when(
       data: (data) => ActerAvatar(
         mode: DisplayMode.DM,
         avatarInfo: AvatarInfo(
           uniqueId: userId,
-          displayName: data.displayName,
-          avatar: data.getAvatarImage(),
+          displayName: data.profile.displayName,
+          avatar: data.profile.getAvatarImage(),
         ),
         size: avatarSize,
       ),
@@ -185,30 +185,32 @@ class RoomAvatar extends ConsumerWidget {
     );
   }
 
-  Widget groupAvatarDM(List<Member> members, WidgetRef ref) {
-    final userId = members[0].userId().toString();
-    final secondaryUserId = members[1].userId().toString();
-    final profile = ref.watch(memberProfileProvider(members[0]));
-    final secondaryProfile = ref.watch(memberProfileProvider(members[1]));
+  Widget groupAvatarDM(List<String> members, WidgetRef ref) {
+    final userId = members[0];
+    final secondaryUserId = members[1];
+    final profile =
+        ref.watch(roomMemberProvider((userId: members[0], roomId: roomId)));
+    final secondaryProfile =
+        ref.watch(roomMemberProvider((userId: members[1], roomId: roomId)));
 
     return profile.when(
       data: (data) {
         return ActerAvatar(
           avatarInfo: AvatarInfo(
             uniqueId: userId,
-            displayName: data.displayName,
-            avatar: data.getAvatarImage(),
+            displayName: data.profile.displayName,
+            avatar: data.profile.getAvatarImage(),
           ),
           avatarsInfo: secondaryProfile.maybeWhen(
             data: (secData) => [
               AvatarInfo(
                 uniqueId: secondaryUserId,
-                displayName: secData.displayName,
-                avatar: secData.getAvatarImage(),
+                displayName: secData.profile.displayName,
+                avatar: secData.profile.getAvatarImage(),
               ),
               for (int i = 2; i < members.length; i++)
                 AvatarInfo(
-                  uniqueId: members[i].userId().toString(),
+                  uniqueId: members[i],
                 ),
             ],
             orElse: () => [],
@@ -235,12 +237,12 @@ class RoomAvatar extends ConsumerWidget {
             data: (secData) => [
               AvatarInfo(
                 uniqueId: secondaryUserId,
-                displayName: secData.displayName,
-                avatar: secData.getAvatarImage(),
+                displayName: secData.profile.displayName,
+                avatar: secData.profile.getAvatarImage(),
               ),
               for (int i = 2; i < members.length; i++)
                 AvatarInfo(
-                  uniqueId: members[i].userId().toString(),
+                  uniqueId: members[i],
                 ),
             ],
             orElse: () => [],

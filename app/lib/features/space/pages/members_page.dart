@@ -20,7 +20,7 @@ class SpaceMembersPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final space = ref.watch(spaceProvider(spaceIdOrAlias)).requireValue;
-    final members = ref.watch(spaceMembersProvider(spaceIdOrAlias));
+    final members = ref.watch(membersIdsProvider(spaceIdOrAlias));
     final myMembership = ref.watch(roomMembershipProvider(spaceIdOrAlias));
     final List<Widget> topMenu = [
       Expanded(
@@ -88,11 +88,9 @@ class SpaceMembersPage extends ConsumerWidget {
                   childAspectRatio: 5.0,
                 ),
                 itemBuilder: (context, index) {
-                  final member = members[index];
                   return MemberListEntry(
-                    member: member,
-                    space: space,
-                    myMembership: myMembership.valueOrNull,
+                    memberId: members[index],
+                    roomId: space.getRoomIdStr(),
                   );
                 },
               );

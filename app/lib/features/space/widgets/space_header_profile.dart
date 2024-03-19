@@ -92,7 +92,7 @@ class SpaceHeaderProfile extends ConsumerWidget {
     WidgetRef ref,
     Widget? child,
   ) {
-    final spaceMembers = ref.watch(spaceMembersProvider(spaceId));
+    final spaceMembers = ref.watch(membersIdsProvider(spaceId));
     return spaceMembers.when(
       data: (members) {
         final membersCount = members.length;
@@ -112,7 +112,7 @@ class SpaceHeaderProfile extends ConsumerWidget {
               spacing: -12,
               children: [
                 ...members.map(
-                  (a) => MemberAvatar(member: a),
+                  (a) => MemberAvatar(memberId: a, roomId: spaceId),
                 ),
                 if (membersCount > 5)
                   CircleAvatar(

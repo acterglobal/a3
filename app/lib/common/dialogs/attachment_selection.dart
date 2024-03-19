@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:acter/common/dialogs/attachment_confirmation.dart';
+import 'package:acter/common/models/types.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/attachments/attachment_options.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'

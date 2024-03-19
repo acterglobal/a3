@@ -1,6 +1,7 @@
 import 'dart:io';
 
-import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/models/types.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -642,18 +643,18 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     final roomId = widget.convo.getRoomIdStr();
     final chatInputState = ref.watch(chatInputProvider(roomId));
     final authorId = chatInputState.repliedToMessage!.author.id;
-    final replyProfile = ref
-        .watch(memberProfileByInfoProvider((userId: authorId, roomId: roomId)));
+    final replyProfile =
+        ref.watch(roomMemberProvider((userId: authorId, roomId: roomId)));
     final inputNotifier = ref.watch(chatInputProvider(roomId).notifier);
     return Row(
       children: [
         replyProfile.when(
-          data: (profile) => ActerAvatar(
+          data: (data) => ActerAvatar(
             mode: DisplayMode.DM,
             avatarInfo: AvatarInfo(
               uniqueId: authorId,
-              displayName: profile.displayName ?? authorId,
-              avatar: profile.getAvatarImage(),
+              displayName: data.profile.displayName ?? authorId,
+              avatar: data.profile.getAvatarImage(),
             ),
             size: 12,
           ),
@@ -902,6 +903,7 @@ class _TextInputWidget extends ConsumerWidget {
     final roomId = convo.getRoomIdStr();
     final chatInputNotifier = ref.watch(chatInputProvider(roomId).notifier);
     final chatInputState = ref.watch(chatInputProvider(roomId));
+    final chatMentions = ref.watch(chatMentionsProvider(roomId));
     final width = MediaQuery.of(context).size.width;
     return CallbackShortcuts(
       bindings: <ShortcutActivator, VoidCallback>{
@@ -1024,19 +1026,21 @@ class _TextInputWidget extends ConsumerWidget {
                   ..strokeJoin = StrokeJoin.round
                   ..style = PaintingStyle.stroke,
               ),
-              data: chatInputState.mentions,
-              suggestionBuilder: (Map<String, dynamic> roomMember) {
-                final authorId = roomMember['link'];
-                final title = roomMember['display'] ?? authorId;
+              data: chatMentions.valueOrNull ?? [],
+              suggestionBuilder: (Map<String, dynamic> mentionRecord) {
+                final authorId = mentionRecord['id'];
+                final title = mentionRecord['displayName'];
                 return ListTile(
                   leading: MentionProfileBuilder(
                     roomId: roomId,
                     authorId: authorId,
-                    title: title,
                   ),
                   title: Wrap(
                     children: [
-                      Text(title, style: Theme.of(context).textTheme.bodySmall),
+                      Text(
+                        title ?? '',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
                       const SizedBox(width: 15),
                       Text(
                         authorId,
