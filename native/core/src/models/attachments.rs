@@ -187,7 +187,7 @@ impl Attachment {
                     trace!(event_id=?self.event_id(), "redacted attachment");
                     managers.push(manager);
                 }
-            } else if manager.add_attachment(&self)? {
+            } else if manager.add_attachment(self)? {
                 trace!(event_id=?self.event_id(), "added attachment");
                 managers.push(manager);
             }
