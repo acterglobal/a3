@@ -10,7 +10,7 @@ import 'package:acter/features/chat/providers/notifiers/media_chat_notifier.dart
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 
 final chatInputProvider =
     StateNotifierProvider.family<ChatInputNotifier, ChatInputState, String>(

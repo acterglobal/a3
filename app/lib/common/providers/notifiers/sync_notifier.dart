@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:acter/common/models/sync_state/sync_state.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 
 // ignore_for_file: avoid_print
 class SyncNotifier extends StateNotifier<SyncState> {
