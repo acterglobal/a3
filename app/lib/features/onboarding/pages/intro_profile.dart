@@ -71,41 +71,51 @@ class IntroProfile extends StatelessWidget {
   }
 
   Widget _buildDescription(BuildContext context) {
-    return Text(
-      L10n.of(context).takeAFirstStep,
-      style: Theme.of(context).textTheme.bodyMedium,
-      textAlign: TextAlign.center,
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 500),
+        child: Text(
+          L10n.of(context).takeAFirstStep,
+          style: Theme.of(context).textTheme.bodyMedium,
+          textAlign: TextAlign.center,
+        ),
+      ),
     );
   }
 
   Widget _buildActionButtons(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        ElevatedButton(
-          key: LoginPageKeys.signUpBtn,
-          onPressed: () => context.pushNamed(Routes.authRegister.name),
-          child: Text(
-            L10n.of(context).signUp,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 500),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ElevatedButton(
+              key: LoginPageKeys.signUpBtn,
+              onPressed: () => context.pushNamed(Routes.authRegister.name),
+              child: Text(
+                L10n.of(context).signUp,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              L10n.of(context).or,
+              style: Theme.of(context).textTheme.bodyMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            OutlinedButton(
+              key: Keys.loginBtn,
+              onPressed: () => context.pushNamed(Routes.authLogin.name),
+              child: Text(
+                L10n.of(context).logIn,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 16),
-        Text(
-          L10n.of(context).or,
-          style: Theme.of(context).textTheme.bodyMedium,
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 16),
-        OutlinedButton(
-          key: Keys.loginBtn,
-          onPressed: () => context.pushNamed(Routes.authLogin.name),
-          child: Text(
-            L10n.of(context).logIn,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-        ),
-      ],
+      ),
     );
   }
 }
