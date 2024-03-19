@@ -16,10 +16,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-import 'package:logging/logging.dart';
-
-final _log = Logger('a3::common::member_list');
-
 class ChangePowerLevel extends StatefulWidget {
   final Member member;
   final Member? myMembership;
