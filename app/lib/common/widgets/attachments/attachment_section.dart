@@ -2,6 +2,7 @@ import 'package:acter/common/dialogs/attachment_selection.dart';
 import 'package:acter/common/providers/attachment_providers.dart';
 
 import 'package:acter/common/widgets/attachments/attachment_item.dart';
+import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Attachment, AttachmentsManager;
 import 'package:atlas_icons/atlas_icons.dart';
@@ -117,6 +118,7 @@ class AttachmentSectionWidget extends ConsumerWidget {
     final titleTextStyle = Theme.of(context).textTheme.titleMedium;
     final descriptionTextStyle = Theme.of(context).textTheme.bodyMedium;
     final confirmBtnColor = Theme.of(context).colorScheme.errorContainer;
+    final TextEditingController reasonController = TextEditingController();
     await showAdaptiveDialog(
       context: context,
       builder: (context) => Dialog(
@@ -139,6 +141,15 @@ class AttachmentSectionWidget extends ConsumerWidget {
                     style: descriptionTextStyle,
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: InputTextField(
+                    controller: reasonController,
+                    hintText: 'Reason',
+                    textInputType: TextInputType.multiline,
+                    maxLines: 5,
+                  ),
+                ),
                 const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -151,7 +162,10 @@ class AttachmentSectionWidget extends ConsumerWidget {
                     ElevatedButton(
                       onPressed: () {
                         Navigator.of(context).pop();
-                        _handleRedactAttachment(eventId);
+                        _handleRedactAttachment(
+                          eventId,
+                          reasonController.text.trim(),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: confirmBtnColor,
@@ -168,10 +182,10 @@ class AttachmentSectionWidget extends ConsumerWidget {
     );
   }
 
-  Future<void> _handleRedactAttachment(String eventId) async {
+  Future<void> _handleRedactAttachment(String eventId, String reason) async {
     EasyLoading.show(status: 'Removing attachment', dismissOnTap: false);
     try {
-      await attachmentManager.redact(eventId, '', null);
+      await attachmentManager.redact(eventId, reason, null);
       _log.info('attachment redacted: $eventId');
       EasyLoading.dismiss();
     } catch (e) {
