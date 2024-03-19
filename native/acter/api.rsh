@@ -1260,10 +1260,8 @@ object Comment {
     fn sender() -> UserId;
     /// When was this comment acknowledged by the server
     fn origin_server_ts() -> u64;
-    /// what is the comment's content in raw text
-    fn content_text() -> string;
-    /// what is the comment's content in html text
-    fn content_formatted() -> Option<string>;
+    /// what is the comment's content
+    fn msg_content() -> MsgContent;
     /// create a draft builder to reply to this comment
     fn reply_builder() -> CommentDraft;
 }
@@ -1281,6 +1279,12 @@ object CommentsManager {
 
     /// draft a new comment for this item
     fn comment_draft() -> CommentDraft;
+
+    /// subscribe to the changes this manager
+    fn subscribe_stream() -> Stream<bool>;
+
+    /// reload the data from the database
+    fn reload() -> Future<Result<CommentsManager>>;
 }
 
 

@@ -5852,6 +5852,53 @@ class Api {
     return tmp7;
   }
 
+  CommentsManager? __commentsManagerReloadFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _commentsManagerReloadFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_CommentsManager");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = CommentsManager._(this, tmp13_1);
+    return tmp7;
+  }
+
   EventId? __attachmentDraftSendFuturePoll(
     int boxed,
     int postCobject,
@@ -12704,6 +12751,39 @@ class Api {
     return tmp9;
   }
 
+  bool? __commentsManagerSubscribeStreamStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _commentsManagerSubscribeStreamStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final tmp9 = tmp11 > 0;
+    return tmp9;
+  }
+
   bool? __attachmentsManagerSubscribeStreamStreamPoll(
     int boxed,
     int postCobject,
@@ -17727,24 +17807,14 @@ class Api {
       int Function(
         int,
       )>();
-  late final _commentContentTextPtr = _lookup<
+  late final _commentMsgContentPtr = _lookup<
       ffi.NativeFunction<
-          _CommentContentTextReturn Function(
+          ffi.Int64 Function(
             ffi.Int64,
-          )>>("__Comment_content_text");
+          )>>("__Comment_msg_content");
 
-  late final _commentContentText = _commentContentTextPtr.asFunction<
-      _CommentContentTextReturn Function(
-        int,
-      )>();
-  late final _commentContentFormattedPtr = _lookup<
-      ffi.NativeFunction<
-          _CommentContentFormattedReturn Function(
-            ffi.Int64,
-          )>>("__Comment_content_formatted");
-
-  late final _commentContentFormatted = _commentContentFormattedPtr.asFunction<
-      _CommentContentFormattedReturn Function(
+  late final _commentMsgContent = _commentMsgContentPtr.asFunction<
+      int Function(
         int,
       )>();
   late final _commentReplyBuilderPtr = _lookup<
@@ -17800,6 +17870,27 @@ class Api {
           int Function(
             int,
           )>();
+  late final _commentsManagerSubscribeStreamPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__CommentsManager_subscribe_stream");
+
+  late final _commentsManagerSubscribeStream =
+      _commentsManagerSubscribeStreamPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _commentsManagerReloadPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__CommentsManager_reload");
+
+  late final _commentsManagerReload = _commentsManagerReloadPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _attachmentDraftSendPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -24754,6 +24845,21 @@ class Api {
             int,
             int,
           )>();
+  late final _commentsManagerReloadFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _CommentsManagerReloadFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__CommentsManager_reload_future_poll");
+
+  late final _commentsManagerReloadFuturePoll =
+      _commentsManagerReloadFuturePollPtr.asFunction<
+          _CommentsManagerReloadFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _attachmentDraftSendFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _AttachmentDraftSendFuturePollReturn Function(
@@ -26980,6 +27086,23 @@ class Api {
   late final _timelineStreamMessagesStreamStreamPoll =
       _timelineStreamMessagesStreamStreamPollPtr.asFunction<
           _TimelineStreamMessagesStreamStreamPollReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _commentsManagerSubscribeStreamStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _CommentsManagerSubscribeStreamStreamPollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__CommentsManager_subscribe_stream_stream_poll");
+
+  late final _commentsManagerSubscribeStreamStreamPoll =
+      _commentsManagerSubscribeStreamStreamPollPtr.asFunction<
+          _CommentsManagerSubscribeStreamStreamPollReturn Function(
             int,
             int,
             int,
@@ -37178,67 +37301,18 @@ class Comment {
     return tmp2;
   }
 
-  /// what is the comment's content in raw text
-  String contentText() {
+  /// what is the comment's content
+  MsgContent msgContent() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._commentContentText(
+    final tmp1 = _api._commentMsgContent(
       tmp0,
     );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    if (tmp4 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
-    List<int> tmp3_buf = [];
-    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp4; i++) {
-      int char = tmp3_precast.elementAt(i).value;
-      tmp3_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  /// what is the comment's content in html text
-  String? contentFormatted() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._commentContentFormatted(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    if (tmp3 == 0) {
-      return null;
-    }
-    if (tmp5 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
-    }
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_MsgContent");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = MsgContent._(_api, tmp3_1);
     return tmp2;
   }
 
@@ -37322,6 +37396,38 @@ class CommentsManager {
     final tmp3_1 = _Box(_api, tmp3_0, "drop_box_CommentDraft");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = CommentDraft._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// subscribe to the changes this manager
+  Stream<bool> subscribeStream() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._commentsManagerSubscribeStream(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__CommentsManager_subscribe_stream_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeStream(tmp3_1, _api.__commentsManagerSubscribeStreamStreamPoll);
+    return tmp2;
+  }
+
+  /// reload the data from the database
+  Future<CommentsManager> reload() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._commentsManagerReload(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__CommentsManager_reload_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__commentsManagerReloadFuturePoll);
     return tmp2;
   }
 
@@ -49879,26 +49985,6 @@ class _ConvoRoomTypeReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _CommentContentTextReturn extends ffi.Struct {
-  @ffi.Int64()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-}
-
-class _CommentContentFormattedReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-}
-
 class _AttachmentTypeStrReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -52232,6 +52318,21 @@ class _CommentsManagerCommentsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _CommentsManagerReloadFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _AttachmentDraftSendFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -54444,6 +54545,13 @@ class _TimelineStreamMessagesStreamStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
+  external int arg1;
+}
+
+class _CommentsManagerSubscribeStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
   external int arg1;
 }
 
