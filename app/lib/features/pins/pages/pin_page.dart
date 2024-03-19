@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/widgets/attachments/attachment_section.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
@@ -35,7 +36,6 @@ class PinPage extends ConsumerWidget {
     List<PopupMenuEntry<String>> actions = [];
     final pinEditNotifier = ref.watch(pinEditProvider(pin).notifier);
     final membership = ref.watch(roomMembershipProvider(spaceId));
-
     if (membership.valueOrNull != null) {
       final memb = membership.requireValue!;
       if (memb.canString('CanPostPin')) {
@@ -172,7 +172,14 @@ class PinPage extends ConsumerWidget {
           ),
           SliverToBoxAdapter(
             child: pin.when(
-              data: (acterPin) => PinItem(acterPin),
+              data: (acterPin) => Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  PinItem(acterPin),
+                  const SizedBox(height: 20),
+                  _buildAttachmentBody(acterPin),
+                ],
+              ),
               error: (err, st) => Text('Error loading pins ${err.toString()}'),
               loading: () => const Skeletonizer(
                 child: Card(),
@@ -181,6 +188,39 @@ class PinPage extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildAttachmentBody(ActerPin pin) {
+    var canPostAttachment = false;
+    return Consumer(
+      builder: (context, ref, child) {
+        final spaceId = pin.roomIdStr();
+        final asyncManager = ref.watch(pinAttachmentManagerProvider(pin));
+        final membership = ref.watch(roomMembershipProvider(spaceId));
+        if (membership.valueOrNull != null) {
+          final memb = membership.requireValue!;
+          if (memb.canString('CanPostPin')) {
+            canPostAttachment = true;
+          }
+        }
+
+        return asyncManager.when(
+          data: (manager) {
+            return AttachmentSectionWidget(
+              attachmentManager: manager,
+              canPostAttachment: canPostAttachment,
+            );
+          },
+          error: (err, st) => Text('Error loading attachments $err'),
+          loading: () => const Skeletonizer(
+            child: SizedBox(
+              height: 100,
+              width: 100,
+            ),
+          ),
+        );
+      },
     );
   }
 

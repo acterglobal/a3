@@ -2,6 +2,7 @@ import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class IntroPage extends StatefulWidget {
   const IntroPage({super.key});
@@ -11,11 +12,17 @@ class IntroPage extends StatefulWidget {
 }
 
 class _IntroPageState extends State<IntroPage> {
-  final List<String> introTexts = [
-    'Simple to use.',
-    'Secure with E2E Encryption.',
-    'Powerful for any organizer.',
-  ];
+  List<String> introTexts = [];
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    introTexts = [
+      L10n.of(context).simpleToUse,
+      L10n.of(context).secureWithE2EEncryption,
+      L10n.of(context).powerfulForAnyOrganizer,
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,122 +31,105 @@ class _IntroPageState extends State<IntroPage> {
         decoration: const BoxDecoration(
           gradient: introGradient,
         ),
+        padding: const EdgeInsets.symmetric(horizontal: 30),
         child: Column(
           children: [
-            Container(
-              margin: const EdgeInsets.only(top: kToolbarHeight),
-              child: Column(
-                children: [
-                  Container(
-                    margin: const EdgeInsets.symmetric(vertical: 15),
-                    height: 100,
-                    width: 100,
-                    child: Image.asset('assets/icon/logo_foreground.png'),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.symmetric(vertical: 15),
-                    child: RichText(
-                      textAlign: TextAlign.center,
-                      text: const TextSpan(
-                        text: 'Welcome to',
-                        style: TextStyle(color: Colors.white, fontSize: 32),
-                        children: <TextSpan>[
-                          TextSpan(
-                            text: ' Acter!',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.green,
-                              fontSize: 32,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 35),
-                    child: Column(
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.symmetric(vertical: 16),
-                          child: const Text(
-                            'A powerful and secure app for organizing change.',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(vertical: 20),
-                          height: 100,
-                          child: ListView.builder(
-                            padding: EdgeInsets.zero,
-                            itemCount: introTexts.length,
-                            itemBuilder: (context, index) {
-                              return Container(
-                                margin: const EdgeInsets.only(top: 5),
-                                child: Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.circle,
-                                      color: Colors.white,
-                                      size: 8,
-                                    ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                    RichText(
-                                      text: TextSpan(
-                                        children: [
-                                          TextSpan(
-                                            text:
-                                                '${introTexts[index].split(' ')[0]} ',
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.green,
-                                              fontSize: 17,
-                                            ),
-                                          ),
-                                          TextSpan(
-                                            text: introTexts[index].substring(
-                                              introTexts[index].indexOf(' ') +
-                                                  1,
-                                            ),
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 17,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () => context.goNamed(Routes.start.name),
-                          child: Container(
-                            height: 54,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Center(
-                              child: Text(
-                                "Let's get started",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+            const SizedBox(height: 80),
+            Image.asset(
+              'assets/icon/logo_foreground.png',
+              height: 100,
+              width: 100,
+            ),
+            const SizedBox(height: 20),
+            RichText(
+              textAlign: TextAlign.center,
+              text: TextSpan(
+                text: L10n.of(context).welcomeTo,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 32,
+                ),
+                children: <TextSpan>[
+                  TextSpan(
+                    text: ' ${L10n.of(context).acter}!',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green,
+                      fontSize: 32,
                     ),
                   ),
                 ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              L10n.of(context).aPowerfulAndSecureApp,
+              style: const TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 20),
+            ListView.builder(
+              padding: EdgeInsets.zero,
+              itemCount: introTexts.length,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                return Container(
+                  margin: const EdgeInsets.only(top: 5),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.circle,
+                        color: Colors.white,
+                        size: 8,
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: '${introTexts[index].split(' ')[0]} ',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green,
+                                fontSize: 17,
+                              ),
+                            ),
+                            TextSpan(
+                              text: introTexts[index].substring(
+                                introTexts[index].indexOf(' ') + 1,
+                              ),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 17,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 20),
+            GestureDetector(
+              onTap: () => context.goNamed(Routes.start.name),
+              child: Container(
+                height: 54,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Center(
+                  child: Text(
+                    L10n.of(context).letsGetStarted,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               ),
             ),
           ],

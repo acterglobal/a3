@@ -1308,7 +1308,9 @@ object Attachment {
     fn sender() -> UserId;
     /// When was this attachment acknowledged by the server
     fn origin_server_ts() -> u64;
-
+    
+    /// the type of attachment
+    fn type_str() -> string;
     /// if this is a media, hand over the description
     fn msg_content() -> MsgContent;
     /// if this is a media, hand over the data

@@ -2,14 +2,14 @@ import 'dart:async';
 
 import 'package:acter/common/notifications/notifications.dart';
 import 'package:acter/common/themes/acter_theme.dart';
+import 'package:acter/common/utils/language.dart';
 import 'package:acter/common/utils/logging.dart';
 import 'package:acter/features/cli/main.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -52,11 +52,13 @@ class _ActerState extends ConsumerState<Acter> {
   @override
   void initState() {
     super.initState();
+    initLanguage(ref);
   }
 
   @override
   Widget build(BuildContext context) {
     final appRouter = ref.watch(goRouterProvider);
+    final language = ref.watch(languageProvider);
     return Portal(
       child: OverlaySupport.global(
         child: MaterialApp.router(
@@ -64,13 +66,9 @@ class _ActerState extends ConsumerState<Acter> {
           theme: ActerTheme.theme,
           title: 'Acter',
           builder: EasyLoading.init(),
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: ApplicationLocalizations.supportedLocales,
+          locale: Locale(language),
+          localizationsDelegates: L10n.localizationsDelegates,
+          supportedLocales: L10n.supportedLocales,
           // MaterialApp contains our top-level Navigator
         ),
       ),
