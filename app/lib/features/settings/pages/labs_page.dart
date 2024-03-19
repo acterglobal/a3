@@ -1,11 +1,10 @@
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
-import 'package:acter/features/settings/widgets/labs_notifications_settings_tile.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:acter/features/settings/providers/settings_providers.dart';
+import 'package:acter/features/settings/widgets/labs_notifications_settings_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:settings_ui/settings_ui.dart';
 
 class SettingsLabsPage extends ConsumerWidget {

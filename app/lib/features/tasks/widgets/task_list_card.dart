@@ -1,14 +1,13 @@
+import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/tasks/providers/tasks.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/features/tasks/widgets/task_entry.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class TaskListCard extends ConsumerStatefulWidget {
@@ -16,6 +15,7 @@ class TaskListCard extends ConsumerStatefulWidget {
   final bool showSpace;
   final bool showTitle;
   final bool showDescription;
+
   const TaskListCard({
     super.key,
     required this.taskList,

@@ -3,9 +3,9 @@ import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/router/general_router.dart';
 import 'package:acter/router/shell_routers/activities_shell_router.dart';
 import 'package:acter/router/shell_routers/chat_shell_router.dart';
-import 'package:acter/router/general_router.dart';
 import 'package:acter/router/shell_routers/home_shell_router.dart';
 import 'package:acter/router/shell_routers/search_shell_router.dart';
 import 'package:acter/router/shell_routers/update_shell_router.dart';
@@ -67,8 +67,9 @@ Future<String?> forwardRedirect(
       client = await acterSdk.getClientWithDeviceId(deviceId!, true);
       // ignore: use_build_context_synchronously
       final ref = ProviderScope.containerOf(context);
-      ref.invalidate(clientProvider); // ensure we have selected the right client
-    } catch(error) {
+      // ensure we have selected the right client
+      ref.invalidate(clientProvider);
+    } catch (error) {
       return null;
     }
     final roomId = state.uri.queryParameters['roomId'];
@@ -81,8 +82,10 @@ Future<String?> forwardRedirect(
     } else {
       // final eventId = state.uri.queryParameters['eventId'];
       // with the event ID or further information we could figure out the specific action
-      return state
-          .namedLocation(Routes.space.name, pathParameters: {'spaceId': roomId});
+      return state.namedLocation(
+        Routes.space.name,
+        pathParameters: {'spaceId': roomId},
+      );
     }
   } catch (error, trace) {
     // ignore: deprecated_member_use

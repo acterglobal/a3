@@ -30,9 +30,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
+import 'package:logging/logging.dart';
 import 'package:mime/mime.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:logging/logging.dart';
 
 final _log = Logger('a3::chat::custom_input');
 

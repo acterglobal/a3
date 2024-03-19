@@ -3,8 +3,8 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:settings_ui/settings_ui.dart';
 import 'package:logging/logging.dart';
+import 'package:settings_ui/settings_ui.dart';
 
 final _log = Logger('a3::room::notification_settings_tile');
 
