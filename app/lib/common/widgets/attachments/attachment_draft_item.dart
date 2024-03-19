@@ -1,4 +1,4 @@
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/models/types.dart';
 import 'package:acter/common/widgets/attachments/attachment_item.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';

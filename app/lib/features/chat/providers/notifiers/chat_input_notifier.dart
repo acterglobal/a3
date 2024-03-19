@@ -44,9 +44,6 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
     state = state.copyWith(mentionReplacements: mentionReplacements);
   }
 
-  void setMentions(List<Map<String, String>> mentions) =>
-      state = state.copyWith(mentions: mentions);
-
   void setRepliedToMessage(Message? message) {
     state = state.copyWith(repliedToMessage: message);
   }
@@ -70,8 +67,6 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
 
   void messageSent() {
     // reset the state;
-    state = const ChatInputState().copyWith(
-      mentions: state.mentions,
-    );
+    state = const ChatInputState();
   }
 }

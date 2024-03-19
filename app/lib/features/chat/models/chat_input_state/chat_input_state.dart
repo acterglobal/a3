@@ -19,7 +19,6 @@ class ChatInputState with _$ChatInputState {
     @Default(null) String? currentMessageId,
     @Default(null) types.Message? repliedToMessage,
     @Default(null) types.Message? editMessage,
-    @Default([]) List<Map<String, String>> mentions,
     @Default({}) Map<String, String> mentionReplacements,
     @Default(false) bool editBtnVisible,
   }) = _ChatInputState;

@@ -1,8 +1,8 @@
 import 'package:acter/common/models/profile_data.dart';
+import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/notifiers/space_notifiers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:logging/logging.dart';
@@ -263,19 +263,6 @@ final spaceItemsProvider =
     items.add(item);
   }
   return items;
-});
-
-/// Get the active members of a given roomId the user knows about. Errors
-/// if the space isn't found. Stays up to date with underlying client data
-/// if a space was found.
-final spaceMembersProvider = FutureProvider.autoDispose
-    .family<List<Member>, String>((ref, roomIdOrAlias) async {
-  final space = await ref.watch(spaceProvider(roomIdOrAlias).future);
-  if (!space.isJoined()) {
-    return [];
-  }
-  final members = await space.activeMembers();
-  return members.toList();
 });
 
 /// Get the members invited of a given roomId the user knows about. Errors

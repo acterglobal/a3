@@ -18,6 +18,8 @@ final featuresProvider =
   );
 });
 
+final languageProvider = StateProvider<String>((ref) => 'en');
+
 final ignoredUsersProvider = FutureProvider<List<UserId>>((ref) async {
   final account = ref.watch(accountProvider);
   return (await account.ignoredUsers()).toList();

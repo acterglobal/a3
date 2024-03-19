@@ -6,7 +6,7 @@ import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sprintf/sprintf.dart';
 
@@ -123,7 +123,7 @@ class CrossSigning {
                       : const Icon(Atlas.phone),
                 ),
                 Text(
-                  AppLocalizations.of(context)!.sasIncomingReqNotifTitle,
+                  L10n.of(context).sasIncomingReqNotifTitle,
                 ),
                 const Spacer(),
                 Padding(
@@ -146,7 +146,7 @@ class CrossSigning {
           flex: 1,
           child: Text(
             sprintf(
-              AppLocalizations.of(context)!.sasIncomingReqNotifContent,
+              L10n.of(context).sasIncomingReqNotifContent,
               [event.sender()],
             ),
           ),
@@ -171,7 +171,7 @@ class CrossSigning {
       return const CircularProgressIndicator();
     }
     return ElevatedButton(
-      child: Text(AppLocalizations.of(context)!.acceptRequest),
+      child: Text(L10n.of(context).acceptRequest),
       onPressed: () async {
         if (_mounted) {
           acceptingRequest = true;
@@ -237,8 +237,8 @@ class CrossSigning {
                 const SizedBox(width: 5),
                 Text(
                   _processMap[flowId]!.verifiyingThisDevice
-                      ? AppLocalizations.of(context)!.verifyThisSession
-                      : AppLocalizations.of(context)!.verifySession,
+                      ? L10n.of(context).verifyThisSession
+                      : L10n.of(context).verifySession,
                 ),
                 const Spacer(),
                 Padding(
@@ -261,7 +261,7 @@ class CrossSigning {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
             child: Text(
-              AppLocalizations.of(context)!.verificationScanSelfNotice,
+              L10n.of(context).verificationScanSelfNotice,
             ),
           ),
         ),
@@ -290,7 +290,7 @@ class CrossSigning {
                   child: Icon(Atlas.camera),
                 ),
                 Text(
-                  AppLocalizations.of(context)!.verificationScanWithThisDevice,
+                  L10n.of(context).verificationScanWithThisDevice,
                 ),
               ],
             ),
@@ -302,10 +302,10 @@ class CrossSigning {
             children: [
               ListTile(
                 title: Text(
-                  AppLocalizations.of(context)!.verificationScanEmojiTitle,
+                  L10n.of(context).verificationScanEmojiTitle,
                 ),
                 subtitle: Text(
-                  AppLocalizations.of(context)!
+                  L10n.of(context)
                       .verificationScanSelfEmojiSubtitle,
                 ),
                 trailing: const Icon(Icons.keyboard_arrow_right_outlined),
@@ -375,8 +375,8 @@ class CrossSigning {
               const SizedBox(width: 5),
               Text(
                 _processMap[flowId]?.verifiyingThisDevice == true
-                    ? AppLocalizations.of(context)!.verifyThisSession
-                    : AppLocalizations.of(context)!.verifySession,
+                    ? L10n.of(context).verifyThisSession
+                    : L10n.of(context).verifySession,
               ),
               const Spacer(),
               Padding(
@@ -405,7 +405,7 @@ class CrossSigning {
         Flexible(
           flex: 1,
           child: Center(
-            child: Text(AppLocalizations.of(context)!.pleaseWait),
+            child: Text(L10n.of(context).pleaseWait),
           ),
         ),
         const Spacer(flex: 1),
@@ -447,7 +447,7 @@ class CrossSigning {
     if (reason != null) {
       return reason;
     }
-    return AppLocalizations.of(context)!.verificationConclusionCompromised;
+    return L10n.of(context).verificationConclusionCompromised;
   }
 
   Widget _buildOnCancel(
@@ -474,8 +474,8 @@ class CrossSigning {
                 const SizedBox(width: 5),
                 Text(
                   _processMap[flowId]?.verifiyingThisDevice == true
-                      ? AppLocalizations.of(context)!.verifyThisSession
-                      : AppLocalizations.of(context)!.verifySession,
+                      ? L10n.of(context).verifyThisSession
+                      : L10n.of(context).verifySession,
                 ),
                 const Spacer(),
               ],
@@ -500,7 +500,7 @@ class CrossSigning {
           child: SizedBox(
             width: MediaQuery.of(context).size.width * 0.40,
             child: ElevatedButton(
-              child: Text(AppLocalizations.of(context)!.sasGotIt),
+              child: Text(L10n.of(context).sasGotIt),
               onPressed: () {
                 rootNavKey.currentContext?.pop();
                 // finish verification
@@ -559,8 +559,8 @@ class CrossSigning {
                 const SizedBox(width: 5),
                 Text(
                   _processMap[flowId]?.verifiyingThisDevice == true
-                      ? AppLocalizations.of(context)!.verifyThisSession
-                      : AppLocalizations.of(context)!.verifySession,
+                      ? L10n.of(context).verifyThisSession
+                      : L10n.of(context).verifySession,
                 ),
                 const Spacer(),
               ],
@@ -583,7 +583,7 @@ class CrossSigning {
           flex: 2,
           child: Text(
             sprintf(
-              AppLocalizations.of(context)!.verificationRequestWaitingFor,
+              L10n.of(context).verificationRequestWaitingFor,
               [event.sender()],
             ),
           ),
@@ -643,8 +643,8 @@ class CrossSigning {
                 const SizedBox(width: 5),
                 Text(
                   _processMap[flowId]?.verifiyingThisDevice == true
-                      ? AppLocalizations.of(context)!.verifyThisSession
-                      : AppLocalizations.of(context)!.verifySession,
+                      ? L10n.of(context).verifyThisSession
+                      : L10n.of(context).verifySession,
                 ),
                 const Spacer(),
                 Padding(
@@ -666,7 +666,7 @@ class CrossSigning {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Text(
-              AppLocalizations.of(context)!.verificationEmojiNotice,
+              L10n.of(context).verificationEmojiNotice,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -726,7 +726,7 @@ class CrossSigning {
           padding: const EdgeInsets.all(10),
           child: Text(
             sprintf(
-              AppLocalizations.of(context)!.verificationRequestWaitingFor,
+              L10n.of(context).verificationRequestWaitingFor,
               [event.sender()],
             ),
           ),
@@ -737,7 +737,7 @@ class CrossSigning {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         ElevatedButton(
-          child: Text(AppLocalizations.of(context)!.verificationSasDoNotMatch),
+          child: Text(L10n.of(context).verificationSasDoNotMatch),
           onPressed: () async {
             rootNavKey.currentContext?.pop();
             // mismatch sas verification
@@ -746,7 +746,7 @@ class CrossSigning {
         ),
         const SizedBox(width: 15),
         ElevatedButton(
-          child: Text(AppLocalizations.of(context)!.verificationSasMatch),
+          child: Text(L10n.of(context).verificationSasMatch),
           onPressed: () async {
             if (_mounted) {
               waitForMatch = true;
@@ -802,9 +802,9 @@ class CrossSigning {
       return 'No messages';
     }
     if (process.verifiyingThisDevice) {
-      return AppLocalizations.of(context)!.verificationConclusionOkSelfNotice;
+      return L10n.of(context).verificationConclusionOkSelfNotice;
     }
-    return AppLocalizations.of(context)!.verificationConclusionOkDone;
+    return L10n.of(context).verificationConclusionOkDone;
   }
 
   Widget _buildOnDone(
@@ -829,7 +829,7 @@ class CrossSigning {
                       : const Icon(Atlas.phone),
                 ),
                 const SizedBox(width: 5),
-                Text(AppLocalizations.of(context)!.sasVerified),
+                Text(L10n.of(context).sasVerified),
               ],
             ),
           ),
@@ -858,7 +858,7 @@ class CrossSigning {
             child: SizedBox(
               width: MediaQuery.of(context).size.width * 0.40,
               child: ElevatedButton(
-                child: Text(AppLocalizations.of(context)!.sasGotIt),
+                child: Text(L10n.of(context).sasGotIt),
                 onPressed: () {
                   rootNavKey.currentContext?.pop();
                   // finish verification

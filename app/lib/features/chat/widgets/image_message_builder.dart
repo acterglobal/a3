@@ -1,4 +1,4 @@
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/models/types.dart';
 import 'package:acter/common/widgets/image_dialog.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';

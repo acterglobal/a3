@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/models/types.dart';
 import 'package:acter/common/widgets/attachments/attachment_draft_item.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
@@ -42,7 +42,7 @@ class _PostAttachmentSelectionState
         Padding(
           padding: const EdgeInsets.all(12),
           child: Text(
-            'Attachments Selected ($attachments.length})',
+            'Attachments Selected (${attachments.length})',
             style: titleTextStyle,
           ),
         ),
@@ -140,6 +140,7 @@ class _PostAttachmentSelectionState
         final res = await draft.send();
         _log.info('attachment sent: $res');
       }
+      EasyLoading.dismiss();
     } catch (e) {
       EasyLoading.showError('Error sending attachments $e');
       _log.severe('Error sending attachments', e);

@@ -59,6 +59,14 @@ class SettingsLabsPage extends ConsumerWidget {
                       updateFeatureState(ref, LabsFeature.tasks, newVal),
                 ),
                 SettingsTile.switchTile(
+                  title: const Text('Comments'),
+                  description: const Text('Commenting on space objects'),
+                  initialValue:
+                      ref.watch(isActiveProvider(LabsFeature.comments)),
+                  onToggle: (newVal) =>
+                      updateFeatureState(ref, LabsFeature.comments, newVal),
+                ),
+                SettingsTile.switchTile(
                   title: const Text('Polls'),
                   description: const Text('Polls and Surveys'),
                   initialValue: ref.watch(isActiveProvider(LabsFeature.polls)),

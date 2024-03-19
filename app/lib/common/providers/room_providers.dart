@@ -2,6 +2,7 @@
 library;
 
 import 'package:acter/common/models/profile_data.dart';
+import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/notifiers/room_notifiers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
@@ -217,36 +218,32 @@ final roomIsMutedProvider =
   return status == 'muted';
 });
 
-class MemberNotFound extends Error {}
-
 class RoomNotFound extends Error {}
 
-typedef RoomMemberQuery = ({
-  String roomId,
-  String userId,
-});
-
 final roomMemberProvider = FutureProvider.autoDispose
-    .family<ProfileData, RoomMemberQuery>((ref, query) async {
+    .family<MemberWithProfile, MemberInfo>((ref, query) async {
+  final sdk = await ref.watch(sdkProvider.future);
   final room = await ref.watch(maybeRoomProvider(query.roomId).future);
   if (room == null) {
     throw RoomNotFound;
   }
   final member = await room.getMember(query.userId);
-  return ref.watch(userProfileDataProvider(member).future);
-});
-
-// Chat Providers
-final userProfileDataProvider =
-    FutureProvider.family<ProfileData, Member>((ref, member) async {
-  final sdk = await ref.watch(sdkProvider.future);
-  // this ensure we are staying up to dates on updates to convo
   final profile = member.getProfile();
   final displayName = profile.getDisplayName();
   if (!profile.hasAvatar()) {
-    return ProfileData(displayName, null);
+    return (member: member, profile: ProfileData(displayName, null));
   }
   final size = sdk.api.newThumbSize(48, 48);
   final avatar = await profile.getAvatar(size);
-  return ProfileData(displayName, avatar.data());
+  return (member: member, profile: ProfileData(displayName, avatar.data()));
+});
+
+final membersIdsProvider =
+    FutureProvider.family<List<String>, String>((ref, roomIdOrAlias) async {
+  final room = await ref.watch(maybeRoomProvider(roomIdOrAlias).future);
+  if (room == null) {
+    throw RoomNotFound;
+  }
+  final members = await room.activeMembersIds();
+  return asDartStringList(members);
 });

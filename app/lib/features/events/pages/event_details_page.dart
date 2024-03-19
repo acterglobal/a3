@@ -434,7 +434,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             roomMemberProvider((roomId: roomId, userId: participantId)),
           );
           var participant = memberInfo.when(
-            data: (profileData) {
+            data: (data) {
+              final profileData = data.profile;
               return ActerAvatar(
                 mode: DisplayMode.DM,
                 avatarInfo: AvatarInfo(

@@ -1,4 +1,4 @@
-import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
@@ -21,8 +21,8 @@ class EmojiReactionItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profile = ref
-        .watch(memberProfileByInfoProvider((userId: userId, roomId: roomId)));
+    final profile =
+        ref.watch(roomMemberProvider((userId: userId, roomId: roomId)));
 
     return ListTile(
       leading: profile.when(
@@ -30,8 +30,8 @@ class EmojiReactionItem extends ConsumerWidget {
           mode: DisplayMode.DM,
           avatarInfo: AvatarInfo(
             uniqueId: userId,
-            displayName: data.displayName,
-            avatar: data.getAvatarImage(),
+            displayName: data.profile.displayName,
+            avatar: data.profile.getAvatarImage(),
           ),
           size: 18,
         ),
@@ -52,7 +52,7 @@ class EmojiReactionItem extends ConsumerWidget {
         },
       ),
       title: profile.when(
-        data: (data) => Text(data.displayName ?? userId),
+        data: (data) => Text(data.profile.displayName ?? userId),
         loading: () => Skeletonizer(child: Text(userId)),
         error: (e, s) => Text('loading profile failed: $e'),
       ),
