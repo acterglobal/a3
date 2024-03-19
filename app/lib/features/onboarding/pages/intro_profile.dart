@@ -19,9 +19,7 @@ class IntroProfile extends StatelessWidget {
 
   Widget _buildBody(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        gradient: introGradient,
-      ),
+      decoration: const BoxDecoration(gradient: introGradient),
       padding: const EdgeInsets.symmetric(horizontal: 30),
       child: Column(
         children: [
