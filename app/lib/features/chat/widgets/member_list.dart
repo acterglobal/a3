@@ -1,4 +1,3 @@
-import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/member_list_entry.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -16,8 +15,7 @@ class MemberList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final roomId = convo.getRoomIdStr();
-    final members = ref.watch(chatMembersProvider(roomId));
-    final myMembership = ref.watch(roomMembershipProvider(roomId));
+    final members = ref.watch(membersIdsProvider(roomId));
 
     return members.when(
       data: (members) {
@@ -34,13 +32,11 @@ class MemberList extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(vertical: 5),
           itemCount: members.length,
           itemBuilder: (context, index) {
-            final member = members[index];
             return Padding(
               padding: const EdgeInsets.all(8.0),
               child: MemberListEntry(
-                member: member,
-                convo: convo,
-                myMembership: myMembership.valueOrNull,
+                memberId: members[index],
+                roomId: roomId,
               ),
             );
           },

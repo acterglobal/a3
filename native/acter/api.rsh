@@ -975,6 +975,9 @@ object Room {
     fn get_my_membership() -> Future<Result<Member>>;
 
     /// the members currently in the room
+    fn active_members_ids() -> Future<Result<Vec<string>>>;
+
+    /// the members currently in the room
     fn active_members() -> Future<Result<Vec<Member>>>;
 
     /// the members invited to this room
@@ -997,6 +1000,9 @@ object Room {
     
     /// set the RoomNotificationMode
     fn set_notification_mode(new_mode: Option<string>) -> Future<Result<bool>>; 
+
+    /// update the power levels of specified member
+    fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;
 
 }
 
@@ -1126,6 +1132,9 @@ object Convo {
 
     /// set description / topic of the room
     fn set_topic(topic: string) -> Future<Result<EventId>>;
+
+    /// the members currently in the convo
+    fn active_members_ids() -> Future<Result<Vec<string>>>;
 
     /// the members currently in the room
     fn active_members() -> Future<Result<Vec<Member>>>;
@@ -1260,10 +1269,8 @@ object Comment {
     fn sender() -> UserId;
     /// When was this comment acknowledged by the server
     fn origin_server_ts() -> u64;
-    /// what is the comment's content in raw text
-    fn content_text() -> string;
-    /// what is the comment's content in html text
-    fn content_formatted() -> Option<string>;
+    /// what is the comment's content
+    fn msg_content() -> MsgContent;
     /// create a draft builder to reply to this comment
     fn reply_builder() -> CommentDraft;
 }
@@ -1281,6 +1288,12 @@ object CommentsManager {
 
     /// draft a new comment for this item
     fn comment_draft() -> CommentDraft;
+
+    /// subscribe to the changes this manager
+    fn subscribe_stream() -> Stream<bool>;
+
+    /// reload the data from the database
+    fn reload() -> Future<Result<CommentsManager>>;
 }
 
 
@@ -1845,6 +1858,9 @@ object Space {
     fn set_name(name: string) -> Future<Result<EventId>>;
 
     /// the members currently in the space
+    fn active_members_ids() -> Future<Result<Vec<string>>>;
+
+    /// the members currently in the space
     fn active_members() -> Future<Result<Vec<Member>>>;
 
     /// the members invited to this room
@@ -1924,9 +1940,6 @@ object Space {
 
     /// Whenever this is submitted;
     fn update_app_settings(new_settings: ActerAppSettingsBuilder) -> Future<Result<string>>;
-
-    /// update the power levels of specified member
-    fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;
 
     /// update the power level for a feature
     fn update_feature_power_levels(feature: string, level: Option<i32>) -> Future<Result<bool>>;

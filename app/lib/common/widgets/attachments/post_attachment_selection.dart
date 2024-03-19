@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/models/types.dart';
 import 'package:acter/common/widgets/attachments/attachment_draft_item.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'

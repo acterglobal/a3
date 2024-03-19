@@ -202,11 +202,7 @@ impl Attachment {
 
 impl ActerModel for Attachment {
     fn indizes(&self, _user_id: &UserId) -> Vec<String> {
-        self.belongs_to()
-            .expect("we always have some as attachments")
-            .into_iter()
-            .map(|v| Attachment::index_for(&v))
-            .collect()
+        vec![Attachment::index_for(&self.inner.on.event_id)]
     }
 
     fn event_id(&self) -> &EventId {
@@ -222,7 +218,8 @@ impl ActerModel for Attachment {
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
-        Some(vec![self.inner.on.event_id.to_string()])
+        // Do not trigger the parent to update, we have a manager
+        None
     }
 
     fn transition(&mut self, model: &AnyActerModel) -> Result<bool> {

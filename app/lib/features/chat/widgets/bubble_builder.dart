@@ -1,5 +1,5 @@
-import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -237,17 +237,17 @@ class _ChatBubble extends ConsumerWidget {
     WidgetRef ref,
   ) {
     final authorId = message.repliedMessage!.author.id;
-    final replyProfile = ref
-        .watch(memberProfileByInfoProvider((userId: authorId, roomId: roomId)));
+    final replyProfile =
+        ref.watch(roomMemberProvider((userId: authorId, roomId: roomId)));
     return Row(
       children: [
         replyProfile.when(
-          data: (profile) => ActerAvatar(
+          data: (data) => ActerAvatar(
             mode: DisplayMode.DM,
             avatarInfo: AvatarInfo(
               uniqueId: authorId,
-              displayName: profile.displayName,
-              avatar: profile.getAvatarImage(),
+              displayName: data.profile.displayName,
+              avatar: data.profile.getAvatarImage(),
             ),
             size: 12,
           ),
@@ -269,8 +269,8 @@ class _ChatBubble extends ConsumerWidget {
         ),
         const SizedBox(width: 5),
         replyProfile.when(
-          data: (profile) => Text(
-            profile.displayName ?? '',
+          data: (data) => Text(
+            data.profile.displayName ?? '',
             style: Theme.of(context).textTheme.bodySmall!.copyWith(
                   color: Theme.of(context).colorScheme.tertiary,
                 ),
