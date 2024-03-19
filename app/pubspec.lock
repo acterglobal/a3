@@ -1293,6 +1293,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.16.7"
+  multiavatar:
+    dependency: transitive
+    description:
+      name: multiavatar
+      sha256: "8fc089ea8421aef04361663af4319b487e2ffa47035cc617bd94cd10e36d5db6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.5"
   nanoid:
     dependency: transitive
     description:
