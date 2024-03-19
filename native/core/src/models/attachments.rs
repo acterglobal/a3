@@ -166,34 +166,36 @@ impl Attachment {
         store: &Store,
         redaction_model: Option<RedactedActerModel>,
     ) -> Result<Vec<String>> {
-        let belongs_to = self
-            .belongs_to()
-            .expect("we always have some as attachments");
+        let belongs_to = self.inner.on.event_id.to_string();
         trace!(event_id=?self.event_id(), ?belongs_to, "applying attachment");
 
-        let mut managers = vec![];
-        for p in belongs_to {
-            let parent = store.get(&p).await?;
+        let manager = {
+            let parent = store.get(&belongs_to).await?;
             if !parent.capabilities().contains(&Capability::Attachmentable) {
                 error!(?parent, attachment = ?self, "doesn't support attachments. can't apply");
-                continue;
-            }
-
-            // FIXME: what if we have this twice in the same loop?
-            let mut manager =
-                AttachmentsManager::from_store_and_event_id(store, parent.event_id()).await;
-            if let Some(redacted) = redaction_model.as_ref() {
-                if manager.redact_attachment(self, redacted)? {
-                    trace!(event_id=?self.event_id(), "redacted attachment");
-                    managers.push(manager);
+                None
+            } else {
+                // FIXME: what if we have this twice in the same loop?
+                let mut manager =
+                    AttachmentsManager::from_store_and_event_id(store, parent.event_id()).await;
+                if let Some(redacted) = redaction_model.as_ref() {
+                    if manager.redact_attachment(self, redacted)? {
+                        trace!(event_id=?self.event_id(), "redacted attachment");
+                        Some(manager)
+                    } else {
+                        None
+                    }
+                } else if manager.add_attachment(self)? {
+                    trace!(event_id=?self.event_id(), "added attachment");
+                    Some(manager)
+                } else {
+                    None
                 }
-            } else if manager.add_attachment(self)? {
-                trace!(event_id=?self.event_id(), "added attachment");
-                managers.push(manager);
             }
-        }
+        };
+
         let mut updates = store.save(self.clone().into()).await?;
-        for manager in managers {
+        if let Some(manager) = manager {
             updates.push(manager.save().await?);
         }
         Ok(updates)

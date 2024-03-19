@@ -1,7 +1,5 @@
-import 'package:acter/common/providers/attachment_providers.dart';
-import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Attachment, FfiBufferUint8, MsgContent;
+    show Attachment, FfiBufferUint8;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,62 +7,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // Attachment item UI
 class AttachmentItem extends ConsumerWidget {
   final Attachment attachment;
-  final bool canRedact;
   const AttachmentItem({
     super.key,
     required this.attachment,
-    this.canRedact = false,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var msgContent = attachment.msgContent();
     String type = attachment.typeStr();
-    final eventId = attachment.attachmentIdStr();
-    final roomId = attachment.roomIdStr();
-    final sender = attachment.sender();
-    return Stack(
-      children: [
-        _buildAttachmentItem(msgContent, type),
-        Positioned(
-          top: -12,
-          right: -12,
-          child: Visibility(
-            visible: canRedact,
-            child: IconButton(
-              onPressed: () async {
-                await showRedactionWidget(context, eventId, roomId, sender);
-
-                /// FIXME: attachment redacted models aren't handled,
-                /// forcibly refreshing attachments
-                ref.invalidate(attachmentsProvider);
-              },
-              icon: const Icon(Atlas.minus_circle_thin, size: 14),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Future<void> showRedactionWidget(
-    BuildContext context,
-    String eventId,
-    String roomId,
-    String senderId,
-  ) async {
-    await showAdaptiveDialog(
-      context: context,
-      builder: (context) => RedactContentWidget(
-        eventId: eventId,
-        roomId: roomId,
-        senderId: senderId,
-        isSpace: true,
-      ),
-    );
-  }
-
-  Widget _buildAttachmentItem(MsgContent msgContent, String type) {
     if (type == 'image') {
       return AttachmentContainer(
         name: msgContent.body(),
