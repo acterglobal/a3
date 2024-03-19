@@ -234,6 +234,7 @@ impl From<OriginalMessageLikeEvent<CommentEventContent>> for Comment {
                 event_id,
                 sender,
                 origin_server_ts,
+                redacted: None,
             },
         }
     }
@@ -287,6 +288,7 @@ impl From<OriginalMessageLikeEvent<CommentUpdateEventContent>> for CommentUpdate
                 event_id,
                 sender,
                 origin_server_ts,
+                redacted: None,
             },
         }
     }

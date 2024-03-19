@@ -194,7 +194,11 @@ impl Attachment {
             }
         };
 
-        let mut updates = store.save(self.clone().into()).await?;
+        let mut redacted_model = self.clone();
+        if let Some(redaction_model_inner) = redaction_model {
+            redacted_model.meta.redacted = Some(redaction_model_inner.meta.event_id.clone());
+        }
+        let mut updates = store.save(redacted_model.into()).await?;
         if let Some(manager) = manager {
             updates.push(manager.save().await?);
         }
@@ -204,7 +208,11 @@ impl Attachment {
 
 impl ActerModel for Attachment {
     fn indizes(&self, _user_id: &UserId) -> Vec<String> {
-        vec![Attachment::index_for(&self.inner.on.event_id)]
+        if self.meta.redacted.is_none() {
+            vec![Attachment::index_for(&self.inner.on.event_id)]
+        } else {
+            vec![]
+        }
     }
 
     fn event_id(&self) -> &EventId {
@@ -258,6 +266,7 @@ impl From<OriginalMessageLikeEvent<AttachmentEventContent>> for Attachment {
                 event_id,
                 sender,
                 origin_server_ts,
+                redacted: None,
             },
         }
     }
@@ -311,6 +320,7 @@ impl From<OriginalMessageLikeEvent<AttachmentUpdateEventContent>> for Attachment
                 event_id,
                 sender,
                 origin_server_ts,
+                redacted: None,
             },
         }
     }

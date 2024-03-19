@@ -164,6 +164,7 @@ impl From<OriginalMessageLikeEvent<TaskEventContent>> for Task {
                 event_id,
                 sender,
                 origin_server_ts,
+                redacted: None,
             },
         }
     }
@@ -217,6 +218,7 @@ impl From<OriginalMessageLikeEvent<TaskUpdateEventContent>> for TaskUpdate {
                 event_id,
                 sender,
                 origin_server_ts,
+                redacted: None,
             },
         }
     }
@@ -274,6 +276,7 @@ impl From<OriginalMessageLikeEvent<TaskSelfAssignEventContent>> for TaskSelfAssi
                 event_id,
                 sender,
                 origin_server_ts,
+                redacted: None,
             },
         }
     }
@@ -329,6 +332,7 @@ impl From<OriginalMessageLikeEvent<TaskSelfUnassignEventContent>> for TaskSelfUn
                 event_id,
                 sender,
                 origin_server_ts,
+                redacted: None,
             },
         }
     }
