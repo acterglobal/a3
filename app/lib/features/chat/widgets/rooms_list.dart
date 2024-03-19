@@ -7,7 +7,7 @@ import 'package:acter/features/chat/widgets/convo_list.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -62,7 +62,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
   }
 
   Widget roomListTitle(BuildContext context) {
-    String title = AppLocalizations.of(context)!.chat;
+    String title = L10n.of(context).chat;
 
     if (ref.watch(hasRoomFilters)) {
       final selection =

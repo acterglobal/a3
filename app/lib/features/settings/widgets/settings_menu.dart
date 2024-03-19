@@ -112,6 +112,16 @@ class SettingsMenu extends ConsumerWidget {
           sectionTitle: 'Acter App',
           children: [
             MenuItemWidget(
+              iconData: Atlas.language_translation,
+              iconColor: colorSelected(Routes.settingLanguage),
+              title: 'Language',
+              subTitle: 'Change app language',
+              titleStyles: titleStylesSelected(Routes.settingLanguage),
+              onTap: () => shouldGoNotNamed
+                  ? context.goNamed(Routes.settingLanguage.name)
+                  : context.pushNamed(Routes.settingLanguage.name),
+            ),
+            MenuItemWidget(
               key: SettingsMenu.labs,
               iconData: Atlas.lab_appliance_thin,
               iconColor: colorSelected(Routes.settingsLabs),

@@ -459,7 +459,7 @@ impl JoinRuleBuilder {
         } = self;
         let allow_rules = restricted_rooms
             .iter()
-            .map(|s| RoomId::parse(s.as_str()).map(AllowRule::room_membership))
+            .map(|s| RoomId::parse(s).map(AllowRule::room_membership))
             .collect::<Result<Vec<AllowRule>, IdParseError>>()?;
         Ok(match rule.to_lowercase().as_str() {
             "private" => RoomJoinRulesEventContent::new(JoinRule::Private),
@@ -734,7 +734,7 @@ impl Room {
                 if !member.can_send_state(StateEventType::RoomTopic) {
                     bail!("No permissions to change topic of this room");
                 }
-                let response = room.set_room_topic(topic.as_str()).await?;
+                let response = room.set_room_topic(&topic).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -1116,7 +1116,7 @@ impl Room {
             .context("You must be logged in to do that")?
             .to_owned();
 
-        let user_id = UserId::parse(user_id.as_str())?;
+        let user_id = UserId::parse(&user_id)?;
 
         RUNTIME
             .spawn(async move {

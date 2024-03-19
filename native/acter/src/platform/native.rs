@@ -177,7 +177,7 @@ pub fn init_logging(
         builder = builder.chain(std::io::stdout());
     }
 
-    let mut path = PathBuf::from(log_dir.as_str());
+    let mut path = PathBuf::from(&log_dir);
     path.push("app_");
 
     let (level, dispatch) = builder

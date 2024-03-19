@@ -1,0 +1,1 @@
+- new labs feature: Pins have comments now (if you activate the labs)

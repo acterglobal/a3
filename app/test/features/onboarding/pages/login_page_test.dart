@@ -1,13 +1,11 @@
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/onboarding/pages/login_page.dart';
-// import 'package:acter/features/onboarding/pages/register_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-// import 'package:mockito/mockito.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 void main() {
   group('login page test', () {
@@ -15,13 +13,8 @@ void main() {
       await tester.pumpWidget(
         const ProviderScope(
           child: MaterialApp(
-            localizationsDelegates: [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: L10n.localizationsDelegates,
+            supportedLocales: L10n.supportedLocales,
             home: LoginPage(),
           ),
         ),
@@ -33,12 +26,12 @@ void main() {
       expect(find.byType(SvgPicture), findsOneWidget);
 
       expect(
-        find.text(AppLocalizations.of(context)!.welcomeBack),
+        find.text(L10n.of(context).welcomeBack),
         findsOneWidget,
       );
       expect(
         find.text(
-          AppLocalizations.of(context)!.loginContinue,
+          L10n.of(context).loginContinue,
         ),
         findsOneWidget,
       );
@@ -48,7 +41,7 @@ void main() {
       expect(find.byKey(LoginPageKeys.submitBtn), findsOneWidget);
       expect(
         find.text(
-          AppLocalizations.of(context)!.noAccount,
+          L10n.of(context).noAccount,
         ),
         findsOneWidget,
       );
@@ -61,21 +54,19 @@ void main() {
       const ProviderScope(
         child: MaterialApp(
           localizationsDelegates: [
-            AppLocalizations.delegate,
+            L10n.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: AppLocalizations.supportedLocales,
+          supportedLocales: L10n.supportedLocales,
           home: LoginPage(),
         ),
       ),
     );
     final BuildContext context = tester.element(find.byType(LoginPage));
-    final userNameError =
-        find.text(AppLocalizations.of(context)!.emptyUsername);
-    final passwordError =
-        find.text(AppLocalizations.of(context)!.emptyPassword);
+    final userNameError = find.text(L10n.of(context).emptyUsername);
+    final passwordError = find.text(L10n.of(context).emptyPassword);
     final submitBtn = find.byKey(LoginPageKeys.submitBtn);
     await tester.tap(submitBtn);
     await tester.pump(const Duration(milliseconds: 100)); // add delay
@@ -90,12 +81,12 @@ void main() {
   //     ProviderScope(
   //       child: MaterialApp(
   //         localizationsDelegates: const [
-  //           AppLocalizations.delegate,
+  //           L10n.delegate,
   //           GlobalMaterialLocalizations.delegate,
   //           GlobalWidgetsLocalizations.delegate,
   //           GlobalCupertinoLocalizations.delegate,
   //         ],
-  //         supportedLocales: AppLocalizations.supportedLocales,
+  //         supportedLocales: L10n.supportedLocales,
   //         initialRoute: '/login',
   //         routes: <String, WidgetBuilder>{
   //           '/login': (BuildContext context) => const LoginPage(),

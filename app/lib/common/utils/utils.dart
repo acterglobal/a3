@@ -2,19 +2,16 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mime/mime.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:logging/logging.dart';
 
@@ -268,35 +265,11 @@ List<String> asDartStringList(FfiListFfiString data) {
   return data.toList().map((e) => e.toDartString()).toList();
 }
 
-// handler for mimetype icon for attached file
-Widget attachmentIconHandler(File file, double? size) {
-  final mimeType = lookupMimeType(file.path);
-  if (mimeType!.startsWith('image/')) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(6),
-      child: Image.file(
-        file,
-        fit: BoxFit.cover,
-        height: size ?? 20,
-        width: size ?? 20,
-      ),
-    );
-  } else if (mimeType.startsWith('audio/')) {
-    return Icon(Atlas.file_sound_thin, size: size ?? 12);
-  } else if (mimeType.startsWith('video/')) {
-    return Icon(Atlas.file_video_thin, size: size ?? 12);
-  } else {
-    return Icon(Atlas.file_thin, size: size ?? 12);
-  }
-}
-
 // ignore: constant_identifier_names
 enum NetworkStatus { NotDetermined, On, Off }
 
 // ignore: constant_identifier_names
 enum RoomVisibility { Public, Private, SpaceVisible }
-
-enum AttachmentType { camera, image, audio, video, file, other }
 
 enum LabsFeature {
   // apps in general
@@ -307,6 +280,7 @@ enum LabsFeature {
   cobudget,
   polls,
   discussions,
+  comments,
 
   // searchOptions
   showNotifications, // FIXME: old name for desktop notifications
@@ -318,3 +292,10 @@ enum LabsFeature {
         LabsFeature.mobilePushNotifications,
       ];
 }
+
+
+// typedef ChatWithProfileData = ({Convo chat, ProfileData profile});
+// typedef SpaceWithProfileData = ({Space space, ProfileData profile});
+// typedef MemberInfo = ({String userId, String? roomId});
+// typedef ChatMessageInfo = ({String messageId, String roomId});
+// typedef AttachmentInfo = ({AttachmentType type, File file});
