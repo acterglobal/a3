@@ -16,50 +16,40 @@ class BackupStateWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentState = ref.watch(backupStateProvider);
-    if (currentState == BackupState.enabled) {
-      if (allowDisabling) {
-        return renderCanDisableAction(context, ref);
-      } else {
-        // nothing to see here. all good.
-        return const SizedBox.shrink();
-      }
-    } else if (currentState == BackupState.unknown) {
-      return renderUnknown(context, ref);
+    switch (ref.watch(backupStateProvider)) {
+      case RecoveryState.enabled:
+        if (allowDisabling) {
+          return renderCanResetAction(context, ref);
+        } else {
+          // nothing to see here. all good.
+          return const SizedBox.shrink();
+        }
+      case RecoveryState.incomplete:
+        return renderRecoverAction(context, ref);
+      case RecoveryState.disabled:
+        return renderStartAction(context, ref);
+      default:
+        return renderUnknown(context, ref);
     }
-    return renderInProgress(context, ref, currentState);
   }
 
   Widget renderUnknown(BuildContext context, WidgetRef ref) {
-    final existsOnServerLoader = ref.watch(backupExistsOnServerProvider);
-    return existsOnServerLoader.when(
-      data: (existsOnServer) => existsOnServer
-          ? renderRecoverAction(context, ref)
-          : renderStartAction(context, ref),
-      error: (e, s) => Card(
+    return Skeletonizer(
+      child: Card(
         child: ListTile(
           leading: const Icon(Icons.warning),
-          title: const Text('Error checking backup state'),
-          subtitle: Text('$e'),
-        ),
-      ),
-      loading: () => Skeletonizer(
-        child: Card(
-          child: ListTile(
-            leading: const Icon(Icons.warning),
-            title: const Text('Encryption backups missing'),
-            subtitle: const Text(
-              'We recommend to use automatic encryption key backups',
-            ),
-            trailing:
-                OutlinedButton(onPressed: () {}, child: const Text('loading')),
+          title: const Text('Encryption backups missing'),
+          subtitle: const Text(
+            'We recommend to use automatic encryption key backups',
           ),
+          trailing:
+              OutlinedButton(onPressed: () {}, child: const Text('loading')),
         ),
       ),
     );
   }
 
-  Widget renderCanDisableAction(BuildContext context, WidgetRef ref) {
+  Widget renderCanResetAction(BuildContext context, WidgetRef ref) {
     return Card(
       child: ListTile(
         leading: const Icon(Atlas.check_website_thin),
@@ -69,9 +59,9 @@ class BackupStateWidget extends ConsumerWidget {
         ),
         trailing: OutlinedButton.icon(
           icon: const Icon(Icons.toggle_on_outlined),
-          onPressed: () => showConfirmDisablingDialog(context, ref),
+          onPressed: () => showConfirmResetDialog(context, ref),
           label: const Text(
-            'enabled',
+            'reset',
           ),
         ),
       ),
@@ -96,9 +86,9 @@ class BackupStateWidget extends ConsumerWidget {
             ),
             if (allowDisabling)
               OutlinedButton(
-                onPressed: () => showConfirmDisablingDialog(context, ref),
+                onPressed: () => showConfirmResetDialog(context, ref),
                 child: const Text(
-                  'disable',
+                  'reset',
                 ),
               ),
           ],
@@ -130,12 +120,14 @@ class BackupStateWidget extends ConsumerWidget {
     String secret;
     try {
       final manager = ref.read(backupManagerProvider);
-      secret = await manager.createNewSecretStore();
+      secret = await manager.enable();
       print('Secret: $secret');
-      await manager.create();
       EasyLoading.dismiss();
     } catch (e) {
-      EasyLoading.show(status: 'enabling backup failed: $e');
+      EasyLoading.showError(
+        'enabling backup failed: $e',
+        duration: const Duration(seconds: 5),
+      );
       return;
     }
     if (context.mounted) {
@@ -148,7 +140,7 @@ class BackupStateWidget extends ConsumerWidget {
   Widget renderInProgress(
     BuildContext context,
     WidgetRef ref,
-    BackupState currentState,
+    RecoveryState currentState,
   ) {
     return Card(
       child: Column(

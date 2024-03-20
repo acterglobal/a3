@@ -90,7 +90,7 @@ class __RecoveryKeyDialogState extends ConsumerState<_RecoveryKeyDialog> {
     try {
       final key = recoveryKey.text;
       final manager = ref.read(backupManagerProvider);
-      final recoveryWorked = await manager.openSecretStoreAndImport(key);
+      final recoveryWorked = await manager.recover(key);
       if (recoveryWorked) {
         EasyLoading.showToast('Recovery successful');
         if (context.mounted) {

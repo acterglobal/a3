@@ -1,10 +1,11 @@
+import 'package:acter/features/backups/dialogs/show_recovery_key.dart';
 import 'package:acter/features/backups/providers/backup_manager_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class _ShowConfirmDisablingDialog extends ConsumerWidget {
-  const _ShowConfirmDisablingDialog();
+class _ShowConfirmResetDialog extends ConsumerWidget {
+  const _ShowConfirmResetDialog();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -19,7 +20,7 @@ class _ShowConfirmDisablingDialog extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              "Disabling the key backup will destroy it locally and on your homeserver. This can't be undone. Are you sure you want to continue? ",
+              "Resetting the key backup will destroy it locally and on your homeserver. This can't be undone. Are you sure you want to continue? ",
             ),
             SizedBox(
               height: 10,
@@ -50,17 +51,14 @@ class _ShowConfirmDisablingDialog extends ConsumerWidget {
   }
 
   void disable(BuildContext context, WidgetRef ref) async {
-    EasyLoading.show(status: 'Disabling Backup');
+    EasyLoading.show(status: 'Resetting Backup');
     try {
       final manager = ref.read(backupManagerProvider);
-      final disablingWorked = await manager.disable();
-      if (disablingWorked) {
-        EasyLoading.showToast('Disabling successful');
-        if (context.mounted) {
-          Navigator.of(context, rootNavigator: true).pop();
-        }
-      } else {
-        EasyLoading.showToast('Disabling failed');
+      final newKey = await manager.reset();
+      EasyLoading.showToast('Reset successful');
+      if (context.mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+        showRecoveryKeyDialog(context, ref, newKey);
       }
     } catch (e) {
       EasyLoading.showToast('Failed to disable: $e');
@@ -68,9 +66,9 @@ class _ShowConfirmDisablingDialog extends ConsumerWidget {
   }
 }
 
-void showConfirmDisablingDialog(BuildContext context, WidgetRef ref) {
+void showConfirmResetDialog(BuildContext context, WidgetRef ref) {
   showDialog(
     context: context,
-    builder: (BuildContext ctx) => const _ShowConfirmDisablingDialog(),
+    builder: (BuildContext ctx) => const _ShowConfirmResetDialog(),
   );
 }

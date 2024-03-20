@@ -1,28 +1,19 @@
-enum BackupState {
-  enabling,
-  resuming,
+enum RecoveryState {
+  incomplete,
   enabled,
-  downloading,
-  disabling,
-  creating,
+  disabled,
   unknown,
 }
 
-BackupState stringToState(String s) {
+RecoveryState stringToState(String s) {
   switch (s) {
-    case 'enabling':
-      return BackupState.enabling;
-    case 'resuming':
-      return BackupState.resuming;
+    case 'incomplete':
+      return RecoveryState.incomplete;
     case 'enabled':
-      return BackupState.enabled;
-    case 'downloading':
-      return BackupState.downloading;
-    case 'disabling':
-      return BackupState.disabling;
-    case 'creating':
-      return BackupState.creating;
+      return RecoveryState.enabled;
+    case 'disabled':
+      return RecoveryState.disabled;
     default:
-      return BackupState.unknown;
+      return RecoveryState.unknown;
   }
 }
