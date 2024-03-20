@@ -1,5 +1,4 @@
 {
-  "aPowerfulAndSecureApp": "A powerful and secure app for organizing change.",
   "accept": "Accept",
   "acceptRequest": "Accept Request",
   "acter": "Acter",
@@ -29,6 +28,7 @@
   "hintMessageInviteCode": "Enter invite code to join a community",
   "hintMessagePassword": "At least 6 characters",
   "hintMessageUsername": "Unique username for logging in and identification",
+  "introPageDescription": "{description, select, desc1{Acter is more than just an app.\nIt's} desc2{ community of change makers.} desc3{Connect with fellow activists, share insights, and collaborate on meaningful projects.} other{}}",
   "invitationText1": "You have been invited to join this room.",
   "invitationText2": "Invited you to join ",
   "inviteCode": "Invite Code",
@@ -37,6 +37,7 @@
   "joinActer": "Join Acter",
   "joinedRooms": "Joined Rooms",
   "language": "Language",
+  "letsExplore": "Let's Explore",
   "letsGetStarted": "Let's get started",
   "loadingConvo": "Loading Conversations",
   "loadingName": "Loading Name",
@@ -132,5 +133,6 @@
   "verifySession": "Verify login",
   "verifyThisSession": "Verify this login",
   "welcomeBack": "Welcome Back",
-  "welcomeTo": "Welcome to"
+  "welcomeTo": "Welcome to",
+  "yourSafeAndSecureSpace": "Your safe and secure space for digital activism"
 }
