@@ -442,14 +442,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.5"
-  events_emitter:
-    dependency: "direct main"
-    description:
-      name: events_emitter
-      sha256: a075477bdf9c8c0c31bb7c7b7bdd357b4486c34f30163119f96de4e7f54abeff
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.5.2"
   expandable_text:
     dependency: "direct main"
     description:
