@@ -106,6 +106,7 @@ class _ImageAttachmentPreviewState extends State<_ImageAttachment> {
 
   void _getAttachmentImage() {
     attachmentImage = widget.attachment.sourceBinary(null);
+
     if (mounted) {
       setState(() {});
     }

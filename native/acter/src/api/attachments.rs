@@ -1,5 +1,5 @@
 use acter_core::{
-    events::attachments::{AttachmentBuilder, AttachmentContent},
+    events::attachments::{AttachmentBuilder, AttachmentContent, FallbackAttachmentContent},
     models::{self, ActerModel, AnyActerModel},
 };
 use anyhow::{bail, Context, Result};
@@ -97,22 +97,26 @@ impl Attachment {
     ) -> Result<FfiBuffer<u8>> {
         // any variable in self can't be called directly in spawn
         match &self.inner.content {
-            AttachmentContent::Image(content) => match thumb_size {
-                Some(thumb_size) => {
-                    let source = content
-                        .info
-                        .as_ref()
-                        .and_then(|info| info.thumbnail_source.clone())
-                        .context("thumbnail source not found")?;
-                    self.client.source_binary(source, Some(thumb_size)).await
+            AttachmentContent::Image(content)
+            | AttachmentContent::Fallback(FallbackAttachmentContent::Image(content)) => {
+                match thumb_size {
+                    Some(thumb_size) => {
+                        let source = content
+                            .info
+                            .as_ref()
+                            .and_then(|info| info.thumbnail_source.clone())
+                            .context("thumbnail source not found")?;
+                        self.client.source_binary(source, Some(thumb_size)).await
+                    }
+                    None => {
+                        self.client
+                            .source_binary(content.source.clone(), None)
+                            .await
+                    }
                 }
-                None => {
-                    self.client
-                        .source_binary(content.source.clone(), None)
-                        .await
-                }
-            },
-            AttachmentContent::Audio(content) => {
+            }
+            AttachmentContent::Audio(content)
+            | AttachmentContent::Fallback(FallbackAttachmentContent::Audio(content)) => {
                 if thumb_size.is_some() {
                     warn!("DeveloperError: audio has not thumbnail");
                 }
@@ -120,37 +124,44 @@ impl Attachment {
                     .source_binary(content.source.clone(), None)
                     .await
             }
-            AttachmentContent::Video(content) => match thumb_size {
-                Some(thumb_size) => {
-                    let source = content
-                        .info
-                        .as_ref()
-                        .and_then(|info| info.thumbnail_source.clone())
-                        .context("thumbnail source not found")?;
-                    self.client.source_binary(source, Some(thumb_size)).await
+            AttachmentContent::Video(content)
+            | AttachmentContent::Fallback(FallbackAttachmentContent::Video(content)) => {
+                match thumb_size {
+                    Some(thumb_size) => {
+                        let source = content
+                            .info
+                            .as_ref()
+                            .and_then(|info| info.thumbnail_source.clone())
+                            .context("thumbnail source not found")?;
+                        self.client.source_binary(source, Some(thumb_size)).await
+                    }
+                    None => {
+                        self.client
+                            .source_binary(content.source.clone(), None)
+                            .await
+                    }
                 }
-                None => {
-                    self.client
-                        .source_binary(content.source.clone(), None)
-                        .await
+            }
+            AttachmentContent::File(content)
+            | AttachmentContent::Fallback(FallbackAttachmentContent::File(content)) => {
+                match thumb_size {
+                    Some(thumb_size) => {
+                        let source = content
+                            .info
+                            .as_ref()
+                            .and_then(|info| info.thumbnail_source.clone())
+                            .context("thumbnail source not found")?;
+                        self.client.source_binary(source, Some(thumb_size)).await
+                    }
+                    None => {
+                        self.client
+                            .source_binary(content.source.clone(), None)
+                            .await
+                    }
                 }
-            },
-            AttachmentContent::File(content) => match thumb_size {
-                Some(thumb_size) => {
-                    let source = content
-                        .info
-                        .as_ref()
-                        .and_then(|info| info.thumbnail_source.clone())
-                        .context("thumbnail source not found")?;
-                    self.client.source_binary(source, Some(thumb_size)).await
-                }
-                None => {
-                    self.client
-                        .source_binary(content.source.clone(), None)
-                        .await
-                }
-            },
-            AttachmentContent::Location(content) => {
+            }
+            AttachmentContent::Location(content)
+            | AttachmentContent::Fallback(FallbackAttachmentContent::Location(content)) => {
                 if thumb_size.is_none() {
                     warn!("DeveloperError: location has not file");
                 }
