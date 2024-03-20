@@ -90,46 +90,28 @@ class _MemberListEntryInner extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final memberStatus = member.membershipStatusStr();
-    final List<Widget> trailing = [];
-    if (member.isIgnored()) {
-      trailing.add(
-        const Tooltip(
-          message: "You have blocked this user, you can't see their messages",
-          child: Icon(Atlas.block_thin),
-        ),
-      );
-    }
+    Widget? trailing;
     if (memberStatus == 'Admin') {
-      trailing.add(
-        const Tooltip(
-          message: 'Space Admin',
-          child: Icon(Atlas.crown_winner_thin),
-        ),
+      trailing = const Tooltip(
+        message: 'Admin',
+        child: Icon(Atlas.crown_winner_thin),
       );
     } else if (memberStatus == 'Mod') {
-      trailing.add(
-        const Tooltip(
-          message: 'Space Moderator',
-          child: Icon(Atlas.shield_star_win_thin),
-        ),
-      );
-    } else if (memberStatus == 'Custom') {
-      trailing.add(
-        Tooltip(
-          message: 'Custom Power Level (${member.powerLevel()})',
-          child: const Icon(Atlas.star_medal_award_thin),
-        ),
+      trailing = const Tooltip(
+        message: 'Moderator',
+        child: Icon(Atlas.shield_star_win_thin),
       );
     }
 
     return ListTile(
       onTap: () async {
-        // ignore: use_build_context_synchronously
-        await showMemberInfoDrawer(
-          context: context,
-          roomId: roomId,
-          memberId: userId,
-        );
+        if (context.mounted) {
+          await showMemberInfoDrawer(
+            context: context,
+            roomId: roomId,
+            memberId: userId,
+          );
+        }
       },
       leading: ActerAvatar(
         mode: DisplayMode.DM,
@@ -145,19 +127,17 @@ class _MemberListEntryInner extends ConsumerWidget {
         style: Theme.of(context).textTheme.bodyMedium,
         overflow: TextOverflow.ellipsis,
       ),
-      subtitle: Text(
-        userId,
-        style: Theme.of(context)
-            .textTheme
-            .labelLarge!
-            .copyWith(color: Theme.of(context).colorScheme.neutral5),
-        overflow: TextOverflow.ellipsis,
-      ),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: trailing,
-      ),
+      subtitle: profile.displayName != null
+          ? Text(
+              userId,
+              style: Theme.of(context)
+                  .textTheme
+                  .labelLarge!
+                  .copyWith(color: Theme.of(context).colorScheme.neutral5),
+              overflow: TextOverflow.ellipsis,
+            )
+          : null,
+      trailing: trailing,
     );
   }
 }

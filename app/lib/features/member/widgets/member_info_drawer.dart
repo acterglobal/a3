@@ -6,6 +6,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/toolkit/menu_item_widget.dart';
 import 'package:acter/features/member/dialogs/show_change_power_level_dialog.dart';
+import 'package:acter/features/member/dialogs/show_kick_user_dialog.dart';
 import 'package:acter/features/member/dialogs/show_unblock_user_dialog.dart';
 import 'package:acter/features/member/widgets/member_info_skeleton.dart';
 import 'package:acter/features/member/widgets/message_user_button.dart';
@@ -98,8 +99,9 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
               withMenu: false,
               onTap: () async {
                 await showUnblockUserDialog(context, member);
-                // ignore: use_build_context_synchronously
-                context.pop();
+                if (context.mounted) {
+                  context.pop();
+                }
               },
             )
           : MenuItemWidget(
@@ -108,28 +110,31 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
               withMenu: false,
               onTap: () async {
                 await showBlockUserDialog(context, member);
-                // ignore: use_build_context_synchronously
-                context.pop();
+                if (context.mounted) {
+                  context.pop();
+                }
               },
             ),
       ..._roomMenu(context, ref),
     ];
   }
 
-  Widget _showPowerLevel(BuildContext context) {
+  Widget _showPowerLevel(BuildContext context, VoidCallback? onTap) {
     final memberStatus = member.membershipStatusStr();
     if (memberStatus == 'Admin') {
-      return const Card(
+      return Card(
         child: ListTile(
-          leading: Icon(Atlas.crown_winner_thin),
-          title: Text('Admin'),
+          leading: const Icon(Atlas.crown_winner_thin),
+          title: const Text('Admin'),
+          onTap: onTap,
         ),
       );
     } else if (memberStatus == 'Mod') {
-      return const Card(
+      return Card(
         child: ListTile(
-          leading: Icon(Atlas.shield_star_win_thin),
-          title: Text('Moderator'),
+          leading: const Icon(Atlas.shield_star_win_thin),
+          title: const Text('Moderator'),
+          onTap: onTap,
         ),
       );
     } else {
@@ -138,6 +143,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
           leading: const Icon(Atlas.shield_star_win_thin),
           title: const Text('Power Level'),
           trailing: Text('${member.powerLevel()}'),
+          onTap: onTap,
         ),
       );
     }
@@ -148,26 +154,25 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
           data: (myMembership) {
             if (myMembership == null) {
               // showing just the power level
-              return [_roomTitle(context, ref), _showPowerLevel(context)];
+              return [_roomTitle(context, ref), _showPowerLevel(context, null)];
             }
 
             final menu = [_roomTitle(context, ref)];
 
             if (myMembership.canString('CanUpdatePowerLevels')) {
               menu.add(
-                MenuItemWidget(
-                  iconData: Atlas.medal_badge_award_thin,
-                  title: 'Change Power Level',
-                  withMenu: false,
-                  onTap: () async {
+                _showPowerLevel(
+                  context,
+                  () async {
                     await changePowerLevel(context, ref);
-                    // ignore: use_build_context_synchronously
-                    context.pop();
+                    if (context.mounted) {
+                      context.pop();
+                    }
                   },
                 ),
               );
             } else {
-              menu.add(_showPowerLevel(context));
+              menu.add(_showPowerLevel(context, null));
             }
 
             if (myMembership.canString('CanKick')) {
@@ -176,10 +181,12 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
                   iconData: Atlas.medal_badge_award_thin,
                   title: 'Kick User',
                   withMenu: false,
-                  onTap: () => customMsgSnackbar(
-                    context,
-                    'Kicking not yet implemented yet',
-                  ),
+                  onTap: () async {
+                    await showKickUserDialog(context, member);
+                    if (context.mounted) {
+                      context.pop();
+                    }
+                  },
                 ),
               );
 
