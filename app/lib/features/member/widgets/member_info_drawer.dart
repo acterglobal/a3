@@ -6,6 +6,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/toolkit/menu_item_widget.dart';
 import 'package:acter/features/member/dialogs/show_change_power_level_dialog.dart';
+import 'package:acter/features/member/dialogs/show_kick_and_ban_user_dialog.dart';
 import 'package:acter/features/member/dialogs/show_kick_user_dialog.dart';
 import 'package:acter/features/member/dialogs/show_unblock_user_dialog.dart';
 import 'package:acter/features/member/widgets/member_info_skeleton.dart';
@@ -178,7 +179,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
             if (myMembership.canString('CanKick')) {
               menu.add(
                 MenuItemWidget(
-                  iconData: Atlas.medal_badge_award_thin,
+                  iconData: Icons.eject_outlined,
                   title: 'Kick User',
                   withMenu: false,
                   onTap: () async {
@@ -193,13 +194,15 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
               if (myMembership.canString('CanBan')) {
                 menu.add(
                   MenuItemWidget(
-                    iconData: Atlas.medal_badge_award_thin,
+                    iconData: Icons.gpp_bad_outlined,
                     title: 'Kick & Ban User',
                     withMenu: false,
-                    onTap: () => customMsgSnackbar(
-                      context,
-                      'Kicking not yet implemented yet',
-                    ),
+                    onTap: () async {
+                      await showKickAndBanUserDialog(context, member);
+                      if (context.mounted) {
+                        context.pop();
+                      }
+                    },
                   ),
                 );
               }
