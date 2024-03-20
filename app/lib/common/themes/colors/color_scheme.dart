@@ -23,14 +23,13 @@ const primaryGradient = LinearGradient(
 
 const introGradient = LinearGradient(
   colors: [
-    Color(0xff121F2B),
     Color(0xff122334),
-    Color(0xff121315),
-    Color(0xff121315),
+    Color(0xff121212),
+    Color(0xff000000),
   ],
   begin: Alignment.topCenter,
   end: Alignment.bottomCenter,
-  stops: [0.0, 0.6, 0.8, 1.0],
+  stops: [0.0, 0.5, 1.0],
   tileMode: TileMode.decal,
 );
 

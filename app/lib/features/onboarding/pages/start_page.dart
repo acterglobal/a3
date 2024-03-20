@@ -24,9 +24,7 @@ class _StartPageState extends State<StartPage> {
   // OnBoarding content list
   List onBoardingPages = [];
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void initData() {
     onBoardingPages = [
       OnBoarding(
         image: 'assets/images/spaces_onboard.png',
@@ -254,6 +252,7 @@ class _StartPageState extends State<StartPage> {
 
   @override
   Widget build(BuildContext context) {
+    initData();
     final imageHeight =
         min(MediaQuery.of(context).size.height * 0.45, 280).toDouble();
     return Scaffold(

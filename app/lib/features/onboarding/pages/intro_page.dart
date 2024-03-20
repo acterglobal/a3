@@ -15,17 +15,12 @@ class _IntroPageState extends State<IntroPage> {
   List<String> introTexts = [];
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  Widget build(BuildContext context) {
     introTexts = [
       L10n.of(context).simpleToUse,
       L10n.of(context).secureWithE2EEncryption,
       L10n.of(context).powerfulForAnyOrganizer,
     ];
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
