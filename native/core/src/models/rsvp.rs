@@ -186,6 +186,7 @@ impl From<OriginalMessageLikeEvent<RsvpEventContent>> for Rsvp {
                 event_id,
                 sender,
                 origin_server_ts,
+                redacted: None,
             },
         }
     }

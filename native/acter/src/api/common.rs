@@ -1,6 +1,7 @@
 use acter_core::events::{
-    attachments::AttachmentContent, rsvp::RsvpStatus, ColorizeBuilder, ObjRef, ObjRefBuilder,
-    Position, RefDetails, RefDetailsBuilder,
+    attachments::{AttachmentContent, FallbackAttachmentContent},
+    rsvp::RsvpStatus,
+    ColorizeBuilder, ObjRef, ObjRefBuilder, Position, RefDetails, RefDetailsBuilder,
 };
 use anyhow::{Context, Result};
 use core::time::Duration;
@@ -238,33 +239,48 @@ impl From<&StickerEventContent> for MsgContent {
 impl From<&AttachmentContent> for MsgContent {
     fn from(value: &AttachmentContent) -> Self {
         match value {
-            AttachmentContent::Image(content) => MsgContent::Image {
-                body: content.body.clone(),
-                source: content.source.clone(),
-                info: content.info.as_ref().map(|x| *x.clone()),
-            },
-            AttachmentContent::Audio(content) => MsgContent::Audio {
-                body: content.body.clone(),
-                source: content.source.clone(),
-                info: content.info.as_ref().map(|x| *x.clone()),
-                audio: content.audio.clone(),
-            },
-            AttachmentContent::Video(content) => MsgContent::Video {
-                body: content.body.clone(),
-                source: content.source.clone(),
-                info: content.info.as_ref().map(|x| *x.clone()),
-            },
-            AttachmentContent::File(content) => MsgContent::File {
-                body: content.body.clone(),
-                source: content.source.clone(),
-                info: content.info.as_ref().map(|x| *x.clone()),
-                filename: content.filename.clone(),
-            },
-            AttachmentContent::Location(content) => MsgContent::Location {
-                body: content.body.clone(),
-                geo_uri: content.geo_uri.clone(),
-                info: content.info.as_ref().map(|x| *x.clone()),
-            },
+            AttachmentContent::Image(content)
+            | AttachmentContent::Fallback(FallbackAttachmentContent::Image(content)) => {
+                MsgContent::Image {
+                    body: content.body.clone(),
+                    source: content.source.clone(),
+                    info: content.info.as_ref().map(|x| *x.clone()),
+                }
+            }
+            AttachmentContent::Audio(content)
+            | AttachmentContent::Fallback(FallbackAttachmentContent::Audio(content)) => {
+                MsgContent::Audio {
+                    body: content.body.clone(),
+                    source: content.source.clone(),
+                    info: content.info.as_ref().map(|x| *x.clone()),
+                    audio: content.audio.clone(),
+                }
+            }
+            AttachmentContent::Video(content)
+            | AttachmentContent::Fallback(FallbackAttachmentContent::Video(content)) => {
+                MsgContent::Video {
+                    body: content.body.clone(),
+                    source: content.source.clone(),
+                    info: content.info.as_ref().map(|x| *x.clone()),
+                }
+            }
+            AttachmentContent::File(content)
+            | AttachmentContent::Fallback(FallbackAttachmentContent::File(content)) => {
+                MsgContent::File {
+                    body: content.body.clone(),
+                    source: content.source.clone(),
+                    info: content.info.as_ref().map(|x| *x.clone()),
+                    filename: content.filename.clone(),
+                }
+            }
+            AttachmentContent::Location(content)
+            | AttachmentContent::Fallback(FallbackAttachmentContent::Location(content)) => {
+                MsgContent::Location {
+                    body: content.body.clone(),
+                    geo_uri: content.geo_uri.clone(),
+                    info: content.info.as_ref().map(|x| *x.clone()),
+                }
+            }
         }
     }
 }
