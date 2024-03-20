@@ -79,6 +79,7 @@ impl From<OriginalMessageLikeEvent<TaskListEventContent>> for TaskList {
                 event_id,
                 sender,
                 origin_server_ts,
+                redacted: None,
             },
             task_stats: Default::default(),
         }
@@ -176,6 +177,7 @@ impl From<OriginalMessageLikeEvent<TaskListUpdateEventContent>> for TaskListUpda
                 event_id,
                 sender,
                 origin_server_ts,
+                redacted: None,
             },
         }
     }

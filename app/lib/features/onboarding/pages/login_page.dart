@@ -1,16 +1,16 @@
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/base_body_widget.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
+import 'package:acter/features/onboarding/widgets/logo_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
@@ -31,6 +31,190 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     username.dispose();
     password.dispose();
     super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+      body: Form(
+        key: formKey,
+        child: Column(
+          children: [
+            _buildAppBar(context),
+            _buildLoginPage(context),
+          ],
+        ),
+      ),
+    );
+  }
+
+  AppBar _buildAppBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.transparent,
+    );
+  }
+
+  Widget _buildLoginPage(BuildContext context) {
+    return Expanded(
+      child: SingleChildScrollView(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 500),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 12),
+              const LogoWidget(width: 150, height: 150),
+              const SizedBox(height: 20),
+              _buildHeadlineText(context),
+              const SizedBox(height: 24),
+              _buildUsernameInputField(context),
+              const SizedBox(height: 12),
+              _buildPasswordInputField(context),
+              const SizedBox(height: 12),
+              _buildForgotPassword(context),
+              const SizedBox(height: 20),
+              _buildLoginButton(context),
+              const SizedBox(height: 12),
+              _buildRegisterAccountButton(context),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeadlineText(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          L10n.of(context).welcomeBack,
+          style: Theme.of(context)
+              .textTheme
+              .headlineMedium
+              ?.copyWith(color: greenColor),
+        ),
+        const SizedBox(height: 10),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Text(
+            L10n.of(context).loginContinue,
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildUsernameInputField(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(L10n.of(context).username),
+        const SizedBox(height: 10),
+        TextFormField(
+          key: LoginPageKeys.usernameField,
+          controller: username,
+          decoration: InputDecoration(
+            hintText: L10n.of(context).hintMessageUsername,
+          ),
+          inputFormatters: [
+            FilteringTextInputFormatter.deny(RegExp(r'\s')),
+          ],
+          validator: (val) {
+            if (val == null || val.trim().isEmpty) {
+              return L10n.of(context).emptyUsername;
+            }
+            return null;
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPasswordInputField(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(L10n.of(context).password),
+        const SizedBox(height: 10),
+        TextFormField(
+          key: LoginPageKeys.passwordField,
+          controller: password,
+          obscureText: !_passwordVisible,
+          decoration: InputDecoration(
+            hintText: L10n.of(context).hintMessagePassword,
+            suffixIcon: IconButton(
+              icon: Icon(
+                _passwordVisible ? Icons.visibility : Icons.visibility_off,
+              ),
+              onPressed: () {
+                setState(() {
+                  _passwordVisible = !_passwordVisible;
+                });
+              },
+            ),
+          ),
+          inputFormatters: [
+            FilteringTextInputFormatter.deny(RegExp(r'\s')),
+          ],
+          validator: (val) {
+            if (val == null || val.trim().isEmpty) {
+              return L10n.of(context).emptyPassword;
+            }
+            return null;
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLoginButton(BuildContext context) {
+    final authState = ref.watch(authStateProvider);
+    return authState
+        ? const Center(child: CircularProgressIndicator())
+        : ElevatedButton(
+            key: LoginPageKeys.submitBtn,
+            onPressed: () => handleSubmit(context),
+            child: Text(
+              L10n.of(context).logIn,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          );
+  }
+
+  Widget _buildForgotPassword(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: TextButton(
+        key: LoginPageKeys.forgotPassBtn,
+        onPressed: () {},
+        child: Text(
+          L10n.of(context).forgotPassword,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRegisterAccountButton(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(L10n.of(context).noProfile),
+        const SizedBox(width: 2),
+        TextButton(
+          key: LoginPageKeys.signUpBtn,
+          onPressed: () => context.goNamed(Routes.authRegister.name),
+          child: Text(
+            L10n.of(context).createProfile,
+          ),
+        ),
+      ],
+    );
   }
 
   Future<void> handleSubmit(BuildContext context) async {
@@ -60,131 +244,5 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         }
       }
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final authState = ref.watch(authStateProvider);
-    return Scaffold(
-      primary: false,
-      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-      extendBodyBehindAppBar: true,
-      body: BaseBody(
-        child: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              backgroundColor: Colors.transparent,
-              title: Text(
-                L10n.of(context).logIn,
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Form(
-                key: formKey,
-                child: Center(
-                  child: Container(
-                    constraints: const BoxConstraints(
-                      maxWidth: 500,
-                    ),
-                    margin: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        const SizedBox(height: 20),
-                        SizedBox(
-                          height: 50,
-                          width: 50,
-                          child: SvgPicture.asset('assets/icon/acter.svg'),
-                        ),
-                        const SizedBox(height: 20),
-                        Text(L10n.of(context).welcomeBack),
-                        const SizedBox(height: 20),
-                        Text(L10n.of(context).loginContinue),
-                        const SizedBox(height: 40),
-                        TextFormField(
-                          key: LoginPageKeys.usernameField,
-                          obscureText: false,
-                          controller: username,
-                          decoration: InputDecoration(
-                            hintText: L10n.of(context).username,
-                          ),
-                          inputFormatters: [
-                            FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                          ],
-                          validator: (val) {
-                            if (val == null || val.trim().isEmpty) {
-                              return L10n.of(context).emptyUsername;
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 20),
-                        TextFormField(
-                          key: LoginPageKeys.passwordField,
-                          controller: password,
-                          obscureText: !_passwordVisible,
-                          decoration: InputDecoration(
-                            hintText: L10n.of(context).password,
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _passwordVisible
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _passwordVisible = !_passwordVisible;
-                                });
-                              },
-                            ),
-                          ),
-                          inputFormatters: [
-                            FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                          ],
-                          validator: (val) {
-                            if (val == null || val.trim().isEmpty) {
-                              return L10n.of(context).emptyPassword;
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 40),
-                        authState
-                            ? const Center(child: CircularProgressIndicator())
-                            : ElevatedButton(
-                                key: LoginPageKeys.submitBtn,
-                                onPressed: () => handleSubmit(context),
-                                child: Text(
-                                  L10n.of(context).logIn,
-                                ),
-                              ),
-                        const SizedBox(height: 40),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(L10n.of(context).noAccount),
-                            const SizedBox(width: 2),
-                            TextButton(
-                              key: LoginPageKeys.signUpBtn,
-                              onPressed: () =>
-                                  context.goNamed(Routes.authRegister.name),
-                              child: Text(
-                                L10n.of(context).register,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

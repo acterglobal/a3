@@ -1,20 +1,20 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/base_body_widget.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
 import 'package:acter/features/settings/super_invites/providers/super_invites_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
@@ -80,227 +80,313 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    final authState = ref.watch(authStateProvider);
-    final authNotifier = ref.watch(authStateProvider.notifier);
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-      primary: false,
-      body: BaseBody(
-        child: Center(
-          child: Container(
-            constraints: const BoxConstraints(maxWidth: 500),
-            child: CustomScrollView(
-              slivers: [
-                SliverAppBar(
-                  backgroundColor: Colors.transparent,
-                  actions: [
-                    if (canGuestLogin)
-                      OutlinedButton(
-                        onPressed: () async =>
-                            await authNotifier.makeGuest(context),
-                        child: Text(L10n.of(context).continueAsGuest),
-                      ),
-                  ],
-                  title: Text(
-                    L10n.of(context).register,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  child: Form(
-                    key: formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        SizedBox(
-                          height: 50,
-                          width: 50,
-                          child: SvgPicture.asset('assets/icon/acter.svg'),
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          L10n.of(context).onboardText,
-                          style: Theme.of(context).textTheme.titleSmall,
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          L10n.of(context).createAccountText,
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        Column(
-                          children: [
-                            const SizedBox(height: 20),
-                            TextFormField(
-                              key: RegisterPage.nameField,
-                              controller: name,
-                              decoration: InputDecoration(
-                                hintText: L10n.of(context).name,
-                              ),
-                              style: Theme.of(context).textTheme.labelLarge,
-                              cursorColor:
-                                  Theme.of(context).colorScheme.tertiary2,
-                              validator: (val) {
-                                if (val == null || val.trim().isEmpty) {
-                                  return L10n.of(context).missingName;
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 10),
-                            TextFormField(
-                              key: RegisterPage.usernameField,
-                              controller: username,
-                              decoration: InputDecoration(
-                                hintText: L10n.of(context).username,
-                              ),
-                              inputFormatters: [
-                                TextInputFormatter.withFunction((
-                                  TextEditingValue oldValue,
-                                  TextEditingValue newValue,
-                                ) {
-                                  return newValue.text.isEmpty ||
-                                          usernamePattern
-                                              .hasMatch(newValue.text)
-                                      ? newValue
-                                      : oldValue;
-                                }),
-                              ],
-                              style: Theme.of(context).textTheme.labelLarge,
-                              validator: (val) {
-                                if (val == null || val.trim().isEmpty) {
-                                  return L10n.of(context).emptyUsername;
-                                }
-                                final cleanedVal = val.trim().toLowerCase();
-                                if (!usernamePattern.hasMatch(cleanedVal)) {
-                                  return 'Username may only contain letters a-z, numbers and any of  ._=-/';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 10),
-                            TextFormField(
-                              key: RegisterPage.passwordField,
-                              controller: password,
-                              decoration: InputDecoration(
-                                hintText: L10n.of(context).password,
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    _passwordVisible
-                                        ? Icons.visibility
-                                        : Icons.visibility_off,
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _passwordVisible = !_passwordVisible;
-                                    });
-                                  },
-                                ),
-                              ),
-                              obscureText: !_passwordVisible,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.deny(
-                                  RegExp(r'\s'),
-                                ),
-                              ],
-                              style: Theme.of(context).textTheme.labelLarge,
-                              validator: (val) {
-                                if (val == null || val.trim().isEmpty) {
-                                  return L10n.of(context).emptyPassword;
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 10),
-                            TextFormField(
-                              key: RegisterPage.tokenField,
-                              controller: token,
-                              decoration: InputDecoration(
-                                hintText: L10n.of(context).token,
-                              ),
-                              inputFormatters: [
-                                FilteringTextInputFormatter.deny(
-                                  RegExp(r'\s'),
-                                ),
-                              ],
-                              style: Theme.of(context).textTheme.labelLarge,
-                              validator: (val) {
-                                if (val == null || val.trim().isEmpty) {
-                                  return L10n.of(context).emptyToken;
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 30),
-                            RichText(
-                              textAlign: TextAlign.start,
-                              text: TextSpan(
-                                // Note: Styles for TextSpans must be explicitly defined.
-                                // Child text spans will inherit styles from parent
+      body: Column(
+        children: [
+          _buildAppBar(context),
+          _buildRegisterPage(context),
+        ],
+      ),
+    );
+  }
 
-                                children: <TextSpan>[
-                                  TextSpan(
-                                    text: '${L10n.of(context).termsText1} ',
-                                  ),
-                                  TextSpan(
-                                    recognizer: TapGestureRecognizer()
-                                      ..onTap = () {
-                                        debugPrint('Terms of Service"');
-                                      },
-                                    text: L10n.of(context).termsText2,
-                                  ),
-                                  TextSpan(
-                                    text: ' ${L10n.of(context).termsText3} ',
-                                  ),
-                                  TextSpan(
-                                    recognizer: TapGestureRecognizer()
-                                      ..onTap = () {
-                                        debugPrint('policy"');
-                                      },
-                                    text: L10n.of(context).termsText4,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 40),
-                        authState
-                            ? const Center(child: CircularProgressIndicator())
-                            : ElevatedButton(
-                                key: RegisterPage.submitBtn,
-                                onPressed: handleSubmit,
-                                child: Text(
-                                  L10n.of(context).register,
-                                ),
-                              ),
-                        const SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              '${L10n.of(context).haveAccount}  ',
-                              style: Theme.of(context).textTheme.bodyMedium,
-                            ),
-                            TextButton(
-                              key: Keys.loginBtn,
-                              onPressed: () =>
-                                  context.goNamed(Routes.authLogin.name),
-                              child: Text(
-                                L10n.of(context).logIn,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                      ],
-                    ),
-                  ),
-                ),
+  AppBar _buildAppBar(BuildContext context) {
+    final authNotifier = ref.watch(authStateProvider.notifier);
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      actions: [
+        if (canGuestLogin)
+          OutlinedButton(
+            onPressed: () async => await authNotifier.makeGuest(context),
+            child: Text(L10n.of(context).continueAsGuest),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildRegisterPage(BuildContext context) {
+    return Expanded(
+      child: SingleChildScrollView(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 500),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Form(
+            key: formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildHeadlineText(context),
+                const SizedBox(height: 50),
+                _buildNameInputField(context),
+                const SizedBox(height: 12),
+                _buildUsernameInputField(context),
+                const SizedBox(height: 12),
+                _buildPasswordInputField(context),
+                const SizedBox(height: 24),
+                _buildTokenInputField(context),
+                const SizedBox(height: 40),
+                _buildTermsAcceptText(context),
+                const SizedBox(height: 20),
+                _buildSignUpButton(context),
+                const SizedBox(height: 12),
+                _buildLoginAccountButton(context),
+                const SizedBox(height: 30),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildHeadlineText(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          L10n.of(context).createProfile,
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                color: greenColor,
+              ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          L10n.of(context).onboardText,
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildNameInputField(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(L10n.of(context).displayName),
+        const SizedBox(height: 10),
+        TextFormField(
+          key: RegisterPage.nameField,
+          controller: name,
+          decoration: InputDecoration(
+            hintText: L10n.of(context).hintMessageDisplayName,
+          ),
+          style: Theme.of(context).textTheme.labelLarge,
+          cursorColor: Theme.of(context).colorScheme.tertiary2,
+          validator: (val) {
+            if (val == null || val.trim().isEmpty) {
+              return L10n.of(context).missingName;
+            }
+            return null;
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildUsernameInputField(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(L10n.of(context).username),
+        const SizedBox(height: 10),
+        TextFormField(
+          key: RegisterPage.usernameField,
+          controller: username,
+          decoration: InputDecoration(
+            hintText: L10n.of(context).hintMessageUsername,
+          ),
+          inputFormatters: [
+            TextInputFormatter.withFunction((
+              TextEditingValue oldValue,
+              TextEditingValue newValue,
+            ) {
+              return newValue.text.isEmpty ||
+                      usernamePattern.hasMatch(newValue.text)
+                  ? newValue
+                  : oldValue;
+            }),
+          ],
+          style: Theme.of(context).textTheme.labelLarge,
+          validator: (val) {
+            if (val == null || val.trim().isEmpty) {
+              return L10n.of(context).emptyUsername;
+            }
+            final cleanedVal = val.trim().toLowerCase();
+            if (!usernamePattern.hasMatch(cleanedVal)) {
+              return 'Username may only contain letters a-z, numbers and any of  ._=-/';
+            }
+            return null;
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPasswordInputField(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(L10n.of(context).password),
+        const SizedBox(height: 10),
+        TextFormField(
+          key: RegisterPage.passwordField,
+          controller: password,
+          decoration: InputDecoration(
+            hintText: L10n.of(context).hintMessagePassword,
+            suffixIcon: IconButton(
+              icon: Icon(
+                _passwordVisible ? Icons.visibility : Icons.visibility_off,
+              ),
+              onPressed: () {
+                setState(() {
+                  _passwordVisible = !_passwordVisible;
+                });
+              },
+            ),
+          ),
+          obscureText: !_passwordVisible,
+          inputFormatters: [
+            FilteringTextInputFormatter.deny(
+              RegExp(r'\s'),
+            ),
+          ],
+          style: Theme.of(context).textTheme.labelLarge,
+          validator: (val) {
+            if (val == null || val.trim().isEmpty) {
+              return L10n.of(context).emptyPassword;
+            }
+            return null;
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTokenInputField(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                L10n.of(context).inviteCode,
+              ),
+            ),
+            IconButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text(L10n.of(context).inviteCode),
+                      content: Text(L10n.of(context).inviteCodeInfo),
+                      actions: <Widget>[
+                        TextButton(
+                          child: Text(L10n.of(context).ok),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              icon: const Icon(Atlas.question_chat, size: 20),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        TextFormField(
+          key: RegisterPage.tokenField,
+          controller: token,
+          decoration: InputDecoration(
+            hintText: L10n.of(context).hintMessageInviteCode,
+          ),
+          inputFormatters: [
+            FilteringTextInputFormatter.deny(
+              RegExp(r'\s'),
+            ),
+          ],
+          style: Theme.of(context).textTheme.labelLarge,
+          validator: (val) {
+            if (val == null || val.trim().isEmpty) {
+              return L10n.of(context).emptyToken;
+            }
+            return null;
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTermsAcceptText(BuildContext context) {
+    return RichText(
+      textAlign: TextAlign.start,
+      text: TextSpan(
+        // Note: Styles for TextSpans must be explicitly defined.
+        // Child text spans will inherit styles from parent
+        children: <TextSpan>[
+          TextSpan(
+            text: '${L10n.of(context).termsText1} ',
+          ),
+          TextSpan(
+            style: const TextStyle(
+              decoration: TextDecoration.underline,
+            ),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () {
+                _log.info(L10n.of(context).termsOfService);
+              },
+            text: L10n.of(context).termsOfService,
+          ),
+          TextSpan(text: ' ${L10n.of(context).and} '),
+          TextSpan(
+            style: const TextStyle(
+              decoration: TextDecoration.underline,
+            ),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () {
+                _log.info(L10n.of(context).privacyPolicy);
+              },
+            text: L10n.of(context).privacyPolicy,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSignUpButton(BuildContext context) {
+    final authState = ref.watch(authStateProvider);
+    return authState
+        ? const Center(child: CircularProgressIndicator())
+        : ElevatedButton(
+            key: RegisterPage.submitBtn,
+            onPressed: handleSubmit,
+            child: Text(
+              L10n.of(context).createProfile,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          );
+  }
+
+  Widget _buildLoginAccountButton(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          L10n.of(context).haveProfile,
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        TextButton(
+          key: Keys.loginBtn,
+          onPressed: () => context.goNamed(Routes.authLogin.name),
+          child: Text(
+            L10n.of(context).logIn,
+          ),
+        ),
+      ],
     );
   }
 }

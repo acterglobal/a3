@@ -96,6 +96,7 @@ impl From<OriginalMessageLikeEvent<NewsEntryEventContent>> for NewsEntry {
                 event_id,
                 sender,
                 origin_server_ts,
+                redacted: None,
             },
         }
     }
@@ -150,6 +151,7 @@ impl From<OriginalMessageLikeEvent<NewsEntryUpdateEventContent>> for NewsEntryUp
                 event_id,
                 sender,
                 origin_server_ts,
+                redacted: None,
             },
         }
     }
