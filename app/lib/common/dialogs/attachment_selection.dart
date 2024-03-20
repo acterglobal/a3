@@ -72,10 +72,13 @@ void showAttachmentSelection(
                 );
               }
             },
-            onTapFile: () => _onTapFileSelection(
-              context,
-              manager,
-            ),
+            onTapFile: () {
+              Navigator.of(context).pop();
+              _onTapFileSelection(
+                context,
+                manager,
+              );
+            },
           ),
         );
 }
@@ -98,7 +101,6 @@ void _onTapFileSelection(
     }).toList();
 
     if (context.mounted) {
-      Navigator.of(context).pop();
       attachmentConfirmationDialog(
         context,
         manager,

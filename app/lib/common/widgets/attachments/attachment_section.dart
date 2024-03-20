@@ -52,8 +52,7 @@ class AttachmentSectionWidget extends ConsumerWidget {
                 runSpacing: 10.0,
                 children: <Widget>[
                   if (list.isNotEmpty)
-                    for (var item in list)
-                      _buildAttachmentItem(context, item, canRedact),
+                    for (var item in list) _buildAttachmentItem(context, item),
                   if (canPostAttachment!)
                     _buildAddAttachment(context, attachmentManager),
                 ],
@@ -76,7 +75,6 @@ class AttachmentSectionWidget extends ConsumerWidget {
   Widget _buildAttachmentItem(
     BuildContext context,
     Attachment item,
-    bool? canRedact,
   ) {
     final eventId = item.attachmentIdStr();
     final roomId = item.roomIdStr();
