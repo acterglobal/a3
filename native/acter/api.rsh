@@ -1987,6 +1987,9 @@ object Member {
     /// Full user_id
     fn user_id() -> UserId;
 
+    /// RoomId this member is attachd to
+    fn room_id_str() -> string;
+
     /// The status of this member.
     fn membership_status_str() -> string;
 
@@ -2005,6 +2008,15 @@ object Member {
 
     /// remove this member from ignore list
     fn unignore() -> Future<Result<bool>>;
+
+    /// kick this member from this room
+    fn kick(msg: Option<string>) -> Future<Result<bool>>;
+
+    /// ban this member from this room
+    fn ban(msg: Option<string>) -> Future<Result<bool>>;
+
+    /// remove the member ban from this room
+    fn unban(msg: Option<string>) -> Future<Result<bool>>;
 }
 
 object Account {
