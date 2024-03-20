@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:acter/common/models/sync_state/sync_state.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/features/cross_signing/cross_signing.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -21,7 +20,6 @@ class SyncNotifier extends StateNotifier<SyncState> {
   late Stream<String> _errorListener;
   late StreamSubscription<String> _errorPoller;
   Timer? _retryTimer;
-  late CrossSigning crossSigning;
 
   SyncNotifier(this.client, this.ref)
       : super(const SyncState(initialSync: true)) {
@@ -49,8 +47,6 @@ class SyncNotifier extends StateNotifier<SyncState> {
 
   void _restartSync() {
     _log.info('restart sync');
-
-    crossSigning = CrossSigning(client, ref);
 
     syncState = client.startSync();
     if (_retryTimer != null) {

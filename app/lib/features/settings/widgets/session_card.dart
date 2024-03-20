@@ -1,4 +1,5 @@
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/features/cross_signing/providers/verification_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -150,7 +151,9 @@ class SessionCard extends ConsumerWidget {
     await client.installRequestEventHandler(event.flowId());
 
     // force request.created, because above loop starts from request.ready
-    final crossSigning = ref.read(syncStateProvider.notifier).crossSigning;
-    crossSigning.emitEvent<VerificationEvent>('request.created', event);
+    // final crossSigning = ref.read(syncStateProvider.notifier).crossSigning;
+    // crossSigning.emitEvent<VerificationEvent>('request.created', event);
+    final notifier = ref.read(verificationStateProvider.notifier);
+    notifier.launchFlow(event);
   }
 }
