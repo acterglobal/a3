@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class LogoWidget extends StatelessWidget {
   final double height;
@@ -12,8 +13,8 @@ class LogoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Image.asset(
-      'assets/icon/logo_foreground.png',
+    return SvgPicture.asset(
+      'assets/icon/logo_foreground.svg',
       height: height,
       width: width,
     );

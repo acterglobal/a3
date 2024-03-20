@@ -337,7 +337,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             ),
             recognizer: TapGestureRecognizer()
               ..onTap = () {
-                debugPrint(L10n.of(context).termsOfService);
+                _log.info(L10n.of(context).termsOfService);
               },
             text: L10n.of(context).termsOfService,
           ),
@@ -348,7 +348,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             ),
             recognizer: TapGestureRecognizer()
               ..onTap = () {
-                debugPrint(L10n.of(context).privacyPolicy);
+                _log.info(L10n.of(context).privacyPolicy);
               },
             text: L10n.of(context).privacyPolicy,
           ),
