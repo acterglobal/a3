@@ -23,6 +23,8 @@ static ALL_MODELS_KEY: &str = "ACTER::ALL";
 static DB_VERSION_KEY: &str = "ACTER::DB_VERSION";
 static CURRENT_DB_VERSION: u32 = 1;
 
+type ModelKeysAndIndizes = (Vec<String>, Vec<String>);
+
 async fn get_from_store<T: serde::de::DeserializeOwned>(client: Client, key: &str) -> Result<T> {
     let v = client
         .store()
@@ -192,12 +194,13 @@ impl Store {
     #[instrument(skip(self))]
     async fn save_model_inner(&self, mdl: AnyActerModel) -> Result<Vec<String>> {
         let mut dirty = self.dirty.lock()?; // hold the lock
-        let keys = self.model_inner_under_lock(mdl)?;
+        let (mut keys, indizes) = self.model_inner_under_lock(mdl)?;
         dirty.extend(keys.clone());
+        keys.extend(indizes);
         Ok(keys)
     }
 
-    fn model_inner_under_lock(&self, mdl: AnyActerModel) -> Result<Vec<String>> {
+    fn model_inner_under_lock(&self, mdl: AnyActerModel) -> Result<ModelKeysAndIndizes> {
         let key = mdl.event_id().to_string();
         let user_id = self.user_id();
         let mut keys_changed = vec![key.clone()];
@@ -229,8 +232,8 @@ impl Store {
             }
         }
 
-        for idx in indizes.into_iter() {
-            trace!(user = ?self.user_id, idx, key, exists=self.indizes.contains(&idx), "adding to index");
+        for idx in indizes.iter() {
+            trace!(user = ?self.user_id, idx, key, exists=self.indizes.contains(idx), "adding to index");
             match self.indizes.entry(idx.clone()) {
                 Entry::Vacant(v) => {
                     v.insert_entry(vec![key.clone()]);
@@ -240,10 +243,9 @@ impl Store {
                 }
             }
             trace!(user = ?self.user_id, idx, key, "added to index");
-            keys_changed.push(idx);
         }
         trace!(user=?self.user_id, key, ?keys_changed, "saved");
-        Ok(keys_changed)
+        Ok((keys_changed, indizes))
     }
 
     pub async fn save_many(&self, models: Vec<AnyActerModel>) -> Result<Vec<String>> {
@@ -251,9 +253,11 @@ impl Store {
         {
             let mut dirty = self.dirty.lock()?; // hold the lock
             for mdl in models.into_iter() {
-                total_list.extend(self.model_inner_under_lock(mdl)?);
+                let (keys, indizes) = self.model_inner_under_lock(mdl)?;
+                dirty.extend(keys.clone());
+                total_list.extend(keys);
+                total_list.extend(indizes);
             }
-            dirty.extend(total_list.clone());
         }
         self.sync().await?; // FIXME: should we really run this every time?
         Ok(total_list)

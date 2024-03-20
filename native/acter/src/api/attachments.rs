@@ -1,11 +1,11 @@
 use acter_core::{
-    events::attachments::{AttachmentBuilder, AttachmentContent},
+    events::attachments::{AttachmentBuilder, AttachmentContent, FallbackAttachmentContent},
     models::{self, ActerModel, AnyActerModel},
 };
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, Client as SdkClient, RoomState};
-use ruma_common::{OwnedEventId, OwnedUserId};
+use ruma_common::{OwnedEventId, OwnedTransactionId, OwnedUserId};
 use ruma_events::{
     room::message::{
         AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
@@ -13,10 +13,10 @@ use ruma_events::{
     },
     MessageLikeEventType,
 };
-use std::{ops::Deref, path::PathBuf};
+use std::{ops::Deref, path::PathBuf, str::FromStr};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::Stream;
-use tracing::warn;
+use tracing::{trace, warn};
 
 use super::{
     api::FfiBuffer, client::Client, common::ThumbnailSize, stream::MsgContentDraft, RUNTIME,
@@ -67,12 +67,20 @@ impl Deref for Attachment {
 }
 
 impl Attachment {
+    pub fn attachment_id_str(&self) -> String {
+        self.inner.meta.event_id.to_string()
+    }
+
+    pub fn room_id_str(&self) -> String {
+        self.room.room_id().to_string()
+    }
+
     pub fn type_str(&self) -> String {
         self.inner.content().type_str()
     }
 
-    pub fn sender(&self) -> OwnedUserId {
-        self.inner.meta.sender.clone()
+    pub fn sender(&self) -> String {
+        self.inner.meta.sender.to_string()
     }
 
     pub fn origin_server_ts(&self) -> u64 {
@@ -89,22 +97,26 @@ impl Attachment {
     ) -> Result<FfiBuffer<u8>> {
         // any variable in self can't be called directly in spawn
         match &self.inner.content {
-            AttachmentContent::Image(content) => match thumb_size {
-                Some(thumb_size) => {
-                    let source = content
-                        .info
-                        .as_ref()
-                        .and_then(|info| info.thumbnail_source.clone())
-                        .context("thumbnail source not found")?;
-                    self.client.source_binary(source, Some(thumb_size)).await
+            AttachmentContent::Image(content)
+            | AttachmentContent::Fallback(FallbackAttachmentContent::Image(content)) => {
+                match thumb_size {
+                    Some(thumb_size) => {
+                        let source = content
+                            .info
+                            .as_ref()
+                            .and_then(|info| info.thumbnail_source.clone())
+                            .context("thumbnail source not found")?;
+                        self.client.source_binary(source, Some(thumb_size)).await
+                    }
+                    None => {
+                        self.client
+                            .source_binary(content.source.clone(), None)
+                            .await
+                    }
                 }
-                None => {
-                    self.client
-                        .source_binary(content.source.clone(), None)
-                        .await
-                }
-            },
-            AttachmentContent::Audio(content) => {
+            }
+            AttachmentContent::Audio(content)
+            | AttachmentContent::Fallback(FallbackAttachmentContent::Audio(content)) => {
                 if thumb_size.is_some() {
                     warn!("DeveloperError: audio has not thumbnail");
                 }
@@ -112,37 +124,44 @@ impl Attachment {
                     .source_binary(content.source.clone(), None)
                     .await
             }
-            AttachmentContent::Video(content) => match thumb_size {
-                Some(thumb_size) => {
-                    let source = content
-                        .info
-                        .as_ref()
-                        .and_then(|info| info.thumbnail_source.clone())
-                        .context("thumbnail source not found")?;
-                    self.client.source_binary(source, Some(thumb_size)).await
+            AttachmentContent::Video(content)
+            | AttachmentContent::Fallback(FallbackAttachmentContent::Video(content)) => {
+                match thumb_size {
+                    Some(thumb_size) => {
+                        let source = content
+                            .info
+                            .as_ref()
+                            .and_then(|info| info.thumbnail_source.clone())
+                            .context("thumbnail source not found")?;
+                        self.client.source_binary(source, Some(thumb_size)).await
+                    }
+                    None => {
+                        self.client
+                            .source_binary(content.source.clone(), None)
+                            .await
+                    }
                 }
-                None => {
-                    self.client
-                        .source_binary(content.source.clone(), None)
-                        .await
+            }
+            AttachmentContent::File(content)
+            | AttachmentContent::Fallback(FallbackAttachmentContent::File(content)) => {
+                match thumb_size {
+                    Some(thumb_size) => {
+                        let source = content
+                            .info
+                            .as_ref()
+                            .and_then(|info| info.thumbnail_source.clone())
+                            .context("thumbnail source not found")?;
+                        self.client.source_binary(source, Some(thumb_size)).await
+                    }
+                    None => {
+                        self.client
+                            .source_binary(content.source.clone(), None)
+                            .await
+                    }
                 }
-            },
-            AttachmentContent::File(content) => match thumb_size {
-                Some(thumb_size) => {
-                    let source = content
-                        .info
-                        .as_ref()
-                        .and_then(|info| info.thumbnail_source.clone())
-                        .context("thumbnail source not found")?;
-                    self.client.source_binary(source, Some(thumb_size)).await
-                }
-                None => {
-                    self.client
-                        .source_binary(content.source.clone(), None)
-                        .await
-                }
-            },
-            AttachmentContent::Location(content) => {
+            }
+            AttachmentContent::Location(content)
+            | AttachmentContent::Fallback(FallbackAttachmentContent::Location(content)) => {
                 if thumb_size.is_none() {
                     warn!("DeveloperError: location has not file");
                 }
@@ -244,6 +263,37 @@ impl AttachmentsManager {
             self.inner.event_id(),
         )
         .await
+    }
+
+    pub async fn redact(
+        &self,
+        attachment_id: String,
+        reason: Option<String>,
+        txn_id: Option<String>,
+    ) -> Result<OwnedEventId> {
+        let room = self.room.clone();
+        let stats = self.inner.stats();
+        let has_entry = self
+            .stats()
+            .user_attachments
+            .into_iter()
+            .any(|inner| OwnedEventId::to_string(&inner) == attachment_id);
+
+        if !has_entry {
+            bail!("attachment doesn't exist");
+        }
+
+        let event_id = OwnedEventId::from_str(&attachment_id).expect("invalid event ID");
+        let txn_id = txn_id.map(OwnedTransactionId::from);
+
+        RUNTIME
+            .spawn(async move {
+                trace!("before redacting attachment");
+                let response = room.redact(&event_id, reason.as_deref(), txn_id).await?;
+                trace!("after redacting attachment");
+                Ok(response.event_id)
+            })
+            .await?
     }
 
     pub async fn attachments(&self) -> Result<Vec<Attachment>> {

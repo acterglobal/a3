@@ -100,6 +100,7 @@ impl From<OriginalMessageLikeEvent<PinEventContent>> for Pin {
                 event_id,
                 sender,
                 origin_server_ts,
+                redacted: None,
             },
         }
     }
@@ -153,6 +154,7 @@ impl From<OriginalMessageLikeEvent<PinUpdateEventContent>> for PinUpdate {
                 event_id,
                 sender,
                 origin_server_ts,
+                redacted: None,
             },
         }
     }

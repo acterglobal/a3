@@ -193,6 +193,8 @@ class PinPage extends ConsumerWidget {
 
   Widget _buildAttachmentBody(ActerPin pin) {
     var canPostAttachment = false;
+    var canRedact = false;
+
     return Consumer(
       builder: (context, ref, child) {
         final spaceId = pin.roomIdStr();
@@ -203,6 +205,10 @@ class PinPage extends ConsumerWidget {
           if (memb.canString('CanPostPin')) {
             canPostAttachment = true;
           }
+          if (memb.canString('CanRedactOwn') &&
+              memb.userId().toString() == pin.sender().toString()) {
+            canRedact = true;
+          }
         }
 
         return asyncManager.when(
@@ -210,6 +216,7 @@ class PinPage extends ConsumerWidget {
             return AttachmentSectionWidget(
               attachmentManager: manager,
               canPostAttachment: canPostAttachment,
+              canRedact: canRedact,
             );
           },
           error: (err, st) => Text('Error loading attachments $err'),

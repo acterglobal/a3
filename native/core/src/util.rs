@@ -9,3 +9,15 @@ where
 {
     Deserialize::deserialize(deserializer).map(Some)
 }
+
+/// This is only used for serialize
+#[allow(clippy::trivially_copy_pass_by_ref)]
+pub(crate) fn is_zero(num: &u32) -> bool {
+    *num == 0
+}
+
+/// This is only used for serialize
+#[allow(clippy::trivially_copy_pass_by_ref)]
+pub(crate) fn is_false(val: &bool) -> bool {
+    !(*val)
+}

@@ -304,7 +304,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
 
   Widget _convoMembersList() {
     final convo = ref.watch(chatProvider(widget.roomId));
-    final members = ref.watch(chatMembersProvider(widget.roomId));
+    final members = ref.watch(membersIdsProvider(widget.roomId));
 
     return Container(
       width: double.infinity,

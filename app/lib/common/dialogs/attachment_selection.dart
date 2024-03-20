@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:acter/common/dialogs/attachment_confirmation.dart';
+import 'package:acter/common/models/types.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/attachments/attachment_options.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
@@ -27,6 +28,7 @@ void showAttachmentSelection(
                 File file = File(imageFile.path);
 
                 if (context.mounted) {
+                  Navigator.of(context).pop();
                   attachmentConfirmationDialog(
                     context,
                     manager,
@@ -45,6 +47,7 @@ void showAttachmentSelection(
               }
 
               if (context.mounted) {
+                Navigator.of(context).pop();
                 attachmentConfirmationDialog(
                   context,
                   manager,
@@ -61,6 +64,7 @@ void showAttachmentSelection(
                 newAttachments.add((type: AttachmentType.video, file: file));
               }
               if (context.mounted) {
+                Navigator.of(context).pop();
                 attachmentConfirmationDialog(
                   context,
                   manager,
@@ -68,10 +72,13 @@ void showAttachmentSelection(
                 );
               }
             },
-            onTapFile: () => _onTapFileSelection(
-              context,
-              manager,
-            ),
+            onTapFile: () {
+              Navigator.of(context).pop();
+              _onTapFileSelection(
+                context,
+                manager,
+              );
+            },
           ),
         );
 }

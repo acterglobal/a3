@@ -11,6 +11,8 @@ use std::ops::Deref;
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 
+use crate::MsgContent;
+
 use super::{client::Client, RUNTIME};
 
 impl Client {
@@ -75,12 +77,8 @@ impl Comment {
         self.inner.meta.origin_server_ts.get().into()
     }
 
-    pub fn content_text(&self) -> String {
-        self.inner.content.body.clone()
-    }
-
-    pub fn content_formatted(&self) -> Option<String> {
-        self.inner.content.formatted.clone().map(|f| f.body)
+    pub fn msg_content(&self) -> MsgContent {
+        (&self.inner.content).into()
     }
 }
 
@@ -150,6 +148,13 @@ impl CommentsManager {
 
     pub fn stats(&self) -> models::CommentsStats {
         self.inner.stats().clone()
+    }
+
+    pub async fn reload(&self) -> Result<CommentsManager> {
+        let client = self.client.clone();
+        let room = self.room.clone();
+        let event_id = self.inner.event_id().clone();
+        CommentsManager::new(client, room, event_id).await
     }
 
     pub fn has_comments(&self) -> bool {

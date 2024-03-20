@@ -2,10 +2,8 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 
-import 'package:acter/common/models/profile_data.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -282,6 +280,7 @@ enum LabsFeature {
   cobudget,
   polls,
   discussions,
+  comments,
 
   // searchOptions
   showNotifications, // FIXME: old name for desktop notifications
@@ -294,10 +293,9 @@ enum LabsFeature {
       ];
 }
 
-enum AttachmentType { camera, image, audio, video, location, file }
 
-typedef ChatWithProfileData = ({Convo chat, ProfileData profile});
-typedef SpaceWithProfileData = ({Space space, ProfileData profile});
-typedef MemberInfo = ({String userId, String? roomId});
-typedef ChatMessageInfo = ({String messageId, String roomId});
-typedef AttachmentInfo = ({AttachmentType type, File file});
+// typedef ChatWithProfileData = ({Convo chat, ProfileData profile});
+// typedef SpaceWithProfileData = ({Space space, ProfileData profile});
+// typedef MemberInfo = ({String userId, String? roomId});
+// typedef ChatMessageInfo = ({String messageId, String roomId});
+// typedef AttachmentInfo = ({AttachmentType type, File file});
