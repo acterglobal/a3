@@ -48,7 +48,7 @@ class IntroPage extends StatelessWidget {
                 ),
             children: <TextSpan>[
               TextSpan(
-                text: '\n${L10n.of(context).acter}!',
+                text: '\n${L10n.of(context).appName('')}!',
               ),
             ],
           ),

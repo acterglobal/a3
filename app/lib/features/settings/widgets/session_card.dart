@@ -18,7 +18,9 @@ class SessionCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     bool isVerified = deviceRecord.isVerified();
-    final fields = [isVerified ? 'Verified' : 'Unverified'];
+    final fields = [
+      isVerified ? L10n.of(context).verified : L10n.of(context).unverified,
+    ];
     final lastSeenTs = deviceRecord.lastSeenTs();
     if (lastSeenTs != null) {
       final dateTime = DateTime.fromMillisecondsSinceEpoch(
@@ -95,22 +97,24 @@ class SessionCard extends ConsumerWidget {
       context: context,
       builder: (BuildContext ctx) {
         return AlertDialog(
-          title: const Text('Authentication required'),
+          title: Text(L10n.of(context).authenticationRequired),
           content: Wrap(
             children: [
-              const Text(
-                'Please provide your user password to confirm you want to end that session.',
+              Text(
+                L10n.of(context).pleaseProvideYourUserPassword,
               ),
               TextField(
                 controller: passwordController,
                 obscureText: true,
-                decoration: const InputDecoration(hintText: 'Password'),
+                decoration: InputDecoration(
+                  hintText: L10n.of(context).password,
+                ),
               ),
             ],
           ),
           actions: [
             OutlinedButton(
-              child: const Text('Cancel'),
+              child: Text(L10n.of(context).cancel),
               onPressed: () {
                 if (ctx.mounted) {
                   // remove pop up
@@ -119,7 +123,7 @@ class SessionCard extends ConsumerWidget {
               },
             ),
             ElevatedButton(
-              child: const Text('Ok'),
+              child: Text(L10n.of(context).ok),
               onPressed: () {
                 if (passwordController.text.isEmpty) {
                   return;
