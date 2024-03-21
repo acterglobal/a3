@@ -151,8 +151,6 @@ class SessionCard extends ConsumerWidget {
     await client.installRequestEventHandler(event.flowId());
 
     // force request.created, because above loop starts from request.ready
-    // final crossSigning = ref.read(syncStateProvider.notifier).crossSigning;
-    // crossSigning.emitEvent<VerificationEvent>('request.created', event);
     final notifier = ref.read(verificationStateProvider.notifier);
     notifier.launchFlow(event);
   }

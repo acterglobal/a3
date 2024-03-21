@@ -72,12 +72,6 @@ class HomeShellState extends ConsumerState<HomeShell> {
 
   @override
   Widget build(BuildContext context) {
-    // ref.listen(syncStateProvider, (prev, next) {
-    //   if (next.initialSync) return;
-    //   final crossSigning = ref.read(syncStateProvider.notifier).crossSigning;
-    //   crossSigning.installEventFilter(context);
-    // });
-
     // get platform of context.
     final client = ref.watch(clientProvider);
     if (client == null) {

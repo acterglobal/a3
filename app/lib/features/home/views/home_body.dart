@@ -49,11 +49,6 @@ class HomeBodyState extends ConsumerState<HomeBody> {
   final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     ref.listen(verificationStateProvider, onStateChange);
     final bottomBarNav = ref.watch(bottomBarNavProvider(context));
