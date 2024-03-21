@@ -2,11 +2,11 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
-class SasStartedPage extends StatelessWidget {
+class SasStartedView extends StatelessWidget {
   final bool isVerifier;
   final Function(BuildContext) onCancel;
 
-  const SasStartedPage({
+  const SasStartedView({
     super.key,
     required this.isVerifier,
     required this.onCancel,

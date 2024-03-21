@@ -2,12 +2,12 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
-class RequestReadyPage extends StatelessWidget {
+class RequestReadyView extends StatelessWidget {
   final bool isVerifier;
   final Function(BuildContext) onCancel;
   final Function(BuildContext) onAccept;
 
-  const RequestReadyPage({
+  const RequestReadyView({
     super.key,
     required this.isVerifier,
     required this.onCancel,

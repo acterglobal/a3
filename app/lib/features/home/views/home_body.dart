@@ -55,8 +55,10 @@ class HomeBodyState extends ConsumerState<HomeBody> {
   @override
   Widget build(BuildContext context) {
     ref.listen(verificationStateProvider, onStateChange);
+
     final bottomBarNav = ref.watch(bottomBarNavProvider(context));
     final keyboardVisibility = ref.watch(keyboardVisibleProvider);
+
     return CallbackShortcuts(
       bindings: <LogicalKeySet, VoidCallback>{
         LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyK): () {
@@ -223,7 +225,7 @@ class HomeBodyState extends ConsumerState<HomeBody> {
     // open request.created dialog
     showModalBottomSheet(
       context: context,
-      builder: (BuildContext context) => RequestCreatedPage(
+      builder: (BuildContext context) => RequestCreatedView(
         onCancel: (BuildContext context) async {
           // cancel verification request launched by this device
           await event.cancelVerificationRequest();
@@ -249,7 +251,7 @@ class HomeBodyState extends ConsumerState<HomeBody> {
     // open request.ready dialog
     showModalBottomSheet(
       context: context,
-      builder: (BuildContext context) => RequestReadyPage(
+      builder: (BuildContext context) => RequestReadyView(
         isVerifier: isVerifier,
         onCancel: (BuildContext context) async {
           await event.cancelVerificationRequest(); // occurs request.cancelled
@@ -282,7 +284,7 @@ class HomeBodyState extends ConsumerState<HomeBody> {
     // open request.done dialog
     showModalBottomSheet(
       context: context,
-      builder: (BuildContext context) => RequestDonePage(
+      builder: (BuildContext context) => RequestDoneView(
         sender: event.sender(),
         isVerifier: isVerifier,
         onDone: onFlowFinished,
@@ -311,7 +313,7 @@ class HomeBodyState extends ConsumerState<HomeBody> {
     // open request.cancel dialog
     showModalBottomSheet(
       context: context,
-      builder: (BuildContext context) => RequestCancelledPage(
+      builder: (BuildContext context) => RequestCancelledView(
         sender: event.sender(),
         isVerifier: isVerifier,
         message: reason,
@@ -337,7 +339,7 @@ class HomeBodyState extends ConsumerState<HomeBody> {
     // open verification.request dialog
     showModalBottomSheet(
       context: context,
-      builder: (BuildContext context) => VerificationRequestPage(
+      builder: (BuildContext context) => VerificationRequestView(
         sender: event.sender(),
         onCancel: (BuildContext context) async {
           // cancel verification request from other device
@@ -370,7 +372,7 @@ class HomeBodyState extends ConsumerState<HomeBody> {
     // open sas.started dialog
     showModalBottomSheet(
       context: context,
-      builder: (BuildContext context) => SasStartedPage(
+      builder: (BuildContext context) => SasStartedView(
         isVerifier: isVerifier,
         onCancel: (BuildContext context) async {
           await event.cancelSasVerification();
@@ -391,7 +393,7 @@ class HomeBodyState extends ConsumerState<HomeBody> {
     // open sas.accept dialog
     showModalBottomSheet(
       context: context,
-      builder: (BuildContext context) => SasAcceptedPage(
+      builder: (BuildContext context) => SasAcceptedView(
         sender: event.sender(),
         isVerifier: isVerifier,
       ),
@@ -419,7 +421,7 @@ class HomeBodyState extends ConsumerState<HomeBody> {
     // open sas.cancelled dialog
     showModalBottomSheet(
       context: context,
-      builder: (BuildContext context) => SasCancelledPage(
+      builder: (BuildContext context) => SasCancelledView(
         sender: event.sender(),
         isVerifier: isVerifier,
         message: reason,
@@ -444,7 +446,7 @@ class HomeBodyState extends ConsumerState<HomeBody> {
       // open sas.keys_exchanged dialog
       showModalBottomSheet(
         context: context,
-        builder: (BuildContext context) => SasKeysExchangedPage(
+        builder: (BuildContext context) => SasKeysExchangedView(
           sender: event.sender(),
           isVerifier: isVerifier,
           emojis: event.emojis(),
@@ -469,7 +471,7 @@ class HomeBodyState extends ConsumerState<HomeBody> {
         // open sas.keys_exchanged dialog
         showModalBottomSheet(
           context: context,
-          builder: (BuildContext context) => SasKeysExchangedPage(
+          builder: (BuildContext context) => SasKeysExchangedView(
             sender: event.sender(),
             isVerifier: isVerifier,
             emojis: emojis,

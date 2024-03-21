@@ -3,7 +3,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
-class SasKeysExchangedPage extends StatelessWidget {
+class SasKeysExchangedView extends StatelessWidget {
   final String sender;
   final bool isVerifier;
   final FfiListVerificationEmoji emojis;
@@ -11,7 +11,7 @@ class SasKeysExchangedPage extends StatelessWidget {
   final Function(BuildContext) onMatch;
   final Function(BuildContext) onMismatch;
 
-  const SasKeysExchangedPage({
+  const SasKeysExchangedView({
     super.key,
     required this.sender,
     required this.isVerifier,

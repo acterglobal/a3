@@ -2,13 +2,13 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
-class RequestCancelledPage extends StatelessWidget {
+class RequestCancelledView extends StatelessWidget {
   final String sender;
   final bool isVerifier;
   final String? message;
   final Function(BuildContext) onDone;
 
-  const RequestCancelledPage({
+  const RequestCancelledView({
     super.key,
     required this.sender,
     required this.isVerifier,

@@ -2,13 +2,13 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
-class SasCancelledPage extends StatelessWidget {
+class SasCancelledView extends StatelessWidget {
   final String sender;
   final bool isVerifier;
   final String? message;
   final Function(BuildContext) onDone;
 
-  const SasCancelledPage({
+  const SasCancelledView({
     super.key,
     required this.sender,
     required this.isVerifier,

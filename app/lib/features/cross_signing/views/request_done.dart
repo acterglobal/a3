@@ -2,12 +2,12 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
-class RequestDonePage extends StatelessWidget {
+class RequestDoneView extends StatelessWidget {
   final bool isVerifier;
   final String sender;
   final Function(BuildContext) onDone;
 
-  const RequestDonePage({
+  const RequestDoneView({
     super.key,
     required this.sender,
     required this.isVerifier,

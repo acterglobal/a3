@@ -2,11 +2,11 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
-class SasAcceptedPage extends StatelessWidget {
+class SasAcceptedView extends StatelessWidget {
   final String sender;
   final bool isVerifier;
 
-  const SasAcceptedPage({
+  const SasAcceptedView({
     super.key,
     required this.sender,
     required this.isVerifier,
