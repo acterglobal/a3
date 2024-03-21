@@ -48,6 +48,10 @@ class HomeBody extends ConsumerStatefulWidget {
 class HomeBodyState extends ConsumerState<HomeBody> {
   final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
 
+  bool isVerifier = false; // whether this device requested verification
+  String? flowId; // if not null, verification flying now
+  bool keysExchanged = false;
+
   @override
   Widget build(BuildContext context) {
     ref.listen(verificationStateProvider, onStateChange);
@@ -148,7 +152,6 @@ class HomeBodyState extends ConsumerState<HomeBody> {
   }
 
   void onStateChange(VerificationState? prev, VerificationState next) {
-    if (prev == next) return; // avoid too frequent callbacks
     switch (next.stage) {
       case 'verification.init':
         onVerificationInit();
@@ -160,16 +163,16 @@ class HomeBodyState extends ConsumerState<HomeBody> {
         onRequestRequested(next.event!);
         break;
       case 'request.ready':
-        onRequestReady(next.event!, next.isVerifier);
+        onRequestReady(next.event!);
         break;
       case 'request.transitioned':
         onRequestTransitioned(next.event!);
         break;
       case 'request.done':
-        onRequestDone(next.event!, next.isVerifier);
+        onRequestDone(next.event!);
         break;
       case 'request.cancelled':
-        onRequestCancelled(next.event!, next.isVerifier, next.flowId);
+        onRequestCancelled(next.event!);
         break;
       case 'verification.request':
         onVerificationRequest(next.event!);
@@ -178,16 +181,16 @@ class HomeBodyState extends ConsumerState<HomeBody> {
         onVerificationReady(next.event!);
         break;
       case 'sas.started':
-        onSasStarted(next.event!, next.isVerifier);
+        onSasStarted(next.event!);
         break;
       case 'sas.accepted':
-        onSasAccepted(next.event!, next.isVerifier);
+        onSasAccepted(next.event!);
         break;
       case 'sas.cancelled':
-        onSasCancelled(next.event!, next.isVerifier, next.flowId);
+        onSasCancelled(next.event!);
         break;
       case 'sas.keys_exchanged':
-        onSasKeysExchanged(next.event!, next.isVerifier, next.keysExchanged);
+        onSasKeysExchanged(next.event!);
         break;
       case 'sas.confirmed':
         onSasConfirmed(next.event!);
@@ -211,10 +214,9 @@ class HomeBodyState extends ConsumerState<HomeBody> {
     _log.info('emitter request.created');
 
     // starting of active verification
-    final notifier = ref.read(verificationStateProvider.notifier);
-    final flowId = event.flowId();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      notifier.changeState(isVerifier: true, flowId: flowId);
+    setState(() {
+      isVerifier = true;
+      flowId = event.flowId();
     });
 
     // open request.created dialog
@@ -236,7 +238,7 @@ class HomeBodyState extends ConsumerState<HomeBody> {
   }
 
   // both of verifier & verifiee
-  void onRequestReady(VerificationEvent event, bool isVerifier) {
+  void onRequestReady(VerificationEvent event) {
     _log.info('emitter request.ready');
 
     // close dialog from previous stage, ex: verification.request
@@ -268,12 +270,9 @@ class HomeBodyState extends ConsumerState<HomeBody> {
     client.installSasEventHandler(event.flowId());
   }
 
-  void onRequestDone(VerificationEvent event, bool isVerifier) {
+  void onRequestDone(VerificationEvent event) {
     _log.info('emitter request.done');
-    final notifier = ref.read(verificationStateProvider.notifier);
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      notifier.changeState(flowId: null); // this event occurs before sas.done
-    });
+    setState(() => flowId = null); // this event occurs before sas.done
 
     // close dialog from previous stage, ex: sas.keys_exchanged
     final nav = Navigator.of(context, rootNavigator: true);
@@ -285,26 +284,19 @@ class HomeBodyState extends ConsumerState<HomeBody> {
       builder: (BuildContext context) => RequestDonePage(
         sender: event.sender(),
         isVerifier: isVerifier,
-        onDone: (BuildContext context) => notifier.finishFlow(),
+        onDone: onFlowFinished,
       ),
       isDismissible: false,
     );
   }
 
   // both of verifier & verifiee get this event when verification was cancelled before start
-  void onRequestCancelled(
-    VerificationEvent event,
-    bool isVerifier,
-    String? flowId,
-  ) {
+  void onRequestCancelled(VerificationEvent event) {
     _log.info('emitter request.cancelled');
     if (flowId == null) {
       return; // already finished due to sas.cancelled happened just before
     }
-    final notifier = ref.read(verificationStateProvider.notifier);
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      notifier.changeState(flowId: null);
-    });
+    setState(() => flowId = null);
 
     // close dialog from previous stage, ex: request.transitioned
     final nav = Navigator.of(context, rootNavigator: true);
@@ -322,7 +314,7 @@ class HomeBodyState extends ConsumerState<HomeBody> {
         sender: event.sender(),
         isVerifier: isVerifier,
         message: reason,
-        onDone: (BuildContext context) => notifier.finishFlow(),
+        onDone: onFlowFinished,
       ),
       isDismissible: false,
     );
@@ -332,15 +324,14 @@ class HomeBodyState extends ConsumerState<HomeBody> {
     _log.info('emitter verification.request');
 
     // starting of verifiee's flow
-    final notifier = ref.read(verificationStateProvider.notifier);
-    final flowId = event.flowId();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      notifier.changeState(isVerifier: false, flowId: flowId);
+    setState(() {
+      isVerifier = false;
+      flowId = event.flowId();
     });
 
     // start request event loop
     final client = ref.read(alwaysClientProvider);
-    client.installRequestEventHandler(flowId);
+    client.installRequestEventHandler(flowId!);
 
     // open verification.request dialog
     showModalBottomSheet(
@@ -365,7 +356,7 @@ class HomeBodyState extends ConsumerState<HomeBody> {
   }
 
   // verifiee gets this event when verifier clicked start
-  void onSasStarted(VerificationEvent event, bool isVerifier) {
+  void onSasStarted(VerificationEvent event) {
     _log.info('emitter sas.started');
 
     // close dialog from previous stage, ex: request.transitioned
@@ -389,7 +380,7 @@ class HomeBodyState extends ConsumerState<HomeBody> {
   }
 
   // verifiee gets this event when verifiee clicked start
-  void onSasAccepted(VerificationEvent event, bool isVerifier) {
+  void onSasAccepted(VerificationEvent event) {
     _log.info('emitter sas.accepted');
 
     // close dialog from previous stage, ex: request.transitioned
@@ -408,19 +399,12 @@ class HomeBodyState extends ConsumerState<HomeBody> {
   }
 
   // both of verifier & verifiee get this event when verification was cancelled after start
-  void onSasCancelled(
-    VerificationEvent event,
-    bool isVerifier,
-    String? flowId,
-  ) {
+  void onSasCancelled(VerificationEvent event) {
     _log.info('emitter sas.cancelled');
     if (flowId == null) {
       return; // already finished due to request.cancelled happened just before
     }
-    final notifier = ref.read(verificationStateProvider.notifier);
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      notifier.changeState(flowId: null);
-    });
+    setState(() => flowId = null);
 
     // close dialog from previous stage, ex: sas.keys_exchanged
     final nav = Navigator.of(context, rootNavigator: true);
@@ -438,25 +422,18 @@ class HomeBodyState extends ConsumerState<HomeBody> {
         sender: event.sender(),
         isVerifier: isVerifier,
         message: reason,
-        onDone: (BuildContext context) => notifier.finishFlow(),
+        onDone: onFlowFinished,
       ),
       isDismissible: false,
     );
   }
 
-  void onSasKeysExchanged(
-    VerificationEvent event,
-    bool isVerifier,
-    bool keysExchanged,
-  ) {
+  void onSasKeysExchanged(VerificationEvent event) {
     _log.info('emitter sas.keys_exchanged');
     if (keysExchanged) {
       return; // skip 2nd occurrence of this event when other clicked match
     }
-    final notifier = ref.read(verificationStateProvider.notifier);
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      notifier.changeState(keysExchanged: true);
-    });
+    setState(() => keysExchanged = true);
 
     // close dialog from previous stage, ex: sas.started
     final nav = Navigator.of(context, rootNavigator: true);
@@ -519,5 +496,14 @@ class HomeBodyState extends ConsumerState<HomeBody> {
 
   void onSasDone(VerificationEvent event) {
     _log.info('emitter sas.done');
+  }
+
+  void onFlowFinished(BuildContext context) {
+    setState(() {
+      isVerifier = false;
+      flowId = null;
+      keysExchanged = false;
+    });
+    ref.read(verificationStateProvider.notifier).finishFlow();
   }
 }
