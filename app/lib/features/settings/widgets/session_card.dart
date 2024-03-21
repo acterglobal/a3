@@ -151,7 +151,6 @@ class SessionCard extends ConsumerWidget {
     await client.installRequestEventHandler(event.flowId());
 
     // force request.created, because above loop starts from request.ready
-    final notifier = ref.read(verificationStateProvider.notifier);
-    notifier.launchFlow(event);
+    ref.read(verificationStateProvider.notifier).launchFlow(event);
   }
 }

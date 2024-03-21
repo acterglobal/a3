@@ -130,13 +130,7 @@ class HomeBodyState extends ConsumerState<HomeBody> {
                             showSelectedLabels: false,
                             showUnselectedLabels: false,
                             currentIndex: widget.navigationShell.currentIndex,
-                            onTap: (index) {
-                              widget.navigationShell.goBranch(
-                                index,
-                                initialLocation: index ==
-                                    widget.navigationShell.currentIndex,
-                              );
-                            },
+                            onTap: onBottomNavigated,
                             items: bottomBarNav,
                             type: BottomNavigationBarType.fixed,
                           ),
@@ -148,6 +142,13 @@ class HomeBodyState extends ConsumerState<HomeBody> {
           ),
         ),
       ),
+    );
+  }
+
+  void onBottomNavigated(int index) {
+    widget.navigationShell.goBranch(
+      index,
+      initialLocation: index == widget.navigationShell.currentIndex,
     );
   }
 
