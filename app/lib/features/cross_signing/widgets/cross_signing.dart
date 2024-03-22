@@ -1,7 +1,3 @@
-import 'package:acter/common/providers/keyboard_visbility_provider.dart';
-import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/utils/constants.dart';
-import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/cross_signing/providers/notifiers/verification_notifiers.dart';
 import 'package:acter/features/cross_signing/providers/verification_providers.dart';
 import 'package:acter/features/cross_signing/views/request_cancelled.dart';
@@ -14,40 +10,23 @@ import 'package:acter/features/cross_signing/views/sas_keys_exchanged.dart';
 import 'package:acter/features/cross_signing/views/sas_started.dart';
 import 'package:acter/features/cross_signing/views/verification_request.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/home/providers/navigation.dart';
-import 'package:acter/features/home/widgets/sidebar_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
-import 'package:screenshot/screenshot.dart';
 
-final _log = Logger('a3::home::body');
+final _log = Logger('a3::cross_signing::widget');
 
-const homeShellKey = Key('home-shell');
-ScreenshotController screenshotController = ScreenshotController();
-
-class HomeBody extends ConsumerStatefulWidget {
-  final StatefulNavigationShell navigationShell;
-  final bool hasFirstSynced;
-
-  const HomeBody({
-    super.key = homeShellKey,
-    required this.navigationShell,
-    required this.hasFirstSynced,
-  });
+// this widget has no elements
+// it just pops up stage dialogs for verification
+class CrossSigning extends ConsumerStatefulWidget {
+  const CrossSigning({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => HomeBodyState();
+  ConsumerState<ConsumerStatefulWidget> createState() => CrossSigningState();
 }
 
-class HomeBodyState extends ConsumerState<HomeBody> {
-  final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
-
+class CrossSigningState extends ConsumerState<CrossSigning> {
   bool isVerifier = false; // whether this device requested verification
   String? flowId; // if not null, verification flying now
   bool keysExchanged = false;
@@ -55,103 +34,7 @@ class HomeBodyState extends ConsumerState<HomeBody> {
   @override
   Widget build(BuildContext context) {
     ref.listen(verificationStateProvider, onStateChange);
-
-    final bottomBarNav = ref.watch(bottomBarNavProvider(context));
-    final keyboardVisibility = ref.watch(keyboardVisibleProvider);
-
-    return CallbackShortcuts(
-      bindings: <LogicalKeySet, VoidCallback>{
-        LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyK): () {
-          context.pushNamed(Routes.quickJump.name);
-        },
-        LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.keyK): () {
-          context.pushNamed(Routes.quickJump.name);
-        },
-      },
-      child: KeyboardDismissOnTap(
-        // close keyboard if clicking somewhere else
-        child: Scaffold(
-          body: Screenshot(
-            controller: screenshotController,
-            child: AdaptiveLayout(
-              key: _key,
-              topNavigation: !widget.hasFirstSynced
-                  ? SlotLayout(
-                      config: <Breakpoint, SlotLayoutConfig?>{
-                        Breakpoints.smallAndUp: SlotLayout.from(
-                          key: const Key('LoadingIndicator'),
-                          builder: (BuildContext ctx) {
-                            return const LinearProgressIndicator(
-                              semanticsLabel: 'Loading first sync',
-                            );
-                          },
-                        ),
-                      },
-                    )
-                  : null,
-              primaryNavigation: isDesktop
-                  ? SlotLayout(
-                      config: <Breakpoint, SlotLayoutConfig?>{
-                        // adapt layout according to platform.
-                        Breakpoints.small: SlotLayout.from(
-                          key: const Key('primaryNavigation'),
-                          builder: (BuildContext ctx) => SidebarWidget(
-                            labelType: NavigationRailLabelType.selected,
-                            navigationShell: widget.navigationShell,
-                          ),
-                        ),
-                        Breakpoints.mediumAndUp: SlotLayout.from(
-                          key: const Key('primaryNavigation'),
-                          builder: (BuildContext ctx) => SidebarWidget(
-                            labelType: NavigationRailLabelType.all,
-                            navigationShell: widget.navigationShell,
-                          ),
-                        ),
-                      },
-                    )
-                  : null,
-              body: SlotLayout(
-                config: <Breakpoint, SlotLayoutConfig>{
-                  Breakpoints.smallAndUp: SlotLayout.from(
-                    key: const Key('Body Small'),
-                    builder: (BuildContext ctx) => widget.navigationShell,
-                  ),
-                },
-              ),
-              bottomNavigation: !isDesktop &&
-                      keyboardVisibility.valueOrNull != true
-                  ? SlotLayout(
-                      config: <Breakpoint, SlotLayoutConfig>{
-                        //In desktop, we have ability to adjust windows res,
-                        // adjust to navbar as primary to smaller views.
-                        Breakpoints.smallAndUp: SlotLayout.from(
-                          key: Keys.mainNav,
-                          inAnimation: AdaptiveScaffold.bottomToTop,
-                          outAnimation: AdaptiveScaffold.topToBottom,
-                          builder: (BuildContext ctx) => BottomNavigationBar(
-                            showSelectedLabels: false,
-                            showUnselectedLabels: false,
-                            currentIndex: widget.navigationShell.currentIndex,
-                            onTap: onBottomNavigated,
-                            items: bottomBarNav,
-                            type: BottomNavigationBarType.fixed,
-                          ),
-                        ),
-                      },
-                    )
-                  : null,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void onBottomNavigated(int index) {
-    widget.navigationShell.goBranch(
-      index,
-      initialLocation: index == widget.navigationShell.currentIndex,
-    );
+    return const SizedBox(width: 0, height: 0); // empty widget
   }
 
   void onStateChange(VerificationState? prev, VerificationState next) {
