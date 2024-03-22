@@ -24,7 +24,7 @@ class IntroPage extends StatelessWidget {
           const Spacer(),
           _buildTitle(context),
           const Spacer(),
-          _buildImage(),
+          _buildImage(context),
           const Spacer(),
           _buildDescription(context),
           const Spacer(),
@@ -63,11 +63,12 @@ class IntroPage extends StatelessWidget {
     );
   }
 
-  Widget _buildImage() {
+  Widget _buildImage(BuildContext context) {
+    final imageSize = MediaQuery.of(context).size.height / 4;
     return Image.asset(
       'assets/icon/intro.png',
-      height: 250,
-      width: 250,
+      height: imageSize,
+      width: imageSize,
     );
   }
 

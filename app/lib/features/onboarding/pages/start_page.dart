@@ -199,6 +199,7 @@ class _StartPageState extends State<StartPage> {
   }
 
   Widget _buildPageViewItem(int index) {
+    final imageSize = MediaQuery.of(context).size.height / 4;
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: 20,
@@ -211,6 +212,8 @@ class _StartPageState extends State<StartPage> {
           const Spacer(),
           Image.asset(
             onBoardingPages[index].image,
+            height: imageSize,
+            width: imageSize,
           ),
           const Spacer(),
           onBoardingPages[index].description,
