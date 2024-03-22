@@ -1,7 +1,7 @@
 import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class ForgotPassword extends StatelessWidget {
   const ForgotPassword({super.key});
@@ -78,7 +78,8 @@ class ForgotPassword extends StatelessWidget {
 
   Widget _buildButton(BuildContext context) {
     return ElevatedButton(
-      onPressed: () async => await openLink('https://next.acter.global/contact-us', context),
+      onPressed: () async =>
+          await openLink('https://next.acter.global/contact-us', context),
       child: Text(
         L10n.of(context).contactActerSupport,
         style: Theme.of(context).textTheme.bodyMedium,

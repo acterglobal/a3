@@ -8,9 +8,8 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sprintf/sprintf.dart';
-
 import 'package:logging/logging.dart';
+import 'package:sprintf/sprintf.dart';
 
 final _log = Logger('a3::cross_signing');
 
@@ -305,8 +304,7 @@ class CrossSigning {
                   L10n.of(context).verificationScanEmojiTitle,
                 ),
                 subtitle: Text(
-                  L10n.of(context)
-                      .verificationScanSelfEmojiSubtitle,
+                  L10n.of(context).verificationScanSelfEmojiSubtitle,
                 ),
                 trailing: const Icon(Icons.keyboard_arrow_right_outlined),
                 onTap: () async {

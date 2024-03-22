@@ -7,8 +7,8 @@ import 'package:acter/features/settings/widgets/email_address_card.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AddEmailAddr extends StatefulWidget {
   const AddEmailAddr({super.key});
