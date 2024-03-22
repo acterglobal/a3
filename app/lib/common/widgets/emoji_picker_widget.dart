@@ -53,14 +53,16 @@ class EmojiPickerWidget extends StatelessWidget {
               onEmojiSelected: onEmojiSelected,
               onBackspacePressed: onBackspacePressed,
               config: Config(
-                columns: cols,
+                emojiViewConfig: EmojiViewConfig(
+                  backgroundColor: Theme.of(context).colorScheme.background,
+                  columns: cols,
+                  emojiSizeMax: EmojiConfig.emojiSizeMax,
+                ),
+                categoryViewConfig: const CategoryViewConfig(
+                  initCategory: Category.RECENT,
+                ),
                 checkPlatformCompatibility:
                     EmojiConfig.checkPlatformCompatibility,
-                emojiSizeMax: EmojiConfig.emojiSizeMax,
-                initCategory: Category.RECENT,
-                bgColor: Theme.of(context).colorScheme.background,
-                recentTabBehavior: RecentTabBehavior.RECENT,
-                recentsLimit: 28,
                 emojiTextStyle: EmojiConfig.emojiTextStyle,
               ),
             ),
