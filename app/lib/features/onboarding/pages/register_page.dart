@@ -270,7 +270,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           children: [
             Expanded(
               child: Text(
-                L10n.of(context).inviteCode,
+                L10n.of(context).inviteCode(''),
               ),
             ),
             IconButton(
@@ -279,7 +279,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
-                      title: Text(L10n.of(context).inviteCode),
+                      title: Text(L10n.of(context).inviteCode('')),
                       content: Text(L10n.of(context).inviteCodeInfo),
                       actions: <Widget>[
                         TextButton(

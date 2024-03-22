@@ -5,6 +5,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:breadcrumbs/breadcrumbs.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SessionCard extends ConsumerWidget {
@@ -15,7 +16,9 @@ class SessionCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     bool isVerified = deviceRecord.isVerified();
-    final fields = [isVerified ? 'Verified' : 'Unverified'];
+    final fields = [
+      isVerified ? L10n.of(context).verified : L10n.of(context).unverified,
+    ];
     final lastSeenTs = deviceRecord.lastSeenTs();
     if (lastSeenTs != null) {
       final dateTime = DateTime.fromMillisecondsSinceEpoch(
@@ -92,30 +95,32 @@ class SessionCard extends ConsumerWidget {
       context: context,
       builder: (BuildContext ctx) {
         return AlertDialog(
-          title: const Text('Authentication required'),
+          title: Text(L10n.of(context).authenticationRequired),
           content: Wrap(
             children: [
-              const Text(
-                'Please provide your user password to confirm you want to end that session.',
+              Text(
+                L10n.of(context).pleaseProvideYourUserPassword,
               ),
               TextField(
                 controller: passwordController,
                 obscureText: true,
-                decoration: const InputDecoration(hintText: 'Password'),
+                decoration: InputDecoration(
+                  hintText: L10n.of(context).password,
+                ),
               ),
             ],
           ),
           actions: [
-            TextButton(
-              child: const Text('Cancel'),
+            OutlinedButton(
+              child: Text(L10n.of(context).cancel),
               onPressed: () {
                 if (ctx.mounted) {
                   Navigator.of(context).pop(false);
                 }
               },
             ),
-            TextButton(
-              child: const Text('Ok'),
+            ElevatedButton(
+              child: Text(L10n.of(context).ok),
               onPressed: () {
                 if (passwordController.text.isEmpty) {
                   return;

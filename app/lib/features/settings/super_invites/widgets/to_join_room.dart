@@ -6,6 +6,7 @@ import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class RoomToInviteTo extends ConsumerWidget {
   final String roomId;
@@ -19,7 +20,7 @@ class RoomToInviteTo extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
-    String subtitle = 'Unknown Room';
+    String subtitle = L10n.of(context).unknownRoom;
     if (room != null) {
       if (room.isSpace()) {
         final space = ref.watch(spaceProvider(roomId)).valueOrNull;
@@ -30,7 +31,7 @@ class RoomToInviteTo extends ConsumerWidget {
             trailing: removeWidget(),
           );
         }
-        subtitle = 'Loading room';
+        subtitle = L10n.of(context).loadingRoom;
       } else {
         final chat = ref.watch(chatProvider(roomId)).valueOrNull;
         if (chat != null) {
@@ -40,7 +41,7 @@ class RoomToInviteTo extends ConsumerWidget {
             trailing: removeWidget(),
           );
         }
-        subtitle = 'Loading chat...';
+        subtitle = L10n.of(context).loadingChat;
       }
     }
     return Card(

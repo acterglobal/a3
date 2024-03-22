@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class CreateSuperInviteTokenPage extends ConsumerStatefulWidget {
   static Key tokenFieldKey = const Key('super-invites-create-token-token');
@@ -22,6 +23,7 @@ class CreateSuperInviteTokenPage extends ConsumerStatefulWidget {
   static Key deleteBtn = const Key('super-invites-create-delete');
   static Key deleteConfirm = const Key('super-invites-create-delete-confirm');
   final SuperInviteToken? token;
+
   const CreateSuperInviteTokenPage({super.key, this.token});
 
   @override
@@ -61,7 +63,9 @@ class _CreateSuperInviteTokenPageConsumerState
   @override
   Widget build(BuildContext context) {
     return SliverScaffold(
-      header: isEdit ? 'Edit Invite Code' : 'Create Invite Code',
+      header: isEdit
+          ? L10n.of(context).inviteCode('edit')
+          : L10n.of(context).inviteCode('create'),
       addActions: true,
       body: Form(
         key: _formKey,
@@ -74,7 +78,9 @@ class _CreateSuperInviteTokenPageConsumerState
               isEdit
                   ? ListTile(
                       title: Text(_tokenController.text),
-                      subtitle: Text('Claimed $_acceptedCount times'),
+                      subtitle: Text(
+                        L10n.of(context).claimedTimes(_acceptedCount),
+                      ),
                       trailing: IconButton(
                         key: CreateSuperInviteTokenPage.deleteBtn,
                         icon: const Icon(Atlas.trash_can_thin),
@@ -82,23 +88,23 @@ class _CreateSuperInviteTokenPageConsumerState
                       ),
                     )
                   : InputTextField(
-                      hintText: 'Code',
+                      hintText: L10n.of(context).code,
                       key: CreateSuperInviteTokenPage.tokenFieldKey,
                       textInputType: TextInputType.text,
                       controller: _tokenController,
-                      validator: (String? val) =>
-                          (val?.isNotEmpty == true && val!.length < 6)
-                              ? 'Code must be at least 6 characters long'
-                              : null,
+                      validator: (String? val) => (val?.isNotEmpty == true &&
+                              val!.length < 6)
+                          ? L10n.of(context).codeMustBeAtLeast6CharactersLong
+                          : null,
                     ),
               CheckboxFormField(
                 key: CreateSuperInviteTokenPage.createDmKey,
-                title: const Text('Create DM when redeeming'),
+                title: Text(L10n.of(context).createDMWhenRedeeming),
                 onChanged: (newValue) =>
                     setState(() => tokenUpdater.createDm(newValue ?? false)),
                 initialValue: _initialDmCheck,
               ),
-              const Text('Spaces & Chats to add them to'),
+              Text(L10n.of(context).spacesAndChatsToAddThemTo),
               Card(
                 child: ListTile(
                   title: ButtonBar(
@@ -110,7 +116,7 @@ class _CreateSuperInviteTokenPageConsumerState
                             context: context,
                             currentSpaceId: null,
                             canCheck: 'CanInvite',
-                            title: const Text('Add Space'),
+                            title: Text(L10n.of(context).addSpace),
                           );
                           if (newSpace != null) {
                             if (!_roomIds.contains(newSpace)) {
@@ -122,7 +128,7 @@ class _CreateSuperInviteTokenPageConsumerState
                             }
                           }
                         },
-                        child: const Text('Add Space'),
+                        child: Text(L10n.of(context).addSpace),
                       ),
                       OutlinedButton(
                         key: CreateSuperInviteTokenPage.addChatKey,
@@ -131,7 +137,7 @@ class _CreateSuperInviteTokenPageConsumerState
                             context: context,
                             currentChatId: null,
                             canCheck: 'CanInvite',
-                            title: const Text('Add Chat'),
+                            title: Text(L10n.of(context).addChat),
                           );
                           if (newSpace != null) {
                             if (!_roomIds.contains(newSpace)) {
@@ -143,7 +149,7 @@ class _CreateSuperInviteTokenPageConsumerState
                             }
                           }
                         },
-                        child: const Text('Add Chat'),
+                        child: Text(L10n.of(context).addChat),
                       ),
                     ],
                   ),
@@ -171,17 +177,21 @@ class _CreateSuperInviteTokenPageConsumerState
           itemCount: _roomIds.length,
         ),
       ],
-      confirmActionTitle: isEdit ? 'Save' : 'Create Code',
+      confirmActionTitle:
+          isEdit ? L10n.of(context).save : L10n.of(context).createCode,
       confirmActionKey: CreateSuperInviteTokenPage.submitBtn,
       confirmActionOnPressed: _submit,
-      cancelActionTitle: 'Cancel',
+      cancelActionTitle: L10n.of(context).cancel,
       cancelActionOnPressed: () =>
           context.canPop() ? context.pop() : context.goNamed(Routes.main.name),
     );
   }
 
   Future<void> _submit() async {
-    EasyLoading.show(status: isEdit ? 'Saving code' : 'Creating code');
+    EasyLoading.show(
+      status:
+          isEdit ? L10n.of(context).savingCode : L10n.of(context).creatingCode,
+    );
     try {
       final tokenTxt = _tokenController.text;
       if (tokenTxt.isNotEmpty) {
@@ -200,7 +210,9 @@ class _CreateSuperInviteTokenPageConsumerState
       Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
     } catch (err) {
       EasyLoading.showError(
-        isEdit ? 'Saving code failed $err' : 'Creating code failed $err',
+        isEdit
+            ? '${L10n.of(context).inviteCodeFailed('save')} $err'
+            : '${L10n.of(context).inviteCodeFailed('create')} $err',
         duration: const Duration(seconds: 3),
       );
     }
@@ -211,9 +223,9 @@ class _CreateSuperInviteTokenPageConsumerState
       context: context,
       builder: (BuildContext ctx) {
         return AlertDialog(
-          title: const Text('Delete code'),
-          content: const Text(
-            "Do you really want to irreversibly delete the super invite code? It can't be used again after.",
+          title: Text(L10n.of(context).deleteCode('')),
+          content: Text(
+            L10n.of(context).doYouWantToDeleteInviteCode,
           ),
           actions: <Widget>[
             Row(
@@ -226,9 +238,10 @@ class _CreateSuperInviteTokenPageConsumerState
                     ),
                     child: TextButton(
                       onPressed: () => ctx.pop(),
-                      child: const Text(
-                        'No',
-                        style: TextStyle(color: Colors.white, fontSize: 17),
+                      child: Text(
+                        L10n.of(context).no,
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 17),
                       ),
                     ),
                   ),
@@ -246,9 +259,10 @@ class _CreateSuperInviteTokenPageConsumerState
                       onPressed: () async {
                         ctx.pop(true);
                       },
-                      child: const Text(
-                        'Delete ',
-                        style: TextStyle(color: Colors.white, fontSize: 17),
+                      child: Text(
+                        L10n.of(context).delete,
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 17),
                       ),
                     ),
                   ),
@@ -259,11 +273,11 @@ class _CreateSuperInviteTokenPageConsumerState
         );
       },
     );
-    if (confirm != true) {
+    if (confirm != true || !context.mounted) {
       return;
     }
 
-    EasyLoading.show(status: 'Deleting code');
+    EasyLoading.show(status: L10n.of(context).deleteCode('withIng'));
     try {
       final tokenTxt = _tokenController.text;
       // all other changes happen on the object itself;
@@ -279,7 +293,7 @@ class _CreateSuperInviteTokenPageConsumerState
       Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
     } catch (err) {
       EasyLoading.showError(
-        'Deleting code failed $err',
+        '${L10n.of(context).inviteCodeFailed('delete')} $err',
         duration: const Duration(seconds: 3),
       );
     }

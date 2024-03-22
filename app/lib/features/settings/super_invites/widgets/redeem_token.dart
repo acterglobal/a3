@@ -4,11 +4,13 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class RedeemToken extends ConsumerStatefulWidget {
   static Key redeemTokenField = const Key('super-invites-redeem-txt');
   static Key redeemTokenSubmit = const Key('super-invites-redeem-submit');
   final SuperInvitesTokenUpdateBuilder? tokenUpdater;
+
   const RedeemToken({super.key, this.tokenUpdater});
 
   @override
@@ -28,17 +30,17 @@ class _RedeemTokenConsumerState extends ConsumerState<RedeemToken> {
         child: ListTile(
           title: TextFormField(
             key: RedeemToken.redeemTokenField,
-            decoration: const InputDecoration(
-              icon: Icon(Atlas.plus_ticket_thin),
-              hintText: 'An invite code you want to redeem',
-              labelText: 'Invite Code',
+            decoration: InputDecoration(
+              icon: const Icon(Atlas.plus_ticket_thin),
+              hintText: L10n.of(context).anInviteCodeYouWantToRedeem,
+              labelText: L10n.of(context).inviteCode(''),
             ),
             controller: _tokenController,
           ),
           trailing: ElevatedButton(
             key: RedeemToken.redeemTokenSubmit,
             onPressed: _submit,
-            child: const Text('redeem'),
+            child: Text(L10n.of(context).redeem('')),
           ),
         ),
       ),
@@ -52,14 +54,18 @@ class _RedeemTokenConsumerState extends ConsumerState<RedeemToken> {
     }
     final superInvites = ref.read(superInvitesProvider);
     try {
-      EasyLoading.show(status: 'redeeming $token');
+      EasyLoading.show(status: '${L10n.of(context).redeem('withIng')} $token');
       final rooms = (await superInvites.redeem(token)).toList();
-      EasyLoading.showSuccess('Added to ${rooms.length} spaces & chats');
+      if (!mounted) return;
+      EasyLoading.showSuccess(
+        L10n.of(context).addedToSpacesAndChats(rooms.length),
+      );
       _tokenController.clear();
       FocusManager.instance.primaryFocus?.unfocus();
     } catch (err) {
+      if (!mounted) return;
       EasyLoading.showError(
-        'Redeeming failed $err',
+        '${L10n.of(context).redeemingFailed} $err',
         duration: const Duration(seconds: 3),
       );
     }
