@@ -1,6 +1,7 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SasAcceptedView extends StatelessWidget {
   final String sender;
@@ -35,7 +36,7 @@ class SasAcceptedView extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          Text('Waiting for $sender'),
+          Text(L10n.of(context).verificationRequestWaitingFor(sender)),
           const Spacer(),
         ],
       ),
@@ -51,7 +52,11 @@ class SasAcceptedView extends StatelessWidget {
           child: Icon(isDesktop ? Atlas.laptop : Atlas.phone),
         ),
         const SizedBox(width: 5),
-        Text(isVerifier ? 'Verify Other Session' : 'Verify This Session'),
+        Text(
+          isVerifier
+              ? L10n.of(context).verifyOtherSession
+              : L10n.of(context).verifyThisSession,
+        ),
       ],
     );
   }

@@ -2,6 +2,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SasKeysExchangedView extends StatelessWidget {
   final String sender;
@@ -36,10 +37,10 @@ class SasKeysExchangedView extends StatelessWidget {
             child: buildTitleBar(context),
           ),
           const Spacer(),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Text(
-              'Compare the unique emoji, ensuring they appear in the same order.',
+              L10n.of(context).verificationEmojiNotice,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -72,7 +73,11 @@ class SasKeysExchangedView extends StatelessWidget {
           child: isDesktop ? const Icon(Atlas.laptop) : const Icon(Atlas.phone),
         ),
         const SizedBox(width: 5),
-        Text(isVerifier ? 'Verify Other Session' : 'Verify This Session'),
+        Text(
+          isVerifier
+              ? L10n.of(context).verifyOtherSession
+              : L10n.of(context).verifyThisSession,
+        ),
         const Spacer(),
         Padding(
           padding: const EdgeInsets.only(right: 10),
@@ -125,14 +130,14 @@ class SasKeysExchangedView extends StatelessWidget {
           child: ElevatedButton(
             onPressed: () => onMismatch(context),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('They don’t match'),
+            child: Text(L10n.of(context).verificationSasDoNotMatch),
           ),
         ),
         const SizedBox(width: 15),
         SizedBox(
           width: 150, // use the same width
           child: ElevatedButton(
-            child: const Text('They match'),
+            child: Text(L10n.of(context).verificationSasMatch),
             onPressed: () => onMatch(context),
           ),
         ),

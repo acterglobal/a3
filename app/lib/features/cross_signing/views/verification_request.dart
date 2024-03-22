@@ -1,6 +1,7 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class VerificationRequestView extends StatelessWidget {
   final String sender;
@@ -29,12 +30,12 @@ class VerificationRequestView extends StatelessWidget {
             child: buildTitleBar(context),
           ),
           const Spacer(),
-          Text('$sender wants to verify your session'),
+          Text(L10n.of(context).sasIncomingReqNotifContent(sender)),
           const Spacer(),
           const Icon(Atlas.lock_keyhole),
           const Spacer(),
           ElevatedButton(
-            child: const Text('Accept Request'),
+            child: Text(L10n.of(context).acceptRequest),
             onPressed: () => onAccept(context),
           ),
           const Spacer(),
@@ -53,7 +54,7 @@ class VerificationRequestView extends StatelessWidget {
           padding: const EdgeInsets.all(10),
           child: Icon(isDesktop ? Atlas.laptop : Atlas.phone),
         ),
-        const Text('Verification Request'),
+        Text(L10n.of(context).sasIncomingReqNotifTitle),
         const Spacer(),
         Padding(
           padding: const EdgeInsets.only(right: 10),

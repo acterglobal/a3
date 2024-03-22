@@ -1,6 +1,7 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class RequestReadyView extends StatelessWidget {
   final bool isVerifier;
@@ -29,11 +30,9 @@ class RequestReadyView extends StatelessWidget {
             child: buildTitleBar(context),
           ),
           const Spacer(),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Text(
-              'Scan the code with your other device or switch and scan with this device',
-            ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: Text(L10n.of(context).verificationScanSelfNotice),
           ),
           const Spacer(),
           const Center(
@@ -49,14 +48,14 @@ class RequestReadyView extends StatelessWidget {
           const Spacer(),
           // TextButton(
           //   onPressed: () {},
-          //   child: const Row(
+          //   child: Row(
           //     mainAxisAlignment: MainAxisAlignment.center,
           //     children: [
-          //       Padding(
+          //       const Padding(
           //         padding: EdgeInsets.all(8),
           //         child: Icon(Atlas.camera),
           //       ),
-          //       Text('Scan with this device'),
+          //       Text(L10n.of(context).verificationScanWithThisDevice),
           //     ],
           //   ),
           // ),
@@ -64,8 +63,10 @@ class RequestReadyView extends StatelessWidget {
           Wrap(
             children: [
               ListTile(
-                title: const Text('Can’t scan'),
-                subtitle: const Text('Verify by comparing emoji instead'),
+                title: Text(L10n.of(context).verificationScanEmojiTitle),
+                subtitle: Text(
+                  L10n.of(context).verificationScanSelfEmojiSubtitle,
+                ),
                 trailing: const Icon(Icons.keyboard_arrow_right_outlined),
                 onTap: () => onAccept(context),
               ),
@@ -86,7 +87,11 @@ class RequestReadyView extends StatelessWidget {
           child: Icon(isDesktop ? Atlas.laptop : Atlas.phone),
         ),
         const SizedBox(width: 5),
-        Text(isVerifier ? 'Verify Other Session' : 'Verify This Session'),
+        Text(
+          isVerifier
+              ? L10n.of(context).verifyOtherSession
+              : L10n.of(context).verifyThisSession,
+        ),
         const Spacer(),
         Padding(
           padding: const EdgeInsets.only(right: 10),

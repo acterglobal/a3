@@ -222,7 +222,16 @@
   "remove": "Remove",
   "reset": "Reset",
   "sasGotIt": "Got it",
-  "sasIncomingReqNotifContent": "%s wants to verify your session",
+  "sasIncomingReqNotifContent": "{sender} wants to verify your session",
+  "@sasIncomingReqNotifContent": {
+    "description": "A message with a single parameter",
+    "placeholders": {
+      "sender": {
+        "type": "String",
+        "example": "@kyra:acter.global"
+      }
+    }
+  },
   "sasIncomingReqNotifTitle": "Verification Request",
   "sasVerified": "Verified!",
   "save": "Save",
@@ -278,12 +287,31 @@
   "verificationCodeNotice": "Compare the code with the one displayed on the other user’s screen.",
   "verificationConclusionCompromised": "One of the following may be compromised:\n\n   - Your homeserver\n   - The homeserver the user you’re verifying is connected to\n   - Yours, or the other users’ internet connection\n   - Yours, or the other users’ device",
   "verificationConclusionNotSecure": "Not secure",
-  "verificationConclusionOkDone": "You’ve successfully verified %s!",
+  "verificationConclusionOkDone": "You’ve successfully verified {sender}!",
+  "@verificationConclusionOkDone": {
+    "description": "A message with a single parameter",
+    "placeholders": {
+      "sender": {
+        "type": "String",
+        "example": "@kyra:acter.global"
+      }
+    }
+  },
   "verificationConclusionOkNotice": "Messages with this user are end-to-end encrypted and can’t be read by third parties.",
   "verificationConclusionOkSelfNotice": "Your new session is now verified. It has access to your encrypted messages, and other users will see it as trusted.",
   "verificationEmojiNotice": "Compare the unique emoji, ensuring they appear in the same order.",
   "verificationNoScanEmojiTitle": "Verify by comparing emojis",
-  "verificationRequestWaitingFor": "Waiting for %s…",
+  "verificationRequestAccept": "To proceed, please accept the verification request on your other device.",
+  "verificationRequestWaitingFor": "Waiting for {sender}…",
+  "@verificationRequestWaitingFor": {
+    "description": "A message with a single parameter",
+    "placeholders": {
+      "sender": {
+        "type": "String",
+        "example": "@kyra:acter.global"
+      }
+    }
+  },
   "verificationSasDoNotMatch": "They don’t match",
   "verificationSasMatch": "They match",
   "verificationScanEmojiSubtitle": "If you’re not in person, compare emoji instead",
@@ -293,15 +321,14 @@
   "verificationScanSelfNotice": "Scan the code with your other device or switch and scan with this device",
   "verificationScanTheirCode": "Scan their code",
   "verificationScanWithThisDevice": "Scan with this device",
-  "verificationVerifiedUser": "Verified %s",
-  "verificationVerifyUser": "Verify %s",
   "verified": "Verified",
   "verifiedSessionsDescription": "All your devices are verified. Your account is secure.",
   "verifyByEmoji": "Interactively Verify by Emoji",
   "verifyCancelledNotice": "Verification has been cancelled. You can start verification again.",
   "verifyInvalidQrNotice": "This QR code looks malformed. Please try to verify with another method.",
-  "verifySession": "Verify login",
-  "verifyThisSession": "Verify this login",
+  "verifyOtherSession": "Verify other session",
+  "verifySession": "Verify session",
+  "verifyThisSession": "Verify this session",
   "version": "Version",
   "welcomeBack": "Welcome Back",
   "welcomeTo": "Welcome to",

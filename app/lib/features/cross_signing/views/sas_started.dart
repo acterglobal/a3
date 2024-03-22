@@ -1,6 +1,7 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SasStartedView extends StatelessWidget {
   final bool isVerifier;
@@ -33,7 +34,7 @@ class SasStartedView extends StatelessWidget {
             child: CircularProgressIndicator(),
           ),
           const Spacer(),
-          const Text('Please wait…'),
+          Text(L10n.of(context).pleaseWait),
           const Spacer(),
         ],
       ),
@@ -49,7 +50,11 @@ class SasStartedView extends StatelessWidget {
           child: Icon(isDesktop ? Atlas.laptop : Atlas.phone),
         ),
         const SizedBox(width: 5),
-        Text(isVerifier ? 'Verify Other Session' : 'Verify This Session'),
+        Text(
+          isVerifier
+              ? L10n.of(context).verifyOtherSession
+              : L10n.of(context).verifyThisSession,
+        ),
         const Spacer(),
         Padding(
           padding: const EdgeInsets.only(right: 10),

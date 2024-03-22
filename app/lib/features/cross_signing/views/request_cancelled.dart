@@ -1,6 +1,7 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class RequestCancelledView extends StatelessWidget {
   final String sender;
@@ -18,8 +19,7 @@ class RequestCancelledView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const fallbackMsg =
-        'One of the following may be compromised:\n\n   - Your homeserver\n   - The homeserver the user you’re verifying is connected to\n   - Yours, or the other users’ internet connection\n   - Yours, or the other users’ device';
+    final fallbackMsg = L10n.of(context).verificationConclusionCompromised;
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
@@ -42,7 +42,7 @@ class RequestCancelledView extends StatelessWidget {
           SizedBox(
             width: MediaQuery.of(context).size.width * 0.40,
             child: ElevatedButton(
-              child: const Text('Got it'),
+              child: Text(L10n.of(context).sasGotIt),
               onPressed: () => onDone(context),
             ),
           ),
@@ -61,7 +61,11 @@ class RequestCancelledView extends StatelessWidget {
           child: Icon(isDesktop ? Atlas.laptop : Atlas.phone),
         ),
         const SizedBox(width: 5),
-        Text(isVerifier ? 'Verify Other Session' : 'Verify This Session'),
+        Text(
+          isVerifier
+              ? L10n.of(context).verifyOtherSession
+              : L10n.of(context).verifyThisSession,
+        ),
       ],
     );
   }
