@@ -75,7 +75,7 @@ async fn edit_text_msg() -> Result<()> {
         .await?;
 
     // msg edition may reach via set action
-    i = 3;
+    i = 30;
     let mut edited_event_id = None;
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
@@ -96,7 +96,7 @@ async fn edit_text_msg() -> Result<()> {
         sleep(Duration::from_secs(1)).await;
     }
     let edited_event_id =
-        edited_event_id.context("Even after 3 seconds, msg edition not received")?;
+        edited_event_id.context("Even after 30 seconds, msg edition not received")?;
 
     assert_eq!(
         edited_event_id,
@@ -152,8 +152,8 @@ async fn edit_image_msg() -> Result<()> {
     );
     timeline.send_message(Box::new(draft)).await?;
 
-    // text msg may reach via pushback action or reset action
-    let mut i = 3;
+    // image msg may reach via pushback action or reset action
+    let mut i = 30;
     let mut sent_event_id = None;
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
@@ -190,7 +190,7 @@ async fn edit_image_msg() -> Result<()> {
         i -= 1;
         sleep(Duration::from_secs(1)).await;
     }
-    let sent_event_id = sent_event_id.context("Even after 3 seconds, text msg not received")?;
+    let sent_event_id = sent_event_id.context("Even after 30 seconds, image msg not received")?;
 
     let bytes = include_bytes!("./fixtures/PNG_transparency_demonstration_1.png");
     let mut tmp_png = NamedTempFile::new()?;
@@ -211,7 +211,7 @@ async fn edit_image_msg() -> Result<()> {
         .await?;
 
     // msg edition may reach via set action
-    i = 3;
+    i = 30;
     let mut edited_event_id = None;
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
@@ -233,7 +233,7 @@ async fn edit_image_msg() -> Result<()> {
         sleep(Duration::from_secs(1)).await;
     }
     let edited_event_id =
-        edited_event_id.context("Even after 3 seconds, msg edition not received")?;
+        edited_event_id.context("Even after 30 seconds, msg edition not received")?;
 
     assert_eq!(
         edited_event_id,

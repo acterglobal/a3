@@ -1,4 +1,5 @@
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/features/cross_signing/providers/verification_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -10,10 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class SessionCard extends ConsumerWidget {
   final DeviceRecord deviceRecord;
 
-  const SessionCard({
-    super.key,
-    required this.deviceRecord,
-  });
+  const SessionCard({super.key, required this.deviceRecord});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -61,7 +59,7 @@ class SessionCard extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: Text(
-                      L10n.of(ctx).logOut,
+                      'Logout',
                       style: Theme.of(ctx).textTheme.labelSmall,
                       softWrap: false,
                     ),
@@ -77,7 +75,7 @@ class SessionCard extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: Text(
-                      L10n.of(ctx).verifySession,
+                      'Verify Session',
                       style: Theme.of(ctx).textTheme.labelSmall,
                       softWrap: false,
                     ),
@@ -117,8 +115,7 @@ class SessionCard extends ConsumerWidget {
               child: Text(L10n.of(context).cancel),
               onPressed: () {
                 if (ctx.mounted) {
-                  // remove pop up
-                  Navigator.of(context, rootNavigator: true).pop();
+                  Navigator.of(context).pop(false);
                 }
               },
             ),
@@ -128,10 +125,8 @@ class SessionCard extends ConsumerWidget {
                 if (passwordController.text.isEmpty) {
                   return;
                 }
-                //FIXME : Need to implement session logout feature here
                 if (ctx.mounted) {
-                  // remove pop up
-                  Navigator.of(context, rootNavigator: true).pop();
+                  Navigator.of(context).pop(true);
                 }
               },
             ),
@@ -152,8 +147,15 @@ class SessionCard extends ConsumerWidget {
   }
 
   Future<void> onVerify(BuildContext context, WidgetRef ref) async {
+    final devId = deviceRecord.deviceId().toString();
     final client = ref.read(alwaysClientProvider);
-    final manager = client.sessionManager();
-    await manager.requestVerification(deviceRecord.deviceId().toString());
+    // final manager = client.sessionManager();
+
+    final event = await client.requestVerification(devId);
+    // start request event loop
+    await client.installRequestEventHandler(event.flowId());
+
+    // force request.created, because above loop starts from request.ready
+    ref.read(verificationStateProvider.notifier).launchFlow(event);
   }
 }

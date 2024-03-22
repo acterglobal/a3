@@ -157,11 +157,11 @@ class _$ChatInputStateCopyWithImpl<$Res, $Val extends ChatInputState>
 }
 
 /// @nodoc
-abstract class _$$_ChatInputStateCopyWith<$Res>
+abstract class _$$ChatInputStateImplCopyWith<$Res>
     implements $ChatInputStateCopyWith<$Res> {
-  factory _$$_ChatInputStateCopyWith(
-          _$_ChatInputState value, $Res Function(_$_ChatInputState) then) =
-      __$$_ChatInputStateCopyWithImpl<$Res>;
+  factory _$$ChatInputStateImplCopyWith(_$ChatInputStateImpl value,
+          $Res Function(_$ChatInputStateImpl) then) =
+      __$$ChatInputStateImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -183,11 +183,11 @@ abstract class _$$_ChatInputStateCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_ChatInputStateCopyWithImpl<$Res>
-    extends _$ChatInputStateCopyWithImpl<$Res, _$_ChatInputState>
-    implements _$$_ChatInputStateCopyWith<$Res> {
-  __$$_ChatInputStateCopyWithImpl(
-      _$_ChatInputState _value, $Res Function(_$_ChatInputState) _then)
+class __$$ChatInputStateImplCopyWithImpl<$Res>
+    extends _$ChatInputStateCopyWithImpl<$Res, _$ChatInputStateImpl>
+    implements _$$ChatInputStateImplCopyWith<$Res> {
+  __$$ChatInputStateImplCopyWithImpl(
+      _$ChatInputStateImpl _value, $Res Function(_$ChatInputStateImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -209,7 +209,7 @@ class __$$_ChatInputStateCopyWithImpl<$Res>
     Object? mentionReplacements = null,
     Object? editBtnVisible = null,
   }) {
-    return _then(_$_ChatInputState(
+    return _then(_$ChatInputStateImpl(
       showReplyView: null == showReplyView
           ? _value.showReplyView
           : showReplyView // ignore: cast_nullable_to_non_nullable
@@ -276,8 +276,8 @@ class __$$_ChatInputStateCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_ChatInputState implements _ChatInputState {
-  const _$_ChatInputState(
+class _$ChatInputStateImpl implements _ChatInputState {
+  const _$ChatInputStateImpl(
       {this.showReplyView = false,
       this.showEditView = false,
       this.replyWidget = null,
@@ -361,10 +361,10 @@ class _$_ChatInputState implements _ChatInputState {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_ChatInputState &&
+            other is _$ChatInputStateImpl &&
             (identical(other.showReplyView, showReplyView) ||
                 other.showReplyView == showReplyView) &&
             (identical(other.showEditView, showEditView) ||
@@ -418,8 +418,9 @@ class _$_ChatInputState implements _ChatInputState {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_ChatInputStateCopyWith<_$_ChatInputState> get copyWith =>
-      __$$_ChatInputStateCopyWithImpl<_$_ChatInputState>(this, _$identity);
+  _$$ChatInputStateImplCopyWith<_$ChatInputStateImpl> get copyWith =>
+      __$$ChatInputStateImplCopyWithImpl<_$ChatInputStateImpl>(
+          this, _$identity);
 }
 
 abstract class _ChatInputState implements ChatInputState {
@@ -438,7 +439,7 @@ abstract class _ChatInputState implements ChatInputState {
       final types.Message? editMessage,
       final List<Map<String, String>> mentions,
       final Map<String, String> mentionReplacements,
-      final bool editBtnVisible}) = _$_ChatInputState;
+      final bool editBtnVisible}) = _$ChatInputStateImpl;
 
   @override
   bool get showReplyView;
@@ -472,6 +473,6 @@ abstract class _ChatInputState implements ChatInputState {
   bool get editBtnVisible;
   @override
   @JsonKey(ignore: true)
-  _$$_ChatInputStateCopyWith<_$_ChatInputState> get copyWith =>
+  _$$ChatInputStateImplCopyWith<_$ChatInputStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

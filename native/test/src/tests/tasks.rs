@@ -61,7 +61,7 @@ async fn odos_tasks() -> Result<()> {
         }
         remaining -= 1;
 
-        if Ok(()) == list_subscription.try_recv() {
+        if list_subscription.try_recv().is_ok() {
             task_list = odo
                 .task_lists()
                 .await?
