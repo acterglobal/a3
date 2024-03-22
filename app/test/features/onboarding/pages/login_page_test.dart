@@ -41,7 +41,7 @@ void main() {
       expect(find.byKey(LoginPageKeys.submitBtn), findsOneWidget);
       expect(
         find.text(
-          L10n.of(context).noAccount,
+          L10n.of(context).noProfile,
         ),
         findsOneWidget,
       );

@@ -7,7 +7,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // Attachment item UI
 class AttachmentItem extends ConsumerWidget {
   final Attachment attachment;
-  const AttachmentItem({super.key, required this.attachment});
+  const AttachmentItem({
+    super.key,
+    required this.attachment,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -41,7 +44,7 @@ class AttachmentItem extends ConsumerWidget {
   }
 }
 
-// outer attachment container
+// outer attachment container UI
 class AttachmentContainer extends ConsumerWidget {
   const AttachmentContainer({
     super.key,
@@ -103,6 +106,7 @@ class _ImageAttachmentPreviewState extends State<_ImageAttachment> {
 
   void _getAttachmentImage() {
     attachmentImage = widget.attachment.sourceBinary(null);
+
     if (mounted) {
       setState(() {});
     }

@@ -46,7 +46,7 @@ Future<String?> authGuardRedirect(
 
   // ignore: deprecated_member_use
   return state.namedLocation(
-    Routes.start.name,
+    Routes.intro.name,
     queryParameters: {'next': next},
   );
 }

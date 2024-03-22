@@ -4,135 +4,126 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
-class IntroPage extends StatefulWidget {
+class IntroPage extends StatelessWidget {
   const IntroPage({super.key});
-
-  @override
-  State<IntroPage> createState() => _IntroPageState();
-}
-
-class _IntroPageState extends State<IntroPage> {
-  List<String> introTexts = [];
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    introTexts = [
-      L10n.of(context).simpleToUse,
-      L10n.of(context).secureWithE2EEncryption,
-      L10n.of(context).powerfulForAnyOrganizer,
-    ];
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: introGradient,
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 30),
-        child: Column(
-          children: [
-            const SizedBox(height: 80),
-            Image.asset(
-              'assets/icon/logo_foreground.png',
-              height: 100,
-              width: 100,
-            ),
-            const SizedBox(height: 20),
-            RichText(
-              textAlign: TextAlign.center,
-              text: TextSpan(
-                text: L10n.of(context).welcomeTo,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 32,
+      resizeToAvoidBottomInset: true,
+      body: _buildBody(context),
+    );
+  }
+
+  Widget _buildBody(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(gradient: introGradient),
+      padding: const EdgeInsets.symmetric(horizontal: 30),
+      child: Column(
+        children: [
+          const Spacer(),
+          _buildTitle(context),
+          const Spacer(),
+          _buildImage(),
+          const Spacer(),
+          _buildDescription(context),
+          const Spacer(),
+          _buildButton(context),
+          const Spacer(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTitle(BuildContext context) {
+    return Column(
+      children: [
+        RichText(
+          textAlign: TextAlign.center,
+          text: TextSpan(
+            text: L10n.of(context).welcomeTo,
+            style: Theme.of(context).textTheme.displayMedium!.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green,
                 ),
+            children: <TextSpan>[
+              TextSpan(
+                text: '\n${L10n.of(context).appName('')}!',
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          L10n.of(context).yourSafeAndSecureSpace,
+          style: Theme.of(context).textTheme.titleSmall,
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildImage() {
+    return Image.asset(
+      'assets/icon/intro.png',
+      height: 250,
+      width: 250,
+    );
+  }
+
+  Widget _buildDescription(BuildContext context) {
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 500),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            RichText(
+              text: TextSpan(
+                text: L10n.of(context).introPageDescription('desc1'),
+                style: Theme.of(context).textTheme.bodyMedium,
                 children: <TextSpan>[
                   TextSpan(
-                    text: ' ${L10n.of(context).acter}!',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green,
-                      fontSize: 32,
-                    ),
+                    text: L10n.of(context).introPageDescription('desc2'),
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          color: Colors.green,
+                        ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             Text(
-              L10n.of(context).aPowerfulAndSecureApp,
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 20),
-            ListView.builder(
-              padding: EdgeInsets.zero,
-              itemCount: introTexts.length,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                return Container(
-                  margin: const EdgeInsets.only(top: 5),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.circle,
-                        color: Colors.white,
-                        size: 8,
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: '${introTexts[index].split(' ')[0]} ',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.green,
-                                fontSize: 17,
-                              ),
-                            ),
-                            TextSpan(
-                              text: introTexts[index].substring(
-                                introTexts[index].indexOf(' ') + 1,
-                              ),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 17,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-            const SizedBox(height: 20),
-            GestureDetector(
-              onTap: () => context.goNamed(Routes.start.name),
-              child: Container(
-                height: 54,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Center(
-                  child: Text(
-                    L10n.of(context).letsGetStarted,
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
+              L10n.of(context).introPageDescription('desc3'),
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildButton(BuildContext context) {
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 500),
+        child: ElevatedButton(
+          onPressed: () => context.goNamed(Routes.start.name),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                L10n.of(context).letsExplore,
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              const SizedBox(width: 10),
+              const Icon(
+                Icons.arrow_forward_ios,
+                size: 18,
+              ),
+            ],
+          ),
         ),
       ),
     );

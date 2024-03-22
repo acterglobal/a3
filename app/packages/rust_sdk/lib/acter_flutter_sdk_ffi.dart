@@ -6279,6 +6279,53 @@ class Api {
     return tmp7;
   }
 
+  EventId? __attachmentsManagerRedactFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _attachmentsManagerRedactFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
   EventId? __taskAssignSelfFuturePoll(
     int boxed,
     int postCobject,
@@ -18041,12 +18088,12 @@ class Api {
       )>();
   late final _attachmentSenderPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int64 Function(
+          _AttachmentSenderReturn Function(
             ffi.Int64,
           )>>("__Attachment_sender");
 
   late final _attachmentSender = _attachmentSenderPtr.asFunction<
-      int Function(
+      _AttachmentSenderReturn Function(
         int,
       )>();
   late final _attachmentOriginServerTsPtr = _lookup<
@@ -18060,6 +18107,27 @@ class Api {
           int Function(
             int,
           )>();
+  late final _attachmentAttachmentIdStrPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentAttachmentIdStrReturn Function(
+            ffi.Int64,
+          )>>("__Attachment_attachment_id_str");
+
+  late final _attachmentAttachmentIdStr =
+      _attachmentAttachmentIdStrPtr.asFunction<
+          _AttachmentAttachmentIdStrReturn Function(
+            int,
+          )>();
+  late final _attachmentRoomIdStrPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentRoomIdStrReturn Function(
+            ffi.Int64,
+          )>>("__Attachment_room_id_str");
+
+  late final _attachmentRoomIdStr = _attachmentRoomIdStrPtr.asFunction<
+      _AttachmentRoomIdStrReturn Function(
+        int,
+      )>();
   late final _attachmentTypeStrPtr = _lookup<
       ffi.NativeFunction<
           _AttachmentTypeStrReturn Function(
@@ -18149,6 +18217,39 @@ class Api {
   late final _attachmentsManagerReload =
       _attachmentsManagerReloadPtr.asFunction<
           int Function(
+            int,
+          )>();
+  late final _attachmentsManagerRedactPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__AttachmentsManager_redact");
+
+  late final _attachmentsManagerRedact =
+      _attachmentsManagerRedactPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
             int,
           )>();
   late final _attachmentsManagerSubscribeStreamPtr = _lookup<
@@ -25095,6 +25196,21 @@ class Api {
   late final _attachmentsManagerReloadFuturePoll =
       _attachmentsManagerReloadFuturePollPtr.asFunction<
           _AttachmentsManagerReloadFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _attachmentsManagerRedactFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentsManagerRedactFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__AttachmentsManager_redact_future_poll");
+
+  late final _attachmentsManagerRedactFuturePoll =
+      _attachmentsManagerRedactFuturePollPtr.asFunction<
+          _AttachmentsManagerRedactFuturePollReturn Function(
             int,
             int,
             int,
@@ -37687,17 +37803,32 @@ class Attachment {
   Attachment._(this._api, this._box);
 
   /// Who send this attachment
-  UserId sender() {
+  String sender() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._attachmentSender(
       tmp0,
     );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_UserId");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = UserId._(_api, tmp3_1);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
     return tmp2;
   }
 
@@ -37710,6 +37841,66 @@ class Attachment {
     );
     final tmp3 = tmp1;
     final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// unique event id associated with this attachment
+  String attachmentIdStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentAttachmentIdStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// the room this attachment lives in
+  String roomIdStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentRoomIdStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
     return tmp2;
   }
 
@@ -37880,6 +38071,87 @@ class AttachmentsManager {
     final tmp2 =
         _nativeFuture(tmp3_1, _api.__attachmentsManagerReloadFuturePoll);
     return tmp2;
+  }
+
+  Future<EventId> redact(
+    String attachmentId,
+    String? reason,
+    String? txnId,
+  ) {
+    final tmp1 = attachmentId;
+    final tmp5 = reason;
+    final tmp11 = txnId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    var tmp9 = 0;
+    var tmp10 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp15 = 0;
+    var tmp16 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    if (tmp5 == null) {
+      tmp6 = 0;
+    } else {
+      tmp6 = 1;
+      final tmp7 = tmp5;
+      final tmp7_0 = utf8.encode(tmp7);
+      tmp9 = tmp7_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = _api.__allocate(tmp9 * 1, 1);
+      final Uint8List tmp8_1 = tmp8_0.asTypedList(tmp9);
+      tmp8_1.setAll(0, tmp7_0);
+      tmp8 = tmp8_0.address;
+      tmp10 = tmp9;
+    }
+    if (tmp11 == null) {
+      tmp12 = 0;
+    } else {
+      tmp12 = 1;
+      final tmp13 = tmp11;
+      final tmp13_0 = utf8.encode(tmp13);
+      tmp15 = tmp13_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp14_0 = _api.__allocate(tmp15 * 1, 1);
+      final Uint8List tmp14_1 = tmp14_0.asTypedList(tmp15);
+      tmp14_1.setAll(0, tmp13_0);
+      tmp14 = tmp14_0.address;
+      tmp16 = tmp15;
+    }
+    final tmp17 = _api._attachmentsManagerRedact(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp8,
+      tmp9,
+      tmp10,
+      tmp12,
+      tmp14,
+      tmp15,
+      tmp16,
+    );
+    final tmp19 = tmp17;
+    final ffi.Pointer<ffi.Void> tmp19_0 = ffi.Pointer.fromAddress(tmp19);
+    final tmp19_1 =
+        _Box(_api, tmp19_0, "__AttachmentsManager_redact_future_drop");
+    tmp19_1._finalizer = _api._registerFinalizer(tmp19_1);
+    final tmp18 =
+        _nativeFuture(tmp19_1, _api.__attachmentsManagerRedactFuturePoll);
+    return tmp18;
   }
 
   /// subscribe to the changes of this model key
@@ -50162,6 +50434,33 @@ class _ConvoRoomTypeReturn extends ffi.Struct {
   external int arg2;
 }
 
+class _AttachmentSenderReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _AttachmentAttachmentIdStrReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _AttachmentRoomIdStrReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
 class _AttachmentTypeStrReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -52616,6 +52915,21 @@ class _AttachmentsManagerContentDraftFuturePollReturn extends ffi.Struct {
 }
 
 class _AttachmentsManagerReloadFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _AttachmentsManagerRedactFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

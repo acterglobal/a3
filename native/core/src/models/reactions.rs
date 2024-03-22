@@ -301,6 +301,7 @@ impl From<OriginalMessageLikeEvent<ReactionEventContent>> for Reaction {
                 event_id,
                 sender,
                 origin_server_ts,
+                redacted: None,
             },
         }
     }

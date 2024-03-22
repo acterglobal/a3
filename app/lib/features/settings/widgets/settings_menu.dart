@@ -9,6 +9,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 const defaultSettingsMenuKey = Key('settings-menu');
 
@@ -43,13 +44,13 @@ class SettingsMenu extends ConsumerWidget {
       children: [
         _settingMenuSection(
           context: context,
-          sectionTitle: 'Account',
+          sectionTitle: L10n.of(context).account,
           children: [
             MenuItemWidget(
               iconData: Atlas.key_monitor_thin,
               iconColor: colorSelected(Routes.settingSessions),
-              title: 'Sessions',
-              subTitle: 'Your active devices',
+              title: L10n.of(context).sessions,
+              subTitle: L10n.of(context).yourActiveDevices,
               titleStyles: titleStylesSelected(Routes.settingSessions),
               onTap: () => shouldGoNotNamed
                   ? context.goNamed(Routes.settingSessions.name)
@@ -58,8 +59,8 @@ class SettingsMenu extends ConsumerWidget {
             MenuItemWidget(
               iconData: Atlas.bell_mobile_thin,
               iconColor: colorSelected(Routes.settingNotifications),
-              title: 'Notifications',
-              subTitle: 'Notifications settings and targets',
+              title: L10n.of(context).notifications,
+              subTitle: L10n.of(context).notificationsSettingsAndTargets,
               titleStyles: titleStylesSelected(Routes.settingNotifications),
               onTap: () => shouldGoNotNamed
                   ? context.goNamed(Routes.settingNotifications.name)
@@ -68,8 +69,8 @@ class SettingsMenu extends ConsumerWidget {
             MenuItemWidget(
               iconData: Atlas.envelope_paper_email_thin,
               iconColor: colorSelected(Routes.emailAddresses),
-              title: 'Email Addresses',
-              subTitle: 'Connected to your account',
+              title: L10n.of(context).email('multiple'),
+              subTitle: L10n.of(context).connectedToYourAccount,
               titleStyles: titleStylesSelected(Routes.emailAddresses),
               onTap: () => shouldGoNotNamed
                   ? context.goNamed(Routes.emailAddresses.name)
@@ -78,8 +79,8 @@ class SettingsMenu extends ConsumerWidget {
             MenuItemWidget(
               iconData: Atlas.users_thin,
               iconColor: colorSelected(Routes.blockedUsers),
-              title: 'Blocked Users',
-              subTitle: 'Users you blocked',
+              title: L10n.of(context).blockedUsers,
+              subTitle: L10n.of(context).usersYouBlocked,
               titleStyles: titleStylesSelected(Routes.blockedUsers),
               onTap: () => shouldGoNotNamed
                   ? context.goNamed(Routes.blockedUsers.name)
@@ -89,15 +90,15 @@ class SettingsMenu extends ConsumerWidget {
         ),
         _settingMenuSection(
           context: context,
-          sectionTitle: 'Community',
+          sectionTitle: L10n.of(context).community,
           children: [
             MenuItemWidget(
               key: SettingsMenu.superInvitations,
               iconData: Atlas.plus_envelope_thin,
               enabled: isSuperInviteEnable,
               iconColor: colorSelected(Routes.settingsSuperInvites),
-              title: 'Super Invitations',
-              subTitle: 'Manage your invitation codes',
+              title: L10n.of(context).superInvitations,
+              subTitle: L10n.of(context).manageYourInvitationCodes,
               titleStyles: titleStylesSelected(Routes.settingsSuperInvites),
               onTap: isSuperInviteEnable
                   ? () => shouldGoNotNamed
@@ -109,7 +110,7 @@ class SettingsMenu extends ConsumerWidget {
         ),
         _settingMenuSection(
           context: context,
-          sectionTitle: 'Acter App',
+          sectionTitle: L10n.of(context).appName('withApp'),
           children: [
             MenuItemWidget(
               iconData: Atlas.language_translation,
@@ -125,8 +126,8 @@ class SettingsMenu extends ConsumerWidget {
               key: SettingsMenu.labs,
               iconData: Atlas.lab_appliance_thin,
               iconColor: colorSelected(Routes.settingsLabs),
-              title: 'Labs',
-              subTitle: 'Experimental Acter features',
+              title: L10n.of(context).labs,
+              subTitle: L10n.of(context).experimentalActerFeatures,
               titleStyles: titleStylesSelected(Routes.settingsLabs),
               onTap: () => shouldGoNotNamed
                   ? context.goNamed(Routes.settingsLabs.name)
@@ -135,7 +136,7 @@ class SettingsMenu extends ConsumerWidget {
             MenuItemWidget(
               iconData: Atlas.info_circle_thin,
               iconColor: colorSelected(Routes.info),
-              title: 'Info',
+              title: L10n.of(context).info,
               titleStyles: titleStylesSelected(Routes.info),
               onTap: () => shouldGoNotNamed
                   ? context.goNamed(Routes.info.name)
@@ -145,15 +146,15 @@ class SettingsMenu extends ConsumerWidget {
         ),
         _settingMenuSection(
           context: context,
-          sectionTitle: 'Danger Zone',
+          sectionTitle: L10n.of(context).dangerZone,
           isDanderZone: true,
           children: [
             MenuItemWidget(
               key: SettingsMenu.logoutAccount,
               iconData: Atlas.exit_thin,
               iconColor: Theme.of(context).colorScheme.error,
-              title: 'Logout',
-              subTitle: 'Close this session, deleting local data',
+              title: L10n.of(context).logOut,
+              subTitle: L10n.of(context).closeSessionAndDeleteData,
               titleStyles: TextStyle(
                 color: Theme.of(context).colorScheme.error,
               ),
@@ -163,8 +164,8 @@ class SettingsMenu extends ConsumerWidget {
               key: SettingsMenu.deactivateAccount,
               iconData: Atlas.trash_can_thin,
               iconColor: Theme.of(context).colorScheme.error,
-              title: 'Deactivate Account',
-              subTitle: 'Irreversibly deactivate this account',
+              title: L10n.of(context).deactivate('withAccount'),
+              subTitle: L10n.of(context).irreversiblyDeactivateAccount,
               titleStyles: TextStyle(
                 color: Theme.of(context).colorScheme.error,
               ),

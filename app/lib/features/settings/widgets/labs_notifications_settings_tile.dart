@@ -5,6 +5,7 @@ import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:settings_ui/settings_ui.dart';
 
@@ -16,13 +17,11 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return SettingsTile.switchTile(
-      title: Text(title ?? 'Mobile Push Notifications'),
+      title: Text(title ?? L10n.of(context).mobilePushNotifications),
       description: !supportedPlatforms
-          ? const Text(
-              'Only supported on mobile (iOS & Android) right now',
-            )
+          ? Text(L10n.of(context).onlySupportedIosAndAndroid)
           : (pushServer.isEmpty
-              ? const Text('No push server configured on build')
+              ? Text(L10n.of(context).noPushServerConfigured)
               : null),
       initialValue: supportedPlatforms &&
           ref.watch(
@@ -38,7 +37,7 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
         if (newVal) {
           final client = ref.read(clientProvider);
           if (client == null) {
-            EasyLoading.showError('No active client');
+            EasyLoading.showError(L10n.of(context).noActiveClient);
             return;
           }
           final granted = await setupPushNotifications(client, forced: true);
@@ -66,6 +65,7 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
 
 class LabsNotificationsSettingsTile extends AbstractSettingsTile {
   final String? title;
+
   const LabsNotificationsSettingsTile({
     this.title,
     super.key,

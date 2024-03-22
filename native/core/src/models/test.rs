@@ -35,6 +35,7 @@ impl TestModelBuilder {
             sender: user_id!("@test:example.org").to_owned(),
             origin_server_ts: MilliSecondsSinceUnixEpoch(123567890u32.into()),
             room_id: OwnedRoomId::try_from(format!("!{room_id}:example.org")).unwrap(),
+            redacted: None,
         }
     }
 }

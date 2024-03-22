@@ -8,6 +8,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:settings_ui/settings_ui.dart';
@@ -37,7 +38,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            'Acter App Info',
+            "${L10n.of(context).appName('withApp')} ${L10n.of(context).info}",
             style: Theme.of(context).textTheme.titleLarge,
           ),
         ),
@@ -45,7 +46,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
           sections: [
             SettingsSection(
               title: Text(
-                'App Defaults',
+                L10n.of(context).appDefaults,
                 style: Theme.of(context)
                     .textTheme
                     .bodyLarge!
@@ -54,21 +55,21 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
               tiles: <SettingsTile>[
                 SettingsTile(
                   title: Text(
-                    'Homeserver Name',
+                    L10n.of(context).homeServerName,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   value: const Text(defaultServerName),
                 ),
                 SettingsTile(
                   title: Text(
-                    'Homeserver URL',
+                    L10n.of(context).homeServerURL,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   value: const Text(defaultServerUrl),
                 ),
                 SettingsTile(
                   title: Text(
-                    'Session Token Name',
+                    L10n.of(context).sessionTokenName,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   value: const Text(defaultSessionKey),
@@ -77,7 +78,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
             ),
             SettingsSection(
               title: Text(
-                'Debug Info',
+                L10n.of(context).debugInfo,
                 style: Theme.of(context)
                     .textTheme
                     .bodyLarge!
@@ -86,7 +87,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
               tiles: <SettingsTile>[
                 SettingsTile(
                   title: Text(
-                    'Version',
+                    L10n.of(context).version,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   value: const Text(versionName),
@@ -94,14 +95,14 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                 isDevBuild
                     ? SettingsTile(
                         title: Text(
-                          'Rageshake App Name',
+                          L10n.of(context).rageShakeAppName,
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                         value: const Text(appName),
                       )
                     : SettingsTile(
                         title: Text(
-                          'Rageshake App Name Digest',
+                          L10n.of(context).rageShakeAppNameDigest,
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                         value: Text('${sha1.convert(utf8.encode(appName))}'),
@@ -109,14 +110,14 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                 isDevBuild
                     ? SettingsTile(
                         title: Text(
-                          'Rageshake Target Url',
+                          L10n.of(context).rageShakeTargetUrl,
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                         value: const Text(rageshakeUrl),
                       )
                     : SettingsTile(
                         title: Text(
-                          'Rageshake Target Url Digest',
+                          L10n.of(context).rageShakeTargetUrlDigest,
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                         value:
@@ -124,7 +125,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                       ),
                 SettingsTile(
                   title: Text(
-                    'HTTP Proxy',
+                    L10n.of(context).httpProxy,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   onPressed: _displayHttpProxyEditor,
@@ -132,7 +133,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                 ),
                 SettingsTile(
                   title: Text(
-                    'Log Settings',
+                    L10n.of(context).logSettings,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   onPressed: _displayDebugLevelEditor,
@@ -142,7 +143,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
             ),
             SettingsSection(
               title: Text(
-                '3rd Party',
+                L10n.of(context).thirdParty,
                 style: Theme.of(context)
                     .textTheme
                     .bodyLarge!
@@ -150,8 +151,8 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
               ),
               tiles: [
                 SettingsTile.navigation(
-                  title: const Text('Licenses'),
-                  value: const Text('Built on the shoulders of giants'),
+                  title: Text(L10n.of(context).licenses),
+                  value: Text(L10n.of(context).builtOnShouldersOfGiants),
                   leading: const Icon(Atlas.list_file_thin),
                   onPressed: (context) => context.pushNamed(
                     Routes.licenses.name,
@@ -192,8 +193,8 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
       context,
       rustLogKey,
       rustLogSetting,
-      'Set Debug level',
-      'Debug Level',
+      L10n.of(context).setDebugLevel,
+      L10n.of(context).debugLevel,
     );
   }
 
@@ -202,8 +203,8 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
       context,
       proxyKey,
       httpProxySetting,
-      'Set HTTP Proxy',
-      'HTTP Proxy',
+      L10n.of(context).setHttpProxy,
+      L10n.of(context).httpProxy,
     );
   }
 
@@ -223,7 +224,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
           title: Text(title),
           content: Wrap(
             children: [
-              const Text('needs an app restart to take effect'),
+              Text(L10n.of(context).needsAppRestartToTakeEffect),
               TextField(
                 controller: textFieldController,
                 decoration: InputDecoration(hintText: fieldName),
@@ -239,16 +240,16 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                 await setSetting(logKey, null);
                 if (context.mounted) Navigator.pop(context);
               },
-              child: const Text('Reset'),
+              child: Text(L10n.of(context).reset),
             ),
             OutlinedButton(
-              child: const Text('Cancel'),
+              child: Text(L10n.of(context).cancel),
               onPressed: () {
                 Navigator.pop(context);
               },
             ),
             ElevatedButton(
-              child: const Text('Save'),
+              child: Text(L10n.of(context).save),
               onPressed: () async {
                 await setSetting(logKey, textFieldController.text);
                 if (context.mounted) Navigator.pop(context);
