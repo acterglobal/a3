@@ -2356,6 +2356,16 @@ object Client {
     /// Get session manager that returns all/verified/unverified/inactive session list
     fn session_manager() -> SessionManager;
 
+    /// Trigger verification of another device
+    /// returns flow id of verification
+    fn request_verification(dev_id: string) -> Future<Result<VerificationEvent>>;
+
+    /// install verification request event handler
+    fn install_request_event_handler(flow_id: string) -> Future<Result<bool>>;
+
+    /// install sas verification event handler
+    fn install_sas_event_handler(flow_id: string) -> Future<Result<bool>>;
+
     /// Return the event handler of device new
     fn device_new_event_rx() -> Option<Stream<DeviceNewEvent>>;
 
@@ -2612,7 +2622,7 @@ object VerificationEvent {
     fn event_type() -> string;
 
     /// Get flow id (EventId or TransactionId)
-    fn flow_id() -> Option<string>;
+    fn flow_id() -> string;
 
     /// Get user id of event sender
     fn sender() -> string;
@@ -2630,6 +2640,7 @@ object VerificationEvent {
     fn accept_verification_request() -> Future<Result<bool>>;
 
     /// Bob cancels the verification request from Alice
+    /// alternative of terminate_verification
     fn cancel_verification_request() -> Future<Result<bool>>;
 
     /// Bob accepts the verification request from Alice with specified methods
@@ -2649,9 +2660,6 @@ object VerificationEvent {
 
     /// Alice says to Bob that SAS verification doesn't match and vice versa
     fn mismatch_sas_verification() -> Future<Result<bool>>;
-
-    /// Alice and Bob reviews the AnyToDeviceEvent::KeyVerificationMac
-    fn review_verification_mac() -> Future<Result<bool>>;
 }
 
 object VerificationEmoji {
@@ -2681,7 +2689,13 @@ object SessionManager {
     fn delete_devices(dev_ids: Vec<string>, username: string, password: string) -> Future<Result<bool>>;
 
     /// Trigger verification of another device
-    fn request_verification(dev_id: string) -> Future<Result<bool>>;
+    /// returns flow id of verification
+    fn request_verification(dev_id: string) -> Future<Result<string>>;
+
+    /// Terminate verification of another device
+    /// alternative of cancel_verification_request
+    /// this fn is used in case without verification event
+    fn terminate_verification(flow_id: string) -> Future<Result<bool>>;
 }
 
 //  ########  ######## ##     ## ####  ######  ########  ######  
@@ -2700,16 +2714,20 @@ object DeviceNewEvent {
     fn device_id() -> DeviceId;
 
     /// Request verification to any devices of user
-    fn request_verification_to_user() -> Future<Result<bool>>;
+    /// returns flow id of verification
+    fn request_verification_to_user() -> Future<Result<string>>;
 
     /// Request verification to specific device
-    fn request_verification_to_device(dev_id: string) -> Future<Result<bool>>;
+    /// returns flow id of verification
+    fn request_verification_to_device(dev_id: string) -> Future<Result<string>>;
 
     /// Request verification to any devices of user with methods
-    fn request_verification_to_user_with_methods(methods: Vec<string>) -> Future<Result<bool>>;
+    /// returns flow id of verification
+    fn request_verification_to_user_with_methods(methods: Vec<string>) -> Future<Result<string>>;
 
     /// Request verification to specific device with methods
-    fn request_verification_to_device_with_methods(dev_id: string, methods: Vec<string>) -> Future<Result<bool>>;
+    /// returns flow id of verification
+    fn request_verification_to_device_with_methods(dev_id: string, methods: Vec<string>) -> Future<Result<string>>;
 }
 
 /// Deliver devices changed event from rust to flutter
