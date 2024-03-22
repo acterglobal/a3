@@ -32,10 +32,13 @@ Future<String?> authGuardRedirect(
       return null;
     }
   } catch (error, trace) {
-    // ignore: deprecated_member_use
+    // ignore: deprecated_member_use, avoid_print
+    print('Fatal error: $error');
+    // ignore: avoid_print
+    print('Stack: $trace');
     return state.namedLocation(
       Routes.fatalFail.name,
-      queryParameters: {'error': error.toString(), 'trace': trace.toString()},
+      queryParameters: {'error': error.toString()},
     );
   }
 
@@ -67,8 +70,13 @@ Future<String?> forwardRedirect(
       client = await acterSdk.getClientWithDeviceId(deviceId!, true);
       // ignore: use_build_context_synchronously
       final ref = ProviderScope.containerOf(context);
-      ref.invalidate(clientProvider); // ensure we have selected the right client
-    } catch(error) {
+      // ensure we have selected the right client
+      ref.invalidate(clientProvider);
+    } catch (error, trace) {
+      // ignore: deprecated_member_use, avoid_print
+      print('Client not found error: $error');
+      // ignore: avoid_print
+      print('Stack: $trace');
       return null;
     }
     final roomId = state.uri.queryParameters['roomId'];
@@ -81,11 +89,16 @@ Future<String?> forwardRedirect(
     } else {
       // final eventId = state.uri.queryParameters['eventId'];
       // with the event ID or further information we could figure out the specific action
-      return state
-          .namedLocation(Routes.space.name, pathParameters: {'spaceId': roomId});
+      return state.namedLocation(
+        Routes.space.name,
+        pathParameters: {'spaceId': roomId},
+      );
     }
   } catch (error, trace) {
-    // ignore: deprecated_member_use
+    // ignore: deprecated_member_use, avoid_print
+    print('Fatal error: $error');
+    // ignore: avoid_print
+    print('Stack: $trace');
     return state.namedLocation(
       Routes.fatalFail.name,
       queryParameters: {'error': error.toString(), 'trace': trace.toString()},
