@@ -7,6 +7,7 @@ import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class AddUserToBlock extends StatefulWidget {
   const AddUserToBlock({
@@ -24,7 +25,7 @@ class _AddUserToBlockState extends State<AddUserToBlock> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Block user with username'),
+      title: Text(L10n.of(context).blockUserWithUsername),
       content: Form(
         key: _formKey,
         child: Column(
@@ -37,7 +38,7 @@ class _AddUserToBlockState extends State<AddUserToBlock> {
                 validator: (value) => value?.startsWith('@') == true &&
                         value?.contains(':') == true
                     ? null
-                    : 'Format must be @user:server.tld',
+                    : L10n.of(context).formatMustBe,
               ),
             ),
           ],
@@ -46,7 +47,7 @@ class _AddUserToBlockState extends State<AddUserToBlock> {
       actions: <Widget>[
         OutlinedButton(
           onPressed: () => Navigator.pop(context, null),
-          child: const Text('Cancel'),
+          child: Text(L10n.of(context).cancel),
         ),
         ElevatedButton(
           onPressed: () {
@@ -54,7 +55,7 @@ class _AddUserToBlockState extends State<AddUserToBlock> {
               Navigator.pop(context, userName.text);
             }
           },
-          child: const Text('Block'),
+          child: Text(L10n.of(context).block),
         ),
       ],
     );
@@ -73,7 +74,7 @@ class BlockedUsersPage extends ConsumerWidget {
         appBar: AppBar(
           backgroundColor: const AppBarTheme().backgroundColor,
           elevation: 0.0,
-          title: const Text('Blocked Users'),
+          title: Text(L10n.of(context).blockedUsers),
           centerTitle: true,
           actions: [
             IconButton(
@@ -95,7 +96,7 @@ class BlockedUsersPage extends ConsumerWidget {
                   if (context.mounted) {
                     customMsgSnackbar(
                       context,
-                      '$userToAdd added to block list. UI might take a bit too update',
+                      L10n.of(context).userAddedToBlockList(userToAdd),
                     );
                   }
                 }
@@ -118,14 +119,14 @@ class BlockedUsersPage extends ConsumerWidget {
                               child: Text(user.toString()),
                             ),
                             trailing: OutlinedButton(
-                              child: const Text('Unblock'),
+                              child: Text(L10n.of(context).unblock),
                               onPressed: () async {
                                 final account = ref.read(accountProvider);
                                 await account.unignoreUser(user.toString());
                                 if (context.mounted) {
                                   customMsgSnackbar(
                                     context,
-                                    'User removed from list. UI might take a bit too update',
+                                    L10n.of(context).userRemovedFromList,
                                   );
                                 }
                               },
@@ -137,12 +138,12 @@ class BlockedUsersPage extends ConsumerWidget {
                     ),
                   ],
                 )
-              : const Center(
-                  child: Text("Here you can see all users you've blocked."),
+              : Center(
+                  child: Text(L10n.of(context).hereYouCanSeeAllUsersYouBlocked),
                 ),
           error: (error, stack) {
             return Center(
-              child: Text('Failed to load: $error'),
+              child: Text('${L10n.of(context).failedToLoad}: $error'),
             );
           },
           loading: () => const Center(

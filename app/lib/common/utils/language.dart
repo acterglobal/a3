@@ -11,12 +11,13 @@ Future<void> initLanguage(WidgetRef ref) async {
   final deviceLanguageCode = PlatformDispatcher.instance.locale.languageCode;
   final bool isLanguageContain = LanguageModel.allLanguagesList
       .contains(LanguageModel.fromCode(deviceLanguageCode));
-  if (prefLanguageCode != null) {
+  if (prefLanguageCode == null && isLanguageContain) {
+    await setLanguage(deviceLanguageCode);
+    ref.read(languageProvider.notifier).update((state) => deviceLanguageCode);
+  } else if (prefLanguageCode != null) {
     ref.read(languageProvider.notifier).update(
           (state) => prefLanguageCode,
         );
-  } else if (isLanguageContain) {
-    ref.read(languageProvider.notifier).update((state) => deviceLanguageCode);
   }
 }
 
