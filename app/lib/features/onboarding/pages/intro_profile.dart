@@ -18,21 +18,35 @@ class IntroProfile extends StatelessWidget {
   }
 
   Widget _buildBody(BuildContext context) {
+    var imageSize = MediaQuery.of(context).size.height / 5;
     return Container(
       decoration: const BoxDecoration(gradient: introGradient),
       padding: const EdgeInsets.symmetric(horizontal: 30),
       child: Column(
         children: [
-          const SizedBox(height: 100),
-          const LogoWidget(),
-          const SizedBox(height: 20),
-          _buildHeadlineText(context),
-          const SizedBox(height: 10),
-          _buildPreviewLabel(context),
-          const SizedBox(height: 20),
-          _buildDescription(context),
-          const SizedBox(height: 50),
-          _buildActionButtons(context),
+          Expanded(
+            child: Column(
+              children: [
+                const Spacer(),
+                LogoWidget(height: imageSize, width: imageSize),
+                const SizedBox(height: 30),
+                _buildHeadlineText(context),
+                const SizedBox(height: 10),
+                _buildPreviewLabel(context),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Column(
+              children: [
+                const Spacer(),
+                _buildDescription(context),
+                const Spacer(),
+                _buildActionButtons(context),
+                const Spacer(),
+              ],
+            ),
+          ),
         ],
       ),
     );
