@@ -372,7 +372,9 @@ class _TokenConfirmState extends State<TokenConfirm> {
   void onSubmit(BuildContext context) {
     if (!_formKey.currentState!.validate()) {
       customMsgSnackbar(
-          context, L10n.of(context).tokenAndPasswordMustBeProvided);
+        context,
+        L10n.of(context).tokenAndPasswordMustBeProvided,
+      );
       return;
     }
     // user can reset password under the same email address
