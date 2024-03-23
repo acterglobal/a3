@@ -38,7 +38,7 @@ Future<String?> authGuardRedirect(
     print('Stack: $trace');
     return state.namedLocation(
       Routes.fatalFail.name,
-      queryParameters: {'error': error.toString()},
+      queryParameters: {'error': error.toString(), 'trace': trace.toString()},
     );
   }
 

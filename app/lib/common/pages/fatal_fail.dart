@@ -3,11 +3,13 @@ import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:stack_trace/stack_trace.dart';
 
-class FatalFailPage extends ConsumerWidget {
+class FatalFailPage extends ConsumerStatefulWidget {
   final String error;
   final String trace;
   const FatalFailPage({
@@ -17,20 +19,82 @@ class FatalFailPage extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _FatalFailPageState();
+}
+
+class _FatalFailPageState extends ConsumerState<FatalFailPage> {
+  bool showStack = false;
+  late String stack;
+
+  @override
+  void initState() {
+    super.initState();
+    stack = Trace.parse(widget.trace).terse.toString();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height / 4;
     return Scaffold(
-      appBar: AppBar(title: Text('Fatal Error: $error')),
-      body: Center(
+      appBar: AppBar(title: const Text('Fatal Error')),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(
-              height: 200,
-              width: 200,
-              child: SvgPicture.asset('assets/images/genericError.svg'),
+            Column(
+              children: [
+                SizedBox(
+                  height: height,
+                  width: height,
+                  child: SvgPicture.asset('assets/images/genericError.svg'),
+                ),
+                const Text(
+                  'Something went terribly wrong:',
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(widget.error),
+                    IconButton(
+                      onPressed: () {
+                        Clipboard.setData(
+                          ClipboardData(
+                            text: '${widget.error}\n$stack',
+                          ),
+                        );
+                        customMsgSnackbar(
+                          context,
+                          'Error & Stacktrace copied to clipboard',
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.copy_all_outlined,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        setState(() {
+                          showStack = !showStack;
+                        });
+                      },
+                      icon: Icon(
+                        showStack
+                            ? Icons.toggle_off_outlined
+                            : Icons.toggle_on_outlined,
+                      ),
+                    ),
+                    const Text('Stacktrace'),
+                  ],
+                ),
+              ],
             ),
-            Text(
-              'Something went wrong: $error',
-            ),
+            if (showStack) Text(stack),
             ButtonBar(
               alignment: MainAxisAlignment.center,
               children: [
