@@ -1,20 +1,18 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:settings_ui/settings_ui.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:acter/common/notifications/notifications.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:app_settings/app_settings.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:settings_ui/settings_ui.dart';
 
 class _LabNotificationSettingsTile extends ConsumerWidget {
   final String? title;
 
-  const _LabNotificationSettingsTile({
-    this.title,
-  });
+  const _LabNotificationSettingsTile({this.title});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

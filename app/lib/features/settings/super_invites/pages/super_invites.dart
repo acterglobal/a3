@@ -6,9 +6,9 @@ import 'package:acter/features/settings/super_invites/providers/super_invites_pr
 import 'package:acter/features/settings/super_invites/widgets/redeem_token.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SuperInvitesPage extends ConsumerWidget {
   static Key createNewToken = const Key('super-invites-create');

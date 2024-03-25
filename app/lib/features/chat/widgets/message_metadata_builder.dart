@@ -5,10 +5,10 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Convo, EventSendState;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:quds_popup_menu/quds_popup_menu.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:quds_popup_menu/quds_popup_menu.dart';
 
 final _log = Logger('a3::chat::message_metadata_builder');
 

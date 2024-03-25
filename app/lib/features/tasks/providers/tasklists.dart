@@ -1,7 +1,7 @@
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/tasks/providers/notifiers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 
 class AsyncTaskListsNotifier extends AsyncNotifier<List<TaskList>> {
   late Stream<bool> _listener;

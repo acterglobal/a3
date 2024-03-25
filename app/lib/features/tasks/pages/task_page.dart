@@ -1,16 +1,16 @@
 import 'package:acter/common/widgets/centered_page.dart';
 import 'package:acter/common/widgets/icons/tasks_icon.dart';
+import 'package:acter/features/tasks/providers/tasklists.dart';
 import 'package:acter/features/tasks/providers/tasks.dart';
 import 'package:acter/features/tasks/widgets/task_info.dart';
 import 'package:flutter/material.dart';
-
-import 'package:acter/features/tasks/providers/tasklists.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class TaskPage extends ConsumerWidget {
   static const taskListTitleKey = Key('task-list-title');
   final String taskListId;
   final String taskId;
+
   const TaskPage({
     required this.taskListId,
     required this.taskId,

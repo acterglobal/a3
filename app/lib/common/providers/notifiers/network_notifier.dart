@@ -1,6 +1,6 @@
 import 'package:acter/common/utils/utils.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 
 class NetworkStateNotifier extends StateNotifier<NetworkStatus> {
   NetworkStateNotifier() : super(NetworkStatus.NotDetermined) {

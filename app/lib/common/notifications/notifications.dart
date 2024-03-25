@@ -13,11 +13,11 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:push/push.dart';
+import 'package:riverpod/riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final _log = Logger('a3::notifications');
@@ -566,7 +566,8 @@ Future<bool> setupPushNotifications(
   if (pushServer.isEmpty) {
     // no server given. Ignoring
     _log.warning(
-        'No push server configured. Skipping push notification setup.',);
+      'No push server configured. Skipping push notification setup.',
+    );
     return false;
   }
 

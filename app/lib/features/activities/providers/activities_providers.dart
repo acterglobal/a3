@@ -1,6 +1,6 @@
 import 'package:acter/features/activities/providers/invitations_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 
 enum HasActivities {
   urgent,

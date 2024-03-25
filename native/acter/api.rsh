@@ -2655,9 +2655,6 @@ object VerificationEvent {
     /// Bob cancels the SAS verification
     fn cancel_sas_verification() -> Future<Result<bool>>;
 
-    /// Alice sends the verification key to Bob and vice versa
-    fn send_verification_key() -> Future<Result<bool>>;
-
     /// Alice says to Bob that SAS verification matches and vice versa
     fn confirm_sas_verification() -> Future<Result<bool>>;
 

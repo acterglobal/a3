@@ -312,7 +312,6 @@ pub async fn register(
     .await
 }
 
-#[allow(clippy::too_many_arguments)]
 pub async fn register_under_config(
     config: ClientBuilder,
     user_id: OwnedUserId,

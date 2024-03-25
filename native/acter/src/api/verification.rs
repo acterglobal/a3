@@ -44,7 +44,6 @@ pub struct VerificationEvent {
 }
 
 impl VerificationEvent {
-    #[allow(clippy::too_many_arguments)]
     pub(crate) fn new(
         client: SdkClient,
         controller: VerificationController,
@@ -258,6 +257,7 @@ impl VerificationEvent {
             .await?
     }
 
+    #[cfg(feature = "testing")]
     pub async fn send_verification_key(&self) -> Result<bool> {
         let client = self.client.clone();
         let sender = self.sender.clone();

@@ -1,6 +1,8 @@
 import 'dart:math';
 
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/features/pins/widgets/pin_list_item.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
@@ -10,8 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
-import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/themes/app_theme.dart';
 
 class PinsPage extends ConsumerWidget {
   const PinsPage({super.key});

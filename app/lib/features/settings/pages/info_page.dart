@@ -1,16 +1,17 @@
-import 'package:acter/features/bug_report/const.dart';
-import 'package:acter/common/widgets/with_sidebar.dart';
-import 'package:acter/features/settings/pages/settings_page.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/material.dart';
+import 'dart:convert';
+
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/with_sidebar.dart';
+import 'package:acter/features/bug_report/const.dart';
+import 'package:acter/features/settings/pages/settings_page.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:atlas_icons/atlas_icons.dart';
+import 'package:crypto/crypto.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:settings_ui/settings_ui.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
-import 'package:crypto/crypto.dart';
-import 'dart:convert';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SettingsInfoPage extends ConsumerStatefulWidget {
   const SettingsInfoPage({super.key});
