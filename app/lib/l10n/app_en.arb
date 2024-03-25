@@ -224,7 +224,7 @@
   "sasGotIt": "Got it",
   "sasIncomingReqNotifContent": "{sender} wants to verify your session",
   "@sasIncomingReqNotifContent": {
-    "description": "A message with a single parameter",
+    "description": "When another users asks to verify this session",
     "placeholders": {
       "sender": {
         "type": "String",
@@ -289,7 +289,7 @@
   "verificationConclusionNotSecure": "Not secure",
   "verificationConclusionOkDone": "You’ve successfully verified {sender}!",
   "@verificationConclusionOkDone": {
-    "description": "A message with a single parameter",
+    "description": "After successfully verifying another user",
     "placeholders": {
       "sender": {
         "type": "String",
@@ -304,7 +304,6 @@
   "verificationRequestAccept": "To proceed, please accept the verification request on your other device.",
   "verificationRequestWaitingFor": "Waiting for {sender}…",
   "@verificationRequestWaitingFor": {
-    "description": "A message with a single parameter",
     "placeholders": {
       "sender": {
         "type": "String",
