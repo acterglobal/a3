@@ -32,7 +32,10 @@ Future<String?> authGuardRedirect(
       return null;
     }
   } catch (error, trace) {
-    // ignore: deprecated_member_use
+    // ignore: deprecated_member_use, avoid_print
+    print('Fatal error: $error');
+    // ignore: avoid_print
+    print('Stack: $trace');
     return state.namedLocation(
       Routes.fatalFail.name,
       queryParameters: {'error': error.toString(), 'trace': trace.toString()},
@@ -69,7 +72,11 @@ Future<String?> forwardRedirect(
       final ref = ProviderScope.containerOf(context);
       // ensure we have selected the right client
       ref.invalidate(clientProvider);
-    } catch (error) {
+    } catch (error, trace) {
+      // ignore: deprecated_member_use, avoid_print
+      print('Client not found error: $error');
+      // ignore: avoid_print
+      print('Stack: $trace');
       return null;
     }
     final roomId = state.uri.queryParameters['roomId'];
@@ -88,7 +95,10 @@ Future<String?> forwardRedirect(
       );
     }
   } catch (error, trace) {
-    // ignore: deprecated_member_use
+    // ignore: deprecated_member_use, avoid_print
+    print('Fatal error: $error');
+    // ignore: avoid_print
+    print('Stack: $trace');
     return state.namedLocation(
       Routes.fatalFail.name,
       queryParameters: {'error': error.toString(), 'trace': trace.toString()},
