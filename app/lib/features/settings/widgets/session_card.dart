@@ -59,7 +59,7 @@ class SessionCard extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: Text(
-                      'Logout',
+                      L10n.of(context).logOut,
                       style: Theme.of(ctx).textTheme.labelSmall,
                       softWrap: false,
                     ),
@@ -75,7 +75,7 @@ class SessionCard extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: Text(
-                      'Verify Session',
+                      L10n.of(context).verifySession,
                       style: Theme.of(ctx).textTheme.labelSmall,
                       softWrap: false,
                     ),
@@ -98,9 +98,7 @@ class SessionCard extends ConsumerWidget {
           title: Text(L10n.of(context).authenticationRequired),
           content: Wrap(
             children: [
-              Text(
-                L10n.of(context).pleaseProvideYourUserPassword,
-              ),
+              Text(L10n.of(context).pleaseProvideYourUserPassword),
               TextField(
                 controller: passwordController,
                 obscureText: true,

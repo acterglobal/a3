@@ -1,6 +1,7 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class RequestCreatedView extends StatelessWidget {
   final Function(BuildContext) onCancel;
@@ -25,10 +26,10 @@ class RequestCreatedView extends StatelessWidget {
             child: buildTitleBar(context),
           ),
           const Spacer(),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
             child: Text(
-              'To proceed, please accept the verification request on your other device.',
+              L10n.of(context).verificationRequestAccept,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -48,7 +49,7 @@ class RequestCreatedView extends StatelessWidget {
           child: Icon(isDesktop ? Atlas.laptop : Atlas.phone),
         ),
         const SizedBox(width: 5),
-        const Text('Verification Request'),
+        Text(L10n.of(context).sasIncomingReqNotifTitle),
         const Spacer(),
         Padding(
           padding: const EdgeInsets.only(right: 10),

@@ -1,6 +1,7 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class RequestDoneView extends StatelessWidget {
   final bool isVerifier;
@@ -33,8 +34,8 @@ class RequestDoneView extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Text(
               isVerifier
-                  ? 'You’ve successfully verified $sender!'
-                  : 'Your new session is now verified. It has access to your encrypted messages, and other users will see it as trusted.',
+                  ? L10n.of(context).verificationConclusionOkDone(sender)
+                  : L10n.of(context).verificationConclusionOkSelfNotice,
               textAlign: TextAlign.center,
             ),
           ),
@@ -47,7 +48,7 @@ class RequestDoneView extends StatelessWidget {
             child: SizedBox(
               width: MediaQuery.of(context).size.width * 0.40,
               child: ElevatedButton(
-                child: const Text('Got it'),
+                child: Text(L10n.of(context).sasGotIt),
                 onPressed: () => onDone(context),
               ),
             ),
@@ -67,7 +68,7 @@ class RequestDoneView extends StatelessWidget {
           child: Icon(isDesktop ? Atlas.laptop : Atlas.phone),
         ),
         const SizedBox(width: 5),
-        const Text('Verified!'),
+        Text(L10n.of(context).sasVerified),
       ],
     );
   }
