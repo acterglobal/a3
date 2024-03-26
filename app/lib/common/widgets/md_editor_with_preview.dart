@@ -68,7 +68,8 @@ class _MdEditorWithPreviewState extends ConsumerState<MdEditorWithPreview> {
                                 data: (text) => RenderHtml(text: text),
                                 error: (error, stackTrace) => Text(
                                     L10n.of(context)
-                                        .parsingMarkdownFailed(error)),
+                                        .parsingMarkdownFailed(error),
+                                ),
                                 loading: () => Text(L10n.of(context).parsing),
                               ),
                         ),

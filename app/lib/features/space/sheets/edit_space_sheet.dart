@@ -17,7 +17,6 @@ import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:logging/logging.dart';
 
 
 final _log = Logger('a3::space::edit');

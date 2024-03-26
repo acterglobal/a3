@@ -82,7 +82,9 @@ class _CreateTaskListSheetConsumerState
           return;
         }
         customMsgSnackbar(
-            context, '${L10n.of(context).failedTo('createTaskList')}: $e');
+          context,
+          '${L10n.of(context).failedTo('createTaskList')}: $e',
+        );
       }
     }
   }

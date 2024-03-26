@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:dart_date/dart_date.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class CalendarWidget extends ConsumerStatefulWidget {

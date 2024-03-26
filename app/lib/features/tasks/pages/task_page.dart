@@ -5,7 +5,6 @@ import 'package:acter/features/tasks/providers/tasks.dart';
 import 'package:acter/features/tasks/widgets/task_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:acter/features/tasks/providers/tasklists.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class TaskPage extends ConsumerWidget {

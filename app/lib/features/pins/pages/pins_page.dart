@@ -12,8 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
-import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class PinsPage extends ConsumerWidget {
