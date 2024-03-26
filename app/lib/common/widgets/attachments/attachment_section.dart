@@ -1,6 +1,6 @@
 import 'package:acter/common/dialogs/attachment_selection.dart';
 import 'package:acter/common/providers/attachment_providers.dart';
-
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:acter/common/widgets/attachments/attachment_item.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
@@ -19,6 +19,7 @@ class AttachmentSectionWidget extends ConsumerWidget {
   final AttachmentsManager attachmentManager;
   final bool? canPostAttachment;
   final bool? canRedact;
+
   const AttachmentSectionWidget({
     super.key,
     required this.attachmentManager,
@@ -39,7 +40,10 @@ class AttachmentSectionWidget extends ConsumerWidget {
             children: <Widget>[
               Row(
                 children: [
-                  Text('Attachments', style: attachmentTitleTextStyle),
+                  Text(
+                    L10n.of(context).attachments,
+                    style: attachmentTitleTextStyle,
+                  ),
                   const SizedBox(width: 5),
                   const Icon(Atlas.paperclip_attachment_thin, size: 14),
                   const SizedBox(width: 5),
@@ -61,7 +65,8 @@ class AttachmentSectionWidget extends ConsumerWidget {
           ),
         );
       },
-      error: (err, st) => Text('Error loading attachments $err'),
+      error: (err, st) =>
+          Text('${L10n.of(context).errorLoading('attachments')} $err'),
       loading: () => const Skeletonizer(
         child: Wrap(
           spacing: 5.0,
@@ -130,12 +135,12 @@ class AttachmentSectionWidget extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text('Delete attachment', style: titleTextStyle),
+                Text(L10n.of(context).deleteAttachment, style: titleTextStyle),
                 const SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    'Are you sure you want to remove this attachment from pin?',
+                    L10n.of(context).areYouSureYouWantToRemoveAttachmentFromPin,
                     style: descriptionTextStyle,
                   ),
                 ),
@@ -143,7 +148,7 @@ class AttachmentSectionWidget extends ConsumerWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: InputTextField(
                     controller: reasonController,
-                    hintText: 'Reason',
+                    hintText: L10n.of(context).reason,
                     textInputType: TextInputType.multiline,
                     maxLines: 5,
                   ),
@@ -154,7 +159,7 @@ class AttachmentSectionWidget extends ConsumerWidget {
                   children: <Widget>[
                     OutlinedButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('No'),
+                      child: Text(L10n.of(context).no),
                     ),
                     const SizedBox(width: 10),
                     ElevatedButton(
@@ -163,12 +168,13 @@ class AttachmentSectionWidget extends ConsumerWidget {
                         _handleRedactAttachment(
                           eventId,
                           reasonController.text.trim(),
+                          context,
                         );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: confirmBtnColor,
                       ),
-                      child: const Text('Yes'),
+                      child: Text(L10n.of(context).yes),
                     ),
                   ],
                 ),
@@ -180,15 +186,16 @@ class AttachmentSectionWidget extends ConsumerWidget {
     );
   }
 
-  Future<void> _handleRedactAttachment(String eventId, String reason) async {
-    EasyLoading.show(status: 'Removing attachment', dismissOnTap: false);
+  Future<void> _handleRedactAttachment(String eventId, String reason, BuildContext context) async {
+    EasyLoading.show(status:  L10n.of(context).removing('attachment'), dismissOnTap: false);
     try {
       await attachmentManager.redact(eventId, reason, null);
       _log.info('attachment redacted: $eventId');
       EasyLoading.dismiss();
     } catch (e) {
       _log.severe('attachment redaction failed', e, null);
-      EasyLoading.showError('Failed to delete attachment due to $e');
+      if(!context.mounted) return;
+      EasyLoading.showError('${L10n.of(context).failedTo('deleteAttachment')} $e');
     }
   }
 
@@ -209,7 +216,7 @@ class AttachmentSectionWidget extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Icon(Icons.add, color: iconColor),
-            Text('Add', style: iconTextStyle!.copyWith(color: iconColor)),
+            Text(L10n.of(context).add(''), style: iconTextStyle!.copyWith(color: iconColor)),
           ],
         ),
       ),

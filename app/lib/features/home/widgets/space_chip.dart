@@ -3,6 +3,7 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SpaceChip extends ConsumerWidget {
   final SpaceItem? space;
@@ -18,13 +19,13 @@ class SpaceChip extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     if (space == null) {
       if (spaceId == null) {
-        throw 'space or spaceId must be provided';
+        throw L10n.of(context).spaceOrSpaceIdMustBeProvided;
       }
       final brief = ref.watch(briefSpaceItemProvider(spaceId!));
       return brief.when(
         data: (space) => renderSpace(space),
         error: (error, st) => Chip(
-          label: Text('Loading failed: $error'),
+          label: Text('${L10n.of(context).loadingFailed('')}: $error'),
         ),
         loading: () => renderLoading(spaceId!),
       );

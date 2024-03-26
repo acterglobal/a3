@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class RoomHierarchyJoinButtons extends ConsumerWidget {
   final Function(String)? forward;
@@ -25,19 +26,19 @@ class RoomHierarchyJoinButtons extends ConsumerWidget {
     switch (joinRule) {
       case 'private':
       case 'invite':
-        return const Tooltip(
-          message: 'You need be invited to join this room',
-          child: Chip(label: Text('Private')),
+        return Tooltip(
+          message: L10n.of(context).youNeedBeInvitedToJoinThisRoom,
+          child: Chip(label: Text(L10n.of(context).private)),
         );
       case 'restricted':
         return Tooltip(
-          message: 'You are able to join this room',
+          message: L10n.of(context).youAreAbleToJoinThisRoom,
           child: OutlinedButton(
             onPressed: () async {
               await joinRoom(
                 context,
                 ref,
-                'Trying to join ${space.name()}',
+                L10n.of(context).tryingToJoin('${space.name()}'),
                 space.roomIdStr(),
                 space.viaServerName(),
                 forward ??
@@ -49,18 +50,18 @@ class RoomHierarchyJoinButtons extends ConsumerWidget {
                         ),
               );
             },
-            child: const Text('join'),
+            child: Text(L10n.of(context).join),
           ),
         );
       case 'public':
         return Tooltip(
-          message: 'You need be invited to join this room',
+          message: L10n.of(context).youNeedBeInvitedToJoinThisRoom,
           child: OutlinedButton(
             onPressed: () async {
               await joinRoom(
                 context,
                 ref,
-                'Trying to join ${space.name()}',
+                L10n.of(context).tryingToJoin('${space.name()}'),
                 space.roomIdStr(),
                 space.viaServerName(),
                 forward ??
@@ -72,13 +73,13 @@ class RoomHierarchyJoinButtons extends ConsumerWidget {
                         ),
               );
             },
-            child: const Text('join'),
+            child: Text(L10n.of(context).join),
           ),
         );
       default:
         return Tooltip(
-          message: 'Unclear join rule $joinRule',
-          child: const Chip(label: Text('unknown')),
+          message: L10n.of(context).unclearJoinRule(joinRule),
+          child: Chip(label: Text(L10n.of(context).unknown)),
         );
     }
   }
@@ -170,8 +171,8 @@ class SpaceHierarchyCard extends ConsumerWidget {
         ? ExpandableText(
             topic!,
             maxLines: 2,
-            expandText: 'show more',
-            collapseText: 'show less',
+            expandText: L10n.of(context).show('more'),
+            collapseText: L10n.of(context).show('less'),
             linkColor: Theme.of(context).colorScheme.primary,
           )
         : null;
@@ -191,13 +192,13 @@ class SpaceHierarchyCard extends ConsumerWidget {
         trailing: RoomHierarchyJoinButtons(space: space),
       ),
       error: (error, stack) => ListTile(
-        title: Text('Error loading: $roomId'),
+        title: Text('${L10n.of(context).errorLoading('')}: $roomId'),
         subtitle: Text('$error'),
       ),
       loading: () => Skeletonizer(
         child: ListTile(
           title: Text(roomId),
-          subtitle: const Text('loading'),
+          subtitle: Text(L10n.of(context).loading('')),
         ),
       ),
     );

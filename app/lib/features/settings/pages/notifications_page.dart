@@ -159,7 +159,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
         title,
       ),
       description: Text(
-        notifToText(curNotifStatus) ?? '(${L10n.of(context).unset})',
+        notifToText(context, curNotifStatus) ?? '(${L10n.of(context).unset})',
       ),
       trailing: PopupMenuButton<String>(
         initialValue: curNotifStatus,
@@ -254,7 +254,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
                   } catch (e) {
                     if (!context.mounted) return;
                     EasyLoading.showError(
-                      '${L10n.of(context).failedToAdd} $emailToAdd: $e',
+                      '${L10n.of(context).failedTo('add')} $emailToAdd: $e',
                     );
                     return;
                   }
@@ -286,12 +286,12 @@ class NotificationsSettingsPage extends ConsumerWidget {
             },
             error: (e, s) => [
               SettingsTile(
-                title: Text('${L10n.of(context).failedToLoadPushTargets}: $e'),
+                title: Text('${L10n.of(context).failedToLoad('pushTargets')}: $e'),
               ),
             ],
             loading: () => [
               SettingsTile(
-                title: Text(L10n.of(context).loadingTargets),
+                title: Text(L10n.of(context).loading('targets')),
               ),
             ],
           ),

@@ -3,6 +3,7 @@ import 'package:acter/features/comments/widgets/comment.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class CommentsList extends ConsumerWidget {
   final CommentsManager manager;
@@ -47,15 +48,15 @@ class CommentsList extends ConsumerWidget {
   Widget onError(BuildContext context, Object error) {
     return Column(
       children: [
-        Text('Comments list error: $error'),
+        Text('${L10n.of(context).commentsListError}: $error'),
       ],
     );
   }
 
   Widget loading(BuildContext context) {
-    return const Column(
+    return Column(
       children: [
-        Text('loading comments list'),
+        Text(L10n.of(context).loading('commentsList')),
       ],
     );
   }

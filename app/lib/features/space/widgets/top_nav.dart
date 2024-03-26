@@ -2,6 +2,8 @@ import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:acter/features/space/providers/space_navbar_provider.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class TabsState {
   final List<TabEntry> tabs;
@@ -124,7 +126,8 @@ class _TopNavBarState extends ConsumerState<TopNavBar>
           },
         );
       },
-      error: (e, stack) => Text('Error loading navigation menu: $e'),
+      error: (e, stack) =>
+          Text('${L10n.of(context).errorLoading('navigationMenu')}: $e'),
       loading: () => const SizedBox(height: 50),
     );
   }

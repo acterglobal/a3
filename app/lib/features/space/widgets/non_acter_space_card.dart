@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 final _log = Logger('a3::space::non_acter_space_card');
 
@@ -17,7 +18,7 @@ class NonActerSpaceCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final myMembership = ref.watch(roomMembershipProvider(spaceId));
     var fallback = Text(
-      'Ask a space admin to convert this into an acter space to unlock these features',
+      L10n.of(context).askASpaceAdminToConvertThis,
       style: Theme.of(context).textTheme.bodySmall,
     );
     return Padding(
@@ -26,11 +27,11 @@ class NonActerSpaceCard extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Not an acter space',
+            L10n.of(context).notAnActerSpace,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           Text(
-            'This space has not been created with acter and therefore lacks many features',
+            L10n.of(context).thisSpaceHasNotBeenCreatedWithActer,
             style: Theme.of(context).textTheme.bodySmall,
           ),
           myMembership.when(
@@ -38,13 +39,15 @@ class NonActerSpaceCard extends ConsumerWidget {
               if (membership?.canString('CanUpgradeToActerSpace') == true) {
                 return OutlinedButton(
                   onPressed: () => upgradeSpace(context, ref),
-                  child: const Text('Upgrade to Acter space'),
+                  child: Text(L10n.of(context).upgradeToActerSpace),
                 );
               } else {
                 return fallback;
               }
             },
-            error: (error, stack) => Text('Loading failed: $error'),
+            error: (error, stack) => Text(
+              '${L10n.of(context).loading}: $error',
+            ),
             loading: () => fallback,
           ),
           const SizedBox(height: 10),
@@ -54,7 +57,7 @@ class NonActerSpaceCard extends ConsumerWidget {
   }
 
   void upgradeSpace(BuildContext context, WidgetRef ref) async {
-    customMsgSnackbar(context, 'Converting to acter space');
+    customMsgSnackbar(context, L10n.of(context).convertingToActerSpace);
 
     try {
       final space = await ref.read(spaceProvider(spaceId).future);
@@ -69,14 +72,14 @@ class NonActerSpaceCard extends ConsumerWidget {
       }
       customMsgSnackbar(
         context,
-        'Successfully upgraded to Acter space. Enjoy!',
+        L10n.of(context).successfullyUpgradedToActerSpace,
       );
     } catch (e) {
       if (!context.mounted) {
         return;
       }
       context.pop();
-      customMsgSnackbar(context, 'Upgrade failed: $e');
+      customMsgSnackbar(context, '${L10n.of(context).upgradeFailed}: $e');
     }
   }
 }

@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class TaskEntry extends ConsumerWidget {
   final Task task;
@@ -58,7 +59,7 @@ class TaskEntry extends ConsumerWidget {
                       ),
                     );
                   },
-                  error: (e, s) => Text('loading comments failed: $e'),
+                  error: (e, s) => Text('${L10n.of(context).loadingFailed('comments')}: $e'),
                   loading: () => const SizedBox.shrink(),
                 ),
       ),
@@ -136,9 +137,9 @@ class TaskEntry extends ConsumerWidget {
                   const TasksIcon(size: 19),
                   ref.watch(taskListProvider(task.taskListIdStr())).when(
                         data: (tl) => Text(tl.name()),
-                        error: (e, s) => Text('Loading failed: $e'),
-                        loading: () => const Skeletonizer(
-                          child: Text('some default text'),
+                        error: (e, s) => Text('${L10n.of(context).loadingFailed('')}: $e'),
+                        loading: () => Skeletonizer(
+                          child: Text(L10n.of(context).loading('')),
                         ),
                       ),
                 ],

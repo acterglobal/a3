@@ -7,6 +7,7 @@ import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class CommentsSection extends ConsumerWidget {
   final Future<CommentsManager> manager;
@@ -35,7 +36,7 @@ class CommentsSection extends ConsumerWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Text('Comments'),
+        Text(L10n.of(context).comments),
         // create comment on top
         if (newCommentLocation == NewCommentLocation.before)
           CreateCommentWidget(manager: manager),
@@ -54,17 +55,17 @@ class CommentsSection extends ConsumerWidget {
   Widget onError(BuildContext context, Object error) {
     return Column(
       children: [
-        const Text('Comments'),
-        Text('Loading failed $error'),
+        Text(L10n.of(context).comments),
+        Text('${L10n.of(context).loadingFailed('')} $error'),
       ],
     );
   }
 
   Widget loading(BuildContext context) {
-    return const Column(
+    return Column(
       children: [
-        Text('Comments'),
-        Text('loading'),
+        Text(L10n.of(context).comments),
+        Text(L10n.of(context).loading('')),
       ],
     );
   }

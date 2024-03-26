@@ -16,6 +16,9 @@ import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:logging/logging.dart';
+
 
 final _log = Logger('a3::space::edit');
 
@@ -27,6 +30,7 @@ final editAvatarProvider = StateProvider.autoDispose<String>((ref) => '');
 
 class EditSpacePage extends ConsumerStatefulWidget {
   final String? spaceId;
+
   const EditSpacePage({super.key, required this.spaceId});
 
   @override
@@ -75,15 +79,15 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
     final avatarNotifier = ref.watch(editAvatarProvider.notifier);
     ref.watch(editTopicProvider);
     return SliverScaffold(
-      header: 'Edit Space',
+      header: L10n.of(context).editSpace,
       addActions: true,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const Text(
-              'Here you can change the space details',
+            Text(
+              L10n.of(context).hereYouCanChangeTheSpaceDetails,
             ),
             const SizedBox(height: 15),
             Row(
@@ -92,9 +96,9 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
                   children: <Widget>[
                     Row(
                       children: <Widget>[
-                        const Padding(
-                          padding: EdgeInsets.only(bottom: 5),
-                          child: Text('Avatar'),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 5),
+                          child: Text(L10n.of(context).avatar),
                         ),
                         const SizedBox(width: 5),
                         avatarUpload.isNotEmpty
@@ -129,19 +133,19 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      const Padding(
-                        padding: EdgeInsets.only(bottom: 5),
-                        child: Text('Space Name'),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 5),
+                        child: Text(L10n.of(context).spaceName),
                       ),
                       InputTextField(
-                        hintText: 'Type Name',
+                        hintText: L10n.of(context).typeName,
                         textInputType: TextInputType.multiline,
                         controller: _titleController,
                         onInputChanged: _handleTitleChange,
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        'eg. Global Movement',
+                        L10n.of(context).egGlobalMovement,
                         style: Theme.of(context).textTheme.labelSmall!.copyWith(
                               color: Theme.of(context).colorScheme.neutral4,
                             ),
@@ -155,11 +159,11 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                const Text('About'),
+                Text(L10n.of(context).about),
                 const SizedBox(height: 15),
                 InputTextField(
                   controller: _topicController,
-                  hintText: 'Description',
+                  hintText: L10n.of(context).description,
                   textInputType: TextInputType.multiline,
                   maxLines: 10,
                   onInputChanged: _handleTopicChange,
@@ -169,18 +173,18 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
           ],
         ),
       ),
-      confirmActionTitle: 'Save Changes',
-      cancelActionTitle: 'Cancel',
+      confirmActionTitle: L10n.of(context).saveChanges,
+      cancelActionTitle: L10n.of(context).cancel,
       confirmActionOnPressed: titleInput.trim().isEmpty
           ? null
           : () async {
               // check permissions before updating space
               bool havePermission = await permissionCheck();
-              if (!havePermission) {
+              if (!havePermission && mounted) {
                 // ignore: use_build_context_synchronously
                 customMsgSnackbar(
                   context,
-                  'Cannot edit space with no permissions',
+                  L10n.of(context).cannotEditSpaceWithNoPermissions,
                 );
                 return;
               }
@@ -190,7 +194,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
                   context: context,
                   builder: (context) => DefaultDialog(
                     title: Text(
-                      'Updating Space',
+                      L10n.of(context).updatingSpace,
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                     isLoader: true,
@@ -255,7 +259,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
 
   void _handleAvatarUpload() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
-      dialogTitle: 'Upload Avatar',
+      dialogTitle: L10n.of(context).uploadAvatar,
       type: FileType.image,
     );
     if (result != null) {

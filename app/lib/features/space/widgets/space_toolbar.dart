@@ -7,6 +7,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SpaceToolbar extends ConsumerWidget {
   static const optionsMenu = Key('space-options-menu');
@@ -27,7 +28,7 @@ class SpaceToolbar extends ConsumerWidget {
             pathParameters: {'spaceId': spaceId},
             queryParameters: {'spaceId': spaceId},
           ),
-          child: const Text('Edit Details'),
+          child: Text(L10n.of(context).editDetails),
         ),
       );
     }
@@ -39,12 +40,12 @@ class SpaceToolbar extends ConsumerWidget {
           Routes.spaceSettings.name,
           pathParameters: {'spaceId': spaceId},
         ),
-        child: const Text('Settings'),
+        child: Text(L10n.of(context).settings),
       ),
       const PopupMenuDivider(),
       PopupMenuItem(
         onTap: () => _handleLeaveSpace(context, ref),
-        child: const Text('Leave Space'),
+        child: Text(L10n.of(context).leaveSpace),
       ),
     ]);
 
@@ -92,16 +93,19 @@ class SpaceToolbar extends ConsumerWidget {
           children: <Widget>[
             const Icon(Icons.person_remove_outlined),
             const SizedBox(height: 5),
-            Text('Leave Space', style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              L10n.of(context).leaveSpace,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
           ],
         ),
-        subtitle: const Text(
-          'Are you sure you want to leave this space?',
+        subtitle: Text(
+          L10n.of(context).areYouSureYouWantToLeaveSpace,
         ),
         actions: <Widget>[
           ElevatedButton(
             onPressed: () => context.pop(),
-            child: const Text('No, I stay'),
+            child: Text(L10n.of(context).noIStay),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -115,7 +119,7 @@ class SpaceToolbar extends ConsumerWidget {
               context.pop();
               context.goNamed(Routes.dashboard.name);
             },
-            child: const Text('Yes, Leave'),
+            child: Text(L10n.of(context).yesLeave),
           ),
         ],
       ),

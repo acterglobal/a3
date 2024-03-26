@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class TasksIcon extends StatelessWidget {
   final double size;
@@ -11,7 +12,7 @@ class TasksIcon extends StatelessWidget {
       padding: const EdgeInsets.all(4),
       child: SvgPicture.asset(
         'assets/images/tasks.svg',
-        semanticsLabel: 'tasks',
+        semanticsLabel: L10n.of(context).tasks,
         height: size,
         width: size,
         colorFilter: ColorFilter.mode(

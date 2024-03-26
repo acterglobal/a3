@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SpacePinsPage extends ConsumerWidget {
   final String spaceIdOrAlias;
@@ -41,7 +42,7 @@ class SpacePinsPage extends ConsumerWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      'Pins',
+                      L10n.of(context).pins,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
@@ -70,9 +71,8 @@ class SpacePinsPage extends ConsumerWidget {
                   child: Center(
                     heightFactor: 1,
                     child: EmptyState(
-                      title: 'No pins available yet',
-                      subtitle:
-                          'Share important resources with your community such as documents or links so everyone is updated.',
+                      title: L10n.of(context).noPinsAvailableYet,
+                      subtitle: L10n.of(context).noPinsAvailableDescription,
                       image: 'assets/images/empty_pin.svg',
                       primaryButton: canAdd
                           ? ElevatedButton(
@@ -80,7 +80,7 @@ class SpacePinsPage extends ConsumerWidget {
                                 Routes.actionAddPin.name,
                                 queryParameters: {'spaceId': spaceIdOrAlias},
                               ),
-                              child: const Text('Share Pin'),
+                              child: Text(L10n.of(context).sharePin),
                             )
                           : null,
                     ),
@@ -99,12 +99,12 @@ class SpacePinsPage extends ConsumerWidget {
             },
             error: (error, stack) => SliverToBoxAdapter(
               child: Center(
-                child: Text('Loading failed: $error'),
+                child: Text('${L10n.of(context).loadingFailed('')}: $error'),
               ),
             ),
-            loading: () => const SliverToBoxAdapter(
+            loading: () => SliverToBoxAdapter(
               child: Center(
-                child: Text('Loading'),
+                child: Text(L10n.of(context).loading('')),
               ),
             ),
           ),

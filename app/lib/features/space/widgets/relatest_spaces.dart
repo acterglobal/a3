@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class RelatedSpaces extends StatelessWidget {
   static const moreOptionKey = Key('related-spaces-more-actions');
@@ -48,11 +49,11 @@ class RelatedSpaces extends StatelessWidget {
             Routes.createSpace.name,
             queryParameters: {'parentSpaceId': spaceIdOrAlias},
           ),
-          child: const Row(
+          child: Row(
             children: <Widget>[
-              Text('Create Subspace'),
-              Spacer(),
-              Icon(Atlas.connection),
+              Text(L10n.of(context).createSubspace),
+              const Spacer(),
+              const Icon(Atlas.connection),
             ],
           ),
         ),
@@ -62,11 +63,11 @@ class RelatedSpaces extends StatelessWidget {
             Routes.linkSubspace.name,
             pathParameters: {'spaceId': spaceIdOrAlias},
           ),
-          child: const Row(
+          child: Row(
             children: <Widget>[
-              Text('Link existing Space'),
-              Spacer(),
-              Icon(Atlas.connection),
+              Text(L10n.of(context).linkExistingSpace),
+              const Spacer(),
+              const Icon(Atlas.connection),
             ],
           ),
         ),
@@ -95,17 +96,17 @@ class RelatedSpaces extends StatelessWidget {
     );
   }
 
-  Widget? renderParentsHeader() {
+  Widget? renderParentsHeader(BuildContext context) {
     if (!showParents || (spaces.parents.isEmpty && spaces.mainParent != null)) {
       return null;
     }
-    return const SliverToBoxAdapter(
+    return SliverToBoxAdapter(
       child: Row(
         children: [
           Expanded(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12),
-              child: Text('Parents'),
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Text(L10n.of(context).parents),
             ),
           ),
         ],
@@ -160,13 +161,13 @@ class RelatedSpaces extends StatelessWidget {
       spaces.hasMoreSubspaces
           ? renderSubspaceHeading(
               context,
-              'My Subspaces',
+              L10n.of(context).subspaces('my'),
               canLinkSpace: canLinkSpace,
               withTools: false,
             )
           : renderSubspaceHeading(
               context,
-              'Subspaces',
+              L10n.of(context).subspaces(''),
               canLinkSpace: canLinkSpace,
               withTools: true,
             ),
@@ -201,13 +202,13 @@ class RelatedSpaces extends StatelessWidget {
       spaces.knownSubspaces.isEmpty
           ? renderSubspaceHeading(
               context,
-              'Subspaces',
+              L10n.of(context).subspaces(''),
               canLinkSpace: canLinkSpace,
               withTools: true,
             )
           : renderSubspaceHeading(
               context,
-              'More Subspaces',
+              L10n.of(context).subspaces('more'),
               canLinkSpace: canLinkSpace,
               withTools: true,
             ),
@@ -237,7 +238,7 @@ class RelatedSpaces extends StatelessWidget {
 
       return renderSubspaceHeading(
         context,
-        'Subspaces',
+        L10n.of(context).subspaces(''),
         canLinkSpace: canLinkSpace,
         withTools: true,
       );
@@ -258,7 +259,7 @@ class RelatedSpaces extends StatelessWidget {
         SliverToBoxAdapter(
           child: Row(
             children: [
-              const Expanded(child: Text('Recommended Spaces')),
+              Expanded(child: Text(L10n.of(context).spaces('recommended'))),
               IconButton(
                 icon: Icon(
                   Atlas.plus_circle,
@@ -295,7 +296,7 @@ class RelatedSpaces extends StatelessWidget {
   Widget build(BuildContext context) {
     final canLinkSpace = spaces.membership?.canString('CanLinkSpaces') ?? false;
 
-    final parentsHeader = renderParentsHeader();
+    final parentsHeader = renderParentsHeader(context);
     final mainParent = renderMainParent();
     final furtherParents = renderFurtherParent();
     final knownSubspaces = renderKnownSubspaces(

@@ -20,6 +20,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:logging/logging.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 final _log = Logger('a3::event::details');
 
@@ -53,7 +54,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             ],
           );
         },
-        error: (error, stackTrace) => Text('Error loading event due to $error'),
+        error: (error, stackTrace) =>
+            Text('${L10n.of(context).errorLoading('eventDueTo')} $error'),
         loading: () => const EventDetailsSkeleton(),
       ),
     );
@@ -102,11 +104,11 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
               Routes.editCalendarEvent.name,
               pathParameters: {'calendarId': widget.calendarId},
             ),
-            child: const Row(
+            child: Row(
               children: <Widget>[
-                Icon(Atlas.pencil_edit_thin),
-                SizedBox(width: 10),
-                Text('Edit Event'),
+                const Icon(Atlas.pencil_edit_thin),
+                const SizedBox(width: 10),
+                Text(L10n.of(context).event('edit')),
               ],
             ),
           ),
@@ -124,7 +126,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
               context: context,
               builder: (context) => RedactContentWidget(
                 removeBtnKey: EventsKeys.eventRemoveBtn,
-                title: 'Remove this post',
+                title: L10n.of(context).removePost('this'),
                 eventId: event.eventId().toString(),
                 onSuccess: () {
                   ref.invalidate(calendarEventProvider);
@@ -147,7 +149,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
                   color: Theme.of(context).colorScheme.error,
                 ),
                 const SizedBox(width: 10),
-                const Text('Remove Event'),
+                Text(L10n.of(context).event('remove')),
               ],
             ),
           ),
@@ -161,9 +163,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         onTap: () => showAdaptiveDialog(
           context: context,
           builder: (ctx) => ReportContentWidget(
-            title: 'Report this Event',
-            description:
-                'Report this content to your homeserver administrator. Please note that your administrator won\'t be able to read or view files in encrypted spaces.',
+            title: L10n.of(context).reportEvent('this'),
+            description: L10n.of(context).reportThisContent,
             eventId: widget.calendarId,
             roomId: event.roomIdStr(),
             senderId: event.sender().toString(),
@@ -177,7 +178,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
               color: Theme.of(context).colorScheme.error,
             ),
             const SizedBox(width: 10),
-            const Text('Report Event'),
+            Text(L10n.of(context).event('report')),
           ],
         ),
       ),
@@ -248,7 +249,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
                       valueListenable: eventParticipantsList,
                       builder: (context, eventParticipantsList, child) {
                         return Text(
-                          '${eventParticipantsList.length} People going',
+                          L10n.of(context)
+                              .peopleGoing(eventParticipantsList.length),
                         );
                       },
                     ),
@@ -264,7 +266,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
 
   Future<void> onRsvp(RsvpStatusTag status, WidgetRef ref) async {
     try {
-      EasyLoading.show(status: 'Updating RSVP', dismissOnTap: false);
+      EasyLoading.show(
+        status: L10n.of(context).updatingRSVP,
+        dismissOnTap: false,
+      );
       final event =
           await ref.read(calendarEventProvider(widget.calendarId).future);
       final rsvpManager = await event.rsvps();
@@ -326,7 +331,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             key: EventsKeys.eventRsvpGoingBtn,
             onTap: () => onRsvp(RsvpStatusTag.Yes, ref),
             iconData: Icons.check,
-            actionName: 'Going',
+            actionName: L10n.of(context).going,
             isSelected: rsvp.single == RsvpStatusTag.Yes,
           ),
           _buildVerticalDivider(),
@@ -334,7 +339,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             key: EventsKeys.eventRsvpNotGoingBtn,
             onTap: () => onRsvp(RsvpStatusTag.No, ref),
             iconData: Icons.close,
-            actionName: 'Not Going',
+            actionName: L10n.of(context).notGoing,
             isSelected: rsvp.single == RsvpStatusTag.No,
           ),
           _buildVerticalDivider(),
@@ -342,7 +347,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             key: EventsKeys.eventRsvpMaybeBtn,
             onTap: () => onRsvp(RsvpStatusTag.Maybe, ref),
             iconData: Icons.question_mark,
-            actionName: 'Maybe',
+            actionName: L10n.of(context).maybe,
             isSelected: rsvp.single == RsvpStatusTag.Maybe,
           ),
         ],
@@ -425,7 +430,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       valueListenable: eventParticipantsList,
       builder: (context, eventParticipantsList, child) {
         if (eventParticipantsList.isEmpty) {
-          return const Text('No participants going');
+          return Text(L10n.of(context).noParticipantsGoing);
         }
 
         List<Widget> avtarList = [];
@@ -478,7 +483,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         mainAxisSize: MainAxisSize.max,
         children: [
           Text(
-            'About',
+            L10n.of(context).about,
             style: Theme.of(context).textTheme.titleSmall,
           ),
           const SizedBox(height: 10),
