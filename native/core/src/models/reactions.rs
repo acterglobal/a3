@@ -6,8 +6,11 @@ use std::{collections::HashMap, ops::Deref};
 use tracing::{error, info, trace};
 
 use super::{ActerModel, AnyActerModel, Capability, EventMeta, RedactedActerModel};
-use crate::util::{is_false, is_zero};
-use crate::{store::Store, Result};
+use crate::{
+    store::Store,
+    util::{is_false, is_zero},
+    Result,
+};
 
 // We understand all unicode [Red Heart](https://emojipedia.org/red-heart#technical) as quick-likes
 static LIKE_HEART: &str = "\u{2764}\u{FE0F}";

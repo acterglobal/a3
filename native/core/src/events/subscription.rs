@@ -3,8 +3,7 @@ use derive_getters::Getters;
 use ruma_macros::EventContent;
 use serde::{Deserialize, Serialize};
 
-use super::{BelongsTo, References, Update};
-use crate::Result;
+use super::BelongsTo;
 
 /// Subscribe Event
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder, Getters)]

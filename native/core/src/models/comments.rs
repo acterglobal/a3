@@ -1,4 +1,3 @@
-use crate::util::{is_false, is_zero};
 use derive_getters::Getters;
 use ruma_common::{EventId, OwnedEventId, UserId};
 use ruma_events::OriginalMessageLikeEvent;
@@ -12,6 +11,7 @@ use crate::{
         CommentBuilder, CommentEventContent, CommentUpdateBuilder, CommentUpdateEventContent,
     },
     store::Store,
+    util::{is_false, is_zero},
     Result,
 };
 
