@@ -9,7 +9,7 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
-use ruma_common::{EventId, OwnedEventId, OwnedRoomId, OwnedUserId, RoomId};
+use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};
 use ruma_events::room::message::{
     AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
     LocationMessageEventContent, TextMessageEventContent, VideoMessageEventContent,

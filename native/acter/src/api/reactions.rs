@@ -2,12 +2,12 @@ use acter_core::models::{self, ActerModel, AnyActerModel};
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::room::Room;
-use ruma_common::{EventId, OwnedEventId, OwnedTransactionId, OwnedUserId};
-use ruma_events::{reaction::ReactionEventContent, relation::Annotation, MessageLikeEventType};
+use ruma_common::{OwnedEventId, OwnedTransactionId, OwnedUserId};
+use ruma_events::MessageLikeEventType;
 use std::ops::Deref;
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
-use tracing::{info, trace};
+use tracing::trace;
 
 use super::{client::Client, RUNTIME};
 

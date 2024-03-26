@@ -1,7 +1,7 @@
 use acter_core::{
     events::{
         pins::{self, PinBuilder},
-        Color, Icon,
+        Icon,
     },
     models::{self, ActerModel, AnyActerModel},
     statics::KEYS,

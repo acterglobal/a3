@@ -19,7 +19,7 @@ use anyhow::{bail, Context, Result};
 use matrix_sdk::{
     deserialized_responses::SyncOrStrippedState,
     media::{MediaFormat, MediaRequest},
-    notification_settings::{IsEncrypted, IsOneToOne, RoomNotificationMode},
+    notification_settings::{IsEncrypted, IsOneToOne},
     room::{Room as SdkRoom, RoomMember},
     RoomMemberships, RoomState,
 };
@@ -41,18 +41,16 @@ use ruma_events::{
         MediaSource,
     },
     space::{child::HierarchySpaceChildEvent, parent::SpaceParentEventContent},
-    AnyMessageLikeEvent, AnyStateEvent, AnyTimelineEvent, MessageLikeEvent, MessageLikeEventType,
-    StateEvent, StateEventType, StaticEventContent,
+    MessageLikeEventType, StateEvent, StateEventType, StaticEventContent,
 };
 use std::{io::Write, ops::Deref, path::PathBuf};
-use tracing::{error, info, warn};
+use tracing::{info, warn};
 
 use crate::{
     OptionBuffer, OptionString, RoomMessage, RoomProfile, ThumbnailSize, UserProfile, RUNTIME,
 };
 
 use super::{
-    account::Account,
     api::FfiBuffer,
     push::{notification_mode_from_input, room_notification_mode_name},
 };

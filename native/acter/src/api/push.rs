@@ -25,7 +25,6 @@ use matrix_sdk::{
 };
 
 use derive_builder::Builder;
-use derive_getters::Getters;
 use futures::stream::StreamExt;
 use matrix_sdk_ui::notification_client::{
     NotificationClient, NotificationEvent, NotificationItem as SdkNotificationItem,
