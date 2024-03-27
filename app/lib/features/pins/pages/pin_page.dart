@@ -17,6 +17,7 @@ class PinPage extends ConsumerWidget {
   static const actionMenuKey = Key('pin-action-menu');
   static const editBtnKey = Key('pin-edit-btn');
   static const titleFieldKey = Key('edit-pin-title-field');
+  static const pinAttachmentsKey = Key('pin-attachments');
 
   final String pinId;
 
@@ -214,6 +215,7 @@ class PinPage extends ConsumerWidget {
         return asyncManager.when(
           data: (manager) {
             return AttachmentSectionWidget(
+              key: PinPage.pinAttachmentsKey,
               attachmentManager: manager,
               canPostAttachment: canPostAttachment,
               canRedact: canRedact,

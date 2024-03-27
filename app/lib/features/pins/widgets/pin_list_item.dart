@@ -120,8 +120,14 @@ class _PinListItemConsumerState extends ConsumerState<PinListItem> {
           ref.watch(attachmentsProvider(asyncManager.requireValue));
       if (attachments.valueOrNull != null) {
         final list = attachments.requireValue;
+        final attachmentId = list[0].attachmentIdStr();
         if (list.isNotEmpty) {
-          attachmentsWidget.add(AttachmentItem(attachment: list[0]));
+          attachmentsWidget.add(
+            AttachmentItem(
+              key: Key(attachmentId),
+              attachment: list[0],
+            ),
+          );
         }
       }
     }

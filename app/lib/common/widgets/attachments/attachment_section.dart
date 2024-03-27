@@ -16,6 +16,10 @@ final _log = Logger('a3::common::attachments');
 
 /// Attachment Section Widget
 class AttachmentSectionWidget extends ConsumerWidget {
+  static const redactBtnKey = Key('attachments-redact-btn');
+  static const addAttachmentBtnKey = Key('attachments-add-btn');
+  static const confirmRedactKey = Key('attachments-confirm-redact');
+
   final AttachmentsManager attachmentManager;
   final bool? canPostAttachment;
   final bool? canRedact;
@@ -82,6 +86,7 @@ class AttachmentSectionWidget extends ConsumerWidget {
     return Stack(
       children: [
         AttachmentItem(
+          key: Key(eventId),
           attachment: item,
         ),
         Positioned(
@@ -90,6 +95,7 @@ class AttachmentSectionWidget extends ConsumerWidget {
           child: Visibility(
             visible: canRedact!,
             child: IconButton(
+              key: redactBtnKey,
               onPressed: () => showRedactionWidget(
                 context,
                 eventId,
@@ -158,6 +164,7 @@ class AttachmentSectionWidget extends ConsumerWidget {
                     ),
                     const SizedBox(width: 10),
                     ElevatedButton(
+                      key: confirmRedactKey,
                       onPressed: () {
                         Navigator.of(context).pop();
                         _handleRedactAttachment(
@@ -197,6 +204,7 @@ class AttachmentSectionWidget extends ConsumerWidget {
     final iconColor = Theme.of(context).colorScheme.secondary;
     final iconTextStyle = Theme.of(context).textTheme.labelLarge;
     return InkWell(
+      key: AttachmentSectionWidget.addAttachmentBtnKey,
       onTap: () => showAttachmentSelection(context, manager),
       child: Container(
         height: 100,
