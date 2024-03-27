@@ -8,6 +8,7 @@ import 'package:acter/common/widgets/side_sheet_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/widgets/create_chat.dart';
 import 'package:acter/features/news/pages/add_news_page.dart';
+import 'package:acter/features/onboarding/pages/forgot_password.dart';
 import 'package:acter/features/onboarding/pages/intro_page.dart';
 import 'package:acter/features/onboarding/pages/intro_profile.dart';
 import 'package:acter/features/onboarding/pages/login_page.dart';
@@ -57,6 +58,12 @@ List<RouteBase> makeGeneralRoutes() {
       name: Routes.authLogin.name,
       path: Routes.authLogin.route,
       builder: (context, state) => const LoginPage(),
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.forgotPassword.name,
+      path: Routes.forgotPassword.route,
+      builder: (context, state) => const ForgotPassword(),
     ),
     GoRoute(
       parentNavigatorKey: rootNavKey,

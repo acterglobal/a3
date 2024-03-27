@@ -91,10 +91,9 @@ dependencies:
   path: ^1.8.3
   url_launcher: ^6.1.10
   file_picker: ^6.1.1
-  emoji_picker_flutter: ^1.6.1
+  emoji_picker_flutter: ^2.1.1
   connectivity_plus: ^5.0.2
   mime: ^1.0.2
-  sprintf: ^7.0.0
   freezed_annotation: ^2.4.1
   http_parser: ^4.0.2
   flutter_custom_selector: ^0.0.3
@@ -125,6 +124,7 @@ dependencies:
   video_player: ^2.8.1
   share_plus: ^7.2.1
   carousel_indicator: ^1.0.6
+  stack_trace: ^1.11.1
 
 # FIXME keep until a new version has been published
 dependency_overrides:

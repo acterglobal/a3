@@ -1,19 +1,19 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/bug_report/const.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'dart:convert';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
-import 'package:path/path.dart';
 import 'package:logging/logging.dart';
+import 'package:path/path.dart';
 
 final _log = Logger('a3::bug_report');
 

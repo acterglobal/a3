@@ -7,6 +7,7 @@ import 'package:acter/features/settings/widgets/email_address_card.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AddEmailAddr extends StatefulWidget {
@@ -23,8 +24,8 @@ class _AddEmailAddrState extends State<AddEmailAddr> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text(
-        "Please provide the email address you'd like to add",
+      title: Text(
+        L10n.of(context).pleaseProvideEmailAddressToAdd,
       ),
       // The token-reset path is just the process by which control over that email address is confirmed.
       content: Form(
@@ -37,7 +38,9 @@ class _AddEmailAddrState extends State<AddEmailAddr> {
               child: TextFormField(
                 controller: newEmailAddress,
                 // FIXME: should have an email-addres-validator ,
-                decoration: const InputDecoration(hintText: 'Email Address'),
+                decoration: InputDecoration(
+                  hintText: L10n.of(context).email('single'),
+                ),
               ),
             ),
           ],
@@ -46,11 +49,11 @@ class _AddEmailAddrState extends State<AddEmailAddr> {
       actions: <Widget>[
         OutlinedButton(
           onPressed: () => Navigator.pop(context, null),
-          child: const Text('Cancel'),
+          child: Text(L10n.of(context).cancel),
         ),
         ElevatedButton(
           onPressed: () => onSubmit(context),
-          child: const Text('Submit'),
+          child: Text(L10n.of(context).submit),
         ),
       ],
     );
@@ -58,7 +61,7 @@ class _AddEmailAddrState extends State<AddEmailAddr> {
 
   void onSubmit(BuildContext context) {
     if (!_formKey.currentState!.validate()) {
-      customMsgSnackbar(context, 'Email or password seems to be not valid.');
+      customMsgSnackbar(context, L10n.of(context).emailOrPasswordSeemsNotValid);
       return;
     }
     Navigator.pop(context, newEmailAddress.text);
@@ -77,7 +80,7 @@ class EmailAddressesPage extends ConsumerWidget {
         appBar: AppBar(
           backgroundColor: const AppBarTheme().backgroundColor,
           elevation: 0.0,
-          title: const Text('Email Addresses'),
+          title: Text(L10n.of(context).email('multiple')),
           centerTitle: true,
           actions: [
             IconButton(
@@ -100,7 +103,9 @@ class EmailAddressesPage extends ConsumerWidget {
           data: (addresses) => buildAddresses(context, addresses),
           error: (error, stack) {
             return Center(
-              child: Text('Error loading email addresses: $error'),
+              child: Text(
+                '${L10n.of(context).errorLoading('emailAddresses')}: $error',
+              ),
             );
           },
           loading: () => const Center(
@@ -127,7 +132,7 @@ class EmailAddressesPage extends ConsumerWidget {
                   child: Icon(Atlas.envelope_question_thin),
                 ),
                 Text(
-                  'Awaiting confirmation',
+                  L10n.of(context).awaitingConfirmation,
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
               ],
@@ -141,7 +146,7 @@ class EmailAddressesPage extends ConsumerWidget {
               vertical: 15,
             ),
             child: Text(
-              'These email addresses have not yet been confirmed. Please go to your inbox and check for the confirmation link.',
+              L10n.of(context).awaitingConfirmationDescription,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
@@ -165,7 +170,7 @@ class EmailAddressesPage extends ConsumerWidget {
                 vertical: 15,
               ),
               child: Text(
-                'Confirmed Email Addresses',
+                L10n.of(context).confirmedEmailAddresses,
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
             ),
@@ -193,7 +198,7 @@ class EmailAddressesPage extends ConsumerWidget {
               vertical: 15,
             ),
             child: Text(
-              'Confirmed emails addresses connected to your account:',
+              L10n.of(context).confirmedEmailAddressesDescription,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
@@ -218,17 +223,18 @@ class EmailAddressesPage extends ConsumerWidget {
       context: context,
       builder: (BuildContext context) => const AddEmailAddr(),
     );
-    if (newValue != null) {
-      EasyLoading.show(status: 'Adding email address');
+    if (newValue != null && context.mounted) {
+      EasyLoading.show(status: L10n.of(context).addingEmailAddress);
       try {
         await manager.requestTokenViaEmail(newValue);
         ref.invalidate(emailAddressesProvider);
+        if (!context.mounted) return;
         EasyLoading.showSuccess(
-          'Please check your inbox for the validation email',
+          L10n.of(context).pleaseCheckYourInbox,
         );
       } catch (e) {
         EasyLoading.showSuccess(
-          'Failed to submit email: $e',
+          '${L10n.of(context).failedTo('submitEmail')}: $e',
           duration: const Duration(seconds: 3),
         );
       }

@@ -4,8 +4,8 @@ import 'package:acter/features/settings/model/language_model.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class LanguageSelectPage extends ConsumerWidget {
   const LanguageSelectPage({super.key});
@@ -25,7 +25,7 @@ class LanguageSelectPage extends ConsumerWidget {
     return AppBar(
       backgroundColor: const AppBarTheme().backgroundColor,
       elevation: 0.0,
-      title:  Text(L10n.of(context).selectLanguage),
+      title: Text(L10n.of(context).selectLanguage),
       centerTitle: true,
     );
   }

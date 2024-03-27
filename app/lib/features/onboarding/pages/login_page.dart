@@ -56,6 +56,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   Widget _buildLoginPage(BuildContext context) {
+    var screenHeight = MediaQuery.of(context).size.height;
+    var imageSize = screenHeight / 5;
     return Expanded(
       child: SingleChildScrollView(
         child: Container(
@@ -65,9 +67,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 12),
-              const LogoWidget(width: 150, height: 150),
-              const SizedBox(height: 20),
+              if (screenHeight > 650)
+                LogoWidget(width: imageSize, height: imageSize),
               _buildHeadlineText(context),
               const SizedBox(height: 24),
               _buildUsernameInputField(context),
@@ -192,9 +193,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       alignment: Alignment.centerRight,
       child: TextButton(
         key: LoginPageKeys.forgotPassBtn,
-        onPressed: () {},
+        onPressed: () => context.pushNamed(Routes.forgotPassword.name),
         child: Text(
-          L10n.of(context).forgotPassword,
+          L10n.of(context).forgotPassword(''),
         ),
       ),
     );

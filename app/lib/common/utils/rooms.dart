@@ -2,6 +2,7 @@ import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 Future<void> joinRoom(
   BuildContext context,
@@ -47,13 +48,13 @@ Future<void> joinRoom(
       context: context,
       builder: (context) => DefaultDialog(
         title: Text(
-          '$displayMsg failed: \n $err"',
+          '$displayMsg ${L10n.of(context).failed}: \n $err"',
           style: Theme.of(context).textTheme.titleSmall,
         ),
         actions: <Widget>[
           ElevatedButton(
             onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-            child: const Text('Close'),
+            child: Text(L10n.of(context).close),
           ),
         ],
       ),

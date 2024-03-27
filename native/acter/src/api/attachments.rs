@@ -5,7 +5,7 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, Client as SdkClient, RoomState};
-use ruma_common::{OwnedEventId, OwnedTransactionId, OwnedUserId};
+use ruma_common::{OwnedEventId, OwnedTransactionId};
 use ruma_events::{
     room::message::{
         AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,

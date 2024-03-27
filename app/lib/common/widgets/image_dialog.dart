@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
@@ -49,11 +50,11 @@ class ImageDialog extends ConsumerWidget {
               child: Image.file(
                 imageFile,
                 frameBuilder: (
-                    BuildContext context,
-                    Widget child,
-                    int? frame,
-                    bool wasSynchronouslyLoaded,
-                    ) {
+                  BuildContext context,
+                  Widget child,
+                  int? frame,
+                  bool wasSynchronouslyLoaded,
+                ) {
                   if (wasSynchronouslyLoaded) {
                     return child;
                   }
@@ -65,10 +66,10 @@ class ImageDialog extends ConsumerWidget {
                   );
                 },
                 errorBuilder: (
-                    BuildContext context,
-                    Object url,
-                    StackTrace? error,
-                    ) {
+                  BuildContext context,
+                  Object url,
+                  StackTrace? error,
+                ) {
                   return Text('Could not load image due to $error');
                 },
                 fit: BoxFit.fitWidth,

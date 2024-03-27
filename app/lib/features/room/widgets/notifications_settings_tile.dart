@@ -3,18 +3,19 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:settings_ui/settings_ui.dart';
 import 'package:logging/logging.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:settings_ui/settings_ui.dart';
 
 final _log = Logger('a3::room::notification_settings_tile');
 
-String? notifToText(String curNotifStatus) {
+String? notifToText(BuildContext context, String curNotifStatus) {
   if (curNotifStatus == 'muted') {
-    return 'Muted';
+    return L10n.of(context).muted;
   } else if (curNotifStatus == 'mentions') {
-    return 'Only on mentions and keywords';
+    return L10n.of(context).mentionsAndKeywordsOnly;
   } else if (curNotifStatus == 'all') {
-    return 'All Messages';
+    return L10n.of(context).allMessages;
   } else {
     return null;
   }
@@ -44,13 +45,15 @@ class _NotificationSettingsTile extends ConsumerWidget {
     // ignore: always_declare_return_types
     return SettingsTile(
       title: Text(
-        title ?? 'Notifications',
+        title ?? L10n.of(context).notifications,
         style: tileTextTheme,
       ),
       description: Text(
-        notifToText(curNotifStatus ?? '') ??
+        notifToText(context, curNotifStatus ?? '') ??
             (defaultTitle ??
-                'Default (${notifToText(defaultNotificationStatus.valueOrNull ?? '') ?? 'undefined'})'),
+                L10n.of(context).defaultNotification(
+                  '(${notifToText(context, defaultNotificationStatus.valueOrNull ?? '') ?? L10n.of(context).undefined})',
+                )),
       ),
       leading: curNotifStatus == 'muted'
           ? const Icon(Atlas.bell_dash_bold, size: 18)
@@ -62,8 +65,9 @@ class _NotificationSettingsTile extends ConsumerWidget {
           _log.info('new value: $newMode');
           final room = await ref.read(maybeRoomProvider(roomId).future);
           if (room == null) {
+            if (!context.mounted) return;
             EasyLoading.showError(
-              'Room not found',
+              L10n.of(context).roomNotFound,
             );
             return;
           }
@@ -72,8 +76,9 @@ class _NotificationSettingsTile extends ConsumerWidget {
           if (await room.setNotificationMode(
             newMode == '' ? null : newMode,
           )) {
+            if (!context.mounted) return;
             EasyLoading.showSuccess(
-              'Notification status submitted',
+              L10n.of(context).notificationStatusSubmitted,
             );
             await Future.delayed(const Duration(seconds: 1), () {
               // FIXME: we want to refresh the view but don't know
@@ -89,7 +94,7 @@ class _NotificationSettingsTile extends ConsumerWidget {
             child: notificationSettingItemUI(
               context,
               curNotifStatus == 'all',
-              'All Messages',
+              L10n.of(context).allMessages,
             ),
           ),
           if (includeMentions)
@@ -98,7 +103,7 @@ class _NotificationSettingsTile extends ConsumerWidget {
               child: notificationSettingItemUI(
                 context,
                 curNotifStatus == 'mentions',
-                'Mentions and Keywords only',
+                L10n.of(context).mentionsAndKeywordsOnly,
               ),
             ),
           PopupMenuItem<String>(
@@ -106,7 +111,7 @@ class _NotificationSettingsTile extends ConsumerWidget {
             child: notificationSettingItemUI(
               context,
               curNotifStatus == 'muted',
-              'Muted',
+              L10n.of(context).muted,
             ),
           ),
           PopupMenuItem<String>(
@@ -115,7 +120,9 @@ class _NotificationSettingsTile extends ConsumerWidget {
               context,
               curNotifStatus == '',
               defaultTitle ??
-                  'Default (${notifToText(defaultNotificationStatus.valueOrNull ?? '') ?? 'unedefined'})',
+                  L10n.of(context).defaultNotification(
+                    '(${notifToText(context, defaultNotificationStatus.valueOrNull ?? '') ?? L10n.of(context).undefined})',
+                  ),
             ),
           ),
         ],

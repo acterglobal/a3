@@ -1,8 +1,8 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/search/model/search_term_delegate.dart';
-import 'package:acter_avatar/acter_avatar.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/features/search/providers/search.dart';
+import 'package:acter_avatar/acter_avatar.dart';
+import 'package:riverpod/riverpod.dart';
 
 const fallbackSidebarIdx = 1;
 const fallbackBottomBarIdx = 0;

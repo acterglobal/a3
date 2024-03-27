@@ -6,6 +6,7 @@ import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class ChatsCard extends ConsumerWidget {
   final String spaceId;
@@ -21,17 +22,19 @@ class ChatsCard extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Chats',
+            L10n.of(context).chats,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 10),
           chats.when(
-            error: (error, stack) => Text('Loading chats failed: $error'),
-            loading: () => const Text('Loading'),
+            error: (error, stack) => Text(
+              '${L10n.of(context).loadingFailed('chats')}: $error',
+            ),
+            loading: () => Text(L10n.of(context).loading('')),
             data: (chats) {
               if (chats.isEmpty) {
                 return Text(
-                  'There are no chats in this space',
+                  L10n.of(context).thereAreNoItemInThisSpace('chats'),
                   style: Theme.of(context).textTheme.bodySmall,
                 );
               }
@@ -62,7 +65,7 @@ class ChatsCard extends ConsumerWidget {
                                 pathParameters: {'spaceId': spaceId},
                               );
                             },
-                            child: Text('see all my ${chats.length} chats'),
+                            child: Text(L10n.of(context).seeAllMyItems(chats.length, 'chats')),
                           ),
                         )
                       : const SizedBox.shrink(),

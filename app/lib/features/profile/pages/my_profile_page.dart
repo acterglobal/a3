@@ -10,6 +10,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ChangeDisplayName extends StatefulWidget {
@@ -38,7 +39,7 @@ class _ChangeDisplayNameState extends State<ChangeDisplayName> {
   Widget build(BuildContext context) {
     final account = widget.account;
     return AlertDialog(
-      title: const Text('Change your display name'),
+      title: Text(L10n.of(context).changeYourDisplayName),
       content: Form(
         key: _formKey,
         child: Column(
@@ -54,7 +55,7 @@ class _ChangeDisplayNameState extends State<ChangeDisplayName> {
       actions: <Widget>[
         TextButton(
           onPressed: () => Navigator.pop(context, null),
-          child: const Text('Cancel'),
+          child: Text(L10n.of(context).cancel),
         ),
         TextButton(
           onPressed: () {
@@ -69,7 +70,7 @@ class _ChangeDisplayNameState extends State<ChangeDisplayName> {
               return;
             }
           },
-          child: const Text('Submit'),
+          child: Text(L10n.of(context).submit),
         ),
       ],
     );
@@ -99,7 +100,7 @@ class MyProfilePage extends StatelessWidget {
         context: context,
         builder: (context) => DefaultDialog(
           title: Text(
-            'Updating Display Name',
+            L10n.of(context).updatingDisplayName,
             style: Theme.of(context).textTheme.titleSmall,
           ),
           isLoader: true,
@@ -112,7 +113,7 @@ class MyProfilePage extends StatelessWidget {
         return;
       }
       Navigator.of(context, rootNavigator: true).pop();
-      customMsgSnackbar(context, 'Display Name update submitted');
+      customMsgSnackbar(context, L10n.of(context).displayNameUpdateSubmitted);
     }
   }
 
@@ -122,19 +123,15 @@ class MyProfilePage extends StatelessWidget {
     WidgetRef ref,
   ) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
-      dialogTitle: 'Upload Avatar',
+      dialogTitle: L10n.of(context).uploadAvatar,
       type: FileType.image,
     );
-    if (result != null) {
-      EasyLoading.show(status: 'Updating profile image');
+    if (result != null && context.mounted) {
+      EasyLoading.show(status: L10n.of(context).updatingProfileImage);
 
       final file = result.files.first;
       await profile.account.uploadAvatar(file.path!);
       ref.invalidate(accountProfileProvider);
-
-      if (!context.mounted) {
-        return;
-      }
       // close loading
       EasyLoading.dismiss();
     } else {
@@ -156,7 +153,7 @@ class MyProfilePage extends StatelessWidget {
   AppBar _buildAppbar(BuildContext context) {
     return AppBar(
       title: Text(
-        'Profile',
+        L10n.of(context).profile,
         style: Theme.of(context).textTheme.titleLarge,
       ),
     );
@@ -184,7 +181,7 @@ class MyProfilePage extends StatelessWidget {
                     _profileItem(
                       key: MyProfilePage.displayNameKey,
                       context: context,
-                      title: 'Display Name',
+                      title: L10n.of(context).displayName,
                       subTitle: displayName,
                       trailingIcon: Atlas.pencil_edit,
                       onPressed: () => updateDisplayName(data, context, ref),
@@ -192,7 +189,7 @@ class MyProfilePage extends StatelessWidget {
                     const SizedBox(height: 20),
                     _profileItem(
                       context: context,
-                      title: 'Username',
+                      title: L10n.of(context).username,
                       subTitle: userId,
                       trailingIcon: Atlas.pages,
                       onPressed: () {
@@ -201,7 +198,7 @@ class MyProfilePage extends StatelessWidget {
                         );
                         customMsgSnackbar(
                           context,
-                          'Username copied to clipboard',
+                          L10n.of(context).usernameCopiedToClipboard,
                         );
                       },
                     ),
@@ -211,7 +208,7 @@ class MyProfilePage extends StatelessWidget {
               ),
             );
           },
-          error: (e, trace) => Text('error: $e'),
+          error: (e, trace) => Text('${L10n.of(context).error}: $e'),
           loading: () => const MyProfileSkeletonWidget(),
         );
       },

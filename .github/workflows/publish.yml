@@ -104,7 +104,7 @@ jobs:
             artifact_path: app/build/linux/x64/release/bundle/
             tar_files: lib/ data/ acter
           - name: iOS
-            os: macos-latest
+            os: macos-14
             target: ios
             with_apple_cert: true
             cargo_make_setup: setup-ios

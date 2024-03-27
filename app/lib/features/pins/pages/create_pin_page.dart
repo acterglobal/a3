@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class CreatePinPage extends ConsumerStatefulWidget {
   final String? initialSelectedSpace;
@@ -30,6 +31,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   EditorState textEditorState = EditorState.blank();
   AttachmentsManager? manager;
+
   @override
   void initState() {
     super.initState();
@@ -43,7 +45,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
   Widget build(BuildContext context) {
     return SliverScaffold(
       confirmActionKey: CreatePinPage.submitBtn,
-      header: 'Create new Pin',
+      header: L10n.of(context).createPin('new'),
       addActions: true,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -69,7 +71,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
           ),
         ),
       ),
-      confirmActionTitle: 'Create Pin',
+      confirmActionTitle: L10n.of(context).createPin(''),
       cancelActionTitle: null,
       confirmActionOnPressed: () async {
         if (_formKey.currentState!.validate()) {
@@ -83,18 +85,18 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.only(bottom: 5),
-          child: Text('Title'),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 5),
+          child: Text(L10n.of(context).title),
         ),
         InputTextField(
-          hintText: 'Pin Name',
+          hintText: L10n.of(context).pinName,
           key: CreatePinPage.titleFieldKey,
           textInputType: TextInputType.text,
           controller: _titleController,
           validator: (value) => (value != null && value.trim().isNotEmpty)
               ? null
-              : 'Please enter a title',
+              : L10n.of(context).pleaseEnterATitle,
         ),
       ],
     );
@@ -104,9 +106,9 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        const Padding(
-          padding: EdgeInsets.only(bottom: 5),
-          child: Text('Link'),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 5),
+          child: Text(L10n.of(context).link),
         ),
         InputTextField(
           hintText: 'https://',
@@ -122,9 +124,9 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        const Padding(
-          padding: EdgeInsets.only(bottom: 5),
-          child: Text('Description'),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 5),
+          child: Text(L10n.of(context).description),
         ),
         Container(
           height: 200,

@@ -5,6 +5,7 @@ import 'package:acter/features/settings/widgets/session_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SessionsPage extends ConsumerWidget {
@@ -19,14 +20,14 @@ class SessionsPage extends ConsumerWidget {
         appBar: AppBar(
           backgroundColor: const AppBarTheme().backgroundColor,
           elevation: 0.0,
-          title: const Text('Sessions'),
+          title: Text(L10n.of(context).sessions),
           centerTitle: true,
         ),
         body: allSessions.when(
           data: (sessions) => buildSessions(context, sessions),
           error: (error, stack) {
-            return const Center(
-              child: Text("Couldn't load all sessions"),
+            return Center(
+              child: Text(L10n.of(context).couldNotLoadAllSessions),
             );
           },
           loading: () => const Center(
@@ -61,7 +62,7 @@ class SessionsPage extends ConsumerWidget {
                   ),
                 ),
                 Text(
-                  'Unverified Sessions',
+                  L10n.of(context).unverifiedSessions,
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
               ],
@@ -75,7 +76,7 @@ class SessionsPage extends ConsumerWidget {
               vertical: 15,
             ),
             child: Text(
-              "You have devices logged in your account that aren't verified. This can be a security risk. Please ensure this is okay.",
+              L10n.of(context).unverifiedSessionsDescription,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
@@ -97,7 +98,7 @@ class SessionsPage extends ConsumerWidget {
                 vertical: 15,
               ),
               child: Text(
-                'Verified Sessions',
+                '${L10n.of(context).verified} ${L10n.of(context).sessions}',
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
             ),
@@ -122,7 +123,7 @@ class SessionsPage extends ConsumerWidget {
               vertical: 15,
             ),
             child: Text(
-              'All your devices are verified. Your account is secure.',
+              L10n.of(context).verifiedSessionsDescription,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
