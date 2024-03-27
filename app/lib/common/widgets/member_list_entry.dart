@@ -15,10 +15,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class ChangePowerLevel extends StatefulWidget {
   final Member member;
   final Member? myMembership;
+
   const ChangePowerLevel({
     super.key,
     required this.member,
@@ -66,38 +68,40 @@ class _ChangePowerLevelState extends State<ChangePowerLevel> {
     final memberStatus = member.membershipStatusStr();
     final currentPowerLevel = member.powerLevel();
     return AlertDialog(
-      title: const Text('Update Power level'),
+      title: Text(L10n.of(context).updatePowerLevel),
       content: Form(
         key: _formKey,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Change the power level of'),
+            Text(L10n.of(context).changeThePowerLevelOf),
             Text(member.userId().toString()),
             // Row(
             //   children: [
-            Text('from $memberStatus ($currentPowerLevel) to '),
+            Text(
+              '${L10n.of(context).from} $memberStatus ($currentPowerLevel) ${L10n.of(context).to} ',
+            ),
             Padding(
               padding: const EdgeInsets.all(5),
               child: DropdownButtonFormField(
                 value: currentMemberStatus,
                 onChanged: _updateMembershipStatus,
-                items: const [
+                items: [
                   DropdownMenuItem(
                     value: 'Admin',
-                    child: Text('Admin'),
+                    child: Text(L10n.of(context).admin),
                   ),
                   DropdownMenuItem(
                     value: 'Mod',
-                    child: Text('Moderator'),
+                    child: Text(L10n.of(context).moderator),
                   ),
                   DropdownMenuItem(
                     value: 'Regular',
-                    child: Text('Regular'),
+                    child: Text(L10n.of(context).regular),
                   ),
                   DropdownMenuItem(
                     value: 'Custom',
-                    child: Text('Custom'),
+                    child: Text(L10n.of(context).custom),
                   ),
                 ],
               ),
@@ -107,9 +111,9 @@ class _ChangePowerLevelState extends State<ChangePowerLevel> {
               child: Padding(
                 padding: const EdgeInsets.all(5),
                 child: TextFormField(
-                  decoration: const InputDecoration(
-                    hintText: 'any number',
-                    labelText: 'Custom power level',
+                  decoration: InputDecoration(
+                    hintText: L10n.of(context).anyNumber,
+                    labelText: L10n.of(context).customPowerLevel(''),
                   ),
                   onChanged: _newCustomLevel,
                   initialValue: currentPowerLevel.toString(),
@@ -117,11 +121,12 @@ class _ChangePowerLevelState extends State<ChangePowerLevel> {
                       const TextInputType.numberWithOptions(signed: true),
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.digitsOnly,
-                  ], // Only numbers
+                  ],
+                  // Only numbers
                   validator: (String? value) {
                     return currentMemberStatus == 'Custom' &&
                             (value == null || int.tryParse(value) == null)
-                        ? 'You need to enter the custom value as a number.'
+                        ? L10n.of(context).youNeedToEnterCustomValueAsNumber
                         : null;
                   },
                 ),
@@ -135,7 +140,7 @@ class _ChangePowerLevelState extends State<ChangePowerLevel> {
       actions: <Widget>[
         TextButton(
           onPressed: () => Navigator.pop(context, null),
-          child: const Text('Cancel'),
+          child: Text(L10n.of(context).cancel),
         ),
         TextButton(
           onPressed: () {
@@ -166,7 +171,7 @@ class _ChangePowerLevelState extends State<ChangePowerLevel> {
               return;
             }
           },
-          child: const Text('Submit'),
+          child: Text(L10n.of(context).submit),
         ),
       ],
     );
@@ -182,22 +187,22 @@ class _MemberListInnerSkeleton extends StatelessWidget {
       leading: Skeletonizer(
         child: ActerAvatar(
           mode: DisplayMode.DM,
-          avatarInfo: const AvatarInfo(
-            uniqueId: 'no id given',
+          avatarInfo: AvatarInfo(
+            uniqueId: L10n.of(context).noIdGiven,
           ),
           size: 18,
         ),
       ),
       title: Skeletonizer(
         child: Text(
-          'no id',
+          L10n.of(context).noId,
           style: Theme.of(context).textTheme.bodyMedium,
           overflow: TextOverflow.ellipsis,
         ),
       ),
       subtitle: Skeletonizer(
         child: Text(
-          'no id',
+          L10n.of(context).noId,
           style: Theme.of(context)
               .textTheme
               .labelLarge!
@@ -232,7 +237,7 @@ class MemberListEntry extends ConsumerWidget {
         member: data.member,
         profile: data.profile,
       ),
-      error: (e, s) => Text('Error loading Profile: $e'),
+      error: (e, s) => Text('${L10n.of(context).errorLoading('profile')}: $e'),
       loading: () => const _MemberListInnerSkeleton(),
     );
   }
@@ -260,24 +265,24 @@ class _MemberListEntryInner extends ConsumerWidget {
       context: context,
       builder: (BuildContext ctx) {
         return AlertDialog(
-          title: Text('Unblock $userId'),
+          title: Text('${L10n.of(context).unblock} $userId'),
           content: RichText(
             textAlign: TextAlign.left,
             text: TextSpan(
-              text: 'You are about to unblock $userId.',
+              text: L10n.of(context).youAreAboutToUnblock(userId),
               style: const TextStyle(color: Colors.white, fontSize: 24),
-              children: const <TextSpan>[
+              children: <TextSpan>[
                 TextSpan(
-                  text: 'This will allow them to contact you again',
+                  text: L10n.of(context).thisWillAllowThemToContactYouAgain,
                 ),
-                TextSpan(text: 'Continue?'),
+                TextSpan(text: L10n.of(context).continueText('?')),
               ],
             ),
           ),
           actions: <Widget>[
             TextButton(
               onPressed: () => context.pop(),
-              child: const Text('No'),
+              child: Text(L10n.of(context).no),
             ),
             TextButton(
               onPressed: () async {
@@ -286,7 +291,7 @@ class _MemberListEntryInner extends ConsumerWidget {
                   context: context,
                   builder: (context) => DefaultDialog(
                     title: Text(
-                      'Unblocking User',
+                      L10n.of(context).unblockingUser,
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                     isLoader: true,
@@ -303,7 +308,7 @@ class _MemberListEntryInner extends ConsumerWidget {
                     context: context,
                     builder: (context) => DefaultDialog(
                       title: Text(
-                        'User unblocked. It might takes a bit before the UI reflects this update.',
+                        L10n.of(context).userUnblockedTitle,
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
                       actions: <Widget>[
@@ -313,7 +318,7 @@ class _MemberListEntryInner extends ConsumerWidget {
                             context.pop();
                             context.pop();
                           },
-                          child: const Text('Okay'),
+                          child: Text(L10n.of(context).okay),
                         ),
                       ],
                     ),
@@ -326,7 +331,7 @@ class _MemberListEntryInner extends ConsumerWidget {
                     context: context,
                     builder: (context) => DefaultDialog(
                       title: Text(
-                        'Unblock user failed: \n $err"',
+                        '${L10n.of(context).unblockUserFailed}: \n $err"',
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
                       actions: <Widget>[
@@ -336,14 +341,14 @@ class _MemberListEntryInner extends ConsumerWidget {
                             context.pop();
                             context.pop();
                           },
-                          child: const Text('Okay'),
+                          child: Text(L10n.of(context).okay),
                         ),
                       ],
                     ),
                   );
                 }
               },
-              child: const Text('Yes'),
+              child: Text(L10n.of(context).yes),
             ),
           ],
         );
@@ -371,7 +376,7 @@ class _MemberListEntryInner extends ConsumerWidget {
         context: context,
         builder: (context) => DefaultDialog(
           title: Text(
-            'Updating Power level of $userId',
+            L10n.of(context).updatingPowerLevelOf(userId),
             style: Theme.of(context).textTheme.titleSmall,
           ),
           isLoader: true,
@@ -386,7 +391,7 @@ class _MemberListEntryInner extends ConsumerWidget {
         return;
       }
       Navigator.of(context, rootNavigator: true).pop();
-      customMsgSnackbar(context, 'PowerLevel update submitted');
+      customMsgSnackbar(context, L10n.of(context).powerLevelUpdateSubmitted);
     }
   }
 
@@ -404,10 +409,10 @@ class _MemberListEntryInner extends ConsumerWidget {
           );
           customMsgSnackbar(
             context,
-            'Username copied to clipboard',
+            L10n.of(context).usernameCopiedToClipboard,
           );
         },
-        child: const Text('Copy username'),
+        child: Text(L10n.of(context).copyUsername),
       ),
     );
 
@@ -417,7 +422,7 @@ class _MemberListEntryInner extends ConsumerWidget {
           onTap: () async {
             await unblockUser(context);
           },
-          child: const Text('Unblock User'),
+          child: Text(L10n.of(context).unblockUser),
         ),
       );
     } else {
@@ -426,7 +431,7 @@ class _MemberListEntryInner extends ConsumerWidget {
           onTap: () async {
             await blockUser(context);
           },
-          child: const Text('Block User'),
+          child: Text(L10n.of(context).blockUser),
         ),
       );
     }
@@ -439,7 +444,7 @@ class _MemberListEntryInner extends ConsumerWidget {
             onTap: () async {
               await changePowerLevel(context, ref);
             },
-            child: const Text('Change Power Level'),
+            child: Text(L10n.of(context).changePowerLevel),
           ),
         );
       }
@@ -449,9 +454,9 @@ class _MemberListEntryInner extends ConsumerWidget {
           PopupMenuItem(
             onTap: () => customMsgSnackbar(
               context,
-              'Kicking not yet implemented yet',
+              L10n.of(context).kickingNotYetImplementedYet,
             ),
-            child: const Text('Kick User'),
+            child: Text(L10n.of(context).kickUser),
           ),
         );
 
@@ -460,9 +465,9 @@ class _MemberListEntryInner extends ConsumerWidget {
             PopupMenuItem(
               onTap: () => customMsgSnackbar(
                 context,
-                'Kicking not yet implemented yet',
+                L10n.of(context).kickingNotYetImplementedYet,
               ),
-              child: const Text('Kick & Ban User'),
+              child: Text(L10n.of(context).kickAndBanUser),
             ),
           );
         }
@@ -486,30 +491,30 @@ class _MemberListEntryInner extends ConsumerWidget {
     final List<Widget> trailing = [];
     if (member.isIgnored()) {
       trailing.add(
-        const Tooltip(
-          message: "You have blocked this user, you can't see their messages",
-          child: Icon(Atlas.block_thin),
+        Tooltip(
+          message: L10n.of(context).youHaveBlockedThisUser,
+          child: const Icon(Atlas.block_thin),
         ),
       );
     }
     if (memberStatus == 'Admin') {
       trailing.add(
-        const Tooltip(
-          message: 'Space Admin',
-          child: Icon(Atlas.crown_winner_thin),
+        Tooltip(
+          message: L10n.of(context).spaceAdmin,
+          child: const Icon(Atlas.crown_winner_thin),
         ),
       );
     } else if (memberStatus == 'Mod') {
       trailing.add(
-        const Tooltip(
-          message: 'Space Moderator',
-          child: Icon(Atlas.shield_star_win_thin),
+        Tooltip(
+          message: L10n.of(context).spaceModerator,
+          child: const Icon(Atlas.shield_star_win_thin),
         ),
       );
     } else if (memberStatus == 'Custom') {
       trailing.add(
         Tooltip(
-          message: 'Custom Power Level (${member.powerLevel()})',
+          message: L10n.of(context).customPowerLevel('${member.powerLevel()}'),
           child: const Icon(Atlas.star_medal_award_thin),
         ),
       );

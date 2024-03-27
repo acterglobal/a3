@@ -2,6 +2,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/space/widgets/relatest_spaces.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class RelatedSpacesCard extends ConsumerWidget {
   final String spaceId;
@@ -18,14 +19,14 @@ class RelatedSpacesCard extends ConsumerWidget {
         spaces: spaces,
         showParents: false,
         fallback: Text(
-          'There are no spaces related to this space',
+          L10n.of(context).thereAreNoSpacesRelatedToThisSpace,
           style: Theme.of(context).textTheme.bodySmall,
         ),
       ),
       error: (error, stack) => SliverToBoxAdapter(
-        child: Text('Loading spaces failed: $error'),
+        child: Text('${L10n.of(context).loadingFailed('spaces')}: $error'),
       ),
-      loading: () => const SliverToBoxAdapter(child: Text('Loading')),
+      loading: () => SliverToBoxAdapter(child: Text(L10n.of(context).loading(''))),
     );
   }
 }

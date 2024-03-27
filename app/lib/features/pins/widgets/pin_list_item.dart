@@ -11,10 +11,12 @@ import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class PinListItemById extends ConsumerWidget {
   final String pinId;
   final bool showSpace;
+
   const PinListItemById({
     required this.pinId,
     this.showSpace = false,
@@ -30,7 +32,9 @@ class PinListItemById extends ConsumerWidget {
         pin: acterPin,
         showSpace: showSpace,
       ),
-      error: (err, st) => Text('Error loading pin ${err.toString()}'),
+      error: (err, st) => Text(
+        '${L10n.of(context).error} ${L10n.of(context).loading('').toLowerCase()}: ${err.toString()}',
+      ),
       loading: () => const Skeletonizer(
         child: SizedBox(
           height: 100,
@@ -44,6 +48,7 @@ class PinListItemById extends ConsumerWidget {
 class PinListItem extends ConsumerStatefulWidget {
   final ActerPin pin;
   final bool showSpace;
+
   const PinListItem({
     super.key,
     required this.pin,

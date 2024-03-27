@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:logging/logging.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 
 final _log = Logger('a3::spaces::public_spaces_selector');
@@ -244,38 +245,38 @@ class PublicSpaceItem extends ConsumerWidget {
                   loading: fallbackAvatar,
                 ),
                 title: Text(
-                  space.name() ?? 'no display name',
+                  space.name() ?? L10n.of(context).noDisplayName,
                   style: Theme.of(context).textTheme.labelLarge,
                   softWrap: false,
                 ),
                 subtitle: Text(
-                  '${space.numJoinedMembers()} Members',
+                  L10n.of(context).countsMembers(space.numJoinedMembers()),
                   style: Theme.of(context).textTheme.labelSmall,
                   softWrap: false,
                 ),
                 trailing: withInfo.when(
                   data: (data) => data != null
-                      ? const Chip(label: Text('member'))
+                      ? Chip(label: Text(L10n.of(context).member))
                       : space.joinRuleStr() == 'Public'
                           ? OutlinedButton(
                               onPressed: () => onSelected(
                                 space,
                                 withInfo.valueOrNull,
                               ),
-                              child: const Text('join'),
+                              child: Text(L10n.of(context).join),
                             )
                           : OutlinedButton(
                               onPressed: () => onSelected(
                                 space,
                                 withInfo.valueOrNull,
                               ),
-                              child: const Text('request to join'),
+                              child: Text(L10n.of(context).requestToJoin),
                             ),
                   error: (e, s) => Text(
                     '$e',
                     softWrap: true,
                   ),
-                  loading: () => const Text('loading'),
+                  loading: () => Text(L10n.of(context).loading('')),
                 ),
               ),
             ),
@@ -332,7 +333,7 @@ class PublicSpaceSelector extends ConsumerWidget {
     return CustomScrollView(
       slivers: [
         SliverAppBar(
-          title: title ?? const Text('Join space'),
+          title: title ?? Text(L10n.of(context).space('join')),
         ),
         SliverToBoxAdapter(
           child: Padding(
@@ -345,12 +346,12 @@ class PublicSpaceSelector extends ConsumerWidget {
                   child: TextField(
                     controller: searchTextCtrl,
                     autofocus: autofocus,
-                    decoration: const InputDecoration(
-                      prefixIcon: Icon(
+                    decoration: InputDecoration(
+                      prefixIcon: const Icon(
                         Atlas.magnifying_glass_thin,
                         color: Colors.white,
                       ),
-                      labelText: 'search space',
+                      labelText: L10n.of(context).searchSpace,
                     ),
                     onChanged: (String value) {
                       searchValueNotifier.state = value;
@@ -383,12 +384,12 @@ class PublicSpaceSelector extends ConsumerWidget {
                         onTap: () =>
                             onSelectedMatch!(alias: alias, servers: [server]),
                         title: Text(alias),
-                        subtitle: Text('on $server'),
+                        subtitle: Text('${L10n.of(context).on} $server'),
                         trailing: OutlinedButton.icon(
                           onPressed: () =>
                               onSelectedMatch!(alias: alias, servers: [server]),
                           icon: const Icon(Atlas.entrance_thin),
-                          label: const Text('Try to join'),
+                          label: Text(L10n.of(context).tryToJoin),
                         ),
                       ),
                     );
@@ -412,7 +413,7 @@ class PublicSpaceSelector extends ConsumerWidget {
                         ),
                         title: Text(targetId),
                         subtitle: servers.isNotEmpty
-                            ? Text('via ${servers.join(', ')}')
+                            ? Text('${L10n.of(context).via} ${servers.join(', ')}')
                             : null,
                         trailing: OutlinedButton.icon(
                           onPressed: () => onSelectedMatch!(
@@ -420,7 +421,7 @@ class PublicSpaceSelector extends ConsumerWidget {
                             servers: servers,
                           ),
                           icon: const Icon(Atlas.entrance_thin),
-                          label: const Text('Try to join'),
+                          label: Text(L10n.of(context).tryToJoin),
                         ),
                       ),
                     );
@@ -475,7 +476,7 @@ class PublicSpaceSelector extends ConsumerWidget {
     return DropdownMenu<String>(
       controller: controller,
       initialSelection: selectedServer,
-      label: const Text('Server'),
+      label: Text(L10n.of(context).server),
       dropdownMenuEntries: menuItems,
       onSelected: (String? typus) {
         if (typus != null) {

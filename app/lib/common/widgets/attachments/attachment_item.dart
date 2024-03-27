@@ -3,6 +3,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 // Attachment item UI
 class AttachmentItem extends ConsumerWidget {
@@ -132,7 +133,7 @@ class _ImageAttachmentPreviewState extends State<_ImageAttachment> {
           );
         } else {
           return Placeholder(
-            child: Text('Error loading image ${snapshot.error}'),
+            child: Text('${L10n.of(context).errorLoading('image')} ${snapshot.error}'),
           );
         }
       },

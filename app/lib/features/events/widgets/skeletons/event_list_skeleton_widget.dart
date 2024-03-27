@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class EventListSkeleton extends StatefulWidget {
   const EventListSkeleton({super.key});
@@ -35,17 +36,17 @@ class _EventListSkeletonState extends State<EventListSkeleton> {
             color: Colors.white,
           ),
           const SizedBox(width: 10),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Event title data'),
-                Text('Event Descriptions data'),
+                Text(L10n.of(context).eventTitleData),
+                Text(L10n.of(context).eventDescriptionsData),
               ],
             ),
           ),
           const SizedBox(width: 20),
-          const Text('RSVP'),
+          Text(L10n.of(context).rsvp),
         ],
       ),
     );

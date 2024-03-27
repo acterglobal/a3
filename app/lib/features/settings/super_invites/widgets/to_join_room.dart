@@ -31,7 +31,7 @@ class RoomToInviteTo extends ConsumerWidget {
             trailing: removeWidget(),
           );
         }
-        subtitle = L10n.of(context).loadingRoom;
+        subtitle = L10n.of(context).loading('room');
       } else {
         final chat = ref.watch(chatProvider(roomId)).valueOrNull;
         if (chat != null) {
@@ -41,7 +41,7 @@ class RoomToInviteTo extends ConsumerWidget {
             trailing: removeWidget(),
           );
         }
-        subtitle = L10n.of(context).loadingChat;
+        subtitle = L10n.of(context).loading('chat');
       }
     }
     return Card(

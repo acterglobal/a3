@@ -29,11 +29,11 @@ class SettingsLabsPage extends ConsumerWidget {
               ],
             ),
             SettingsSection(
-              title: Text(L10n.of(context).spaces),
+              title: Text(L10n.of(context).spaces('')),
               tiles: [
                 SettingsTile.switchTile(
                   title: Text(
-                    '${L10n.of(context).encrypted} ${L10n.of(context).spaces.toLowerCase()}',
+                    '${L10n.of(context).encrypted} ${L10n.of(context).spaces('').toLowerCase()}',
                   ),
                   description: Text(L10n.of(context).notYetSupported),
                   enabled: false,

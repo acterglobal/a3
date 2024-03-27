@@ -11,6 +11,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class EventsPage extends ConsumerWidget {
   const EventsPage({super.key});
@@ -24,7 +25,7 @@ class EventsPage extends ConsumerWidget {
       body: CustomScrollView(
         slivers: <Widget>[
           PageHeaderWidget(
-            title: 'Events',
+            title: L10n.of(context).events,
             sectionDecoration: const BoxDecoration(
               gradient: primaryGradient,
             ),
@@ -40,7 +41,7 @@ class EventsPage extends ConsumerWidget {
               ),
             ],
             expandedContent: Text(
-              'Calendar events from all the Spaces you are part of',
+              L10n.of(context).calendarEventsFromAllTheSpaces,
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ),
@@ -48,7 +49,7 @@ class EventsPage extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
             sliver: SliverToBoxAdapter(
               child: Text(
-                'Upcoming',
+                L10n.of(context).upcoming,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
@@ -59,9 +60,9 @@ class EventsPage extends ConsumerWidget {
                   (MediaQuery.of(context).size.width ~/ 600).toInt();
               const int minCount = 2;
               if (events.isEmpty) {
-                return const SliverToBoxAdapter(
+                return SliverToBoxAdapter(
                   child: Center(
-                    child: Text('There\'s nothing scheduled yet'),
+                    child: Text(L10n.of(context).thereIsNothingScheduledYet),
                   ),
                 );
               }
@@ -81,7 +82,7 @@ class EventsPage extends ConsumerWidget {
             },
             error: (error, stack) => SliverToBoxAdapter(
               child: Center(
-                child: Text('Loading failed: $error'),
+                child: Text('${L10n.of(context).loadingFailed('')}: $error'),
               ),
             ),
             loading: () => const SliverToBoxAdapter(
@@ -92,7 +93,7 @@ class EventsPage extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
             sliver: SliverToBoxAdapter(
               child: Text(
-                'Past',
+                L10n.of(context).past,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
@@ -103,9 +104,9 @@ class EventsPage extends ConsumerWidget {
                   (MediaQuery.of(context).size.width ~/ 600).toInt();
               const int minCount = 2;
               if (events.isEmpty) {
-                return const SliverToBoxAdapter(
+                return SliverToBoxAdapter(
                   child: Center(
-                    child: Text('There\'s nothing scheduled yet'),
+                    child: Text(L10n.of(context).thereIsNothingScheduledYet),
                   ),
                 );
               }
@@ -125,7 +126,7 @@ class EventsPage extends ConsumerWidget {
             },
             error: (error, stack) => SliverToBoxAdapter(
               child: Center(
-                child: Text('Loading failed: $error'),
+                child: Text('${L10n.of(context).loadingFailed('')}: $error'),
               ),
             ),
             loading: () => const SliverToBoxAdapter(

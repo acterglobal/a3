@@ -6,6 +6,7 @@ import 'package:acter/features/events/widgets/events_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class EventsCard extends ConsumerWidget {
   final String spaceId;
@@ -22,13 +23,13 @@ class EventsCard extends ConsumerWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Text(
-            'Events',
+            L10n.of(context).events,
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
         events.when(
           error: (error, stackTrace) => Text(
-            'Loading events failed: $error',
+            '${L10n.of(context).loadingFailed('events')}: $error',
           ),
           data: (events) {
             int eventsLimit = min(events.length, 3);
@@ -46,7 +47,7 @@ class EventsCard extends ConsumerWidget {
                     : Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'There are no events scheduled',
+                          L10n.of(context).thereAreNoEventsScheduled,
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ),
@@ -58,7 +59,9 @@ class EventsCard extends ConsumerWidget {
                             Routes.spaceEvents.name,
                             pathParameters: {'spaceId': spaceId},
                           ),
-                          child: Text('See all my ${events.length} events'),
+                          child: Text(
+                            L10n.of(context).seeAllMyItems(events.length, 'events'),
+                          ),
                         ),
                       )
                     : const SizedBox.shrink(),

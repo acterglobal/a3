@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class ConvoHierarchyCard extends ConsumerWidget {
   final SpaceHierarchyRoomInfo space;
@@ -122,13 +123,13 @@ class ConvoHierarchyCard extends ConsumerWidget {
         onLongPress: onLongPress,
       ),
       error: (error, stack) => ListTile(
-        title: Text('Error loading: $roomId'),
+        title: Text('${L10n.of(context).errorLoading('')}: $roomId'),
         subtitle: Text('$error'),
       ),
       loading: () => Skeletonizer(
         child: ListTile(
           title: Text(roomId),
-          subtitle: const Text('loading'),
+          subtitle: Text(L10n.of(context).loading('')),
         ),
       ),
     );

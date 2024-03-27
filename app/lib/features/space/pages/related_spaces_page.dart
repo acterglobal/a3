@@ -9,6 +9,7 @@ import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class RelatedSpacesPage extends ConsumerWidget {
   final String spaceIdOrAlias;
@@ -42,12 +43,12 @@ class RelatedSpacesPage extends ConsumerWidget {
             },
             error: (error, stack) => SliverToBoxAdapter(
               child: Center(
-                child: Text('Loading failed: $error'),
+                child: Text('${L10n.of(context).loadingFailed('')}: $error'),
               ),
             ),
-            loading: () => const SliverToBoxAdapter(
+            loading: () => SliverToBoxAdapter(
               child: Center(
-                child: Text('Loading'),
+                child: Text(L10n.of(context).loading('')),
               ),
             ),
           ),
@@ -61,9 +62,8 @@ class RelatedSpacesPage extends ConsumerWidget {
       child: Center(
         heightFactor: 1,
         child: EmptyState(
-          title: 'No connected spaces',
-          subtitle:
-              'In connected spaces, you can focus on specific actions or campaigns of your working groups and start organizing.',
+          title: L10n.of(context).noConnectedSpaces,
+          subtitle: L10n.of(context).inConnectedSpaces,
           image: 'assets/images/empty_space.svg',
           primaryButton: canLinkSpace
               ? ElevatedButton(
@@ -73,7 +73,7 @@ class RelatedSpacesPage extends ConsumerWidget {
                       'parentSpaceId': spaceIdOrAlias,
                     },
                   ),
-                  child: const Text('Create New Spaces'),
+                  child: Text(L10n.of(context).createSpace('new')),
                 )
               : null,
         ),
