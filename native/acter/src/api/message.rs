@@ -6,61 +6,10 @@ use matrix_sdk_ui::timeline::{
     EventSendState as SdkEventSendState, EventTimelineItem, MembershipChange, TimelineItem,
     TimelineItemContent, TimelineItemKind, VirtualTimelineItem,
 };
-use ruma_common::{serde::Raw, OwnedEventId, OwnedRoomId, OwnedTransactionId, OwnedUserId};
-use ruma_events::{
-    call::{
-        answer::{OriginalCallAnswerEvent, OriginalSyncCallAnswerEvent},
-        candidates::{OriginalCallCandidatesEvent, OriginalSyncCallCandidatesEvent},
-        hangup::{OriginalCallHangupEvent, OriginalSyncCallHangupEvent},
-        invite::{OriginalCallInviteEvent, OriginalSyncCallInviteEvent},
-    },
-    policy::rule::{
-        room::{OriginalPolicyRuleRoomEvent, OriginalSyncPolicyRuleRoomEvent},
-        server::{OriginalPolicyRuleServerEvent, OriginalSyncPolicyRuleServerEvent},
-        user::{OriginalPolicyRuleUserEvent, OriginalSyncPolicyRuleUserEvent},
-    },
-    reaction::{OriginalReactionEvent, OriginalSyncReactionEvent},
-    receipt::Receipt,
-    room::{
-        aliases::{OriginalRoomAliasesEvent, OriginalSyncRoomAliasesEvent},
-        avatar::{OriginalRoomAvatarEvent, OriginalSyncRoomAvatarEvent},
-        canonical_alias::{OriginalRoomCanonicalAliasEvent, OriginalSyncRoomCanonicalAliasEvent},
-        create::{OriginalRoomCreateEvent, OriginalSyncRoomCreateEvent},
-        encrypted::{
-            EncryptedEventScheme, OriginalRoomEncryptedEvent, OriginalSyncRoomEncryptedEvent,
-        },
-        encryption::{OriginalRoomEncryptionEvent, OriginalSyncRoomEncryptionEvent},
-        guest_access::{OriginalRoomGuestAccessEvent, OriginalSyncRoomGuestAccessEvent},
-        history_visibility::{
-            OriginalRoomHistoryVisibilityEvent, OriginalSyncRoomHistoryVisibilityEvent,
-        },
-        join_rules::{OriginalRoomJoinRulesEvent, OriginalSyncRoomJoinRulesEvent},
-        member::{MembershipState, OriginalRoomMemberEvent, OriginalSyncRoomMemberEvent},
-        message::{
-            MessageType, OriginalRoomMessageEvent, OriginalSyncRoomMessageEvent, Relation,
-            RoomMessageEvent,
-        },
-        name::{OriginalRoomNameEvent, OriginalSyncRoomNameEvent},
-        pinned_events::{OriginalRoomPinnedEventsEvent, OriginalSyncRoomPinnedEventsEvent},
-        power_levels::{OriginalRoomPowerLevelsEvent, OriginalSyncRoomPowerLevelsEvent},
-        redaction::{RoomRedactionEvent, SyncRoomRedactionEvent},
-        server_acl::{OriginalRoomServerAclEvent, OriginalSyncRoomServerAclEvent},
-        third_party_invite::{
-            OriginalRoomThirdPartyInviteEvent, OriginalSyncRoomThirdPartyInviteEvent,
-        },
-        tombstone::{OriginalRoomTombstoneEvent, OriginalSyncRoomTombstoneEvent},
-        topic::{OriginalRoomTopicEvent, OriginalSyncRoomTopicEvent},
-    },
-    space::{
-        child::{OriginalSpaceChildEvent, OriginalSyncSpaceChildEvent},
-        parent::{OriginalSpaceParentEvent, OriginalSyncSpaceParentEvent},
-    },
-    sticker::{OriginalStickerEvent, OriginalSyncStickerEvent},
-    AnySyncMessageLikeEvent, AnySyncStateEvent, AnySyncTimelineEvent, SyncMessageLikeEvent,
-    SyncStateEvent,
-};
+use ruma_common::{OwnedEventId, OwnedTransactionId, OwnedUserId};
+use ruma_events::{receipt::Receipt, room::message::MessageType};
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, ops::Deref, sync::Arc};
+use std::sync::Arc;
 use tracing::info;
 
 use super::common::{MsgContent, ReactionRecord};
@@ -523,19 +472,20 @@ impl RoomMessage {
 impl From<(Arc<TimelineItem>, OwnedUserId)> for RoomMessage {
     fn from(v: (Arc<TimelineItem>, OwnedUserId)) -> RoomMessage {
         let (item, user_id) = v;
-
-        match item.deref().deref() {
+        match item.kind() {
             TimelineItemKind::Event(event_item) => RoomMessage::new_event_item(user_id, event_item),
             TimelineItemKind::Virtual(virtual_item) => RoomMessage::new_virtual_item(virtual_item),
         }
     }
 }
+
 impl From<(EventTimelineItem, OwnedUserId)> for RoomMessage {
     fn from(v: (EventTimelineItem, OwnedUserId)) -> RoomMessage {
         let (event_item, user_id) = v;
         RoomMessage::new_event_item(user_id, &event_item)
     }
 }
+
 impl From<VirtualTimelineItem> for RoomMessage {
     fn from(event_item: VirtualTimelineItem) -> RoomMessage {
         RoomMessage::new_virtual_item(&event_item)

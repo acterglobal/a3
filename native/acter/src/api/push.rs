@@ -1,6 +1,3 @@
-use std::sync::Arc;
-use urlencoding::encode;
-
 use acter_core::{
     events::{
         news::{FallbackNewsContent, NewsContent},
@@ -9,38 +6,31 @@ use acter_core::{
     push::default_rules,
 };
 use anyhow::{bail, Context, Result};
-use matrix_sdk::{
-    notification_settings::{
-        IsEncrypted, IsOneToOne, NotificationSettings as SdkNotificationSettings,
-        RoomNotificationMode,
-    },
-    ruma::{
-        api::client::push::{
-            get_pushers, set_pusher, EmailPusherData, Pusher as RumaPusher, PusherIds, PusherInit,
-            PusherKind,
-        },
-        assign,
-        push::HttpPusherData,
-    },
-};
-
 use derive_builder::Builder;
-use derive_getters::Getters;
 use futures::stream::StreamExt;
+use matrix_sdk::notification_settings::{
+    IsEncrypted, IsOneToOne, NotificationSettings as SdkNotificationSettings, RoomNotificationMode,
+};
 use matrix_sdk_ui::notification_client::{
     NotificationClient, NotificationEvent, NotificationItem as SdkNotificationItem,
     NotificationProcessSetup, RawNotificationEvent,
 };
+use ruma::{assign, push::HttpPusherData};
 use ruma_client_api::{
     device,
-    push::{get_pushrules_all, set_pushrule, RuleScope},
+    push::{
+        get_pushers, get_pushrules_all, set_pusher, set_pushrule, EmailPusherData,
+        Pusher as RumaPusher, PusherIds, PusherInit, PusherKind, RuleScope,
+    },
 };
 use ruma_common::{EventId, OwnedMxcUri, OwnedRoomId, RoomId};
 use ruma_events::{
     room::{message::MessageType, MediaSource},
     AnySyncMessageLikeEvent, AnySyncTimelineEvent, MessageLikeEvent, SyncMessageLikeEvent,
 };
+use std::sync::Arc;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
+use urlencoding::encode;
 
 use super::Client;
 
