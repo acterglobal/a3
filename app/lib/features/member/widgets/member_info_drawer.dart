@@ -20,6 +20,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class _MemberInfoDrawerInner extends ConsumerWidget {
   final Member member;
@@ -40,18 +41,20 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
         await showChangePowerLevelDialog(context, member, myMembership);
     if (newPowerLevel != null) {
       // We are doing as expected, but the lints triggers.
-      // ignore: use_build_context_synchronously
       EasyLoading.show(
-        status: 'Updating Power level of $userId',
+      // ignore: use_build_context_synchronously
+        status: L10n.of(context).updatingPowerLevelOf(userId),
       );
       try {
         final room = await ref.read(maybeRoomProvider(roomId).future);
         await room?.updatePowerLevel(userId, newPowerLevel);
         EasyLoading.dismiss();
-        EasyLoading.showToast('PowerLevel update submitted');
+      // ignore: use_build_context_synchronously
+        EasyLoading.showToast(L10n.of(context).powerLevelUpdateSubmitted);
       } catch (e) {
         EasyLoading.showError(
-          'Failed to set power level: $e',
+          // ignore: use_build_context_synchronously
+          '${L10n.of(context).failedTo('changePowerLevel')}: $e',
           duration: const Duration(seconds: 3),
         );
       }
@@ -85,7 +88,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
     final itsMe = memberId == myUserId;
     if (itsMe) {
       return [
-        const Center(child: Text('This is you')),
+        Center(child: Text(L10n.of(context).itsYou)),
         const SizedBox(height: 30),
       ];
     }
@@ -96,7 +99,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
       (member.isIgnored())
           ? MenuItemWidget(
               iconData: Atlas.block_thin,
-              title: 'Unblock User',
+              title: L10n.of(context).unblockUser,
               withMenu: false,
               onTap: () async {
                 await showUnblockUserDialog(context, member);
@@ -107,7 +110,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
             )
           : MenuItemWidget(
               iconData: Atlas.block_thin,
-              title: 'Block User',
+              title: L10n.of(context).blockUser,
               withMenu: false,
               onTap: () async {
                 await showBlockUserDialog(context, member);
@@ -126,7 +129,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
       return Card(
         child: ListTile(
           leading: const Icon(Atlas.crown_winner_thin),
-          title: const Text('Admin'),
+          title: Text(L10n.of(context).admin),
           onTap: onTap,
         ),
       );
@@ -134,7 +137,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
       return Card(
         child: ListTile(
           leading: const Icon(Atlas.shield_star_win_thin),
-          title: const Text('Moderator'),
+          title: Text(L10n.of(context).moderator),
           onTap: onTap,
         ),
       );
@@ -142,7 +145,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
       return Card(
         child: ListTile(
           leading: const Icon(Atlas.shield_star_win_thin),
-          title: const Text('Power Level'),
+          title: Text(L10n.of(context).powerLevel),
           trailing: Text('${member.powerLevel()}'),
           onTap: onTap,
         ),
@@ -180,7 +183,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
               menu.add(
                 MenuItemWidget(
                   iconData: Icons.eject_outlined,
-                  title: 'Kick User',
+                  title: L10n.of(context).kickUser,
                   withMenu: false,
                   onTap: () async {
                     await showKickUserDialog(context, member);
@@ -195,7 +198,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
                 menu.add(
                   MenuItemWidget(
                     iconData: Icons.gpp_bad_outlined,
-                    title: 'Kick & Ban User',
+                    title: L10n.of(context).kickAndBanUser,
                     withMenu: false,
                     onTap: () async {
                       await showKickAndBanUserDialog(context, member);
@@ -213,7 +216,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
             _roomTitle(context, ref),
             MenuItemWidget(
               iconData: Atlas.triangle_exclamation_thin,
-              title: 'Error loading: $e',
+              title: '${L10n.of(context).errorLoading('')}: $e',
               withMenu: false,
               onTap: () {},
             ),
@@ -223,7 +226,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
             Skeletonizer(
               child: MenuItemWidget(
                 iconData: Atlas.medal_badge_award_thin,
-                title: 'Change Power Level',
+                title: L10n.of(context).changePowerLevel,
                 withMenu: false,
                 onTap: () {},
               ),
@@ -288,7 +291,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
         );
         customMsgSnackbar(
           context,
-          'Username copied to clipboard',
+          L10n.of(context).usernameCopiedToClipboard,
         );
       },
       child: Row(
@@ -324,7 +327,7 @@ class MemberInfoDrawer extends ConsumerWidget {
           ),
           error: (e, s) => Padding(
             padding: const EdgeInsets.all(20.0),
-            child: Text('Failed to load profile: $e'),
+            child: Text('${L10n.of(context).errorLoading('profile')}: $e'),
           ),
           loading: () => const MemberInfoSkeleton(),
         );

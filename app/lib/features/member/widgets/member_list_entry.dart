@@ -8,6 +8,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class _MemberListInnerSkeleton extends StatelessWidget {
   const _MemberListInnerSkeleton();
@@ -18,22 +19,22 @@ class _MemberListInnerSkeleton extends StatelessWidget {
       leading: Skeletonizer(
         child: ActerAvatar(
           mode: DisplayMode.DM,
-          avatarInfo: const AvatarInfo(
-            uniqueId: 'no id given',
+          avatarInfo: AvatarInfo(
+            uniqueId: L10n.of(context).noIdGiven,
           ),
           size: 18,
         ),
       ),
       title: Skeletonizer(
         child: Text(
-          'no id',
+          L10n.of(context).noId,
           style: Theme.of(context).textTheme.bodyMedium,
           overflow: TextOverflow.ellipsis,
         ),
       ),
       subtitle: Skeletonizer(
         child: Text(
-          'no id',
+          L10n.of(context).noId,
           style: Theme.of(context)
               .textTheme
               .labelLarge!
@@ -68,7 +69,7 @@ class MemberListEntry extends ConsumerWidget {
         member: data.member,
         profile: data.profile,
       ),
-      error: (e, s) => Text('Error loading Profile: $e'),
+      error: (e, s) => Text('${L10n.of(context).errorLoading('profile')}: $e'),
       loading: () => const _MemberListInnerSkeleton(),
     );
   }

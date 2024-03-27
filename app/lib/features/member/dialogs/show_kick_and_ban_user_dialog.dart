@@ -1,6 +1,7 @@
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 Future<void> showKickAndBanUserDialog(
   BuildContext context,
@@ -13,50 +14,48 @@ Future<void> showKickAndBanUserDialog(
     builder: (BuildContext context) {
       final reason = TextEditingController();
       return AlertDialog(
-        title: Text('Kick & ban $userId'),
+        title: Text(L10n.of(context).kickAndBanUserTitle(userId)),
         content: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                'You are about to kick and ban $userId from $roomId ',
-              ),
-              const Text("They won't be able to join again"),
+              Text(L10n.of(context).kickAndBanUserDescription(userId, roomId)),
+              Text(L10n.of(context).theyWontBeAbleToJoinAgain),
               TextFormField(
                 controller: reason,
-                decoration: const InputDecoration(
-                  hintText: 'optional reason',
-                  labelText: 'Reason',
+                decoration: InputDecoration(
+                  hintText: L10n.of(context).reasonHint,
+                  labelText: L10n.of(context).reasonLabel,
                 ),
               ),
-              const Text('Continue?'),
+              Text(L10n.of(context).continueQuestion),
             ],
           ),
         ),
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-            child: const Text('No'),
+            child: Text(L10n.of(context).no),
           ),
           TextButton(
             onPressed: () async {
-              EasyLoading.show(status: 'Kicking & banning user');
+              EasyLoading.show(status: L10n.of(context).kickAndBanProgress);
               try {
                 final maybeReason = reason.text.isNotEmpty ? reason.text : null;
                 await member.kick(maybeReason);
                 await member.ban(maybeReason);
-                EasyLoading.showToast('User kicked & banned');
+                // ignore: use_build_context_synchronously
+                EasyLoading.showToast(L10n.of(context).kickAndBanSuccess);
                 if (context.mounted) {
                   Navigator.of(context, rootNavigator: true).pop();
                 }
-              } catch (err) {
-                EasyLoading.showError(
-                  'Kicking & banning user failed: \n $err"',
-                );
+              } catch (error) {
+                // ignore: use_build_context_synchronously
+                EasyLoading.showError(L10n.of(context).kickAndBanFailed(error));
               }
             },
-            child: const Text('Yes'),
+            child: Text(L10n.of(context).yes),
           ),
         ],
       );

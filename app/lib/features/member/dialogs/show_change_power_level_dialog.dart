@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class _ChangePowerLevelDialog extends StatefulWidget {
   final Member member;
@@ -53,38 +54,36 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
     final memberStatus = member.membershipStatusStr();
     final currentPowerLevel = member.powerLevel();
     return AlertDialog(
-      title: const Text('Update Power level'),
+      title: Text(L10n.of(context).updatePowerLevel),
       content: Form(
         key: _formKey,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Change the power level of'),
+            Text(L10n.of(context).changeThePowerLevelOf),
             Text(member.userId().toString()),
-            // Row(
-            //   children: [
-            Text('from $memberStatus ($currentPowerLevel) to '),
+            Text(L10n.of(context).changeThePowerLevelDetails(currentPowerLevel, memberStatus)),
             Padding(
               padding: const EdgeInsets.all(5),
               child: DropdownButtonFormField(
                 value: currentMemberStatus,
                 onChanged: _updateMembershipStatus,
-                items: const [
+                items: [
                   DropdownMenuItem(
                     value: 'Admin',
-                    child: Text('Admin'),
+                    child: Text(L10n.of(context).admin),
                   ),
                   DropdownMenuItem(
                     value: 'Mod',
-                    child: Text('Moderator'),
+                    child:Text(L10n.of(context).moderator),
                   ),
                   DropdownMenuItem(
                     value: 'Regular',
-                    child: Text('Regular'),
+                    child: Text(L10n.of(context).regular),
                   ),
                   DropdownMenuItem(
                     value: 'Custom',
-                    child: Text('Custom'),
+                    child: Text(L10n.of(context).custom),
                   ),
                 ],
               ),
@@ -94,9 +93,9 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
               child: Padding(
                 padding: const EdgeInsets.all(5),
                 child: TextFormField(
-                  decoration: const InputDecoration(
-                    hintText: 'any number',
-                    labelText: 'Custom power level',
+                  decoration:  InputDecoration(
+                    hintText: L10n.of(context).anyNumber,
+                    labelText: L10n.of(context).customPowerLevel(''),
                   ),
                   onChanged: _newCustomLevel,
                   initialValue: currentPowerLevel.toString(),
@@ -104,11 +103,12 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
                       const TextInputType.numberWithOptions(signed: true),
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.digitsOnly,
-                  ], // Only numbers
+                  ],
+                  // Only numbers
                   validator: (String? value) {
                     return currentMemberStatus == 'Custom' &&
                             (value == null || int.tryParse(value) == null)
-                        ? 'You need to enter the custom value as a number.'
+                        ? L10n.of(context).youNeedToEnterCustomValueAsNumber
                         : null;
                   },
                 ),
@@ -122,7 +122,7 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
       actions: <Widget>[
         TextButton(
           onPressed: () => Navigator.pop(context, null),
-          child: const Text('Cancel'),
+          child: Text(L10n.of(context).cancel),
         ),
         TextButton(
           onPressed: () {
@@ -153,7 +153,7 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
               return;
             }
           },
-          child: const Text('Submit'),
+          child: Text(L10n.of(context).submit),
         ),
       ],
     );
