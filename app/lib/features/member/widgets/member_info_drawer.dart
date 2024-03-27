@@ -38,7 +38,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
     final myMembership = await ref.read(roomMembershipProvider(roomId).future);
     if (!context.mounted) return;
     final newPowerLevel =
-        await showChangePowerLevelDialog(context, member, myMembership);
+        await showChangePowerLevelDialog(context, member, (myMembership?.powerLevel() ?? 0));
     if (newPowerLevel != null) {
       // We are doing as expected, but the lints triggers.
       EasyLoading.show(
@@ -90,6 +90,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
       return [
         Center(child: Text(L10n.of(context).itsYou)),
         const SizedBox(height: 30),
+      ..._roomMenu(context, ref),
       ];
     }
 

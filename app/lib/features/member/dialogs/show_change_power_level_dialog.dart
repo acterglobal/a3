@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,10 +7,10 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class _ChangePowerLevelDialog extends StatefulWidget {
   final Member member;
-  final Member? myMembership;
+  final int maxPowerLevel;
   const _ChangePowerLevelDialog({
     required this.member,
-    this.myMembership,
+    required this.maxPowerLevel,
   });
 
   @override
@@ -40,7 +41,7 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
     if (mounted) {
       setState(() {
         if (value != null) {
-          customValue = int.tryParse(value);
+          customValue = max(int.tryParse(value) ?? 0, widget.maxPowerLevel);
         } else {
           customValue = null;
         }
@@ -69,18 +70,21 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
                 value: currentMemberStatus,
                 onChanged: _updateMembershipStatus,
                 items: [
-                  DropdownMenuItem(
-                    value: 'Admin',
-                    child: Text(L10n.of(context).admin),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Mod',
-                    child:Text(L10n.of(context).moderator),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Regular',
-                    child: Text(L10n.of(context).regular),
-                  ),
+                  if (widget.maxPowerLevel >= 100)
+                    DropdownMenuItem(
+                      value: 'Admin',
+                      child: Text(L10n.of(context).admin),
+                    ),
+                  if (widget.maxPowerLevel >= 50)
+                    DropdownMenuItem(
+                      value: 'Mod',
+                      child:Text(L10n.of(context).moderator),
+                    ),
+                  if (widget.maxPowerLevel >= 0)
+                    DropdownMenuItem(
+                      value: 'Regular',
+                      child: Text(L10n.of(context).regular),
+                    ),
                   DropdownMenuItem(
                     value: 'Custom',
                     child: Text(L10n.of(context).custom),
@@ -95,7 +99,7 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
                 child: TextFormField(
                   decoration:  InputDecoration(
                     hintText: L10n.of(context).anyNumber,
-                    labelText: L10n.of(context).customPowerLevel(''),
+                    labelText: L10n.of(context).customPowerLevel,
                   ),
                   onChanged: _newCustomLevel,
                   initialValue: currentPowerLevel.toString(),
@@ -106,10 +110,15 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
                   ],
                   // Only numbers
                   validator: (String? value) {
-                    return currentMemberStatus == 'Custom' &&
-                            (value == null || int.tryParse(value) == null)
-                        ? L10n.of(context).youNeedToEnterCustomValueAsNumber
-                        : null;
+                    if (currentMemberStatus == 'Custom') {
+                      if ((value == null || int.tryParse(value) == null)) {
+                        return L10n.of(context).youNeedToEnterCustomValueAsNumber;
+                      }
+                      if ((int.tryParse(value) ?? 0) > widget.maxPowerLevel) {
+                        return L10n.of(context).youCantExceedPowerLevel(widget.maxPowerLevel);
+                      }
+                    }
+                    return null;
                   },
                 ),
               ),
@@ -163,13 +172,13 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
 Future<int?> showChangePowerLevelDialog(
   BuildContext context,
   Member member,
-  Member? myMembership,
+  int maxPowerLevel,
 ) async {
   return await showDialog(
     context: context,
     builder: (BuildContext context) => _ChangePowerLevelDialog(
       member: member,
-      myMembership: myMembership,
+      maxPowerLevel: maxPowerLevel,
     ),
   );
 }
