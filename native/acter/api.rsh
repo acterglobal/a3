@@ -1857,6 +1857,15 @@ object Space {
     /// set name of the room
     fn set_name(name: string) -> Future<Result<EventId>>;
 
+    /// download media (image/audio/video/file/location) to specified path
+    /// if thumb size is given, media thumbnail is returned
+    /// if thumb size is not given, media file is returned
+    fn download_media(event_id: string, thumb_size: Option<ThumbnailSize>, dir_path: string) -> Future<Result<OptionString>>;
+
+    /// get the path that media (image/audio/video/file) was saved
+    /// return None when never downloaded
+    fn media_path(event_id: string, is_thumb: bool) -> Future<Result<OptionString>>;
+
     /// the members currently in the space
     fn active_members_ids() -> Future<Result<Vec<string>>>;
 
