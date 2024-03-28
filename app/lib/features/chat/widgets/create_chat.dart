@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:acter/common/dialogs/invite_to_room_dialog.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
@@ -115,7 +115,7 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
     String? description,
     List<String> selectedUsers,
   ) async {
-    EasyLoading.show(status: 'Creating Chat');
+    EasyLoading.show(status: L10n.of(context).creatingChat);
     try {
       final sdk = await ref.read(sdkProvider.future);
       final config = sdk.api.newConvoSettingsBuilder();
@@ -152,12 +152,13 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
       }
       final convo = await client.convoWithRetry(roomIdStr, 120);
       EasyLoading.dismiss();
-      EasyLoading.showSuccess('Chat Room Created');
+      if (!mounted) return null;
+      EasyLoading.showSuccess(L10n.of(context).chatRoomCreated);
       return convo;
     } catch (e) {
       EasyLoading.dismiss();
       EasyLoading.showError(
-        'Error creating chat $e',
+        '${L10n.of(context).errorCreatingChat} $e',
         duration: const Duration(seconds: 3),
       );
       return null;
@@ -197,7 +198,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('New Chat'),
+        title: Text(L10n.of(context).newChat),
       ),
       body: BaseBody(
         child: ListView(
@@ -219,16 +220,16 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
   String _makeTitle(WidgetRef ref) {
     final selectedUsers = ref.watch(createChatSelectedUsersProvider).toList();
     if (selectedUsers.isEmpty) {
-      return 'Create Group Chat';
+      return L10n.of(context).createGroupChat;
     } else if (selectedUsers.length > 1) {
-      return 'Start Group DM';
+      return L10n.of(context).startDM('group');
     } else {
       final client = ref.watch(alwaysClientProvider);
       if (checkUserDMExists(selectedUsers[0].userId().toString(), client) !=
           null) {
-        return 'Go to DM';
+        return L10n.of(context).goToDM;
       } else {
-        return 'Start DM';
+        return L10n.of(context).startDM('');
       }
     }
   }
@@ -408,9 +409,9 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
     return TextField(
       controller: searchCtrl,
       style: Theme.of(context).textTheme.labelMedium,
-      decoration: const InputDecoration(
-        hintText: 'Search Username to start a DM',
-        contentPadding: EdgeInsets.all(18),
+      decoration: InputDecoration(
+        hintText: L10n.of(context).searchUsernameToStartDM,
+        contentPadding: const EdgeInsets.all(18),
         hintMaxLines: 1,
       ),
       onChanged: (String val) =>
@@ -427,7 +428,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Found Users',
+            L10n.of(context).foundUsers,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           foundUsers.when(
@@ -435,7 +436,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                 ? Center(
                     heightFactor: 10,
                     child: Text(
-                      'No Users found with specified search term',
+                      L10n.of(context).noUsersFoundWithSpecifiedSearchTerm,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   )
@@ -448,7 +449,8 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                       onUp: _onUp,
                     ),
                   ),
-            error: (e, st) => Text('Error loading users $e'),
+            error: (e, st) =>
+                Text('${L10n.of(context).errorLoading('users')} $e'),
             loading: () => const Center(
               heightFactor: 5,
               child: CircularProgressIndicator(),
@@ -525,7 +527,7 @@ class _CreateRoomFormWidgetConsumerState
               ),
               const Spacer(),
               Text(
-                'Create Group Chat',
+                L10n.of(context).createGroupChat,
                 style: Theme.of(context).textTheme.titleSmall,
               ),
               const Spacer(),
@@ -538,9 +540,9 @@ class _CreateRoomFormWidgetConsumerState
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: 5),
-                    child: Text('Avatar'),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 5),
+                    child: Text(L10n.of(context).avatar),
                   ),
                   GestureDetector(
                     onTap: _handleAvatarUpload,
@@ -569,13 +571,13 @@ class _CreateRoomFormWidgetConsumerState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 5),
-                      child: Text('Name'),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 5),
+                      child: Text(L10n.of(context).name),
                     ),
                     InputTextField(
                       key: CreateChatPage.chatTitleKey,
-                      hintText: 'What to call this chat?',
+                      hintText: L10n.of(context).whatToCallThisChat,
                       textInputType: TextInputType.multiline,
                       controller: _titleController,
                       onInputChanged: _handleTitleChange,
@@ -586,23 +588,23 @@ class _CreateRoomFormWidgetConsumerState
             ],
           ),
           const SizedBox(height: 15),
-          const Padding(
-            padding: EdgeInsets.only(bottom: 5),
-            child: Text('About'),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 5),
+            child: Text(L10n.of(context).about),
           ),
           InputTextField(
             controller: _descriptionController,
-            hintText: 'Description',
+            hintText: L10n.of(context).description,
             textInputType: TextInputType.multiline,
             maxLines: 10,
           ),
           const SizedBox(height: 15),
-          const SelectSpaceFormField(
+          SelectSpaceFormField(
             canCheck: 'CanLinkSpaces',
             mandatory: true,
-            title: 'Parent space',
-            emptyText: 'optional parent space',
-            selectTitle: 'Select parent space',
+            title: L10n.of(context).parentSpace(''),
+            emptyText: L10n.of(context).parentSpace('optional'),
+            selectTitle: L10n.of(context).parentSpace('selectText'),
           ),
           const SizedBox(height: 15),
           Row(
@@ -610,7 +612,7 @@ class _CreateRoomFormWidgetConsumerState
             children: <Widget>[
               OutlinedButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Cancel'),
+                child: Text(L10n.of(context).cancel),
               ),
               const SizedBox(width: 10),
               ElevatedButton(
@@ -620,7 +622,7 @@ class _CreateRoomFormWidgetConsumerState
                     : () async {
                         if (isSpaceRoom && currentParentSpace == null) {
                           EasyLoading.showError(
-                            'Parent Space must be selected',
+                            L10n.of(context).parentSpaceMustBeSelected,
                             duration: const Duration(seconds: 2),
                           );
                           return;
@@ -638,7 +640,7 @@ class _CreateRoomFormWidgetConsumerState
                           );
                         }
                       },
-                child: const Text('Create'),
+                child: Text(L10n.of(context).create),
               ),
             ],
           ),
@@ -653,7 +655,7 @@ class _CreateRoomFormWidgetConsumerState
 
   void _handleAvatarUpload() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
-      dialogTitle: 'Upload Avatar',
+      dialogTitle: L10n.of(context).uploadAvatar,
       type: FileType.image,
     );
     if (result != null) {
@@ -712,7 +714,7 @@ class _UserWidget extends ConsumerWidget {
             size: 18,
           );
         },
-        error: (e, st) => Text('Error loading avatar $e'),
+        error: (e, st) => Text('${L10n.of(context).errorLoading('avatar')} $e'),
         loading: () => Skeletonizer(
           child: ActerAvatar(
             mode: DisplayMode.DM,

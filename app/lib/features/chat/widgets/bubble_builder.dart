@@ -18,6 +18,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:swipe_to/swipe_to.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 final _log = Logger('a3::chat::bubble_builder');
 
@@ -362,7 +363,7 @@ class __EmojiContainerState extends ConsumerState<_EmojiContainer>
                   if (sentByMe) {
                     customMsgSnackbar(
                       context,
-                      'Revoking emoji reactions not yet supported',
+                      L10n.of(context).revokingEmojiReactionsNotYetSupported,
                     );
                   } else {
                     widget.onToggle(widget.message.id, key);
@@ -444,7 +445,7 @@ class __EmojiContainerState extends ConsumerState<_EmojiContainer>
           0,
           Tab(
             child: Chip(
-              label: Text('All $total'),
+              label: Text('${L10n.of(context).all} $total'),
             ),
           ),
         );
@@ -551,7 +552,7 @@ class _OriginalMessageBuilder extends ConsumerWidget {
             ),
           ),
           Text(
-            'sent an image.',
+            L10n.of(context).sentAnImage,
             style: Theme.of(context).textTheme.labelLarge,
           ),
         ],

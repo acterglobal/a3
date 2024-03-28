@@ -2,6 +2,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 const colors = [
   Color(0xffff6767),
@@ -220,7 +221,7 @@ class TypingWidget extends StatelessWidget {
     if (mode == TypingIndicatorMode.name) {
       return SizedBox(
         child: Text(
-          _getUserPlural(widget.options.typingUsers),
+          _getUserPlural(widget.options.typingUsers, context),
           style: const TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w500,
@@ -242,7 +243,7 @@ class TypingWidget extends StatelessWidget {
           ),
           const SizedBox(width: 10),
           Text(
-            _getUserPlural(widget.options.typingUsers),
+            _getUserPlural(widget.options.typingUsers, context),
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w500,
@@ -266,15 +267,21 @@ class TypingWidget extends StatelessWidget {
   }
 
   /// Handler for multi user typing text.
-  String _getUserPlural(List<types.User> authors) {
+  String _getUserPlural(List<types.User> authors, BuildContext context) {
     if (authors.isEmpty) {
       return '';
     } else if (authors.length == 1) {
-      return '${authors[0].firstName} is typing...';
+      return L10n.of(context).typeIndicator1('${authors[0].firstName}');
     } else if (authors.length == 2) {
-      return '${authors[0].firstName} and ${authors[1].firstName} is typing...';
+      return L10n.of(context).typeIndicator2(
+        '${authors[0].firstName}',
+        '${authors[1].firstName}',
+      );
     } else {
-      return '${authors[0].firstName} and ${authors.length - 1} others are typing...';
+      return L10n.of(context).typeIndicator3(
+        authors.length - 1,
+        '${authors[0].firstName}',
+      );
     }
   }
 }

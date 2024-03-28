@@ -1,6 +1,7 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 // Attachments Selection Media Type Widget (Mobile)
 class AttachmentOptions extends StatelessWidget {
@@ -30,33 +31,33 @@ class AttachmentOptions extends StatelessWidget {
               if (onTapCamera != null) onTapCamera!();
             },
             leading: Icon(Atlas.camera, color: iconColor),
-            title: const Text('Camera'),
+            title: Text(L10n.of(context).camera),
           ),
         ListTile(
           onTap: () {
             if (onTapImage != null) onTapImage!();
           },
           leading: Icon(Atlas.file_image, color: iconColor),
-          title: const Text('Image'),
+          title: Text(L10n.of(context).image),
         ),
         ListTile(
           onTap: () {
             if (onTapVideo != null) onTapVideo!();
           },
           leading: Icon(Atlas.file_video, color: iconColor),
-          title: const Text('Video'),
+          title: Text(L10n.of(context).video),
         ),
         ListTile(
           onTap: () {
             if (onTapFile != null) onTapFile!();
           },
           leading: Icon(Atlas.file, color: iconColor),
-          title: const Text('File'),
+          title: Text(L10n.of(context).file),
         ),
         ListTile(
           onTap: () => Navigator.of(context).pop(),
           contentPadding: const EdgeInsets.all(0),
-          title: const Text('Cancel', textAlign: TextAlign.center),
+          title: Text(L10n.of(context).cancel, textAlign: TextAlign.center),
         ),
       ],
     );

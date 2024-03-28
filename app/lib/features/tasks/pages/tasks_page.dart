@@ -24,7 +24,7 @@ class TasksPage extends ConsumerWidget {
       body: CustomScrollView(
         slivers: <Widget>[
           PageHeaderWidget(
-            title: L10n.of(context).tasks,
+            title: L10n.of(context).tasks(''),
             sectionDecoration: const BoxDecoration(
               gradient: primaryGradient,
             ),

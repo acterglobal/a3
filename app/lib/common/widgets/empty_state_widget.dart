@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class EmptyState extends StatelessWidget {
   final String title;
@@ -26,7 +27,7 @@ class EmptyState extends StatelessWidget {
         children: [
           SvgPicture.asset(
             image,
-            semanticsLabel: 'state',
+            semanticsLabel: L10n.of(context).state,
             height: 150,
             width: 150,
           ),

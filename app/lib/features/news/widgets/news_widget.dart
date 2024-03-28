@@ -7,6 +7,7 @@ import 'package:acter/features/news/widgets/news_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class NewsWidget extends ConsumerStatefulWidget {
   const NewsWidget({super.key});
@@ -39,13 +40,12 @@ class _NewsWidgetState extends ConsumerState<NewsWidget> {
         if (data.isEmpty) {
           return Center(
             child: EmptyState(
-              title: 'You have no updates',
-              subtitle:
-                  'Create actionable posts and engage everyone within your space.',
+              title: L10n.of(context).youHaveNoUpdates,
+              subtitle: L10n.of(context).createPostsAndEngageWithinSpace,
               image: 'assets/images/empty_updates.svg',
               primaryButton: ElevatedButton(
                 onPressed: () => context.pushNamed(Routes.actionAddUpdate.name),
-                child: const Text('Create New update'),
+                child: Text(L10n.of(context).createUpdate('new')),
               ),
             ),
           );
@@ -75,7 +75,7 @@ class _NewsWidgetState extends ConsumerState<NewsWidget> {
         );
       },
       error: (error, stackTrace) {
-        return const Center(child: Text("Couldn't fetch news"));
+        return Center(child: Text(L10n.of(context).couldNotFetchNews));
       },
       loading: () => const Center(
         child: SizedBox(

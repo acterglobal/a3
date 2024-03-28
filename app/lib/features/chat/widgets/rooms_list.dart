@@ -69,10 +69,10 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
           ref.watch(roomListFilterProvider.select((value) => value.selection));
       switch (selection) {
         case FilterSelection.dmsOnly:
-          title = 'DMs';
+          title = L10n.of(context).dms;
           break;
         case FilterSelection.favorites:
-          title = 'Bookmarked';
+          title = L10n.of(context).bookmarked;
         default:
           break;
       }
@@ -90,7 +90,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
     final searchTerm =
         ref.watch(roomListFilterProvider.select((value) => value.searchTerm));
     if (searchTerm != null && searchTerm.isNotEmpty) {
-      searchFilterText = "Search result for '$searchTerm'..";
+      searchFilterText = L10n.of(context).searchResultFor(searchTerm);
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Text(searchFilterText),
@@ -126,7 +126,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
             padding: EdgeInsets.all(8.0),
             child: Icon(Atlas.magnifying_glass),
           ),
-          hintText: 'Search chats',
+          hintText: L10n.of(context).searchChats,
           trailing: hasSearchTerm
               ? [
                   InkWell(
@@ -157,7 +157,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
                     _isSearchVisible = false;
                   });
                 },
-                child: const Text('clear'),
+                child: Text(L10n.of(context).clear.toLowerCase()),
               ),
             if (!hasFilters)
               TextButton(
@@ -166,7 +166,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
                     _isSearchVisible = false;
                   });
                 },
-                child: const Text('close'),
+                child: Text(L10n.of(context).close.toLowerCase()),
               ),
           ],
         ),
@@ -190,7 +190,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
         children: [
           FilterChip(
             selected: selected == FilterSelection.all,
-            label: const Text('All'),
+            label: Text(L10n.of(context).all),
             onSelected: (value) async {
               await ref
                   .read(roomListFilterProvider.notifier)
@@ -200,7 +200,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
           const SizedBox(width: 10),
           FilterChip(
             selected: selected == FilterSelection.favorites,
-            label: const Text('Bookmarked'),
+            label: Text(L10n.of(context).bookmarked),
             onSelected: (value) async {
               await ref
                   .read(roomListFilterProvider.notifier)
@@ -210,7 +210,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
           const SizedBox(width: 10),
           FilterChip(
             selected: selected == FilterSelection.dmsOnly,
-            label: const Text('DMs'),
+            label: Text(L10n.of(context).dms),
             onSelected: (value) async {
               await ref
                   .read(roomListFilterProvider.notifier)

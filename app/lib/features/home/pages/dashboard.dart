@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class Dashboard extends ConsumerWidget {
   const Dashboard({super.key});
@@ -65,17 +66,16 @@ class Dashboard extends ConsumerWidget {
       return Center(
         heightFactor: 1.5,
         child: EmptyState(
-          title: 'You are not a member of any space yet',
-          subtitle:
-              'Create or join space, to start organizing and collaborating!',
+          title: L10n.of(context).youAreNotAMemberOfAnySpaceYet,
+          subtitle: L10n.of(context).createOrJoinSpace(''),
           image: 'assets/images/empty_home.svg',
           primaryButton: ElevatedButton(
             onPressed: () => context.pushNamed(Routes.createSpace.name),
-            child: const Text('Create New Space'),
+            child: Text(L10n.of(context).createSpace('new')),
           ),
           secondaryButton: OutlinedButton(
             onPressed: () => context.pushNamed(Routes.joinSpace.name),
-            child: const Text('Join Existing Space'),
+            child: Text(L10n.of(context).space('joinExisting')),
           ),
         ),
       );
@@ -116,8 +116,8 @@ class Dashboard extends ConsumerWidget {
                   ),
                 ],
                 title: isDesktop
-                    ? const Text('My Dashboard')
-                    : const Text('Overview'),
+                    ? Text(L10n.of(context).myDashboard)
+                    : Text(L10n.of(context).overview),
               ),
               ...children,
             ],

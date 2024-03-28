@@ -11,6 +11,7 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class TextMessageBuilder extends ConsumerStatefulWidget {
   final Convo convo;
@@ -174,7 +175,7 @@ class _TextWidget extends ConsumerWidget {
         Visibility(
           visible: wasEdited,
           child: Text(
-            'Edited',
+            L10n.of(context).edited,
             style: const ActerChatTheme()
                 .emptyChatPlaceholderTextStyle
                 .copyWith(fontSize: 12),

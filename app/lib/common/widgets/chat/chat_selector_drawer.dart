@@ -4,6 +4,7 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 const Key selectChatDrawerKey = Key('chat-widgets-select-chat-drawer');
 
@@ -33,20 +34,20 @@ Future<String?> selectChatDrawer({
               Row(
                 children: [
                   Expanded(
-                    child: title ?? const Text('Select Chat'),
+                    child: title ?? Text(L10n.of(context).select('chat')),
                   ),
                   OutlinedButton.icon(
                     icon: const Icon(Atlas.minus_circle_thin),
                     onPressed: () {
                       Navigator.pop(context, '');
                     },
-                    label: const Text('Clear'),
+                    label: Text(L10n.of(context).clear),
                   ),
                 ],
               ),
               Flexible(
                 child: chats.isEmpty
-                    ? const Text('no chats found')
+                    ? Text(L10n.of(context).noChatsFound)
                     : ListView.builder(
                         padding: const EdgeInsets.all(8),
                         itemCount: chats.length,
