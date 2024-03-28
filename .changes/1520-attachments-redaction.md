@@ -1,1 +1,0 @@
-- You can now delete attachments from pin with the help of minus icon (showing, if having necessary permissions) on attachment item.
