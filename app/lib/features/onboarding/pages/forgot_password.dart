@@ -29,15 +29,15 @@ class ForgotPassword extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: 20),
+            const Spacer(),
             _buildTitleText(context),
             const Spacer(),
-            _buildImage(),
+            _buildImage(context),
             const Spacer(),
             _buildDescriptionText(context),
             const Spacer(),
             _buildButton(context),
-            const SizedBox(height: 50),
+            const Spacer(),
           ],
         ),
       ),
@@ -64,11 +64,13 @@ class ForgotPassword extends StatelessWidget {
     );
   }
 
-  Widget _buildImage() {
+  Widget _buildImage(BuildContext context) {
+    var screenHeight = MediaQuery.of(context).size.height;
+    var imageSize = screenHeight / 3;
     return SvgPicture.asset(
       'assets/icon/forgot_password.svg',
-      height: 300,
-      width: 300,
+      height: imageSize,
+      width: imageSize,
     );
   }
 
@@ -78,8 +80,7 @@ class ForgotPassword extends StatelessWidget {
 
   Widget _buildButton(BuildContext context) {
     return ElevatedButton(
-      onPressed: () async =>
-          await openLink('https://next.acter.global/contact-us', context),
+      onPressed: () async => await mailTo(toAddress: 'support@acter.global'),
       child: Text(
         L10n.of(context).contactActerSupport,
         style: Theme.of(context).textTheme.bodyMedium,
