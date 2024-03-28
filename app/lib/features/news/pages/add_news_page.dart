@@ -154,7 +154,9 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
               Navigator.of(context, rootNavigator: true).pop();
               if (ref.read(newsStateProvider).newsPostSpaceId == null) {
                 customMsgSnackbar(
-                    context, L10n.of(context).pleaseFirstSelectASpace);
+                  context,
+                  L10n.of(context).pleaseFirstSelectASpace,
+                );
                 return;
               }
               await ref
