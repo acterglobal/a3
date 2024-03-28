@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
@@ -70,7 +70,7 @@ class ImageDialog extends ConsumerWidget {
                   Object url,
                   StackTrace? error,
                 ) {
-                  return Text('Could not load image due to $error');
+                  return Text('${L10n.of(context).couldNotLoadImage} $error');
                 },
                 fit: BoxFit.fitWidth,
               ),

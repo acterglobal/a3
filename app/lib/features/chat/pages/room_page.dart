@@ -41,8 +41,9 @@ class RoomPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(chatProvider(roomId)).when(
           data: (convo) => ChatRoom(convo: convo),
-          error: (e, s) => Center(child: Text('Loading room failed: $e')),
-          loading: () => const Center(child: Text('loading...')),
+          error: (e, s) => Center(
+              child: Text('${L10n.of(context).loadingFailed('room')}: $e')),
+          loading: () => Center(child: Text(L10n.of(context).loading(''))),
         );
   }
 }
@@ -151,9 +152,11 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                       ),
                       skipLoadingOnReload: true,
                       error: (error, stackTrace) => Text(
-                        'Error loading profile $error',
+                        '${L10n.of(context).errorLoading('profile')} $error',
                       ),
-                      loading: () => const Skeletonizer(child: Text('loading')),
+                      loading: () => Skeletonizer(
+                        child: Text(L10n.of(context).loading('')),
+                      ),
                     ),
                     const SizedBox(height: 5),
                     activeMembers.when(
@@ -166,7 +169,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                       },
                       skipLoadingOnReload: false,
                       error: (error, stackTrace) =>
-                          Text('Error loading members count $error'),
+                          Text('${L10n.of(context).errorLoading('membersCount')} $error'),
                       loading: () => Skeletonizer(
                         child: Text(
                           '100 ${L10n.of(context).members}',

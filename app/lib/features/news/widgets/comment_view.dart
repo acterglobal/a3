@@ -3,6 +3,7 @@ import 'package:acter/models/CommentModel.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class CommentView extends StatefulWidget {
   final CommentModel commentModel;
@@ -80,11 +81,11 @@ class CommentViewState extends State<CommentView> {
                                   fontSize: 14,
                                 ),
                               ),
-                              const Padding(
-                                padding: EdgeInsets.only(left: 8),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 8),
                                 child: Text(
-                                  'Reply',
-                                  style: TextStyle(
+                                  L10n.of(context).reply,
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 14,
                                   ),
@@ -126,7 +127,9 @@ class CommentViewState extends State<CommentView> {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(52, 12, 0, 8),
               child: Text(
-                replyView ? 'Hide replies' : 'View replies',
+                replyView
+                    ? L10n.of(context).replies('hide')
+                    : L10n.of(context).replies('view'),
                 style: const TextStyle(color: Colors.white),
               ),
             ),
