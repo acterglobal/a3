@@ -42,7 +42,8 @@ class RoomPage extends ConsumerWidget {
     return ref.watch(chatProvider(roomId)).when(
           data: (convo) => ChatRoom(convo: convo),
           error: (e, s) => Center(
-              child: Text('${L10n.of(context).loadingFailed('room')}: $e')),
+            child: Text('${L10n.of(context).loadingFailed('room')}: $e'),
+          ),
           loading: () => Center(child: Text(L10n.of(context).loading(''))),
         );
   }
@@ -168,8 +169,9 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                         );
                       },
                       skipLoadingOnReload: false,
-                      error: (error, stackTrace) =>
-                          Text('${L10n.of(context).errorLoading('membersCount')} $error'),
+                      error: (error, stackTrace) => Text(
+                        '${L10n.of(context).errorLoading('membersCount')} $error',
+                      ),
                       loading: () => Skeletonizer(
                         child: Text(
                           '100 ${L10n.of(context).members}',
