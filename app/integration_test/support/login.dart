@@ -47,6 +47,11 @@ extension ActerLogin on ConvenientTest {
     String passwordText =
         passwordFor(username, registrationToken: registrationToken);
 
+    Finder explore = find.byKey(Keys.exploreBtn);
+    await explore.should(findsOneWidget);
+
+    await explore.tap();
+
     Finder skip = find.byKey(Keys.skipBtn);
     await skip.should(findsOneWidget);
 
@@ -107,6 +112,11 @@ extension ActerLogin on ConvenientTest {
   Future<void> tryLogin(String username, {String? registrationToken}) async {
     String passwordText =
         passwordFor(username, registrationToken: registrationToken);
+
+    Finder explore = find.byKey(Keys.exploreBtn);
+    await explore.should(findsOneWidget);
+
+    await explore.tap();
 
     Finder skip = find.byKey(Keys.skipBtn);
     await skip.should(findsOneWidget);
