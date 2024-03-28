@@ -5,7 +5,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/member_list_entry.dart';
+import 'package:acter/features/member/widgets/member_list_entry.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';

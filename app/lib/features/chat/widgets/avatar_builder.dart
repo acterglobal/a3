@@ -1,4 +1,4 @@
-import 'package:acter/common/dialogs/member_info_drawer.dart';
+import 'package:acter/features/member/dialogs/show_member_info_drawer.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';

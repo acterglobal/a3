@@ -2,32 +2,32 @@ import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
-Future<void> showBlockUserDialog(BuildContext context, Member member) async {
+Future<void> showUnblockUserDialog(BuildContext context, Member member) async {
   final userId = member.userId().toString();
   await showDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('Block $userId'),
+        title: Text(L10n.of(context).unblockTitle(userId)),
         content: RichText(
           textAlign: TextAlign.left,
           text: TextSpan(
-            text: 'You are about to block $userId. ',
+            text: L10n.of(context).youAreAboutToUnblock(userId),
             style: const TextStyle(color: Colors.white, fontSize: 24),
-            children: const <TextSpan>[
+            children:  <TextSpan>[
               TextSpan(
-                text:
-                    "Once blocked you won't see their messages anymore and it will block their attempt to contact you directly. ",
+                text: L10n.of(context).thisWillAllowThemToContactYouAgain,
               ),
-              TextSpan(text: 'Continue?'),
+              TextSpan(text: L10n.of(context).continueQuestion),
             ],
           ),
         ),
         actions: <Widget>[
           TextButton(
-            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-            child: const Text('No'),
+            onPressed: () => context.pop(),
+            child: Text(L10n.of(context).no),
           ),
           TextButton(
             onPressed: () async {
@@ -36,14 +36,14 @@ Future<void> showBlockUserDialog(BuildContext context, Member member) async {
                 context: context,
                 builder: (context) => DefaultDialog(
                   title: Text(
-                    'Blocking User',
+                    L10n.of(context).unblockingUserProgress,
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
                   isLoader: true,
                 ),
               );
               try {
-                await member.ignore();
+                await member.unignore();
                 if (!context.mounted) {
                   return;
                 }
@@ -53,7 +53,7 @@ Future<void> showBlockUserDialog(BuildContext context, Member member) async {
                   context: context,
                   builder: (context) => DefaultDialog(
                     title: Text(
-                      'User blocked. It might takes a bit before the UI reflects this update.',
+                      L10n.of(context).unblockingUserSuccess,
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                     actions: <Widget>[
@@ -63,12 +63,12 @@ Future<void> showBlockUserDialog(BuildContext context, Member member) async {
                           context.pop();
                           context.pop();
                         },
-                        child: const Text('Okay'),
+                        child: Text(L10n.of(context).okay),
                       ),
                     ],
                   ),
                 );
-              } catch (err) {
+              } catch (error) {
                 if (!context.mounted) {
                   return;
                 }
@@ -76,7 +76,7 @@ Future<void> showBlockUserDialog(BuildContext context, Member member) async {
                   context: context,
                   builder: (context) => DefaultDialog(
                     title: Text(
-                      'Block user failed: \n $err"',
+                      L10n.of(context).unblockingUserFailed(error),
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                     actions: <Widget>[
@@ -86,14 +86,14 @@ Future<void> showBlockUserDialog(BuildContext context, Member member) async {
                           context.pop();
                           context.pop();
                         },
-                        child: const Text('Okay'),
+                        child: Text(L10n.of(context).okay),
                       ),
                     ],
                   ),
                 );
               }
             },
-            child: const Text('Yes'),
+            child: Text(L10n.of(context).yes),
           ),
         ],
       );
