@@ -4,6 +4,7 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class UserAvatarWidget extends ConsumerWidget {
   final double size;
@@ -28,7 +29,7 @@ class UserAvatarWidget extends ConsumerWidget {
           avatar: data.profile.getAvatarImage(),
         ),
       ),
-      error: (error, stackTrace) => const Text("Couldn't load avatar"),
+      error: (error, stackTrace) => Text(L10n.of(context).couldNotLoadAvatar),
       loading: () => Skeletonizer(
         child: ActerAvatar(
           mode: DisplayMode.DM,

@@ -86,7 +86,7 @@ class SidebarWidget extends ConsumerWidget {
                   children: [
                     const Icon(Atlas.bug_file_thin, color: Colors.white),
                     Text(
-                      'Report',
+                      L10n.of(context).report(''),
                       style: Theme.of(context).textTheme.labelSmall,
                       softWrap: false,
                     ),

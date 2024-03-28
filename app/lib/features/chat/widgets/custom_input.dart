@@ -220,8 +220,9 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                         showAdaptiveDialog(
                           context: context,
                           builder: (context) => DefaultDialog(
-                            title: const Text(
-                              'Are you sure you want to delete this message? This action cannot be undone.',
+                            title: Text(
+                              L10n.of(context)
+                                  .areYouSureYouWantToDeleteThisMessage,
                             ),
                             actions: <Widget>[
                               OutlinedButton(
@@ -229,7 +230,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                                   context,
                                   rootNavigator: true,
                                 ).pop(),
-                                child: const Text('No'),
+                                child: Text(L10n.of(context).no),
                               ),
                               ElevatedButton(
                                 onPressed: () async {
@@ -265,7 +266,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                                     _log.info(currentMessageId);
                                   }
                                 },
-                                child: const Text('Yes'),
+                                child: Text(L10n.of(context).yes),
                               ),
                             ],
                           ),
@@ -280,9 +281,8 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                         showAdaptiveDialog(
                           context: context,
                           builder: (context) => ReportContentWidget(
-                            title: 'Report this message',
-                            description:
-                                'Report this message to your homeserver administrator. Please note that adminstrator wouldn\'t be able to read or view any files, if room is encrypted',
+                            title: L10n.of(context).reportMessage('this'),
+                            description: L10n.of(context).reportMessageContent,
                             senderId: message.author.id,
                             roomId: roomId,
                             eventId: currentMessageId!,
@@ -291,7 +291,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                       }
                     },
                     child: Text(
-                      isAuthor() ? 'Delete' : 'Report',
+                      isAuthor() ? L10n.of(context).delete : L10n.of(context).report(''),
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.error,
                       ),
@@ -300,14 +300,14 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                   if (showEditButton)
                     InkWell(
                       onTap: () => onPressEditMessage(roomId, currentMessageId),
-                      child: const Text('Edit'),
+                      child: Text(L10n.of(context).edit),
                     ),
                   InkWell(
                     onTap: () => customMsgSnackbar(
                       context,
-                      'More options not implemented yet',
+                      L10n.of(context).moreOptionsNotImplementedYet,
                     ),
-                    child: const Text('More'),
+                    child: Text(L10n.of(context).more),
                   ),
                 ],
               ),
@@ -679,7 +679,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
         ),
         const SizedBox(width: 5),
         Text(
-          'Reply to ${toBeginningOfSentenceCase(authorId)}',
+          L10n.of(context).replyTo('${toBeginningOfSentenceCase(authorId)}'),
           style: const TextStyle(
             color: Colors.grey,
             fontSize: 12,
@@ -712,9 +712,9 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     return Row(
       children: [
         const SizedBox(width: 5),
-        const Text(
-          'Edit Message:',
-          style: TextStyle(
+        Text(
+          '${L10n.of(context).editMessage}:',
+          style: const TextStyle(
             color: Colors.grey,
             fontSize: 12,
           ),
@@ -759,7 +759,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
       mentionState.controller!.clear();
     } catch (e) {
       if (context.mounted) {
-        customMsgSnackbar(context, 'Error sending message: $e');
+        customMsgSnackbar(context, '${L10n.of(context).errorSendingMessage}: $e');
       }
       inputNotifier.sendingFailed();
     }
@@ -812,7 +812,7 @@ class _FileWidget extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text('Attachments (${selectedFiles.length})'),
+          Text('${L10n.of(context).attachments} (${selectedFiles.length})'),
           const SizedBox(height: 10),
           Wrap(
             spacing: 5.0,
@@ -837,14 +837,14 @@ class _FileWidget extends ConsumerWidget {
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: const Text('Cancel'),
+            child: Text(L10n.of(context).cancel),
           ),
           ElevatedButton(
             onPressed: () async {
               Navigator.of(context).pop();
               handleFileUpload(selectedFiles, type);
             },
-            child: const Text('Send'),
+            child: Text(L10n.of(context).send('')),
           ),
         ],
       ),
@@ -1007,7 +1007,7 @@ class _TextInputWidget extends ConsumerWidget {
               ),
             ),
             hintText: isEncrypted
-                ? 'New Encrypted Message '
+                ? L10n.of(context).newEncryptedMessage
                 : L10n.of(context).newMessage,
             hintStyle: Theme.of(context).textTheme.labelLarge!.copyWith(
                   color: Theme.of(context).colorScheme.onSurface,

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:html/dom.dart' as html;
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class UserMentionMessageData {
   String parsedMessage;
@@ -142,8 +143,8 @@ void askToJoinRoom(
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
-            'You are not part of this group. Would you like to join?',
+          Text(
+            L10n.of(context).youAreNotPartOfThisGroup,
           ),
           const SizedBox(height: 20),
           ElevatedButton(
@@ -153,13 +154,13 @@ void askToJoinRoom(
               await joinRoom(
                 context,
                 ref,
-                'Trying to join $roomId',
+                L10n.of(context).tryingToJoin(roomId),
                 roomId,
                 server,
                 (roomId) => navigateToRoomOrAskToJoin(context, ref, roomId),
               );
             },
-            child: const Text('Join Room'),
+            child: Text(L10n.of(context).joinRoom),
           ),
         ],
       ),

@@ -1,26 +1,27 @@
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class MembersListSkeleton extends StatelessWidget {
   const MembersListSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Skeletonizer(child: _buildSkeletonUI());
+    return Skeletonizer(child: _buildSkeletonUI(context));
   }
 
-  Widget _buildSkeletonUI() {
+  Widget _buildSkeletonUI(BuildContext context) {
     return Column(
       children: [
-        _buildMemberItemSkeletonUI(),
-        _buildMemberItemSkeletonUI(),
-        _buildMemberItemSkeletonUI(),
+        _buildMemberItemSkeletonUI(context),
+        _buildMemberItemSkeletonUI(context),
+        _buildMemberItemSkeletonUI(context),
       ],
     );
   }
 
-  Widget _buildMemberItemSkeletonUI() {
+  Widget _buildMemberItemSkeletonUI(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Row(
@@ -31,12 +32,12 @@ class MembersListSkeleton extends StatelessWidget {
             color: Colors.white,
           ),
           const SizedBox(width: 10),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Member title data'),
-                Text('Member Descriptions data'),
+                Text(L10n.of(context).memberTitleData),
+                Text(L10n.of(context).memberDescriptionsData),
               ],
             ),
           ),

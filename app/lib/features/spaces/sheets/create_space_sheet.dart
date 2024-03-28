@@ -115,7 +115,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                 SelectSpaceFormField(
                   canCheck: 'CanLinkSpaces',
                   mandatory: false,
-                  title: L10n.of(context).parentSpace,
+                  title: L10n.of(context).parentSpace(''),
                   selectTitle: L10n.of(context).selectParentSpace,
                 ),
               ],
