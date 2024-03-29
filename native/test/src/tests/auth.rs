@@ -93,12 +93,13 @@ async fn kyra_can_restore() -> Result<()> {
     let homeserver_url = option_env!("DEFAULT_HOMESERVER_URL")
         .unwrap_or("http://localhost:8118")
         .to_string();
-    let tmp_dir = TempDir::new()?;
-    let base_path = tmp_dir.path().to_string_lossy().to_string();
+    let base_data = TempDir::new()?;
+    let base_path = base_data.path().to_string_lossy().to_string();
+    let media_data = TempDir::new()?;
     let (config, user_id) = make_client_config(
         base_path,
         "@kyra",
-        None,
+        media_data.path().to_string_lossy().to_string(),
         None,
         &homeserver_name,
         &homeserver_url,
@@ -111,7 +112,6 @@ async fn kyra_can_restore() -> Result<()> {
             config.clone(),
             user_id,
             default_user_password("kyra"),
-            None,
             None,
             Some("KYRA_DEV".to_string()),
         )
@@ -142,11 +142,12 @@ async fn kyra_can_restore_with_db_passphrase() -> Result<()> {
         .to_string();
     let tmp_dir = TempDir::new()?;
     let base_path = tmp_dir.path().to_string_lossy().to_string();
+    let media_data_dir = TempDir::new()?;
     let db_passphrase = Uuid::new_v4().to_string();
     let (config, user_id) = make_client_config(
         base_path,
         "@kyra",
-        None,
+        media_data_dir.path().to_string_lossy().to_string(),
         Some(db_passphrase.clone()),
         &homeserver_name,
         &homeserver_url,
@@ -159,7 +160,6 @@ async fn kyra_can_restore_with_db_passphrase() -> Result<()> {
             config.clone(),
             user_id,
             default_user_password("kyra"),
-            None,
             Some(db_passphrase),
             Some("KYRA_DEV".to_string()),
         )
