@@ -151,7 +151,7 @@ impl ActerModel for CalendarEventUpdate {
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
-        None
+        Some(vec![self.inner.calendar_event.event_id.to_string()])
     }
 }
 
