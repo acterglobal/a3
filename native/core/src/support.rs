@@ -13,8 +13,29 @@ pub struct RestoreToken {
     pub session: CustomAuthSession,
     /// a passphrase for the underlying database
     pub db_passphrase: Option<String>,
+
+    // legacy that isn't used anymore
+    #[serde(default, skip_serializing)]
+    #[allow(dead_code)]
     /// a separate local cache path
-    pub media_cache_base_path: Option<String>,
+    media_cache_base_path: Option<String>,
+}
+
+impl RestoreToken {
+    pub fn serialized(
+        session: CustomAuthSession,
+        homeurl: Url,
+        is_guest: bool,
+        db_passphrase: Option<String>,
+    ) -> serde_json::Result<String> {
+        serde_json::to_string(&RestoreToken {
+            session,
+            homeurl,
+            is_guest,
+            db_passphrase,
+            media_cache_base_path: None,
+        })
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug)]

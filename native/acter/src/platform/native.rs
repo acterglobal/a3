@@ -56,13 +56,11 @@ fn make_data_path(
 pub async fn new_client_config(
     db_base_path: String,
     home_dir: String,
-    media_cache_base_path: Option<String>,
+    media_cache_base_path: String,
     db_passphrase: Option<String>,
     reset_if_existing: bool,
 ) -> Result<ClientBuilder> {
-    let media_cached_path = media_cache_base_path
-        .map(|p| make_data_path(&p, &home_dir, false))
-        .transpose()?;
+    let media_cached_path = make_data_path(&media_cache_base_path, &home_dir, false)?;
     RUNTIME
         .spawn(async move {
             let data_path = make_data_path(&db_base_path, &home_dir, reset_if_existing)?;
@@ -290,7 +288,7 @@ impl From<StoreCacheWrapperError> for MakeStoreConfigError {
 
 async fn make_store_config(
     path: &Path,
-    media_cache_path: Option<PathBuf>,
+    media_cache_path: PathBuf,
     passphrase: Option<&str>,
 ) -> Result<StoreConfig, MakeStoreConfigError> {
     let config = StoreConfig::new().crypto_store(SqliteCryptoStore::open(path, passphrase).await?);
@@ -299,13 +297,10 @@ async fn make_store_config(
     let Some(passphrase) = passphrase else {
         return Ok(config.state_store(sql_state_store));
     };
-    let Some(media_path) = media_cache_path else {
-        return Ok(config.state_store(sql_state_store));
-    };
 
     let wrapped_state_store = matrix_sdk_store_media_cache_wrapper::wrap_with_file_cache(
         sql_state_store,
-        media_path,
+        media_cache_path,
         passphrase,
     )
     .await?;
