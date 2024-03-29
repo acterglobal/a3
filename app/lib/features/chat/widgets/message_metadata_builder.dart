@@ -9,6 +9,7 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:quds_popup_menu/quds_popup_menu.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 final _log = Logger('a3::chat::message_metadata_builder');
 
@@ -45,7 +46,7 @@ class MessageMetadataBuilder extends ConsumerWidget {
                 GestureDetector(
                   onTap: () => _handleCancelRetrySend(),
                   child: Text(
-                    'Cancel Send',
+                    L10n.of(context).cancelSend,
                     style: Theme.of(context).textTheme.labelSmall!.copyWith(
                           color: Theme.of(context).colorScheme.neutral5,
                           decoration: TextDecoration.underline,
@@ -59,13 +60,13 @@ class MessageMetadataBuilder extends ConsumerWidget {
                   onTap: () => _handleRetry(),
                   child: RichText(
                     text: TextSpan(
-                      text: 'Failed to sent: ${sendState.error()}. ',
+                      text: '${L10n.of(context).failedTo('sent')}Failed to sent: ${sendState.error()}. ',
                       style: Theme.of(context).textTheme.labelSmall!.copyWith(
                             color: Theme.of(context).colorScheme.neutral5,
                           ),
                       children: <TextSpan>[
                         TextSpan(
-                          text: 'Retry',
+                          text: L10n.of(context).retry,
                           style: Theme.of(context)
                               .textTheme
                               .labelSmall!
@@ -245,7 +246,7 @@ class _UserReceiptsWidget extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  'Seen By',
+                  L10n.of(context).seenBy,
                   style: Theme.of(context).textTheme.labelLarge,
                 ),
               ),

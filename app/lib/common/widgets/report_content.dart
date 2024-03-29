@@ -97,7 +97,7 @@ class ReportContentWidget extends ConsumerWidget {
         ),
         ElevatedButton(
           onPressed: () => reportContent(context, ref, textController.text),
-          child: Text(L10n.of(context).report),
+          child: Text(L10n.of(context).report('')),
         ),
       ],
     );
