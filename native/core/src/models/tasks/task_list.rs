@@ -47,10 +47,6 @@ impl TaskList {
         format!("{}::{}", self.meta.event_id, KEYS::TASKS::TASKS)
     }
 
-    pub fn key_from_event(event_id: &EventId) -> String {
-        event_id.to_string()
-    }
-
     pub fn redacted(&self) -> bool {
         false
     }
@@ -147,9 +143,7 @@ impl ActerModel for TaskListUpdate {
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
-        Some(vec![TaskList::key_from_event(
-            &self.inner.task_list.event_id,
-        )])
+        Some(vec![self.inner.task_list.event_id.to_string()])
     }
 }
 

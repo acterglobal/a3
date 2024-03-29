@@ -55,10 +55,6 @@ impl CalendarEvent {
             .to_owned()
     }
 
-    pub fn key_from_event(event_id: &EventId) -> String {
-        event_id.to_string()
-    }
-
     pub fn utc_end(&self) -> UtcDateTime {
         self.inner.utc_end
     }
