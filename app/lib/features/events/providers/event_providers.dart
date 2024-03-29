@@ -13,8 +13,9 @@ class AsyncSpaceEventsNotifier
     extends AutoDisposeFamilyAsyncNotifier<List<ffi.CalendarEvent>, String> {
   late Stream<bool> _listener;
 
-  Future<List<ffi.CalendarEvent>> _getEvents(ffi.Space arg) async {
-    return (await arg.calendarEvents()).toList(); // this might throw internally
+  Future<List<ffi.CalendarEvent>> _getEvents(ffi.Space space) async {
+    final events = await space.calendarEvents(); // this might throw internally
+    return events.toList();
   }
 
   @override
@@ -65,8 +66,9 @@ class AsyncUpcomingEventsNotifier
 
   Future<List<ffi.CalendarEvent>> _getAllUpcoming() async {
     final client = ref.read(alwaysClientProvider);
-    return (await client.allUpcomingEvents(null)).toList();
-    // this might throw internally
+    final events =
+        await client.allUpcomingEvents(null); // this might throw internally
+    return events.toList();
   }
 
   @override
@@ -91,8 +93,9 @@ class AsyncMyUpcomingEventsNotifier
 
   Future<List<ffi.CalendarEvent>> _getMyUpcoming() async {
     final client = ref.read(alwaysClientProvider);
-    return (await client.myUpcomingEvents(null)).toList();
-    // this might throw internally
+    final events =
+        await client.myUpcomingEvents(null); // this might throw internally
+    return events.toList();
   }
 
   @override
@@ -117,8 +120,9 @@ class AsyncMyPastEventsNotifier
 
   Future<List<ffi.CalendarEvent>> _getMyPast() async {
     final client = ref.read(alwaysClientProvider);
-    return (await client.myPastEvents(null)).toList();
-    // this might throw internally
+    final events =
+        await client.myPastEvents(null); // this might throw internally
+    return events.toList();
   }
 
   @override

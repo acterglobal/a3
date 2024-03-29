@@ -479,9 +479,13 @@ class CreateEditEventPageConsumerState
       rsvpDraft.status('yes');
       await rsvpDraft.send();
       _log.info('Created Calendar Event: ${eventId.toString()}');
+
       EasyLoading.dismiss();
+
+      ref.invalidate(calendarEventProvider(eventId.toString())); // edit page
+      ref.invalidate(spaceEventsProvider(spaceId)); // events page in space
+
       if (context.mounted) {
-        ref.invalidate(calendarEventProvider);
         context.pop();
         context.pushNamed(
           Routes.calendarEvent.name,
@@ -491,7 +495,6 @@ class CreateEditEventPageConsumerState
     } catch (e) {
       EasyLoading.dismiss();
       EasyLoading.showError('Error Creating Calendar Event: $e');
-      return;
     }
   }
 
@@ -499,7 +502,7 @@ class CreateEditEventPageConsumerState
   Future<void> _handleUpdateEvent() async {
     if (!(_eventFromKey.currentState!.validate())) return;
 
-    EasyLoading.show(status: 'Updating Event', dismissOnTap: false);
+    EasyLoading.show(status: 'Updating Calendar Event', dismissOnTap: false);
     try {
       // We always have calendar object at this stage.
       final calendarEvent =
@@ -528,13 +531,15 @@ class CreateEditEventPageConsumerState
       _log.info('Calendar Event updated $eventId');
 
       EasyLoading.dismiss();
-      if (context.mounted) {
-        context.pop();
-      }
+
+      ref.invalidate(calendarEventProvider(eventId.toString())); // edit page
+      final spaceId = calendarEvent.roomIdStr();
+      ref.invalidate(spaceEventsProvider(spaceId)); // events page in space
+
+      if (context.mounted) context.pop();
     } catch (e) {
       EasyLoading.dismiss();
       EasyLoading.showError('Error updating event: $e');
-      return;
     }
   }
 }
