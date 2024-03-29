@@ -107,7 +107,8 @@ class _TaskListCardState extends ConsumerState<TaskListCard> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         child: Text(
-                          L10n.of(context).countTasksDone(overview.doneTasks.length, total),
+                          L10n.of(context)
+                              .countTasksDone(overview.doneTasks.length, total),
                         ),
                       ),
                     );
@@ -158,7 +159,8 @@ class _TaskListCardState extends ConsumerState<TaskListCard> {
                     ),
                   );
                 },
-                error: (error, stack) => Text('${L10n.of(context).errorLoading('tasks')}: $error'),
+                error: (error, stack) =>
+                    Text('${L10n.of(context).errorLoading('tasks')}: $error'),
                 loading: () => Text(L10n.of(context).loading('')),
               ),
             ],
@@ -214,12 +216,7 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
             ),
           ),
         ),
-        onFieldSubmitted: (value) {
-          if (_formKey.currentState!.validate()) {
-            _formKey.currentState!.save();
-            _handleSubmit(context);
-          }
-        },
+        onFieldSubmitted: _handleSubmit,
         validator: (value) {
           if (value == null || value.isEmpty) {
             return L10n.of(context).aTaskMustHaveATitle;
@@ -230,7 +227,9 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
     );
   }
 
-  Future<void> _handleSubmit(BuildContext context) async {
+  Future<void> _handleSubmit(String value) async {
+    if (!_formKey.currentState!.validate()) return;
+    _formKey.currentState!.save();
     final taskDraft = widget.taskList.taskBuilder();
     taskDraft.title(_textCtrl.text);
     try {
