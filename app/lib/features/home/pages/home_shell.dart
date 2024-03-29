@@ -19,6 +19,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:shake/shake.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 const homeShellKey = Key('home-shell');
 ScreenshotController screenshotController = ScreenshotController();
@@ -116,13 +117,16 @@ class HomeShellState extends ConsumerState<HomeShell> {
                     margin: const EdgeInsets.symmetric(vertical: 15),
                     child: RichText(
                       textAlign: TextAlign.center,
-                      text: const TextSpan(
-                        text: 'Access',
-                        style: TextStyle(color: Colors.white, fontSize: 32),
+                      text: TextSpan(
+                        text: L10n.of(context).access,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 32,
+                        ),
                         children: <TextSpan>[
                           TextSpan(
-                            text: ' Denied',
-                            style: TextStyle(
+                            text: ' ${L10n.of(context).denied}',
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.red,
                               fontSize: 32,
@@ -134,18 +138,18 @@ class HomeShellState extends ConsumerState<HomeShell> {
                   ),
                   Container(
                     margin: const EdgeInsets.symmetric(vertical: 15),
-                    child: const Text(
-                      'Your session has been terminated by the server, you need to log in again',
+                    child: Text(
+                      L10n.of(context).yourSessionHasBeenTerminatedByServer,
                     ),
                   ),
                   softLogout
                       ? OutlinedButton(
                           onPressed: onLoginAgain,
-                          child: const Text('Login again'),
+                          child: Text(L10n.of(context).loginAgain),
                         )
                       : OutlinedButton(
                           onPressed: onClearDB,
-                          child: const Text('Clear DB and re-login'),
+                          child: Text(L10n.of(context).clearDBAndReLogin),
                         ),
                 ],
               ),
@@ -203,8 +207,8 @@ class HomeShellState extends ConsumerState<HomeShell> {
                 Breakpoints.smallAndUp: SlotLayout.from(
                   key: const Key('LoadingIndicator'),
                   builder: (BuildContext ctx) {
-                    return const LinearProgressIndicator(
-                      semanticsLabel: 'Loading first sync',
+                    return LinearProgressIndicator(
+                      semanticsLabel: L10n.of(context).loading('firstSync'),
                     );
                   },
                 ),
