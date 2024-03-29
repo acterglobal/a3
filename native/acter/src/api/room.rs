@@ -19,7 +19,7 @@ use anyhow::{bail, Context, Result};
 use matrix_sdk::{
     deserialized_responses::SyncOrStrippedState,
     media::{MediaFormat, MediaRequest},
-    notification_settings::{IsEncrypted, IsOneToOne, RoomNotificationMode},
+    notification_settings::{IsEncrypted, IsOneToOne},
     room::{Room as SdkRoom, RoomMember},
     RoomMemberships, RoomState,
 };
@@ -41,18 +41,16 @@ use ruma_events::{
         MediaSource,
     },
     space::{child::HierarchySpaceChildEvent, parent::SpaceParentEventContent},
-    AnyMessageLikeEvent, AnyStateEvent, AnyTimelineEvent, MessageLikeEvent, MessageLikeEventType,
-    StateEvent, StateEventType, StaticEventContent,
+    MessageLikeEventType, StateEvent, StateEventType, StaticEventContent,
 };
 use std::{io::Write, ops::Deref, path::PathBuf};
-use tracing::{error, info, warn};
+use tracing::{info, warn};
 
 use crate::{
     OptionBuffer, OptionString, RoomMessage, RoomProfile, ThumbnailSize, UserProfile, RUNTIME,
 };
 
 use super::{
-    account::Account,
     api::FfiBuffer,
     push::{notification_mode_from_input, room_notification_mode_name},
 };
@@ -115,6 +113,7 @@ impl From<MessageLikeEventType> for PermissionTest {
 }
 
 pub struct Member {
+    pub(crate) room: Room,
     pub(crate) member: RoomMember,
     pub(crate) acter_app_settings: Option<ActerAppSettingsContent>,
 }
@@ -134,6 +133,10 @@ impl Member {
 
     pub fn user_id(&self) -> OwnedUserId {
         self.member.user_id().to_owned()
+    }
+
+    pub fn room_id_str(&self) -> String {
+        self.room.room_id().to_string()
     }
 
     pub fn can_string(&self, input: String) -> bool {
@@ -288,6 +291,42 @@ impl Member {
         RUNTIME
             .spawn(async move {
                 member.unignore().await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn kick(&self, msg: Option<String>) -> Result<bool> {
+        let member_id = self.member.user_id().to_owned();
+        let room = self.room.clone();
+
+        RUNTIME
+            .spawn(async move {
+                room.kick_user(&member_id, msg.as_deref()).await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn ban(&self, msg: Option<String>) -> Result<bool> {
+        let member_id = self.member.user_id().to_owned();
+        let room = self.room.clone();
+
+        RUNTIME
+            .spawn(async move {
+                room.ban_user(&member_id, msg.as_deref()).await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn unban(&self, msg: Option<String>) -> Result<bool> {
+        let member_id = self.member.user_id().to_owned();
+        let room = self.room.clone();
+
+        RUNTIME
+            .spawn(async move {
+                room.unban_user(&member_id, msg.as_deref()).await?;
                 Ok(true)
             })
             .await?
@@ -615,9 +654,9 @@ impl Room {
         if !self.is_joined() {
             bail!("Not a room we have joined");
         }
-        let room = self.room.clone();
+        let me = self.clone();
 
-        let client = room.client();
+        let client = me.room.client();
         let my_id = client
             .user_id()
             .context("You must be logged in to do that")?
@@ -631,12 +670,14 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let member = room
+                let member = me
+                    .room
                     .get_member(&my_id)
                     .await?
                     .context("Unable to find me in room")?;
                 Ok(Member {
                     member,
+                    room: me.clone(),
                     acter_app_settings,
                 })
             })
@@ -768,7 +809,7 @@ impl Room {
     }
 
     pub async fn active_members(&self) -> Result<Vec<Member>> {
-        let room = self.room.clone();
+        let room = self.clone();
 
         let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
@@ -785,6 +826,7 @@ impl Room {
                     .into_iter()
                     .map(|member| Member {
                         member,
+                        room: room.clone(),
                         acter_app_settings: acter_app_settings.clone(),
                     })
                     .collect();
@@ -817,7 +859,7 @@ impl Room {
     }
 
     pub async fn invited_members(&self) -> Result<Vec<Member>> {
-        let room = self.room.clone();
+        let room = self.clone();
         let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
             Some(self.app_settings_content().await?)
@@ -833,6 +875,7 @@ impl Room {
                     .into_iter()
                     .map(|member| Member {
                         member,
+                        room: room.clone(),
                         acter_app_settings: acter_app_settings.clone(),
                     })
                     .collect();
@@ -842,7 +885,7 @@ impl Room {
     }
 
     pub async fn active_members_no_sync(&self) -> Result<Vec<Member>> {
-        let room = self.room.clone();
+        let room = self.clone();
         let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
             Some(self.app_settings_content().await?)
@@ -858,6 +901,7 @@ impl Room {
                     .into_iter()
                     .map(|member| Member {
                         member,
+                        room: room.clone(),
                         acter_app_settings: acter_app_settings.clone(),
                     })
                     .collect();
@@ -868,6 +912,7 @@ impl Room {
 
     pub async fn get_member(&self, user_id: String) -> Result<Member> {
         let room = self.room.clone();
+        let api_room = self.clone();
         let uid = UserId::parse(user_id)?;
         let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
@@ -884,6 +929,7 @@ impl Room {
                     .context("Unable to find user in room")?;
                 Ok(Member {
                     member,
+                    room: api_room.clone(),
                     acter_app_settings: acter_app_settings.clone(),
                 })
             })
@@ -1167,6 +1213,7 @@ impl Room {
             bail!("Unable to get a room we are not invited");
         }
         let room = self.room.clone();
+        let api_room = self.clone();
         let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
             Some(self.app_settings_content().await?)
@@ -1185,6 +1232,7 @@ impl Room {
                     if let Some(member) = room.get_member(user_id).await? {
                         members.push(Member {
                             member,
+                            room: api_room.clone(),
                             acter_app_settings: acter_app_settings.clone(),
                         });
                     }

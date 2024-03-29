@@ -9,12 +9,14 @@ import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class PinItem extends ConsumerStatefulWidget {
   static const linkFieldKey = Key('edit-pin-link-field');
   static const descriptionFieldKey = Key('edit-pin-description-field');
   static const saveBtnKey = Key('pin-edit-save');
   final ActerPin pin;
+
   const PinItem(this.pin, {super.key});
 
   @override
@@ -107,7 +109,7 @@ class _PinItemState extends ConsumerState<PinItem> {
           if (value != null) {
             final uri = Uri.tryParse(value);
             if (uri == null || !uri.isAbsolute) {
-              return 'link is not valid';
+              return L10n.of(context).linkIsNotValid;
             }
           }
           return null;
@@ -227,6 +229,7 @@ class _ActionButtonsWidget extends ConsumerWidget {
     required this.onSave,
     required this.onCancel,
   });
+
   final ActerPin pin;
   final void Function()? onSave;
   final void Function()? onCancel;
@@ -241,13 +244,13 @@ class _ActionButtonsWidget extends ConsumerWidget {
         children: <Widget>[
           OutlinedButton(
             onPressed: onCancel,
-            child: const Text('Cancel'),
+            child: Text(L10n.of(context).cancel),
           ),
           const SizedBox(width: 5),
           ElevatedButton(
             key: PinItem.saveBtnKey,
             onPressed: onSave,
-            child: const Text('Save'),
+            child: Text(L10n.of(context).save),
           ),
         ],
       ),

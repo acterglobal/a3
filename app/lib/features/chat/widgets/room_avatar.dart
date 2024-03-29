@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 final _log = Logger('a3::chat::room_avatar');
 
@@ -29,9 +30,9 @@ class RoomAvatar extends ConsumerWidget {
       width: avatarSize,
       height: avatarSize,
       child: ref.watch(chatProvider(roomId)).when(
-            data: (convo) => chatAvatarUI(convo, ref),
-            error: (e, s) => Center(child: Text('Loading room failed: $e')),
-            loading: () => const Center(child: Text('loading...')),
+            data: (convo) => chatAvatarUI(convo, ref, context),
+            error: (e, s) => Center(child: Text('${L10n.of(context).loadingFailed('room')}: $e')),
+            loading: () => Center(child: Text(L10n.of(context).loading(''))),
           ),
     );
   }
@@ -62,7 +63,7 @@ class RoomAvatar extends ConsumerWidget {
     );
   }
 
-  Widget chatAvatarUI(Convo convo, WidgetRef ref) {
+  Widget chatAvatarUI(Convo convo, WidgetRef ref, BuildContext context) {
     //Data Providers
     final convoProfile = ref.watch(chatProfileDataProvider(convo));
 
@@ -97,7 +98,7 @@ class RoomAvatar extends ConsumerWidget {
 
         //Type == DM and no avatar: Handle avatar according to the members counts
         else {
-          return dmAvatar(ref);
+          return dmAvatar(ref, context);
         }
       },
       skipLoadingOnReload: false,
@@ -122,7 +123,7 @@ class RoomAvatar extends ConsumerWidget {
     );
   }
 
-  Widget dmAvatar(WidgetRef ref) {
+  Widget dmAvatar(WidgetRef ref, BuildContext context) {
     final client = ref.watch(alwaysClientProvider);
     final convoMembers = ref.watch(membersIdsProvider(roomId));
     return convoMembers.when(
@@ -147,7 +148,7 @@ class RoomAvatar extends ConsumerWidget {
         }
       },
       skipLoadingOnReload: false,
-      error: (error, stackTrace) => Text('Error loading members count $error'),
+      error: (error, stackTrace) => Text('${L10n.of(context).loadingFailed('membersCount')} $error'),
       loading: () => const CircularProgressIndicator(),
     );
   }

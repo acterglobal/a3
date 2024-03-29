@@ -30,6 +30,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mime/mime.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 const addNewsKey = Key('add-news');
 
@@ -147,12 +148,15 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       context: context,
       builder: (context) {
         return AlertDialog.adaptive(
-          title: const Text('Add an action widget'),
+          title: Text(L10n.of(context).addActionWidget),
           content: SelectActionItem(
             onShareEventSelected: () async {
               Navigator.of(context, rootNavigator: true).pop();
               if (ref.read(newsStateProvider).newsPostSpaceId == null) {
-                customMsgSnackbar(context, 'Please first select a space');
+                customMsgSnackbar(
+                  context,
+                  L10n.of(context).pleaseFirstSelectASpace,
+                );
                 return;
               }
               await ref
@@ -233,7 +237,8 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
                   loading: () =>
                       const SizedBox(width: 300, child: EventItemSkeleton()),
                   error: (e, s) => Center(
-                    child: Text('Event failed: $e'),
+                    child:
+                        Text('${L10n.of(context).failedToLoad('event')}: $e'),
                   ),
                 ),
         ],
@@ -250,13 +255,13 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
         children: [
           SvgPicture.asset(
             'assets/images/empty_updates.svg',
-            semanticsLabel: 'state',
+            semanticsLabel: L10n.of(context).state,
             height: 150,
             width: 150,
           ),
           const SizedBox(height: 20),
           Text(
-            'Create actionable posts and engage everyone within your space.',
+            L10n.of(context).createPostsAndEngageWithinSpace,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
@@ -264,19 +269,19 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           OutlinedButton(
             key: NewsUpdateKeys.addTextSlide,
             onPressed: () => NewsUtils.addTextSlide(ref),
-            child: const Text('Add text slide'),
+            child: Text(L10n.of(context).addSlide('text')),
           ),
           const SizedBox(height: 20),
           OutlinedButton(
             key: NewsUpdateKeys.addImageSlide,
             onPressed: () async => await NewsUtils.addImageSlide(ref),
-            child: const Text('Add image slide'),
+            child: Text(L10n.of(context).addSlide('image')),
           ),
           const SizedBox(height: 20),
           OutlinedButton(
             key: NewsUpdateKeys.addVideoSlide,
             onPressed: () async => await NewsUtils.addVideoSlide(ref),
-            child: const Text('Add video slide'),
+            child: Text(L10n.of(context).addSlide('video')),
           ),
         ],
       ),
@@ -343,11 +348,11 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
     final newsSlideList = ref.read(newsStateProvider).newsSlideList;
 
     if (spaceId == null) {
-      customMsgSnackbar(context, 'Please first select a space');
+      customMsgSnackbar(context, L10n.of(context).pleaseFirstSelectASpace);
       return;
     }
 
-    String displayMsg = 'Slide posting';
+    String displayMsg = L10n.of(context).slidePosting;
     // Show loading message
     EasyLoading.show(status: displayMsg);
     try {
@@ -358,7 +363,10 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
         // If slide type is text
         if (slidePost.type == NewsSlideType.text) {
           if (slidePost.text == null || slidePost.text!.trim().isEmpty) {
-            EasyLoading.showError('Your text slides must contains some text');
+            if (!mounted) return;
+            EasyLoading.showError(
+              L10n.of(context).yourTextSlidesMustContainsSomeText,
+            );
             return;
           }
           final textDraft = slidePost.html != null
@@ -386,12 +394,14 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           final file = slidePost.mediaFile!;
           String? mimeType = file.mimeType ?? lookupMimeType(file.path);
           if (mimeType == null) {
-            EasyLoading.showError('Invalid media format');
+            if (!mounted) return;
+            EasyLoading.showError(L10n.of(context).invalidMediaFormat);
             return;
           }
           if (!mimeType.startsWith('image/')) {
+            if (!mounted) return;
             EasyLoading.showError(
-              'Posting of $mimeType not yet supported',
+              L10n.of(context).postingOfTypeNotYetSupported(mimeType),
             );
             return;
           }
@@ -422,12 +432,14 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           final file = slidePost.mediaFile!;
           String? mimeType = file.mimeType ?? lookupMimeType(file.path);
           if (mimeType == null) {
-            EasyLoading.showError('Invalid media format');
+            if (!mounted) return;
+            EasyLoading.showError(L10n.of(context).invalidMediaFormat);
             return;
           }
           if (!mimeType.startsWith('video/')) {
+            if (!mounted) return;
             EasyLoading.showError(
-              'Posting of $mimeType not yet supported',
+              L10n.of(context).postingOfTypeNotYetSupported(mimeType),
             );
             return;
           }
@@ -465,7 +477,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       Navigator.of(context).pop();
       context.goNamed(Routes.main.name); // go to the home / main updates
     } catch (err) {
-      EasyLoading.showError('$displayMsg failed: \n $err');
+      EasyLoading.showError('$displayMsg ${L10n.of(context).failed}: \n $err');
     }
   }
 

@@ -3,6 +3,7 @@ import 'package:acter/common/widgets/icons/tasks_icon.dart';
 import 'package:acter/features/tasks/providers/tasklists.dart';
 import 'package:acter/features/tasks/widgets/task_list_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class TaskListPage extends ConsumerWidget {
@@ -25,8 +26,8 @@ class TaskListPage extends ConsumerWidget {
             const TasksIcon(),
             taskList.when(
               data: (d) => Text(key: taskListTitleKey, d.name()),
-              error: (e, s) => Text('failed to load: $e'),
-              loading: () => const Text('loading'),
+              error: (e, s) => Text('${L10n.of(context).failedToLoad('')}: $e'),
+              loading: () => Text(L10n.of(context).loading('')),
             ),
           ],
         ),
@@ -41,7 +42,7 @@ class TaskListPage extends ConsumerWidget {
                   showDescription: true,
                   showTitle: false,
                 ),
-                orElse: () => const Text('loading'),
+                orElse: () => Text(L10n.of(context).loading('')),
               ),
               // following: comments
             ),

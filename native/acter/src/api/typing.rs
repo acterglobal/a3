@@ -1,7 +1,4 @@
-use futures::{
-    channel::mpsc::{channel, Receiver, Sender},
-    stream::StreamExt,
-};
+use futures::channel::mpsc::{channel, Receiver, Sender};
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
     room::Room,

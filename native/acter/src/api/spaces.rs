@@ -5,29 +5,15 @@ pub use acter_core::spaces::{
 use acter_core::{
     error::Error,
     events::{
-        attachments::{
-            AttachmentEventContent, AttachmentUpdateEventContent, SyncAttachmentEvent,
-            SyncAttachmentUpdateEvent,
-        },
-        calendar::{
-            CalendarEventEventContent, CalendarEventUpdateEventContent, SyncCalendarEventEvent,
-            SyncCalendarEventUpdateEvent,
-        },
-        comments::{
-            CommentEventContent, CommentUpdateEventContent, SyncCommentEvent,
-            SyncCommentUpdateEvent,
-        },
-        news::{
-            NewsEntryEventContent, NewsEntryUpdateEventContent, SyncNewsEntryEvent,
-            SyncNewsEntryUpdateEvent,
-        },
-        pins::{PinEventContent, PinUpdateEventContent, SyncPinEvent, SyncPinUpdateEvent},
-        rsvp::{RsvpEventContent, SyncRsvpEvent},
+        attachments::{SyncAttachmentEvent, SyncAttachmentUpdateEvent},
+        calendar::{SyncCalendarEventEvent, SyncCalendarEventUpdateEvent},
+        comments::{SyncCommentEvent, SyncCommentUpdateEvent},
+        news::{SyncNewsEntryEvent, SyncNewsEntryUpdateEvent},
+        pins::{SyncPinEvent, SyncPinUpdateEvent},
+        rsvp::SyncRsvpEvent,
         tasks::{
             SyncTaskEvent, SyncTaskListEvent, SyncTaskListUpdateEvent, SyncTaskSelfAssignEvent,
-            SyncTaskSelfUnassignEvent, SyncTaskUpdateEvent, TaskEventContent, TaskListEventContent,
-            TaskListUpdateEventContent, TaskSelfAssignEventContent, TaskSelfUnassignEventContent,
-            TaskUpdateEventContent,
+            SyncTaskSelfUnassignEvent, SyncTaskUpdateEvent,
         },
     },
     executor::Executor,
@@ -45,21 +31,20 @@ use matrix_sdk::{
 use matrix_sdk_ui::timeline::RoomExt;
 use ruma_client_api::state::send_state_event;
 use ruma_common::{
-    directory::RoomTypeFilter, exports, serde::Raw, OwnedRoomAliasId, OwnedRoomId, RoomAliasId,
-    RoomId, RoomOrAliasId, ServerName,
+    directory::RoomTypeFilter, serde::Raw, OwnedRoomAliasId, OwnedRoomId, RoomAliasId, RoomId,
+    RoomOrAliasId, ServerName,
 };
 use ruma_events::{
-    reaction::{ReactionEventContent, SyncReactionEvent},
+    reaction::SyncReactionEvent,
     room::redaction::{RoomRedactionEvent, SyncRoomRedactionEvent},
     space::child::SpaceChildEventContent,
-    AnyStateEventContent, MessageLikeEvent, StateEventType, StaticEventContent,
-    UnsignedRoomRedactionEvent,
+    AnyStateEventContent, MessageLikeEvent, StateEventType,
 };
 use serde::{Deserialize, Serialize};
 use std::{ops::Deref, sync::Arc};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
-use tracing::{error, info, trace, warn};
+use tracing::{error, trace, warn};
 
 use crate::{Client, PublicSearchResult, Room, TimelineStream, RUNTIME};
 

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class ImageMessageBuilder extends ConsumerWidget {
   final types.ImageMessage message;
@@ -157,7 +158,7 @@ class ImageMessageBuilder extends ConsumerWidget {
               Object url,
               StackTrace? error,
             ) {
-              return Text('Could not load image due to $error');
+              return Text('${L10n.of(context).couldNotLoadImage} $error');
             },
             fit: BoxFit.cover,
           ),

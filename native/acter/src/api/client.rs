@@ -14,20 +14,17 @@ use futures::{
 };
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
 use matrix_sdk::{
-    config::SyncSettings, deserialized_responses::RawAnySyncOrStrippedTimelineEvent,
-    event_handler::EventHandlerHandle, media::MediaRequest, room::Room as SdkRoom,
-    Client as SdkClient, LoopCtrl, RoomState, RumaApiError,
+    config::SyncSettings, event_handler::EventHandlerHandle, media::MediaRequest,
+    room::Room as SdkRoom, Client as SdkClient, LoopCtrl, RoomState, RumaApiError,
 };
 use matrix_sdk_base::media::UniqueKey;
 use ruma_client_api::{
     error::{ErrorBody, ErrorKind},
-    push::get_notifications,
     Error,
 };
 use ruma_common::{
-    device_id, IdParseError, MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedMxcUri,
-    OwnedRoomAliasId, OwnedRoomId, OwnedServerName, OwnedUserId, RoomAliasId, RoomId,
-    RoomOrAliasId, UserId,
+    device_id, IdParseError, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId,
+    OwnedServerName, OwnedUserId, RoomAliasId, RoomId, RoomOrAliasId, UserId,
 };
 use ruma_events::room::MediaSource;
 use std::{
@@ -42,7 +39,7 @@ use std::{
 };
 use tokio::{
     sync::{
-        broadcast::{channel, Receiver, Sender},
+        broadcast::{channel, Receiver},
         Mutex, RwLock, RwLockWriteGuard,
     },
     task::JoinHandle,

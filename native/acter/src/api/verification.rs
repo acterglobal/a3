@@ -14,7 +14,7 @@ use matrix_sdk::{
 };
 use ruma::assign;
 use ruma_client_api::uiaa::{AuthData, Password, UserIdentifier};
-use ruma_common::{device_id, OwnedDeviceId, OwnedEventId, OwnedTransactionId, OwnedUserId};
+use ruma_common::{device_id, OwnedDeviceId, OwnedUserId};
 use ruma_events::{
     key::verification::{accept::AcceptMethod, start::StartMethod, VerificationMethod},
     room::message::{MessageType, OriginalSyncRoomMessageEvent},

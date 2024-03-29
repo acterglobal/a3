@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 /// Reusable bottom sheet widget
 class DefaultBottomSheet extends ConsumerWidget {
@@ -26,7 +27,7 @@ class DefaultBottomSheet extends ConsumerWidget {
             actions: <Widget>[
               CupertinoActionSheetAction(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Close'),
+                child: Text(L10n.of(context).close),
               ),
             ],
           )

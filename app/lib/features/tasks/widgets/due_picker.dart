@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class PickedDue {
   final DateTime due;
   final bool includeTime;
+
   const PickedDue(this.due, this.includeTime);
 }
 
@@ -80,7 +82,7 @@ class DuePicker extends StatefulWidget {
       transitionDuration:
           transitionDuration ?? const Duration(milliseconds: 200),
       barrierDismissible: true,
-      barrierLabel: 'Select Due',
+      barrierLabel: L10n.of(context).selectDue,
       pageBuilder: (BuildContext context, anim1, anim2) {
         return DuePicker(
           separator: separator,
@@ -135,13 +137,13 @@ class _DuePickerState extends State<DuePicker> {
             ? const SizedBox()
             : Wrap(
                 children: [
-                  const Text('Quick select:'),
+                  Text(L10n.of(context).quickSelect),
                   const SizedBox(
                     width: 10,
                   ),
                   ActionChip(
                     key: DuePicker.quickSelectToday,
-                    label: const Text('Today'),
+                    label: Text(L10n.of(context).today),
                     onPressed: () {
                       widget.onSelect(
                         PickedDue(DateTime.now(), false),
@@ -153,7 +155,7 @@ class _DuePickerState extends State<DuePicker> {
                   ),
                   ActionChip(
                     key: DuePicker.quickSelectTomorrow,
-                    label: const Text('Tomorrow'),
+                    label: Text(L10n.of(context).tomorrow),
                     onPressed: () {
                       widget.onSelect(
                         PickedDue(DateTime.now().nextDay, false),

@@ -1,6 +1,5 @@
-use std::sync::PoisonError;
-
 use ruma_events::UnsignedRoomRedactionEvent;
+use std::sync::PoisonError;
 
 use crate::models::EventMeta;
 

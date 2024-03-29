@@ -1,7 +1,7 @@
 use acter_core::events::{
     attachments::{AttachmentContent, FallbackAttachmentContent},
     rsvp::RsvpStatus,
-    ColorizeBuilder, ObjRef, ObjRefBuilder, Position, RefDetails, RefDetailsBuilder,
+    ColorizeBuilder, ObjRefBuilder, Position, RefDetails, RefDetailsBuilder,
 };
 use anyhow::{Context, Result};
 use core::time::Duration;

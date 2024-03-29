@@ -137,6 +137,12 @@ Future<bool> openLink(String target, BuildContext context) async {
   }
 }
 
+Future<void> mailTo({required String toAddress, String? subject}) async {
+  final Uri emailLaunchUri =
+      Uri(scheme: 'mailto', path: toAddress, query: subject);
+  await launchUrl(emailLaunchUri);
+}
+
 String randomString() {
   final random = Random.secure();
   final values = List<int>.generate(16, (i) => random.nextInt(255));
@@ -292,7 +298,6 @@ enum LabsFeature {
         LabsFeature.mobilePushNotifications,
       ];
 }
-
 
 // typedef ChatWithProfileData = ({Convo chat, ProfileData profile});
 // typedef SpaceWithProfileData = ({Space space, ProfileData profile});

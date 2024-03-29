@@ -18,6 +18,7 @@ import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SpaceChatsPage extends ConsumerWidget {
   static const createChatKey = Key('space-chat-create');
@@ -60,11 +61,11 @@ class SpaceChatsPage extends ConsumerWidget {
                       queryParameters: {'spaceId': spaceIdOrAlias},
                       extra: 1,
                     ),
-                    child: const Row(
+                    child: Row(
                       children: <Widget>[
-                        Text('Create Chat'),
-                        Spacer(),
-                        Icon(Atlas.chats),
+                        Text(L10n.of(context).createChat),
+                        const Spacer(),
+                        const Icon(Atlas.chats),
                       ],
                     ),
                   ),
@@ -73,11 +74,11 @@ class SpaceChatsPage extends ConsumerWidget {
                       Routes.linkChat.name,
                       pathParameters: {'spaceId': spaceIdOrAlias},
                     ),
-                    child: const Row(
+                    child: Row(
                       children: <Widget>[
-                        Text('Link existing Chat'),
-                        Spacer(),
-                        Icon(Atlas.chats),
+                        Text(L10n.of(context).linkExistingChat),
+                        const Spacer(),
+                        const Icon(Atlas.chats),
                       ],
                     ),
                   ),
@@ -105,9 +106,8 @@ class SpaceChatsPage extends ConsumerWidget {
     return Center(
       heightFactor: 1,
       child: EmptyState(
-        title: 'No chats in this space yet',
-        subtitle:
-            'Get the conversation going to start organizing collaborating',
+        title: L10n.of(context).noChatsInThisSpaceYet,
+        subtitle: L10n.of(context).getConversationGoingToStart,
         image: 'assets/images/empty_chat.svg',
         primaryButton: canCreateSpace
             ? ElevatedButton(
@@ -116,7 +116,7 @@ class SpaceChatsPage extends ConsumerWidget {
                   queryParameters: {'spaceId': spaceIdOrAlias},
                   extra: 1,
                 ),
-                child: const Text('Create Space Chat'),
+                child: Text(L10n.of(context).createSpaceChat),
               )
             : null,
       ),
@@ -144,13 +144,15 @@ class SpaceChatsPage extends ConsumerWidget {
         );
       },
       error: (error, stackTrace) => SliverToBoxAdapter(
-        child: Center(child: Text('Failed to load events due to $error')),
+        child: Center(
+          child: Text('${L10n.of(context).failedToLoad('chatsDueTo')} $error'),
+        ),
       ),
-      loading: () => const SliverToBoxAdapter(
+      loading: () => SliverToBoxAdapter(
         child: Skeletonizer(
           child: ListTile(
-            title: Text('roomId'),
-            subtitle: Text('loading'),
+            title: Text(L10n.of(context).roomId),
+            subtitle: Text(L10n.of(context).loading('')),
           ),
         ),
       ),
@@ -182,10 +184,11 @@ class SpaceChatsPage extends ConsumerWidget {
         ),
       ),
       error: (e, s) => SliverToBoxAdapter(
-        child: Text('Error loading related chats: $e'),
+        child: Text('${L10n.of(context).errorLoading('relatedChats')}: $e'),
       ),
-      loading: () =>
-          const SliverToBoxAdapter(child: Text('loading other chats')),
+      loading: () => SliverToBoxAdapter(
+        child: Text(L10n.of(context).loading('otherChats')),
+      ),
     );
   }
 

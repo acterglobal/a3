@@ -104,7 +104,7 @@ class EmailAddressesPage extends ConsumerWidget {
           error: (error, stack) {
             return Center(
               child: Text(
-                '${L10n.of(context).errorLoadingEmailAddresses}: $error',
+                '${L10n.of(context).errorLoading('emailAddresses')}: $error',
               ),
             );
           },
@@ -234,7 +234,7 @@ class EmailAddressesPage extends ConsumerWidget {
         );
       } catch (e) {
         EasyLoading.showSuccess(
-          '${L10n.of(context).failedToSubmitEmail}: $e',
+          '${L10n.of(context).failedTo('submitEmail')}: $e',
           duration: const Duration(seconds: 3),
         );
       }

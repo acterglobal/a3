@@ -5,12 +5,13 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/member_list_entry.dart';
+import 'package:acter/features/member/widgets/member_list_entry.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SpaceMembersPage extends ConsumerWidget {
   final String spaceIdOrAlias;
@@ -25,7 +26,7 @@ class SpaceMembersPage extends ConsumerWidget {
     final List<Widget> topMenu = [
       Expanded(
         child: Text(
-          'Members',
+          L10n.of(context).members,
           style: Theme.of(context).textTheme.titleMedium,
         ),
       ),
@@ -73,10 +74,10 @@ class SpaceMembersPage extends ConsumerWidget {
                   (MediaQuery.of(context).size.width ~/ 300).toInt();
               const int minCount = 4;
               if (members.isEmpty) {
-                return const SliverToBoxAdapter(
+                return SliverToBoxAdapter(
                   child: Center(
                     child: Text(
-                      'No members found. How can that even be, you are here, aren\'t you?',
+                      L10n.of(context).noMembersFound,
                     ),
                   ),
                 );
@@ -97,12 +98,12 @@ class SpaceMembersPage extends ConsumerWidget {
             },
             error: (error, stack) => SliverToBoxAdapter(
               child: Center(
-                child: Text('Loading failed: $error'),
+                child: Text('${L10n.of(context).loadingFailed('')}: $error'),
               ),
             ),
-            loading: () => const SliverToBoxAdapter(
+            loading: () => SliverToBoxAdapter(
               child: Center(
-                child: Text('Loading'),
+                child: Text(L10n.of(context).loading('')),
               ),
             ),
           ),

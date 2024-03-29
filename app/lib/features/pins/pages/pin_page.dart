@@ -11,12 +11,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class PinPage extends ConsumerWidget {
   static const pinPageKey = Key('pin-page');
   static const actionMenuKey = Key('pin-action-menu');
   static const editBtnKey = Key('pin-edit-btn');
   static const titleFieldKey = Key('edit-pin-title-field');
+  static const pinAttachmentsKey = Key('pin-attachments');
 
   final String pinId;
 
@@ -43,11 +45,11 @@ class PinPage extends ConsumerWidget {
           PopupMenuItem<String>(
             key: PinPage.editBtnKey,
             onTap: () => pinEditNotifier.setEditMode(true),
-            child: const Row(
+            child: Row(
               children: <Widget>[
-                Icon(Atlas.pencil_box_thin),
-                SizedBox(width: 10),
-                Text('Edit Pin'),
+                const Icon(Atlas.pencil_box_thin),
+                const SizedBox(width: 10),
+                Text(L10n.of(context).editPin),
               ],
             ),
           ),
@@ -71,7 +73,7 @@ class PinPage extends ConsumerWidget {
                   color: Theme.of(context).colorScheme.error,
                 ),
                 const SizedBox(width: 10),
-                const Text('Remove Pin'),
+                Text(L10n.of(context).removePin('')),
               ],
             ),
           ),
@@ -87,7 +89,7 @@ class PinPage extends ConsumerWidget {
                   color: Theme.of(context).colorScheme.error,
                 ),
                 const SizedBox(width: 10),
-                const Text('Report Pin'),
+                Text(L10n.of(context).reportPin('')),
               ],
             ),
           ),
@@ -111,7 +113,7 @@ class PinPage extends ConsumerWidget {
     showAdaptiveDialog(
       context: context,
       builder: (context) => RedactContentWidget(
-        title: 'Remove this pin',
+        title: L10n.of(context).removePin('this'),
         eventId: pin.eventIdStr(),
         onSuccess: () {
           if (context.mounted && context.canPop()) {
@@ -130,9 +132,8 @@ class PinPage extends ConsumerWidget {
     showAdaptiveDialog(
       context: context,
       builder: (ctx) => ReportContentWidget(
-        title: 'Report this Pin',
-        description:
-            'Report this content to your homeserver administrator. Please note that your administrator won\'t be able to read or view files in encrypted spaces.',
+        title: L10n.of(context).reportPin('this'),
+        description: L10n.of(context).reportThisContent,
         eventId: pinId,
         roomId: pin.roomIdStr(),
         senderId: pin.sender().toString(),
@@ -163,11 +164,11 @@ class PinPage extends ConsumerWidget {
                 ],
               );
             },
-            loading: () => const SliverAppBar(
-              title: Skeletonizer(child: Text('Loading pin')),
+            loading: () => SliverAppBar(
+              title: Skeletonizer(child: Text(L10n.of(context).loading('pin'))),
             ),
             error: (err, st) => SliverAppBar(
-              title: Text('Error loading pin ${err.toString()}'),
+              title: Text('${L10n.of(context).errorLoading('pin')} ${err.toString()}'),
             ),
           ),
           SliverToBoxAdapter(
@@ -180,7 +181,7 @@ class PinPage extends ConsumerWidget {
                   _buildAttachmentBody(acterPin),
                 ],
               ),
-              error: (err, st) => Text('Error loading pins ${err.toString()}'),
+              error: (err, st) => Text('${L10n.of(context).errorLoading('pin')} ${err.toString()}'),
               loading: () => const Skeletonizer(
                 child: Card(),
               ),
@@ -214,12 +215,13 @@ class PinPage extends ConsumerWidget {
         return asyncManager.when(
           data: (manager) {
             return AttachmentSectionWidget(
+              key: PinPage.pinAttachmentsKey,
               attachmentManager: manager,
               canPostAttachment: canPostAttachment,
               canRedact: canRedact,
             );
           },
-          error: (err, st) => Text('Error loading attachments $err'),
+          error: (err, st) => Text('${L10n.of(context).errorLoading('attachments')} $err'),
           loading: () => const Skeletonizer(
             child: SizedBox(
               height: 100,

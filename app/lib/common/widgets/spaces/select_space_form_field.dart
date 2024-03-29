@@ -5,20 +5,22 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SelectSpaceFormField extends ConsumerWidget {
   static Key openKey = const Key('select-space-form-field-open');
 
-  final String title;
-  final String selectTitle;
-  final String emptyText;
+  final String? title;
+  final String? selectTitle;
+  final String? emptyText;
   final String canCheck;
   final bool mandatory;
+
   const SelectSpaceFormField({
     super.key,
-    this.title = 'Space',
-    this.selectTitle = 'Select space',
-    this.emptyText = 'Please select a space',
+    this.title,
+    this.selectTitle,
+    this.emptyText,
     this.mandatory = true,
     required this.canCheck,
   });
@@ -34,7 +36,7 @@ class SelectSpaceFormField extends ConsumerWidget {
         context: context,
         currentSpaceId: ref.read(selectedSpaceIdProvider),
         canCheck: canCheck,
-        title: Text(selectTitle),
+        title: Text(selectTitle ?? L10n.of(context).select('space')),
       );
       spaceNotifier.state = newSelectedSpaceId;
     }
@@ -42,7 +44,7 @@ class SelectSpaceFormField extends ConsumerWidget {
     final emptyButton = OutlinedButton(
       key: openKey,
       onPressed: selectSpace,
-      child: Text(emptyText),
+      child: Text(emptyText ?? L10n.of(context).pleaseSelectSpace),
     );
 
     return FormField(
@@ -54,7 +56,7 @@ class SelectSpaceFormField extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    title,
+                    title ?? L10n.of(context).space(''),
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   Consumer(builder: spaceBuilder),
@@ -82,7 +84,7 @@ class SelectSpaceFormField extends ConsumerWidget {
       validator: (x) =>
           (!mandatory || ref.read(selectedSpaceIdProvider) != null)
               ? null
-              : 'You must select a space',
+              : L10n.of(context).youMustSelectSpace,
     );
   }
 
@@ -92,17 +94,17 @@ class SelectSpaceFormField extends ConsumerWidget {
     return spaceDetails.when(
       data: (space) =>
           space != null ? SpaceChip(space: space) : Text(currentSelectedSpace!),
-      error: (e, s) => Text('error: $e'),
+      error: (e, s) => Text('${L10n.of(context).error}: $e'),
       loading: () => Skeletonizer(
         child: Chip(
           avatar: ActerAvatar(
             mode: DisplayMode.Space,
-            avatarInfo: const AvatarInfo(
-              uniqueId: 'loading',
+            avatarInfo: AvatarInfo(
+              uniqueId: L10n.of(context).loading(''),
             ),
             size: 24,
           ),
-          label: const Text('loading'),
+          label: Text(L10n.of(context).loading('')),
         ),
       ),
     );
