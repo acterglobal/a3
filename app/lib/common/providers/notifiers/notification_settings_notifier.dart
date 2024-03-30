@@ -18,7 +18,7 @@ class AsyncNotificationSettingsNotifier
     final settings = await client.notificationSettings();
     _listener = settings.changesStream();
     _poller = _listener.listen(
-      (e) async {
+      (e) {
         // reset the state of this to trigger the notification
         // cascade
         state = AsyncValue.data(settings);
