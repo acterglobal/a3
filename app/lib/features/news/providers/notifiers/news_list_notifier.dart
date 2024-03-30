@@ -9,7 +9,6 @@ final _log = Logger('a3::news::list_notifier');
 
 class AsyncNewsListNotifier extends AutoDisposeAsyncNotifier<List<NewsEntry>> {
   late Stream<bool> _listener;
-  // ignore: unused_field
   late StreamSubscription<bool> _poller;
 
   @override

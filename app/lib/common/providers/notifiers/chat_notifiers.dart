@@ -8,8 +8,6 @@ import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::common::chat');
 
-// ignore_for_file: unused_field
-
 class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, Convo> {
   late Stream<bool> _listener;
   late StreamSubscription<bool> _poller;

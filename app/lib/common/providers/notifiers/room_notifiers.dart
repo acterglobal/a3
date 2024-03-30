@@ -7,8 +7,6 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::common::room');
 
-// ignore_for_file: unused_field
-
 class AsyncMaybeRoomNotifier extends FamilyAsyncNotifier<Room?, String> {
   late Stream<bool> _listener;
   late StreamSubscription<bool> _poller;
