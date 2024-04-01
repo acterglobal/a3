@@ -16,7 +16,7 @@ pub async fn destroy_local_data(
 pub async fn new_client_config(
     base_path: String,
     home_dir: String,
-    media_cache_base_path: Option<String>,
+    media_cache_base_path: String,
     db_passphrase: Option<String>,
     reset_if_existing: bool,
 ) -> Result<ClientBuilder> {
