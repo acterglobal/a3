@@ -1,5 +1,5 @@
 import 'package:acter/common/models/types.dart';
-import 'package:acter/common/widgets/attachments/attachment_item.dart';
+import 'package:acter/common/widgets/attachments/attachment_container.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
@@ -32,12 +32,9 @@ class AttachmentDraftItem extends StatelessWidget {
           fit: BoxFit.cover,
         ),
       );
-    }
-    if (type == AttachmentType.audio) {
+    } else if (type == AttachmentType.audio) {
       return const Icon(Atlas.file_sound_thin);
-    }
-
-    if (type == AttachmentType.video) {
+    } else if (type == AttachmentType.video) {
       return const Icon(Atlas.file_video_thin);
     } else {
       return const Icon(Atlas.plus_file_thin);

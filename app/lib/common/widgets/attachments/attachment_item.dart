@@ -1,9 +1,13 @@
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Attachment, FfiBufferUint8;
+import 'package:acter/common/models/attachment_media_state/attachment_media_state.dart';
+import 'package:acter/common/models/types.dart';
+import 'package:acter/common/providers/attachment_providers.dart';
+import 'package:acter/common/widgets/attachments/attachment_container.dart';
+import 'package:acter/common/widgets/image_dialog.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Attachment;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 // Attachment item UI
 class AttachmentItem extends ConsumerWidget {
@@ -20,7 +24,7 @@ class AttachmentItem extends ConsumerWidget {
     if (type == 'image') {
       return AttachmentContainer(
         name: msgContent.body(),
-        child: _ImageAttachment(attachment: attachment),
+        child: _ImageView(attachment: attachment),
       );
     } else if (type == 'video') {
       return AttachmentContainer(
@@ -45,98 +49,137 @@ class AttachmentItem extends ConsumerWidget {
   }
 }
 
-// outer attachment container UI
-class AttachmentContainer extends ConsumerWidget {
-  const AttachmentContainer({
-    super.key,
-    required this.name,
-    required this.child,
-  });
-  final String name;
-  final Widget child;
+class _ImageView extends ConsumerWidget {
+  final Attachment attachment;
+  const _ImageView({required this.attachment});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final containerColor = Theme.of(context).colorScheme.background;
-    final borderColor = Theme.of(context).colorScheme.primary;
-    final containerTextStyle = Theme.of(context).textTheme.bodySmall;
-    return Container(
-      height: 100,
-      width: 100,
-      padding: const EdgeInsets.fromLTRB(3, 3, 3, 0),
-      decoration: BoxDecoration(
-        color: containerColor,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: borderColor),
-      ),
+    final attachmentId = attachment.attachmentIdStr();
+    final spaceId = attachment.roomIdStr();
+    final AttachmentMediaInfo mediaInfo =
+        (attachmentId: attachmentId, spaceId: spaceId);
+    final mediaState = ref.watch(attachmentMediaStateProvider(mediaInfo));
+    if (mediaState.mediaLoadingState.isLoading || mediaState.isDownloading) {
+      return loadingIndication(context);
+    } else if (mediaState.mediaFile == null) {
+      return imagePlaceholder(context, mediaInfo, mediaState, ref);
+    } else {
+      return imageUI(context, mediaState);
+    }
+  }
+
+  Widget loadingIndication(BuildContext context) {
+    return const SizedBox(
+      width: 150,
+      height: 150,
+      child: Center(child: CircularProgressIndicator()),
+    );
+  }
+
+  Widget imagePlaceholder(
+    BuildContext context,
+    AttachmentMediaInfo mediaInfo,
+    AttachmentMediaState mediaState,
+    WidgetRef ref,
+  ) {
+    final msgContent = attachment.msgContent();
+    return InkWell(
+      onTap: () async {
+        if (mediaState.mediaFile != null) {
+          showAdaptiveDialog(
+            context: context,
+            barrierDismissible: false,
+            useRootNavigator: false,
+            builder: (ctx) => ImageDialog(
+              title: msgContent.body(),
+              imageFile: mediaState.mediaFile!,
+            ),
+          );
+        } else {
+          ref
+              .read(attachmentMediaStateProvider(mediaInfo).notifier)
+              .downloadMedia();
+        }
+      },
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Expanded(child: child),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 6),
-            child: Text(
-              name,
-              style:
-                  containerTextStyle!.copyWith(overflow: TextOverflow.ellipsis),
+          const Icon(
+            Icons.download,
+            size: 24,
+          ),
+          const SizedBox(height: 8),
+          Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.background,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.image,
+                  size: 14,
+                ),
+                const SizedBox(width: 5),
+                Text(
+                  formatBytes(msgContent.size()!.truncate()),
+                  style: Theme.of(context).textTheme.labelSmall,
+                ),
+              ],
             ),
           ),
         ],
       ),
     );
   }
-}
 
-// image attachment UI
-class _ImageAttachment extends StatefulWidget {
-  final Attachment attachment;
-  const _ImageAttachment({required this.attachment});
-
-  @override
-  State<_ImageAttachment> createState() => _ImageAttachmentPreviewState();
-}
-
-class _ImageAttachmentPreviewState extends State<_ImageAttachment> {
-  late Future<FfiBufferUint8> attachmentImage;
-
-  @override
-  void initState() {
-    super.initState();
-    _getAttachmentImage();
-  }
-
-  void _getAttachmentImage() {
-    attachmentImage = widget.attachment.sourceBinary(null);
-
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: attachmentImage.then((value) => value.asTypedList()),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasData) {
-          return ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(6),
-              topRight: Radius.circular(6),
-            ),
-            child: Image.memory(
-              snapshot.data!,
-              fit: BoxFit.cover,
-            ),
-          );
-        } else {
-          return Placeholder(
-            child: Text('${L10n.of(context).errorLoading('image')} ${snapshot.error}'),
-          );
-        }
+  Widget imageUI(BuildContext context, AttachmentMediaState mediaState) {
+    return InkWell(
+      onTap: () {
+        final msgContent = attachment.msgContent();
+        showAdaptiveDialog(
+          context: context,
+          barrierDismissible: false,
+          useRootNavigator: false,
+          builder: (ctx) => ImageDialog(
+            title: msgContent.body(),
+            imageFile: mediaState.mediaFile!,
+          ),
+        );
       },
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(6),
+        child: Image.file(
+          mediaState.mediaFile!,
+          frameBuilder: (
+            BuildContext context,
+            Widget child,
+            int? frame,
+            bool wasSynchronouslyLoaded,
+          ) {
+            if (wasSynchronouslyLoaded) {
+              return child;
+            }
+            return AnimatedOpacity(
+              opacity: frame == null ? 0 : 1,
+              duration: const Duration(seconds: 1),
+              curve: Curves.easeOut,
+              child: child,
+            );
+          },
+          errorBuilder: (
+            BuildContext context,
+            Object url,
+            StackTrace? error,
+          ) {
+            return Text('Could not load image due to $error');
+          },
+          fit: BoxFit.cover,
+        ),
+      ),
     );
   }
 }

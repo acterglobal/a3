@@ -410,7 +410,7 @@ Stream<T> _nativeStream<T>(
   }
 
   controller.onCancel = close;
-  rx.listen((dynamic _message) => poll());
+  rx.listen((dynamic nk _message) => poll());
   done.listen((dynamic _message) => controller.close());
   poll();
   return controller.stream;
