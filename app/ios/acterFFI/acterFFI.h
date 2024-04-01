@@ -51,7 +51,7 @@ typedef struct RustCallStatus {
 typedef void (*UniFfiRustFutureContinuation)(void * _Nonnull, int8_t);
 
 // Scaffolding functions
-void* _Nonnull uniffi_acter_fn_func_get_notification_item(RustBuffer base_path, RustBuffer temp_dir, RustBuffer restore_token, RustBuffer room_id, RustBuffer event_id
+void* _Nonnull uniffi_acter_fn_func_get_notification_item(RustBuffer base_path, RustBuffer media_cache_path, RustBuffer temp_dir, RustBuffer restore_token, RustBuffer room_id, RustBuffer event_id
 );
 RustBuffer ffi_acter_rustbuffer_alloc(int32_t size, RustCallStatus *_Nonnull out_status
 );

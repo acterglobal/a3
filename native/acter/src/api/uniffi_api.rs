@@ -85,12 +85,13 @@ impl NotificationItem {
 #[uniffi::export]
 pub async fn get_notification_item(
     base_path: String,
+    media_cache_path: String,
     temp_dir: String,
     restore_token: String,
     room_id: String,
     event_id: String,
 ) -> uniffi::Result<NotificationItem, ActerError> {
-    let client = login_with_token(base_path, restore_token).await?;
+    let client = login_with_token(base_path, media_cache_path, restore_token).await?;
     Ok(NotificationItem::from(
         client.get_notification_item(room_id, event_id).await?,
         temp_dir,
