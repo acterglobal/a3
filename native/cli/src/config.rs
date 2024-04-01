@@ -88,7 +88,7 @@ impl LoginConfig {
                 token_path_string.display()
             );
             let token = std::fs::read_to_string(access_token_path)?;
-            return login_with_token(base_path, token).await;
+            return login_with_token(base_path, cache_base_path, token).await;
         }
 
         let password = match self.login_password {

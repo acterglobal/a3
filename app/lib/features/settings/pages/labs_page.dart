@@ -54,7 +54,7 @@ class SettingsLabsPage extends ConsumerWidget {
                 ),
                 SettingsTile.switchTile(
                   key: tasksLabSwitch,
-                  title: Text(L10n.of(context).tasks),
+                  title: Text(L10n.of(context).tasks('')),
                   description: Text(
                     L10n.of(context).manageTasksListsAndToDosTogether,
                   ),

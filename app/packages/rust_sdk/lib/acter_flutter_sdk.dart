@@ -263,11 +263,11 @@ class ActerSdk {
     return await client.getNotificationItem(roomId, eventId);
   }
 
-  Future<void> _maybeMigrateFromPrefs(appDocPath) async {
+  Future<void> _maybeMigrateFromPrefs(String appDocPath, String appCachePath) async {
     SharedPreferences prefs = await sharedPrefs();
     List<String> sessions = (prefs.getStringList(_sessionKey) ?? []);
     for (final token in sessions) {
-      ffi.Client client = await _api.loginWithToken(appDocPath, token);
+      ffi.Client client = await _api.loginWithToken(appDocPath, appCachePath, token);
       _clients.add(client);
     }
     _index = prefs.getInt('$_sessionKey::currentClientIdx') ?? 0;
@@ -285,6 +285,7 @@ class ActerSdk {
       return;
     }
     String appDocPath = await appDir();
+    String appCachePath = await appCacheDir();
     int delayedCounter = 0;
     while (!await storage.isCupertinoProtectedDataAvailable()) {
       if (delayedCounter > 10) {
@@ -308,7 +309,7 @@ class ActerSdk {
     if (sessionsStr == null) {
       _log.info('Secure Store: session key not found, checking for migration');
       // not yet set. let's see if we maybe want to migrate instead:
-      await _maybeMigrateFromPrefs(appDocPath);
+      await _maybeMigrateFromPrefs(appDocPath, appCachePath);
       return;
     }
 
@@ -320,7 +321,7 @@ class ActerSdk {
       final token = await storage.read(key: deviceId as String);
       if (token != null) {
         _log.info('Secure Store[$deviceId]: token found');
-        ffi.Client client = await _api.loginWithToken(appDocPath, token);
+        ffi.Client client = await _api.loginWithToken(appDocPath, appCachePath, token);
         _log.info('Secure Store[$deviceId]: login successful');
         _clients.add(client);
       } else {

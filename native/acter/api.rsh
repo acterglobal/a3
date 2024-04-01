@@ -24,7 +24,7 @@ fn write_log(text: string, level: string) -> Result<()>;
 fn login_new_client(base_path: string, media_cache_base_path: string, username: string, password: string, default_homeserver_name: string, default_homeserver_url: string, device_name: Option<string>) -> Future<Result<Client>>;
 
 /// Create a new client from the restore token
-fn login_with_token(base_path: string, restore_token: string) -> Future<Result<Client>>;
+fn login_with_token(base_path: string, media_cache_base_path: string, restore_token: string) -> Future<Result<Client>>;
 
 /// Create an anonymous client connecting to the homeserver
 fn guest_client(base_path: string, media_cache_base_path: string, default_homeserver_name: string, default_homeserver_url: string, device_name: Option<string>) -> Future<Result<Client>>;
