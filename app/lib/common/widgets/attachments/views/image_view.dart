@@ -9,7 +9,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // Image Attachment preview
 class ImageView extends ConsumerWidget {
   final Attachment attachment;
-  const ImageView({super.key, required this.attachment});
+  final bool? openView;
+  const ImageView({
+    super.key,
+    required this.attachment,
+    this.openView = true,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -93,18 +98,20 @@ class ImageView extends ConsumerWidget {
 
   Widget imageUI(BuildContext context, AttachmentMediaState mediaState) {
     return InkWell(
-      onTap: () {
-        final msgContent = attachment.msgContent();
-        showAdaptiveDialog(
-          context: context,
-          barrierDismissible: false,
-          useRootNavigator: false,
-          builder: (ctx) => ImageDialog(
-            title: msgContent.body(),
-            imageFile: mediaState.mediaFile!,
-          ),
-        );
-      },
+      onTap: openView!
+          ? () {
+              final msgContent = attachment.msgContent();
+              showAdaptiveDialog(
+                context: context,
+                barrierDismissible: false,
+                useRootNavigator: false,
+                builder: (ctx) => ImageDialog(
+                  title: msgContent.body(),
+                  imageFile: mediaState.mediaFile!,
+                ),
+              );
+            }
+          : null,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(6),
         child: Image.file(

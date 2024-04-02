@@ -9,9 +9,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // Attachment item UI
 class AttachmentItem extends ConsumerWidget {
   final Attachment attachment;
+  final bool? openView;
   const AttachmentItem({
     super.key,
     required this.attachment,
+    this.openView = true,
   });
 
   @override
@@ -21,17 +23,17 @@ class AttachmentItem extends ConsumerWidget {
     if (type == 'image') {
       return AttachmentContainer(
         name: msgContent.body(),
-        child: ImageView(attachment: attachment),
+        child: ImageView(attachment: attachment, openView: openView),
       );
     } else if (type == 'video') {
       return AttachmentContainer(
         name: msgContent.body(),
-        child: VideoView(attachment: attachment),
+        child: VideoView(attachment: attachment, openView: openView),
       );
     } else {
       return AttachmentContainer(
         name: msgContent.body(),
-        child: FileView(attachment: attachment),
+        child: FileView(attachment: attachment, openView: openView),
       );
     }
   }

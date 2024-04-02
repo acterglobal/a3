@@ -132,6 +132,7 @@ class _PinListItemConsumerState extends ConsumerState<PinListItem> {
             AttachmentItem(
               key: Key(attachmentId),
               attachment: list[0],
+              openView: false,
             ),
           );
         }

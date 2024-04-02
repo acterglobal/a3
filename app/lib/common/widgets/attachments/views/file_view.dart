@@ -10,7 +10,12 @@ import 'package:open_filex/open_filex.dart';
 
 class FileView extends ConsumerWidget {
   final Attachment attachment;
-  const FileView({super.key, required this.attachment});
+  final bool? openView;
+  const FileView({
+    super.key,
+    required this.attachment,
+    this.openView = true,
+  });
 
   void _openFile(File f) async {
     await OpenFilex.open(
@@ -92,7 +97,7 @@ class FileView extends ConsumerWidget {
 
   Widget fileUI(BuildContext context, AttachmentMediaState mediaState) {
     return InkWell(
-      onTap: () => _openFile(mediaState.mediaFile!),
+      onTap: openView! ? () => _openFile(mediaState.mediaFile!) : null,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(6),
         child: const Icon(Icons.description, size: 22),

@@ -10,7 +10,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // Video attachment preview
 class VideoView extends ConsumerWidget {
   final Attachment attachment;
-  const VideoView({super.key, required this.attachment});
+  final bool? openView;
+  const VideoView({super.key, required this.attachment, this.openView = true});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -95,15 +96,17 @@ class VideoView extends ConsumerWidget {
   Widget videoUI(BuildContext context, AttachmentMediaState mediaState) {
     final msgContent = attachment.msgContent();
     return InkWell(
-      onTap: () => showAdaptiveDialog(
-        context: context,
-        barrierDismissible: false,
-        useRootNavigator: false,
-        builder: (ctx) => VideoDialog(
-          title: msgContent.body(),
-          videoFile: mediaState.mediaFile!,
-        ),
-      ),
+      onTap: openView!
+          ? () => showAdaptiveDialog(
+                context: context,
+                barrierDismissible: false,
+                useRootNavigator: false,
+                builder: (ctx) => VideoDialog(
+                  title: msgContent.body(),
+                  videoFile: mediaState.mediaFile!,
+                ),
+              )
+          : null,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(6),
         child: ActerVideoPlayer(
