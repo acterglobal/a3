@@ -117,6 +117,7 @@ void _onTapFileSelection(
     }).toList();
 
     if (context.mounted) {
+      Navigator.of(context).pop();
       attachmentConfirmationDialog(
         context,
         manager,
