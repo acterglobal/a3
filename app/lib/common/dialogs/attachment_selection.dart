@@ -39,7 +39,9 @@ void showAttachmentSelection(
 }
 
 void _onTapCameraSelection(
-    BuildContext context, AttachmentsManager manager) async {
+  BuildContext context,
+  AttachmentsManager manager,
+) async {
   XFile? imageFile = await ImagePicker().pickImage(source: ImageSource.camera);
   if (imageFile != null) {
     File file = File(imageFile.path);
@@ -56,7 +58,9 @@ void _onTapCameraSelection(
 }
 
 void _onTapVideoSelection(
-    BuildContext context, AttachmentsManager manager) async {
+  BuildContext context,
+  AttachmentsManager manager,
+) async {
   XFile? videoFile = await ImagePicker().pickVideo(source: ImageSource.gallery);
   List<AttachmentInfo> newAttachments = [];
   if (videoFile != null) {
