@@ -32,8 +32,6 @@ class AttachmentDraftItem extends StatelessWidget {
           fit: BoxFit.cover,
         ),
       );
-    } else if (type == AttachmentType.audio) {
-      return const Icon(Atlas.file_sound_thin);
     } else if (type == AttachmentType.video) {
       return const Icon(Atlas.file_video_thin);
     } else {

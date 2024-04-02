@@ -73,7 +73,6 @@ void showAttachmentSelection(
               }
             },
             onTapFile: () {
-              Navigator.of(context).pop();
               _onTapFileSelection(
                 context,
                 manager,
