@@ -1,5 +1,4 @@
 import 'package:acter/common/models/attachment_media_state/attachment_media_state.dart';
-import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/notifiers/attachments_notifiers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:riverpod/riverpod.dart';
@@ -17,7 +16,8 @@ final attachmentsProvider = FutureProvider.family
   return (await liveManager.attachments()).toList();
 });
 
-final attachmentMediaStateProvider = StateNotifierProvider.family.autoDispose<
-    AttachmentMediaNotifier, AttachmentMediaState, AttachmentMediaInfo>(
-  (ref, mediaInfo) => AttachmentMediaNotifier(mediaInfo: mediaInfo, ref: ref),
+final attachmentMediaStateProvider = StateNotifierProvider.family
+    .autoDispose<AttachmentMediaNotifier, AttachmentMediaState, Attachment>(
+  (ref, attachment) =>
+      AttachmentMediaNotifier(attachment: attachment, ref: ref),
 );

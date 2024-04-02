@@ -2,8 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:acter/common/models/attachment_media_state/attachment_media_state.dart';
-import 'package:acter/common/models/types.dart';
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
@@ -43,25 +41,22 @@ class AttachmentsManagerNotifier
 
 class AttachmentMediaNotifier extends StateNotifier<AttachmentMediaState> {
   final Ref ref;
-  final AttachmentMediaInfo mediaInfo;
+  final Attachment attachment;
   AttachmentMediaNotifier({
-    required this.mediaInfo,
+    required this.attachment,
     required this.ref,
   }) : super(const AttachmentMediaState()) {
     _init();
   }
 
   void _init() async {
-    final spaceId = mediaInfo.spaceId;
-    final attachmentId = mediaInfo.attachmentId;
-    final space = await ref.read(spaceProvider(spaceId).future);
     state = state.copyWith(
       mediaLoadingState: const AttachmentMediaLoadingState.loading(),
     );
 
     try {
       //Get media path if already downloaded
-      final mediaPath = await space.mediaPath(attachmentId, false);
+      final mediaPath = await attachment.mediaPath(false);
       if (mediaPath.text() != null) {
         state = state.copyWith(
           mediaFile: File(mediaPath.text()!),
@@ -84,15 +79,10 @@ class AttachmentMediaNotifier extends StateNotifier<AttachmentMediaState> {
   }
 
   Future<void> downloadMedia() async {
-    final spaceId = mediaInfo.spaceId;
-    final attachmentId = mediaInfo.attachmentId;
-
     state = state.copyWith(isDownloading: true);
-    final space = await ref.read(spaceProvider(spaceId).future);
     //Download media if media path is not available
     final tempDir = await getTemporaryDirectory();
-    final result = await space.downloadMedia(
-      attachmentId,
+    final result = await attachment.downloadMedia(
       null,
       tempDir.path,
     );

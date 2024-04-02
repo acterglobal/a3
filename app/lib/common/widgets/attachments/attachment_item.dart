@@ -1,5 +1,4 @@
 import 'package:acter/common/models/attachment_media_state/attachment_media_state.dart';
-import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/attachment_providers.dart';
 import 'package:acter/common/widgets/attachments/attachment_container.dart';
 import 'package:acter/common/widgets/image_dialog.dart';
@@ -55,15 +54,11 @@ class _ImageView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final attachmentId = attachment.attachmentIdStr();
-    final spaceId = attachment.roomIdStr();
-    final AttachmentMediaInfo mediaInfo =
-        (attachmentId: attachmentId, spaceId: spaceId);
-    final mediaState = ref.watch(attachmentMediaStateProvider(mediaInfo));
+    final mediaState = ref.watch(attachmentMediaStateProvider(attachment));
     if (mediaState.mediaLoadingState.isLoading || mediaState.isDownloading) {
       return loadingIndication(context);
     } else if (mediaState.mediaFile == null) {
-      return imagePlaceholder(context, mediaInfo, mediaState, ref);
+      return imagePlaceholder(context, attachment, mediaState, ref);
     } else {
       return imageUI(context, mediaState);
     }
@@ -79,7 +74,7 @@ class _ImageView extends ConsumerWidget {
 
   Widget imagePlaceholder(
     BuildContext context,
-    AttachmentMediaInfo mediaInfo,
+    Attachment attachment,
     AttachmentMediaState mediaState,
     WidgetRef ref,
   ) {
@@ -98,7 +93,7 @@ class _ImageView extends ConsumerWidget {
           );
         } else {
           ref
-              .read(attachmentMediaStateProvider(mediaInfo).notifier)
+              .read(attachmentMediaStateProvider(attachment).notifier)
               .downloadMedia();
         }
       },
