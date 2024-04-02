@@ -288,9 +288,7 @@ class _PasswordConfirmState extends State<PasswordConfirm> {
   }
 
   void onSubmit(BuildContext context) {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
     Navigator.pop(context, newPassword.text);
   }
 }

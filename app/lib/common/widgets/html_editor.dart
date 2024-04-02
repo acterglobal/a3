@@ -112,7 +112,6 @@ class HtmlEditorState extends State<HtmlEditor> {
   late EditorScrollController editorScrollController;
   final TextDirection _textDirection = TextDirection.ltr;
   // we store this to the stream stays alive
-  // ignore: unused_field
   StreamSubscription<(TransactionTime, Transaction)>? _changeListener;
 
   @override

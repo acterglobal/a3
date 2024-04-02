@@ -41,9 +41,14 @@ class NotificationService: UNNotificationServiceExtension {
             Logger.push.error("Couldn't get base application dir")
             return discard()
         }
+        guard let mediaCachePath = getCacheDirectoryPath() else {
+            Logger.push.error("Couldn't get base cache dir")
+            return discard()
+        }
 
         Task {
             await handle(basePath: basePath,
+                         mediaCachePath: mediaCachePath,
                          session: sessionKey,
                          roomId: roomId,
                          eventId: eventId,
@@ -54,6 +59,7 @@ class NotificationService: UNNotificationServiceExtension {
 
 
     private func handle(basePath: String,
+                        mediaCachePath: String,
                         session: String,
                         roomId: String,
                         eventId: String,
@@ -62,7 +68,7 @@ class NotificationService: UNNotificationServiceExtension {
 
         do {
             Logger.push.log("Session found: \(session, privacy: .public); BasePath: \(basePath, privacy: .public)");
-            let notification = try await getNotificationItem(basePath, session, roomId, eventId, NSTemporaryDirectory());
+            let notification = try await getNotificationItem(basePath, mediaCachePath, session, roomId, eventId, NSTemporaryDirectory());
             
             if let bestAttemptContent = bestAttemptContent {
                 bestAttemptContent.title = notification.title;
@@ -164,6 +170,14 @@ class NotificationService: UNNotificationServiceExtension {
     internal func getAppDirectoryPath() -> String? {
         let paths = NSSearchPathForDirectoriesInDomains(
             FileManager.SearchPathDirectory.documentDirectory,
+            FileManager.SearchPathDomainMask.userDomainMask,
+            true)
+        return paths.first
+    }
+
+    internal func getCacheDirectoryPath() -> String? {
+        let paths = NSSearchPathForDirectoriesInDomains(
+            FileManager.SearchPathDirectory.cachesDirectory,
             FileManager.SearchPathDomainMask.userDomainMask,
             true)
         return paths.first

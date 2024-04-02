@@ -219,31 +219,26 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   Future<void> handleSubmit(BuildContext context) async {
-    if (formKey.currentState!.validate()) {
-      final network = ref.read(networkAwareProvider);
-      if (!inCI && network == NetworkStatus.Off) {
-        showNoInternetNotification();
-      } else {
-        final authNotifier = ref.read(authStateProvider.notifier);
-        final loginSuccess = await authNotifier.login(
-          username.text,
-          password.text,
-        );
+    if (!formKey.currentState!.validate()) return;
+    final network = ref.read(networkAwareProvider);
+    if (!inCI && network == NetworkStatus.Off) {
+      showNoInternetNotification();
+      return;
+    }
+    final authNotifier = ref.read(authStateProvider.notifier);
+    final loginSuccess = await authNotifier.login(
+      username.text,
+      password.text,
+    );
 
-        // We are doing as expected, but the lints triggers.
-        // ignore: use_build_context_synchronously
-        if (!context.mounted) {
-          return;
-        }
-        if (loginSuccess == null) {
-          // no message means, login was successful.
-          context.goNamed(Routes.main.name);
-        } else {
-          EasyLoading.showError(
-            loginSuccess,
-          );
-        }
-      }
+    // We are doing as expected, but the lints triggers.
+    // ignore: use_build_context_synchronously
+    if (!context.mounted) return;
+    if (loginSuccess == null) {
+      // no message means, login was successful.
+      context.goNamed(Routes.main.name);
+    } else {
+      EasyLoading.showError(loginSuccess);
     }
   }
 }

@@ -51,9 +51,8 @@ class _AddUserToBlockState extends State<AddUserToBlock> {
         ),
         ElevatedButton(
           onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              Navigator.pop(context, userName.text);
-            }
+            if (!_formKey.currentState!.validate()) return;
+            Navigator.pop(context, userName.text);
           },
           child: Text(L10n.of(context).block),
         ),

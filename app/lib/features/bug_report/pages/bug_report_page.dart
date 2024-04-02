@@ -236,12 +236,11 @@ class _BugReportState extends ConsumerState<BugReportPage> {
                     : ElevatedButton(
                         key: BugReportPage.submitBtn,
                         onPressed: () async {
-                          if (formKey.currentState!.validate()) {
-                            if (await reportBug(context)) {
-                              if (context.mounted && context.canPop()) {
-                                context.pop();
-                              }
-                            }
+                          if (!formKey.currentState!.validate()) return;
+                          if (!await reportBug(context)) return;
+                          if (!context.mounted) return;
+                          if (context.canPop()) {
+                            context.pop();
                           }
                         },
                         child: const Text('Submit'),

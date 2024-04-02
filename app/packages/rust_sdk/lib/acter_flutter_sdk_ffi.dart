@@ -858,16 +858,21 @@ class Api {
   /// Create a new client from the restore token
   Future<Client> loginWithToken(
     String basePath,
+    String mediaCacheBasePath,
     String restoreToken,
   ) {
     final tmp0 = basePath;
-    final tmp4 = restoreToken;
+    final tmp4 = mediaCacheBasePath;
+    final tmp8 = restoreToken;
     var tmp1 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
     var tmp5 = 0;
     var tmp6 = 0;
     var tmp7 = 0;
+    var tmp9 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
     final tmp0_0 = utf8.encode(tmp0);
     tmp2 = tmp0_0.length;
 
@@ -884,20 +889,31 @@ class Api {
     tmp5_1.setAll(0, tmp4_0);
     tmp5 = tmp5_0.address;
     tmp7 = tmp6;
-    final tmp8 = _loginWithToken(
+    final tmp8_0 = utf8.encode(tmp8);
+    tmp10 = tmp8_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp9_0 = this.__allocate(tmp10 * 1, 1);
+    final Uint8List tmp9_1 = tmp9_0.asTypedList(tmp10);
+    tmp9_1.setAll(0, tmp8_0);
+    tmp9 = tmp9_0.address;
+    tmp11 = tmp10;
+    final tmp12 = _loginWithToken(
       tmp1,
       tmp2,
       tmp3,
       tmp5,
       tmp6,
       tmp7,
+      tmp9,
+      tmp10,
+      tmp11,
     );
-    final tmp10 = tmp8;
-    final ffi.Pointer<ffi.Void> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-    final tmp10_1 = _Box(this, tmp10_0, "__login_with_token_future_drop");
-    tmp10_1._finalizer = this._registerFinalizer(tmp10_1);
-    final tmp9 = _nativeFuture(tmp10_1, this.__loginWithTokenFuturePoll);
-    return tmp9;
+    final tmp14 = tmp12;
+    final ffi.Pointer<ffi.Void> tmp14_0 = ffi.Pointer.fromAddress(tmp14);
+    final tmp14_1 = _Box(this, tmp14_0, "__login_with_token_future_drop");
+    tmp14_1._finalizer = this._registerFinalizer(tmp14_1);
+    final tmp13 = _nativeFuture(tmp14_1, this.__loginWithTokenFuturePoll);
+    return tmp13;
   }
 
   /// Create an anonymous client connecting to the homeserver
@@ -13982,10 +13998,16 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
           )>>("__login_with_token");
 
   late final _loginWithToken = _loginWithTokenPtr.asFunction<
       int Function(
+        int,
+        int,
+        int,
         int,
         int,
         int,

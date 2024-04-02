@@ -206,15 +206,14 @@ class _PinDescriptionWidgetConsumerState
             pinEditNotifier.setEditMode(false);
           },
           onSave: () async {
-            if (widget.formkey.currentState!.validate()) {
-              pinEditNotifier.setEditMode(false);
-              final htmlText = textEditorState.intoHtml();
-              final plainText = textEditorState.intoMarkdown();
-              pinEditNotifier.setHtml(htmlText);
-              pinEditNotifier.setMarkdown(plainText);
-              pinEditNotifier.setLink(widget.linkController.text);
-              await pinEditNotifier.onSave();
-            }
+            if (!widget.formkey.currentState!.validate()) return;
+            pinEditNotifier.setEditMode(false);
+            final htmlText = textEditorState.intoHtml();
+            final plainText = textEditorState.intoMarkdown();
+            pinEditNotifier.setHtml(htmlText);
+            pinEditNotifier.setMarkdown(plainText);
+            pinEditNotifier.setLink(widget.linkController.text);
+            await pinEditNotifier.onSave();
           },
         ),
       ],

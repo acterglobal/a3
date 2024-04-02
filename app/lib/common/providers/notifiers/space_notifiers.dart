@@ -9,8 +9,6 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::common::space');
 
-// ignore_for_file: unused_field
-
 class AsyncSpaceProfileDataNotifier
     extends FamilyAsyncNotifier<ProfileData, Space> {
   late Stream<bool> _listener;

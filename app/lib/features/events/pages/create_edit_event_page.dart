@@ -38,7 +38,7 @@ class CreateEditEventPage extends ConsumerStatefulWidget {
 
 class CreateEditEventPageConsumerState
     extends ConsumerState<CreateEditEventPage> {
-  final _eventFromKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
   final _eventNameController = TextEditingController();
   final _startDateController = TextEditingController();
   final _startTimeController = TextEditingController();
@@ -125,7 +125,7 @@ class CreateEditEventPageConsumerState
   Widget _buildBody() {
     return SingleChildScrollView(
       child: Form(
-        key: _eventFromKey,
+        key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -441,7 +441,7 @@ class CreateEditEventPageConsumerState
 
   // Create event handler
   Future<void> _handleCreateEvent() async {
-    if (!(_eventFromKey.currentState!.validate())) return;
+    if (!_formKey.currentState!.validate()) return;
 
     EasyLoading.show(
       status: L10n.of(context).creatingCalendarEvent,
@@ -513,7 +513,7 @@ class CreateEditEventPageConsumerState
 
   // Edit event handler
   Future<void> _handleUpdateEvent() async {
-    if (!(_eventFromKey.currentState!.validate())) return;
+    if (!_formKey.currentState!.validate()) return;
 
     EasyLoading.show(
       status: L10n.of(context).updatingEvent,

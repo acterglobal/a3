@@ -179,12 +179,7 @@ class _TaskTitleState extends State<TaskTitle> {
                   child: const Icon(Atlas.xmark_circle_thin),
                 ),
               ),
-              onFieldSubmitted: (value) async {
-                if (_formKey.currentState!.validate()) {
-                  _formKey.currentState!.save();
-                  await _handleSubmit();
-                }
-              },
+              onFieldSubmitted: _handleSubmit,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return L10n.of(context).aTaskMustHaveATitle;
@@ -207,27 +202,28 @@ class _TaskTitleState extends State<TaskTitle> {
           );
   }
 
-  Future<void> _handleSubmit() async {
+  Future<void> _handleSubmit(String value) async {
+    if (!_formKey.currentState!.validate()) return;
+    _formKey.currentState!.save();
     final newString = _textController.text;
-    if (newString != widget.task.title()) {
-      try {
-        EasyLoading.show(status: L10n.of(context).updatingTaskTitle);
-        final updater = widget.task.updateBuilder();
-        updater.title(newString);
-        await updater.send();
-        if (!mounted) return;
-        EasyLoading.showToast(
-          L10n.of(context).titleUpdated,
-          toastPosition: EasyLoadingToastPosition.bottom,
-        );
-        setState(() => editMode = false);
-      } catch (e) {
-        EasyLoading.showError(
-          '${L10n.of(context).failedTo('updateTitle')}: $e',
-        );
-      }
+    if (newString == widget.task.title()) {
+      setState(() => editMode = false);
+      return;
     }
-    setState(() => editMode = false);
+    try {
+      EasyLoading.show(status: L10n.of(context).updatingTaskTitle);
+      final updater = widget.task.updateBuilder();
+      updater.title(newString);
+      await updater.send();
+      if (!mounted) return;
+      EasyLoading.showToast(
+        L10n.of(context).titleUpdated,
+        toastPosition: EasyLoadingToastPosition.bottom,
+      );
+      setState(() => editMode = false);
+    } catch (e) {
+      EasyLoading.showError('${L10n.of(context).failedTo('updateTitle')}: $e');
+    }
   }
 }
 
