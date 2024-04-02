@@ -8,16 +8,13 @@ import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::common::chat');
 
-// ignore_for_file: unused_field
-
 class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, Convo> {
   late Stream<bool> _listener;
   late StreamSubscription<bool> _poller;
 
   @override
   FutureOr<Convo> build(Convo arg) async {
-    final convo = arg;
-    final convoId = convo.getRoomIdStr();
+    final convoId = arg.getRoomIdStr();
     final client = ref.watch(alwaysClientProvider);
     _listener = client.subscribeStream(convoId); // keep it resident in memory
     _poller = _listener.listen(
@@ -32,7 +29,7 @@ class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, Convo> {
       },
     );
     ref.onDispose(() => _poller.cancel());
-    return convo;
+    return arg;
   }
 }
 
@@ -45,7 +42,7 @@ class LatestMsgNotifier extends StateNotifier<RoomMessage?> {
   LatestMsgNotifier(this.ref, this.convo) : super(null) {
     final convoId = convo.getRoomIdStr();
     state = convo.latestMessage();
-    final client = ref.watch(alwaysClientProvider);
+    final client = ref.read(alwaysClientProvider);
     _listener = client.subscribeStream(
       '$convoId::latest_message',
     ); // keep it resident in memory

@@ -6,7 +6,6 @@ import 'package:riverpod/riverpod.dart';
 
 class InvitationListNotifier extends Notifier<List<Invitation>> {
   late Stream<FfiListInvitation> _listener;
-  // ignore: unused_field
   late StreamSubscription<FfiListInvitation> _poller;
 
   @override

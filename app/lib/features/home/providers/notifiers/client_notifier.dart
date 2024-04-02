@@ -14,7 +14,7 @@ class ClientNotifier extends StateNotifier<Client?> {
   }
 
   Future<void> _loadUp(Ref ref) async {
-    final asyncSdk = await ref.watch(sdkProvider.future);
+    final asyncSdk = await ref.read(sdkProvider.future);
     PlatformDispatcher.instance.onError = (exception, stackTrace) {
       _log.severe('platform dispatch error', exception, stackTrace);
       return true; // make this error handled

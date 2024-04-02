@@ -42,50 +42,45 @@ class _CreateTaskListSheetConsumerState
   }
 
   Future<void> submitForm(BuildContext context) async {
-    if (_formKey.currentState!.validate()) {
-      DefaultDialog(
-        title: Text(
-          L10n.of(context).postingTaskList,
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
-        isLoader: true,
-      );
-      try {
-        final spaceId = ref.read(selectedSpaceIdProvider);
-        final space = await ref.read(spaceProvider(spaceId!).future);
-        final taskListDraft = space.taskListDraft();
-        final text = ref.read(textProvider);
-        taskListDraft.name(_titleController.text);
-        if (text.isNotEmpty) {
-          taskListDraft.descriptionMarkdown(text);
-        }
-        final taskListId = await taskListDraft.send();
-        // reset providers
-
-        _titleController.text = '';
-        ref.read(textProvider.notifier).state = '';
-
-        // We are doing as expected, but the lints triggers.
-        // ignore: use_build_context_synchronously
-        if (!context.mounted) {
-          return;
-        }
-        Navigator.of(context, rootNavigator: true).pop();
-        context.pushNamed(
-          Routes.taskList.name,
-          pathParameters: {'taskListId': taskListId.toString()},
-        );
-      } catch (e) {
-        // We are doing as expected, but the lints triggers.
-        // ignore: use_build_context_synchronously
-        if (!context.mounted) {
-          return;
-        }
-        customMsgSnackbar(
-          context,
-          '${L10n.of(context).failedTo('createTaskList')}: $e',
-        );
+    if (!_formKey.currentState!.validate()) return;
+    DefaultDialog(
+      title: Text(
+        L10n.of(context).postingTaskList,
+        style: Theme.of(context).textTheme.titleSmall,
+      ),
+      isLoader: true,
+    );
+    try {
+      final spaceId = ref.read(selectedSpaceIdProvider);
+      final space = await ref.read(spaceProvider(spaceId!).future);
+      final taskListDraft = space.taskListDraft();
+      final text = ref.read(textProvider);
+      taskListDraft.name(_titleController.text);
+      if (text.isNotEmpty) {
+        taskListDraft.descriptionMarkdown(text);
       }
+      final taskListId = await taskListDraft.send();
+      // reset providers
+
+      _titleController.text = '';
+      ref.read(textProvider.notifier).state = '';
+
+      // We are doing as expected, but the lints triggers.
+      // ignore: use_build_context_synchronously
+      if (!context.mounted) return;
+      Navigator.of(context, rootNavigator: true).pop();
+      context.pushNamed(
+        Routes.taskList.name,
+        pathParameters: {'taskListId': taskListId.toString()},
+      );
+    } catch (e) {
+      // We are doing as expected, but the lints triggers.
+      // ignore: use_build_context_synchronously
+      if (!context.mounted) return;
+      customMsgSnackbar(
+        context,
+        '${L10n.of(context).failedTo('createTaskList')}: $e',
+      );
     }
   }
 

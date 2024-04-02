@@ -73,11 +73,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
       ),
       confirmActionTitle: L10n.of(context).createPin(''),
       cancelActionTitle: null,
-      confirmActionOnPressed: () async {
-        if (_formKey.currentState!.validate()) {
-          _handleCreatePin();
-        }
-      },
+      confirmActionOnPressed: _handleCreatePin,
     );
   }
 
@@ -153,7 +149,8 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
     );
   }
 
-  void _handleCreatePin() async {
+  Future<void> _handleCreatePin() async {
+    if (!_formKey.currentState!.validate()) return;
     EasyLoading.show(status: 'Creating pin...', dismissOnTap: false);
     try {
       final spaceId = ref.read(selectedSpaceIdProvider);
@@ -185,9 +182,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
       EasyLoading.showSuccess('Pin created successfully');
       // We are doing as expected, but the lints triggers.
       // ignore: use_build_context_synchronously
-      if (!context.mounted) {
-        return;
-      }
+      if (!context.mounted) return;
 
       // ignore: use_build_context_synchronously
       Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
@@ -199,9 +194,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
     } catch (e) {
       // We are doing as expected, but the lints triggers.
       // ignore: use_build_context_synchronously
-      if (!context.mounted) {
-        return;
-      }
+      if (!context.mounted) return;
       EasyLoading.showError('An error occured creating pin $e');
     }
   }
