@@ -26,33 +26,27 @@ use futures::stream::StreamExt;
 use matrix_sdk::{
     deserialized_responses::SyncOrStrippedState,
     event_handler::{Ctx, EventHandlerHandle},
-    media::{MediaFormat, MediaRequest},
     room::{Messages, MessagesOptions, Room as SdkRoom},
 };
 use matrix_sdk_ui::timeline::RoomExt;
 use ruma_client_api::state::send_state_event;
 use ruma_common::{
-    directory::RoomTypeFilter, serde::Raw, EventId, OwnedRoomAliasId, OwnedRoomId, RoomAliasId,
-    RoomId, RoomOrAliasId, ServerName,
+    directory::RoomTypeFilter, serde::Raw, OwnedRoomAliasId, OwnedRoomId, RoomAliasId, RoomId,
+    RoomOrAliasId, ServerName,
 };
 use ruma_events::{
     reaction::SyncReactionEvent,
-    room::{
-        message::{MessageType, RoomMessageEvent},
-        redaction::{RoomRedactionEvent, SyncRoomRedactionEvent},
-    },
+    room::redaction::{RoomRedactionEvent, SyncRoomRedactionEvent},
     space::child::SpaceChildEventContent,
     AnyStateEventContent, MessageLikeEvent, StateEventType,
 };
 use serde::{Deserialize, Serialize};
-use std::{io::Write, ops::Deref, path::PathBuf, sync::Arc};
+use std::{ops::Deref, sync::Arc};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::{error, trace, warn};
 
-use crate::{
-    Client, OptionString, PublicSearchResult, Room, ThumbnailSize, TimelineStream, RUNTIME,
-};
+use crate::{Client, PublicSearchResult, Room, TimelineStream, RUNTIME};
 
 use super::utils::{remap_for_diff, ApiVectorDiff};
 

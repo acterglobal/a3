@@ -1,2 +1,0 @@
-- [feat.]: More interactivity comes with Attachments, now image and video attachments are enabled to be previewed in full screen while other files can be opened natively.
-- [fix]: Attachments selection is also now shown on the desktop, allowing you to choose specific file types for upload.
