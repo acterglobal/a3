@@ -239,6 +239,12 @@ object UserProfile {
 }
 
 object RoomProfile {
+    /// get room id
+    fn room_id() -> RoomId;
+
+    /// get room id as String
+    fn room_id_str() -> string;
+
     /// whether to have avatar
     fn has_avatar() -> bool;
 
@@ -2543,14 +2549,20 @@ object Invitation {
     /// get the room id of this invitation
     fn room_id() -> RoomId;
 
-    /// get the room name of this invitation
-    fn room_name() -> Future<Result<string>>;
+    /// the RoomId as a String
+    fn room_id_str() -> string;
+
+    /// get the room of this invitation
+    fn room() -> Room;
 
     /// get the user id of this invitation sender
-    fn sender() -> UserId;
+    fn sender_id() -> UserId;
+
+    /// get the user id of this invitation sender as string
+    fn sender_id_str() -> string;
 
     /// get the user profile that contains avatar and display name
-    fn get_sender_profile() -> Future<Result<UserProfile>>;
+    fn sender_profile() -> Option<UserProfile>;
 
     /// accept invitation about me to this room
     fn accept() -> Future<Result<bool>>;

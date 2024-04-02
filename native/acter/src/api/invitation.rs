@@ -2,7 +2,7 @@ use anyhow::{bail, Context, Result};
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
-    room::Room,
+    room::{Room, RoomMember},
     Client as SdkClient, RoomMemberships, RoomState,
 };
 use ruma_client_api::user_directory::search_users;
@@ -19,11 +19,17 @@ use super::{
 };
 
 #[derive(Clone, Debug)]
+enum Sender {
+    IdOnly(OwnedUserId),
+    Member(RoomMember),
+}
+
+#[derive(Clone, Debug)]
 pub struct Invitation {
     client: SdkClient,
     origin_server_ts: Option<u64>,
     room: Room,
-    sender: OwnedUserId,
+    sender: Sender,
 }
 
 impl Invitation {
@@ -31,41 +37,37 @@ impl Invitation {
         self.origin_server_ts
     }
 
+    pub fn room(&self) -> Room {
+        self.room.clone()
+    }
+
     pub fn room_id(&self) -> OwnedRoomId {
         self.room.room_id().to_owned()
     }
 
-    pub async fn room_name(&self) -> Result<String> {
-        let client = self.client.clone();
-        let room_id = self.room.room_id().to_owned();
-        let room = client.get_room(&room_id).context("Room not found")?;
-        if !matches!(room.state(), RoomState::Invited) {
-            bail!("Unable to get a room we are not invited");
+    pub fn room_id_str(&self) -> String {
+        self.room.room_id().to_string()
+    }
+
+    pub fn sender_id(&self) -> OwnedUserId {
+        match &self.sender {
+            Sender::IdOnly(i) => i.clone(),
+            Sender::Member(m) => m.user_id().to_owned(),
         }
-        RUNTIME
-            .spawn(async move {
-                let name = room.display_name().await?;
-                Ok(name.to_string())
-            })
-            .await?
     }
 
-    pub fn sender(&self) -> OwnedUserId {
-        self.sender.clone()
+    pub fn sender_id_str(&self) -> String {
+        match &self.sender {
+            Sender::IdOnly(i) => i.to_string(),
+            Sender::Member(m) => m.user_id().to_string(),
+        }
     }
 
-    pub async fn get_sender_profile(&self) -> Result<UserProfile> {
-        let room = self.room.clone();
-        let sender = self.sender.clone();
-        RUNTIME
-            .spawn(async move {
-                let member = room
-                    .get_member(&sender)
-                    .await?
-                    .context("Unable to find sender in room")?;
-                Ok(UserProfile::from_member(member))
-            })
-            .await?
+    pub fn sender_profile(&self) -> Option<UserProfile> {
+        match &self.sender {
+            Sender::IdOnly(i) => None,
+            Sender::Member(m) => Some(UserProfile::from_member(m.clone())),
+        }
     }
 
     pub async fn accept(&self) -> Result<bool> {
@@ -205,7 +207,7 @@ impl InvitationController {
                     client: client.clone(),
                     origin_server_ts: None,
                     room: room.clone(),
-                    sender: inviter.user_id().to_owned(),
+                    sender: Sender::Member(inviter),
                 };
                 invitations.push(invitation);
             }
@@ -241,12 +243,12 @@ impl InvitationController {
                 client: client.clone(),
                 origin_server_ts: Some(since_the_epoch.as_millis() as u64),
                 room: room.clone(),
-                sender: sender.to_owned(),
+                sender: Sender::IdOnly(sender.to_owned()),
             };
             let mut invitations = self.invitations.lock_mut();
             if !invitations
                 .iter()
-                .any(|x| x.room_id() == *room_id && x.sender == *sender)
+                .any(|x| x.room_id() == *room_id && x.sender_id() == *sender)
             {
                 invitations.insert(0, invitation);
             }

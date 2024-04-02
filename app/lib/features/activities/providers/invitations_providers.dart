@@ -1,4 +1,5 @@
-import 'package:acter/common/models/invitation_profile.dart';
+import 'package:acter/common/models/profile_data.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/activities/providers/notifiers/invitation_list_notifier.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:logging/logging.dart';
@@ -11,19 +12,20 @@ final invitationListProvider =
   () => InvitationListNotifier(),
 );
 
-final invitationProfileProvider =
-    FutureProvider.family<InvitationProfile, Invitation>(
-        (ref, invitation) async {
-  String? displayName;
-  FfiBufferUint8? avatar;
-  try {
-    UserProfile profile = await invitation.getSenderProfile();
-    displayName = profile.getDisplayName();
-    avatar = (await profile.getAvatar(null)).data();
-  } catch (e, s) {
-    _log.severe('failed to load profile', e, s);
+final invitationProfileProvider = FutureProvider.autoDispose.family<
+    (
+      ProfileData,
+      ProfileData?,
+    ),
+    Invitation>((ref, invitation) async {
+  final roomProfile =
+      await ref.watch(roomProfileDataProvider(invitation.roomIdStr()).future);
+  UserProfile? user = invitation.senderProfile();
+  if (user == null) {
+    return (roomProfile, null);
   }
-  String? roomName = await invitation.roomName();
-  String roomId = invitation.roomId().toString();
-  return InvitationProfile(displayName, avatar, roomName, roomId);
+
+  final displayName = user.getDisplayName();
+  final avatar = await user.getAvatar(null);
+  return (roomProfile, ProfileData(displayName, avatar.data()));
 });

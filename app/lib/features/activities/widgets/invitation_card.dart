@@ -1,7 +1,9 @@
+import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/activities/providers/invitations_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Invitation;
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show Invitation, UserProfile;
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -21,8 +23,12 @@ class InvitationCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final invitationProfile = ref.watch(invitationProfileProvider(invitation));
+    final roomId = invitation.roomIdStr();
+    final userId = invitation.senderIdStr();
     return invitationProfile.when(
       data: (data) {
+        final inviterProfile = data.$2;
+        final room = data.$1;
         return Card(
           margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
           child: Column(
@@ -32,20 +38,22 @@ class InvitationCard extends ConsumerWidget {
                 leading: ActerAvatar(
                   mode: DisplayMode.Space,
                   avatarInfo: AvatarInfo(
-                    uniqueId: data.roomId,
-                    displayName: data.displayName,
-                    avatar: data.getAvatarImage(),
+                    uniqueId: roomId,
+                    displayName: room.displayName,
+                    avatar: room.getAvatarImage(),
                   ),
-                  size: 20,
+                  size: 48,
                 ),
-                title: Text(data.roomName ?? data.roomId),
-                subtitle: RichText(
-                  text: TextSpan(
-                    text: L10n.of(context).invitationText2,
-                    children: <TextSpan>[
-                      TextSpan(text: invitation.sender().toString()),
-                    ],
-                  ),
+                title: Text(room.displayName ?? roomId),
+                subtitle: Row(
+                  children: [
+                    Text(L10n.of(context).invitationText2),
+                    inviter(
+                      context,
+                      inviterProfile,
+                      userId,
+                    ),
+                  ],
                 ),
               ),
               Divider(
@@ -65,8 +73,7 @@ class InvitationCard extends ConsumerWidget {
                     const SizedBox(width: 15),
                     // Accept Invitation Button
                     ElevatedButton(
-                      onPressed: () =>
-                          _onTapAcceptInvite(ref, context, data.roomId),
+                      onPressed: () => _onTapAcceptInvite(ref, context, roomId),
                       child: Text(L10n.of(context).accept),
                     ),
                   ],
@@ -76,12 +83,45 @@ class InvitationCard extends ConsumerWidget {
           ),
         );
       },
-      error: (error, stackTrace) => const Text('Error loading invitation'),
-      loading: () => const Skeletonizer(
-        child: Card(
-          child: ListTile(leading: Text('Something')),
+      error: (error, stackTrace) => Card(
+        child: ListTile(
+          title: Text('Error loading invitation: $error'),
         ),
       ),
+      loading: () => Skeletonizer(
+        child: Card(
+          child: ListTile(title: Text(roomId)),
+        ),
+      ),
+    );
+  }
+
+  Widget inviter(BuildContext context, ProfileData? profile, String userId) {
+    if (profile == null) {
+      return Chip(
+        visualDensity: VisualDensity.compact,
+        avatar: ActerAvatar(
+          mode: DisplayMode.DM,
+          avatarInfo: AvatarInfo(
+            uniqueId: userId,
+          ),
+          size: 24,
+        ),
+        label: Text(userId),
+      );
+    }
+    return Chip(
+      visualDensity: VisualDensity.compact,
+      avatar: ActerAvatar(
+        mode: DisplayMode.DM,
+        avatarInfo: AvatarInfo(
+          uniqueId: userId,
+          displayName: profile.displayName,
+          avatar: profile.getAvatarImage(),
+        ),
+        size: 24,
+      ),
+      label: Text(profile.displayName ?? userId),
     );
   }
 
