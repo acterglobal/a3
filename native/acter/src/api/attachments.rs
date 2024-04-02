@@ -9,7 +9,7 @@ use matrix_sdk::{
     room::Room,
     Client as SdkClient, RoomState,
 };
-use ruma_common::{OwnedEventId, OwnedTransactionId, EventId};
+use ruma_common::{EventId, OwnedEventId, OwnedTransactionId};
 use ruma_events::{
     room::message::{
         AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
@@ -256,7 +256,6 @@ impl Attachment {
                         }
                         _ => bail!("This message type is not downloadable"),
                     },
-                    
                 };
                 let Some(request) = request else {
                     warn!("Content info or thumbnail source not found");
@@ -300,7 +299,6 @@ impl Attachment {
     }
 
     pub async fn media_path(&self, is_thumb: bool) -> Result<OptionString> {
-        
         let room = self.room.clone();
         let client = self.room.client();
 
@@ -315,18 +313,20 @@ impl Attachment {
                         AttachmentContent::Image(_)
                             | AttachmentContent::Video(_)
                             | AttachmentContent::File(_)
-                            | AttachmentContent::Location(_) |AttachmentContent::Fallback(_)
+                            | AttachmentContent::Location(_)
+                            | AttachmentContent::Fallback(_)
                     );
                     if !available {
                         bail!("This message type is not downloadable");
                     }
                 } else {
                     let available = matches!(
-                       evt_content,
+                        evt_content,
                         AttachmentContent::Image(_)
                             | AttachmentContent::Audio(_)
                             | AttachmentContent::Video(_)
-                            | AttachmentContent::File(_) | AttachmentContent::Fallback(_)
+                            | AttachmentContent::File(_)
+                            | AttachmentContent::Fallback(_)
                     );
                     if !available {
                         bail!("This message type is not downloadable");
@@ -351,7 +351,6 @@ impl Attachment {
             })
             .await?
     }
-
 }
 
 #[derive(Clone, Debug)]
