@@ -578,32 +578,30 @@ class _ChangePowerLevelState extends State<ChangePowerLevel> {
         ),
         TextButton(
           onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              final freshMemberStatus = widget.currentPowerLevelName;
-              if (freshMemberStatus == currentMemberStatus) {
-                // nothing to do, all the same.
-                Navigator.pop(context, null);
-                return;
-              }
-              int? newValue;
-              if (currentMemberStatus == 'Admin') {
-                newValue = 100;
-              } else if (currentMemberStatus == 'Mod') {
-                newValue = 50;
-              } else if (currentMemberStatus == 'Regular') {
-                newValue = 0;
-              } else {
-                newValue = customValue ?? 0;
-              }
-
-              if (currentPowerLevel == newValue) {
-                // nothing to be done.
-                newValue = null;
-              }
-
-              Navigator.pop(context, newValue);
+            if (!_formKey.currentState!.validate()) return;
+            final freshMemberStatus = widget.currentPowerLevelName;
+            if (freshMemberStatus == currentMemberStatus) {
+              // nothing to do, all the same.
+              Navigator.pop(context, null);
               return;
             }
+            int? newValue;
+            if (currentMemberStatus == 'Admin') {
+              newValue = 100;
+            } else if (currentMemberStatus == 'Mod') {
+              newValue = 50;
+            } else if (currentMemberStatus == 'Regular') {
+              newValue = 0;
+            } else {
+              newValue = customValue ?? 0;
+            }
+
+            if (currentPowerLevel == newValue) {
+              // nothing to be done.
+              newValue = null;
+            }
+
+            Navigator.pop(context, newValue);
           },
           child: const Text('Submit'),
         ),

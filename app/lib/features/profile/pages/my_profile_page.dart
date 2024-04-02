@@ -59,15 +59,13 @@ class _ChangeDisplayNameState extends State<ChangeDisplayName> {
         ),
         TextButton(
           onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              final currentUserName = account.profile.displayName;
-              final newDisplayName = newUsername.text;
-              if (currentUserName != newDisplayName) {
-                Navigator.pop(context, newDisplayName);
-              } else {
-                Navigator.pop(context, null);
-              }
-              return;
+            if (!_formKey.currentState!.validate()) return;
+            final currentUserName = account.profile.displayName;
+            final newDisplayName = newUsername.text;
+            if (currentUserName != newDisplayName) {
+              Navigator.pop(context, newDisplayName);
+            } else {
+              Navigator.pop(context, null);
             }
           },
           child: Text(L10n.of(context).submit),

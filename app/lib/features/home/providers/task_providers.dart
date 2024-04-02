@@ -6,7 +6,6 @@ import 'package:riverpod/riverpod.dart';
 
 class MyOpenTasksNotifier extends AsyncNotifier<List<Task>> {
   late Stream<bool> _listener;
-  // ignore: unused_field
   late StreamSubscription<bool> _poller;
 
   @override

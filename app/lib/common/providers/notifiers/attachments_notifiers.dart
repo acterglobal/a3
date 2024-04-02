@@ -9,8 +9,6 @@ import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::common::attachments');
 
-// ignore_for_file: unused_field
-
 class AttachmentsManagerNotifier
     extends FamilyNotifier<AttachmentsManager, AttachmentsManager> {
   late Stream<void> _listener;
@@ -35,6 +33,7 @@ class AttachmentsManagerNotifier
         _log.info('stream ended');
       },
     );
+    ref.onDispose(() => _poller.cancel());
     return arg;
   }
 }

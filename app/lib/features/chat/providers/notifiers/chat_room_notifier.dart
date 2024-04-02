@@ -33,19 +33,16 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     try {
       timeline = convo.timelineStream();
       _listener = timeline.messagesStream(); // keep it resident in memory
-      _poller = _listener.listen((diff) async {
-        await _handleDiff(diff);
-      });
+      _poller = _listener.listen(_handleDiff);
+      ref.onDispose(() => _poller.cancel());
       do {
         await loadMore();
         await Future.delayed(const Duration(milliseconds: 100), () => null);
       } while (state.hasMore && state.messages.length < 10);
-      ref.onDispose(() => _poller.cancel());
     } catch (e) {
+      final err = 'Some error occurred loading room ${e.toString()}';
       state = state.copyWith(
-        loading: ChatRoomLoadingState.error(
-          'Some error occurred loading room ${e.toString()}',
-        ),
+        loading: ChatRoomLoadingState.error(err),
       );
     }
   }

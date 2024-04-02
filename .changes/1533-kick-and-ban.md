@@ -1,1 +1,0 @@
-- You can now kick (and ban) any user from a space or chat through the recently introduced member-info-drawer (by clicking on the user avatar almost everywhere).
