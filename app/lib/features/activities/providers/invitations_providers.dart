@@ -1,5 +1,4 @@
 import 'package:acter/common/models/profile_data.dart';
-import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/activities/providers/notifiers/invitation_list_notifier.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:logging/logging.dart';
@@ -12,20 +11,14 @@ final invitationListProvider =
   () => InvitationListNotifier(),
 );
 
-final invitationProfileProvider = FutureProvider.autoDispose.family<
-    (
-      ProfileData,
-      ProfileData?,
-    ),
-    Invitation>((ref, invitation) async {
-  final roomProfile =
-      await ref.watch(roomProfileDataProvider(invitation.roomIdStr()).future);
+final invitationUserProfileProvider = FutureProvider.autoDispose
+    .family<ProfileData?, Invitation>((ref, invitation) async {
   UserProfile? user = invitation.senderProfile();
   if (user == null) {
-    return (roomProfile, null);
+    return null;
   }
 
   final displayName = user.getDisplayName();
   final avatar = await user.getAvatar(null);
-  return (roomProfile, ProfileData(displayName, avatar.data()));
+  return ProfileData(displayName, avatar.data());
 });
