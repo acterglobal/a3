@@ -532,16 +532,15 @@ impl Client {
             .fold(
                 (Vec::new(), Vec::new()),
                 move |(mut spaces, mut convos), room| {
-                    if matches!(room.state(), RoomState::Left) {
-                        // ignore rooms we aren't in anymore ... maybe make them available somewhere else at some point
-                        return (spaces, convos);
-                    }
-                    let inner = Room::new(client.clone(), room);
+                    // only include items we are ourselves are currently joined in
+                    if matches!(room.state(), RoomState::Joined) {
+                        let inner = Room::new(client.clone(), room);
 
-                    if inner.is_space() {
-                        spaces.push(inner);
-                    } else {
-                        convos.push(inner);
+                        if inner.is_space() {
+                            spaces.push(inner);
+                        } else {
+                            convos.push(inner);
+                        }
                     }
                     (spaces, convos)
                 },
