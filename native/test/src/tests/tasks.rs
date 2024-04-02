@@ -140,7 +140,7 @@ async fn task_smoketests() -> Result<()> {
         draft.send().await?
     };
 
-    let task_list_key = TaskList::key_from_event(&task_list_id);
+    let task_list_key = task_list_id.to_string();
 
     let wait_for_space = space.clone();
     let task_list = wait_for(move || {
@@ -279,7 +279,7 @@ async fn task_lists_comments_smoketests() -> Result<()> {
         draft.send().await?
     };
 
-    let task_list_key = TaskList::key_from_event(&task_list_id);
+    let task_list_key = task_list_id.to_string();
 
     let wait_for_space = space.clone();
     let task_list = wait_for(move || {
@@ -345,7 +345,7 @@ async fn task_comment_smoketests() -> Result<()> {
         draft.send().await?
     };
 
-    let task_list_key = TaskList::key_from_event(&task_list_id);
+    let task_list_key = task_list_id.to_string();
 
     let wait_for_space = space.clone();
     let task_list = wait_for(move || {

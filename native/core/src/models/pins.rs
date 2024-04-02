@@ -44,10 +44,6 @@ impl Pin {
             .pin(self.meta.event_id.clone())
             .to_owned()
     }
-
-    pub fn key_from_event(event_id: &EventId) -> String {
-        event_id.to_string()
-    }
 }
 
 impl ActerModel for Pin {
@@ -126,7 +122,7 @@ impl ActerModel for PinUpdate {
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
-        Some(vec![Pin::key_from_event(&self.inner.pin.event_id)])
+        Some(vec![self.inner.pin.event_id.to_string()])
     }
 }
 

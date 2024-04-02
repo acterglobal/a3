@@ -489,9 +489,13 @@ class CreateEditEventPageConsumerState
       rsvpDraft.status('yes');
       await rsvpDraft.send();
       _log.info('Created Calendar Event: ${eventId.toString()}');
+
       EasyLoading.dismiss();
+
+      ref.invalidate(calendarEventProvider(eventId.toString())); // edit page
+      ref.invalidate(spaceEventsProvider(spaceId)); // events page in space
+
       if (context.mounted) {
-        ref.invalidate(calendarEventProvider);
         context.pop();
         context.pushNamed(
           Routes.calendarEvent.name,
@@ -504,7 +508,6 @@ class CreateEditEventPageConsumerState
       EasyLoading.showError(
         '${L10n.of(context).errorCreatingCalendarEvent}: $e',
       );
-      return;
     }
   }
 
@@ -544,14 +547,16 @@ class CreateEditEventPageConsumerState
       _log.info('Calendar Event updated $eventId');
 
       EasyLoading.dismiss();
-      if (context.mounted) {
-        context.pop();
-      }
+
+      ref.invalidate(calendarEventProvider(eventId.toString())); // edit page
+      final spaceId = calendarEvent.roomIdStr();
+      ref.invalidate(spaceEventsProvider(spaceId)); // events page in space
+
+      if (context.mounted) context.pop();
     } catch (e) {
       EasyLoading.dismiss();
       if (!mounted) return;
       EasyLoading.showError('${L10n.of(context).errorUpdatingEvent}: $e');
-      return;
     }
   }
 }

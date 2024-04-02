@@ -5,7 +5,7 @@ use std::ops::Deref;
 
 use super::{
     super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta, Store},
-    TaskList, KEYS,
+    KEYS,
 };
 use crate::{
     events::tasks::{
@@ -93,10 +93,6 @@ impl Task {
             task: self.meta.event_id.clone().into(),
         }
     }
-
-    pub fn key_from_event(event_id: &EventId) -> String {
-        event_id.to_string()
-    }
 }
 
 impl ActerModel for Task {
@@ -131,9 +127,7 @@ impl ActerModel for Task {
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
-        Some(vec![TaskList::key_from_event(
-            &self.inner.task_list_id.event_id,
-        )])
+        Some(vec![self.inner.task_list_id.event_id.to_string()])
     }
 
     fn transition(&mut self, model: &AnyActerModel) -> Result<bool> {
@@ -190,7 +184,7 @@ impl ActerModel for TaskUpdate {
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
-        Some(vec![Task::key_from_event(&self.inner.task.event_id)])
+        Some(vec![self.inner.task.event_id.to_string()])
     }
 }
 
@@ -255,7 +249,7 @@ impl ActerModel for TaskSelfAssign {
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
-        Some(vec![Task::key_from_event(&self.inner.task.event_id)])
+        Some(vec![self.inner.task.event_id.to_string()])
     }
 }
 
@@ -311,7 +305,7 @@ impl ActerModel for TaskSelfUnassign {
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
-        Some(vec![Task::key_from_event(&self.inner.task.event_id)])
+        Some(vec![self.inner.task.event_id.to_string()])
     }
 }
 
