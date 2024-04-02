@@ -15,7 +15,7 @@ void showAttachmentSelection(
   BuildContext context,
   AttachmentsManager manager,
 ) async {
-  !isLargeScreen(context)
+  isLargeScreen(context)
       ? await showAdaptiveDialog(
           context: context,
           builder: (context) => Dialog(
