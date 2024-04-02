@@ -12,7 +12,7 @@ class TasksIcon extends StatelessWidget {
       padding: const EdgeInsets.all(4),
       child: SvgPicture.asset(
         'assets/images/tasks.svg',
-        semanticsLabel: L10n.of(context).tasks(''),
+        semanticsLabel: L10n.of(context).tasks,
         height: size,
         width: size,
         colorFilter: ColorFilter.mode(

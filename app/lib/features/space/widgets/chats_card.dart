@@ -28,13 +28,13 @@ class ChatsCard extends ConsumerWidget {
           const SizedBox(height: 10),
           chats.when(
             error: (error, stack) => Text(
-              '${L10n.of(context).loadingFailed('chats')}: $error',
+              L10n.of(context).loadingChatsFailed(error),
             ),
-            loading: () => Text(L10n.of(context).loading('')),
+            loading: () => Text(L10n.of(context).loading),
             data: (chats) {
               if (chats.isEmpty) {
                 return Text(
-                  L10n.of(context).thereAreNoItemInThisSpace('chats'),
+                  L10n.of(context).thereAreNoChatsInThisSpace,
                   style: Theme.of(context).textTheme.bodySmall,
                 );
               }
@@ -65,7 +65,7 @@ class ChatsCard extends ConsumerWidget {
                                 pathParameters: {'spaceId': spaceId},
                               );
                             },
-                            child: Text(L10n.of(context).seeAllMyItems(chats.length, 'chats')),
+                            child: Text(L10n.of(context).seeAllMyChats(chats.length)),
                           ),
                         )
                       : const SizedBox.shrink(),

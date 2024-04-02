@@ -69,7 +69,7 @@ class MemberListEntry extends ConsumerWidget {
         member: data.member,
         profile: data.profile,
       ),
-      error: (e, s) => Text('${L10n.of(context).errorLoading('profile')}: $e'),
+      error: (e, s) => Text(L10n.of(context).errorLoadingProfile(e)),
       loading: () => const _MemberListInnerSkeleton(),
     );
   }

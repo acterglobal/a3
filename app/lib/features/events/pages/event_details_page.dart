@@ -55,7 +55,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           );
         },
         error: (error, stackTrace) =>
-            Text('${L10n.of(context).errorLoading('eventDueTo')} $error'),
+            Text(L10n.of(context).errorLoadingEventDueTo(error)),
         loading: () => const EventDetailsSkeleton(),
       ),
     );
@@ -108,7 +108,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
               children: <Widget>[
                 const Icon(Atlas.pencil_edit_thin),
                 const SizedBox(width: 10),
-                Text(L10n.of(context).event('edit')),
+                Text(L10n.of(context).eventEdit),
               ],
             ),
           ),
@@ -126,7 +126,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
               context: context,
               builder: (context) => RedactContentWidget(
                 removeBtnKey: EventsKeys.eventRemoveBtn,
-                title: L10n.of(context).removePost('this'),
+                title: L10n.of(context).removeThisPost,
                 eventId: event.eventId().toString(),
                 onSuccess: () {
                   ref.invalidate(calendarEventProvider);
@@ -149,7 +149,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
                   color: Theme.of(context).colorScheme.error,
                 ),
                 const SizedBox(width: 10),
-                Text(L10n.of(context).event('remove')),
+                Text(L10n.of(context).eventRemove),
               ],
             ),
           ),
@@ -163,7 +163,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         onTap: () => showAdaptiveDialog(
           context: context,
           builder: (ctx) => ReportContentWidget(
-            title: L10n.of(context).reportEvent('this'),
+            title: L10n.of(context).reportThisEvent,
             description: L10n.of(context).reportThisContent,
             eventId: widget.calendarId,
             roomId: event.roomIdStr(),
@@ -178,7 +178,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
               color: Theme.of(context).colorScheme.error,
             ),
             const SizedBox(width: 10),
-            Text(L10n.of(context).event('report')),
+            Text(L10n.of(context).eventReport),
           ],
         ),
       ),

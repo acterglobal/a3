@@ -55,7 +55,7 @@ class EmojiReactionItem extends ConsumerWidget {
       title: profile.when(
         data: (data) => Text(data.profile.displayName ?? userId),
         loading: () => Skeletonizer(child: Text(userId)),
-        error: (e, s) => Text('${L10n.of(context).loadingFailed('profile')}: $e'),
+        error: (e, s) => Text(L10n.of(context).loadingProfileFailed(e)),
       ),
       subtitle: Text(userId),
       trailing: Wrap(

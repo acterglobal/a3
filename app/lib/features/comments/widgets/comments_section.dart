@@ -56,7 +56,7 @@ class CommentsSection extends ConsumerWidget {
     return Column(
       children: [
         Text(L10n.of(context).comments),
-        Text('${L10n.of(context).loadingFailed('')} $error'),
+        Text(L10n.of(context).loadingFailed(error)),
       ],
     );
   }
@@ -65,7 +65,7 @@ class CommentsSection extends ConsumerWidget {
     return Column(
       children: [
         Text(L10n.of(context).comments),
-        Text(L10n.of(context).loading('')),
+        Text(L10n.of(context).loading),
       ],
     );
   }

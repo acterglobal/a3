@@ -45,7 +45,7 @@ class _NewsWidgetState extends ConsumerState<NewsWidget> {
               image: 'assets/images/empty_updates.svg',
               primaryButton: ElevatedButton(
                 onPressed: () => context.pushNamed(Routes.actionAddUpdate.name),
-                child: Text(L10n.of(context).createUpdate('new')),
+                child: Text(L10n.of(context).createNewUpdate),
               ),
             ),
           );

@@ -58,7 +58,7 @@ class ForgotPassword extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 20),
-        Text(L10n.of(context).forgotPassword('withYour')),
+        Text(L10n.of(context).forgotYourPassword),
         Text(L10n.of(context).noWorriesWeHaveGotYouCovered),
       ],
     );

@@ -33,14 +33,14 @@ class _RedeemTokenConsumerState extends ConsumerState<RedeemToken> {
             decoration: InputDecoration(
               icon: const Icon(Atlas.plus_ticket_thin),
               hintText: L10n.of(context).anInviteCodeYouWantToRedeem,
-              labelText: L10n.of(context).inviteCode(''),
+              labelText: L10n.of(context).inviteCode,
             ),
             controller: _tokenController,
           ),
           trailing: ElevatedButton(
             key: RedeemToken.redeemTokenSubmit,
             onPressed: _submit,
-            child: Text(L10n.of(context).redeem('')),
+            child: Text(L10n.of(context).redeem),
           ),
         ),
       ),
@@ -54,7 +54,7 @@ class _RedeemTokenConsumerState extends ConsumerState<RedeemToken> {
     }
     final superInvites = ref.read(superInvitesProvider);
     try {
-      EasyLoading.show(status: '${L10n.of(context).redeem('withIng')} $token');
+      EasyLoading.show(status: '${L10n.of(context).redeeming} $token');
       final rooms = (await superInvites.redeem(token)).toList();
       if (!mounted) return;
       EasyLoading.showSuccess(

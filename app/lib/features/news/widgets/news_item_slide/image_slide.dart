@@ -58,7 +58,7 @@ class _ImageSlideState extends State<ImageSlide> {
             ),
           );
         } else {
-          return Center(child: Text(L10n.of(context).loading('image')));
+          return Center(child: Text(L10n.of(context).loadingImage));
         }
       },
     );

@@ -281,7 +281,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                         showAdaptiveDialog(
                           context: context,
                           builder: (context) => ReportContentWidget(
-                            title: L10n.of(context).reportMessage('this'),
+                            title: L10n.of(context).reportThisMessage,
                             description: L10n.of(context).reportMessageContent,
                             senderId: message.author.id,
                             roomId: roomId,
@@ -291,7 +291,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                       }
                     },
                     child: Text(
-                      isAuthor() ? L10n.of(context).delete : L10n.of(context).report(''),
+                      isAuthor() ? L10n.of(context).delete : L10n.of(context).report,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.error,
                       ),
@@ -844,7 +844,7 @@ class _FileWidget extends ConsumerWidget {
               Navigator.of(context).pop();
               handleFileUpload(selectedFiles, type);
             },
-            child: Text(L10n.of(context).send('')),
+            child: Text(L10n.of(context).send),
           ),
         ],
       ),

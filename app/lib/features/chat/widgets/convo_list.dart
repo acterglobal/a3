@@ -59,7 +59,7 @@ class _ConvosListConsumerState extends ConsumerState<ConvosList> {
             onPressed: () async => context.pushNamed(
               Routes.createChat.name,
             ),
-            child: Text(L10n.of(context).send('dm')),
+            child: Text(L10n.of(context).sendDM),
           ),
         ),
       );

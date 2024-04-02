@@ -43,12 +43,12 @@ class RelatedSpacesPage extends ConsumerWidget {
             },
             error: (error, stack) => SliverToBoxAdapter(
               child: Center(
-                child: Text('${L10n.of(context).loadingFailed('')}: $error'),
+                child: Text(L10n.of(context).loadingFailed(error)),
               ),
             ),
             loading: () => SliverToBoxAdapter(
               child: Center(
-                child: Text(L10n.of(context).loading('')),
+                child: Text(L10n.of(context).loading),
               ),
             ),
           ),
@@ -73,7 +73,7 @@ class RelatedSpacesPage extends ConsumerWidget {
                       'parentSpaceId': spaceIdOrAlias,
                     },
                   ),
-                  child: Text(L10n.of(context).createSpace('new')),
+                  child: Text(L10n.of(context).createNewSpace),
                 )
               : null,
         ),

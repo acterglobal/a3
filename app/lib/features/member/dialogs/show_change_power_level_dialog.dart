@@ -63,10 +63,7 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
           children: [
             Text(L10n.of(context).changeThePowerLevelOf),
             Text(member.userId().toString()),
-            Text(
-              L10n.of(context)
-                  .changeThePowerLevelDetails(currentPowerLevel, memberStatus),
-            ),
+            Text(L10n.of(context).changeThePowerFromTo(memberStatus, currentPowerLevel)),
             Padding(
               padding: const EdgeInsets.all(5),
               child: DropdownButtonFormField(
@@ -81,7 +78,7 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
                   if (widget.maxPowerLevel >= 50)
                     DropdownMenuItem(
                       value: 'Mod',
-                      child: Text(L10n.of(context).moderator),
+                      child:Text(L10n.of(context).moderator),
                     ),
                   if (widget.maxPowerLevel >= 0)
                     DropdownMenuItem(
@@ -100,7 +97,7 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
               child: Padding(
                 padding: const EdgeInsets.all(5),
                 child: TextFormField(
-                  decoration: InputDecoration(
+                  decoration:  InputDecoration(
                     hintText: L10n.of(context).anyNumber,
                     labelText: L10n.of(context).customPowerLevel,
                   ),
@@ -114,13 +111,11 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
                   // Only numbers
                   validator: (String? value) {
                     if (currentMemberStatus == 'Custom') {
-                      if (value == null || int.tryParse(value) == null) {
-                        return L10n.of(context)
-                            .youNeedToEnterCustomValueAsNumber;
+                      if ((value == null || int.tryParse(value) == null)) {
+                        return L10n.of(context).youNeedToEnterCustomValueAsNumber;
                       }
                       if ((int.tryParse(value) ?? 0) > widget.maxPowerLevel) {
-                        return L10n.of(context)
-                            .youCantExceedPowerLevel(widget.maxPowerLevel);
+                        return L10n.of(context).youCantExceedPowerLevel(widget.maxPowerLevel);
                       }
                     }
                     return null;
@@ -140,30 +135,32 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
         ),
         TextButton(
           onPressed: () {
-            if (!_formKey.currentState!.validate()) return;
-            final freshMemberStatus = widget.member.membershipStatusStr();
-            if (freshMemberStatus == currentMemberStatus) {
-              // nothing to do, all the same.
-              Navigator.pop(context, null);
+            if (_formKey.currentState!.validate()) {
+              final freshMemberStatus = widget.member.membershipStatusStr();
+              if (freshMemberStatus == currentMemberStatus) {
+                // nothing to do, all the same.
+                Navigator.pop(context, null);
+                return;
+              }
+              int? newValue;
+              if (currentMemberStatus == 'Admin') {
+                newValue = 100;
+              } else if (currentMemberStatus == 'Mod') {
+                newValue = 50;
+              } else if (currentMemberStatus == 'Regular') {
+                newValue = 0;
+              } else {
+                newValue = customValue ?? 0;
+              }
+
+              if (currentPowerLevel == newValue) {
+                // nothing to be done.
+                newValue = null;
+              }
+
+              Navigator.pop(context, newValue);
               return;
             }
-            int? newValue;
-            if (currentMemberStatus == 'Admin') {
-              newValue = 100;
-            } else if (currentMemberStatus == 'Mod') {
-              newValue = 50;
-            } else if (currentMemberStatus == 'Regular') {
-              newValue = 0;
-            } else {
-              newValue = customValue ?? 0;
-            }
-
-            if (currentPowerLevel == newValue) {
-              // nothing to be done.
-              newValue = null;
-            }
-
-            Navigator.pop(context, newValue);
           },
           child: Text(L10n.of(context).submit),
         ),

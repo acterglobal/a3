@@ -224,14 +224,14 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
     if (selectedUsers.isEmpty) {
       return L10n.of(context).createGroupChat;
     } else if (selectedUsers.length > 1) {
-      return L10n.of(context).startDM('group');
+      return L10n.of(context).startGroupDM;
     } else {
       final client = ref.watch(alwaysClientProvider);
       if (checkUserDMExists(selectedUsers[0].userId().toString(), client) !=
           null) {
         return L10n.of(context).goToDM;
       } else {
-        return L10n.of(context).startDM('');
+        return L10n.of(context).startDM;
       }
     }
   }
@@ -452,7 +452,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                     ),
                   ),
             error: (e, st) =>
-                Text('${L10n.of(context).errorLoading('users')} $e'),
+                Text(L10n.of(context).errorLoadingUsers(e)),
             loading: () => const Center(
               heightFactor: 5,
               child: CircularProgressIndicator(),
@@ -604,9 +604,9 @@ class _CreateRoomFormWidgetConsumerState
           SelectSpaceFormField(
             canCheck: 'CanLinkSpaces',
             mandatory: true,
-            title: L10n.of(context).parentSpace(''),
-            emptyText: L10n.of(context).parentSpace('optional'),
-            selectTitle: L10n.of(context).parentSpace('selectText'),
+            title: L10n.of(context).parentSpace,
+            emptyText: L10n.of(context).optionalParentSpace,
+            selectTitle: L10n.of(context).selectParentSpace,
           ),
           const SizedBox(height: 15),
           Row(
@@ -716,7 +716,7 @@ class _UserWidget extends ConsumerWidget {
             size: 18,
           );
         },
-        error: (e, st) => Text('${L10n.of(context).errorLoading('avatar')} $e'),
+        error: (e, st) => Text(L10n.of(context).errorLoadingAvatar(e)),
         loading: () => Skeletonizer(
           child: ActerAvatar(
             mode: DisplayMode.DM,

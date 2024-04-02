@@ -69,7 +69,7 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
       ),
       error: (error, stackTrace) => LoadingConvoCard(
         roomId: roomId,
-        subtitle: Text(L10n.of(context).failedToLoad('conversation')),
+        subtitle: Text(L10n.of(context).failedToLoadConversation(error)),
       ),
       loading: () => LoadingConvoCard(
         roomId: roomId,
@@ -359,7 +359,7 @@ class _SubtitleWidget extends ConsumerWidget {
             ),
             Expanded(
               child: Text(
-                L10n.of(context).failedTo('decryptMessage'),
+                L10n.of(context).failedToDecryptMessage,
                 style: Theme.of(context).textTheme.bodySmall!.copyWith(
                       color: Theme.of(context).colorScheme.neutral5,
                       fontStyle: FontStyle.italic,

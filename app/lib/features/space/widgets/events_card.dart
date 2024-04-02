@@ -29,7 +29,7 @@ class EventsCard extends ConsumerWidget {
         ),
         events.when(
           error: (error, stackTrace) => Text(
-            '${L10n.of(context).loadingFailed('events')}: $error',
+            L10n.of(context).loadingEventsFailed(events),
           ),
           data: (events) {
             int eventsLimit = min(events.length, 3);
@@ -60,7 +60,7 @@ class EventsCard extends ConsumerWidget {
                             pathParameters: {'spaceId': spaceId},
                           ),
                           child: Text(
-                            L10n.of(context).seeAllMyItems(events.length, 'events'),
+                            L10n.of(context).seeAllMyEvents(events.length),
                           ),
                         ),
                       )

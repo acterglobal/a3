@@ -276,7 +276,7 @@ class PublicSpaceItem extends ConsumerWidget {
                     '$e',
                     softWrap: true,
                   ),
-                  loading: () => Text(L10n.of(context).loading('')),
+                  loading: () => Text(L10n.of(context).loading),
                 ),
               ),
             ),
@@ -333,7 +333,7 @@ class PublicSpaceSelector extends ConsumerWidget {
     return CustomScrollView(
       slivers: [
         SliverAppBar(
-          title: title ?? Text(L10n.of(context).space('join')),
+          title: title ?? Text(L10n.of(context).joinSpace),
         ),
         SliverToBoxAdapter(
           child: Padding(

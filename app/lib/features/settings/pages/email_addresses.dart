@@ -39,7 +39,7 @@ class _AddEmailAddrState extends State<AddEmailAddr> {
                 controller: newEmailAddress,
                 // FIXME: should have an email-addres-validator ,
                 decoration: InputDecoration(
-                  hintText: L10n.of(context).email('single'),
+                  hintText: L10n.of(context).emailAddress,
                 ),
               ),
             ),
@@ -80,7 +80,7 @@ class EmailAddressesPage extends ConsumerWidget {
         appBar: AppBar(
           backgroundColor: const AppBarTheme().backgroundColor,
           elevation: 0.0,
-          title: Text(L10n.of(context).email('multiple')),
+          title: Text(L10n.of(context).emailAddresses),
           centerTitle: true,
           actions: [
             IconButton(
@@ -104,7 +104,7 @@ class EmailAddressesPage extends ConsumerWidget {
           error: (error, stack) {
             return Center(
               child: Text(
-                '${L10n.of(context).errorLoading('emailAddresses')}: $error',
+                L10n.of(context).errorLoadingEmailAddresses(error),
               ),
             );
           },
@@ -234,7 +234,7 @@ class EmailAddressesPage extends ConsumerWidget {
         );
       } catch (e) {
         EasyLoading.showSuccess(
-          '${L10n.of(context).failedTo('submitEmail')}: $e',
+          L10n.of(context).failedToSubmitEmail(e),
           duration: const Duration(seconds: 3),
         );
       }

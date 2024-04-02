@@ -208,7 +208,7 @@ class HomeShellState extends ConsumerState<HomeShell> {
                   key: const Key('LoadingIndicator'),
                   builder: (BuildContext ctx) {
                     return LinearProgressIndicator(
-                      semanticsLabel: L10n.of(context).loading('firstSync'),
+                      semanticsLabel: L10n.of(context).loadingFirstSync,
                     );
                   },
                 ),

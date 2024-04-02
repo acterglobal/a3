@@ -52,7 +52,7 @@ class _VideoSlideState extends State<VideoSlide> {
               videoFile: snapshot.data!,
             );
           } else {
-            return Center(child: Text(L10n.of(context).loading('video')));
+            return Center(child: Text(L10n.of(context).loadingVideo));
           }
         },
       ),

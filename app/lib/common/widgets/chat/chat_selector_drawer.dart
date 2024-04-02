@@ -34,7 +34,7 @@ Future<String?> selectChatDrawer({
               Row(
                 children: [
                   Expanded(
-                    child: title ?? Text(L10n.of(context).select('chat')),
+                    child: title ?? Text(L10n.of(context).selectChat),
                   ),
                   OutlinedButton.icon(
                     icon: const Icon(Atlas.minus_circle_thin),

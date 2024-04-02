@@ -25,7 +25,7 @@ class SpaceChip extends ConsumerWidget {
       return brief.when(
         data: (space) => renderSpace(space),
         error: (error, st) => Chip(
-          label: Text('${L10n.of(context).loadingFailed('')}: $error'),
+          label: Text(L10n.of(context).loadingFailed(error)),
         ),
         loading: () => renderLoading(spaceId!),
       );

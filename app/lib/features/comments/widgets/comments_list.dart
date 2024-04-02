@@ -56,7 +56,7 @@ class CommentsList extends ConsumerWidget {
   Widget loading(BuildContext context) {
     return Column(
       children: [
-        Text(L10n.of(context).loading('commentsList')),
+        Text(L10n.of(context).loadingCommentsList),
       ],
     );
   }

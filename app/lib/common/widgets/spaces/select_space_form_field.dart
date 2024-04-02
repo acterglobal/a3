@@ -36,7 +36,7 @@ class SelectSpaceFormField extends ConsumerWidget {
         context: context,
         currentSpaceId: ref.read(selectedSpaceIdProvider),
         canCheck: canCheck,
-        title: Text(selectTitle ?? L10n.of(context).select('space')),
+        title: Text(selectTitle ?? L10n.of(context).selectSpace),
       );
       spaceNotifier.state = newSelectedSpaceId;
     }
@@ -56,7 +56,7 @@ class SelectSpaceFormField extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    title ?? L10n.of(context).space(''),
+                    title ?? L10n.of(context).space,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   Consumer(builder: spaceBuilder),
@@ -100,11 +100,11 @@ class SelectSpaceFormField extends ConsumerWidget {
           avatar: ActerAvatar(
             mode: DisplayMode.Space,
             avatarInfo: AvatarInfo(
-              uniqueId: L10n.of(context).loading(''),
+              uniqueId: L10n.of(context).loading,
             ),
             size: 24,
           ),
-          label: Text(L10n.of(context).loading('')),
+          label: Text(L10n.of(context).loading),
         ),
       ),
     );

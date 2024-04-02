@@ -66,9 +66,9 @@ class _DueChipState extends State<DueChip> {
     TextStyle? dueTheme;
 
     if (dueDate!.isToday) {
-      label = L10n.of(context).due('today');
+      label = L10n.of(context).dueToday;
     } else if (dueDate!.isTomorrow) {
-      label = L10n.of(context).due('tomorrow');
+      label = L10n.of(context).dueTomorrow;
     } else if (dueDate!.isPast) {
       label = dueDate!.timeago();
       dueTheme = textStyle.copyWith(
@@ -81,7 +81,7 @@ class _DueChipState extends State<DueChip> {
       label: Text(
         // FIXME: tooltip to show the full date?
         label ??
-            '${L10n.of(context).due('')}: ${DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(dueDate!)}',
+            '${L10n.of(context).due}: ${DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(dueDate!)}',
         style: widget.task.isDone() ? null : dueTheme,
       ),
     );
@@ -95,7 +95,7 @@ class _DueChipState extends State<DueChip> {
     if (newDue == null || !mounted) {
       return;
     }
-    EasyLoading.show(status: L10n.of(context).updatingDue(''));
+    EasyLoading.show(status: L10n.of(context).updatingDue);
     try {
       final updater = widget.task.updateBuilder();
       updater.dueDate(newDue.due.year, newDue.due.month, newDue.due.day);
@@ -112,12 +112,12 @@ class _DueChipState extends State<DueChip> {
       await updater.send();
       if(!mounted) return;
       EasyLoading.showToast(
-        L10n.of(context).due('success'),
+        L10n.of(context).dueSuccess,
         toastPosition: EasyLoadingToastPosition.bottom,
       );
     } catch (e) {
       if(!mounted) return;
-      EasyLoading.showError('${L10n.of(context).updatingDue('failed')}: $e');
+      EasyLoading.showError(L10n.of(context).updatingDueFailed(e));
     }
   }
 }

@@ -23,7 +23,7 @@ class MyTasksSection extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            L10n.of(context).tasks('my'),
+            L10n.of(context).myTasks,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 10),
@@ -78,8 +78,8 @@ class MyTasksSection extends ConsumerWidget {
                         )
                         .toList(),
                   ),
-            error: (error, stack) => Text('${L10n.of(context).loadingFailed('tasks')}: $error'),
-            loading: () => Text(L10n.of(context).loading('')),
+            error: (error, stack) => Text(L10n.of(context).loadingTasksFailed(error)),
+            loading: () => Text(L10n.of(context).loading),
           ),
         ],
       ),

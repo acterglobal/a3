@@ -171,8 +171,8 @@ class SpaceHierarchyCard extends ConsumerWidget {
         ? ExpandableText(
             topic!,
             maxLines: 2,
-            expandText: L10n.of(context).show('more'),
-            collapseText: L10n.of(context).show('less'),
+            expandText: L10n.of(context).showMore,
+            collapseText: L10n.of(context).showLess,
             linkColor: Theme.of(context).colorScheme.primary,
           )
         : null;
@@ -192,13 +192,13 @@ class SpaceHierarchyCard extends ConsumerWidget {
         trailing: RoomHierarchyJoinButtons(space: space),
       ),
       error: (error, stack) => ListTile(
-        title: Text('${L10n.of(context).errorLoading('')}: $roomId'),
+        title: Text(L10n.of(context).errorLoading(roomId)),
         subtitle: Text('$error'),
       ),
       loading: () => Skeletonizer(
         child: ListTile(
           title: Text(roomId),
-          subtitle: Text(L10n.of(context).loading('')),
+          subtitle: Text(L10n.of(context).loading),
         ),
       ),
     );

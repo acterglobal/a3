@@ -195,7 +195,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         key: LoginPageKeys.forgotPassBtn,
         onPressed: () => context.pushNamed(Routes.forgotPassword.name),
         child: Text(
-          L10n.of(context).forgotPassword(''),
+          L10n.of(context).forgotPassword,
         ),
       ),
     );

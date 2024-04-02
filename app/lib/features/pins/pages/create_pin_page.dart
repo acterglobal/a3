@@ -45,7 +45,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
   Widget build(BuildContext context) {
     return SliverScaffold(
       confirmActionKey: CreatePinPage.submitBtn,
-      header: L10n.of(context).createPin('new'),
+      header: L10n.of(context).createNewPin,
       addActions: true,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -71,7 +71,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
           ),
         ),
       ),
-      confirmActionTitle: L10n.of(context).createPin(''),
+      confirmActionTitle: L10n.of(context).createPin,
       cancelActionTitle: null,
       confirmActionOnPressed: _handleCreatePin,
     );

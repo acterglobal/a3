@@ -42,9 +42,9 @@ class RoomPage extends ConsumerWidget {
     return ref.watch(chatProvider(roomId)).when(
           data: (convo) => ChatRoom(convo: convo),
           error: (e, s) => Center(
-            child: Text('${L10n.of(context).loadingFailed('room')}: $e'),
+            child: Text(L10n.of(context).loadingRoomFailed(e)),
           ),
-          loading: () => Center(child: Text(L10n.of(context).loading(''))),
+          loading: () => Center(child: Text(L10n.of(context).loading)),
         );
   }
 }
@@ -153,10 +153,10 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                       ),
                       skipLoadingOnReload: true,
                       error: (error, stackTrace) => Text(
-                        '${L10n.of(context).errorLoading('profile')} $error',
+                        L10n.of(context).errorLoadingProfile(error),
                       ),
                       loading: () => Skeletonizer(
-                        child: Text(L10n.of(context).loading('')),
+                        child: Text(L10n.of(context).loading),
                       ),
                     ),
                     const SizedBox(height: 5),
@@ -164,17 +164,17 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                       data: (members) {
                         int count = members.length;
                         return Text(
-                          '$count ${L10n.of(context).members}',
+                          L10n.of(context).membersCountLeft(count),
                           style: Theme.of(context).textTheme.bodySmall,
                         );
                       },
                       skipLoadingOnReload: false,
                       error: (error, stackTrace) => Text(
-                        '${L10n.of(context).errorLoading('membersCount')} $error',
+                        L10n.of(context).errorLoadingMembersCount(error),
                       ),
                       loading: () => Skeletonizer(
                         child: Text(
-                          '100 ${L10n.of(context).members}',
+                          L10n.of(context).membersCountLeft(100),
                         ),
                       ),
                     ),

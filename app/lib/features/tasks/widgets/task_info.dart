@@ -179,7 +179,12 @@ class _TaskTitleState extends State<TaskTitle> {
                   child: const Icon(Atlas.xmark_circle_thin),
                 ),
               ),
-              onFieldSubmitted: _handleSubmit,
+              onFieldSubmitted: (value) async {
+                if (_formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
+                  await _handleSubmit();
+                }
+              },
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return L10n.of(context).aTaskMustHaveATitle;
@@ -202,28 +207,27 @@ class _TaskTitleState extends State<TaskTitle> {
           );
   }
 
-  Future<void> _handleSubmit(String value) async {
-    if (!_formKey.currentState!.validate()) return;
-    _formKey.currentState!.save();
+  Future<void> _handleSubmit() async {
     final newString = _textController.text;
-    if (newString == widget.task.title()) {
-      setState(() => editMode = false);
-      return;
+    if (newString != widget.task.title()) {
+      try {
+        EasyLoading.show(status: L10n.of(context).updatingTaskTitle);
+        final updater = widget.task.updateBuilder();
+        updater.title(newString);
+        await updater.send();
+        if (!mounted) return;
+        EasyLoading.showToast(
+          L10n.of(context).titleUpdated,
+          toastPosition: EasyLoadingToastPosition.bottom,
+        );
+        setState(() => editMode = false);
+      } catch (e) {
+        EasyLoading.showError(
+          L10n.of(context).failedToUpdateTitle(e),
+        );
+      }
     }
-    try {
-      EasyLoading.show(status: L10n.of(context).updatingTaskTitle);
-      final updater = widget.task.updateBuilder();
-      updater.title(newString);
-      await updater.send();
-      if (!mounted) return;
-      EasyLoading.showToast(
-        L10n.of(context).titleUpdated,
-        toastPosition: EasyLoadingToastPosition.bottom,
-      );
-      setState(() => editMode = false);
-    } catch (e) {
-      EasyLoading.showError('${L10n.of(context).failedTo('updateTitle')}: $e');
-    }
+    setState(() => editMode = false);
   }
 }
 
@@ -305,7 +309,7 @@ class _TaskBodyState extends State<TaskBody> {
                       setState(() => editMode = false);
                     } catch (e) {
                       EasyLoading.showError(
-                        '${L10n.of(context).failedToLoad('updateNotes')}: $e',
+                        L10n.of(context).failedToLoadUpdateNotes(e),
                       );
                     }
                   },

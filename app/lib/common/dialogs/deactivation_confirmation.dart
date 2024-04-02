@@ -20,7 +20,7 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
     builder: (BuildContext ctx) {
       return AlertDialog(
         title: Text(
-          L10n.of(context).deactivate('withAccount'),
+          L10n.of(context).deactivateAccount,
           style: TextStyle(
             color: AppTheme.brandColorScheme.error,
             fontSize: 26,
@@ -138,7 +138,7 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
               }
             },
             child: Text(
-              L10n.of(context).deactivate(''),
+              L10n.of(context).deactivate,
             ),
           ),
         ],

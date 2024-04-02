@@ -123,13 +123,13 @@ class ConvoHierarchyCard extends ConsumerWidget {
         onLongPress: onLongPress,
       ),
       error: (error, stack) => ListTile(
-        title: Text('${L10n.of(context).errorLoading('')}: $roomId'),
+        title: Text(L10n.of(context).errorLoading(roomId)),
         subtitle: Text('$error'),
       ),
       loading: () => Skeletonizer(
         child: ListTile(
           title: Text(roomId),
-          subtitle: Text(L10n.of(context).loading('')),
+          subtitle: Text(L10n.of(context).loading),
         ),
       ),
     );
