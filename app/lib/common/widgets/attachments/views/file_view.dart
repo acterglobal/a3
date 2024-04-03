@@ -1,12 +1,10 @@
-import 'dart:io';
-
 import 'package:acter/common/models/attachment_media_state/attachment_media_state.dart';
 import 'package:acter/common/providers/attachment_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Attachment;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:open_filex/open_filex.dart';
+import 'package:share_plus/share_plus.dart';
 
 class FileView extends ConsumerWidget {
   final Attachment attachment;
@@ -16,12 +14,6 @@ class FileView extends ConsumerWidget {
     required this.attachment,
     this.openView = true,
   });
-
-  void _openFile(File f) async {
-    await OpenFilex.open(
-      f.path,
-    );
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -53,7 +45,7 @@ class FileView extends ConsumerWidget {
     return InkWell(
       onTap: () async {
         if (mediaState.mediaFile != null) {
-          _openFile(mediaState.mediaFile!);
+          Share.shareXFiles([XFile(mediaState.mediaFile!.path)]);
         } else {
           ref
               .read(attachmentMediaStateProvider(attachment).notifier)
@@ -97,7 +89,9 @@ class FileView extends ConsumerWidget {
 
   Widget fileUI(BuildContext context, AttachmentMediaState mediaState) {
     return InkWell(
-      onTap: openView! ? () => _openFile(mediaState.mediaFile!) : null,
+      onTap: openView!
+          ? () => Share.shareXFiles([XFile(mediaState.mediaFile!.path)])
+          : null,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(6),
         child: const Icon(Icons.description, size: 22),
