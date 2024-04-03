@@ -30,7 +30,7 @@ class MySpacesSection extends ConsumerWidget {
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
-        !spaces.isEmpty
+        spaces.isEmpty
             ? const _NoSpacesWidget()
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
