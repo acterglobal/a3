@@ -2,7 +2,7 @@ use acter::{
     matrix_sdk::config::StoreConfig,
     testing::{ensure_user, wait_for},
 };
-use acter_core::models::{ActerModel};
+use acter_core::models::ActerModel;
 use anyhow::{bail, Result};
 use tokio::time::{sleep, Duration};
 use tokio_retry::{

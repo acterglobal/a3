@@ -2546,17 +2546,11 @@ object Invitation {
     /// get the timestamp of this invitation in milliseconds
     fn origin_server_ts() -> Option<u64>;
 
-    /// get the room id of this invitation
-    fn room_id() -> RoomId;
-
     /// the RoomId as a String
     fn room_id_str() -> string;
 
     /// get the room of this invitation
     fn room() -> Room;
-
-    /// get the user id of this invitation sender
-    fn sender_id() -> UserId;
 
     /// get the user id of this invitation sender as string
     fn sender_id_str() -> string;

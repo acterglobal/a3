@@ -23562,16 +23562,6 @@ class Api {
           _InvitationOriginServerTsReturn Function(
             int,
           )>();
-  late final _invitationRoomIdPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-          )>>("__Invitation_room_id");
-
-  late final _invitationRoomId = _invitationRoomIdPtr.asFunction<
-      int Function(
-        int,
-      )>();
   late final _invitationRoomIdStrPtr = _lookup<
       ffi.NativeFunction<
           _InvitationRoomIdStrReturn Function(
@@ -23589,16 +23579,6 @@ class Api {
           )>>("__Invitation_room");
 
   late final _invitationRoom = _invitationRoomPtr.asFunction<
-      int Function(
-        int,
-      )>();
-  late final _invitationSenderIdPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-          )>>("__Invitation_sender_id");
-
-  late final _invitationSenderId = _invitationSenderIdPtr.asFunction<
       int Function(
         int,
       )>();
@@ -48451,21 +48431,6 @@ class Invitation {
     return tmp2;
   }
 
-  /// get the room id of this invitation
-  RoomId roomId() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._invitationRoomId(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_RoomId");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = RoomId._(_api, tmp3_1);
-    return tmp2;
-  }
-
   /// the RoomId as a String
   String roomIdStr() {
     var tmp0 = 0;
@@ -48508,21 +48473,6 @@ class Invitation {
     final tmp3_1 = _Box(_api, tmp3_0, "drop_box_Room");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = Room._(_api, tmp3_1);
-    return tmp2;
-  }
-
-  /// get the user id of this invitation sender
-  UserId senderId() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._invitationSenderId(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_UserId");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = UserId._(_api, tmp3_1);
     return tmp2;
   }
 
