@@ -207,6 +207,8 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       if (parentRoomId != null) {
         final space = await ref.read(spaceProvider(parentRoomId).future);
         await space.addChildRoom(roomId.toString());
+        // spaceRelations come from the server and must be manually invalidated
+        ref.invalidate(spaceRelationsOverviewProvider(parentRoomId));
       }
 
       EasyLoading.dismiss();
