@@ -949,6 +949,9 @@ object Room {
     /// the RoomId as a String
     fn room_id_str() -> string;
 
+    /// whether this is a Space
+    fn is_space() -> bool;
+
     /// the JoinRule as a String
     fn join_rule_str() -> string;
 
@@ -967,8 +970,8 @@ object Room {
     /// get the room profile that contains avatar and display name
     fn space_relations() -> Future<Result<SpaceRelations>>;
 
-    /// Whether this is a space (or, if this returns `false`, consider it a chat)
-    fn is_space() -> bool;
+    /// Whether this is a direct message (in chat)
+    fn is_direct() -> Future<Result<bool>>;
 
     /// add the following as a parent room and return event id of that event
     /// room can have multiple parents
@@ -2545,6 +2548,9 @@ object NotificationSettings {
 object Invitation {
     /// get the timestamp of this invitation in milliseconds
     fn origin_server_ts() -> Option<u64>;
+
+    /// whether this is an invite to a DM
+    fn is_dm() -> bool;
 
     /// the RoomId as a String
     fn room_id_str() -> string;

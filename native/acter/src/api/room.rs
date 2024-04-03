@@ -1138,6 +1138,14 @@ impl Room {
         matches!(self.room.state(), RoomState::Invited)
     }
 
+    pub async fn is_direct(&self) -> Result<bool> {
+        let room = self.room.clone();
+
+        Ok(RUNTIME
+            .spawn(async move { room.is_direct().await })
+            .await??)
+    }
+
     pub fn is_joined(&self) -> bool {
         matches!(self.room.state(), RoomState::Joined)
     }
