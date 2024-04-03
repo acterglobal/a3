@@ -37,7 +37,8 @@ class SpaceTasksPage extends ConsumerWidget {
                 Expanded(
                   child: Text(
                     taskLists.hasValue && taskLists.valueOrNull!.isNotEmpty
-                        ? '${L10n.of(context).tasks} (${taskLists.valueOrNull!.length})'
+                        ? L10n.of(context)
+                            .tasksCount(taskLists.valueOrNull!.length)
                         : L10n.of(context).tasks,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),

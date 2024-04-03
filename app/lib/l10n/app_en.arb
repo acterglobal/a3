@@ -1529,5 +1529,6 @@
   "onBoardingSpaceDescription3": ", conversations, events, tasks, updates, and resources.",
   "onBoardingUpdateDescription1": "Boost engagement by posting important updates",
   "onBoardingUpdateDescription2": ", setting them apart from casual discussions.",
-  "membersCount": "{count} Members"
+  "membersCount": "{count} Members",
+  "tasksCount": "Tasks ({count})"
 }

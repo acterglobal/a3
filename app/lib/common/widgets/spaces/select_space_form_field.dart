@@ -94,7 +94,7 @@ class SelectSpaceFormField extends ConsumerWidget {
     return spaceDetails.when(
       data: (space) =>
           space != null ? SpaceChip(space: space) : Text(currentSelectedSpace!),
-      error: (e, s) => Text('${L10n.of(context).error}: $e'),
+      error: (e, s) => Text(L10n.of(context).errorLoading(e)),
       loading: () => Skeletonizer(
         child: Chip(
           avatar: ActerAvatar(
