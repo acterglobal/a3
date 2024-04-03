@@ -18,7 +18,6 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
-
 final _log = Logger('a3::space::edit');
 
 // interface data providers
@@ -73,7 +72,6 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
 
   @override
   Widget build(BuildContext context) {
-    final titleInput = ref.watch(editTitleProvider);
     final avatarUpload = ref.watch(editAvatarProvider);
     final avatarNotifier = ref.watch(editAvatarProvider.notifier);
     ref.watch(editTopicProvider);
@@ -174,50 +172,8 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
       ),
       confirmActionTitle: L10n.of(context).saveChanges,
       cancelActionTitle: L10n.of(context).cancel,
-      confirmActionOnPressed: titleInput.trim().isEmpty
-          ? null
-          : () async {
-              // check permissions before updating space
-              bool havePermission = await permissionCheck();
-              if (!havePermission && mounted) {
-                // ignore: use_build_context_synchronously
-                customMsgSnackbar(
-                  context,
-                  L10n.of(context).cannotEditSpaceWithNoPermissions,
-                );
-                return;
-              }
-              if (context.mounted) {
-                showAdaptiveDialog(
-                  barrierDismissible: false,
-                  context: context,
-                  builder: (context) => DefaultDialog(
-                    title: Text(
-                      L10n.of(context).updatingSpace,
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                    isLoader: true,
-                  ),
-                );
-                final roomId = await _handleUpdateSpace(context);
-                _log.info('Space Updated: $roomId');
-                // We are doing as expected, but the lints triggers.
-                // ignore: use_build_context_synchronously
-                if (!context.mounted) {
-                  return;
-                }
-                context.pop(); // pop the loading screen
-                context.pop(); // pop the edit sheet
-                context.pushNamed(
-                  Routes.space.name,
-                  pathParameters: {
-                    'spaceId': roomId.toString(),
-                  },
-                );
-              }
-            },
-      cancelActionOnPressed: () =>
-          context.canPop() ? context.pop() : context.goNamed(Routes.main.name),
+      confirmActionOnPressed: _handleConfirm,
+      cancelActionOnPressed: _handleCancel,
     );
   }
 
@@ -306,5 +262,53 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
     _log.info('topic update event: $eventId');
 
     return space.getRoomId();
+  }
+
+  Future<void> _handleConfirm() async {
+    final titleInput = ref.read(editTitleProvider);
+    if (titleInput.trim().isEmpty) return;
+    // check permissions before updating space
+    bool havePermission = await permissionCheck();
+    if (!havePermission && mounted) {
+      // ignore: use_build_context_synchronously
+      customMsgSnackbar(
+        context,
+        L10n.of(context).cannotEditSpaceWithNoPermissions,
+      );
+      return;
+    }
+    if (!context.mounted) return;
+    showAdaptiveDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) => DefaultDialog(
+        title: Text(
+          L10n.of(context).updatingSpace,
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        isLoader: true,
+      ),
+    );
+    final roomId = await _handleUpdateSpace(context);
+    _log.info('Space Updated: $roomId');
+    // We are doing as expected, but the lints triggers.
+    // ignore: use_build_context_synchronously
+    if (!context.mounted) return;
+    context.pop(); // pop the loading screen
+    context.pop(); // pop the edit sheet
+    context.pushNamed(
+      Routes.space.name,
+      pathParameters: {
+        'spaceId': roomId.toString(),
+      },
+    );
+  }
+
+  void _handleCancel() {
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.goNamed(Routes.main.name);
+    }
   }
 }

@@ -33,8 +33,10 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
               Expanded(
                 child: SingleChildScrollView(
                   child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
                     color: Theme.of(context).colorScheme.background,
                     child: Column(
                       children: [
@@ -83,66 +85,71 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
           ),
           TextButton(
             key: deactivateConfirmBtn,
-            onPressed: () async {
-              showAdaptiveDialog(
-                barrierDismissible: false,
-                context: context,
-                builder: (context) => DefaultDialog(
-                  title: Text(
-                    L10n.of(context).deactivatingYourAccount,
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  isLoader: true,
-                ),
-              );
-              final sdk = await ref.read(sdkProvider.future);
-              try {
-                if (!await sdk.deactivateAndDestroyCurrentClient(
-                  passwordController.text,
-                )) {
-                  if (!context.mounted) return;
-                  throw L10n.of(context).deactivationAndRemovingFailed;
-                }
-                // ignore: use_build_context_synchronously
-                if (!context.mounted) {
-                  return;
-                }
-                // remove pop up
-                Navigator.of(context, rootNavigator: true).pop();
-                // remove ourselves
-                Navigator.of(context, rootNavigator: true).pop();
-                context.goNamed(Routes.main.name);
-              } catch (err) {
-                // We are doing as expected, but the lints triggers.
-                // ignore: use_build_context_synchronously
-                if (!context.mounted) {
-                  return;
-                }
-
-                showAdaptiveDialog(
-                  context: context,
-                  builder: (context) => DefaultDialog(
-                    title: Text(
-                      '${L10n.of(context).deactivatingFailed}: \n $err"',
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                    actions: <Widget>[
-                      ElevatedButton(
-                        onPressed: () =>
-                            Navigator.of(context, rootNavigator: true).pop(),
-                        child: Text(L10n.of(context).close),
-                      ),
-                    ],
-                  ),
-                );
-              }
-            },
-            child: Text(
-              L10n.of(context).deactivate(''),
+            onPressed: () async => _onConfirm(
+              context,
+              ref,
+              passwordController.text,
             ),
+            child: Text(L10n.of(context).deactivate('')),
           ),
         ],
       );
     },
   );
+}
+
+Future<void> _onConfirm(
+  BuildContext context,
+  WidgetRef ref,
+  String password,
+) async {
+  showAdaptiveDialog(
+    barrierDismissible: false,
+    context: context,
+    builder: (context) => DefaultDialog(
+      title: Text(
+        L10n.of(context).deactivatingYourAccount,
+        style: Theme.of(context).textTheme.titleSmall,
+      ),
+      isLoader: true,
+    ),
+  );
+  final sdk = await ref.read(sdkProvider.future);
+  try {
+    if (!await sdk.deactivateAndDestroyCurrentClient(password)) {
+      if (!context.mounted) return;
+      throw L10n.of(context).deactivationAndRemovingFailed;
+    }
+    // ignore: use_build_context_synchronously
+    if (!context.mounted) {
+      return;
+    }
+    // remove pop up
+    Navigator.of(context, rootNavigator: true).pop();
+    // remove ourselves
+    Navigator.of(context, rootNavigator: true).pop();
+    context.goNamed(Routes.main.name);
+  } catch (err) {
+    // We are doing as expected, but the lints triggers.
+    // ignore: use_build_context_synchronously
+    if (!context.mounted) {
+      return;
+    }
+
+    showAdaptiveDialog(
+      context: context,
+      builder: (context) => DefaultDialog(
+        title: Text(
+          '${L10n.of(context).deactivatingFailed}: \n $err"',
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        actions: <Widget>[
+          ElevatedButton(
+            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+            child: Text(L10n.of(context).close),
+          ),
+        ],
+      ),
+    );
+  }
 }
