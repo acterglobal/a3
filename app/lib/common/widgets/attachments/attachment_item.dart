@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // Attachment item UI
 class AttachmentItem extends ConsumerWidget {
   final Attachment attachment;
+  // whether item can be viewed on gesture
   final bool? openView;
   const AttachmentItem({
     super.key,
