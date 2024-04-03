@@ -149,6 +149,8 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
       if (parentId != null) {
         final space = await ref.read(spaceProvider(parentId).future);
         await space.addChildRoom(roomIdStr);
+        // spaceRelations come from the server and must be manually invalidated
+        ref.invalidate(spaceRelationsOverviewProvider(parentId));
       }
       final convo = await client.convoWithRetry(roomIdStr, 120);
       EasyLoading.dismiss();

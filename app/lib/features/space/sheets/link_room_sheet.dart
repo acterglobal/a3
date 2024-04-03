@@ -437,6 +437,8 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     } else {
       childRoomsIds.add(roomId);
     }
+    // spaceRelations come from the server and must be manually invalidated
+    ref.invalidate(spaceRelationsOverviewProvider(selectedParentSpaceId));
   }
 
 //Unlink child room
@@ -453,7 +455,10 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       //Fetch selected room data and add given parentSpaceId as parent
       final room = await ref.read(maybeRoomProvider(roomId).future);
       if (room != null && mounted) {
-        room.removeParentRoom(selectedParentSpaceId, L10n.of(context).unlink('room'));
+        room.removeParentRoom(
+          selectedParentSpaceId,
+          L10n.of(context).unlink('room'),
+        );
       }
     }
 
@@ -462,5 +467,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     } else {
       childRoomsIds.remove(roomId);
     }
+    // spaceRelations come from the server and must be manually invalidated
+    ref.invalidate(spaceRelationsOverviewProvider(selectedParentSpaceId));
   }
 }
