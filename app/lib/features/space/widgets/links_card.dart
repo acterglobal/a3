@@ -34,7 +34,7 @@ class LinksCard extends ConsumerWidget {
                   if (pins.isEmpty) {
                     return [
                       Text(
-                        L10n.of(context).thereAreNoPinsInThisSpace,
+                        L10n.of(context).noPinsInSpace,
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ];

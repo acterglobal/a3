@@ -30,7 +30,7 @@ class MySpacesSection extends ConsumerWidget {
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
-        spaces.isEmpty
+        !spaces.isEmpty
             ? const _NoSpacesWidget()
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -104,7 +104,7 @@ class _NoSpacesWidget extends ConsumerWidget {
                       fontWeight: FontWeight.bold,
                     ),
               ),
-              TextSpan(text: '\t${L10n.of(context).or}\t'),
+              TextSpan(text: L10n.of(context).or),
               TextSpan(
                 text: L10n.of(context).join,
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
@@ -113,7 +113,11 @@ class _NoSpacesWidget extends ConsumerWidget {
                     ),
               ),
               TextSpan(
-                text: '\t${L10n.of(context).spaceShortDescription}',
+                text: ' ',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              TextSpan(
+                text: L10n.of(context).spaceShortDescription,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ],

@@ -164,7 +164,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                       data: (members) {
                         int count = members.length;
                         return Text(
-                          L10n.of(context).membersCountLeft(count),
+                          L10n.of(context).membersCount(count),
                           style: Theme.of(context).textTheme.bodySmall,
                         );
                       },
@@ -174,7 +174,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                       ),
                       loading: () => Skeletonizer(
                         child: Text(
-                          L10n.of(context).membersCountLeft(100),
+                          L10n.of(context).membersCount(100),
                         ),
                       ),
                     ),

@@ -32,9 +32,7 @@ class PinListItemById extends ConsumerWidget {
         pin: acterPin,
         showSpace: showSpace,
       ),
-      error: (err, st) => Text(
-        '${L10n.of(context).error} ${L10n.of(context).loading.toLowerCase()}: ${err.toString()}',
-      ),
+      error: (err, st) => Text(L10n.of(context).errorLoading(err)),
       loading: () => const Skeletonizer(
         child: SizedBox(
           height: 100,

@@ -326,14 +326,14 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Text(
-                  L10n.of(context).membersCountRight(list.length),
+                  L10n.of(context).membersCount(list.length),
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
               );
             },
             loading: () => Skeletonizer(
               child: Text(
-                L10n.of(context).membersCountRight(0),
+                L10n.of(context).membersCount(0),
               ),
             ),
             error: (error, stackTrace) =>
