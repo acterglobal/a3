@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/chat/pages/chat_select_page.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
 import 'package:acter/features/chat/pages/room_profile_page.dart';
 import 'package:acter/features/chat/widgets/chat_layout_builder.dart';
@@ -32,7 +31,10 @@ List<RouteBase> makeChatShellRoutes(ref) {
         return NoTransitionPage(
           key: state.pageKey,
           child: ChatLayoutBuilder(
-            children: [RoomPage(roomId: roomId)],
+            centerBuilder: (inSidebar) => RoomPage(
+              roomId: roomId,
+              inSidebar: inSidebar,
+            ),
           ),
         );
       },
@@ -47,10 +49,14 @@ List<RouteBase> makeChatShellRoutes(ref) {
         return NoTransitionPage(
           key: state.pageKey,
           child: ChatLayoutBuilder(
-            children: [
-              RoomPage(roomId: roomId),
-              RoomProfilePage(roomId: roomId),
-            ],
+            centerBuilder: (inSidebar) => RoomPage(
+              roomId: roomId,
+              inSidebar: inSidebar,
+            ),
+            expandedBuilder: (inSidebar) => RoomProfilePage(
+              roomId: roomId,
+              inSidebar: inSidebar,
+            ),
           ),
         );
       },

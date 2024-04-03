@@ -1,7 +1,6 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/chat/models/room_list_filter_state/room_list_filter_state.dart';
-import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
 import 'package:acter/features/chat/widgets/convo_list.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -15,9 +14,13 @@ import 'package:go_router/go_router.dart';
 final bucketGlobal = PageStorageBucket();
 
 class RoomsListWidget extends ConsumerStatefulWidget {
+  final Function(String) onSelected;
   static const roomListMenuKey = Key('room-list');
 
-  const RoomsListWidget({super.key = roomListMenuKey});
+  const RoomsListWidget({
+    required this.onSelected,
+    super.key = roomListMenuKey,
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -227,7 +230,6 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
   Widget build(BuildContext context) {
     final client = ref.watch(alwaysClientProvider);
     final hasFilters = ref.watch(hasRoomFilters);
-    final inSideBar = ref.watch(inSideBarProvider);
     return PageStorage(
       bucket: bucketGlobal,
       child: CustomScrollView(
@@ -307,17 +309,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
             child: client.isGuest()
                 ? empty
                 : ConvosList(
-                    onSelected: (String roomId) {
-                      inSideBar
-                          ? context.goNamed(
-                              Routes.chatroom.name,
-                              pathParameters: {'roomId': roomId},
-                            )
-                          : context.pushNamed(
-                              Routes.chatroom.name,
-                              pathParameters: {'roomId': roomId},
-                            );
-                    },
+                    onSelected: widget.onSelected,
                   ),
           ),
         ],
