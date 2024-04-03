@@ -494,11 +494,11 @@ impl Client {
     pub async fn new(client: SdkClient, state: ClientState) -> Result<Self> {
         let core = CoreClient::new(client.clone()).await?;
         let mut cl = Client {
-            core,
+            core: core.clone(),
             state: Arc::new(RwLock::new(state)),
             spaces: Default::default(),
             convos: Default::default(),
-            invitation_controller: InvitationController::new(),
+            invitation_controller: InvitationController::new(core.clone()),
             verification_controller: VerificationController::new(),
             device_controller: DeviceController::new(client),
             typing_controller: TypingController::new(),
@@ -532,16 +532,15 @@ impl Client {
             .fold(
                 (Vec::new(), Vec::new()),
                 move |(mut spaces, mut convos), room| {
-                    if matches!(room.state(), RoomState::Left) {
-                        // ignore rooms we aren't in anymore ... maybe make them available somewhere else at some point
-                        return (spaces, convos);
-                    }
-                    let inner = Room::new(client.clone(), room);
+                    // only include items we are ourselves are currently joined in
+                    if matches!(room.state(), RoomState::Joined) {
+                        let inner = Room::new(client.clone(), room);
 
-                    if inner.is_space() {
-                        spaces.push(inner);
-                    } else {
-                        convos.push(inner);
+                        if inner.is_space() {
+                            spaces.push(inner);
+                        } else {
+                            convos.push(inner);
+                        }
                     }
                     (spaces, convos)
                 },
@@ -631,7 +630,7 @@ impl Client {
         let executor = self.executor().clone();
         let client = self.core.client().clone();
 
-        self.invitation_controller.add_event_handler(&client);
+        self.invitation_controller.add_event_handler();
         self.typing_controller.add_event_handler(&client);
         self.receipt_controller.add_event_handler(&client);
 
@@ -709,7 +708,7 @@ impl Client {
                     {
                         info!("received first sync");
                         trace!(user_id=?client.user_id(), "initial synced");
-                        invitation_controller.load_invitations(&client).await;
+                        invitation_controller.load_invitations().await;
 
                         initial.store(false, Ordering::SeqCst);
 
@@ -974,7 +973,7 @@ impl Client {
         }
         let client = self.core.client().clone();
 
-        self.invitation_controller.remove_event_handler(&client);
+        self.invitation_controller.remove_event_handler();
         self.verification_controller
             .remove_to_device_event_handler(&client);
         self.verification_controller

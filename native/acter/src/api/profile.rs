@@ -4,6 +4,7 @@ use matrix_sdk::{
     room::RoomMember,
     Client, DisplayName, Room,
 };
+use ruma::OwnedRoomId;
 use ruma_client_api::user_directory::search_users;
 use ruma_common::OwnedUserId;
 use ruma_events::room::MediaSource;
@@ -109,6 +110,14 @@ pub struct RoomProfile {
 impl RoomProfile {
     pub(crate) fn new(room: Room) -> Self {
         RoomProfile { room }
+    }
+
+    pub fn room_id(&self) -> OwnedRoomId {
+        self.room.room_id().to_owned()
+    }
+
+    pub fn room_id_str(&self) -> String {
+        self.room.room_id().to_string()
     }
 
     pub fn has_avatar(&self) -> bool {
