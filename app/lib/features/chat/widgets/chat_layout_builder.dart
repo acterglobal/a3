@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/features/chat/pages/chat_select_page.dart';
 import 'package:acter/features/chat/pages/room_profile_page.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/rooms_list.dart';
@@ -8,46 +9,60 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 const sidebarMinWidth = 750;
 
 class ChatLayoutBuilder extends ConsumerWidget {
-  final Widget child;
-  const ChatLayoutBuilder({required this.child, super.key});
+  final List<Widget>? children;
+  const ChatLayoutBuilder({this.children, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentId = ref.watch(selectedChatIdProvider);
-    final isExpanded = ref.watch(hasExpandedPanel);
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxWidth >= sidebarMinWidth) {
-          // FIXME: do state change inside notifier
-          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-            ref.read(inSideBarProvider.notifier).update((state) => true);
-          });
-          return Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              const Flexible(
-                child: RoomsListWidget(),
-              ),
-              Flexible(
+        if (constraints.maxWidth < sidebarMinWidth) {
+          // we only have space to show the deepest child:
+          if (children != null) {
+            return children!.last;
+          } else {
+            // no children, show the room list
+            return const RoomsListWidget();
+          }
+        }
+
+        // we have space to show more
+        final List<Flexible> wrappedChildren;
+
+        if (children != null) {
+          wrappedChildren = children!.indexed.map((entry) {
+            final child = entry.$2;
+            if (entry.$1 == 0) {
+              // the first entry gets twice the space, all following just 1
+              return Flexible(
                 flex: 2,
                 child: child,
-              ),
-              currentId != null && isExpanded
-                  ? Flexible(child: RoomProfilePage(roomId: currentId))
-                  : const SizedBox.shrink(),
-            ],
-          );
+              );
+            } else {
+              return Flexible(
+                child: child,
+              );
+            }
+          }).toList();
+        } else {
+          // nothing else to show, show placeholder page:
+          wrappedChildren = [
+            const Flexible(
+              flex: 2,
+              child: ChatSelectPage(),
+            ),
+          ];
         }
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          ref.read(inSideBarProvider.notifier).update((state) => false);
-          ref.read(hasExpandedPanel.notifier).update((state) => false);
-        });
-        // mobile case / not enough space
-        if (currentId == null) {
-          // we prefer showing the room list on the index page if there isn't enough space
-          return const RoomsListWidget();
-        }
-        return child;
+
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            const Flexible(
+              child: RoomsListWidget(),
+            ),
+            ...wrappedChildren,
+          ],
+        );
       },
     );
   }

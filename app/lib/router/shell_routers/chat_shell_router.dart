@@ -18,9 +18,7 @@ List<RouteBase> makeChatShellRoutes(ref) {
         selectedChatNotifier.select(null);
         return NoTransitionPage(
           key: state.pageKey,
-          child: const ChatLayoutBuilder(
-            child: ChatSelectPage(),
-          ),
+          child: const ChatLayoutBuilder(),
         );
       },
     ),
@@ -34,7 +32,7 @@ List<RouteBase> makeChatShellRoutes(ref) {
         return NoTransitionPage(
           key: state.pageKey,
           child: ChatLayoutBuilder(
-            child: RoomPage(roomId: roomId),
+            children: [RoomPage(roomId: roomId)],
           ),
         );
       },
@@ -49,7 +47,10 @@ List<RouteBase> makeChatShellRoutes(ref) {
         return NoTransitionPage(
           key: state.pageKey,
           child: ChatLayoutBuilder(
-            child: RoomProfilePage(roomId: roomId),
+            children: [
+              RoomPage(roomId: roomId),
+              RoomProfilePage(roomId: roomId),
+            ],
           ),
         );
       },
