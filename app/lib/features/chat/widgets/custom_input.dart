@@ -5,7 +5,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/attachments/attachment_item.dart';
+import 'package:acter/common/widgets/attachments/attachment_container.dart';
 import 'package:acter/common/widgets/attachments/attachment_options.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';

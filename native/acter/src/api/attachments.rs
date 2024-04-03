@@ -4,8 +4,12 @@ use acter_core::{
 };
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
-use matrix_sdk::{room::Room, Client as SdkClient, RoomState};
-use ruma_common::{OwnedEventId, OwnedTransactionId};
+use matrix_sdk::{
+    media::{MediaFormat, MediaRequest},
+    room::Room,
+    Client as SdkClient, RoomState,
+};
+use ruma_common::{EventId, OwnedEventId, OwnedTransactionId};
 use ruma_events::{
     room::message::{
         AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
@@ -13,7 +17,7 @@ use ruma_events::{
     },
     MessageLikeEventType,
 };
-use std::{ops::Deref, path::PathBuf, str::FromStr};
+use std::{io::Write, ops::Deref, path::PathBuf, str::FromStr};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::Stream;
 use tracing::{trace, warn};
@@ -21,7 +25,7 @@ use tracing::{trace, warn};
 use super::{
     api::FfiBuffer, client::Client, common::ThumbnailSize, stream::MsgContentDraft, RUNTIME,
 };
-use crate::MsgContent;
+use crate::{MsgContent, OptionString};
 
 impl Client {
     pub async fn wait_for_attachment(
@@ -91,88 +95,261 @@ impl Attachment {
         MsgContent::from(&self.inner.content)
     }
 
-    pub async fn source_binary(
+    pub async fn download_media(
         &self,
         thumb_size: Option<Box<ThumbnailSize>>,
-    ) -> Result<FfiBuffer<u8>> {
-        // any variable in self can't be called directly in spawn
-        match &self.inner.content {
-            AttachmentContent::Image(content)
-            | AttachmentContent::Fallback(FallbackAttachmentContent::Image(content)) => {
-                match thumb_size {
-                    Some(thumb_size) => {
-                        let source = content
-                            .info
-                            .as_ref()
-                            .and_then(|info| info.thumbnail_source.clone())
-                            .context("thumbnail source not found")?;
-                        self.client.source_binary(source, Some(thumb_size)).await
-                    }
-                    None => {
-                        self.client
-                            .source_binary(content.source.clone(), None)
-                            .await
+        dir_path: String,
+    ) -> Result<OptionString> {
+        let room = self.room.clone();
+        let client = self.room.client();
+        let evt_id = self.inner.meta.event_id.clone();
+        let evt_content = self.inner.content().clone();
+
+        RUNTIME
+            .spawn(async move {
+                // get file extension from msg info
+                let (request, mut filename) = match thumb_size.clone() {
+                    Some(thumb_size) => match evt_content {
+                        AttachmentContent::Image(content) | AttachmentContent::Fallback(FallbackAttachmentContent::Image(content)) => {
+                            let request = content
+                                .info
+                                .as_ref()
+                                .and_then(|info| info.thumbnail_source.clone())
+                                .map(|source| MediaRequest {
+                                    source,
+                                    format: MediaFormat::from(thumb_size),
+                                });
+                            let filename = content
+                                .info
+                                .clone()
+                                .and_then(|info| info.mimetype)
+                                .and_then(|mimetype| {
+                                    mime2ext::mime2ext(mimetype).map(|ext| {
+                                        format!("{}-thumbnail.{}", evt_id, ext)
+                                    })
+                                });
+                            (request, filename)
+                        }
+                        AttachmentContent::Video(content) | AttachmentContent::Fallback(FallbackAttachmentContent::Video(content))=> {
+                            let request = content
+                                .info
+                                .as_ref()
+                                .and_then(|info| info.thumbnail_source.clone())
+                                .map(|source| MediaRequest {
+                                    source,
+                                    format: MediaFormat::from(thumb_size),
+                                });
+                            let filename = content
+                                .info
+                                .clone()
+                                .and_then(|info| info.mimetype)
+                                .and_then(|mimetype| {
+                                    mime2ext::mime2ext(mimetype).map(|ext| {
+                                        format!("{}-thumbnail.{}", evt_id, ext)
+                                    })
+                                });
+                            (request, filename)
+                        }
+                        AttachmentContent::File(content) | AttachmentContent::Fallback(FallbackAttachmentContent::File(content))=> {
+                            let request = content
+                                .info
+                                .as_ref()
+                                .and_then(|info| info.thumbnail_source.clone())
+                                .map(|source| MediaRequest {
+                                    source,
+                                    format: MediaFormat::from(thumb_size),
+                                });
+                            let filename = content
+                                .info
+                                .clone()
+                                .and_then(|info| info.mimetype)
+                                .and_then(|mimetype| {
+                                    mime2ext::mime2ext(mimetype).map(|ext| {
+                                        format!("{}-thumbnail.{}", evt_id, ext)
+                                    })
+                                });
+                            (request, filename)
+                        }
+                        AttachmentContent::Location(content) | AttachmentContent::Fallback(FallbackAttachmentContent::Location(content)) => {
+                            let request = content
+                                .info
+                                .as_ref()
+                                .and_then(|info| info.thumbnail_source.clone())
+                                .map(|source| MediaRequest {
+                                    source,
+                                    format: MediaFormat::from(thumb_size),
+                                });
+                            let filename = content
+                                .info
+                                .clone()
+                                .and_then(|info| info.thumbnail_info)
+                                .and_then(|info| info.mimetype)
+                                .and_then(|mimetype| {
+                                    mime2ext::mime2ext(mimetype).map(|ext| {
+                                        format!("{}-thumbnail.{}", evt_id, ext)
+                                    })
+                                });
+                            (request, filename)
+                        }
+                        _ => bail!("This attachment type is not downloadable"),
+                    },
+                    None => match evt_content {
+                        AttachmentContent::Image(content) | AttachmentContent::Fallback(FallbackAttachmentContent::Image(content)) => {
+                            let request = MediaRequest {
+                                source: content.source.clone(),
+                                format: MediaFormat::File,
+                            };
+                            let filename = content
+                                .info
+                                .clone()
+                                .and_then(|info| info.mimetype)
+                                .and_then(|mimetype| {
+                                    mime2ext::mime2ext(mimetype)
+                                        .map(|ext| format!("{}.{}", evt_id, ext))
+                                });
+                            (Some(request), filename)
+                        }
+                        AttachmentContent::Audio(content) | AttachmentContent::Fallback(FallbackAttachmentContent::Audio(content))=> {
+                            let request = MediaRequest {
+                                source: content.source.clone(),
+                                format: MediaFormat::File,
+                            };
+                            let filename = content
+                                .info
+                                .clone()
+                                .and_then(|info| info.mimetype)
+                                .and_then(|mimetype| {
+                                    mime2ext::mime2ext(mimetype)
+                                        .map(|ext| format!("{}.{}", evt_id, ext))
+                                });
+                            (Some(request), filename)
+                        }
+                        AttachmentContent::Video(content) | AttachmentContent::Fallback(FallbackAttachmentContent::Video(content)) => {
+                            let request = MediaRequest {
+                                source: content.source.clone(),
+                                format: MediaFormat::File,
+                            };
+                            let filename = content
+                                .info
+                                .clone()
+                                .and_then(|info| info.mimetype)
+                                .and_then(|mimetype| {
+                                    mime2ext::mime2ext(mimetype)
+                                        .map(|ext| format!("{}.{}",evt_id, ext))
+                                });
+                            (Some(request), filename)
+                        }
+                        AttachmentContent::File(content) | AttachmentContent::Fallback(FallbackAttachmentContent::File(content)) => {
+                            let request = MediaRequest {
+                                source: content.source.clone(),
+                                format: MediaFormat::File,
+                            };
+                            let filename = content
+                                .info
+                                .clone()
+                                .and_then(|info| info.mimetype)
+                                .and_then(|mimetype| {
+                                    mime2ext::mime2ext(mimetype)
+                                        .map(|ext| format!("{}.{}", evt_id, ext))
+                                });
+                            (Some(request), filename)
+                        }
+                        _ => bail!("This message type is not downloadable"),
+                    },
+                };
+                let Some(request) = request else {
+                    warn!("Content info or thumbnail source not found");
+                    return Ok(OptionString::new(None));
+                };
+                let data = client.media().get_media_content(&request, false).await?;
+                // infer file extension via parsing of file binary
+                if filename.is_none() {
+                    if let Some(kind) = infer::get(&data) {
+                        filename = Some(if thumb_size.clone().is_some() {
+                            format!("{}-thumbnail.{}", evt_id, kind.extension())
+                        } else {
+                            format!("{}.{}", evt_id, kind.extension())
+                        });
                     }
                 }
-            }
-            AttachmentContent::Audio(content)
-            | AttachmentContent::Fallback(FallbackAttachmentContent::Audio(content)) => {
-                if thumb_size.is_some() {
-                    warn!("DeveloperError: audio has not thumbnail");
-                }
-                self.client
-                    .source_binary(content.source.clone(), None)
-                    .await
-            }
-            AttachmentContent::Video(content)
-            | AttachmentContent::Fallback(FallbackAttachmentContent::Video(content)) => {
-                match thumb_size {
-                    Some(thumb_size) => {
-                        let source = content
-                            .info
-                            .as_ref()
-                            .and_then(|info| info.thumbnail_source.clone())
-                            .context("thumbnail source not found")?;
-                        self.client.source_binary(source, Some(thumb_size)).await
+                let mut path = PathBuf::from(dir_path.clone());
+                path.push(filename.unwrap_or_else(|| evt_id.to_string()));
+                let mut file = std::fs::File::create(path.clone())?;
+                file.write_all(&data)?;
+                let key = if thumb_size.is_some() {
+                    [
+                        room.room_id().as_str().as_bytes(),
+                        evt_id.as_bytes(),
+                        "thumbnail".as_bytes(),
+                    ]
+                    .concat()
+                } else {
+                    [room.room_id().as_str().as_bytes(), evt_id.as_bytes()].concat()
+                };
+                let path_text = path
+                    .to_str()
+                    .context("Path was generated from strings. Must be string")?;
+                client
+                    .store()
+                    .set_custom_value_no_read(&key, path_text.as_bytes().to_vec())
+                    .await?;
+                Ok(OptionString::new(Some(path_text.to_string())))
+            })
+            .await?
+    }
+
+    pub async fn media_path(&self, is_thumb: bool) -> Result<OptionString> {
+        let room = self.room.clone();
+        let client = self.room.client();
+
+        let evt_id = self.inner.meta.event_id.clone();
+        let evt_content = self.inner.content().clone();
+
+        RUNTIME
+            .spawn(async move {
+                if is_thumb {
+                    let available = matches!(
+                        evt_content,
+                        AttachmentContent::Image(_)
+                            | AttachmentContent::Video(_)
+                            | AttachmentContent::File(_)
+                            | AttachmentContent::Location(_)
+                            | AttachmentContent::Fallback(_)
+                    );
+                    if !available {
+                        bail!("This message type is not downloadable");
                     }
-                    None => {
-                        self.client
-                            .source_binary(content.source.clone(), None)
-                            .await
+                } else {
+                    let available = matches!(
+                        evt_content,
+                        AttachmentContent::Image(_)
+                            | AttachmentContent::Audio(_)
+                            | AttachmentContent::Video(_)
+                            | AttachmentContent::File(_)
+                            | AttachmentContent::Fallback(_)
+                    );
+                    if !available {
+                        bail!("This message type is not downloadable");
                     }
                 }
-            }
-            AttachmentContent::File(content)
-            | AttachmentContent::Fallback(FallbackAttachmentContent::File(content)) => {
-                match thumb_size {
-                    Some(thumb_size) => {
-                        let source = content
-                            .info
-                            .as_ref()
-                            .and_then(|info| info.thumbnail_source.clone())
-                            .context("thumbnail source not found")?;
-                        self.client.source_binary(source, Some(thumb_size)).await
-                    }
-                    None => {
-                        self.client
-                            .source_binary(content.source.clone(), None)
-                            .await
-                    }
-                }
-            }
-            AttachmentContent::Location(content)
-            | AttachmentContent::Fallback(FallbackAttachmentContent::Location(content)) => {
-                if thumb_size.is_none() {
-                    warn!("DeveloperError: location has not file");
-                }
-                let source = content
-                    .info
-                    .as_ref()
-                    .and_then(|info| info.thumbnail_source.clone())
-                    .context("thumbnail source not found")?;
-                self.client.source_binary(source, thumb_size).await
-            }
-        }
+                let key = if is_thumb {
+                    [
+                        room.room_id().as_str().as_bytes(),
+                        evt_id.as_bytes(),
+                        "thumbnail".as_bytes(),
+                    ]
+                    .concat()
+                } else {
+                    [room.room_id().as_str().as_bytes(), evt_id.as_bytes()].concat()
+                };
+                let path = client.store().get_custom_value(&key).await?;
+                let text = match path {
+                    Some(path) => Some(std::str::from_utf8(&path)?.to_string()),
+                    None => None,
+                };
+                Ok(OptionString::new(text))
+            })
+            .await?
     }
 }
 

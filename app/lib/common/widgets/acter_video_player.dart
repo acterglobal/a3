@@ -6,11 +6,13 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 class ActerVideoPlayer extends StatefulWidget {
   final File videoFile;
   final VoidCallback? onTapFullScreen;
+  final bool? hasPlayerControls;
 
   const ActerVideoPlayer({
     super.key,
     required this.videoFile,
     this.onTapFullScreen,
+    this.hasPlayerControls = true,
   });
 
   @override
@@ -85,7 +87,7 @@ class _ActerVideoPlayerState extends State<ActerVideoPlayer> {
     return Stack(
       children: <Widget>[
         playButtonUI(),
-        playPauseControls(),
+        if (widget.hasPlayerControls!) playPauseControls(),
         playbackSpeedMenu(),
         if (widget.onTapFullScreen != null) fullScreenActionButton(),
       ],

@@ -1327,8 +1327,15 @@ object Attachment {
     fn msg_content() -> MsgContent;
     /// if this is a media, hand over the data
     /// if thumb size is given, media thumbnail is returned
+
+    /// download media (image/audio/video/file/location) to specified path
+    /// if thumb size is given, media thumbnail is returned
     /// if thumb size is not given, media file is returned
-    fn source_binary(thumb_size: Option<ThumbnailSize>) -> Future<Result<buffer<u8>>>;
+    fn download_media(thumb_size: Option<ThumbnailSize>, dir_path: string) -> Future<Result<OptionString>>;
+
+    /// get the path that media (image/audio/video/file) was saved
+    /// return None when never downloaded
+    fn media_path(is_thumb: bool) -> Future<Result<OptionString>>;
 }
 
 /// Reference to the attachments section of a particular item
