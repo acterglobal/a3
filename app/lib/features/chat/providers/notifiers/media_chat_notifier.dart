@@ -6,6 +6,9 @@ import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dar
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod/riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::chat::media_chat_notifier');
 
 class MediaChatNotifier extends StateNotifier<MediaChatState> {
   final Ref ref;
@@ -23,7 +26,7 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
     _convo = await ref.read(chatProvider(messageInfo.roomId).future);
     if (_convo != null) {
       state = state.copyWith(
-        mediaChatLoadingState: const MediaChatLoadingState.loading(),
+        mediaChatLoadingState: const MediaChatLoadingState.notYetStarted(),
       );
       try {
         //Get media path if already downloaded
@@ -34,11 +37,14 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
             mediaChatLoadingState: const MediaChatLoadingState.loaded(),
           );
         } else {
-          state = state.copyWith(
-            mediaChatLoadingState: const MediaChatLoadingState.error(
-              'Media not found',
-            ),
-          );
+          if (true) {
+            await downloadMedia();
+          } else {
+            state = state.copyWith(
+              mediaChatLoadingState:
+                  const MediaChatLoadingState.notYetStarted(),
+            );
+          }
         }
       } catch (e) {
         state = state.copyWith(
@@ -58,19 +64,27 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
   Future<void> downloadMedia() async {
     if (_convo != null) {
       state = state.copyWith(isDownloading: true);
-
-      //Download media if media path is not available
-      final tempDir = await getTemporaryDirectory();
-      final result = await _convo!.downloadMedia(
-        messageInfo.messageId,
-        null,
-        tempDir.path,
-      );
-      String? mediaPath = result.text();
-      if (mediaPath != null) {
+      try {
+        //Download media if media path is not available
+        final tempDir = await getTemporaryDirectory();
+        final result = await _convo!.downloadMedia(
+          messageInfo.messageId,
+          null,
+          tempDir.path,
+        );
+        String? mediaPath = result.text();
+        if (mediaPath != null) {
+          state = state.copyWith(
+            mediaFile: File(mediaPath),
+            isDownloading: false,
+          );
+        }
+      } catch (error, stackTrace) {
+        _log.severe('Error downloading media:', error, stackTrace);
         state = state.copyWith(
-          mediaFile: File(mediaPath),
-          isDownloading: false,
+          mediaChatLoadingState: MediaChatLoadingState.error(
+            'Some error occurred ${error.toString()}',
+          ),
         );
       }
     }
