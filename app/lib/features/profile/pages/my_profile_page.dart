@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
-import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/profile/widgets/skeletons/my_profile_skeletons_widget.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
@@ -94,23 +93,15 @@ class MyProfilePage extends StatelessWidget {
     );
 
     if (newText != null && context.mounted) {
-      showAdaptiveDialog(
-        context: context,
-        builder: (context) => DefaultDialog(
-          title: Text(
-            L10n.of(context).updatingDisplayName,
-            style: Theme.of(context).textTheme.titleSmall,
-          ),
-          isLoader: true,
-        ),
+      EasyLoading.show(
+        status: L10n.of(context).updatingDisplayName,
+        dismissOnTap: false,
       );
       await profile.account.setDisplayName(newText);
       ref.invalidate(accountProfileProvider);
 
-      if (!context.mounted) {
-        return;
-      }
-      Navigator.of(context, rootNavigator: true).pop();
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
       customMsgSnackbar(context, L10n.of(context).displayNameUpdateSubmitted);
     }
   }

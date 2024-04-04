@@ -3,6 +3,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -103,38 +104,30 @@ Future<void> _onConfirm(
   WidgetRef ref,
   String password,
 ) async {
-  showAdaptiveDialog(
-    barrierDismissible: false,
-    context: context,
-    builder: (context) => DefaultDialog(
-      title: Text(
-        L10n.of(context).deactivatingYourAccount,
-        style: Theme.of(context).textTheme.titleSmall,
-      ),
-      isLoader: true,
-    ),
+  EasyLoading.show(
+    status: L10n.of(context).deactivatingYourAccount,
+    dismissOnTap: false,
   );
   final sdk = await ref.read(sdkProvider.future);
   try {
     if (!await sdk.deactivateAndDestroyCurrentClient(password)) {
-      if (!context.mounted) return;
-      throw L10n.of(context).deactivationAndRemovingFailed;
+      EasyLoading.dismiss();
+      if (context.mounted) {
+        EasyLoading.showError(
+          L10n.of(context).deactivationAndRemovingFailed,
+          duration: const Duration(seconds: 3),
+        );
+      }
     }
+    EasyLoading.dismiss();
     // ignore: use_build_context_synchronously
-    if (!context.mounted) {
-      return;
-    }
-    // remove pop up
-    Navigator.of(context, rootNavigator: true).pop();
-    // remove ourselves
-    Navigator.of(context, rootNavigator: true).pop();
+    if (!context.mounted) return;
     context.goNamed(Routes.main.name);
   } catch (err) {
+    EasyLoading.dismiss();
     // We are doing as expected, but the lints triggers.
     // ignore: use_build_context_synchronously
-    if (!context.mounted) {
-      return;
-    }
+    if (!context.mounted) return;
 
     showAdaptiveDialog(
       context: context,

@@ -1,8 +1,9 @@
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 Future<void> joinRoom(
   BuildContext context,
@@ -12,37 +13,20 @@ Future<void> joinRoom(
   String? server,
   Function(String) forward,
 ) async {
-  showAdaptiveDialog(
-    barrierDismissible: false,
-    context: context,
-    builder: (context) => DefaultDialog(
-      title: Text(
-        displayMsg,
-        style: Theme.of(context).textTheme.titleSmall,
-      ),
-      isLoader: true,
-    ),
-  );
+  EasyLoading.show(status: displayMsg, dismissOnTap: false);
   final client = ref.read(alwaysClientProvider);
   try {
-    final newSpace = await client.joinSpace(
-      roomIdOrAlias,
-      server,
-    );
+    final newSpace = await client.joinSpace(roomIdOrAlias, server);
+    EasyLoading.dismiss();
     // We are doing as expected, but the lints triggers.
     // ignore: use_build_context_synchronously
-    if (!context.mounted) {
-      return;
-    }
-    Navigator.of(context, rootNavigator: true).pop();
+    if (!context.mounted) return;
     forward(newSpace.getRoomIdStr());
   } catch (err) {
+    EasyLoading.dismiss();
     // We are doing as expected, but the lints triggers.
     // ignore: use_build_context_synchronously
-    if (!context.mounted) {
-      return;
-    }
-    Navigator.of(context, rootNavigator: true).pop();
+    if (!context.mounted) return;
     showAdaptiveDialog(
       barrierDismissible: false,
       context: context,

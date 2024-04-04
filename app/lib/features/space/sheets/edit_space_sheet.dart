@@ -4,19 +4,19 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/sliver_scaffold.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 final _log = Logger('a3::space::edit');
 
@@ -270,7 +270,6 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
     // check permissions before updating space
     bool havePermission = await permissionCheck();
     if (!havePermission && mounted) {
-      // ignore: use_build_context_synchronously
       customMsgSnackbar(
         context,
         L10n.of(context).cannotEditSpaceWithNoPermissions,
@@ -278,29 +277,19 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
       return;
     }
     if (!context.mounted) return;
-    showAdaptiveDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (context) => DefaultDialog(
-        title: Text(
-          L10n.of(context).updatingSpace,
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
-        isLoader: true,
-      ),
+    EasyLoading.show(
+      status: L10n.of(context).updatingSpace,
+      dismissOnTap: false,
     );
     final roomId = await _handleUpdateSpace(context);
     _log.info('Space Updated: $roomId');
+    EasyLoading.dismiss();
     // We are doing as expected, but the lints triggers.
-    // ignore: use_build_context_synchronously
     if (!context.mounted) return;
-    context.pop(); // pop the loading screen
-    context.pop(); // pop the edit sheet
+    Navigator.of(context, rootNavigator: true).pop();
     context.pushNamed(
       Routes.space.name,
-      pathParameters: {
-        'spaceId': roomId.toString(),
-      },
+      pathParameters: {'spaceId': roomId.toString()},
     );
   }
 

@@ -7,9 +7,10 @@ import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 final _log = Logger('a3::common::redact');
 
@@ -89,12 +90,9 @@ class RedactContentWidget extends ConsumerWidget {
   }
 
   void redactContent(BuildContext ctx, WidgetRef ref, String reason) async {
-    showAdaptiveDialog(
-      context: (ctx),
-      builder: (ctx) => DefaultDialog(
-        title: Text(L10n.of(ctx).removing('content')),
-        isLoader: true,
-      ),
+    EasyLoading.show(
+      status: L10n.of(ctx).removing('content'),
+      dismissOnTap: false,
     );
     try {
       if (isSpace) {
@@ -113,17 +111,16 @@ class RedactContentWidget extends ConsumerWidget {
         );
       }
 
-      if (ctx.mounted) {
-        Navigator.of(ctx, rootNavigator: true).pop();
-        Navigator.of(ctx, rootNavigator: true).pop(true);
-        customMsgSnackbar(ctx, L10n.of(ctx).contentSuccessfullyRemoved);
-        if (onSuccess != null) {
-          onSuccess!();
-        }
+      EasyLoading.dismiss();
+      if (!ctx.mounted) return;
+      Navigator.of(ctx, rootNavigator: true).pop(true);
+      customMsgSnackbar(ctx, L10n.of(ctx).contentSuccessfullyRemoved);
+      if (onSuccess != null) {
+        onSuccess!();
       }
     } catch (e) {
+      EasyLoading.dismiss();
       if (ctx.mounted) {
-        Navigator.of(ctx, rootNavigator: true).pop();
         showAdaptiveDialog(
           context: ctx,
           builder: (ctx) => DefaultDialog(
