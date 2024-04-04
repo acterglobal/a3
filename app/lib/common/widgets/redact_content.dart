@@ -91,7 +91,7 @@ class RedactContentWidget extends ConsumerWidget {
 
   void redactContent(BuildContext ctx, WidgetRef ref, String reason) async {
     EasyLoading.show(
-      status: L10n.of(ctx).removing('content'),
+      status: L10n.of(ctx).removingContent,
       dismissOnTap: false,
     );
     try {

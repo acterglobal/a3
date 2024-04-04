@@ -99,12 +99,12 @@ class SpacePinsPage extends ConsumerWidget {
             },
             error: (error, stack) => SliverToBoxAdapter(
               child: Center(
-                child: Text('${L10n.of(context).loadingFailed('')}: $error'),
+                child: Text(L10n.of(context).loadingFailed(error)),
               ),
             ),
             loading: () => SliverToBoxAdapter(
               child: Center(
-                child: Text(L10n.of(context).loading('')),
+                child: Text(L10n.of(context).loading),
               ),
             ),
           ),

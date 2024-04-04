@@ -78,7 +78,7 @@ class _CreateTaskListSheetConsumerState
       if (!context.mounted) return;
       customMsgSnackbar(
         context,
-        '${L10n.of(context).failedTo('createTaskList')}: $e',
+        L10n.of(context).failedToCreateTaskList(e),
       );
     }
   }
@@ -88,7 +88,7 @@ class _CreateTaskListSheetConsumerState
     final textNotifier = ref.watch(textProvider.notifier);
 
     return SliverScaffold(
-      header: L10n.of(context).createTaskList('new'),
+      header: L10n.of(context).createNewTaskList,
       addActions: true,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
@@ -161,7 +161,7 @@ class _CreateTaskListSheetConsumerState
             ),
             textStyle: Theme.of(context).textTheme.bodySmall,
           ),
-          child: Text(L10n.of(context).createTaskList('')),
+          child: Text(L10n.of(context).createTaskList),
         ),
       ],
     );

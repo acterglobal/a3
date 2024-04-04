@@ -43,7 +43,7 @@ class UserChip extends ConsumerWidget {
         deleteIcon: deleteIcon,
       ),
       error: (e, s) => Chip(
-        label: Text('${L10n.of(context).errorLoading('')} $memberId: $e'),
+        label: Text(L10n.of(context).errorLoadingMember(memberId, e)),
       ),
       loading: () => Skeletonizer(
         child: Chip(

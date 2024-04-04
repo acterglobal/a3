@@ -239,6 +239,12 @@ object UserProfile {
 }
 
 object RoomProfile {
+    /// get room id
+    fn room_id() -> RoomId;
+
+    /// get room id as String
+    fn room_id_str() -> string;
+
     /// whether to have avatar
     fn has_avatar() -> bool;
 
@@ -943,6 +949,9 @@ object Room {
     /// the RoomId as a String
     fn room_id_str() -> string;
 
+    /// whether this is a Space
+    fn is_space() -> bool;
+
     /// the JoinRule as a String
     fn join_rule_str() -> string;
 
@@ -961,8 +970,8 @@ object Room {
     /// get the room profile that contains avatar and display name
     fn space_relations() -> Future<Result<SpaceRelations>>;
 
-    /// Whether this is a space (or, if this returns `false`, consider it a chat)
-    fn is_space() -> bool;
+    /// Whether this is a direct message (in chat)
+    fn is_direct() -> Future<Result<bool>>;
 
     /// add the following as a parent room and return event id of that event
     /// room can have multiple parents
@@ -1327,8 +1336,15 @@ object Attachment {
     fn msg_content() -> MsgContent;
     /// if this is a media, hand over the data
     /// if thumb size is given, media thumbnail is returned
+
+    /// download media (image/audio/video/file/location) to specified path
+    /// if thumb size is given, media thumbnail is returned
     /// if thumb size is not given, media file is returned
-    fn source_binary(thumb_size: Option<ThumbnailSize>) -> Future<Result<buffer<u8>>>;
+    fn download_media(thumb_size: Option<ThumbnailSize>, dir_path: string) -> Future<Result<OptionString>>;
+
+    /// get the path that media (image/audio/video/file) was saved
+    /// return None when never downloaded
+    fn media_path(is_thumb: bool) -> Future<Result<OptionString>>;
 }
 
 /// Reference to the attachments section of a particular item
@@ -2540,17 +2556,20 @@ object Invitation {
     /// get the timestamp of this invitation in milliseconds
     fn origin_server_ts() -> Option<u64>;
 
-    /// get the room id of this invitation
-    fn room_id() -> RoomId;
+    /// whether this is an invite to a DM
+    fn is_dm() -> bool;
 
-    /// get the room name of this invitation
-    fn room_name() -> Future<Result<string>>;
+    /// the RoomId as a String
+    fn room_id_str() -> string;
 
-    /// get the user id of this invitation sender
-    fn sender() -> UserId;
+    /// get the room of this invitation
+    fn room() -> Room;
+
+    /// get the user id of this invitation sender as string
+    fn sender_id_str() -> string;
 
     /// get the user profile that contains avatar and display name
-    fn get_sender_profile() -> Future<Result<UserProfile>>;
+    fn sender_profile() -> Option<UserProfile>;
 
     /// accept invitation about me to this room
     fn accept() -> Future<Result<bool>>;

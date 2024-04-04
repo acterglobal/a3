@@ -73,7 +73,7 @@ class PinPage extends ConsumerWidget {
                   color: Theme.of(context).colorScheme.error,
                 ),
                 const SizedBox(width: 10),
-                Text(L10n.of(context).removePin('')),
+                Text(L10n.of(context).removePin),
               ],
             ),
           ),
@@ -89,7 +89,7 @@ class PinPage extends ConsumerWidget {
                   color: Theme.of(context).colorScheme.error,
                 ),
                 const SizedBox(width: 10),
-                Text(L10n.of(context).reportPin('')),
+                Text(L10n.of(context).reportPin),
               ],
             ),
           ),
@@ -113,7 +113,7 @@ class PinPage extends ConsumerWidget {
     showAdaptiveDialog(
       context: context,
       builder: (context) => RedactContentWidget(
-        title: L10n.of(context).removePin('this'),
+        title: L10n.of(context).removeThisPin,
         eventId: pin.eventIdStr(),
         onSuccess: () {
           if (context.mounted && context.canPop()) {
@@ -132,7 +132,7 @@ class PinPage extends ConsumerWidget {
     showAdaptiveDialog(
       context: context,
       builder: (ctx) => ReportContentWidget(
-        title: L10n.of(context).reportPin('this'),
+        title: L10n.of(context).reportThisPin,
         description: L10n.of(context).reportThisContent,
         eventId: pinId,
         roomId: pin.roomIdStr(),
@@ -165,10 +165,10 @@ class PinPage extends ConsumerWidget {
               );
             },
             loading: () => SliverAppBar(
-              title: Skeletonizer(child: Text(L10n.of(context).loading('pin'))),
+              title: Skeletonizer(child: Text(L10n.of(context).loadingPin)),
             ),
             error: (err, st) => SliverAppBar(
-              title: Text('${L10n.of(context).errorLoading('pin')} ${err.toString()}'),
+              title: Text(L10n.of(context).errorLoadingPin(err)),
             ),
           ),
           SliverToBoxAdapter(
@@ -181,7 +181,7 @@ class PinPage extends ConsumerWidget {
                   _buildAttachmentBody(acterPin),
                 ],
               ),
-              error: (err, st) => Text('${L10n.of(context).errorLoading('pin')} ${err.toString()}'),
+              error: (err, st) => Text(L10n.of(context).errorLoadingPin(err)),
               loading: () => const Skeletonizer(
                 child: Card(),
               ),
@@ -221,7 +221,8 @@ class PinPage extends ConsumerWidget {
               canRedact: canRedact,
             );
           },
-          error: (err, st) => Text('${L10n.of(context).errorLoading('attachments')} $err'),
+          error: (err, st) =>
+              Text(L10n.of(context).errorLoadingAttachments(err)),
           loading: () => const Skeletonizer(
             child: SizedBox(
               height: 100,

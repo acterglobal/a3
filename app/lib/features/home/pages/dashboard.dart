@@ -67,15 +67,15 @@ class Dashboard extends ConsumerWidget {
         heightFactor: 1.5,
         child: EmptyState(
           title: L10n.of(context).youAreNotAMemberOfAnySpaceYet,
-          subtitle: L10n.of(context).createOrJoinSpace(''),
+          subtitle: L10n.of(context).createOrJoinSpaceDescription,
           image: 'assets/images/empty_home.svg',
           primaryButton: ElevatedButton(
             onPressed: () => context.pushNamed(Routes.createSpace.name),
-            child: Text(L10n.of(context).createSpace('new')),
+            child: Text(L10n.of(context).createNewSpace),
           ),
           secondaryButton: OutlinedButton(
             onPressed: () => context.pushNamed(Routes.joinSpace.name),
-            child: Text(L10n.of(context).space('joinExisting')),
+            child: Text(L10n.of(context).joinExistingSpace),
           ),
         ),
       );

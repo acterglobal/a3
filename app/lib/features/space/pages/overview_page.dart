@@ -30,7 +30,7 @@ class ActerSpaceChecker extends ConsumerWidget {
     final expCheck = expectation ?? (a) => a != null;
     return appSettings.when(
       data: (data) => expCheck(data) ? child : const SizedBox.shrink(),
-      error: (error, stackTrace) => Text('${L10n.of(context).failedToLoad('space')}: $error'),
+      error: (error, stackTrace) => Text(L10n.of(context).failedToLoadSpace(error)),
       loading: () => const SizedBox.shrink(),
     );
   }

@@ -161,13 +161,13 @@ class RelatedSpaces extends StatelessWidget {
       spaces.hasMoreSubspaces
           ? renderSubspaceHeading(
               context,
-              L10n.of(context).subspaces('my'),
+              L10n.of(context).mySubspaces,
               canLinkSpace: canLinkSpace,
               withTools: false,
             )
           : renderSubspaceHeading(
               context,
-              L10n.of(context).subspaces(''),
+              L10n.of(context).subspaces,
               canLinkSpace: canLinkSpace,
               withTools: true,
             ),
@@ -202,13 +202,13 @@ class RelatedSpaces extends StatelessWidget {
       spaces.knownSubspaces.isEmpty
           ? renderSubspaceHeading(
               context,
-              L10n.of(context).subspaces(''),
+              L10n.of(context).subspaces,
               canLinkSpace: canLinkSpace,
               withTools: true,
             )
           : renderSubspaceHeading(
               context,
-              L10n.of(context).subspaces('more'),
+              L10n.of(context).moreSubspaces,
               canLinkSpace: canLinkSpace,
               withTools: true,
             ),
@@ -238,7 +238,7 @@ class RelatedSpaces extends StatelessWidget {
 
       return renderSubspaceHeading(
         context,
-        L10n.of(context).subspaces(''),
+        L10n.of(context).subspaces,
         canLinkSpace: canLinkSpace,
         withTools: true,
       );
@@ -259,7 +259,7 @@ class RelatedSpaces extends StatelessWidget {
         SliverToBoxAdapter(
           child: Row(
             children: [
-              Expanded(child: Text(L10n.of(context).spaces('recommended'))),
+              Expanded(child: Text(L10n.of(context).recommendedSpaces)),
               IconButton(
                 icon: Icon(
                   Atlas.plus_circle,

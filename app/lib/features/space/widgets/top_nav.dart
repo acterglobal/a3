@@ -125,8 +125,7 @@ class _TopNavBarState extends ConsumerState<TopNavBar>
           },
         );
       },
-      error: (e, stack) =>
-          Text('${L10n.of(context).errorLoading('navigationMenu')}: $e'),
+      error: (e, stack) => Text(L10n.of(context).errorLoadingNavigationMenu(e)),
       loading: () => const SizedBox(height: 50),
     );
   }

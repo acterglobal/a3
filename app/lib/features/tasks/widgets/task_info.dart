@@ -222,7 +222,9 @@ class _TaskTitleState extends State<TaskTitle> {
       );
       setState(() => editMode = false);
     } catch (e) {
-      EasyLoading.showError('${L10n.of(context).failedTo('updateTitle')}: $e');
+      EasyLoading.showError(
+        L10n.of(context).failedToUpdateTitle(e),
+      );
     }
   }
 }
@@ -305,7 +307,7 @@ class _TaskBodyState extends State<TaskBody> {
                       setState(() => editMode = false);
                     } catch (e) {
                       EasyLoading.showError(
-                        '${L10n.of(context).failedToLoad('updateNotes')}: $e',
+                        L10n.of(context).failedToLoadUpdateNotes(e),
                       );
                     }
                   },

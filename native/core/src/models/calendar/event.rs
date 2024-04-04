@@ -55,10 +55,6 @@ impl CalendarEvent {
             .to_owned()
     }
 
-    pub fn key_from_event(event_id: &EventId) -> String {
-        event_id.to_string()
-    }
-
     pub fn utc_end(&self) -> UtcDateTime {
         self.inner.utc_end
     }
@@ -151,7 +147,7 @@ impl ActerModel for CalendarEventUpdate {
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
-        None
+        Some(vec![self.inner.calendar_event.event_id.to_string()])
     }
 }
 

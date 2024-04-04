@@ -32,9 +32,7 @@ class PinListItemById extends ConsumerWidget {
         pin: acterPin,
         showSpace: showSpace,
       ),
-      error: (err, st) => Text(
-        '${L10n.of(context).error} ${L10n.of(context).loading('').toLowerCase()}: ${err.toString()}',
-      ),
+      error: (err, st) => Text(L10n.of(context).errorLoading(err)),
       loading: () => const Skeletonizer(
         child: SizedBox(
           height: 100,
@@ -125,12 +123,14 @@ class _PinListItemConsumerState extends ConsumerState<PinListItem> {
           ref.watch(attachmentsProvider(asyncManager.requireValue));
       if (attachments.valueOrNull != null) {
         final list = attachments.requireValue;
-        final attachmentId = list[0].attachmentIdStr();
+
         if (list.isNotEmpty) {
+          final attachmentId = list[0].attachmentIdStr();
           attachmentsWidget.add(
             AttachmentItem(
               key: Key(attachmentId),
               attachment: list[0],
+              openView: false,
             ),
           );
         }

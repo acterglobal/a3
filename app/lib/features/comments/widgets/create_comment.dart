@@ -28,7 +28,7 @@ class _CreateCommentWidgetState extends ConsumerState<CreateCommentWidget> {
         child: OutlinedButton.icon(
           onPressed: () => setState(() => opened = true),
           icon: const Icon(Icons.add_comment_outlined),
-          label: Text(L10n.of(context).comment('')),
+          label: Text(L10n.of(context).comment),
         ),
       );
     }
@@ -37,7 +37,7 @@ class _CreateCommentWidgetState extends ConsumerState<CreateCommentWidget> {
       children: <Widget>[
         Padding(
           padding: const EdgeInsets.only(bottom: 5),
-          child: Text(L10n.of(context).comment('create')),
+          child: Text(L10n.of(context).createComment),
         ),
         Container(
           height: 200,

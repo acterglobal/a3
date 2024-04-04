@@ -83,7 +83,7 @@ class SuperInvitesPage extends ConsumerWidget {
                 return SliverToBoxAdapter(
                   child: Center(
                     child: Text(
-                      '${L10n.of(context).failedToLoad('inviteCodes')}: $error',
+                      L10n.of(context).failedToLoadInviteCodes(error),
                     ),
                   ),
                 );

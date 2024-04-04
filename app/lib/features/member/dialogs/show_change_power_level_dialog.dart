@@ -8,6 +8,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 class _ChangePowerLevelDialog extends StatefulWidget {
   final Member member;
   final int maxPowerLevel;
+
   const _ChangePowerLevelDialog({
     required this.member,
     required this.maxPowerLevel,
@@ -65,7 +66,7 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
             Text(member.userId().toString()),
             Text(
               L10n.of(context)
-                  .changeThePowerLevelDetails(currentPowerLevel, memberStatus),
+                  .changeThePowerFromTo(memberStatus, currentPowerLevel),
             ),
             Padding(
               padding: const EdgeInsets.all(5),

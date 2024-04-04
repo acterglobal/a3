@@ -38,7 +38,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            "${L10n.of(context).appName('withApp')} ${L10n.of(context).info}",
+            '${L10n.of(context).acterApp} ${L10n.of(context).info}',
             style: Theme.of(context).textTheme.titleLarge,
           ),
         ),

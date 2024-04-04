@@ -65,7 +65,7 @@ class SpaceSettingsMenu extends ConsumerWidget {
                 ),
               ],
               error: (e, s) => [
-                Text('${L10n.of(context).loadingFailed('space')}: $e'),
+                Text(L10n.of(context).loadingFailed(e)),
               ],
               loading: () => [
                 ActerAvatar(

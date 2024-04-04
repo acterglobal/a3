@@ -128,8 +128,8 @@ class CommentViewState extends State<CommentView> {
               padding: const EdgeInsets.fromLTRB(52, 12, 0, 8),
               child: Text(
                 replyView
-                    ? L10n.of(context).replies('hide')
-                    : L10n.of(context).replies('view'),
+                    ? L10n.of(context).hideReplies
+                    : L10n.of(context).viewReplies,
                 style: const TextStyle(color: Colors.white),
               ),
             ),

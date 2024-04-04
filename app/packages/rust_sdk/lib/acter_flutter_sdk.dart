@@ -192,7 +192,7 @@ const mOptions = MacOsOptions(
 
 class ActerSdk {
   late final ffi.Api _api;
-  late final String _previousLogPath;
+  String? _previousLogPath;
   static String _sessionKey = defaultSessionKey;
   int _index = 0;
   static final List<ffi.Client> _clients = [];
@@ -263,11 +263,15 @@ class ActerSdk {
     return await client.getNotificationItem(roomId, eventId);
   }
 
-  Future<void> _maybeMigrateFromPrefs(String appDocPath, String appCachePath) async {
+  Future<void> _maybeMigrateFromPrefs(
+    String appDocPath,
+    String appCachePath,
+  ) async {
     SharedPreferences prefs = await sharedPrefs();
     List<String> sessions = (prefs.getStringList(_sessionKey) ?? []);
     for (final token in sessions) {
-      ffi.Client client = await _api.loginWithToken(appDocPath, appCachePath, token);
+      ffi.Client client =
+          await _api.loginWithToken(appDocPath, appCachePath, token);
       _clients.add(client);
     }
     _index = prefs.getInt('$_sessionKey::currentClientIdx') ?? 0;
@@ -321,11 +325,14 @@ class ActerSdk {
       final token = await storage.read(key: deviceId as String);
       if (token != null) {
         _log.info('Secure Store[$deviceId]: token found');
-        ffi.Client client = await _api.loginWithToken(appDocPath, appCachePath, token);
+        ffi.Client client =
+            await _api.loginWithToken(appDocPath, appCachePath, token);
         _log.info('Secure Store[$deviceId]: login successful');
         _clients.add(client);
       } else {
-        _log.severe('Secure Store[$deviceId]: not found. despite in session list');
+        _log.severe(
+          'Secure Store[$deviceId]: not found. despite in session list',
+        );
       }
     }
     final key = await storage.read(key: '$_sessionKey::currentClientIdx');

@@ -63,7 +63,7 @@ class __AddEmailState extends State<_AddEmail> {
           onPressed: () {
             Navigator.pop(context, emailAddr);
           },
-          child: Text(L10n.of(context).add('')),
+          child: Text(L10n.of(context).add),
         ),
       ],
     );
@@ -105,28 +105,28 @@ class NotificationsSettingsPage extends ConsumerWidget {
                 _notifSection(
                   context,
                   ref,
-                  L10n.of(context).regularAndEncryptedSpaceOrChat('regular'),
+                  L10n.of(context).regularSpaceOrChat,
                   false,
                   false,
                 ),
                 _notifSection(
                   context,
                   ref,
-                  L10n.of(context).regularAndEncryptedSpaceOrChat('encrypted'),
+                  L10n.of(context).encryptedSpaceOrChat,
                   true,
                   false,
                 ),
                 _notifSection(
                   context,
                   ref,
-                  L10n.of(context).regularAndEncryptedDMChat(''),
+                  L10n.of(context).dmChat,
                   false,
                   true,
                 ),
                 _notifSection(
                   context,
                   ref,
-                  L10n.of(context).regularAndEncryptedDMChat('encrypted'),
+                  L10n.of(context).encryptedDMChat,
                   true,
                   true,
                 ),
@@ -238,7 +238,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
                 );
                 if (emailToAdd != null && context.mounted) {
                   EasyLoading.show(
-                    status: '${L10n.of(context).add('withIng')} $emailToAdd',
+                    status: L10n.of(context).adding(emailToAdd),
                   );
                   final client = ref.read(
                     alwaysClientProvider,
@@ -254,7 +254,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
                   } catch (e) {
                     if (!context.mounted) return;
                     EasyLoading.showError(
-                      '${L10n.of(context).failedTo('add')} $emailToAdd: $e',
+                      L10n.of(context).failedToAdd('$emailToAdd: $e'),
                     );
                     return;
                   }
@@ -286,12 +286,12 @@ class NotificationsSettingsPage extends ConsumerWidget {
             },
             error: (e, s) => [
               SettingsTile(
-                title: Text('${L10n.of(context).failedToLoad('pushTargets')}: $e'),
+                title: Text(L10n.of(context).failedToLoadPushTargets(e)),
               ),
             ],
             loading: () => [
               SettingsTile(
-                title: Text(L10n.of(context).loading('targets')),
+                title: Text(L10n.of(context).loadingTargets),
               ),
             ],
           ),
@@ -325,7 +325,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
                   subtitle: Text(item.pushkey()),
                 ),
                 ListTile(
-                  title: Text(L10n.of(context).appName('text')),
+                  title: Text(L10n.of(context).appName),
                   subtitle: Text(item.appDisplayName()),
                 ),
                 ListTile(

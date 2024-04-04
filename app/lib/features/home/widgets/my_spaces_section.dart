@@ -26,7 +26,7 @@ class MySpacesSection extends ConsumerWidget {
           key: DashboardKeys.widgetMySpacesHeader,
           onTap: () => context.pushNamed(Routes.spaces.name),
           child: Text(
-            L10n.of(context).spaces('my'),
+            L10n.of(context).mySpaces,
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
@@ -54,10 +54,7 @@ class MySpacesSection extends ConsumerWidget {
                               context.pushNamed(Routes.spaces.name);
                             },
                             child: Text(
-                              L10n.of(context).seeAllMyItems(
-                                spaces.length,
-                                'spaces',
-                              ),
+                              L10n.of(context).seeAllMySpaces(spaces.length),
                             ),
                           )
                         : Column(
@@ -66,13 +63,13 @@ class MySpacesSection extends ConsumerWidget {
                               OutlinedButton(
                                 onPressed: () =>
                                     context.pushNamed(Routes.createSpace.name),
-                                child: Text(L10n.of(context).createSpace('')),
+                                child: Text(L10n.of(context).createSpace),
                               ),
                               const SizedBox(height: 10),
                               ElevatedButton(
                                 onPressed: () =>
                                     context.pushNamed(Routes.joinSpace.name),
-                                child: Text(L10n.of(context).space('join')),
+                                child: Text(L10n.of(context).joinSpace),
                               ),
                             ],
                           ),
@@ -101,22 +98,26 @@ class _NoSpacesWidget extends ConsumerWidget {
           text: TextSpan(
             children: <TextSpan>[
               TextSpan(
-                text: L10n.of(context).createOrJoinSpace('create'),
+                text: L10n.of(context).create,
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                       decoration: TextDecoration.underline,
                       fontWeight: FontWeight.bold,
                     ),
               ),
-              TextSpan(text: '\t${L10n.of(context).or}\t'),
+              TextSpan(text: L10n.of(context).or),
               TextSpan(
-                text: L10n.of(context).createOrJoinSpace('join'),
+                text: L10n.of(context).join,
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                       decoration: TextDecoration.underline,
                       fontWeight: FontWeight.bold,
                     ),
               ),
               TextSpan(
-                text: '\t${L10n.of(context).createOrJoinSpace('restText')}',
+                text: ' ',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              TextSpan(
+                text: L10n.of(context).spaceShortDescription,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ],
@@ -140,7 +141,7 @@ class _NoSpacesWidget extends ConsumerWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(L10n.of(context).createSpace('new')),
+                Text(L10n.of(context).createNewSpace),
                 const SizedBox(width: 10),
                 const Icon(Icons.chevron_right_outlined),
               ],
@@ -165,7 +166,7 @@ class _NoSpacesWidget extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(6),
               ),
             ),
-            child: Text(L10n.of(context).space('joinExisting')),
+            child: Text(L10n.of(context).joinExistingSpace),
           ),
         ),
       ],

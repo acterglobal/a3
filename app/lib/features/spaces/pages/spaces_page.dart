@@ -54,7 +54,7 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
                       onTap: () => context.pushNamed(Routes.createSpace.name),
                       child: Row(
                         children: <Widget>[
-                          Text(L10n.of(context).createSpace('')),
+                          Text(L10n.of(context).createSpace),
                           const Spacer(),
                           const Icon(Atlas.connection),
                         ],
@@ -64,7 +64,7 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
                       onTap: () => context.pushNamed(Routes.joinSpace.name),
                       child: Row(
                         children: <Widget>[
-                          Text(L10n.of(context).space('join')),
+                          Text(L10n.of(context).joinSpace),
                           const Spacer(),
                           const Icon(Atlas.calendar_dots),
                         ],
@@ -73,7 +73,7 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
                   ],
                 ),
               ],
-              title: L10n.of(context).spaces(''),
+              title: L10n.of(context).spaces,
             ),
             // we have more than just the spaces screen, put them into a grid.
             SliverGrid.builder(

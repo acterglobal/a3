@@ -75,7 +75,7 @@ class SpaceEventsPage extends ConsumerWidget {
                                 Routes.createEvent.name,
                                 queryParameters: {'spaceId': spaceIdOrAlias},
                               ),
-                              child: Text(L10n.of(context).event('create')),
+                              child: Text(L10n.of(context).eventCreate),
                             )
                           : null,
                     ),
@@ -95,7 +95,7 @@ class SpaceEventsPage extends ConsumerWidget {
             },
             error: (error, stackTrace) => SliverToBoxAdapter(
               child: Center(
-                child: Text('${L10n.of(context).failedToLoad('eventsDueTo')} $error'),
+                child: Text(L10n.of(context).failedToLoadEventsDueTo(error)),
               ),
             ),
             loading: () => const SliverToBoxAdapter(

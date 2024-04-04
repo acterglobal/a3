@@ -54,7 +54,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
       } catch (e) {
         EasyLoading.showError(
           // ignore: use_build_context_synchronously
-          '${L10n.of(context).failedTo('changePowerLevel')}: $e',
+          L10n.of(context).failedToChangePowerLevel(e),
           duration: const Duration(seconds: 3),
         );
       }
@@ -217,7 +217,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
             _roomTitle(context, ref),
             MenuItemWidget(
               iconData: Atlas.triangle_exclamation_thin,
-              title: '${L10n.of(context).errorLoading('')}: $e',
+              title: L10n.of(context).errorLoading(e),
               withMenu: false,
               onTap: () {},
             ),
@@ -328,7 +328,7 @@ class MemberInfoDrawer extends ConsumerWidget {
           ),
           error: (e, s) => Padding(
             padding: const EdgeInsets.all(20.0),
-            child: Text('${L10n.of(context).errorLoading('profile')}: $e'),
+            child: Text(L10n.of(context).errorLoadingProfile(e)),
           ),
           loading: () => const MemberInfoSkeleton(),
         );

@@ -31,7 +31,7 @@ class PostAttachmentOptions extends StatelessWidget {
             if (onTapAddText != null) onTapAddText!();
           },
           leading: const Icon(Atlas.size_text),
-          title: Text(L10n.of(context).addSlide('text')),
+          title: Text(L10n.of(context).addTextSlide),
         ),
         ListTile(
           key: NewsUpdateKeys.addImageSlide,
@@ -40,7 +40,7 @@ class PostAttachmentOptions extends StatelessWidget {
             if (onTapImage != null) onTapImage!();
           },
           leading: const Icon(Atlas.file_image),
-          title: Text(L10n.of(context).select('picture')),
+          title: Text(L10n.of(context).selectPicture),
         ),
         ListTile(
           key: NewsUpdateKeys.addVideoSlide,
@@ -49,7 +49,7 @@ class PostAttachmentOptions extends StatelessWidget {
             if (onTapVideo != null) onTapVideo!();
           },
           leading: const Icon(Atlas.file_video),
-          title: Text(L10n.of(context).select('video')),
+          title: Text(L10n.of(context).selectVideo),
         ),
         ListTile(
           key: NewsUpdateKeys.cancelButton,

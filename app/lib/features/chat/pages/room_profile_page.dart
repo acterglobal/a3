@@ -6,7 +6,6 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/base_body_widget.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/render_html.dart';
-import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/member_list.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/chat/widgets/skeletons/action_item_skeleton_widget.dart';
@@ -27,9 +26,11 @@ final _log = Logger('a3::chat::room_profile_page');
 
 class RoomProfilePage extends ConsumerStatefulWidget {
   final String roomId;
+  final bool inSidebar;
 
   const RoomProfilePage({
     required this.roomId,
+    required this.inSidebar,
     super.key,
   });
 
@@ -53,23 +54,14 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
   }
 
   AppBar _buildAppBar(BuildContext context) {
-    final inSideBar = ref.watch(inSideBarProvider);
-    final isExpanded = ref.watch(hasExpandedPanel);
-
     return AppBar(
-      automaticallyImplyLeading: false,
-      leading: Visibility(
-        visible: inSideBar && isExpanded,
-        replacement: IconButton(
-          onPressed: () => context.pop(),
-          icon: const Icon(Icons.arrow_back_ios),
-        ),
-        child: IconButton(
-          onPressed: () =>
-              ref.read(hasExpandedPanel.notifier).update((state) => false),
-          icon: const Icon(Atlas.xmark_circle_thin),
-        ),
-      ),
+      // custom x-circle when we are in widescreen mode;
+      leading: widget.inSidebar
+          ? IconButton(
+              onPressed: () => context.pop(),
+              icon: const Icon(Atlas.xmark_circle_thin),
+            )
+          : null,
       backgroundColor: Colors.transparent,
       elevation: 0.0,
     );
@@ -136,7 +128,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         defaultTextStyle: Theme.of(context).textTheme.bodySmall,
       ),
       loading: () => Skeletonizer(
-        child: Text(L10n.of(context).loading('')),
+        child: Text(L10n.of(context).loading),
       ),
       error: (e, s) => Text('${L10n.of(context).error}: $e'),
     );
@@ -200,8 +192,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
               },
             );
           },
-          error: (e, st) =>
-              Text('${L10n.of(context).errorLoading('tileDueTo')} $e'),
+          error: (e, st) => Text(L10n.of(context).errorLoadingTileDueTo(e)),
           loading: () => ActionItemSkeleton(
             iconData: Atlas.user_plus_thin,
             actionName: L10n.of(context).invite,
@@ -327,18 +318,18 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Text(
-                  '${L10n.of(context).members} (${list.length})',
+                  L10n.of(context).membersCount(list.length),
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
               );
             },
             loading: () => Skeletonizer(
               child: Text(
-                '${L10n.of(context).members} (0)',
+                L10n.of(context).membersCount(0),
               ),
             ),
             error: (error, stackTrace) =>
-                Text('${L10n.of(context).errorLoading('membersCount')} $error'),
+                Text(L10n.of(context).errorLoadingMembersCount(error)),
           ),
           convo.when(
             data: (data) => MemberList(convo: data),
@@ -374,7 +365,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
               Navigator.of(context, rootNavigator: true).pop();
               EasyLoading.show(status: L10n.of(context).leavingRoom);
               var res = await _handleLeaveRoom(ref, widget.roomId);
-              if(!mounted) return;
+              if (!mounted) return;
               if (res) {
                 if (context.mounted) {
                   EasyLoading.dismiss();

@@ -19,7 +19,7 @@ class SelectActionItem extends StatelessWidget {
         actionItemUI(
           context: context,
           actionIcon: Atlas.calendar_dots,
-          actionName: L10n.of(context).event('share'),
+          actionName: L10n.of(context).eventShare,
           onTap: () => onShareEventSelected(),
         ),
         const SizedBox(height: 20.0),

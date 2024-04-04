@@ -34,7 +34,7 @@ class LinksCard extends ConsumerWidget {
                   if (pins.isEmpty) {
                     return [
                       Text(
-                        L10n.of(context).thereAreNoItemInThisSpace('pins'),
+                        L10n.of(context).noPinsInSpace,
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ];
@@ -66,9 +66,9 @@ class LinksCard extends ConsumerWidget {
                   );
                 },
                 error: (error, stack) => [
-                  Text('${L10n.of(context).loadingFailed('pins')}: $error'),
+                  Text(L10n.of(context).loadingPinsFailed(error)),
                 ],
-                loading: () => [Text(L10n.of(context).loading(''))],
+                loading: () => [Text(L10n.of(context).loading)],
               ),
             ],
           ),

@@ -238,7 +238,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
                       const SizedBox(width: 300, child: EventItemSkeleton()),
                   error: (e, s) => Center(
                     child:
-                        Text('${L10n.of(context).failedToLoad('event')}: $e'),
+                        Text(L10n.of(context).failedToLoadEvent(e)),
                   ),
                 ),
         ],
@@ -269,19 +269,19 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           OutlinedButton(
             key: NewsUpdateKeys.addTextSlide,
             onPressed: () => NewsUtils.addTextSlide(ref),
-            child: Text(L10n.of(context).addSlide('text')),
+            child: Text(L10n.of(context).addTextSlide),
           ),
           const SizedBox(height: 20),
           OutlinedButton(
             key: NewsUpdateKeys.addImageSlide,
             onPressed: () async => await NewsUtils.addImageSlide(ref),
-            child: Text(L10n.of(context).addSlide('image')),
+            child: Text(L10n.of(context).addImageSlide),
           ),
           const SizedBox(height: 20),
           OutlinedButton(
             key: NewsUpdateKeys.addVideoSlide,
             onPressed: () async => await NewsUtils.addVideoSlide(ref),
-            child: Text(L10n.of(context).addSlide('video')),
+            child: Text(L10n.of(context).addVideoSlide),
           ),
         ],
       ),

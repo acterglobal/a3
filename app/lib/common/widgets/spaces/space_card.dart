@@ -141,14 +141,14 @@ class SpaceCard extends ConsumerWidget {
       ),
       error: (error, stack) => ListTile(
         title: Text(
-          '${L10n.of(context).error} ${L10n.of(context).loading('').toLowerCase()}: $roomId',
+          L10n.of(context).errorLoadingRoom(roomId, error),
         ),
         subtitle: Text('$error'),
       ),
       loading: () => Skeletonizer(
         child: ListTile(
           title: Text(roomId),
-          subtitle: Text(L10n.of(context).loading('')),
+          subtitle: Text(L10n.of(context).loading),
         ),
       ),
     );

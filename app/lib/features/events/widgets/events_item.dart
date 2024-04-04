@@ -110,12 +110,12 @@ class EventItem extends StatelessWidget {
           },
           error: (e, st) => Chip(
             label: Text(
-              '${L10n.of(context).errorLoading('rsvpStatus')}: $e',
+              L10n.of(context).errorLoadingRsvpStatus(e),
               softWrap: true,
             ),
           ),
           loading: () => Chip(
-            label: Text(L10n.of(context).loading('rsvpStatus')),
+            label: Text(L10n.of(context).loadingRsvpStatus),
           ),
         );
       },

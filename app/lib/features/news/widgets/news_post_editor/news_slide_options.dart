@@ -165,7 +165,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
                     .read(newsStateProvider.notifier)
                     .changeNewsPostSpaceId(context);
               },
-              child: Text(L10n.of(context).select('space')),
+              child: Text(L10n.of(context).selectSpace),
             ),
     );
   }

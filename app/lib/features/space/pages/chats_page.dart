@@ -145,14 +145,14 @@ class SpaceChatsPage extends ConsumerWidget {
       },
       error: (error, stackTrace) => SliverToBoxAdapter(
         child: Center(
-          child: Text('${L10n.of(context).failedToLoad('chatsDueTo')} $error'),
+          child: Text(L10n.of(context).failedToLoadChatsDueTo(error)),
         ),
       ),
       loading: () => SliverToBoxAdapter(
         child: Skeletonizer(
           child: ListTile(
             title: Text(L10n.of(context).roomId),
-            subtitle: Text(L10n.of(context).loading('')),
+            subtitle: Text(L10n.of(context).loading),
           ),
         ),
       ),
@@ -184,10 +184,10 @@ class SpaceChatsPage extends ConsumerWidget {
         ),
       ),
       error: (e, s) => SliverToBoxAdapter(
-        child: Text('${L10n.of(context).errorLoading('relatedChats')}: $e'),
+        child: Text(L10n.of(context).errorLoadingRelatedChats(e)),
       ),
       loading: () => SliverToBoxAdapter(
-        child: Text(L10n.of(context).loading('otherChats')),
+        child: Text(L10n.of(context).loadingOtherChats),
       ),
     );
   }

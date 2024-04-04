@@ -84,9 +84,9 @@ class SpaceHeaderProfile extends ConsumerWidget {
         );
       },
       error: (error, stack) => Text(
-        '${L10n.of(context).loadingFailed}: $error',
+        L10n.of(context).loadingFailed(error),
       ),
-      loading: () => Text(L10n.of(context).loading('')),
+      loading: () => Text(L10n.of(context).loading),
     );
   }
 
@@ -135,7 +135,7 @@ class SpaceHeaderProfile extends ConsumerWidget {
         );
       },
       error: (error, stack) => Text(
-        '${L10n.of(context).loadingFailed('members')}: $error',
+        L10n.of(context).loadingMembersFailed(error),
       ),
       loading: () => const Skeletonizer(
         child: Wrap(

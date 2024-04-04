@@ -69,8 +69,7 @@ class AttachmentSectionWidget extends ConsumerWidget {
           ),
         );
       },
-      error: (err, st) =>
-          Text('${L10n.of(context).errorLoading('attachments')} $err'),
+      error: (err, st) => Text(L10n.of(context).errorLoadingAttachments(err)),
       loading: () => const Skeletonizer(
         child: Wrap(
           spacing: 5.0,
@@ -193,16 +192,25 @@ class AttachmentSectionWidget extends ConsumerWidget {
     );
   }
 
-  Future<void> _handleRedactAttachment(String eventId, String reason, BuildContext context) async {
-    EasyLoading.show(status:  L10n.of(context).removing('attachment'), dismissOnTap: false);
+  Future<void> _handleRedactAttachment(
+    String eventId,
+    String reason,
+    BuildContext context,
+  ) async {
+    EasyLoading.show(
+      status: L10n.of(context).removingAttachment,
+      dismissOnTap: false,
+    );
     try {
       await attachmentManager.redact(eventId, reason, null);
       _log.info('attachment redacted: $eventId');
       EasyLoading.dismiss();
     } catch (e) {
       _log.severe('attachment redaction failed', e, null);
-      if(!context.mounted) return;
-      EasyLoading.showError('${L10n.of(context).failedTo('deleteAttachment')} $e');
+      if (!context.mounted) return;
+      EasyLoading.showError(
+        L10n.of(context).failedToDeleteAttachment(e),
+      );
     }
   }
 
@@ -224,7 +232,10 @@ class AttachmentSectionWidget extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Icon(Icons.add, color: iconColor),
-            Text(L10n.of(context).add(''), style: iconTextStyle!.copyWith(color: iconColor)),
+            Text(
+              L10n.of(context).add,
+              style: iconTextStyle!.copyWith(color: iconColor),
+            ),
           ],
         ),
       ),

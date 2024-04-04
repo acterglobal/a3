@@ -11,6 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class RoomToInviteTo extends ConsumerWidget {
   final String roomId;
   final GestureTapCallback onRemove;
+
   const RoomToInviteTo({
     super.key,
     required this.roomId,
@@ -31,7 +32,7 @@ class RoomToInviteTo extends ConsumerWidget {
             trailing: removeWidget(),
           );
         }
-        subtitle = L10n.of(context).loading('room');
+        subtitle = L10n.of(context).loadingRoom;
       } else {
         final chat = ref.watch(chatProvider(roomId)).valueOrNull;
         if (chat != null) {
@@ -41,7 +42,7 @@ class RoomToInviteTo extends ConsumerWidget {
             trailing: removeWidget(),
           );
         }
-        subtitle = L10n.of(context).loading('chat');
+        subtitle = L10n.of(context).loadingChat;
       }
     }
     return Card(

@@ -28,14 +28,14 @@ void logoutConfirmationDialog(BuildContext context, WidgetRef ref) {
         content: RichText(
           textAlign: TextAlign.left,
           text: TextSpan(
-            text: L10n.of(context).logOutConformationDescription('desc1'),
+            text: L10n.of(context).logOutConformationDescription1,
             style: const TextStyle(color: Colors.white, fontSize: 15),
             children: <TextSpan>[
               TextSpan(
-                text: L10n.of(context).logOutConformationDescription('desc2'),
+                text: L10n.of(context).logOutConformationDescription2,
               ),
               TextSpan(
-                text: L10n.of(context).logOutConformationDescription('desc3'),
+                text: L10n.of(context).logOutConformationDescription3,
               ),
             ],
           ),

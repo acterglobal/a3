@@ -114,8 +114,8 @@ class CreateEditEventPageConsumerState
     return AppBar(
       title: Text(
         widget.calendarId != null
-            ? L10n.of(context).event('edit')
-            : L10n.of(context).event('create'),
+            ? L10n.of(context).eventEdit
+            : L10n.of(context).eventCreate,
         style: Theme.of(context).textTheme.titleMedium,
       ),
     );
@@ -183,7 +183,7 @@ class CreateEditEventPageConsumerState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(L10n.of(context).start('dateText')),
+                  Text(L10n.of(context).startDate),
                   const SizedBox(height: 10),
                   TextFormField(
                     key: EventsKeys.eventStartDate,
@@ -191,13 +191,13 @@ class CreateEditEventPageConsumerState
                     keyboardType: TextInputType.text,
                     controller: _startDateController,
                     decoration: InputDecoration(
-                      hintText: L10n.of(context).select('dateText'),
+                      hintText: L10n.of(context).selectDate,
                       suffixIcon: const Icon(Icons.calendar_month_outlined),
                     ),
                     onTap: () => _selectDate(isStartDate: true),
                     validator: (value) {
                       if (value != null && value.isEmpty) {
-                        return L10n.of(context).required('startDate');
+                        return L10n.of(context).startDateRequired;
                       }
                       return null;
                     },
@@ -210,7 +210,7 @@ class CreateEditEventPageConsumerState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(L10n.of(context).start('timeText')),
+                  Text(L10n.of(context).startTime),
                   const SizedBox(height: 10),
                   TextFormField(
                     key: EventsKeys.eventStartTime,
@@ -218,13 +218,13 @@ class CreateEditEventPageConsumerState
                     keyboardType: TextInputType.text,
                     controller: _startTimeController,
                     decoration: InputDecoration(
-                      hintText: L10n.of(context).select('timeText'),
+                      hintText: L10n.of(context).selectTime,
                       suffixIcon: const Icon(Icons.access_time_outlined),
                     ),
                     onTap: () => _selectTime(isStartTime: true),
                     validator: (value) {
                       if (value != null && value.isEmpty) {
-                        return L10n.of(context).required('startTime');
+                        return L10n.of(context).startTimeRequired;
                       }
                       return null;
                     },
@@ -241,7 +241,7 @@ class CreateEditEventPageConsumerState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(L10n.of(context).end('dateText')),
+                  Text(L10n.of(context).endDate),
                   const SizedBox(height: 10),
                   TextFormField(
                     key: EventsKeys.eventEndDate,
@@ -249,13 +249,13 @@ class CreateEditEventPageConsumerState
                     keyboardType: TextInputType.text,
                     controller: _endDateController,
                     decoration: InputDecoration(
-                      hintText: L10n.of(context).select('dateText'),
+                      hintText: L10n.of(context).selectDate,
                       suffixIcon: const Icon(Icons.calendar_month_outlined),
                     ),
                     onTap: () => _selectDate(isStartDate: false),
                     validator: (value) {
                       if (value != null && value.isEmpty) {
-                        return L10n.of(context).required('endDate');
+                        return L10n.of(context).endDateRequired;
                       }
                       return null;
                     },
@@ -268,7 +268,7 @@ class CreateEditEventPageConsumerState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(L10n.of(context).end('timeText')),
+                  Text(L10n.of(context).endTime),
                   const SizedBox(height: 10),
                   TextFormField(
                     key: EventsKeys.eventEndTime,
@@ -276,13 +276,13 @@ class CreateEditEventPageConsumerState
                     keyboardType: TextInputType.text,
                     controller: _endTimeController,
                     decoration: InputDecoration(
-                      hintText: L10n.of(context).select('timeText'),
+                      hintText: L10n.of(context).selectTime,
                       suffixIcon: const Icon(Icons.access_time_outlined),
                     ),
                     onTap: () => _selectTime(isStartTime: false),
                     validator: (value) {
                       if (value != null && value.isEmpty) {
-                        return L10n.of(context).required('endTime');
+                        return L10n.of(context).endTimeRequired;
                       }
                       return null;
                     },
@@ -324,7 +324,7 @@ class CreateEditEventPageConsumerState
         } else {
           if (!context.mounted) return;
           EasyLoading.showToast(
-            L10n.of(context).pleaseSelectValid('endDate'),
+            L10n.of(context).pleaseSelectValidEndDate,
             toastPosition: EasyLoadingToastPosition.bottom,
           );
         }
@@ -356,7 +356,7 @@ class CreateEditEventPageConsumerState
         if (_selectedStartDate.isSameDay(_selectedEndDate) &&
             startTime > endTime) {
           EasyLoading.showToast(
-            L10n.of(context).pleaseSelectValid('endTime'),
+            L10n.of(context).pleaseSelectValidEndTime,
             toastPosition: EasyLoadingToastPosition.bottom,
           );
         } else {
@@ -415,8 +415,8 @@ class CreateEditEventPageConsumerState
               : _handleCreateEvent,
           child: Text(
             widget.calendarId != null
-                ? L10n.of(context).event('update')
-                : L10n.of(context).event('create'),
+                ? L10n.of(context).eventUpdate
+                : L10n.of(context).eventCreate,
           ),
         ),
       ],
@@ -489,9 +489,13 @@ class CreateEditEventPageConsumerState
       rsvpDraft.status('yes');
       await rsvpDraft.send();
       _log.info('Created Calendar Event: ${eventId.toString()}');
+
       EasyLoading.dismiss();
+
+      ref.invalidate(calendarEventProvider(eventId.toString())); // edit page
+      ref.invalidate(spaceEventsProvider(spaceId)); // events page in space
+
       if (context.mounted) {
-        ref.invalidate(calendarEventProvider);
         context.pop();
         context.pushNamed(
           Routes.calendarEvent.name,
@@ -504,7 +508,6 @@ class CreateEditEventPageConsumerState
       EasyLoading.showError(
         '${L10n.of(context).errorCreatingCalendarEvent}: $e',
       );
-      return;
     }
   }
 
@@ -544,14 +547,16 @@ class CreateEditEventPageConsumerState
       _log.info('Calendar Event updated $eventId');
 
       EasyLoading.dismiss();
-      if (context.mounted) {
-        context.pop();
-      }
+
+      ref.invalidate(calendarEventProvider(eventId.toString())); // edit page
+      final spaceId = calendarEvent.roomIdStr();
+      ref.invalidate(spaceEventsProvider(spaceId)); // events page in space
+
+      if (context.mounted) context.pop();
     } catch (e) {
       EasyLoading.dismiss();
       if (!mounted) return;
       EasyLoading.showError('${L10n.of(context).errorUpdatingEvent}: $e');
-      return;
     }
   }
 }

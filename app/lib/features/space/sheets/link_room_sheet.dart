@@ -131,12 +131,12 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(L10n.of(context).parentSpace('')),
+                    Text(L10n.of(context).parentSpace),
                     SpaceChip(space: space),
                   ],
                 );
         },
-        error: (e, s) => errorUI('error: ', e),
+        error: (e, s) => errorUI(L10n.of(context).error(e)),
         loading: () => Container(),
       ),
     );
@@ -163,7 +163,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       data: (chats) => chats.isEmpty
           ? Text(L10n.of(context).noChatsFound)
           : chatListUI(chats),
-      error: (e, s) => errorUI(L10n.of(context).errorLoading('chats'), e),
+      error: (e, s) => errorUI(L10n.of(context).errorLoadingChats(e)),
       loading: () => loadingUI(),
     );
   }
@@ -175,7 +175,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       data: (chats) => chats.isEmpty
           ? Text(L10n.of(context).noChatsFoundMatchingYourSearchTerm)
           : chatListUI(chats),
-      error: (e, s) => errorUI(L10n.of(context).searchingFailed, e),
+      error: (e, s) => errorUI(L10n.of(context).searchingFailed(e)),
       loading: () => loadingUI(),
     );
   }
@@ -213,7 +213,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       data: (spaces) => spaces.isEmpty
           ? Text(L10n.of(context).noSpacesFound)
           : spaceListUI(spaces),
-      error: (e, s) => errorUI(L10n.of(context).errorLoading('spaces'), e),
+      error: (e, s) => errorUI(L10n.of(context).errorLoadingSpaces(e)),
       loading: () => loadingUI(),
     );
   }
@@ -232,7 +232,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
         return spaceListUI(spaces);
       },
       loading: () => loadingUI(),
-      error: (e, s) => errorUI(L10n.of(context).searchingFailed, e),
+      error: (e, s) => errorUI(L10n.of(context).searchingFailed(e)),
     );
   }
 
@@ -277,9 +277,9 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
   }
 
 //Common error UI
-  Widget errorUI(String message, e) {
+  Widget errorUI(String message) {
     return Center(
-      child: Text('$message : $e'),
+      child: Text(message),
     );
   }
 
@@ -312,7 +312,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
             subtitle: isSubspace
                 ? Text(L10n.of(context).subspace)
                 : isRecommendedSpace
-                    ? Text(L10n.of(context).space('recommended'))
+                    ? Text(L10n.of(context).recommendedSpace)
                     : null,
             trailing: SizedBox(
               width: 100,
@@ -320,7 +320,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
                   ? OutlinedButton(
                       onPressed: () => onTapUnlinkChildRoom(roomId),
                       key: Key('room-list-unlink-$roomId'),
-                      child: Text(L10n.of(context).unlink('')),
+                      child: Text(L10n.of(context).unlink),
                     )
                   : canLink
                       ? OutlinedButton(
@@ -437,6 +437,8 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     } else {
       childRoomsIds.add(roomId);
     }
+    // spaceRelations come from the server and must be manually invalidated
+    ref.invalidate(spaceRelationsOverviewProvider(selectedParentSpaceId));
   }
 
 //Unlink child room
@@ -447,13 +449,16 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     //Fetch selected parent space data and add given roomId as child
     final space = await ref.read(spaceProvider(selectedParentSpaceId).future);
     if (!mounted) return;
-    space.removeChildRoom(roomId, L10n.of(context).unlink('room'));
+    space.removeChildRoom(roomId, L10n.of(context).unlinkRoom);
 
     if (widget.childRoomType == ChildRoomType.space) {
       //Fetch selected room data and add given parentSpaceId as parent
       final room = await ref.read(maybeRoomProvider(roomId).future);
       if (room != null && mounted) {
-        room.removeParentRoom(selectedParentSpaceId, L10n.of(context).unlink('room'));
+        room.removeParentRoom(
+          selectedParentSpaceId,
+          L10n.of(context).unlinkRoom,
+        );
       }
     }
 
@@ -462,5 +467,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     } else {
       childRoomsIds.remove(roomId);
     }
+    // spaceRelations come from the server and must be manually invalidated
+    ref.invalidate(spaceRelationsOverviewProvider(selectedParentSpaceId));
   }
 }
