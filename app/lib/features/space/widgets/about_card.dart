@@ -60,9 +60,9 @@ class AboutCard extends ConsumerWidget {
                 );
               },
               error: (error, stack) => Text(
-                '${L10n.of(context).loadingFailed}: $error',
+                L10n.of(context).loadingFailed(error),
               ),
-              loading: () => Text(L10n.of(context).loading('')),
+              loading: () => Text(L10n.of(context).loading),
             ),
             const SizedBox(height: 10),
           ],

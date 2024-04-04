@@ -92,7 +92,7 @@ class RedactContentWidget extends ConsumerWidget {
     showAdaptiveDialog(
       context: (ctx),
       builder: (ctx) => DefaultDialog(
-        title: Text(L10n.of(ctx).removing('content')),
+        title: Text(L10n.of(ctx).removingContent),
         isLoader: true,
       ),
     );

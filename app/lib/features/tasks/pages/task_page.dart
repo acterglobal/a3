@@ -30,8 +30,8 @@ class TaskPage extends ConsumerWidget {
             const TasksIcon(),
             taskList.when(
               data: (d) => Text(key: taskListTitleKey, d.name()),
-              error: (e, s) => Text('${L10n.of(context).failedToLoad('')}: $e'),
-              loading: () => Text(L10n.of(context).loading('')),
+              error: (e, s) => Text(L10n.of(context).failedToLoad(e)),
+              loading: () => Text(L10n.of(context).loading),
             ),
           ],
         ),
@@ -42,7 +42,7 @@ class TaskPage extends ConsumerWidget {
             SliverToBoxAdapter(
               child: task.when(
                 data: (t) => TaskInfo(task: t),
-                error: (e, s) => Text('${L10n.of(context).failedToLoad('task')}: $e'),
+                error: (e, s) => Text(L10n.of(context).failedToLoadTask(e)),
                 loading: () => const TaskInfoSkeleton(),
                 skipLoadingOnReload: true,
               ),

@@ -37,8 +37,9 @@ class SpaceTasksPage extends ConsumerWidget {
                 Expanded(
                   child: Text(
                     taskLists.hasValue && taskLists.valueOrNull!.isNotEmpty
-                        ? '${L10n.of(context).tasks} (${taskLists.valueOrNull!.length})'
-                        : L10n.of(context).tasks(''),
+                        ? L10n.of(context)
+                            .tasksCount(taskLists.valueOrNull!.length)
+                        : L10n.of(context).tasks,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
@@ -77,7 +78,7 @@ class SpaceTasksPage extends ConsumerWidget {
               child: SizedBox(
                 height: 450,
                 child: Center(
-                  child: Text('${L10n.of(context).loadingFailed('')}: $error'),
+                  child: Text(L10n.of(context).loadingFailed(error)),
                 ),
               ),
             ),
@@ -85,7 +86,7 @@ class SpaceTasksPage extends ConsumerWidget {
               child: SizedBox(
                 height: 450,
                 child: Center(
-                  child: Text(L10n.of(context).loading('')),
+                  child: Text(L10n.of(context).loading),
                 ),
               ),
             ),

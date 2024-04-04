@@ -136,7 +136,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         defaultTextStyle: Theme.of(context).textTheme.bodySmall,
       ),
       loading: () => Skeletonizer(
-        child: Text(L10n.of(context).loading('')),
+        child: Text(L10n.of(context).loading),
       ),
       error: (e, s) => Text('${L10n.of(context).error}: $e'),
     );
@@ -200,8 +200,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
               },
             );
           },
-          error: (e, st) =>
-              Text('${L10n.of(context).errorLoading('tileDueTo')} $e'),
+          error: (e, st) => Text(L10n.of(context).errorLoadingTileDueTo(e)),
           loading: () => ActionItemSkeleton(
             iconData: Atlas.user_plus_thin,
             actionName: L10n.of(context).invite,
@@ -327,18 +326,18 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Text(
-                  '${L10n.of(context).members} (${list.length})',
+                  L10n.of(context).membersCount(list.length),
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
               );
             },
             loading: () => Skeletonizer(
               child: Text(
-                '${L10n.of(context).members} (0)',
+                L10n.of(context).membersCount(0),
               ),
             ),
             error: (error, stackTrace) =>
-                Text('${L10n.of(context).errorLoading('membersCount')} $error'),
+                Text(L10n.of(context).errorLoadingMembersCount(error)),
           ),
           convo.when(
             data: (data) => MemberList(convo: data),
@@ -374,7 +373,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
               Navigator.of(context, rootNavigator: true).pop();
               EasyLoading.show(status: L10n.of(context).leavingRoom);
               var res = await _handleLeaveRoom(ref, widget.roomId);
-              if(!mounted) return;
+              if (!mounted) return;
               if (res) {
                 if (context.mounted) {
                   EasyLoading.dismiss();

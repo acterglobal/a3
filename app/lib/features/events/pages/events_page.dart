@@ -82,7 +82,7 @@ class EventsPage extends ConsumerWidget {
             },
             error: (error, stack) => SliverToBoxAdapter(
               child: Center(
-                child: Text('${L10n.of(context).loadingFailed('')}: $error'),
+                child: Text(L10n.of(context).loadingFailed(error)),
               ),
             ),
             loading: () => const SliverToBoxAdapter(
@@ -126,7 +126,7 @@ class EventsPage extends ConsumerWidget {
             },
             error: (error, stack) => SliverToBoxAdapter(
               child: Center(
-                child: Text('${L10n.of(context).loadingFailed('')}: $error'),
+                child: Text(L10n.of(context).loadingFailed(error)),
               ),
             ),
             loading: () => const SliverToBoxAdapter(

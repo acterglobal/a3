@@ -26,8 +26,8 @@ class TaskListPage extends ConsumerWidget {
             const TasksIcon(),
             taskList.when(
               data: (d) => Text(key: taskListTitleKey, d.name()),
-              error: (e, s) => Text('${L10n.of(context).failedToLoad('')}: $e'),
-              loading: () => Text(L10n.of(context).loading('')),
+              error: (e, s) => Text(L10n.of(context).failedToLoad(e)),
+              loading: () => Text(L10n.of(context).loading),
             ),
           ],
         ),
@@ -42,7 +42,7 @@ class TaskListPage extends ConsumerWidget {
                   showDescription: true,
                   showTitle: false,
                 ),
-                orElse: () => Text(L10n.of(context).loading('')),
+                orElse: () => Text(L10n.of(context).loading),
               ),
               // following: comments
             ),

@@ -59,7 +59,7 @@ class TaskEntry extends ConsumerWidget {
                       ),
                     );
                   },
-                  error: (e, s) => Text('${L10n.of(context).loadingFailed('comments')}: $e'),
+                  error: (e, s) => Text(L10n.of(context).loadingCommentsFailed(e)),
                   loading: () => const SizedBox.shrink(),
                 ),
       ),
@@ -137,9 +137,9 @@ class TaskEntry extends ConsumerWidget {
                   const TasksIcon(size: 19),
                   ref.watch(taskListProvider(task.taskListIdStr())).when(
                         data: (tl) => Text(tl.name()),
-                        error: (e, s) => Text('${L10n.of(context).loadingFailed('')}: $e'),
+                        error: (e, s) => Text(L10n.of(context).loadingFailed(e)),
                         loading: () => Skeletonizer(
-                          child: Text(L10n.of(context).loading('')),
+                          child: Text(L10n.of(context).loading),
                         ),
                       ),
                 ],

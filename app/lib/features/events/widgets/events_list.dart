@@ -18,7 +18,7 @@ class EventsList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return events.when(
       error: (error, stackTrace) => Text(
-        '${L10n.of(context).loadingFailed('events')}: $error',
+        L10n.of(context).loadingEventsFailed(error),
       ),
       data: (events) {
         int eventsLimit =
@@ -48,7 +48,7 @@ class EventsList extends ConsumerWidget {
                       onPressed: () =>
                           context.pushNamed(Routes.calendarEvents.name),
                       child: Text(
-                        L10n.of(context).seeAllMyItems(events.length, 'events'),
+                        L10n.of(context).seeAllMyEvents(events.length),
                       ),
                     ),
                   )

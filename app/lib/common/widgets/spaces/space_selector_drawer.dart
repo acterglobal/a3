@@ -35,7 +35,7 @@ Future<String?> selectSpaceDrawer({
               Row(
                 children: [
                   Expanded(
-                    child: title ?? Text(L10n.of(context).select('space')),
+                    child: title ?? Text(L10n.of(context).selectSpace),
                   ),
                   OutlinedButton.icon(
                     icon: const Icon(Atlas.minus_circle_thin),

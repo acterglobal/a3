@@ -24,9 +24,9 @@ class RelatedSpacesCard extends ConsumerWidget {
         ),
       ),
       error: (error, stack) => SliverToBoxAdapter(
-        child: Text('${L10n.of(context).loadingFailed('spaces')}: $error'),
+        child: Text(L10n.of(context).loadingSpacesFailed(error)),
       ),
-      loading: () => SliverToBoxAdapter(child: Text(L10n.of(context).loading(''))),
+      loading: () => SliverToBoxAdapter(child: Text(L10n.of(context).loading)),
     );
   }
 }

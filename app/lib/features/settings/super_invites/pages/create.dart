@@ -64,8 +64,8 @@ class _CreateSuperInviteTokenPageConsumerState
   Widget build(BuildContext context) {
     return SliverScaffold(
       header: isEdit
-          ? L10n.of(context).inviteCode('edit')
-          : L10n.of(context).inviteCode('create'),
+          ? L10n.of(context).editInviteCode
+          : L10n.of(context).createInviteCode,
       addActions: true,
       body: Form(
         key: _formKey,
@@ -211,8 +211,8 @@ class _CreateSuperInviteTokenPageConsumerState
     } catch (err) {
       EasyLoading.showError(
         isEdit
-            ? '${L10n.of(context).inviteCodeFailed('save')} $err'
-            : '${L10n.of(context).inviteCodeFailed('create')} $err',
+            ? L10n.of(context).saveInviteCodeFailed(err)
+            : L10n.of(context).createInviteCodeFailed(err),
         duration: const Duration(seconds: 3),
       );
     }
@@ -223,7 +223,7 @@ class _CreateSuperInviteTokenPageConsumerState
       context: context,
       builder: (BuildContext ctx) {
         return AlertDialog(
-          title: Text(L10n.of(context).deleteCode('')),
+          title: Text(L10n.of(context).deleteCode),
           content: Text(
             L10n.of(context).doYouWantToDeleteInviteCode,
           ),
@@ -277,7 +277,7 @@ class _CreateSuperInviteTokenPageConsumerState
       return;
     }
 
-    EasyLoading.show(status: L10n.of(context).deleteCode('withIng'));
+    EasyLoading.show(status: L10n.of(context).deletingCode);
     try {
       final tokenTxt = _tokenController.text;
       // all other changes happen on the object itself;
@@ -293,7 +293,7 @@ class _CreateSuperInviteTokenPageConsumerState
       Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
     } catch (err) {
       EasyLoading.showError(
-        '${L10n.of(context).inviteCodeFailed('delete')} $err',
+        L10n.of(context).deleteInviteCodeFailed(err),
         duration: const Duration(seconds: 3),
       );
     }

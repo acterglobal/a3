@@ -39,16 +39,16 @@ class _StartPageState extends State<StartPage> {
             style: Theme.of(context).textTheme.bodyMedium,
             children: [
               TextSpan(
-                text: L10n.of(context).onBoardingSpaceDescription('desc1'),
+                text: L10n.of(context).onBoardingSpaceDescription1,
               ),
               TextSpan(
-                text: L10n.of(context).onBoardingSpaceDescription('desc2'),
+                text: L10n.of(context).onBoardingSpaceDescription2,
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                       color: Colors.green,
                     ),
               ),
               TextSpan(
-                text: L10n.of(context).onBoardingSpaceDescription('desc3'),
+                text: L10n.of(context).onBoardingSpaceDescription3,
               ),
             ],
           ),
@@ -70,18 +70,18 @@ class _StartPageState extends State<StartPage> {
             children: [
               TextSpan(
                 text: L10n.of(context)
-                    .onBoardingCommunicationDescription('desc1'),
+                    .onBoardingCommunicationDescription1,
               ),
               TextSpan(
                 text: L10n.of(context)
-                    .onBoardingCommunicationDescription('desc2'),
+                    .onBoardingCommunicationDescription2,
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                       color: Colors.green,
                     ),
               ),
               TextSpan(
                 text: L10n.of(context)
-                    .onBoardingCommunicationDescription('desc3'),
+                    .onBoardingCommunicationDescription3,
               ),
             ],
           ),
@@ -102,13 +102,13 @@ class _StartPageState extends State<StartPage> {
             style: Theme.of(context).textTheme.bodyMedium,
             children: [
               TextSpan(
-                text: L10n.of(context).onBoardingUpdateDescription('desc1'),
+                text: L10n.of(context).onBoardingUpdateDescription1,
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                       color: Colors.green,
                     ),
               ),
               TextSpan(
-                text: L10n.of(context).onBoardingUpdateDescription('desc2'),
+                text: L10n.of(context).onBoardingUpdateDescription2,
               ),
             ],
           ),
@@ -130,14 +130,14 @@ class _StartPageState extends State<StartPage> {
             children: [
               TextSpan(
                 text:
-                    L10n.of(context).onBoardingSimpleToUseDescription('desc1'),
+                    L10n.of(context).onBoardingSimpleToUseDescription1,
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                       color: Colors.green,
                     ),
               ),
               TextSpan(
                 text:
-                    L10n.of(context).onBoardingSimpleToUseDescription('desc2'),
+                    L10n.of(context).onBoardingSimpleToUseDescription2,
               ),
             ],
           ),

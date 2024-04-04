@@ -97,7 +97,7 @@ class ReportContentWidget extends ConsumerWidget {
         ),
         ElevatedButton(
           onPressed: () => reportContent(context, ref, textController.text),
-          child: Text(L10n.of(context).report('')),
+          child: Text(L10n.of(context).report),
         ),
       ],
     );
@@ -156,7 +156,7 @@ class ReportContentWidget extends ConsumerWidget {
           showAdaptiveDialog(
             context: ctx,
             builder: (ctx) => DefaultDialog(
-              title: Text(L10n.of(ctx).reportSendingFailed('')),
+              title: Text(L10n.of(ctx).reportSendingFailed),
               actions: <Widget>[
                 OutlinedButton(
                   onPressed: () => Navigator.of(ctx, rootNavigator: true).pop(),
@@ -173,7 +173,7 @@ class ReportContentWidget extends ConsumerWidget {
         showAdaptiveDialog(
           context: ctx,
           builder: (ctx) => DefaultDialog(
-            title: Text('${L10n.of(ctx).reportSendingFailed('dueTo')} $e'),
+            title: Text(L10n.of(ctx).reportSendingFailedDueTo(e)),
             actions: <Widget>[
               OutlinedButton(
                 onPressed: () => Navigator.of(ctx, rootNavigator: true).pop(),

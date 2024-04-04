@@ -171,7 +171,7 @@ class EmailAddressCard extends ConsumerWidget {
         EasyLoading.showSuccess(L10n.of(context).looksGoodAddressConfirmed);
       } catch (e) {
         EasyLoading.showError(
-          '${L10n.of(context).failedTo('confirmToken')}: $e',
+          L10n.of(context).failedToConfirmToken(e),
           duration: const Duration(seconds: 3),
         );
       }
@@ -208,7 +208,7 @@ class EmailAddressCard extends ConsumerWidget {
         }
       } catch (e) {
         EasyLoading.showError(
-          '${L10n.of(context).failedTo('confirmToken')}: $e',
+          L10n.of(context).failedToConfirmToken(e),
           duration: const Duration(seconds: 3),
         );
       }

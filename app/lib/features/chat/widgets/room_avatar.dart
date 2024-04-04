@@ -31,8 +31,8 @@ class RoomAvatar extends ConsumerWidget {
       height: avatarSize,
       child: ref.watch(chatProvider(roomId)).when(
             data: (convo) => chatAvatarUI(convo, ref, context),
-            error: (e, s) => Center(child: Text('${L10n.of(context).loadingFailed('room')}: $e')),
-            loading: () => Center(child: Text(L10n.of(context).loading(''))),
+            error: (e, s) => Center(child: Text(L10n.of(context).loadingRoomFailed(e))),
+            loading: () => Center(child: Text(L10n.of(context).loading)),
           ),
     );
   }
@@ -148,7 +148,7 @@ class RoomAvatar extends ConsumerWidget {
         }
       },
       skipLoadingOnReload: false,
-      error: (error, stackTrace) => Text('${L10n.of(context).loadingFailed('membersCount')} $error'),
+      error: (error, stackTrace) => Text(L10n.of(context).loadingMembersCountFailed(error)),
       loading: () => const CircularProgressIndicator(),
     );
   }

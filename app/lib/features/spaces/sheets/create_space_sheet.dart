@@ -53,7 +53,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     return SliverScaffold(
       header: parentSelected
           ? L10n.of(context).createSubspace
-          : L10n.of(context).createSpace(''),
+          : L10n.of(context).createSpace,
       addActions: true,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
@@ -115,7 +115,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                 SelectSpaceFormField(
                   canCheck: 'CanLinkSpaces',
                   mandatory: false,
-                  title: L10n.of(context).parentSpace(''),
+                  title: L10n.of(context).parentSpace,
                   selectTitle: L10n.of(context).selectParentSpace,
                 ),
               ],
@@ -123,7 +123,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
           ],
         ),
       ),
-      confirmActionTitle: L10n.of(context).createSpace(''),
+      confirmActionTitle: L10n.of(context).createSpace,
       confirmActionKey: CreateSpaceKeys.submitBtn,
       cancelActionTitle: L10n.of(context).cancel,
       confirmActionOnPressed: titleInput.trim().isEmpty

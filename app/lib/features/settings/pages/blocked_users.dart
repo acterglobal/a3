@@ -142,7 +142,7 @@ class BlockedUsersPage extends ConsumerWidget {
                 ),
           error: (error, stack) {
             return Center(
-              child: Text('${L10n.of(context).failedToLoad}: $error'),
+              child: Text(L10n.of(context).failedToLoad(error)),
             );
           },
           loading: () => const Center(

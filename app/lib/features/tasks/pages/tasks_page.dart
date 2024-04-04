@@ -24,7 +24,7 @@ class TasksPage extends ConsumerWidget {
       body: CustomScrollView(
         slivers: <Widget>[
           PageHeaderWidget(
-            title: L10n.of(context).tasks(''),
+            title: L10n.of(context).tasks,
             sectionDecoration: const BoxDecoration(
               gradient: primaryGradient,
             ),
@@ -64,7 +64,7 @@ class TasksPage extends ConsumerWidget {
                 height: 450,
                 child: Center(
                   child: Text(
-                    '${L10n.of(context).loadingFailed('tasks')}: $error',
+                    L10n.of(context).loadingTasksFailed(error),
                   ),
                 ),
               ),
@@ -73,7 +73,7 @@ class TasksPage extends ConsumerWidget {
               child: SizedBox(
                 height: 450,
                 child: Center(
-                  child: Text(L10n.of(context).loading('')),
+                  child: Text(L10n.of(context).loading),
                 ),
               ),
             ),

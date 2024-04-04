@@ -181,7 +181,7 @@ class ActionBox extends ConsumerWidget {
           onPressed: () => showAdaptiveDialog(
             context: context,
             builder: (context) => ReportContentWidget(
-              title: L10n.of(context).reportPost('this'),
+              title: L10n.of(context).reportThisPost,
               eventId: news.eventId().toString(),
               description: L10n.of(context).reportPostContent,
               senderId: senderId,
@@ -190,7 +190,7 @@ class ActionBox extends ConsumerWidget {
             ),
           ),
           icon: const Icon(Atlas.exclamation_chat_thin),
-          label: Text(L10n.of(context).report('this')),
+          label: Text(L10n.of(context).reportThis),
         ),
       );
     }
@@ -202,7 +202,7 @@ class ActionBox extends ConsumerWidget {
           onPressed: () => showAdaptiveDialog(
             context: context,
             builder: (context) => RedactContentWidget(
-              title: L10n.of(context).removePost('this'),
+              title: L10n.of(context).removeThisPost,
               eventId: news.eventId().toString(),
               onSuccess: () {
                 context.pop();

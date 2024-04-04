@@ -49,7 +49,7 @@ class IntroPage extends StatelessWidget {
                 ),
             children: <TextSpan>[
               TextSpan(
-                text: '\n${L10n.of(context).appName('')}!',
+                text: L10n.of(context).acter,
               ),
             ],
           ),
@@ -82,11 +82,11 @@ class IntroPage extends StatelessWidget {
           children: [
             RichText(
               text: TextSpan(
-                text: L10n.of(context).introPageDescription('desc1'),
+                text: L10n.of(context).introPageDescription1,
                 style: Theme.of(context).textTheme.bodyMedium,
                 children: <TextSpan>[
                   TextSpan(
-                    text: L10n.of(context).introPageDescription('desc2'),
+                    text: L10n.of(context).introPageDescription2,
                     style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                           color: Colors.green,
                         ),
@@ -96,7 +96,7 @@ class IntroPage extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              L10n.of(context).introPageDescription('desc3'),
+              L10n.of(context).introPageDescription3,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ],

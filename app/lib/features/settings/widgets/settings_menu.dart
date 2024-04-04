@@ -69,7 +69,7 @@ class SettingsMenu extends ConsumerWidget {
             MenuItemWidget(
               iconData: Atlas.envelope_paper_email_thin,
               iconColor: colorSelected(Routes.emailAddresses),
-              title: L10n.of(context).email('multiple'),
+              title: L10n.of(context).emailAddresses,
               subTitle: L10n.of(context).connectedToYourAccount,
               titleStyles: titleStylesSelected(Routes.emailAddresses),
               onTap: () => shouldGoNotNamed
@@ -110,7 +110,7 @@ class SettingsMenu extends ConsumerWidget {
         ),
         _settingMenuSection(
           context: context,
-          sectionTitle: L10n.of(context).appName('withApp'),
+          sectionTitle: L10n.of(context).acterApp,
           children: [
             MenuItemWidget(
               iconData: Atlas.language_translation,
@@ -164,7 +164,7 @@ class SettingsMenu extends ConsumerWidget {
               key: SettingsMenu.deactivateAccount,
               iconData: Atlas.trash_can_thin,
               iconColor: Theme.of(context).colorScheme.error,
-              title: L10n.of(context).deactivate('withAccount'),
+              title: L10n.of(context).deactivateAccount,
               subTitle: L10n.of(context).irreversiblyDeactivateAccount,
               titleStyles: TextStyle(
                 color: Theme.of(context).colorScheme.error,

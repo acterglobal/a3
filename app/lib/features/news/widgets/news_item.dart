@@ -118,7 +118,7 @@ class _NewsItemState extends ConsumerState<NewsItem> {
                 child: space.when(
                   data: (space) =>
                       Text(space!.spaceProfileData.displayName ?? roomId),
-                  error: (e, st) => Text('${L10n.of(context).errorLoading('space')}: $e'),
+                  error: (e, st) => Text(L10n.of(context).errorLoadingSpace(e)),
                   loading: () => Skeletonizer(
                     child: Text(roomId),
                   ),
@@ -173,7 +173,8 @@ class _NewsItemState extends ConsumerState<NewsItem> {
               );
             },
             loading: () => const EventItemSkeleton(),
-            error: (e, s) => Center(child: Text('${L10n.of(context).failedToLoad('event')}: $e')),
+            error: (e, s) =>
+                Center(child: Text(L10n.of(context).failedToLoadEvent(e))),
           );
     } else {
       return Card(
