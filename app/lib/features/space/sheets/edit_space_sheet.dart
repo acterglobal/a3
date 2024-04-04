@@ -72,6 +72,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
 
   @override
   Widget build(BuildContext context) {
+    final titleInput = ref.watch(editTitleProvider);
     final avatarUpload = ref.watch(editAvatarProvider);
     final avatarNotifier = ref.watch(editAvatarProvider.notifier);
     ref.watch(editTopicProvider);
@@ -172,7 +173,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
       ),
       confirmActionTitle: L10n.of(context).saveChanges,
       cancelActionTitle: L10n.of(context).cancel,
-      confirmActionOnPressed: _handleConfirm,
+      confirmActionOnPressed: () async => await _handleConfirm(titleInput),
       cancelActionOnPressed: _handleCancel,
     );
   }
@@ -264,8 +265,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
     return space.getRoomId();
   }
 
-  Future<void> _handleConfirm() async {
-    final titleInput = ref.read(editTitleProvider);
+  Future<void> _handleConfirm(String titleInput) async {
     if (titleInput.trim().isEmpty) return;
     // check permissions before updating space
     bool havePermission = await permissionCheck();
