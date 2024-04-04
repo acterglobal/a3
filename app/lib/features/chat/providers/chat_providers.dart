@@ -48,10 +48,6 @@ final filteredChatsProvider =
   return foundRooms;
 });
 
-// for desktop only
-final inSideBarProvider = StateProvider<bool>((ref) => false);
-final hasExpandedPanel = StateProvider<bool>((ref) => false);
-
 // get status of room encryption
 final isRoomEncryptedProvider =
     FutureProvider.family<bool, String>((ref, roomId) async {
