@@ -96,7 +96,7 @@ class InvitationCard extends ConsumerWidget {
         loading: () => Skeletonizer(child: Text(roomId)),
         error: (e, s) => Text('Error loading $roomId: $e'),
       ),
-      subtitle: Row(
+      subtitle: Wrap(
         children: [
           Text(L10n.of(context).invitationToSpace),
           inviter(
