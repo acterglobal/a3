@@ -83,23 +83,7 @@ class BlockedUsersPage extends ConsumerWidget {
               ),
               iconSize: 28,
               color: Theme.of(context).colorScheme.surface,
-              onPressed: () async {
-                final userToAdd = await showDialog<String?>(
-                  context: context,
-                  builder: (BuildContext context) => const AddUserToBlock(),
-                );
-                if (userToAdd != null) {
-                  final account = ref.read(accountProvider);
-
-                  await account.ignoreUser(userToAdd);
-                  if (context.mounted) {
-                    customMsgSnackbar(
-                      context,
-                      L10n.of(context).userAddedToBlockList(userToAdd),
-                    );
-                  }
-                }
-              },
+              onPressed: () async => await onAdd(context, ref),
             ),
           ],
         ),
@@ -109,26 +93,21 @@ class BlockedUsersPage extends ConsumerWidget {
                   slivers: [
                     SliverList.builder(
                       itemBuilder: (BuildContext context, int index) {
-                        final user = users[index];
+                        final userId = users[index].toString();
                         return Card(
                           margin: const EdgeInsets.all(5),
                           child: ListTile(
                             title: Padding(
                               padding: const EdgeInsets.all(10),
-                              child: Text(user.toString()),
+                              child: Text(userId),
                             ),
                             trailing: OutlinedButton(
                               child: Text(L10n.of(context).unblock),
-                              onPressed: () async {
-                                final account = ref.read(accountProvider);
-                                await account.unignoreUser(user.toString());
-                                if (context.mounted) {
-                                  customMsgSnackbar(
-                                    context,
-                                    L10n.of(context).userRemovedFromList,
-                                  );
-                                }
-                              },
+                              onPressed: () async => await onDelete(
+                                context,
+                                ref,
+                                userId,
+                              ),
                             ),
                           ),
                         );
@@ -151,5 +130,37 @@ class BlockedUsersPage extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Future<void> onAdd(BuildContext context, WidgetRef ref) async {
+    final userToAdd = await showDialog<String?>(
+      context: context,
+      builder: (BuildContext context) => const AddUserToBlock(),
+    );
+    if (userToAdd != null) {
+      final account = ref.read(accountProvider);
+      await account.ignoreUser(userToAdd);
+      if (context.mounted) {
+        customMsgSnackbar(
+          context,
+          L10n.of(context).userAddedToBlockList(userToAdd),
+        );
+      }
+    }
+  }
+
+  Future<void> onDelete(
+    BuildContext context,
+    WidgetRef ref,
+    String userId,
+  ) async {
+    final account = ref.read(accountProvider);
+    await account.unignoreUser(userId);
+    if (context.mounted) {
+      customMsgSnackbar(
+        context,
+        L10n.of(context).userRemovedFromList,
+      );
+    }
   }
 }

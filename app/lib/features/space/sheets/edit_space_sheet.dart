@@ -74,7 +74,6 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
   Widget build(BuildContext context) {
     final titleInput = ref.watch(editTitleProvider);
     final avatarUpload = ref.watch(editAvatarProvider);
-    final avatarNotifier = ref.watch(editAvatarProvider.notifier);
     ref.watch(editTopicProvider);
     return SliverScaffold(
       header: L10n.of(context).editSpace,
@@ -103,9 +102,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
                             ? Padding(
                                 padding: const EdgeInsets.only(bottom: 5),
                                 child: GestureDetector(
-                                  onTap: () {
-                                    avatarNotifier.update((state) => '');
-                                  },
+                                  onTap: _clearAvatar,
                                   child: Container(
                                     decoration: BoxDecoration(
                                       color: Theme.of(context)
@@ -113,10 +110,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
                                           .neutral4,
                                       shape: BoxShape.circle,
                                     ),
-                                    child: const Icon(
-                                      Icons.close,
-                                      size: 14,
-                                    ),
+                                    child: const Icon(Icons.close, size: 14),
                                   ),
                                 ),
                               )
@@ -299,5 +293,10 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
     } else {
       context.goNamed(Routes.main.name);
     }
+  }
+
+  void _clearAvatar() {
+    final avatarNotifier = ref.read(editAvatarProvider.notifier);
+    avatarNotifier.update((state) => '');
   }
 }
