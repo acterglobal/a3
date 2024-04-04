@@ -1,9 +1,9 @@
 import 'package:acter/common/dialogs/nuke_confirmation.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -12,6 +12,7 @@ import 'package:stack_trace/stack_trace.dart';
 class FatalFailPage extends ConsumerStatefulWidget {
   final String error;
   final String trace;
+
   const FatalFailPage({
     super.key,
     required this.error,
@@ -49,28 +50,14 @@ class _FatalFailPageState extends ConsumerState<FatalFailPage> {
                   width: height,
                   child: SvgPicture.asset('assets/images/genericError.svg'),
                 ),
-                const Text(
-                  'Something went terribly wrong:',
-                ),
+                const Text('Something went terribly wrong:'),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(widget.error),
                     IconButton(
-                      onPressed: () {
-                        Clipboard.setData(
-                          ClipboardData(
-                            text: '${widget.error}\n$stack',
-                          ),
-                        );
-                        customMsgSnackbar(
-                          context,
-                          'Error & Stacktrace copied to clipboard',
-                        );
-                      },
-                      icon: const Icon(
-                        Icons.copy_all_outlined,
-                      ),
+                      onPressed: onCopy,
+                      icon: const Icon(Icons.copy_all_outlined),
                     ),
                   ],
                 ),
@@ -79,9 +66,7 @@ class _FatalFailPageState extends ConsumerState<FatalFailPage> {
                   children: [
                     IconButton(
                       onPressed: () {
-                        setState(() {
-                          showStack = !showStack;
-                        });
+                        setState(() => showStack = !showStack);
                       },
                       icon: Icon(
                         showStack
@@ -108,8 +93,7 @@ class _FatalFailPageState extends ConsumerState<FatalFailPage> {
                     style:
                         TextStyle(color: Theme.of(context).colorScheme.error),
                   ),
-                  onPressed: () =>
-                      customMsgSnackbar(context, 'long press to activate'),
+                  onPressed: onNukePressed,
                   onLongPress: () => nukeConfirmationDialog(context, ref),
                 ),
                 OutlinedButton.icon(
@@ -123,5 +107,16 @@ class _FatalFailPageState extends ConsumerState<FatalFailPage> {
         ),
       ),
     );
+  }
+
+  void onCopy() {
+    Clipboard.setData(
+      ClipboardData(text: '${widget.error}\n$stack'),
+    );
+    EasyLoading.showToast('Error & Stacktrace copied to clipboard');
+  }
+
+  void onNukePressed() {
+    EasyLoading.showToast('long press to activate');
   }
 }

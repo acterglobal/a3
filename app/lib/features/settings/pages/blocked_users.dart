@@ -1,18 +1,16 @@
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AddUserToBlock extends StatefulWidget {
-  const AddUserToBlock({
-    super.key,
-  });
+  const AddUserToBlock({super.key});
 
   @override
   State<AddUserToBlock> createState() => _AddUserToBlockState();
@@ -137,16 +135,11 @@ class BlockedUsersPage extends ConsumerWidget {
       context: context,
       builder: (BuildContext context) => const AddUserToBlock(),
     );
-    if (userToAdd != null) {
-      final account = ref.read(accountProvider);
-      await account.ignoreUser(userToAdd);
-      if (context.mounted) {
-        customMsgSnackbar(
-          context,
-          L10n.of(context).userAddedToBlockList(userToAdd),
-        );
-      }
-    }
+    if (userToAdd == null) return;
+    final account = ref.read(accountProvider);
+    await account.ignoreUser(userToAdd);
+    if (!context.mounted) return;
+    EasyLoading.showToast(L10n.of(context).userAddedToBlockList(userToAdd));
   }
 
   Future<void> onDelete(
@@ -156,11 +149,7 @@ class BlockedUsersPage extends ConsumerWidget {
   ) async {
     final account = ref.read(accountProvider);
     await account.unignoreUser(userId);
-    if (context.mounted) {
-      customMsgSnackbar(
-        context,
-        L10n.of(context).userRemovedFromList,
-      );
-    }
+    if (!context.mounted) return;
+    EasyLoading.showToast(L10n.of(context).userRemovedFromList);
   }
 }

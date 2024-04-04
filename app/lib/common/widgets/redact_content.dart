@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
@@ -113,8 +112,7 @@ class RedactContentWidget extends ConsumerWidget {
 
       EasyLoading.dismiss();
       if (!ctx.mounted) return;
-      Navigator.of(ctx, rootNavigator: true).pop(true);
-      customMsgSnackbar(ctx, L10n.of(ctx).contentSuccessfullyRemoved);
+      EasyLoading.showToast(L10n.of(ctx).contentSuccessfullyRemoved);
       if (onSuccess != null) {
         onSuccess!();
       }

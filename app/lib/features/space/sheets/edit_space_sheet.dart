@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
@@ -264,9 +263,9 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
     // check permissions before updating space
     bool havePermission = await permissionCheck();
     if (!havePermission && mounted) {
-      customMsgSnackbar(
-        context,
+      EasyLoading.showError(
         L10n.of(context).cannotEditSpaceWithNoPermissions,
+        duration: const Duration(seconds: 3),
       );
       return;
     }

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/attachments/attachment_container.dart';
@@ -24,6 +23,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
@@ -272,10 +272,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                       child: Text(L10n.of(context).edit),
                     ),
                   InkWell(
-                    onTap: () => customMsgSnackbar(
-                      context,
-                      L10n.of(context).moreOptionsNotImplementedYet,
-                    ),
+                    onTap: onMoreTap,
                     child: Text(L10n.of(context).more),
                   ),
                 ],
@@ -660,9 +657,9 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
       mentionState.controller!.clear();
     } catch (e) {
       if (context.mounted) {
-        customMsgSnackbar(
-          context,
+        EasyLoading.showError(
           '${L10n.of(context).errorSendingMessage}: $e',
+          duration: const Duration(seconds: 3),
         );
       }
       inputNotifier.sendingFailed();
@@ -718,7 +715,10 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     } catch (e) {
       if (!context.mounted) return;
       Navigator.of(context, rootNavigator: true).pop();
-      customMsgSnackbar(context, e.toString());
+      EasyLoading.showError(
+        e.toString(),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 
@@ -773,6 +773,10 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
       AttachmentType.file,
       handleFileUpload,
     );
+  }
+
+  void onMoreTap() {
+    EasyLoading.showToast(L10n.of(context).moreOptionsNotImplementedYet);
   }
 }
 

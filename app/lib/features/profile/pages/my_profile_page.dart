@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/profile/widgets/skeletons/my_profile_skeletons_widget.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
@@ -102,7 +101,7 @@ class MyProfilePage extends StatelessWidget {
 
       EasyLoading.dismiss();
       if (!context.mounted) return;
-      customMsgSnackbar(context, L10n.of(context).displayNameUpdateSubmitted);
+      EasyLoading.showToast(L10n.of(context).displayNameUpdateSubmitted);
     }
   }
 
@@ -181,15 +180,7 @@ class MyProfilePage extends StatelessWidget {
                       title: L10n.of(context).username,
                       subTitle: userId,
                       trailingIcon: Atlas.pages,
-                      onPressed: () {
-                        Clipboard.setData(
-                          ClipboardData(text: userId),
-                        );
-                        customMsgSnackbar(
-                          context,
-                          L10n.of(context).usernameCopiedToClipboard,
-                        );
-                      },
+                      onPressed: () => _onCopy(userId, context),
                     ),
                     const SizedBox(height: 25),
                   ],
@@ -240,10 +231,7 @@ class MyProfilePage extends StatelessWidget {
                       ),
                       color: Theme.of(context).colorScheme.surface,
                     ),
-                    child: const Icon(
-                      Icons.edit,
-                      size: 16,
-                    ),
+                    child: const Icon(Icons.edit, size: 16),
                   ),
                 ),
               ),
@@ -282,5 +270,10 @@ class MyProfilePage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _onCopy(String userId, BuildContext context) {
+    Clipboard.setData(ClipboardData(text: userId));
+    EasyLoading.showToast(L10n.of(context).usernameCopiedToClipboard);
   }
 }

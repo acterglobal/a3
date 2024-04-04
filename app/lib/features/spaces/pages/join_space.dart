@@ -1,14 +1,14 @@
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/rooms.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/spaces/widgets/public_spaces_selector.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class JoinSpacePage extends ConsumerWidget {
   const JoinSpacePage({super.key});
@@ -17,9 +17,7 @@ class JoinSpacePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: primaryGradient,
-        ),
+        decoration: const BoxDecoration(gradient: primaryGradient),
         child: PublicSpaceSelector(
           autofocus: true,
           canMatchAlias: true,
@@ -59,9 +57,7 @@ class JoinSpacePage extends ConsumerWidget {
       serverNames.first,
       (roomId) => context.pushNamed(
         Routes.space.name,
-        pathParameters: {
-          'spaceId': roomId,
-        },
+        pathParameters: {'spaceId': roomId},
       ),
     );
   }
@@ -85,23 +81,18 @@ class JoinSpacePage extends ConsumerWidget {
     // we don't know the space yet, the user wants to join.
     final joinRule = spaceSearchResult.joinRuleStr();
     if (joinRule != 'Public') {
-      customMsgSnackbar(
-        context,
-        L10n.of(context).joinRuleNotSupportedYet(joinRule),
-      );
+      EasyLoading.showToast(L10n.of(context).joinRuleNotSupportedYet(joinRule));
       return;
     }
     await joinRoom(
       context,
       ref,
-      L10n.of(context).tryingToJoin('${spaceSearchResult.name()}'),
+      L10n.of(context).tryingToJoin(spaceSearchResult.name().toString()),
       spaceSearchResult.roomIdStr(),
       searchServer,
       (roomId) => context.pushNamed(
         Routes.space.name,
-        pathParameters: {
-          'spaceId': roomId,
-        },
+        pathParameters: {'spaceId': roomId},
       ),
     );
   }

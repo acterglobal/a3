@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
@@ -8,6 +7,7 @@ import 'package:acter/features/space/settings/widgets/space_settings_menu.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:settings_ui/settings_ui.dart';
 
@@ -366,10 +366,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
         newPowerLevel,
       );
       if (context.mounted) {
-        customMsgSnackbar(
-          context,
-          'Power level update for updates submitted',
-        );
+        EasyLoading.showToast('Power level update for updates submitted');
       }
     }
   }
@@ -409,10 +406,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
         newPowerLevel,
       );
       if (context.mounted) {
-        customMsgSnackbar(
-          context,
-          'Power level update for Pins submitted',
-        );
+        EasyLoading.showToast('Power level update for Pins submitted');
       }
     }
   }
@@ -452,8 +446,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
         newPowerLevel,
       );
       if (context.mounted) {
-        customMsgSnackbar(
-          context,
+        EasyLoading.showToast(
           'Power level update for calendar events submitted',
         );
       }
@@ -495,10 +488,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
         newPowerLevel,
       );
       if (context.mounted) {
-        customMsgSnackbar(
-          context,
-          'Power level update for task lists submitted',
-        );
+        EasyLoading.showToast('Power level update for task lists submitted');
       }
     }
   }
@@ -525,10 +515,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
         newPowerLevel,
       );
       if (context.mounted) {
-        customMsgSnackbar(
-          context,
-          'Power level update for tasks submitted',
-        );
+        EasyLoading.showToast('Power level update for tasks submitted');
       }
     }
   }

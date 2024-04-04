@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/base_body_widget.dart';
@@ -14,13 +13,13 @@ import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 final _log = Logger('a3::chat::room_profile_page');
 
@@ -180,15 +179,17 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
                   ? null
                   : Theme.of(context).colorScheme.onSurface,
               onTap: () {
-                membership.canString('CanInvite')
-                    ? context.pushNamed(
-                        Routes.spaceInvite.name,
-                        pathParameters: {'spaceId': widget.roomId},
-                      )
-                    : customMsgSnackbar(
-                        context,
-                        L10n.of(context).notEnoughPowerLevelForInvites,
-                      );
+                if (membership.canString('CanInvite')) {
+                  context.pushNamed(
+                    Routes.spaceInvite.name,
+                    pathParameters: {'spaceId': widget.roomId},
+                  );
+                } else {
+                  EasyLoading.showError(
+                    L10n.of(context).notEnoughPowerLevelForInvites,
+                    duration: const Duration(seconds: 3),
+                  );
+                }
               },
             );
           },

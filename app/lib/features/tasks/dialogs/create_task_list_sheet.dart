@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/md_editor_with_preview.dart';
@@ -76,9 +75,9 @@ class _CreateTaskListSheetConsumerState
       // We are doing as expected, but the lints triggers.
       // ignore: use_build_context_synchronously
       if (!context.mounted) return;
-      customMsgSnackbar(
-        context,
+      EasyLoading.showError(
         L10n.of(context).failedToCreateTaskList(e),
+        duration: const Duration(seconds: 3),
       );
     }
   }

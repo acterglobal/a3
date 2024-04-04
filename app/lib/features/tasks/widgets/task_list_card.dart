@@ -1,4 +1,3 @@
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
@@ -7,8 +6,9 @@ import 'package:acter/features/tasks/widgets/task_entry.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class TaskListCard extends ConsumerStatefulWidget {
@@ -107,7 +107,8 @@ class _TaskListCardState extends ConsumerState<TaskListCard> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         child: Text(
-                          L10n.of(context).countTasksDone(overview.doneTasks.length, total),
+                          L10n.of(context)
+                              .countTasksDone(overview.doneTasks.length, total),
                         ),
                       ),
                     );
@@ -158,7 +159,8 @@ class _TaskListCardState extends ConsumerState<TaskListCard> {
                     ),
                   );
                 },
-                error: (error, stack) => Text(L10n.of(context).errorLoadingTasks(error)),
+                error: (error, stack) =>
+                    Text(L10n.of(context).errorLoadingTasks(error)),
                 loading: () => Text(L10n.of(context).loading),
               ),
             ],
@@ -237,7 +239,7 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
       await taskDraft.send();
     } catch (e) {
       if (context.mounted) {
-        customMsgSnackbar(context, L10n.of(context).creatingTaskFailed(e));
+        EasyLoading.showToast(L10n.of(context).creatingTaskFailed(e));
       }
       return;
     }
