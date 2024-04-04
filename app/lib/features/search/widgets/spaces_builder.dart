@@ -3,6 +3,7 @@ import 'package:acter/features/search/model/util.dart';
 import 'package:acter/features/search/providers/spaces.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SpacesBuilder extends ConsumerWidget {
   final NavigateTo navigateTo;
@@ -16,12 +17,12 @@ class SpacesBuilder extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final foundSpaces = ref.watch(spacesFoundProvider);
     return foundSpaces.when(
-      loading: () => const Text('loading'),
-      error: (e, st) => Text('error: $e'),
+      loading: () => Text(L10n.of(context).loading),
+      error: (e, st) => Text(L10n.of(context).error(e)),
       data: (data) {
         final Widget body;
         if (data.isEmpty) {
-          body = const Text('no matching spaces found');
+          body = Text(L10n.of(context).noMatchingSpacesFound);
         } else {
           final List<Widget> children = data
               .map(
@@ -52,7 +53,7 @@ class SpacesBuilder extends ConsumerWidget {
           padding: const EdgeInsets.only(top: 10),
           child: Column(
             children: [
-              const Text('Spaces'),
+              Text(L10n.of(context).spaces),
               const SizedBox(height: 15),
               body,
               const SizedBox(height: 10),

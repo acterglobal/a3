@@ -38,13 +38,13 @@ class InvitationCard extends ConsumerWidget {
               children: <Widget>[
                 // Reject Invitation Button
                 OutlinedButton(
-                  onPressed: _onTapDeclineInvite,
+                  onPressed: () => _onTapDeclineInvite(context),
                   child: Text(L10n.of(context).decline),
                 ),
                 const SizedBox(width: 15),
                 // Accept Invitation Button
                 ElevatedButton(
-                  onPressed: _onTapAcceptInvite,
+                  onPressed: () => _onTapAcceptInvite(context),
                   child: Text(L10n.of(context).accept),
                 ),
               ],
@@ -94,7 +94,7 @@ class InvitationCard extends ConsumerWidget {
       title: roomProfile.when(
         data: (room) => Text(room.displayName ?? roomId),
         loading: () => Skeletonizer(child: Text(roomId)),
-        error: (e, s) => Text('Error loading $roomId: $e'),
+        error: (e, s) => Text(L10n.of(context).errorLoadingRoom(e, roomId)),
       ),
       subtitle: Wrap(
         children: [
@@ -135,7 +135,7 @@ class InvitationCard extends ConsumerWidget {
       title: roomProfile.when(
         data: (room) => Text(room.displayName ?? roomId),
         loading: () => Skeletonizer(child: Text(roomId)),
-        error: (e, s) => Text('Error loading $roomId: $e'),
+        error: (e, s) => Text(L10n.of(context).errorLoadingRoom(e, roomId)),
       ),
       subtitle: Row(
         children: [
@@ -194,23 +194,25 @@ class InvitationCard extends ConsumerWidget {
   }
 
   // method for post-process invitation accept
-  void _onTapAcceptInvite() async {
-    EasyLoading.show(status: 'Joining', dismissOnTap: false);
+  void _onTapAcceptInvite(BuildContext context) async {
+    EasyLoading.show(status: L10n.of(context).joining, dismissOnTap: false);
     bool res = await invitation.accept();
-    if (!res) {
-      EasyLoading.showError('Failed to join');
+    if (!res && context.mounted) {
+      EasyLoading.showError(L10n.of(context).failedToJoin);
       return;
     }
-    EasyLoading.showSuccess('Joined');
+    if(!context.mounted) return;
+    EasyLoading.showSuccess(L10n.of(context).joined);
   }
 
-  void _onTapDeclineInvite() async {
-    EasyLoading.show(status: 'Rejecting', dismissOnTap: false);
+  void _onTapDeclineInvite(BuildContext context) async {
+    EasyLoading.show(status: L10n.of(context).rejecting, dismissOnTap: false);
     bool res = await invitation.reject();
-    if (!res) {
-      EasyLoading.showError('Failed to reject');
+    if (!res && context.mounted) {
+      EasyLoading.showError(L10n.of(context).failedToReject);
       return;
     }
-    EasyLoading.showSuccess('Rejected');
+    if(!context.mounted) return;
+    EasyLoading.showSuccess(L10n.of(context).rejected);
   }
 }
