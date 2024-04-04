@@ -1,4 +1,3 @@
-import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -40,47 +39,13 @@ Future<void> showUnblockUserDialog(BuildContext context, Member member) async {
                 await member.unignore();
                 EasyLoading.dismiss();
                 if (!context.mounted) return;
-
-                showAdaptiveDialog(
-                  context: context,
-                  builder: (context) => DefaultDialog(
-                    title: Text(
-                      L10n.of(context).unblockingUserSuccess,
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                    actions: <Widget>[
-                      ElevatedButton(
-                        onPressed: () {
-                          // close both dialogs
-                          context.pop();
-                          context.pop();
-                        },
-                        child: Text(L10n.of(context).okay),
-                      ),
-                    ],
-                  ),
-                );
+                EasyLoading.showSuccess(L10n.of(context).unblockingUserSuccess);
               } catch (error) {
                 EasyLoading.dismiss();
                 if (!context.mounted) return;
-                showAdaptiveDialog(
-                  context: context,
-                  builder: (context) => DefaultDialog(
-                    title: Text(
-                      L10n.of(context).unblockingUserFailed(error),
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                    actions: <Widget>[
-                      ElevatedButton(
-                        onPressed: () {
-                          // close both dialogs
-                          context.pop();
-                          context.pop();
-                        },
-                        child: Text(L10n.of(context).okay),
-                      ),
-                    ],
-                  ),
+                EasyLoading.showError(
+                  L10n.of(context).unblockingUserFailed(error),
+                  duration: const Duration(seconds: 3),
                 );
               }
             },

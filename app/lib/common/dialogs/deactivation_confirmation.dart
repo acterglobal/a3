@@ -1,7 +1,6 @@
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -128,21 +127,9 @@ Future<void> _onConfirm(
     // We are doing as expected, but the lints triggers.
     // ignore: use_build_context_synchronously
     if (!context.mounted) return;
-
-    showAdaptiveDialog(
-      context: context,
-      builder: (context) => DefaultDialog(
-        title: Text(
-          '${L10n.of(context).deactivatingFailed}: \n $err"',
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
-        actions: <Widget>[
-          ElevatedButton(
-            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-            child: Text(L10n.of(context).close),
-          ),
-        ],
-      ),
+    EasyLoading.showError(
+      '${L10n.of(context).deactivatingFailed}: \n $err"',
+      duration: const Duration(seconds: 3),
     );
   }
 }

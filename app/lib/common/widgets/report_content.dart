@@ -132,48 +132,20 @@ class ReportContentWidget extends ConsumerWidget {
       EasyLoading.dismiss();
       if (!ctx.mounted) return;
       if (res) {
-        showAdaptiveDialog(
-          context: ctx,
-          builder: (ctx) => DefaultDialog(
-            title: Text(L10n.of(ctx).reportSent),
-            actions: <Widget>[
-              OutlinedButton(
-                onPressed: () => Navigator.of(ctx, rootNavigator: true).pop(),
-                child: Text(L10n.of(ctx).close),
-              ),
-            ],
-          ),
-        );
+        EasyLoading.showSuccess(L10n.of(ctx).reportSent);
       } else {
-        showAdaptiveDialog(
-          context: ctx,
-          builder: (ctx) => DefaultDialog(
-            title: Text(L10n.of(ctx).reportSendingFailed),
-            actions: <Widget>[
-              OutlinedButton(
-                onPressed: () => Navigator.of(ctx, rootNavigator: true).pop(),
-                child: Text(L10n.of(ctx).close),
-              ),
-            ],
-          ),
+        EasyLoading.showError(
+          L10n.of(ctx).reportSendingFailed,
+          duration: const Duration(seconds: 3),
         );
       }
     } catch (e) {
       EasyLoading.dismiss();
-      if (ctx.mounted) {
-        showAdaptiveDialog(
-          context: ctx,
-          builder: (ctx) => DefaultDialog(
-            title: Text(L10n.of(ctx).reportSendingFailedDueTo(e)),
-            actions: <Widget>[
-              OutlinedButton(
-                onPressed: () => Navigator.of(ctx, rootNavigator: true).pop(),
-                child: Text(L10n.of(ctx).close),
-              ),
-            ],
-          ),
-        );
-      }
+      if (!ctx.mounted) return;
+      EasyLoading.showError(
+        L10n.of(ctx).reportSendingFailedDueTo(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 }

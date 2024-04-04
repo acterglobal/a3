@@ -1,5 +1,4 @@
 import 'package:acter/common/models/types.dart';
-
 import 'package:acter/common/widgets/attachments/post_attachment_selection.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show AttachmentsManager;

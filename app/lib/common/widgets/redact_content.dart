@@ -120,20 +120,11 @@ class RedactContentWidget extends ConsumerWidget {
       }
     } catch (e) {
       EasyLoading.dismiss();
-      if (ctx.mounted) {
-        showAdaptiveDialog(
-          context: ctx,
-          builder: (ctx) => DefaultDialog(
-            title: Text('${L10n.of(ctx).redactionFailed} $e'),
-            actions: <Widget>[
-              OutlinedButton(
-                onPressed: () => Navigator.of(ctx, rootNavigator: true).pop(),
-                child: Text(L10n.of(ctx).close),
-              ),
-            ],
-          ),
-        );
-      }
+      if (!ctx.mounted) return;
+      EasyLoading.showError(
+        '${L10n.of(ctx).redactionFailed} $e',
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 }
