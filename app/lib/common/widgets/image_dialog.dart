@@ -70,7 +70,7 @@ class ImageDialog extends ConsumerWidget {
                   Object url,
                   StackTrace? error,
                 ) {
-                  return Text('${L10n.of(context).couldNotLoadImage} $error');
+                  return Text(L10n.of(context).couldNotLoadImage(error.toString()));
                 },
                 fit: BoxFit.fitWidth,
               ),

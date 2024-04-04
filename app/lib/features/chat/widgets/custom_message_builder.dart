@@ -176,7 +176,7 @@ class CustomMessageBuilder extends StatelessWidget {
     Object url,
     StackTrace? error,
   ) {
-    return Text('${L10n.of(context).couldNotLoadImage} $error');
+    return Text(L10n.of(context).couldNotLoadImage(error.toString()));
   }
 
   Widget stickerFrameBuilder(
