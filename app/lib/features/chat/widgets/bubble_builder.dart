@@ -333,15 +333,15 @@ class __EmojiContainerState extends ConsumerState<_EmojiContainer>
 
   @override
   Widget build(BuildContext context) {
-    List<String> keys = [];
-    if (widget.message.metadata != null) {
-      if (widget.message.metadata!.containsKey('reactions')) {
-        Map<String, dynamic> reactions = widget.message.metadata!['reactions'];
-        keys = reactions.keys.toList();
-      }
-    }
     return LayoutBuilder(
       builder: (context, constraints) {
+        Map<String, dynamic> reactions = {};
+        List<String> keys = [];
+        final metadata = widget.message.metadata;
+        if (metadata == null) return const SizedBox();
+        if (!metadata.containsKey('reactions')) return const SizedBox();
+        reactions = metadata['reactions'];
+        keys = reactions.keys.toList();
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 3),
           child: Wrap(
@@ -350,24 +350,11 @@ class __EmojiContainerState extends ConsumerState<_EmojiContainer>
             runSpacing: 3,
             children: List.generate(keys.length, (int index) {
               String key = keys[index];
-              Map<String, dynamic> reactions =
-                  widget.message.metadata!['reactions'];
-              final recordsCount = reactions[key]?.length;
-              var sentByMe = (reactions[key]! as List<ReactionRecord>)
-                  .any((x) => x.sentByMe());
+              final records = reactions[key]! as List<ReactionRecord>;
+              final sentByMe = records.any((x) => x.sentByMe());
               return InkWell(
-                onLongPress: () {
-                  showEmojiReactionsSheet(reactions, widget.roomId);
-                },
-                onTap: () {
-                  if (sentByMe) {
-                    EasyLoading.showToast(
-                      L10n.of(context).revokingEmojiReactionsNotYetSupported,
-                    );
-                  } else {
-                    widget.onToggle(widget.message.id, key);
-                  }
-                },
+                onLongPress: () => onEmojiLongPress(reactions),
+                onTap: () => onEmojiTap(sentByMe, key),
                 child: Chip(
                   padding: const EdgeInsets.symmetric(
                     vertical: 1,
@@ -381,7 +368,7 @@ class __EmojiContainerState extends ConsumerState<_EmojiContainer>
                     key,
                     style: EmojiConfig.emojiTextStyle,
                   ),
-                  label: Text(recordsCount!.toString()),
+                  label: Text(records.length.toString()),
                 ),
               );
             }),
@@ -515,6 +502,20 @@ class __EmojiContainerState extends ConsumerState<_EmojiContainer>
       }
     });
   }
+
+  void onEmojiLongPress(Map<String, dynamic> reactions) {
+    showEmojiReactionsSheet(reactions, widget.roomId);
+  }
+
+  void onEmojiTap(bool sentByMe, String key) {
+    if (sentByMe) {
+      EasyLoading.showToast(
+        L10n.of(context).revokingEmojiReactionsNotYetSupported,
+      );
+    } else {
+      widget.onToggle(widget.message.id, key);
+    }
+  }
 }
 
 class _OriginalMessageBuilder extends ConsumerWidget {
@@ -528,16 +529,18 @@ class _OriginalMessageBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (message.repliedMessage is types.TextMessage) {
-      final w = message.repliedMessage!.metadata!['messageLength'] * 38.5;
+    final repliedMessage = message.repliedMessage;
+    if (repliedMessage == null) return const SizedBox();
+    if (repliedMessage is types.TextMessage) {
+      final w = repliedMessage.metadata!['messageLength'] * 38.5;
       return TextMessageBuilder(
         convo: convo,
         message: message.repliedMessage as types.TextMessage,
         messageWidth: w.toInt(),
         isReply: true,
       );
-    } else if (message.repliedMessage is types.ImageMessage) {
-      final imageMsg = message.repliedMessage as types.ImageMessage;
+    }
+    if (repliedMessage is types.ImageMessage) {
       return Row(
         children: [
           Container(
@@ -545,8 +548,8 @@ class _OriginalMessageBuilder extends ConsumerWidget {
             margin: const EdgeInsets.all(12),
             child: ImageMessageBuilder(
               convo: convo,
-              message: imageMsg,
-              messageWidth: imageMsg.size.toInt(),
+              message: repliedMessage,
+              messageWidth: repliedMessage.size.toInt(),
               isReplyContent: true,
             ),
           ),
@@ -556,22 +559,23 @@ class _OriginalMessageBuilder extends ConsumerWidget {
           ),
         ],
       );
-    } else if (message.repliedMessage is types.FileMessage) {
+    }
+    if (repliedMessage is types.FileMessage) {
       return Padding(
         padding: const EdgeInsets.all(12),
         child: Text(
-          message.repliedMessage!.metadata?['content'],
+          repliedMessage.metadata!['content'],
           style: Theme.of(context).textTheme.bodySmall,
         ),
       );
-    } else if (message.repliedMessage is types.CustomMessage) {
+    }
+    if (repliedMessage is types.CustomMessage) {
       return CustomMessageBuilder(
-        message: message.repliedMessage as types.CustomMessage,
+        message: repliedMessage,
         messageWidth: 100,
       );
-    } else {
-      return const SizedBox();
     }
+    return const SizedBox();
   }
 }
 

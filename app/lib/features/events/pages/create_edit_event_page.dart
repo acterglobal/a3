@@ -304,33 +304,32 @@ class CreateEditEventPageConsumerState
       firstDate: DateTime.now(),
       lastDate: DateTime.now().addYears(1),
     );
-    if (date != null) {
-      if (isStartDate) {
-        _selectedStartDate = date;
-        _startDateController.text = eventDateFormat(date);
-        // if end date is empty and if start date is same or after end date
-        if (_endDateController.text.isEmpty ||
-            date.isSameOrAfter(_selectedEndDate)) {
-          _selectedEndDate = date;
-          _endDateController.text = eventDateFormat(date);
-        }
-      } else {
-        // if date is same or after start date
-        if (date.isSameOrAfter(_selectedStartDate)) {
-          _selectedEndDate = date;
-          _endDateController.text = eventDateFormat(date);
-          // When user change date that time end time is reset
-          _endTimeController.text = '';
-        } else {
-          if (!context.mounted) return;
-          EasyLoading.showToast(
-            L10n.of(context).pleaseSelectValidEndDate,
-            toastPosition: EasyLoadingToastPosition.bottom,
-          );
-        }
+    if (date == null) return;
+    if (!context.mounted) return;
+    if (isStartDate) {
+      _selectedStartDate = date;
+      _startDateController.text = eventDateFormat(date);
+      // if end date is empty and if start date is same or after end date
+      if (_endDateController.text.isEmpty ||
+          date.isSameOrAfter(_selectedEndDate)) {
+        _selectedEndDate = date;
+        _endDateController.text = eventDateFormat(date);
       }
-      setState(() {});
+    } else {
+      // if date is same or after start date
+      if (date.isSameOrAfter(_selectedStartDate)) {
+        _selectedEndDate = date;
+        _endDateController.text = eventDateFormat(date);
+        // When user change date that time end time is reset
+        _endTimeController.text = '';
+      } else {
+        EasyLoading.showToast(
+          L10n.of(context).pleaseSelectValidEndDate,
+          toastPosition: EasyLoadingToastPosition.bottom,
+        );
+      }
     }
+    setState(() {});
   }
 
   // Selecting Time
@@ -339,33 +338,32 @@ class CreateEditEventPageConsumerState
       context: context,
       initialTime: isStartTime ? _selectedStartTime : _selectedEndTime,
     );
-    if (time != null) {
-      if (!mounted) return;
-      if (isStartTime) {
-        _selectedStartTime = time;
-        _startTimeController.text = _selectedStartTime.format(context);
-        // select end time after one of start time
-        if (_endTimeController.text.isEmpty) {
-          _selectedEndTime = time.replacing(hour: _selectedStartTime.hour + 1);
-          _endTimeController.text = _selectedEndTime.format(context);
-        }
-      } else {
-        // Checking if end time is before start time
-        final double startTime = _selectedStartTime.toDouble();
-        final double endTime = time.toDouble();
-        if (_selectedStartDate.isSameDay(_selectedEndDate) &&
-            startTime > endTime) {
-          EasyLoading.showToast(
-            L10n.of(context).pleaseSelectValidEndTime,
-            toastPosition: EasyLoadingToastPosition.bottom,
-          );
-        } else {
-          _selectedEndTime = time;
-          _endTimeController.text = _selectedEndTime.format(context);
-        }
+    if (time == null) return;
+    if (!context.mounted) return;
+    if (isStartTime) {
+      _selectedStartTime = time;
+      _startTimeController.text = _selectedStartTime.format(context);
+      // select end time after one of start time
+      if (_endTimeController.text.isEmpty) {
+        _selectedEndTime = time.replacing(hour: _selectedStartTime.hour + 1);
+        _endTimeController.text = _selectedEndTime.format(context);
       }
-      setState(() {});
+    } else {
+      // Checking if end time is before start time
+      final double startTime = _selectedStartTime.toDouble();
+      final double endTime = time.toDouble();
+      if (_selectedStartDate.isSameDay(_selectedEndDate) &&
+          startTime > endTime) {
+        EasyLoading.showToast(
+          L10n.of(context).pleaseSelectValidEndTime,
+          toastPosition: EasyLoadingToastPosition.bottom,
+        );
+      } else {
+        _selectedEndTime = time;
+        _endTimeController.text = _selectedEndTime.format(context);
+      }
     }
+    setState(() {});
   }
 
   // Description field

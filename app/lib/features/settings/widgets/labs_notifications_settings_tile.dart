@@ -28,41 +28,33 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
             isActiveProvider(LabsFeature.mobilePushNotifications),
           ),
       enabled: supportedPlatforms && pushServer.isNotEmpty,
-      onToggle: (newVal) async {
-        updateFeatureState(
-          ref,
-          LabsFeature.mobilePushNotifications,
-          newVal,
-        );
-        if (newVal) {
-          final client = ref.read(clientProvider);
-          if (client == null) {
-            EasyLoading.showError(
-              L10n.of(context).noActiveClient,
-              duration: const Duration(seconds: 3),
-            );
-            return;
-          }
-          final granted = await setupPushNotifications(client, forced: true);
-          if (!granted) {
-            await AppSettings.openAppSettings(
-              type: AppSettingsType.notification,
-            );
-            final granted = await setupPushNotifications(client, forced: true);
-            if (!granted) {
-              // second attempt, even sending the user to the settings, they do not
-              // approve. Let's kick it back off
-              updateFeatureState(
-                ref,
-                LabsFeature.mobilePushNotifications,
-                false,
-              );
-            }
-            return;
-          }
-        }
-      },
+      onToggle: (newVal) => onToggle(context, ref, newVal),
     );
+  }
+
+  Future<void> onToggle(
+    BuildContext context,
+    WidgetRef ref,
+    bool newVal,
+  ) async {
+    updateFeatureState(ref, LabsFeature.mobilePushNotifications, newVal);
+    if (!newVal) return;
+    final client = ref.read(clientProvider);
+    if (client == null) {
+      EasyLoading.showError(
+        L10n.of(context).noActiveClient,
+        duration: const Duration(seconds: 3),
+      );
+      return;
+    }
+    var granted = await setupPushNotifications(client, forced: true);
+    if (granted) return;
+    await AppSettings.openAppSettings(type: AppSettingsType.notification);
+    granted = await setupPushNotifications(client, forced: true);
+    if (granted) return;
+    // second attempt, even sending the user to the settings, they do not
+    // approve. Let's kick it back off
+    updateFeatureState(ref, LabsFeature.mobilePushNotifications, false);
   }
 }
 

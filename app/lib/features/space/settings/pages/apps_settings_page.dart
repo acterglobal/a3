@@ -360,14 +360,10 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
         currentPowerLevel: currentPw,
       ),
     );
-    if (newPowerLevel != currentPw) {
-      await space.updateFeaturePowerLevels(
-        powerLevels.newsKey(),
-        newPowerLevel,
-      );
-      if (context.mounted) {
-        EasyLoading.showToast('Power level update for updates submitted');
-      }
+    if (newPowerLevel == currentPw) return;
+    await space.updateFeaturePowerLevels(powerLevels.newsKey(), newPowerLevel);
+    if (context.mounted) {
+      EasyLoading.showToast('Power level update for updates submitted');
     }
   }
 
@@ -400,14 +396,10 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
         currentPowerLevel: currentPw,
       ),
     );
-    if (newPowerLevel != currentPw) {
-      await space.updateFeaturePowerLevels(
-        powerLevels.pinsKey(),
-        newPowerLevel,
-      );
-      if (context.mounted) {
-        EasyLoading.showToast('Power level update for Pins submitted');
-      }
+    if (newPowerLevel == currentPw) return;
+    await space.updateFeaturePowerLevels(powerLevels.pinsKey(), newPowerLevel);
+    if (context.mounted) {
+      EasyLoading.showToast('Power level update for Pins submitted');
     }
   }
 
@@ -440,16 +432,13 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
         currentPowerLevel: currentPw,
       ),
     );
-    if (newPowerLevel != currentPw) {
-      await space.updateFeaturePowerLevels(
-        powerLevels.eventsKey(),
-        newPowerLevel,
-      );
-      if (context.mounted) {
-        EasyLoading.showToast(
-          'Power level update for calendar events submitted',
-        );
-      }
+    if (newPowerLevel == currentPw) return;
+    await space.updateFeaturePowerLevels(
+      powerLevels.eventsKey(),
+      newPowerLevel,
+    );
+    if (context.mounted) {
+      EasyLoading.showToast('Power level update for calendar events submitted');
     }
   }
 
@@ -482,14 +471,13 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
         currentPowerLevel: currentPw,
       ),
     );
-    if (newPowerLevel != currentPw) {
-      await space.updateFeaturePowerLevels(
-        powerLevels.taskListsKey(),
-        newPowerLevel,
-      );
-      if (context.mounted) {
-        EasyLoading.showToast('Power level update for task lists submitted');
-      }
+    if (newPowerLevel == currentPw) return;
+    await space.updateFeaturePowerLevels(
+      powerLevels.taskListsKey(),
+      newPowerLevel,
+    );
+    if (context.mounted) {
+      EasyLoading.showToast('Power level update for task lists submitted');
     }
   }
 
@@ -509,14 +497,10 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
         currentPowerLevel: currentPw,
       ),
     );
-    if (newPowerLevel != currentPw) {
-      await space.updateFeaturePowerLevels(
-        powerLevels.tasksKey(),
-        newPowerLevel,
-      );
-      if (context.mounted) {
-        EasyLoading.showToast('Power level update for tasks submitted');
-      }
+    if (newPowerLevel == currentPw) return;
+    await space.updateFeaturePowerLevels(powerLevels.tasksKey(), newPowerLevel);
+    if (context.mounted) {
+      EasyLoading.showToast('Power level update for tasks submitted');
     }
   }
 
