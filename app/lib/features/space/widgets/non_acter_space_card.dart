@@ -71,9 +71,7 @@ class NonActerSpaceCard extends ConsumerWidget {
       // We are doing as expected, but the lint still triggers.
       // ignore: use_build_context_synchronously
       if (!context.mounted) return;
-      EasyLoading.showSuccess(
-        L10n.of(context).successfullyUpgradedToActerSpace,
-      );
+      EasyLoading.showToast(L10n.of(context).successfullyUpgradedToActerSpace);
     } catch (e) {
       EasyLoading.dismiss();
       if (!context.mounted) return;

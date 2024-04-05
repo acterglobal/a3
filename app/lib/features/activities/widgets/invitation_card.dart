@@ -201,8 +201,8 @@ class InvitationCard extends ConsumerWidget {
       EasyLoading.showError(L10n.of(context).failedToJoin);
       return;
     }
-    if(!context.mounted) return;
-    EasyLoading.showSuccess(L10n.of(context).joined);
+    if (!context.mounted) return;
+    EasyLoading.showToast(L10n.of(context).joined);
   }
 
   void _onTapDeclineInvite(BuildContext context) async {
@@ -212,7 +212,7 @@ class InvitationCard extends ConsumerWidget {
       EasyLoading.showError(L10n.of(context).failedToReject);
       return;
     }
-    if(!context.mounted) return;
-    EasyLoading.showSuccess(L10n.of(context).rejected);
+    if (!context.mounted) return;
+    EasyLoading.showToast(L10n.of(context).rejected);
   }
 }

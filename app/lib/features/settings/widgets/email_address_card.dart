@@ -158,7 +158,7 @@ class EmailAddressCard extends ConsumerWidget {
         await manager.tryConfirmEmailStatus(emailAddress, newValue);
         ref.invalidate(emailAddressesProvider);
         if (!context.mounted) return;
-        EasyLoading.showSuccess(L10n.of(context).looksGoodAddressConfirmed);
+        EasyLoading.showToast(L10n.of(context).looksGoodAddressConfirmed);
       } catch (e) {
         EasyLoading.showError(
           L10n.of(context).failedToConfirmToken(e),
@@ -189,7 +189,7 @@ class EmailAddressCard extends ConsumerWidget {
         if (!context.mounted) return;
         if (result) {
           ref.invalidate(emailAddressesProvider);
-          EasyLoading.showSuccess(L10n.of(context).looksGoodAddressConfirmed);
+          EasyLoading.showToast(L10n.of(context).looksGoodAddressConfirmed);
         } else {
           EasyLoading.showError(
             L10n.of(context).invalidTokenOrPassword,

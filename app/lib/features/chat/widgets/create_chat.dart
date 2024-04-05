@@ -155,7 +155,7 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
       final convo = await client.convoWithRetry(roomIdStr, 120);
       EasyLoading.dismiss();
       if (!mounted) return null;
-      EasyLoading.showSuccess(L10n.of(context).chatRoomCreated);
+      EasyLoading.showToast(L10n.of(context).chatRoomCreated);
       return convo;
     } catch (e) {
       EasyLoading.dismiss();
@@ -451,8 +451,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                       onUp: _onUp,
                     ),
                   ),
-            error: (e, st) =>
-                Text(L10n.of(context).errorLoadingUsers(e)),
+            error: (e, st) => Text(L10n.of(context).errorLoadingUsers(e)),
             loading: () => const Center(
               heightFactor: 5,
               child: CircularProgressIndicator(),

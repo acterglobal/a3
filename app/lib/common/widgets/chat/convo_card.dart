@@ -138,9 +138,7 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
     }
     await room.unmute();
     if (!mounted) return;
-    EasyLoading.showSuccess(
-      L10n.of(context).notificationsUnmuted,
-    );
+    EasyLoading.showToast(L10n.of(context).notificationsUnmuted);
     await Future.delayed(const Duration(seconds: 1), () {
       // FIXME: we want to refresh the view but don't know
       //        when the event was confirmed form sync :(

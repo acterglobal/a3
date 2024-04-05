@@ -222,7 +222,7 @@ class EmailAddressesPage extends ConsumerWidget {
         await manager.requestTokenViaEmail(newValue);
         ref.invalidate(emailAddressesProvider);
         if (!context.mounted) return;
-        EasyLoading.showSuccess(L10n.of(context).pleaseCheckYourInbox);
+        EasyLoading.showToast(L10n.of(context).pleaseCheckYourInbox);
       } catch (e) {
         EasyLoading.showError(
           L10n.of(context).failedToSubmitEmail(e),

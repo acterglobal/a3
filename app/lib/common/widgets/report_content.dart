@@ -132,7 +132,7 @@ class ReportContentWidget extends ConsumerWidget {
       EasyLoading.dismiss();
       if (!ctx.mounted) return;
       if (res) {
-        EasyLoading.showSuccess(L10n.of(ctx).reportSent);
+        EasyLoading.showToast(L10n.of(ctx).reportSent);
       } else {
         EasyLoading.showError(
           L10n.of(ctx).reportSendingFailed,

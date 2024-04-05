@@ -36,7 +36,7 @@ Future<void> showBlockUserDialog(BuildContext context, Member member) async {
                 await member.ignore();
                 EasyLoading.dismiss();
                 if (!context.mounted) return;
-                EasyLoading.showSuccess(L10n.of(context).blockingUserSuccess);
+                EasyLoading.showToast(L10n.of(context).blockingUserSuccess);
               } catch (error) {
                 EasyLoading.dismiss();
                 if (!context.mounted) return;

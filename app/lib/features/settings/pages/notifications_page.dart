@@ -200,7 +200,10 @@ class NotificationsSettingsPage extends ConsumerWidget {
       EasyLoading.showError(L10n.of(context).clientNotFound);
       return;
     }
-    EasyLoading.show();
+    EasyLoading.show(
+      status: 'Changing notification mode...',
+      dismissOnTap: false,
+    );
     try {
       await ref
           .read(notificationSettingsProvider)
@@ -211,7 +214,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
             newMode,
           );
       if (!context.mounted) return;
-      EasyLoading.showSuccess(L10n.of(context).notificationStatusSubmitted);
+      EasyLoading.showToast(L10n.of(context).notificationStatusSubmitted);
     } catch (e) {
       EasyLoading.showError(
         '${L10n.of(context).notificationStatusUpdateFailed}: $e',
@@ -306,7 +309,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
       }
       ref.invalidate(pushersProvider);
       if (!context.mounted) return;
-      EasyLoading.showSuccess(
+      EasyLoading.showToast(
         '$emailToAdd ${L10n.of(context).addedToPusherList}',
       );
     }
@@ -387,7 +390,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
     try {
       await item.delete();
       if (!context.mounted) return;
-      EasyLoading.showSuccess(L10n.of(context).pushTargetDeleted);
+      EasyLoading.showToast(L10n.of(context).pushTargetDeleted);
       ref.invalidate(possibleEmailToAddForPushProvider);
       ref.invalidate(pushersProvider);
     } catch (e) {
