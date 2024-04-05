@@ -3,6 +3,7 @@ import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/widgets/attachments/attachment_section.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/report_content.dart';
+import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/pin_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -179,6 +180,8 @@ class PinPage extends ConsumerWidget {
                   PinItem(acterPin),
                   const SizedBox(height: 20),
                   _buildAttachmentBody(acterPin),
+                  const SizedBox(height: 20),
+                  CommentsSection(manager: acterPin.comments()),
                 ],
               ),
               error: (err, st) => Text(L10n.of(context).errorLoadingPin(err)),

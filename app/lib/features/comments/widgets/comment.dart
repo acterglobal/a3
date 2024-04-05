@@ -43,7 +43,7 @@ class CommentWidget extends ConsumerWidget {
                   )
                 : Text(msgContent.body()),
           ),
-          const SizedBox(height: 16)
+          const SizedBox(height: 16),
         ],
       ),
     );

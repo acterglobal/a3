@@ -46,10 +46,9 @@ class CommentsList extends ConsumerWidget {
 
   Widget commentEmptyState(BuildContext context) {
     return EmptyState(
-      title: L10n.of(context).commentEmptyStateTitle,
       subtitle: L10n.of(context).commentEmptyStateSubtitle,
       image: 'assets/icon/comment.svg',
-      imageSize: 100,
+      imageSize: 50,
       primaryButton: CreateCommentWidget(manager: manager),
     );
   }

@@ -31,7 +31,7 @@ class _CreateCommentWidgetState extends ConsumerState<CreateCommentWidget> {
 
   Widget createCommentButtonUI() {
     return Center(
-      child: ElevatedButton.icon(
+      child: OutlinedButton.icon(
         onPressed: () => setState(() => opened = true),
         icon: const Icon(Icons.add_comment_outlined),
         label: Text(L10n.of(context).comment),
