@@ -37,6 +37,10 @@ final mediaChatStateProvider = StateNotifierProvider.family<MediaChatNotifier,
   (ref, messageInfo) => MediaChatNotifier(ref: ref, messageInfo: messageInfo),
 );
 
+final timelineStreamProvider = StateProvider.family<TimelineStream, Convo>(
+  (ref, convo) => convo.timelineStream(),
+);
+
 final filteredChatsProvider =
     FutureProvider.autoDispose<List<Convo>>((ref) async {
   final allRooms = ref.watch(chatsProvider);

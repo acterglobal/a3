@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Convo, EventSendState;
@@ -44,7 +45,7 @@ class MessageMetadataBuilder extends ConsumerWidget {
             return Row(
               children: <Widget>[
                 GestureDetector(
-                  onTap: () => _handleCancelRetrySend(),
+                  onTap: () => _handleCancelRetrySend(ref),
                   child: Text(
                     L10n.of(context).cancelSend,
                     style: Theme.of(context).textTheme.labelSmall!.copyWith(
@@ -57,10 +58,11 @@ class MessageMetadataBuilder extends ConsumerWidget {
                   width: 10,
                 ),
                 GestureDetector(
-                  onTap: () => _handleRetry(),
+                  onTap: () => _handleRetry(ref),
                   child: RichText(
                     text: TextSpan(
-                      text: L10n.of(context).failedToSent('${sendState.error()}'),
+                      text:
+                          L10n.of(context).failedToSent('${sendState.error()}'),
                       style: Theme.of(context).textTheme.labelSmall!.copyWith(
                             color: Theme.of(context).colorScheme.neutral5,
                           ),
@@ -97,14 +99,14 @@ class MessageMetadataBuilder extends ConsumerWidget {
     }
   }
 
-  Future<void> _handleRetry() async {
-    final stream = convo.timelineStream();
+  Future<void> _handleRetry(WidgetRef ref) async {
+    final stream = ref.read(timelineStreamProvider(convo));
     // attempts to retry sending local echo to server
     await stream.retrySend(message.id);
   }
 
-  Future<void> _handleCancelRetrySend() async {
-    final stream = convo.timelineStream();
+  Future<void> _handleCancelRetrySend(WidgetRef ref) async {
+    final stream = ref.read(timelineStreamProvider(convo));
     // cancels the retry sending of local echos
     await stream.cancelSend(message.id);
   }
