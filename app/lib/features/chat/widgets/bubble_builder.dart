@@ -102,20 +102,19 @@ class _ChatBubble extends ConsumerWidget {
     final myId = ref.watch(myUserIdStrProvider);
     final isAuthor = (myId == message.author.id);
     final roomId = convo.getRoomIdStr();
-    final emojiRowVisible = ref.watch(
+    final actionsVisible = ref.watch(
       chatInputProvider(roomId).select(
         (state) => // only when showing actions and this is the selected message
             state.selectedMessageState == SelectedMessageState.actions &&
             state.selectedMessage?.id == message.id,
       ),
     );
-    bool hasRepliedMessage = message.repliedMessage != null;
 
     return Column(
       crossAxisAlignment:
           isAuthor ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: [
-        if (emojiRowVisible)
+        if (actionsVisible)
           EmojiRow(
             roomId: roomId,
             onEmojiTap: (String eventId, String emoji) {
@@ -127,83 +126,13 @@ class _ChatBubble extends ConsumerWidget {
             message: message,
           ),
         const SizedBox(height: 4),
-        enlargeEmoji
-            ? child
-            : Bubble(
-                color: isAuthor
-                    ? Theme.of(context).colorScheme.surface
-                    : Theme.of(context).colorScheme.neutral2,
-                borderColor: Colors.transparent,
-                style: BubbleStyle(
-                  margin: nextMessageInGroup
-                      ? const BubbleEdges.symmetric(horizontal: 2)
-                      : null,
-                  radius: const Radius.circular(22),
-                  padding: (message is types.ImageMessage && !hasRepliedMessage)
-                      ? const BubbleEdges.all(0)
-                      : null,
-                  nip: (nextMessageInGroup || message is types.ImageMessage)
-                      ? BubbleNip.no
-                      : !isAuthor
-                          ? BubbleNip.leftBottom
-                          : BubbleNip.rightBottom,
-                  nipHeight: 18,
-                  nipWidth: 0.5,
-                  nipRadius: 0,
-                ),
-                child: hasRepliedMessage
-                    ? Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Container(
-                            decoration: BoxDecoration(
-                              color: isAuthor
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Theme.of(context)
-                                      .colorScheme
-                                      .neutral
-                                      .withOpacity(0.3),
-                              borderRadius: BorderRadius.circular(22),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    left: 10,
-                                    top: 15,
-                                  ),
-                                  child: Consumer(
-                                    builder: (ctx, ref, child) =>
-                                        replyProfileBuilder(
-                                      context,
-                                      roomId,
-                                      ref,
-                                    ),
-                                  ),
-                                ),
-                                _OriginalMessageBuilder(
-                                  convo: convo,
-                                  message: message,
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          child,
-                        ],
-                      )
-                    : child,
-              ),
-        Align(
-          alignment: !isAuthor ? Alignment.bottomLeft : Alignment.bottomRight,
-          child: _EmojiContainer(
-            roomId: roomId,
-            onToggle: (eventId, emoji) => toggleReaction(ref, eventId, emoji),
-            isAuthor: isAuthor,
-            message: message,
-            nextMessageInGroup: nextMessageInGroup,
-          ),
+        enlargeEmoji ? child : renderBubble(context, isAuthor),
+        _EmojiContainer(
+          roomId: roomId,
+          onToggle: (eventId, emoji) => toggleReaction(ref, eventId, emoji),
+          isAuthor: isAuthor,
+          message: message,
+          nextMessageInGroup: nextMessageInGroup,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -218,11 +147,82 @@ class _ChatBubble extends ConsumerWidget {
     );
   }
 
+  Bubble renderBubble(
+    BuildContext context,
+    bool isAuthor,
+  ) {
+    bool hasRepliedMessage = message.repliedMessage != null;
+    Widget bubbleChild = child;
+    if (hasRepliedMessage) {
+      bubbleChild = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            decoration: BoxDecoration(
+              color: isAuthor
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.neutral.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(22),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 10,
+                    top: 15,
+                  ),
+                  child: Consumer(
+                    builder: (ctx, ref, child) => replyProfileBuilder(
+                      context,
+                      ref,
+                    ),
+                  ),
+                ),
+                _OriginalMessageBuilder(
+                  convo: convo,
+                  message: message,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 5),
+          child,
+        ],
+      );
+    }
+
+    return Bubble(
+      color: isAuthor
+          ? Theme.of(context).colorScheme.surface
+          : Theme.of(context).colorScheme.neutral2,
+      borderColor: Colors.transparent,
+      style: BubbleStyle(
+        margin: nextMessageInGroup
+            ? const BubbleEdges.symmetric(horizontal: 2)
+            : null,
+        radius: const Radius.circular(22),
+        padding: (message is types.ImageMessage && !hasRepliedMessage)
+            ? const BubbleEdges.all(0)
+            : null,
+        nip: (nextMessageInGroup || message is types.ImageMessage)
+            ? BubbleNip.no
+            : !isAuthor
+                ? BubbleNip.leftBottom
+                : BubbleNip.rightBottom,
+        nipHeight: 18,
+        nipWidth: 0.5,
+        nipRadius: 0,
+      ),
+      child: bubbleChild,
+    );
+  }
+
   Widget replyProfileBuilder(
     BuildContext context,
-    String roomId,
     WidgetRef ref,
   ) {
+    final roomId = convo.getRoomIdStr();
     final authorId = message.repliedMessage!.author.id;
     final replyProfile =
         ref.watch(roomMemberProvider((userId: authorId, roomId: roomId)));
@@ -361,11 +361,10 @@ class __EmojiContainerState extends ConsumerState<_EmojiContainer>
                       ? AppTheme.theme.colorScheme.inversePrimary
                       : Colors.transparent,
                   labelPadding: const EdgeInsets.only(left: 2, right: 1),
-                  avatar: Text(
-                    key,
-                    style: EmojiConfig.emojiTextStyle,
+                  avatar: Text(key, style: EmojiConfig.emojiTextStyle),
+                  label: Text(
+                    recordsCount!.toString(),
                   ),
-                  label: Text(recordsCount!.toString()),
                 ),
               );
             }),
