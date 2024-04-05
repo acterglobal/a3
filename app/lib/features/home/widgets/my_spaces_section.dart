@@ -21,9 +21,6 @@ class MySpacesSection extends ConsumerWidget {
     int spacesLimit =
         (limit != null && spaces.length > limit!) ? limit! : spaces.length;
 
-    if(spaces.isNotEmpty && spacesLimit <= spaces.length) {
-      createOrJoinSpaceTutorials(context: context);
-    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

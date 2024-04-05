@@ -1,7 +1,7 @@
 import 'package:acter/common/tutorial_dialogs/show_tutorials.dart';
+import 'package:acter/common/tutorial_dialogs/target_focus.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
@@ -13,176 +13,68 @@ final jumpToKey = GlobalKey();
 
 const bottomNavigationPrefKey = 'bottomNavigationPrefKey';
 
+Future<void> onSkip() async {
+  final prefs = await sharedPrefs();
+  if (prefs.getBool(bottomNavigationPrefKey) ?? true) {
+    await prefs.setBool(bottomNavigationPrefKey, false);
+  }
+}
+
 void bottomNavigationTutorials({required BuildContext context}) async {
   final prefs = await sharedPrefs();
   final isShow = prefs.getBool(bottomNavigationPrefKey) ?? true;
 
-  if (context.mounted && !isShow) {
+  if (context.mounted && isShow) {
     showTutorials(
       context: context,
-      onFinish: () async {
-        await prefs.setBool(bottomNavigationPrefKey, false);
+      onFinish: onSkip,
+      onClickTarget: (targetFocus) => onSkip(),
+      onSkip: () {
+        onSkip();
+        return true;
       },
       targets: [
-        TargetFocus(
+        targetFocus(
           identify: 'updateKey',
           keyTarget: updateKey,
-          contents: [
-            TargetContent(
-              align: ContentAlign.top,
-              builder: (context, controller) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SvgPicture.asset(
-                      'assets/images/empty_updates.svg',
-                      semanticsLabel: 'state',
-                      height: 150,
-                      width: 150,
-                    ),
-                    const SizedBox(height: 50),
-                    Text(
-                      L10n.of(context).updatesTabTutorialTitle,
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    Text(
-                      L10n.of(context).updatesTabTutorialDescription,
-                      style: Theme.of(context).textTheme.labelLarge,
-                    ),
-                  ],
-                );
-              },
-            ),
-          ],
+          contentAlign: ContentAlign.top,
+          contentImageUrl: 'assets/images/empty_updates.svg',
+          contentTitle: L10n.of(context).updatesTabTutorialTitle,
+          contentDescription: L10n.of(context).updatesTabTutorialDescription,
         ),
-        TargetFocus(
+        targetFocus(
           identify: 'dashboardKey',
           keyTarget: dashboardKey,
-          contents: [
-            TargetContent(
-              align: ContentAlign.top,
-              builder: (context, controller) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SvgPicture.asset(
-                      'assets/images/empty_home.svg',
-                      semanticsLabel: 'state',
-                      height: 150,
-                      width: 150,
-                    ),
-                    const SizedBox(height: 50),
-                    Text(
-                      L10n.of(context).homeTabTutorialTitle,
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    Text(
-                      L10n.of(context).homeTabTutorialDescription,
-                      style: Theme.of(context).textTheme.labelLarge,
-                    ),
-                  ],
-                );
-              },
-            ),
-          ],
+          contentAlign: ContentAlign.top,
+          contentImageUrl: 'assets/images/empty_home.svg',
+          contentTitle: L10n.of(context).homeTabTutorialTitle,
+          contentDescription: L10n.of(context).homeTabTutorialDescription,
         ),
-        TargetFocus(
+        targetFocus(
           identify: 'chatsKey',
           keyTarget: chatsKey,
-          contents: [
-            TargetContent(
-              align: ContentAlign.top,
-              builder: (context, controller) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SvgPicture.asset(
-                      'assets/images/empty_chat.svg',
-                      semanticsLabel: 'state',
-                      height: 150,
-                      width: 150,
-                    ),
-                    const SizedBox(height: 50),
-                    Text(
-                      L10n.of(context).chatsTabTutorialTitle,
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    Text(
-                      L10n.of(context).chatsTabTutorialDescription,
-                      style: Theme.of(context).textTheme.labelLarge,
-                    ),
-                  ],
-                );
-              },
-            ),
-          ],
+          contentAlign: ContentAlign.top,
+          contentImageUrl: 'assets/images/empty_chat.svg',
+          contentTitle: L10n.of(context).chatsTabTutorialTitle,
+          contentDescription: L10n.of(context).chatsTabTutorialDescription,
         ),
-        TargetFocus(
+        targetFocus(
           identify: 'activityKey',
           keyTarget: activityKey,
           alignSkip: Alignment.bottomLeft,
-          contents: [
-            TargetContent(
-              align: ContentAlign.top,
-              builder: (context, controller) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SvgPicture.asset(
-                      'assets/images/empty_activity.svg',
-                      semanticsLabel: 'state',
-                      height: 150,
-                      width: 150,
-                    ),
-                    const SizedBox(height: 50),
-                    Text(
-                      L10n.of(context).activityTabTutorialTitle,
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    Text(
-                      L10n.of(context).activityTabTutorialDescription,
-                      style: Theme.of(context).textTheme.labelLarge,
-                    ),
-                  ],
-                );
-              },
-            ),
-          ],
+          contentAlign: ContentAlign.top,
+          contentImageUrl: 'assets/images/empty_activity.svg',
+          contentTitle: L10n.of(context).activityTabTutorialTitle,
+          contentDescription: L10n.of(context).activityTabTutorialDescription,
         ),
-        TargetFocus(
+        targetFocus(
           identify: 'jumpToKey',
           keyTarget: jumpToKey,
+          contentAlign: ContentAlign.top,
           alignSkip: Alignment.bottomLeft,
-          contents: [
-            TargetContent(
-              align: ContentAlign.top,
-              builder: (context, controller) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(
-                      Icons.search,
-                      size: 150,
-                    ),
-                    const SizedBox(height: 50),
-                    Text(
-                      L10n.of(context).jumpToTabTutorialTitle,
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    Text(
-                      L10n.of(context).jumpToTabTutorialDescription,
-                      style: Theme.of(context).textTheme.labelLarge,
-                    ),
-                  ],
-                );
-              },
-            ),
-          ],
+          iconData: Icons.search,
+          contentTitle: L10n.of(context).jumpToTabTutorialTitle,
+          contentDescription: L10n.of(context).jumpToTabTutorialDescription,
         ),
       ],
     );

@@ -1,4 +1,5 @@
 import 'package:acter/common/tutorial_dialogs/show_tutorials.dart';
+import 'package:acter/common/tutorial_dialogs/target_focus.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
@@ -9,6 +10,13 @@ final joinExistingSpaceKey = GlobalKey();
 
 const createOrJoinSpacePrefKey = 'createOrJoinSpacePrefKey';
 
+Future<void> onSkip() async {
+  final prefs = await sharedPrefs();
+  if (prefs.getBool(createOrJoinSpacePrefKey) ?? true) {
+    await prefs.setBool(createOrJoinSpacePrefKey, false);
+  }
+}
+
 Future<void> createOrJoinSpaceTutorials({required BuildContext context}) async {
   final prefs = await sharedPrefs();
   final isShow = prefs.getBool(createOrJoinSpacePrefKey) ?? true;
@@ -16,62 +24,28 @@ Future<void> createOrJoinSpaceTutorials({required BuildContext context}) async {
   if (context.mounted && isShow) {
     showTutorials(
       context: context,
-      onFinish: () async {
-        await prefs.setBool(createOrJoinSpacePrefKey, false);
+      onFinish: onSkip,
+      onClickTarget: (targetFocus) => onSkip(),
+      onSkip: () {
+        onSkip();
+        return true;
       },
       targets: [
-        TargetFocus(
+        targetFocus(
           identify: 'createNewSpaceKey',
           keyTarget: createNewSpaceKey,
+          contentAlign: ContentAlign.top,
           shape: ShapeLightFocus.RRect,
-          paddingFocus: 10,
-          contents: [
-            TargetContent(
-              align: ContentAlign.top,
-              builder: (context, controller) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      L10n.of(context).createSpaceTutorialTitle,
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    Text(
-                      L10n.of(context).createSpaceTutorialDescription,
-                      style: Theme.of(context).textTheme.labelLarge,
-                    ),
-                  ],
-                );
-              },
-            ),
-          ],
+          contentTitle: L10n.of(context).createSpaceTutorialTitle,
+          contentDescription: L10n.of(context).createSpaceTutorialDescription,
         ),
-        TargetFocus(
+        targetFocus(
           identify: 'joinExistingSpaceKey',
           keyTarget: joinExistingSpaceKey,
+          contentAlign: ContentAlign.top,
           shape: ShapeLightFocus.RRect,
-          contents: [
-            TargetContent(
-              align: ContentAlign.top,
-              builder: (context, controller) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      L10n.of(context).joinSpaceTutorialTitle,
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    Text(
-                      L10n.of(context).joinSpaceTutorialDescription,
-                      style: Theme.of(context).textTheme.labelLarge,
-                    ),
-                  ],
-                );
-              },
-            ),
-          ],
+          contentTitle: L10n.of(context).joinSpaceTutorialTitle,
+          contentDescription: L10n.of(context).joinSpaceTutorialDescription,
         ),
       ],
     );

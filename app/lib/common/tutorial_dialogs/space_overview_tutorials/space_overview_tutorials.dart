@@ -1,4 +1,5 @@
 import 'package:acter/common/tutorial_dialogs/show_tutorials.dart';
+import 'package:acter/common/tutorial_dialogs/target_focus.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
@@ -8,6 +9,13 @@ final spaceOverviewKey = GlobalKey();
 
 const spaceOverviewPrefKey = 'spaceOverviewPrefKey';
 
+Future<void> onSkip() async {
+  final prefs = await sharedPrefs();
+  if (prefs.getBool(spaceOverviewPrefKey) ?? true) {
+    await prefs.setBool(spaceOverviewPrefKey, false);
+  }
+}
+
 void spaceOverviewTutorials({required BuildContext context}) async {
   final prefs = await sharedPrefs();
   final isShow = prefs.getBool(spaceOverviewPrefKey) ?? true;
@@ -15,36 +23,21 @@ void spaceOverviewTutorials({required BuildContext context}) async {
   if (context.mounted && isShow) {
     showTutorials(
       context: context,
-      onFinish: () async {
-        await prefs.setBool(spaceOverviewPrefKey, false);
+      onFinish: onSkip,
+      onClickTarget: (targetFocus) => onSkip(),
+      onSkip: () {
+        onSkip();
+        return true;
       },
       targets: [
-        TargetFocus(
+        targetFocus(
           identify: 'spaceOverviewKey',
           keyTarget: spaceOverviewKey,
+          contentAlign: ContentAlign.bottom,
           shape: ShapeLightFocus.RRect,
           paddingFocus: 10,
-          contents: [
-            TargetContent(
-              align: ContentAlign.bottom,
-              builder: (context, controller) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      L10n.of(context).spaceOverviewTutorialTitle,
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    Text(
-                      L10n.of(context).spaceOverviewTutorialDescription,
-                      style: Theme.of(context).textTheme.labelLarge,
-                    ),
-                  ],
-                );
-              },
-            ),
-          ],
+          contentTitle: L10n.of(context).spaceOverviewTutorialTitle,
+          contentDescription: L10n.of(context).spaceOverviewTutorialDescription,
         ),
       ],
     );
