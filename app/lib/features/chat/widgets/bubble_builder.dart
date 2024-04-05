@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -351,14 +350,7 @@ class __EmojiContainerState extends ConsumerState<_EmojiContainer>
                   showEmojiReactionsSheet(reactions, widget.roomId);
                 },
                 onTap: () {
-                  if (sentByMe) {
-                    customMsgSnackbar(
-                      context,
-                      L10n.of(context).revokingEmojiReactionsNotYetSupported,
-                    );
-                  } else {
-                    widget.onToggle(widget.message.id, key);
-                  }
+                  widget.onToggle(widget.message.id, key);
                 },
                 child: Chip(
                   padding: const EdgeInsets.symmetric(
