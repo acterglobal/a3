@@ -509,6 +509,8 @@
   "@letsGetStarted": {},
   "licenses": "Licenses",
   "@licenses": {},
+  "limitedInternConnection": "Limited Internet connection",
+  "@limitedInternConnection":{},
   "link": "Link",
   "@link": {},
   "linkExistingChat": "Link existing Chat",
