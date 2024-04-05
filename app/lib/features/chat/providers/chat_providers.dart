@@ -19,6 +19,10 @@ final chatInputProvider =
   (ref, roomId) => ChatInputNotifier(),
 );
 
+// keep track of text controller values across rooms.
+final textValuesProvider =
+    StateProvider.family<String, String>((ref, roomId) => '');
+
 final chatInputFocusProvider = StateProvider<FocusNode>((ref) => FocusNode());
 final chatStateProvider =
     StateNotifierProvider.family<ChatRoomNotifier, ChatRoomState, Convo>(

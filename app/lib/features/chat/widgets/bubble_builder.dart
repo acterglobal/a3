@@ -7,6 +7,7 @@ import 'package:acter/features/chat/widgets/custom_message_builder.dart';
 import 'package:acter/features/chat/widgets/emoji_reaction_item.dart';
 import 'package:acter/features/chat/widgets/emoji_row.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
+import 'package:acter/features/chat/widgets/message_actions.dart';
 import 'package:acter/features/chat/widgets/message_metadata_builder.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -125,24 +126,31 @@ class _ChatBubble extends ConsumerWidget {
             },
             message: message,
           ),
-        const SizedBox(height: 4),
+        if (!actionsVisible) const SizedBox(height: 4),
         enlargeEmoji ? child : renderBubble(context, isAuthor),
-        _EmojiContainer(
-          roomId: roomId,
-          onToggle: (eventId, emoji) => toggleReaction(ref, eventId, emoji),
-          isAuthor: isAuthor,
-          message: message,
-          nextMessageInGroup: nextMessageInGroup,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            MessageMetadataBuilder(
-              convo: convo,
-              message: message,
-            ),
-          ],
-        ),
+        if (!actionsVisible)
+          _EmojiContainer(
+            roomId: roomId,
+            onToggle: (eventId, emoji) => toggleReaction(ref, eventId, emoji),
+            isAuthor: isAuthor,
+            message: message,
+            nextMessageInGroup: nextMessageInGroup,
+          ),
+        if (!actionsVisible)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              MessageMetadataBuilder(
+                convo: convo,
+                message: message,
+              ),
+            ],
+          ),
+        if (actionsVisible)
+          MessageActions(
+            convo: convo,
+            roomId: roomId,
+          ),
       ],
     );
   }

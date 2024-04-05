@@ -64,11 +64,11 @@ class EmojiRow extends ConsumerWidget {
       constraints: const BoxConstraints(maxWidth: 238, maxHeight: 42),
       padding: const EdgeInsets.all(8),
       margin: !isAuthor
-          ? const EdgeInsets.only(bottom: 8, left: 8)
-          : const EdgeInsets.only(bottom: 8, right: 8),
+          ? const EdgeInsets.only(bottom: 4, left: 8)
+          : const EdgeInsets.only(bottom: 4, right: 8),
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(20)),
-        color: Theme.of(context).colorScheme.neutral2,
+        color: Theme.of(context).colorScheme.background,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

@@ -1,18 +1,13 @@
 import 'dart:io';
 
 import 'package:acter/common/models/types.dart';
-import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/attachments/attachment_container.dart';
 import 'package:acter/common/widgets/attachments/attachment_options.dart';
-import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
-import 'package:acter/common/widgets/report_content.dart';
-import 'package:acter/features/chat/chat_utils/chat_utils.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/custom_message_builder.dart';
@@ -32,7 +27,6 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:html/parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 import 'package:logging/logging.dart';
@@ -41,13 +35,9 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 final _log = Logger('a3::chat::custom_input');
 
-// keep track of text controller values across rooms.
-final _textValuesProvider =
-    StateProvider.family<String, String>((ref, roomId) => '');
-
 final _sendButtonVisible = StateProvider.family<bool, String>(
   (ref, roomId) => ref.watch(
-    _textValuesProvider(roomId).select((value) => value.isNotEmpty),
+    textValuesProvider(roomId).select((value) => value.isNotEmpty),
   ),
 );
 
@@ -111,61 +101,14 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     }
 
     return switch (chatInputState.selectedMessageState) {
-      SelectedMessageState.actions =>
-        renderActionsMenu(context, chatInputState.selectedMessage!),
       SelectedMessageState.replyTo =>
         renderReplyView(context, chatInputState.selectedMessage!),
       SelectedMessageState.edit =>
         renderEditView(context, chatInputState.selectedMessage!),
-      SelectedMessageState.none => renderMain(context)
+      SelectedMessageState.none ||
+      SelectedMessageState.actions =>
+        renderMain(context)
     };
-  }
-
-  Widget renderActionsMenu(BuildContext context, Message currentMessage) {
-    final roomId = widget.convo.getRoomIdStr();
-    final isAuthor = ref.watch(isAuthorOfSelectedMessage(roomId));
-
-    return FrostEffect(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            if (!isAuthor)
-              InkWell(
-                onTap: () =>
-                    onReportMessage(context, currentMessage.id, roomId),
-                child: Text(
-                  L10n.of(context).report,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.error,
-                  ),
-                ),
-              ),
-            // FIXME: should be a check whether the user can redact.
-            if (isAuthor)
-              InkWell(
-                onTap: () => onDeleteOwnMessage(
-                  context,
-                  currentMessage.id,
-                  roomId,
-                ),
-                child: Text(
-                  L10n.of(context).delete,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.error,
-                  ),
-                ),
-              ),
-            if (isAuthor)
-              InkWell(
-                onTap: () => onPressEditMessage(roomId, currentMessage),
-                child: Text(L10n.of(context).edit),
-              ),
-          ],
-        ),
-      ),
-    );
   }
 
   Widget renderMain(BuildContext context) {
@@ -176,7 +119,6 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     final roomId = widget.convo.getRoomIdStr();
     final isEncrypted =
         ref.watch(isRoomEncryptedProvider(roomId)).valueOrNull ?? false;
-    final chatInputState = ref.watch(chatInputProvider(roomId));
 
     return Column(
       children: [
@@ -402,129 +344,6 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
         },
       ),
     );
-  }
-
-  void onReportMessage(
-    BuildContext context,
-    String messageId,
-    String roomId,
-  ) {
-    final message =
-        ref.read(chatStateProvider(widget.convo)).messages.firstWhere(
-              (element) => element.id == messageId,
-            );
-    showAdaptiveDialog(
-      context: context,
-      builder: (context) => ReportContentWidget(
-        title: L10n.of(context).reportThisMessage,
-        description: L10n.of(context).reportMessageContent,
-        senderId: message.author.id,
-        roomId: roomId,
-        eventId: messageId,
-      ),
-    );
-  }
-
-  void onDeleteOwnMessage(
-    BuildContext context,
-    String messageId,
-    String roomId,
-  ) {
-    final chatInputNotifier = ref.watch(chatInputProvider(roomId).notifier);
-    showAdaptiveDialog(
-      context: context,
-      builder: (context) => DefaultDialog(
-        title: Text(
-          L10n.of(context).areYouSureYouWantToDeleteThisMessage,
-        ),
-        actions: <Widget>[
-          OutlinedButton(
-            onPressed: () => Navigator.of(
-              context,
-              rootNavigator: true,
-            ).pop(),
-            child: Text(L10n.of(context).no),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              try {
-                redactRoomMessage(
-                  messageId,
-                  ref.read(myUserIdStrProvider), // editor is me
-                );
-                chatInputNotifier.unsetSelectedMessage();
-                if (context.mounted) {
-                  Navigator.of(
-                    context,
-                    rootNavigator: true,
-                  ).pop();
-                }
-              } catch (e) {
-                if (!context.mounted) {
-                  return;
-                }
-                Navigator.of(
-                  context,
-                  rootNavigator: true,
-                ).pop();
-                customMsgSnackbar(
-                  context,
-                  e.toString(),
-                );
-              }
-            },
-            child: Text(L10n.of(context).yes),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void onPressEditMessage(String roomId, Message message) {
-    ref.read(chatInputProvider(roomId).notifier).setEditMessage(message);
-    if (message is TextMessage) {
-      // Parse String Data to HTML document
-      final document = parse(message.text);
-
-      if (document.body != null) {
-        // Get message data
-        String msg = message.text.trim();
-
-        // Get list of 'A Tags' values
-        final aTagElementList = document.getElementsByTagName('a');
-
-        for (final aTagElement in aTagElementList) {
-          final userMentionMessageData =
-              parseUserMentionMessage(msg, aTagElement);
-          msg = userMentionMessageData.parsedMessage;
-
-          // Adding mentions data
-          ref.read(chatInputProvider(roomId).notifier).addMention(
-                userMentionMessageData.displayName,
-                userMentionMessageData.userName,
-              );
-        }
-
-        // Parse data
-        final messageDocument = parse(msg);
-        final messageBodyText = messageDocument.body?.text ?? '';
-
-        // Update text value with msg value
-        ref
-            .read(_textValuesProvider(roomId).notifier)
-            .update((state) => messageBodyText);
-      }
-    }
-
-    final chatInputFocusState = ref.read(chatInputFocusProvider.notifier);
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      FocusScope.of(context).requestFocus(chatInputFocusState.state);
-    });
-  }
-
-  // delete message event
-  Future<void> redactRoomMessage(String eventId, String senderId) async {
-    await widget.convo.redactMessage(eventId, senderId, null, null);
   }
 
   // file selection
@@ -891,7 +710,7 @@ class _TextInputWidget extends ConsumerWidget {
         child: FlutterMentions(
           key: mentionKey,
           // restore input if available, but only as a read on startup
-          defaultText: ref.read(_textValuesProvider(roomId)),
+          defaultText: ref.read(textValuesProvider(roomId)),
           suggestionPosition: SuggestionPosition.Top,
           suggestionListWidth: width >= 770 ? width * 0.6 : width * 0.8,
           onMentionAdd: (Map<String, dynamic> roomMember) {
@@ -908,7 +727,7 @@ class _TextInputWidget extends ConsumerWidget {
           ),
           onChanged: (String value) async {
             ref
-                .read(_textValuesProvider(roomId).notifier)
+                .read(textValuesProvider(roomId).notifier)
                 .update((state) => value);
             if (value.isNotEmpty) {
               Future.delayed(const Duration(milliseconds: 500), () async {
