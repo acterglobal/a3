@@ -33,24 +33,24 @@ class CommentsList extends ConsumerWidget {
   Widget commentListUI(BuildContext context, List<Comment> comments) {
     return Column(
       children: [
-        ListView(
-          shrinkWrap: true,
+        Column(
           children: comments.map((c) => CommentWidget(comment: c)).toList(),
         ),
-        CreateCommentWidget(manager: manager)
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: CreateCommentWidget(manager: manager),
+        ),
       ],
     );
   }
 
   Widget commentEmptyState(BuildContext context) {
-    return Center(
-      child: EmptyState(
-        title: L10n.of(context).commentEmptyStateTitle,
-        subtitle: L10n.of(context).commentEmptyStateSubtitle,
-        image: 'assets/icon/comment.svg',
-        imageSize: 100,
-        primaryButton: CreateCommentWidget(manager: manager),
-      ),
+    return EmptyState(
+      title: L10n.of(context).commentEmptyStateTitle,
+      subtitle: L10n.of(context).commentEmptyStateSubtitle,
+      image: 'assets/icon/comment.svg',
+      imageSize: 100,
+      primaryButton: CreateCommentWidget(manager: manager),
     );
   }
 
