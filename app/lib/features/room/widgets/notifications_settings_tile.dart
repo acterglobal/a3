@@ -140,18 +140,22 @@ class _NotificationSettingsTile extends ConsumerWidget {
       );
       return;
     }
-    EasyLoading.showProgress(0);
+    EasyLoading.show(
+      status: 'Changing notification mode...',
+      dismissOnTap: false,
+    );
     // '' is a special case resetting to default.
-    if (await room.setNotificationMode(newMode == '' ? null : newMode)) {
-      if (!context.mounted) return;
-      EasyLoading.showToast(L10n.of(context).notificationStatusSubmitted);
-      await Future.delayed(const Duration(seconds: 1), () {
-        // FIXME: we want to refresh the view but don't know
-        //        when the event was confirmed form sync :(
-        // let's hope that a second delay is reasonable enough
-        ref.invalidate(maybeRoomProvider(roomId));
-      });
-    }
+    final res = await room.setNotificationMode(newMode == '' ? null : newMode);
+    EasyLoading.dismiss();
+    if (!res) return;
+    if (!context.mounted) return;
+    EasyLoading.showToast(L10n.of(context).notificationStatusSubmitted);
+    await Future.delayed(const Duration(seconds: 1), () {
+      // FIXME: we want to refresh the view but don't know
+      //        when the event was confirmed form sync :(
+      // let's hope that a second delay is reasonable enough
+      ref.invalidate(maybeRoomProvider(roomId));
+    });
   }
 }
 

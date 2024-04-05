@@ -355,14 +355,11 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     );
     final convo = await ref.read(chatProvider(widget.roomId).future);
     final res = await convo.leave();
-    if (!mounted) return;
+    EasyLoading.dismiss();
+    if (!context.mounted) return;
     if (res) {
-      if (context.mounted) {
-        EasyLoading.dismiss();
-        context.goNamed(Routes.chat.name);
-      }
+      context.goNamed(Routes.chat.name);
     } else {
-      EasyLoading.dismiss();
       EasyLoading.showError(
         L10n.of(context).someErrorOccurredLeavingRoom,
         duration: const Duration(seconds: 3),

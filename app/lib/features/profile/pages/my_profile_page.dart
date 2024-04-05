@@ -91,18 +91,19 @@ class MyProfilePage extends StatelessWidget {
       builder: (BuildContext context) => ChangeDisplayName(account: profile),
     );
 
-    if (newText != null && context.mounted) {
-      EasyLoading.show(
-        status: L10n.of(context).updatingDisplayName,
-        dismissOnTap: false,
-      );
-      await profile.account.setDisplayName(newText);
-      ref.invalidate(accountProfileProvider);
+    if (!context.mounted) return;
+    if (newText == null) return;
 
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
-      EasyLoading.showToast(L10n.of(context).displayNameUpdateSubmitted);
-    }
+    EasyLoading.show(
+      status: L10n.of(context).updatingDisplayName,
+      dismissOnTap: false,
+    );
+    await profile.account.setDisplayName(newText);
+    ref.invalidate(accountProfileProvider);
+
+    EasyLoading.dismiss();
+    if (!context.mounted) return;
+    EasyLoading.showToast(L10n.of(context).displayNameUpdateSubmitted);
   }
 
   Future<void> updateAvatar(
@@ -114,12 +115,12 @@ class MyProfilePage extends StatelessWidget {
       dialogTitle: L10n.of(context).uploadAvatar,
       type: FileType.image,
     );
-    if (result != null && context.mounted) {
+    if (!context.mounted) return;
+    if (result != null) {
       EasyLoading.show(
         status: L10n.of(context).updatingProfileImage,
         dismissOnTap: false,
       );
-
       final file = result.files.first;
       await profile.account.uploadAvatar(file.path!);
       ref.invalidate(accountProfileProvider);

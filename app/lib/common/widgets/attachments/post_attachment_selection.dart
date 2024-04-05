@@ -102,7 +102,8 @@ class _PostAttachmentSelectionState
       for (var selected in widget.attachments) {
         final type = selected.type;
         final file = selected.file;
-        final mimeType = lookupMimeType(file.path)!;
+        final mimeType = lookupMimeType(file.path);
+        if (mimeType == null) continue;
         final manager = widget.manager;
         if (type == AttachmentType.camera || type == AttachmentType.image) {
           Uint8List bytes = await file.readAsBytes();
@@ -142,11 +143,13 @@ class _PostAttachmentSelectionState
       }
       EasyLoading.dismiss();
     } catch (e) {
+      _log.severe('Error sending attachments', e);
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
       EasyLoading.showError(
         'Error sending attachments $e',
         duration: const Duration(seconds: 3),
       );
-      _log.severe('Error sending attachments', e);
     }
   }
 }

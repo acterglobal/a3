@@ -197,28 +197,30 @@ class InvitationCard extends ConsumerWidget {
   void _onTapAcceptInvite(BuildContext context) async {
     EasyLoading.show(status: L10n.of(context).joining, dismissOnTap: false);
     bool res = await invitation.accept();
-    if (!res && context.mounted) {
+    EasyLoading.dismiss();
+    if (!context.mounted) return;
+    if (res) {
+      EasyLoading.showToast(L10n.of(context).joined);
+    } else {
       EasyLoading.showError(
         L10n.of(context).failedToJoin,
         duration: const Duration(seconds: 3),
       );
-      return;
     }
-    if (!context.mounted) return;
-    EasyLoading.showToast(L10n.of(context).joined);
   }
 
   void _onTapDeclineInvite(BuildContext context) async {
     EasyLoading.show(status: L10n.of(context).rejecting, dismissOnTap: false);
     bool res = await invitation.reject();
-    if (!res && context.mounted) {
+    EasyLoading.dismiss();
+    if (!context.mounted) return;
+    if (res) {
+      EasyLoading.showToast(L10n.of(context).rejected);
+    } else {
       EasyLoading.showError(
         L10n.of(context).failedToReject,
         duration: const Duration(seconds: 3),
       );
-      return;
     }
-    if (!context.mounted) return;
-    EasyLoading.showToast(L10n.of(context).rejected);
   }
 }

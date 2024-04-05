@@ -239,7 +239,10 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
       await taskDraft.send();
     } catch (e) {
       if (context.mounted) {
-        EasyLoading.showToast(L10n.of(context).creatingTaskFailed(e));
+        EasyLoading.showError(
+          L10n.of(context).creatingTaskFailed(e),
+          duration: const Duration(seconds: 3),
+        );
       }
       return;
     }

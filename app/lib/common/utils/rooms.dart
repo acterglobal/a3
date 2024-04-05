@@ -17,14 +17,10 @@ Future<void> joinRoom(
   try {
     final newSpace = await client.joinSpace(roomIdOrAlias, server);
     EasyLoading.dismiss();
-    // We are doing as expected, but the lints triggers.
-    // ignore: use_build_context_synchronously
     if (!context.mounted) return;
     forward(newSpace.getRoomIdStr());
   } catch (err) {
     EasyLoading.dismiss();
-    // We are doing as expected, but the lints triggers.
-    // ignore: use_build_context_synchronously
     if (!context.mounted) return;
     EasyLoading.showError(
       '$displayMsg ${L10n.of(context).failed}: \n $err"',

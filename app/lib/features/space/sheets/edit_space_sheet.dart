@@ -277,7 +277,6 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
     final roomId = await _handleUpdateSpace(context);
     _log.info('Space Updated: $roomId');
     EasyLoading.dismiss();
-    // We are doing as expected, but the lints triggers.
     if (!context.mounted) return;
     Navigator.of(context, rootNavigator: true).pop();
     context.pushNamed(

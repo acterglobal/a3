@@ -356,7 +356,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
         // If slide type is text
         if (slidePost.type == NewsSlideType.text) {
           if (slidePost.text == null || slidePost.text!.trim().isEmpty) {
-            if (!mounted) return;
+            if (!context.mounted) return;
             EasyLoading.showError(
               L10n.of(context).yourTextSlidesMustContainsSomeText,
               duration: const Duration(seconds: 3),
@@ -369,10 +369,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           final textSlideDraft = textDraft.intoNewsSlideDraft();
 
           textSlideDraft.color(
-            sdk.api.newColorizeBuilder(
-              null,
-              slidePost.backgroundColor?.value,
-            ),
+            sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.value),
           );
 
           if (slidePost.newsReferencesModel != null) {
@@ -388,7 +385,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           final file = slidePost.mediaFile!;
           String? mimeType = file.mimeType ?? lookupMimeType(file.path);
           if (mimeType == null) {
-            if (!mounted) return;
+            if (!context.mounted) return;
             EasyLoading.showError(
               L10n.of(context).invalidMediaFormat,
               duration: const Duration(seconds: 3),
@@ -396,7 +393,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
             return;
           }
           if (!mimeType.startsWith('image/')) {
-            if (!mounted) return;
+            if (!context.mounted) return;
             EasyLoading.showError(
               L10n.of(context).postingOfTypeNotYetSupported(mimeType),
               duration: const Duration(seconds: 3),
@@ -412,10 +409,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
               .height(decodedImage.height);
           final imageSlideDraft = imageDraft.intoNewsSlideDraft();
           imageSlideDraft.color(
-            sdk.api.newColorizeBuilder(
-              null,
-              slidePost.backgroundColor?.value,
-            ),
+            sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.value),
           );
           if (slidePost.newsReferencesModel != null) {
             final objRef = getSlideReference(sdk, slidePost);
@@ -430,7 +424,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           final file = slidePost.mediaFile!;
           String? mimeType = file.mimeType ?? lookupMimeType(file.path);
           if (mimeType == null) {
-            if (!mounted) return;
+            if (!context.mounted) return;
             EasyLoading.showError(
               L10n.of(context).invalidMediaFormat,
               duration: const Duration(seconds: 3),
@@ -438,7 +432,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
             return;
           }
           if (!mimeType.startsWith('video/')) {
-            if (!mounted) return;
+            if (!context.mounted) return;
             EasyLoading.showError(
               L10n.of(context).postingOfTypeNotYetSupported(mimeType),
               duration: const Duration(seconds: 3),
@@ -450,10 +444,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
               client.videoDraft(file.path, mimeType).size(bytes.length);
           final videoSlideDraft = videoDraft.intoNewsSlideDraft();
           videoSlideDraft.color(
-            sdk.api.newColorizeBuilder(
-              null,
-              slidePost.backgroundColor?.value,
-            ),
+            sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.value),
           );
           if (slidePost.newsReferencesModel != null) {
             final objRef = getSlideReference(sdk, slidePost);
@@ -467,11 +458,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       // close loading
       EasyLoading.dismiss();
 
-      // We are doing as expected, but the lints triggers.
-      // ignore: use_build_context_synchronously
-      if (!context.mounted) {
-        return;
-      }
+      if (!context.mounted) return;
       // FIXME due to #718. well lets at least try forcing a refresh upon route.
       ref.invalidate(newsListProvider);
       ref.invalidate(newsStateProvider);
@@ -479,6 +466,8 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       Navigator.of(context).pop();
       context.goNamed(Routes.main.name); // go to the home / main updates
     } catch (err) {
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
       EasyLoading.showError(
         '$displayMsg ${L10n.of(context).failed}: \n $err',
         duration: const Duration(seconds: 3),

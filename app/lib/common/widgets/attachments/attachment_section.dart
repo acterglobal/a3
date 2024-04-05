@@ -207,6 +207,7 @@ class AttachmentSectionWidget extends ConsumerWidget {
       EasyLoading.dismiss();
     } catch (e) {
       _log.severe('attachment redaction failed', e, null);
+      EasyLoading.dismiss();
       if (!context.mounted) return;
       EasyLoading.showError(
         L10n.of(context).failedToDeleteAttachment(e),

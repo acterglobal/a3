@@ -177,23 +177,18 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
       }
       final pinId = await pinDraft.send();
 
+      EasyLoading.dismiss();
       // reset controllers
       _linkController.text = '';
-      EasyLoading.showToast('Pin created successfully');
-      // We are doing as expected, but the lints triggers.
-      // ignore: use_build_context_synchronously
       if (!context.mounted) return;
-
-      // ignore: use_build_context_synchronously
+      EasyLoading.showToast('Pin created successfully');
       Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
-      // ignore: use_build_context_synchronously
       context.pushNamed(
         Routes.pin.name,
         pathParameters: {'pinId': pinId.toString()},
       );
     } catch (e) {
-      // We are doing as expected, but the lints triggers.
-      // ignore: use_build_context_synchronously
+      EasyLoading.dismiss();
       if (!context.mounted) return;
       EasyLoading.showError(
         'An error occured creating pin $e',

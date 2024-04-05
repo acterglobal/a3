@@ -132,7 +132,7 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
     String roomId = widget.room.getRoomIdStr();
     final room = await ref.read(maybeRoomProvider(roomId).future);
     if (room == null) {
-      if (!mounted) return;
+      if (!context.mounted) return;
       EasyLoading.showError(
         L10n.of(context).roomNotFound,
         duration: const Duration(seconds: 3),
@@ -140,7 +140,7 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
       return;
     }
     await room.unmute();
-    if (!mounted) return;
+    if (!context.mounted) return;
     EasyLoading.showToast(L10n.of(context).notificationsUnmuted);
     await Future.delayed(const Duration(seconds: 1), () {
       // FIXME: we want to refresh the view but don't know

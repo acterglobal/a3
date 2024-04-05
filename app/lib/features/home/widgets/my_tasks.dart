@@ -5,9 +5,9 @@ import 'package:acter/features/tasks/widgets/task_entry.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class MyTasksSection extends ConsumerWidget {
   final int limit;
@@ -68,21 +68,21 @@ class MyTasksSection extends ConsumerWidget {
                           (task) => TaskEntry(
                             task: task,
                             showBreadCrumb: true,
-                            onDone: () {
-                              EasyLoading.showToast(
-                                L10n.of(context).markedAsDone,
-                                toastPosition: EasyLoadingToastPosition.bottom,
-                              );
-                            },
+                            onDone: () => onTaskDone(context),
                           ),
                         )
                         .toList(),
                   ),
-            error: (error, stack) => Text(L10n.of(context).loadingTasksFailed(error)),
+            error: (error, stack) =>
+                Text(L10n.of(context).loadingTasksFailed(error)),
             loading: () => Text(L10n.of(context).loading),
           ),
         ],
       ),
     );
+  }
+
+  void onTaskDone(BuildContext context) {
+    EasyLoading.showToast(L10n.of(context).markedAsDone);
   }
 }

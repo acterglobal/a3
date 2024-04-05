@@ -323,10 +323,7 @@ class CreateEditEventPageConsumerState
         // When user change date that time end time is reset
         _endTimeController.text = '';
       } else {
-        EasyLoading.showToast(
-          L10n.of(context).pleaseSelectValidEndDate,
-          toastPosition: EasyLoadingToastPosition.bottom,
-        );
+        EasyLoading.showToast(L10n.of(context).pleaseSelectValidEndDate);
       }
     }
     setState(() {});
@@ -354,10 +351,7 @@ class CreateEditEventPageConsumerState
       final double endTime = time.toDouble();
       if (_selectedStartDate.isSameDay(_selectedEndDate) &&
           startTime > endTime) {
-        EasyLoading.showToast(
-          L10n.of(context).pleaseSelectValidEndTime,
-          toastPosition: EasyLoadingToastPosition.bottom,
-        );
+        EasyLoading.showToast(L10n.of(context).pleaseSelectValidEndTime);
       } else {
         _selectedEndTime = time;
         _endTimeController.text = _selectedEndTime.format(context);
@@ -441,20 +435,20 @@ class CreateEditEventPageConsumerState
   Future<void> _handleCreateEvent() async {
     if (!_formKey.currentState!.validate()) return;
 
+    final spaceId = ref.read(selectedSpaceIdProvider);
+    if (spaceId == null) {
+      EasyLoading.showError(
+        L10n.of(context).pleaseSelectSpace,
+        duration: const Duration(seconds: 2),
+      );
+      return;
+    }
+
     EasyLoading.show(
       status: L10n.of(context).creatingCalendarEvent,
       dismissOnTap: false,
     );
     try {
-      final spaceId = ref.read(selectedSpaceIdProvider);
-      if (spaceId == null) {
-        EasyLoading.showError(
-          L10n.of(context).pleaseSelectSpace,
-          duration: const Duration(seconds: 2),
-        );
-        return;
-      }
-
       // Replacing hours and minutes from DateTime
       // Start Date
       final startDateTime = _calculateStartDate();
@@ -502,7 +496,7 @@ class CreateEditEventPageConsumerState
       }
     } catch (e) {
       EasyLoading.dismiss();
-      if (!mounted) return;
+      if (!context.mounted) return;
       EasyLoading.showError(
         '${L10n.of(context).errorCreatingCalendarEvent}: $e',
         duration: const Duration(seconds: 3),
@@ -554,7 +548,7 @@ class CreateEditEventPageConsumerState
       if (context.mounted) context.pop();
     } catch (e) {
       EasyLoading.dismiss();
-      if (!mounted) return;
+      if (!context.mounted) return;
       EasyLoading.showError(
         '${L10n.of(context).errorUpdatingEvent}: $e',
         duration: const Duration(seconds: 3),

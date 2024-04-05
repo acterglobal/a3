@@ -152,22 +152,25 @@ class EmailAddressCard extends ConsumerWidget {
       context: context,
       builder: (BuildContext context) => const PasswordConfirm(),
     );
-    if (newValue != null && context.mounted) {
-      EasyLoading.show(
-        status: L10n.of(context).tryingToConfirmToken,
-        dismissOnTap: false,
+    if (!context.mounted) return;
+    if (newValue == null) return;
+    EasyLoading.show(
+      status: L10n.of(context).tryingToConfirmToken,
+      dismissOnTap: false,
+    );
+    try {
+      await manager.tryConfirmEmailStatus(emailAddress, newValue);
+      ref.invalidate(emailAddressesProvider);
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
+      EasyLoading.showToast(L10n.of(context).looksGoodAddressConfirmed);
+    } catch (e) {
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
+      EasyLoading.showError(
+        L10n.of(context).failedToConfirmToken(e),
+        duration: const Duration(seconds: 3),
       );
-      try {
-        await manager.tryConfirmEmailStatus(emailAddress, newValue);
-        ref.invalidate(emailAddressesProvider);
-        if (!context.mounted) return;
-        EasyLoading.showToast(L10n.of(context).looksGoodAddressConfirmed);
-      } catch (e) {
-        EasyLoading.showError(
-          L10n.of(context).failedToConfirmToken(e),
-          duration: const Duration(seconds: 3),
-        );
-      }
     }
   }
 
@@ -181,33 +184,36 @@ class EmailAddressCard extends ConsumerWidget {
       context: context,
       builder: (BuildContext context) => const TokenConfirm(),
     );
-    if (newValue != null && context.mounted) {
-      EasyLoading.show(
-        status: L10n.of(context).tryingToConfirmToken,
-        dismissOnTap: false,
+    if (!context.mounted) return;
+    if (newValue == null) return;
+    EasyLoading.show(
+      status: L10n.of(context).tryingToConfirmToken,
+      dismissOnTap: false,
+    );
+    try {
+      final result = await manager.submitTokenFromEmail(
+        emailAddress,
+        newValue.token,
+        newValue.password,
       );
-      try {
-        final result = await manager.submitTokenFromEmail(
-          emailAddress,
-          newValue.token,
-          newValue.password,
-        );
-        if (!context.mounted) return;
-        if (result) {
-          ref.invalidate(emailAddressesProvider);
-          EasyLoading.showToast(L10n.of(context).looksGoodAddressConfirmed);
-        } else {
-          EasyLoading.showError(
-            L10n.of(context).invalidTokenOrPassword,
-            duration: const Duration(seconds: 3),
-          );
-        }
-      } catch (e) {
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
+      if (result) {
+        ref.invalidate(emailAddressesProvider);
+        EasyLoading.showToast(L10n.of(context).looksGoodAddressConfirmed);
+      } else {
         EasyLoading.showError(
-          L10n.of(context).failedToConfirmToken(e),
+          L10n.of(context).invalidTokenOrPassword,
           duration: const Duration(seconds: 3),
         );
       }
+    } catch (e) {
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
+      EasyLoading.showError(
+        L10n.of(context).failedToConfirmToken(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 }

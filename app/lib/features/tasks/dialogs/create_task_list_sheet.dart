@@ -62,8 +62,6 @@ class _CreateTaskListSheetConsumerState
       ref.read(textProvider.notifier).state = '';
 
       EasyLoading.dismiss();
-      // We are doing as expected, but the lints triggers.
-      // ignore: use_build_context_synchronously
       if (!context.mounted) return;
       Navigator.of(context, rootNavigator: true).pop();
       context.pushNamed(
@@ -72,8 +70,6 @@ class _CreateTaskListSheetConsumerState
       );
     } catch (e) {
       EasyLoading.dismiss();
-      // We are doing as expected, but the lints triggers.
-      // ignore: use_build_context_synchronously
       if (!context.mounted) return;
       EasyLoading.showError(
         L10n.of(context).failedToCreateTaskList(e),

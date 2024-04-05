@@ -66,10 +66,8 @@ class NonActerSpaceCard extends ConsumerWidget {
       _log.info('before setting space state');
 
       await space.setActerSpaceStates();
-      EasyLoading.dismiss();
       _log.info('after setting space state');
-      // We are doing as expected, but the lint still triggers.
-      // ignore: use_build_context_synchronously
+      EasyLoading.dismiss();
       if (!context.mounted) return;
       EasyLoading.showToast(L10n.of(context).successfullyUpgradedToActerSpace);
     } catch (e) {

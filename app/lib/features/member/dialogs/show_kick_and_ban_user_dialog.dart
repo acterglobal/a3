@@ -48,12 +48,12 @@ Future<void> showKickAndBanUserDialog(
                 final maybeReason = reason.text.isNotEmpty ? reason.text : null;
                 await member.kick(maybeReason);
                 await member.ban(maybeReason);
-                // ignore: use_build_context_synchronously
+                EasyLoading.dismiss();
+                if (!context.mounted) return;
                 EasyLoading.showToast(L10n.of(context).kickAndBanSuccess);
-                if (context.mounted) {
-                  Navigator.of(context, rootNavigator: true).pop();
-                }
+                Navigator.of(context, rootNavigator: true).pop();
               } catch (error) {
+                EasyLoading.dismiss();
                 if (!context.mounted) return;
                 EasyLoading.showError(
                   L10n.of(context).kickAndBanFailed(error),

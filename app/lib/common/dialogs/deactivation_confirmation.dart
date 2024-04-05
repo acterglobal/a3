@@ -111,21 +111,18 @@ Future<void> _onConfirm(
   try {
     if (!await sdk.deactivateAndDestroyCurrentClient(password)) {
       EasyLoading.dismiss();
-      if (context.mounted) {
-        EasyLoading.showError(
-          L10n.of(context).deactivationAndRemovingFailed,
-          duration: const Duration(seconds: 3),
-        );
-      }
+      if (!context.mounted) return;
+      EasyLoading.showError(
+        L10n.of(context).deactivationAndRemovingFailed,
+        duration: const Duration(seconds: 3),
+      );
+      return;
     }
     EasyLoading.dismiss();
-    // ignore: use_build_context_synchronously
     if (!context.mounted) return;
     context.goNamed(Routes.main.name);
   } catch (err) {
     EasyLoading.dismiss();
-    // We are doing as expected, but the lints triggers.
-    // ignore: use_build_context_synchronously
     if (!context.mounted) return;
     EasyLoading.showError(
       '${L10n.of(context).deactivatingFailed}: \n $err"',

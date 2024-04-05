@@ -201,19 +201,15 @@ class _CreateSuperInviteTokenPageConsumerState
       await provider.createOrUpdateToken(tokenUpdater);
       ref.invalidate(superInvitesTokensProvider);
       EasyLoading.dismiss();
-      // We are doing as expected, but the lints triggers.
-      // ignore: use_build_context_synchronously
-      if (!context.mounted) {
-        return;
-      }
+      if (!context.mounted) return;
       Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
     } catch (err) {
-      EasyLoading.showError(
-        isEdit
-            ? L10n.of(context).saveInviteCodeFailed(err)
-            : L10n.of(context).createInviteCodeFailed(err),
-        duration: const Duration(seconds: 3),
-      );
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
+      final status = isEdit
+          ? L10n.of(context).saveInviteCodeFailed(err)
+          : L10n.of(context).createInviteCodeFailed(err);
+      EasyLoading.showError(status, duration: const Duration(seconds: 3));
     }
   }
 
@@ -287,13 +283,11 @@ class _CreateSuperInviteTokenPageConsumerState
       await provider.delete(tokenTxt);
       ref.invalidate(superInvitesTokensProvider);
       EasyLoading.dismiss();
-      // We are doing as expected, but the lints triggers.
-      // ignore: use_build_context_synchronously
-      if (!context.mounted) {
-        return;
-      }
+      if (!context.mounted) return;
       Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
     } catch (err) {
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
       EasyLoading.showError(
         L10n.of(context).deleteInviteCodeFailed(err),
         duration: const Duration(seconds: 3),

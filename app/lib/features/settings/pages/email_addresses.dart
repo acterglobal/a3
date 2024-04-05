@@ -58,7 +58,10 @@ class _AddEmailAddrState extends State<AddEmailAddr> {
 
   void onSubmit(BuildContext context) {
     if (!_formKey.currentState!.validate()) {
-      EasyLoading.showToast(L10n.of(context).emailOrPasswordSeemsNotValid);
+      EasyLoading.showError(
+        L10n.of(context).emailOrPasswordSeemsNotValid,
+        duration: const Duration(seconds: 3),
+      );
       return;
     }
     Navigator.pop(context, newEmailAddress.text);
@@ -224,9 +227,12 @@ class EmailAddressesPage extends ConsumerWidget {
       try {
         await manager.requestTokenViaEmail(newValue);
         ref.invalidate(emailAddressesProvider);
+        EasyLoading.dismiss();
         if (!context.mounted) return;
         EasyLoading.showToast(L10n.of(context).pleaseCheckYourInbox);
       } catch (e) {
+        EasyLoading.dismiss();
+        if (!context.mounted) return;
         EasyLoading.showError(
           L10n.of(context).failedToSubmitEmail(e),
           duration: const Duration(seconds: 3),

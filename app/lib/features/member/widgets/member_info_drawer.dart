@@ -37,31 +37,32 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
     final userId = member.userId().toString();
     final myMembership = await ref.read(roomMembershipProvider(roomId).future);
     if (!context.mounted) return;
+
     final newPowerLevel = await showChangePowerLevelDialog(
       context,
       member,
       myMembership?.powerLevel() ?? 0,
     );
-    if (newPowerLevel != null) {
-      // We are doing as expected, but the lints triggers.
-      EasyLoading.show(
-        // ignore: use_build_context_synchronously
-        status: L10n.of(context).updatingPowerLevelOf(userId),
-        dismissOnTap: false,
+    if (newPowerLevel == null) return;
+
+    if (!context.mounted) return;
+    EasyLoading.show(
+      status: L10n.of(context).updatingPowerLevelOf(userId),
+      dismissOnTap: false,
+    );
+    try {
+      final room = await ref.read(maybeRoomProvider(roomId).future);
+      await room?.updatePowerLevel(userId, newPowerLevel);
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
+      EasyLoading.showToast(L10n.of(context).powerLevelUpdateSubmitted);
+    } catch (e) {
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
+      EasyLoading.showError(
+        L10n.of(context).failedToChangePowerLevel(e),
+        duration: const Duration(seconds: 3),
       );
-      try {
-        final room = await ref.read(maybeRoomProvider(roomId).future);
-        await room?.updatePowerLevel(userId, newPowerLevel);
-        EasyLoading.dismiss();
-        // ignore: use_build_context_synchronously
-        EasyLoading.showToast(L10n.of(context).powerLevelUpdateSubmitted);
-      } catch (e) {
-        EasyLoading.showError(
-          // ignore: use_build_context_synchronously
-          L10n.of(context).failedToChangePowerLevel(e),
-          duration: const Duration(seconds: 3),
-        );
-      }
     }
   }
 

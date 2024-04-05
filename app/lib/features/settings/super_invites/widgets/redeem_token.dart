@@ -49,24 +49,25 @@ class _RedeemTokenConsumerState extends ConsumerState<RedeemToken> {
 
   Future<void> _submit() async {
     final token = _tokenController.text;
-    if (token.isEmpty) {
-      return;
-    }
+    if (token.isEmpty) return;
     final superInvites = ref.read(superInvitesProvider);
+
+    EasyLoading.show(
+      status: L10n.of(context).redeeming(token),
+      dismissOnTap: false,
+    );
     try {
-      EasyLoading.show(
-        status: L10n.of(context).redeeming(token),
-        dismissOnTap: false,
-      );
       final rooms = (await superInvites.redeem(token)).toList();
-      if (!mounted) return;
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
       EasyLoading.showToast(
         L10n.of(context).addedToSpacesAndChats(rooms.length),
       );
       _tokenController.clear();
       FocusManager.instance.primaryFocus?.unfocus();
     } catch (err) {
-      if (!mounted) return;
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
       EasyLoading.showError(
         '${L10n.of(context).redeemingFailed} $err',
         duration: const Duration(seconds: 3),

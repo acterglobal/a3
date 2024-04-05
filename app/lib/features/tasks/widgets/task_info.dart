@@ -135,19 +135,13 @@ class TaskInfo extends ConsumerWidget {
     if (account.userId().toString() == userId) return;
     await task.unassignSelf();
     if (!context.mounted) return;
-    EasyLoading.showToast(
-      L10n.of(context).assignmentWithdrawn,
-      toastPosition: EasyLoadingToastPosition.bottom,
-    );
+    EasyLoading.showToast(L10n.of(context).assignmentWithdrawn);
   }
 
   Future<void> onAssign(BuildContext context) async {
     await task.assignSelf();
     if (!context.mounted) return;
-    EasyLoading.showToast(
-      L10n.of(context).assignedYourself,
-      toastPosition: EasyLoadingToastPosition.bottom,
-    );
+    EasyLoading.showToast(L10n.of(context).assignedYourself);
   }
 }
 
@@ -217,21 +211,21 @@ class _TaskTitleState extends State<TaskTitle> {
       setState(() => editMode = false);
       return;
     }
+    EasyLoading.show(
+      status: L10n.of(context).updatingTaskTitle,
+      dismissOnTap: false,
+    );
     try {
-      EasyLoading.show(
-        status: L10n.of(context).updatingTaskTitle,
-        dismissOnTap: false,
-      );
       final updater = widget.task.updateBuilder();
       updater.title(newString);
       await updater.send();
-      if (!mounted) return;
-      EasyLoading.showToast(
-        L10n.of(context).titleUpdated,
-        toastPosition: EasyLoadingToastPosition.bottom,
-      );
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
+      EasyLoading.showToast(L10n.of(context).titleUpdated);
       setState(() => editMode = false);
     } catch (e) {
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
       EasyLoading.showError(
         L10n.of(context).failedToUpdateTitle(e),
         duration: const Duration(seconds: 3),
@@ -367,21 +361,21 @@ class _TaskBodyState extends State<TaskBody> {
       setState(() => editMode = false);
     }
 
+    EasyLoading.show(
+      status: L10n.of(context).updatingTaskNote,
+      dismissOnTap: false,
+    );
     try {
-      EasyLoading.show(
-        status: L10n.of(context).updatingTaskNote,
-        dismissOnTap: false,
-      );
       final updater = widget.task.updateBuilder();
       updater.descriptionText(newBody);
       await updater.send();
-      if (!mounted) return;
-      EasyLoading.showToast(
-        L10n.of(context).notesUpdates,
-        toastPosition: EasyLoadingToastPosition.bottom,
-      );
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
+      EasyLoading.showToast(L10n.of(context).notesUpdates);
       setState(() => editMode = false);
     } catch (e) {
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
       EasyLoading.showError(
         L10n.of(context).failedToLoadUpdateNotes(e),
         duration: const Duration(seconds: 3),

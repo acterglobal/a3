@@ -92,13 +92,9 @@ class _DueChipState extends State<DueChip> {
       context: context,
       initialDate: dueDate,
     ); // FIXME: add unsetting support
-    if (newDue == null || !mounted) {
-      return;
-    }
-    EasyLoading.show(
-      status: L10n.of(context).updatingDue,
-      dismissOnTap: false,
-    );
+    if (!context.mounted) return;
+    if (newDue == null) return;
+    EasyLoading.show(status: L10n.of(context).updatingDue, dismissOnTap: false);
     try {
       final updater = widget.task.updateBuilder();
       updater.dueDate(newDue.due.year, newDue.due.month, newDue.due.day);
@@ -113,13 +109,15 @@ class _DueChipState extends State<DueChip> {
         updater.unsetUtcDueTimeOfDay();
       }
       await updater.send();
-      if (!mounted) return;
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
       EasyLoading.showToast(
         L10n.of(context).dueSuccess,
         toastPosition: EasyLoadingToastPosition.bottom,
       );
     } catch (e) {
-      if (!mounted) return;
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
       EasyLoading.showError(
         L10n.of(context).updatingDueFailed(e),
         duration: const Duration(seconds: 3),

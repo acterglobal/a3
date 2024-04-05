@@ -509,9 +509,8 @@ class __EmojiContainerState extends ConsumerState<_EmojiContainer>
 
   void onEmojiTap(bool sentByMe, String key) {
     if (sentByMe) {
-      EasyLoading.showToast(
-        L10n.of(context).revokingEmojiReactionsNotYetSupported,
-      );
+      final status = L10n.of(context).revokingEmojiReactionsNotYetSupported;
+      EasyLoading.showToast(status);
     } else {
       widget.onToggle(widget.message.id, key);
     }
