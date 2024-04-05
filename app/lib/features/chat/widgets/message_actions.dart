@@ -6,6 +6,7 @@ import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,6 +33,10 @@ class MessageActions extends ConsumerWidget {
 
     final myId = ref.watch(myUserIdStrProvider);
     final isAuthor = (myId == message.author.id);
+    bool isTextMessage = false;
+    if (message is TextMessage) {
+      isTextMessage = true;
+    }
 
     return Container(
       padding: const EdgeInsets.all(8),
@@ -59,6 +64,27 @@ class MessageActions extends ConsumerWidget {
               size: 18,
             ),
           ),
+          if (isTextMessage)
+            makeMenuItem(
+              pressed: () {
+                String msg = (message as TextMessage).text.trim();
+                Clipboard.setData(
+                  ClipboardData(
+                    text: msg,
+                  ),
+                );
+                EasyLoading.showToast(
+                  L10n.of(context).messageCopiedToClipboard,
+                  toastPosition: EasyLoadingToastPosition.bottom,
+                );
+                ref.read(chatInputProvider(roomId).notifier).unsetActions();
+              },
+              text: Text(L10n.of(context).copyMessage),
+              icon: const Icon(
+                Icons.copy_all_outlined,
+                size: 14,
+              ),
+            ),
           if (isAuthor)
             makeMenuItem(
               pressed: () => onPressEditMessage(context, ref, roomId, message),
