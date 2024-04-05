@@ -1,68 +1,76 @@
 +++
 title = "Localisation"
-
 weight = 10
 template = "docs/page.html"
-
 [extra]
 toc = true
 top = false
 +++
+title = "Localisation"
+# i18n Language Support
 
-Acter app is supported with flutter localizations and it is already setup and defined in `pubspec.yaml`.
+## **Acter** has support for internationalization in the application to support multiple languages. This document presents the basic idea of the way it is setup and instruction to maintain it.
 
-## Add new locale in the application
 
-1. Firstly go the `l10.dart` file and add the locale you want to support in the application.
+## i18n Setup
+Reference: <https://docs.flutter.dev/ui/accessibility-and-internationalization/internationalization#adding-your-own-localized-messages>
 
+* Packages Used:
+  `flutter_localizations:
+  sdk: flutter
+  intl: ^0.18.0 0`
+* Configuration:
+  `l10n.yaml` file is used at flutter `app/` folder which contain all the configuration as below.
+
+  ```
+  arb-dir: lib/l10n
+  template-arb-file: app_en.arb
+  output-localization-file: l10n.dart
+  output-class: L10n
+  preferred-supported-locales: ["en"]
+  nullable-getter: false
+  ```
+
+* Template File:
+  `a3/app/lib/l10n/app_en.arb` file which is containing all the English language strings is used as template file.
+* Language specific dart files:
+  When we do
+  ```
+  flutter pub get
+  ```
+  
+  or
+
+  ```
+  flutter run
+  ```
+  then codegen takes place automatically. You should find generated files in
+  ```
+  ${FLUTTER_PROJECT}/.dart_tool/flutter_gen/gen_l10n
+  ```
+
+* Translation:
+  [weblate.org](https://weblate.org/en-gb/) is used to manage string translation by taking based of template file.
+
+
+##  Instruction for usage
+
+* Only add/update strings in template file (`app_en.arb`) as [weblate.org](https://weblate.org/en-gb/) is going to take care of all translations (including the english strings)
+* Avoid manual code formatting or changes in `app_en.arb`. Do changes in template file only when you need to add new string or change keys.
+* Use [Placeholders](https://docs.flutter.dev/ui/accessibility-and-internationalization/internationalization#placeholders-plurals-and-selects) to manage dynamic string support based on the arguments.
+
+  Example
+
+  ```
+  "hello": "Hello {userName}",
+  ```
+
+* Do not use [selects](https://docs.flutter.dev/ui/accessibility-and-internationalization/internationalization#placeholders-plurals-and-selects) for otherwise similar strings but use distinctive strings
 ```
-class ApplicationLocalizations {
-  static final supportedLocales = [const Locale('en'), const Locale('de')];
-}
-```
+//DO NOT USE THIS
+"loading": "{objects, select, tasks{Tasks} events{Events } other{}}",
 
-2. Create an `.arb` extension file in **l10** directory. Here you can add your locale strings with key-value pairs as in JSON format. For example
-
-```
-{
-    "language": "English",
-    "all": "all",
-    "noMessages": "No Conversations yet",
-    "loading": "loading",
-}
-```
-
-3. Save the file and rebuild the project. Verify that the localization file has been successfully generated in your project build files. The generated path from root directory is `dart_tool/flutter_gen/app_localizations_en.dart`, in case the locale is english.
-
-## Add new localized text in the application
-
-1. Navigate to `app_en.arb` file.
-2. Add a new key-value pair containing the string. For Example:
-
-```
-{
-    "language": "English",
-    "all": "all",
-    "noMessages": "No Conversations yet",
-    "loading": "loading",
-    "news": "news"
-}
-```
-
-3. To support this text in **deutsch**. We also need to update `app_de.arb`.
-
-```
-{
-    "language": "Deutsch",
-    "all": "alle",
-    "noMessages": "Noch keine Gespräche",
-    "loading": "Wird geladen",
-    "news": "Nachrichten",
-}
-```
-
-4. Save the file and rebuild the project. You can use your new localized string in your dart files.
-
-```
-Text(AppLocalizations.of(context)!.news);
+//USE THIS APPROACH
+"loadingTasks": "Loading Tasks",
+"loadingEvents": "Loading Events",
 ```
