@@ -1,6 +1,5 @@
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor.dart';
-import 'package:acter/features/comments/models.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
@@ -81,10 +80,7 @@ class _PinItemState extends ConsumerState<PinItem> {
               formkey: _formkey,
             ),
             const SizedBox(height: 20),
-            CommentsSection(
-              manager: comments,
-              newCommentLocation: NewCommentLocation.after,
-            ),
+            CommentsSection(manager: comments),
           ],
         ),
       ),
