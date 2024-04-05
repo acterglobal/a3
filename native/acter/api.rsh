@@ -1289,6 +1289,9 @@ object CommentsManager {
     /// Get the list of comments (in arrival order)
     fn comments() -> Future<Result<Vec<Comment>>>;
 
+    /// String representation of the room id this comments manager is in
+    fn room_id_str() -> string;
+
     /// Does this item have any comments?
     fn has_comments() -> bool;
 
