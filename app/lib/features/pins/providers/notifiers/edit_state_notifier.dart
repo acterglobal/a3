@@ -43,7 +43,7 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
 
   Future<void> onSave() async {
     try {
-      EasyLoading.show(status: 'Saving Pin');
+      EasyLoading.show(status: 'Saving Pin', dismissOnTap: false);
       final updateBuilder = pin.updateBuilder();
       bool hasChanges = false;
 

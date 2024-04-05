@@ -364,7 +364,10 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
           ElevatedButton(
             onPressed: () async {
               Navigator.of(context, rootNavigator: true).pop();
-              EasyLoading.show(status: L10n.of(context).leavingRoom);
+              EasyLoading.show(
+                status: L10n.of(context).leavingRoom,
+                dismissOnTap: false,
+              );
               var res = await _handleLeaveRoom(ref, widget.roomId);
               if (!mounted) return;
               if (res) {

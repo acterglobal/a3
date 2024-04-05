@@ -288,6 +288,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
     if (emailToAdd != null && context.mounted) {
       EasyLoading.show(
         status: L10n.of(context).adding(emailToAdd),
+        dismissOnTap: false,
       );
       final client = ref.read(
         alwaysClientProvider,
@@ -386,7 +387,10 @@ class NotificationsSettingsPage extends ConsumerWidget {
     Pusher item,
   ) async {
     Navigator.pop(context, null);
-    EasyLoading.show(status: L10n.of(context).deletingPushTarget);
+    EasyLoading.show(
+      status: L10n.of(context).deletingPushTarget,
+      dismissOnTap: false,
+    );
     try {
       await item.delete();
       if (!context.mounted) return;

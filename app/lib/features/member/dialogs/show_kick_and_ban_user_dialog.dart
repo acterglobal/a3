@@ -40,7 +40,10 @@ Future<void> showKickAndBanUserDialog(
           ),
           TextButton(
             onPressed: () async {
-              EasyLoading.show(status: L10n.of(context).kickAndBanProgress);
+              EasyLoading.show(
+                status: L10n.of(context).kickAndBanProgress,
+                dismissOnTap: false,
+              );
               try {
                 final maybeReason = reason.text.isNotEmpty ? reason.text : null;
                 await member.kick(maybeReason);

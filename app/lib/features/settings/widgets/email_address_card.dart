@@ -153,7 +153,10 @@ class EmailAddressCard extends ConsumerWidget {
       builder: (BuildContext context) => const PasswordConfirm(),
     );
     if (newValue != null && context.mounted) {
-      EasyLoading.show(status: L10n.of(context).tryingToConfirmToken);
+      EasyLoading.show(
+        status: L10n.of(context).tryingToConfirmToken,
+        dismissOnTap: false,
+      );
       try {
         await manager.tryConfirmEmailStatus(emailAddress, newValue);
         ref.invalidate(emailAddressesProvider);
@@ -179,7 +182,10 @@ class EmailAddressCard extends ConsumerWidget {
       builder: (BuildContext context) => const TokenConfirm(),
     );
     if (newValue != null && context.mounted) {
-      EasyLoading.show(status: L10n.of(context).tryingToConfirmToken);
+      EasyLoading.show(
+        status: L10n.of(context).tryingToConfirmToken,
+        dismissOnTap: false,
+      );
       try {
         final result = await manager.submitTokenFromEmail(
           emailAddress,

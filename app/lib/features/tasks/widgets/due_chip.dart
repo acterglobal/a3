@@ -95,7 +95,10 @@ class _DueChipState extends State<DueChip> {
     if (newDue == null || !mounted) {
       return;
     }
-    EasyLoading.show(status: L10n.of(context).updatingDue);
+    EasyLoading.show(
+      status: L10n.of(context).updatingDue,
+      dismissOnTap: false,
+    );
     try {
       final updater = widget.task.updateBuilder();
       updater.dueDate(newDue.due.year, newDue.due.month, newDue.due.day);
@@ -110,13 +113,13 @@ class _DueChipState extends State<DueChip> {
         updater.unsetUtcDueTimeOfDay();
       }
       await updater.send();
-      if(!mounted) return;
+      if (!mounted) return;
       EasyLoading.showToast(
         L10n.of(context).dueSuccess,
         toastPosition: EasyLoadingToastPosition.bottom,
       );
     } catch (e) {
-      if(!mounted) return;
+      if (!mounted) return;
       EasyLoading.showError(L10n.of(context).updatingDueFailed(e));
     }
   }

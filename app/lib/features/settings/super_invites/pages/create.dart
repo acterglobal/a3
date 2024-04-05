@@ -188,10 +188,9 @@ class _CreateSuperInviteTokenPageConsumerState
   }
 
   Future<void> _submit() async {
-    EasyLoading.show(
-      status:
-          isEdit ? L10n.of(context).savingCode : L10n.of(context).creatingCode,
-    );
+    final status =
+        isEdit ? L10n.of(context).savingCode : L10n.of(context).creatingCode;
+    EasyLoading.show(status: status, dismissOnTap: false);
     try {
       final tokenTxt = _tokenController.text;
       if (tokenTxt.isNotEmpty) {
@@ -277,7 +276,10 @@ class _CreateSuperInviteTokenPageConsumerState
       return;
     }
 
-    EasyLoading.show(status: L10n.of(context).deletingCode);
+    EasyLoading.show(
+      status: L10n.of(context).deletingCode,
+      dismissOnTap: false,
+    );
     try {
       final tokenTxt = _tokenController.text;
       // all other changes happen on the object itself;

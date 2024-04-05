@@ -186,7 +186,10 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     String spaceName,
     String description,
   ) async {
-    EasyLoading.show(status: L10n.of(context).creatingSpace);
+    EasyLoading.show(
+      status: L10n.of(context).creatingSpace,
+      dismissOnTap: false,
+    );
     try {
       final sdk = await ref.read(sdkProvider.future);
       final config = sdk.api.newSpaceSettingsBuilder();

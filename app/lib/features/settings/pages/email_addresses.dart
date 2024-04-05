@@ -217,7 +217,10 @@ class EmailAddressesPage extends ConsumerWidget {
       builder: (BuildContext context) => const AddEmailAddr(),
     );
     if (newValue != null && context.mounted) {
-      EasyLoading.show(status: L10n.of(context).addingEmailAddress);
+      EasyLoading.show(
+        status: L10n.of(context).addingEmailAddress,
+        dismissOnTap: false,
+      );
       try {
         await manager.requestTokenViaEmail(newValue);
         ref.invalidate(emailAddressesProvider);

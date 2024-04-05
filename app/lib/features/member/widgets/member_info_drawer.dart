@@ -47,6 +47,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
       EasyLoading.show(
         // ignore: use_build_context_synchronously
         status: L10n.of(context).updatingPowerLevelOf(userId),
+        dismissOnTap: false,
       );
       try {
         final room = await ref.read(maybeRoomProvider(roomId).future);

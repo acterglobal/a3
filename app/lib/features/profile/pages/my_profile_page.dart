@@ -115,7 +115,10 @@ class MyProfilePage extends StatelessWidget {
       type: FileType.image,
     );
     if (result != null && context.mounted) {
-      EasyLoading.show(status: L10n.of(context).updatingProfileImage);
+      EasyLoading.show(
+        status: L10n.of(context).updatingProfileImage,
+        dismissOnTap: false,
+      );
 
       final file = result.files.first;
       await profile.account.uploadAvatar(file.path!);

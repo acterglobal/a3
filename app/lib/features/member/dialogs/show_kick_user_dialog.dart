@@ -32,11 +32,14 @@ Future<void> showKickUserDialog(BuildContext context, Member member) async {
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-            child:  Text(L10n.of(context).no),
+            child: Text(L10n.of(context).no),
           ),
           TextButton(
             onPressed: () async {
-              EasyLoading.show(status: L10n.of(context).kickProgress);
+              EasyLoading.show(
+                status: L10n.of(context).kickProgress,
+                dismissOnTap: false,
+              );
               try {
                 final maybeReason = reason.text.isNotEmpty ? reason.text : null;
                 await member.kick(maybeReason);
@@ -50,7 +53,7 @@ Future<void> showKickUserDialog(BuildContext context, Member member) async {
                 EasyLoading.showError(L10n.of(context).kickFailed(error));
               }
             },
-            child:  Text(L10n.of(context).yes),
+            child: Text(L10n.of(context).yes),
           ),
         ],
       );

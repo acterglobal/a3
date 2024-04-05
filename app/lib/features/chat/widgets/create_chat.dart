@@ -115,7 +115,10 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
     String? description,
     List<String> selectedUsers,
   ) async {
-    EasyLoading.show(status: L10n.of(context).creatingChat);
+    EasyLoading.show(
+      status: L10n.of(context).creatingChat,
+      dismissOnTap: false,
+    );
     try {
       final sdk = await ref.read(sdkProvider.future);
       final config = sdk.api.newConvoSettingsBuilder();

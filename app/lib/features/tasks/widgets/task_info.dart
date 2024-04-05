@@ -211,7 +211,10 @@ class _TaskTitleState extends State<TaskTitle> {
       return;
     }
     try {
-      EasyLoading.show(status: L10n.of(context).updatingTaskTitle);
+      EasyLoading.show(
+        status: L10n.of(context).updatingTaskTitle,
+        dismissOnTap: false,
+      );
       final updater = widget.task.updateBuilder();
       updater.title(newString);
       await updater.send();
@@ -295,6 +298,7 @@ class _TaskBodyState extends State<TaskBody> {
                     try {
                       EasyLoading.show(
                         status: L10n.of(context).updatingTaskNote,
+                        dismissOnTap: false,
                       );
                       final updater = widget.task.updateBuilder();
                       updater.descriptionText(newBody);
