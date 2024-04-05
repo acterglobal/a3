@@ -106,6 +106,7 @@ class EmojiRow extends ConsumerWidget {
 
   void _showBottomSheet(BuildContext context) => showModalBottomSheet<void>(
         context: context,
+        enableDrag: false,
         builder: (context) => EmojiPickerWidget(
           withBoarder: true,
           onEmojiSelected: (category, emoji) {
