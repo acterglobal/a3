@@ -120,7 +120,10 @@ class _DueChipState extends State<DueChip> {
       );
     } catch (e) {
       if (!mounted) return;
-      EasyLoading.showError(L10n.of(context).updatingDueFailed(e));
+      EasyLoading.showError(
+        L10n.of(context).updatingDueFailed(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 }

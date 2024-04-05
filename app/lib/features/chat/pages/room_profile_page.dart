@@ -379,6 +379,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
                 EasyLoading.dismiss();
                 EasyLoading.showError(
                   L10n.of(context).someErrorOccurredLeavingRoom,
+                  duration: const Duration(seconds: 3),
                 );
               }
             },

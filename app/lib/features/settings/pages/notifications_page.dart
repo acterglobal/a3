@@ -197,7 +197,10 @@ class NotificationsSettingsPage extends ConsumerWidget {
     final client = ref.read(clientProvider);
     if (client == null) {
       // ignore: use_build_context_synchronously
-      EasyLoading.showError(L10n.of(context).clientNotFound);
+      EasyLoading.showError(
+        L10n.of(context).clientNotFound,
+        duration: const Duration(seconds: 3),
+      );
       return;
     }
     EasyLoading.show(
@@ -305,6 +308,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
         if (!context.mounted) return;
         EasyLoading.showError(
           L10n.of(context).failedToAdd('$emailToAdd: $e'),
+          duration: const Duration(seconds: 3),
         );
         return;
       }

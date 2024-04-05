@@ -78,7 +78,10 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
       await pin.refresh();
       EasyLoading.showToast('Pin Updated Successfully');
     } catch (e) {
-      EasyLoading.showError('Error saving changes: ${e.toString()}');
+      EasyLoading.showError(
+        'Error saving changes: ${e.toString()}',
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 }

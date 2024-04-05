@@ -507,6 +507,7 @@ class CreateEditEventPageConsumerState
       if (!mounted) return;
       EasyLoading.showError(
         '${L10n.of(context).errorCreatingCalendarEvent}: $e',
+        duration: const Duration(seconds: 3),
       );
     }
   }
@@ -556,7 +557,10 @@ class CreateEditEventPageConsumerState
     } catch (e) {
       EasyLoading.dismiss();
       if (!mounted) return;
-      EasyLoading.showError('${L10n.of(context).errorUpdatingEvent}: $e');
+      EasyLoading.showError(
+        '${L10n.of(context).errorUpdatingEvent}: $e',
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 }

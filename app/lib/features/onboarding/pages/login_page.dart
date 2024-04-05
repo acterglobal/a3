@@ -238,7 +238,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       // no message means, login was successful.
       context.goNamed(Routes.main.name);
     } else {
-      EasyLoading.showError(loginSuccess);
+      EasyLoading.showError(
+        loginSuccess,
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 }

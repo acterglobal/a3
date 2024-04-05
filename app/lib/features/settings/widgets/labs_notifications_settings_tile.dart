@@ -37,7 +37,10 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
         if (newVal) {
           final client = ref.read(clientProvider);
           if (client == null) {
-            EasyLoading.showError(L10n.of(context).noActiveClient);
+            EasyLoading.showError(
+              L10n.of(context).noActiveClient,
+              duration: const Duration(seconds: 3),
+            );
             return;
           }
           final granted = await setupPushNotifications(client, forced: true);

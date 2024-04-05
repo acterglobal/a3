@@ -134,7 +134,10 @@ class _NotificationSettingsTile extends ConsumerWidget {
     final room = await ref.read(maybeRoomProvider(roomId).future);
     if (room == null) {
       if (!context.mounted) return;
-      EasyLoading.showError(L10n.of(context).roomNotFound);
+      EasyLoading.showError(
+        L10n.of(context).roomNotFound,
+        duration: const Duration(seconds: 3),
+      );
       return;
     }
     EasyLoading.showProgress(0);

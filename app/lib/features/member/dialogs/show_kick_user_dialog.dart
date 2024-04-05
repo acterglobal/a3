@@ -49,8 +49,11 @@ Future<void> showKickUserDialog(BuildContext context, Member member) async {
                   Navigator.of(context, rootNavigator: true).pop();
                 }
               } catch (error) {
-                // ignore: use_build_context_synchronously
-                EasyLoading.showError(L10n.of(context).kickFailed(error));
+                if (!context.mounted) return;
+                EasyLoading.showError(
+                  L10n.of(context).kickFailed(error),
+                  duration: const Duration(seconds: 3),
+                );
               }
             },
             child: Text(L10n.of(context).yes),

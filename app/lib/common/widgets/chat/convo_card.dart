@@ -133,7 +133,10 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
     final room = await ref.read(maybeRoomProvider(roomId).future);
     if (room == null) {
       if (!mounted) return;
-      EasyLoading.showError(L10n.of(context).roomNotFound);
+      EasyLoading.showError(
+        L10n.of(context).roomNotFound,
+        duration: const Duration(seconds: 3),
+      );
       return;
     }
     await room.unmute();

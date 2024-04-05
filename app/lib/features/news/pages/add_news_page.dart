@@ -359,6 +359,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
             if (!mounted) return;
             EasyLoading.showError(
               L10n.of(context).yourTextSlidesMustContainsSomeText,
+              duration: const Duration(seconds: 3),
             );
             return;
           }
@@ -388,13 +389,17 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           String? mimeType = file.mimeType ?? lookupMimeType(file.path);
           if (mimeType == null) {
             if (!mounted) return;
-            EasyLoading.showError(L10n.of(context).invalidMediaFormat);
+            EasyLoading.showError(
+              L10n.of(context).invalidMediaFormat,
+              duration: const Duration(seconds: 3),
+            );
             return;
           }
           if (!mimeType.startsWith('image/')) {
             if (!mounted) return;
             EasyLoading.showError(
               L10n.of(context).postingOfTypeNotYetSupported(mimeType),
+              duration: const Duration(seconds: 3),
             );
             return;
           }
@@ -426,13 +431,17 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           String? mimeType = file.mimeType ?? lookupMimeType(file.path);
           if (mimeType == null) {
             if (!mounted) return;
-            EasyLoading.showError(L10n.of(context).invalidMediaFormat);
+            EasyLoading.showError(
+              L10n.of(context).invalidMediaFormat,
+              duration: const Duration(seconds: 3),
+            );
             return;
           }
           if (!mimeType.startsWith('video/')) {
             if (!mounted) return;
             EasyLoading.showError(
               L10n.of(context).postingOfTypeNotYetSupported(mimeType),
+              duration: const Duration(seconds: 3),
             );
             return;
           }
@@ -470,7 +479,10 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       Navigator.of(context).pop();
       context.goNamed(Routes.main.name); // go to the home / main updates
     } catch (err) {
-      EasyLoading.showError('$displayMsg ${L10n.of(context).failed}: \n $err');
+      EasyLoading.showError(
+        '$displayMsg ${L10n.of(context).failed}: \n $err',
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 

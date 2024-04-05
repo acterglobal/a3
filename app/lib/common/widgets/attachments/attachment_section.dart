@@ -210,6 +210,7 @@ class AttachmentSectionWidget extends ConsumerWidget {
       if (!context.mounted) return;
       EasyLoading.showError(
         L10n.of(context).failedToDeleteAttachment(e),
+        duration: const Duration(seconds: 3),
       );
     }
   }

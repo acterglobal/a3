@@ -142,7 +142,10 @@ class _PostAttachmentSelectionState
       }
       EasyLoading.dismiss();
     } catch (e) {
-      EasyLoading.showError('Error sending attachments $e');
+      EasyLoading.showError(
+        'Error sending attachments $e',
+        duration: const Duration(seconds: 3),
+      );
       _log.severe('Error sending attachments', e);
     }
   }

@@ -198,7 +198,10 @@ class InvitationCard extends ConsumerWidget {
     EasyLoading.show(status: L10n.of(context).joining, dismissOnTap: false);
     bool res = await invitation.accept();
     if (!res && context.mounted) {
-      EasyLoading.showError(L10n.of(context).failedToJoin);
+      EasyLoading.showError(
+        L10n.of(context).failedToJoin,
+        duration: const Duration(seconds: 3),
+      );
       return;
     }
     if (!context.mounted) return;
@@ -209,7 +212,10 @@ class InvitationCard extends ConsumerWidget {
     EasyLoading.show(status: L10n.of(context).rejecting, dismissOnTap: false);
     bool res = await invitation.reject();
     if (!res && context.mounted) {
-      EasyLoading.showError(L10n.of(context).failedToReject);
+      EasyLoading.showError(
+        L10n.of(context).failedToReject,
+        duration: const Duration(seconds: 3),
+      );
       return;
     }
     if (!context.mounted) return;

@@ -54,8 +54,11 @@ Future<void> showKickAndBanUserDialog(
                   Navigator.of(context, rootNavigator: true).pop();
                 }
               } catch (error) {
-                // ignore: use_build_context_synchronously
-                EasyLoading.showError(L10n.of(context).kickAndBanFailed(error));
+                if (!context.mounted) return;
+                EasyLoading.showError(
+                  L10n.of(context).kickAndBanFailed(error),
+                  duration: const Duration(seconds: 3),
+                );
               }
             },
             child: Text(L10n.of(context).yes),

@@ -195,7 +195,10 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
       // We are doing as expected, but the lints triggers.
       // ignore: use_build_context_synchronously
       if (!context.mounted) return;
-      EasyLoading.showError('An error occured creating pin $e');
+      EasyLoading.showError(
+        'An error occured creating pin $e',
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 }

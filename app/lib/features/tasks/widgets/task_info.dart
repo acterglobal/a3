@@ -227,6 +227,7 @@ class _TaskTitleState extends State<TaskTitle> {
     } catch (e) {
       EasyLoading.showError(
         L10n.of(context).failedToUpdateTitle(e),
+        duration: const Duration(seconds: 3),
       );
     }
   }
@@ -312,6 +313,7 @@ class _TaskBodyState extends State<TaskBody> {
                     } catch (e) {
                       EasyLoading.showError(
                         L10n.of(context).failedToLoadUpdateNotes(e),
+                        duration: const Duration(seconds: 3),
                       );
                     }
                   },
