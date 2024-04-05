@@ -10,13 +10,17 @@ enum SelectedMessageState {
   edit,
 }
 
+enum SendingState {
+  preparing,
+  sending,
+}
+
 @freezed
 class ChatInputState with _$ChatInputState {
   const factory ChatInputState({
     @Default(SelectedMessageState.none)
     SelectedMessageState selectedMessageState,
-    @Default(true) bool allowEdit,
-    @Default(false) bool sendBtnVisible,
+    @Default(SendingState.preparing) SendingState sendingState,
     @Default(false) bool emojiPickerVisible,
     @Default(null) types.Message? selectedMessage,
     @Default({}) Map<String, String> mentionReplacements,

@@ -357,7 +357,7 @@
   "@errorCreatingChat": {},
   "errorLoading": "Error loading {error}",
   "@errorLoading": {},
-  "errorSendingMessage": "Error sending message",
+  "errorSendingMessage": "Sending failed: {error}",
   "@errorSendingMessage": {},
   "errorSubmittingComment": "Error submitting comment",
   "@errorSubmittingComment": {},

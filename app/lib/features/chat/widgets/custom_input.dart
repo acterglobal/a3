@@ -27,6 +27,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
@@ -43,6 +44,19 @@ final _log = Logger('a3::chat::custom_input');
 // keep track of text controller values across rooms.
 final _textValuesProvider =
     StateProvider.family<String, String>((ref, roomId) => '');
+
+final _sendButtonVisible = StateProvider.family<bool, String>(
+  (ref, roomId) => ref.watch(
+    _textValuesProvider(roomId).select((value) => value.isNotEmpty),
+  ),
+);
+
+final _allowEdit = StateProvider.family<bool, String>(
+  (ref, roomId) => ref.watch(
+    chatInputProvider(roomId)
+        .select((state) => state.sendingState == SendingState.preparing),
+  ),
+);
 
 class CustomChatInput extends ConsumerStatefulWidget {
   final Convo convo;
@@ -79,18 +93,12 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
       baseOffset: cursorPos + emojiLength,
       extentOffset: cursorPos + emojiLength,
     );
-    final roomId = widget.convo.getRoomIdStr();
-    ref.read(chatInputProvider(roomId).notifier).showSendBtn(true);
   }
 
   void handleBackspacePressed() {
     final newValue =
         mentionKey.currentState!.controller!.text.characters.skipLast(1).string;
     mentionKey.currentState!.controller!.text = newValue;
-    if (newValue.isEmpty) {
-      final roomId = widget.convo.getRoomIdStr();
-      ref.read(chatInputProvider(roomId).notifier).showSendBtn(false);
-    }
   }
 
   @override
@@ -201,24 +209,13 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                       child: _TextInputWidget(
                         mentionKey: mentionKey,
                         convo: widget.convo,
-                        onSendButtonPressed: onSendButtonPressed,
+                        onSendButtonPressed: () => onSendButtonPressed(context),
                         isEncrypted: isEncrypted,
                       ),
                     ),
                   ),
-                  if (chatInputState.sendBtnVisible)
-                    InkWell(
-                      onTap: () => onSendButtonPressed(),
-                      child: CircleAvatar(
-                        radius: 22,
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        child: Icon(
-                          Icons.send,
-                          size: 20,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        ),
-                      ),
-                    ),
+                  if (ref.watch(_sendButtonVisible(roomId)))
+                    renderSendButton(context, roomId),
                 ],
               ),
             ),
@@ -234,6 +231,29 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             onBackspacePressed: handleBackspacePressed,
           ),
       ],
+    );
+  }
+
+  Widget renderSendButton(BuildContext context, String roomId) {
+    final allowEditing = ref.watch(_allowEdit(roomId));
+
+    if (allowEditing) {
+      return IconButton.filled(
+        iconSize: 20,
+        onPressed: () => onSendButtonPressed(context),
+        icon: const Icon(
+          Icons.send,
+        ),
+      );
+    }
+
+    return IconButton.filled(
+      iconSize: 20,
+      onPressed: () => {},
+      icon: Icon(
+        Icons.send,
+        color: Theme.of(context).colorScheme.inversePrimary,
+      ),
     );
   }
 
@@ -560,7 +580,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     final roomId = widget.convo.getRoomIdStr();
     final client = ref.read(alwaysClientProvider);
     final inputState = ref.read(chatInputProvider(roomId));
-    final stream = widget.convo.timelineStream();
+    final stream = ref.read(timelineStreamProvider(widget.convo));
 
     try {
       for (File file in files) {
@@ -715,54 +735,43 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     );
   }
 
-  Future<void> onSendButtonPressed() async {
+  Future<void> onSendButtonPressed(BuildContext context) async {
     if (mentionKey.currentState!.controller!.text.isEmpty) return;
     final roomId = widget.convo.getRoomIdStr();
-    final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
-    final mentionReplacements =
-        ref.read(chatInputProvider(roomId)).mentionReplacements;
-    final mentionState = mentionKey.currentState!;
-    inputNotifier.prepareSending();
-    String markdownText = mentionState.controller!.text;
-    mentionReplacements.forEach((key, value) {
-      markdownText = markdownText.replaceAll(key, value);
-    });
-
+    ref.read(chatInputProvider(roomId).notifier).startSending();
     try {
-      await handleSendPressed(markdownText);
-      inputNotifier.messageSent();
-      mentionState.controller!.clear();
-    } catch (e) {
-      if (context.mounted) {
-        customMsgSnackbar(
-          context,
-          '${L10n.of(context).errorSendingMessage}: $e',
-        );
+      // end the typing notification
+      await widget.convo.typingNotice(false);
+
+      final mentionReplacements =
+          ref.read(chatInputProvider(roomId)).mentionReplacements;
+      final mentionState = mentionKey.currentState!;
+      String markdownText = mentionState.controller!.text;
+      mentionReplacements.forEach((key, value) {
+        markdownText = markdownText.replaceAll(key, value);
+      });
+
+      // make the actual draft
+      final client = ref.read(alwaysClientProvider);
+      final draft = client.textMarkdownDraft(markdownText);
+
+      // actually send it out
+      final stream = ref.read(timelineStreamProvider(widget.convo));
+      final inputState = ref.read(chatInputProvider(roomId));
+
+      if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
+        await stream.replyMessage(inputState.selectedMessage!.id, draft);
+      } else if (inputState.selectedMessageState == SelectedMessageState.edit) {
+        await stream.editMessage(inputState.selectedMessage!.id, draft);
+      } else {
+        await stream.sendMessage(draft);
       }
-      inputNotifier.sendingFailed();
-    }
-  }
-
-  // push messages in convo
-  Future<void> handleSendPressed(String markdownMessage) async {
-    final roomId = widget.convo.getRoomIdStr();
-    final client = ref.read(alwaysClientProvider);
-    final inputState = ref.read(chatInputProvider(roomId));
-    // image or video is sent automatically
-    // user will click "send" button explicitly for text only
-    await widget.convo.typingNotice(false);
-    final stream = widget.convo.timelineStream();
-    final draft = client.textMarkdownDraft(markdownMessage);
-
-    if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
-      await stream.replyMessage(inputState.selectedMessage!.id, draft);
-    } else if (inputState.selectedMessageState == SelectedMessageState.edit) {
-      await stream.editMessage(inputState.selectedMessage!.id, draft);
-    } else {
-      await stream.sendMessage(draft);
-    }
-    if (inputState.selectedMessage != null) {
-      ref.read(chatInputProvider(roomId).notifier).unsetSelectedMessage();
+      ref.read(chatInputProvider(roomId).notifier).messageSent();
+      mentionState.controller!.clear();
+    } catch (error, stackTrace) {
+      _log.severe('Sending chat message failed', error, stackTrace);
+      EasyLoading.showError(L10n.of(context).errorSendingMessage(error));
+      ref.read(chatInputProvider(roomId).notifier).sendingFailed();
     }
   }
 }
@@ -865,12 +874,6 @@ class _TextInputWidget extends ConsumerWidget {
     this.isEncrypted = false,
   });
 
-  void _updateTextValue(String roomId, WidgetRef ref) {
-    String textValue = '';
-    textValue += mentionKey.currentState!.controller!.text;
-    ref.read(_textValuesProvider(roomId).notifier).update((state) => textValue);
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final roomId = convo.getRoomIdStr();
@@ -887,8 +890,8 @@ class _TextInputWidget extends ConsumerWidget {
       child: Focus(
         child: FlutterMentions(
           key: mentionKey,
-          // restore input if available
-          defaultText: ref.watch(_textValuesProvider(roomId)),
+          // restore input if available, but only as a read on startup
+          defaultText: ref.read(_textValuesProvider(roomId)),
           suggestionPosition: SuggestionPosition.Top,
           suggestionListWidth: width >= 770 ? width * 0.6 : width * 0.8,
           onMentionAdd: (Map<String, dynamic> roomMember) {
@@ -904,21 +907,21 @@ class _TextInputWidget extends ConsumerWidget {
             borderRadius: BorderRadius.circular(6),
           ),
           onChanged: (String value) async {
-            _updateTextValue(roomId, ref);
+            ref
+                .read(_textValuesProvider(roomId).notifier)
+                .update((state) => value);
             if (value.isNotEmpty) {
-              chatInputNotifier.showSendBtn(true);
               Future.delayed(const Duration(milliseconds: 500), () async {
                 await typingNotice(true);
               });
             } else {
-              chatInputNotifier.showSendBtn(false);
               Future.delayed(const Duration(milliseconds: 500), () async {
                 await typingNotice(false);
               });
             }
           },
           textInputAction: TextInputAction.newline,
-          enabled: chatInputState.allowEdit,
+          enabled: ref.watch(_allowEdit(roomId)),
           onSubmitted: (value) => onSendButtonPressed(),
           style: Theme.of(context).textTheme.bodyMedium,
           cursorColor: Theme.of(context).colorScheme.primary,

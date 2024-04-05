@@ -5,8 +5,6 @@ import 'package:riverpod/riverpod.dart';
 class ChatInputNotifier extends StateNotifier<ChatInputState> {
   ChatInputNotifier() : super(const ChatInputState());
 
-  void showSendBtn(bool value) => state = state.copyWith(sendBtnVisible: value);
-
   void emojiPickerVisible(bool value) =>
       state = state.copyWith(emojiPickerVisible: value);
 
@@ -54,17 +52,17 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
     );
   }
 
-  void prepareSending() {
-    state = state.copyWith(sendBtnVisible: false, allowEdit: false);
+  void startSending() {
+    state = state.copyWith(sendingState: SendingState.sending);
   }
 
   void sendingFailed() {
     // reset the state;
-    state = state.copyWith(sendBtnVisible: true, allowEdit: true);
+    state = state.copyWith(sendingState: SendingState.preparing);
   }
 
   void messageSent() {
     // reset the state;
-    state = const ChatInputState();
+    state = state.copyWith(sendingState: SendingState.preparing);
   }
 }
