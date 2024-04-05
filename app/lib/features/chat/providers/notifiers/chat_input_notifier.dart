@@ -1,35 +1,14 @@
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:riverpod/riverpod.dart';
 
 class ChatInputNotifier extends StateNotifier<ChatInputState> {
   ChatInputNotifier() : super(const ChatInputState());
 
-  void showEditView(bool value) => state = state.copyWith(showEditView: value);
-
-  void showReplyView(bool value) =>
-      state = state.copyWith(showReplyView: value);
-
   void showSendBtn(bool value) => state = state.copyWith(sendBtnVisible: value);
-
-  void showEditButton(bool value) =>
-      state = state.copyWith(editBtnVisible: value);
-
-  void toggleAttachment(bool value) =>
-      state = state.copyWith(attachmentVisible: value);
-
-  void emojiRowVisible(bool value) =>
-      state = state.copyWith(emojiRowVisible: value);
 
   void emojiPickerVisible(bool value) =>
       state = state.copyWith(emojiPickerVisible: value);
-
-  void setReplyWidget(Widget? child) {
-    if (mounted) {
-      state = state.copyWith(replyWidget: child);
-    }
-  }
 
   void addMention(String displayName, String authorId) {
     final mentionReplacements = Map.of(state.mentionReplacements);
@@ -38,16 +17,41 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
     state = state.copyWith(mentionReplacements: mentionReplacements);
   }
 
-  void setRepliedToMessage(Message? message) {
-    state = state.copyWith(repliedToMessage: message);
+  void setReplyToMessage(Message message) {
+    state = state.copyWith(
+      selectedMessage: message,
+      selectedMessageState: SelectedMessageState.replyTo,
+    );
   }
 
-  void setEditMessage(Message? message) {
-    state = state.copyWith(editMessage: message);
+  void setEditMessage(Message message) {
+    state = state.copyWith(
+      selectedMessage: message,
+      selectedMessageState: SelectedMessageState.edit,
+    );
   }
 
-  void setCurrentMessageId(String? messageId) {
-    state = state.copyWith(currentMessageId: messageId);
+  void setActionsMessage(Message message) {
+    state = state.copyWith(
+      selectedMessage: message,
+      selectedMessageState: SelectedMessageState.actions,
+    );
+  }
+
+  void unsetActions() {
+    if (state.selectedMessageState == SelectedMessageState.actions) {
+      state = state.copyWith(
+        selectedMessage: null,
+        selectedMessageState: SelectedMessageState.none,
+      );
+    }
+  }
+
+  void unsetSelectedMessage() {
+    state = state.copyWith(
+      selectedMessage: null,
+      selectedMessageState: SelectedMessageState.none,
+    );
   }
 
   void prepareSending() {

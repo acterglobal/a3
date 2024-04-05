@@ -2,6 +2,7 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/custom_message_builder.dart';
 import 'package:acter/features/chat/widgets/emoji_reaction_item.dart';
@@ -44,7 +45,6 @@ class BubbleBuilder extends ConsumerWidget {
     final isAuthor = (myId == message.author.id);
     final roomId = convo.getRoomIdStr();
 
-    final chatInputState = ref.watch(chatInputProvider(roomId));
     final chatInputNotifier = ref.watch(chatInputProvider(roomId).notifier);
     final chatInputFocusState = ref.watch(chatInputFocusProvider.notifier);
 
@@ -58,38 +58,17 @@ class BubbleBuilder extends ConsumerWidget {
         isMemberEvent
             ? child
             : SwipeTo(
-                onLeftSwipe: !isAuthor
-                    ? null
-                    : (DragUpdateDetails details) {
-                        FocusScope.of(context)
-                            .requestFocus(chatInputFocusState.state);
-                        if (chatInputState.currentMessageId != null) {
-                          chatInputNotifier.emojiRowVisible(false);
-                          chatInputNotifier.setRepliedToMessage(message);
-                          chatInputNotifier.showReplyView(true);
-                          chatInputNotifier.setReplyWidget(child);
-                        } else {
-                          chatInputNotifier.showReplyView(true);
-                          chatInputNotifier.setRepliedToMessage(message);
-                          chatInputNotifier.setReplyWidget(child);
-                        }
-                      },
+                onLeftSwipe: (DragUpdateDetails details) {
+                  FocusScope.of(context)
+                      .requestFocus(chatInputFocusState.state);
+                  chatInputNotifier.setReplyToMessage(message);
+                },
                 onRightSwipe: isAuthor
                     ? null
                     : (DragUpdateDetails details) {
                         FocusScope.of(context)
                             .requestFocus(chatInputFocusState.state);
-                        if (chatInputState.emojiRowVisible) {
-                          chatInputNotifier.emojiRowVisible(false);
-
-                          chatInputNotifier.setRepliedToMessage(message);
-                          chatInputNotifier.showReplyView(true);
-                          chatInputNotifier.setReplyWidget(child);
-                        } else {
-                          chatInputNotifier.showReplyView(true);
-                          chatInputNotifier.setRepliedToMessage(message);
-                          chatInputNotifier.setReplyWidget(child);
-                        }
+                        chatInputNotifier.setEditMessage(message);
                       },
                 child: _ChatBubble(
                   convo: convo,
@@ -124,22 +103,30 @@ class _ChatBubble extends ConsumerWidget {
     final myId = ref.watch(myUserIdStrProvider);
     final isAuthor = (myId == message.author.id);
     final roomId = convo.getRoomIdStr();
+    final emojiRowVisible = ref.watch(
+      chatInputProvider(roomId).select(
+        (state) => // only when showing actions and this is the selected message
+            state.selectedMessageState == SelectedMessageState.actions &&
+            state.selectedMessage?.id == message.id,
+      ),
+    );
     bool hasRepliedMessage = message.repliedMessage != null;
 
     return Column(
       crossAxisAlignment:
           isAuthor ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: [
-        EmojiRow(
-          roomId: roomId,
-          onEmojiTap: (String eventId, String emoji) {
-            final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
-            inputNotifier.setCurrentMessageId(null);
-            inputNotifier.emojiRowVisible(false);
-            toggleReaction(eventId, emoji);
-          },
-          message: message,
-        ),
+        if (emojiRowVisible)
+          EmojiRow(
+            roomId: roomId,
+            onEmojiTap: (String eventId, String emoji) {
+              ref
+                  .read(chatInputProvider(roomId).notifier)
+                  .unsetSelectedMessage();
+              toggleReaction(eventId, emoji);
+            },
+            message: message,
+          ),
         const SizedBox(height: 4),
         enlargeEmoji
             ? child

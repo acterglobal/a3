@@ -851,6 +851,8 @@
   "@reply": {},
   "replyTo": "Reply to {name}",
   "@replyTo": {},
+  "replyPreviewUnavailable": "No preview available for the message you are replying to",
+  "@replyPreviewUnavailable": {},
   "report": "Report",
   "@report": {},
   "reportThisEvent": "Report this event",

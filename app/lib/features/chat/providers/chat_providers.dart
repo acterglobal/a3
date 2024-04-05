@@ -1,5 +1,6 @@
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
@@ -23,6 +24,13 @@ final chatStateProvider =
     StateNotifierProvider.family<ChatRoomNotifier, ChatRoomState, Convo>(
   (ref, convo) => ChatRoomNotifier(ref: ref, convo: convo),
 );
+
+final isAuthorOfSelectedMessage =
+    StateProvider.family<bool, String>((ref, roomId) {
+  final chatInputState = ref.watch(chatInputProvider(roomId));
+  final myUserId = ref.watch(myUserIdStrProvider);
+  return chatInputState.selectedMessage?.author.id == myUserId;
+});
 
 final mediaChatStateProvider = StateNotifierProvider.family<MediaChatNotifier,
     MediaChatState, ChatMessageInfo>(

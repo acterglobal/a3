@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:acter/common/models/types.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
@@ -14,6 +15,7 @@ import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/chat/chat_utils/chat_utils.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/chat/widgets/custom_message_builder.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
 import 'package:acter/features/chat/widgets/mention_profile_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -95,18 +97,133 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
   Widget build(BuildContext context) {
     final roomId = widget.convo.getRoomIdStr();
     final chatInputState = ref.watch(chatInputProvider(roomId));
-    final showReplyView = ref.watch(
-      chatInputProvider(roomId).select((ci) => ci.showReplyView),
+
+    if (chatInputState.selectedMessage == null) {
+      return renderMain(context);
+    }
+
+    return switch (chatInputState.selectedMessageState) {
+      SelectedMessageState.actions =>
+        renderActionsMenu(context, chatInputState.selectedMessage!),
+      SelectedMessageState.replyTo =>
+        renderReplyView(context, chatInputState.selectedMessage!),
+      SelectedMessageState.edit =>
+        renderEditView(context, chatInputState.selectedMessage!),
+      SelectedMessageState.none => renderMain(context)
+    };
+  }
+
+  Widget renderActionsMenu(BuildContext context, Message currentMessage) {
+    final roomId = widget.convo.getRoomIdStr();
+    final isAuthor = ref.watch(isAuthorOfSelectedMessage(roomId));
+
+    return FrostEffect(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            if (!isAuthor)
+              InkWell(
+                onTap: () =>
+                    onReportMessage(context, currentMessage.id, roomId),
+                child: Text(
+                  L10n.of(context).report,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                ),
+              ),
+            // FIXME: should be a check whether the user can redact.
+            if (isAuthor)
+              InkWell(
+                onTap: () => onDeleteOwnMessage(
+                  context,
+                  currentMessage.id,
+                  roomId,
+                ),
+                child: Text(
+                  L10n.of(context).delete,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                ),
+              ),
+            if (isAuthor)
+              InkWell(
+                onTap: () => onPressEditMessage(roomId, currentMessage),
+                child: Text(L10n.of(context).edit),
+              ),
+          ],
+        ),
+      ),
     );
-    final showEditView = ref.watch(
-      chatInputProvider(roomId).select((ci) => ci.showEditView),
-    );
+  }
+
+  Widget renderMain(BuildContext context) {
+    return renderChatInputArea(context, null);
+  }
+
+  Widget renderChatInputArea(BuildContext context, Widget? child) {
+    final roomId = widget.convo.getRoomIdStr();
+    final isEncrypted =
+        ref.watch(isRoomEncryptedProvider(roomId)).valueOrNull ?? false;
+    final chatInputState = ref.watch(chatInputProvider(roomId));
 
     return Column(
       children: [
-        if (showReplyView) renderReplyView(context, chatInputState),
-        if (showEditView) renderEditView(context, chatInputState),
-        renderMain(context, chatInputState),
+        if (child != null) child,
+        FrostEffect(
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 15),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.background,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: InkWell(
+                      onTap: () => onSelectAttachment(context),
+                      child: const Icon(
+                        Atlas.paperclip_attachment_thin,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: _TextInputWidget(
+                        mentionKey: mentionKey,
+                        convo: widget.convo,
+                        onSendButtonPressed: onSendButtonPressed,
+                        isEncrypted: isEncrypted,
+                      ),
+                    ),
+                  ),
+                  if (chatInputState.sendBtnVisible)
+                    InkWell(
+                      onTap: () => onSendButtonPressed(),
+                      child: CircleAvatar(
+                        radius: 22,
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        child: Icon(
+                          Icons.send,
+                          size: 20,
+                          color: Theme.of(context).colorScheme.onPrimary,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ),
         if (ref.watch(chatInputProvider(roomId)).emojiPickerVisible)
           EmojiPickerWidget(
             size: Size(
@@ -120,204 +237,73 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     );
   }
 
-  Widget renderMenu(BuildContext context, ChatInputState chatInputState) {
-    final roomId = widget.convo.getRoomIdStr();
-    final currentMessageId = chatInputState.currentMessageId;
-    final chatState = ref.watch(chatStateProvider(widget.convo));
-    final userId = ref.watch(alwaysClientProvider).userId().toString();
-    final showEditButton = ref.watch(
-      chatInputProvider(roomId).select((ci) => ci.editBtnVisible),
-    );
-
-    final isAuthor = () {
-      if (currentMessageId != null) {
-        final messages = chatState.messages;
-        int index = messages.indexWhere((x) => x.id == currentMessageId);
-        if (index != -1) {
-          return userId == messages[index].author.id;
-        }
-      }
-      return false;
-    }();
-
-    return FrostEffect(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            if (!isAuthor)
-              InkWell(
-                onTap: () =>
-                    onReportMessage(context, currentMessageId!, roomId),
-                child: Text(
-                  L10n.of(context).report,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.error,
-                  ),
-                ),
-              ),
-            // FIXME: should be a check whether the user can redact.
-            if (isAuthor)
-              InkWell(
-                onTap: () => onDeleteOwnMessage(
-                  context,
-                  currentMessageId!,
-                  roomId,
-                  userId,
-                ),
-                child: Text(
-                  L10n.of(context).delete,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.error,
-                  ),
-                ),
-              ),
-            if (showEditButton)
-              InkWell(
-                onTap: () => onPressEditMessage(roomId, currentMessageId),
-                child: Text(L10n.of(context).edit),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget renderMain(BuildContext context, ChatInputState chatInputState) {
-    if (chatInputState.emojiRowVisible) {
-      return renderMenu(context, chatInputState);
-    }
-
-    return renderChatInput(context, chatInputState);
-  }
-
-  Widget renderChatInput(BuildContext context, ChatInputState chatInputState) {
-    final roomId = widget.convo.getRoomIdStr();
-    final isEncrypted =
-        ref.watch(isRoomEncryptedProvider(roomId)).valueOrNull ?? false;
-
-    return FrostEffect(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 15),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.background,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: InkWell(
-                  onTap: () => onSelectAttachment(context),
-                  child: const Icon(
-                    Atlas.paperclip_attachment_thin,
-                    size: 20,
-                  ),
-                ),
-              ),
-              Flexible(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: _TextInputWidget(
-                    mentionKey: mentionKey,
-                    convo: widget.convo,
-                    onSendButtonPressed: onSendButtonPressed,
-                    isEncrypted: isEncrypted,
-                  ),
-                ),
-              ),
-              if (chatInputState.sendBtnVisible)
-                InkWell(
-                  onTap: () => onSendButtonPressed(),
-                  child: CircleAvatar(
-                    radius: 22,
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    child: Icon(
-                      Icons.send,
-                      size: 20,
-                      color: Theme.of(context).colorScheme.onPrimary,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget renderReplyView(BuildContext context, ChatInputState chatInputState) {
+  Widget renderReplyView(BuildContext context, Message repliedToMessage) {
     final size = MediaQuery.of(context).size;
     final roomId = widget.convo.getRoomIdStr();
-    final repliedToMessage = chatInputState.repliedToMessage;
-    return FrostEffect(
-      widgetWidth: size.width,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primaryContainer,
-          borderRadius: BorderRadius.circular(6),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.only(
-            top: 12.0,
-            left: 16.0,
-            right: 16.0,
+
+    return renderChatInputArea(
+      context,
+      FrostEffect(
+        widgetWidth: size.width,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primaryContainer,
+            borderRadius: BorderRadius.circular(6),
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              repliedToMessage != null
-                  ? Consumer(
-                      builder: (ctx, ref, child) => replyBuilder(roomId),
-                    )
-                  : const SizedBox.shrink(),
-              if (repliedToMessage != null &&
-                  chatInputState.replyWidget != null)
+          child: Padding(
+            padding: const EdgeInsets.only(
+              top: 12.0,
+              left: 16.0,
+              right: 16.0,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Consumer(
+                  builder: (ctx, ref, child) =>
+                      replyBuilder(roomId, repliedToMessage),
+                ),
                 _ReplyContentWidget(
                   convo: widget.convo,
                   msg: repliedToMessage,
-                  messageWidget: chatInputState.replyWidget!,
                 ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget renderEditView(BuildContext context, ChatInputState chatInputState) {
+  Widget renderEditView(BuildContext context, Message editMessage) {
     final size = MediaQuery.of(context).size;
-    final editMessage = chatInputState.editMessage;
-    return FrostEffect(
-      widgetWidth: size.width,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primaryContainer,
-          borderRadius: BorderRadius.circular(6),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.only(
-            top: 12.0,
-            left: 16.0,
-            right: 16.0,
+    return renderChatInputArea(
+      context,
+      FrostEffect(
+        widgetWidth: size.width,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primaryContainer,
+            borderRadius: BorderRadius.circular(6),
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: editMessage != null
-                ? [
-                    Consumer(builder: editMessageBuilder),
-                    _EditMessageContentWidget(
-                      convo: widget.convo,
-                      msg: editMessage,
-                    ),
-                  ]
-                : [],
+          child: Padding(
+            padding: const EdgeInsets.only(
+              top: 12.0,
+              left: 16.0,
+              right: 16.0,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Consumer(builder: editMessageBuilder),
+                _EditMessageContentWidget(
+                  convo: widget.convo,
+                  msg: editMessage,
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -400,12 +386,12 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
 
   void onReportMessage(
     BuildContext context,
-    String currentMessageId,
+    String messageId,
     String roomId,
   ) {
     final message =
         ref.read(chatStateProvider(widget.convo)).messages.firstWhere(
-              (element) => element.id == currentMessageId,
+              (element) => element.id == messageId,
             );
     showAdaptiveDialog(
       context: context,
@@ -414,16 +400,15 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
         description: L10n.of(context).reportMessageContent,
         senderId: message.author.id,
         roomId: roomId,
-        eventId: currentMessageId,
+        eventId: messageId,
       ),
     );
   }
 
   void onDeleteOwnMessage(
     BuildContext context,
-    String currentMessageId,
+    String messageId,
     String roomId,
-    String userId,
   ) {
     final chatInputNotifier = ref.watch(chatInputProvider(roomId).notifier);
     showAdaptiveDialog(
@@ -444,11 +429,10 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             onPressed: () async {
               try {
                 redactRoomMessage(
-                  currentMessageId,
-                  userId, // editor is me
+                  messageId,
+                  ref.read(myUserIdStrProvider), // editor is me
                 );
-                chatInputNotifier.emojiRowVisible(false);
-                chatInputNotifier.setCurrentMessageId(null);
+                chatInputNotifier.unsetSelectedMessage();
                 if (context.mounted) {
                   Navigator.of(
                     context,
@@ -476,24 +460,8 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     );
   }
 
-  void onPressEditMessage(String roomId, String? currentMessageId) {
-    final emojiRowVisible = ref.read(
-      chatInputProvider(roomId).select((ci) {
-        return ci.emojiRowVisible;
-      }),
-    );
-    final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
-    if (emojiRowVisible) {
-      inputNotifier.setCurrentMessageId(null);
-      inputNotifier.emojiRowVisible(false);
-    }
-
-    inputNotifier.showEditView(true);
-    final message =
-        ref.read(chatStateProvider(widget.convo)).messages.firstWhere(
-              (element) => element.id == currentMessageId,
-            );
-    inputNotifier.setEditMessage(message);
+  void onPressEditMessage(String roomId, Message message) {
+    ref.read(chatInputProvider(roomId).notifier).setEditMessage(message);
     if (message is TextMessage) {
       // Parse String Data to HTML document
       final document = parse(message.text);
@@ -607,9 +575,9 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
               .size(file.lengthSync())
               .width(image.width)
               .height(image.height);
-          if (inputState.repliedToMessage != null) {
+          if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
             await stream.replyMessage(
-              inputState.repliedToMessage!.id,
+              inputState.selectedMessage!.id,
               imageDraft,
             );
           } else {
@@ -619,9 +587,9 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             attachmentType == AttachmentType.audio) {
           final audioDraft =
               client.audioDraft(file.path, mimeType).size(file.lengthSync());
-          if (inputState.repliedToMessage != null) {
+          if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
             await stream.replyMessage(
-              inputState.repliedToMessage!.id,
+              inputState.selectedMessage!.id,
               audioDraft,
             );
           } else {
@@ -631,9 +599,10 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             attachmentType == AttachmentType.video) {
           final videoDraft =
               client.videoDraft(file.path, mimeType).size(file.lengthSync());
-          if (inputState.repliedToMessage != null) {
+
+          if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
             await stream.replyMessage(
-              inputState.repliedToMessage!.id,
+              inputState.selectedMessage!.id,
               videoDraft,
             );
           } else {
@@ -642,8 +611,9 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
         } else {
           final draft =
               client.fileDraft(file.path, mimeType).size(file.lengthSync());
-          if (inputState.repliedToMessage != null) {
-            await stream.replyMessage(inputState.repliedToMessage!.id, draft);
+
+          if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
+            await stream.replyMessage(inputState.selectedMessage!.id, draft);
           } else {
             await stream.sendMessage(draft);
           }
@@ -653,20 +623,11 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
       _log.severe('error occurred', e, s);
     }
 
-    if (inputState.repliedToMessage != null) {
-      final notifier = ref.read(chatInputProvider(roomId).notifier);
-      notifier.setRepliedToMessage(null);
-      notifier.setEditMessage(null);
-      notifier.showReplyView(false);
-      notifier.showEditView(false);
-      notifier.setReplyWidget(null);
-    }
+    ref.read(chatInputProvider(roomId).notifier).unsetSelectedMessage();
   }
 
-  Widget replyBuilder(String roomId) {
-    final roomId = widget.convo.getRoomIdStr();
-    final chatInputState = ref.watch(chatInputProvider(roomId));
-    final authorId = chatInputState.repliedToMessage!.author.id;
+  Widget replyBuilder(String roomId, Message repliedToMessage) {
+    final authorId = repliedToMessage.author.id;
     final replyProfile =
         ref.watch(roomMemberProvider((userId: authorId, roomId: roomId)));
     final inputNotifier = ref.watch(chatInputProvider(roomId).notifier);
@@ -712,11 +673,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
         const Spacer(),
         GestureDetector(
           onTap: () {
-            inputNotifier.showReplyView(false);
-            inputNotifier.showEditView(false);
-            inputNotifier.setReplyWidget(null);
-            inputNotifier.setRepliedToMessage(null);
-            inputNotifier.setEditMessage(null);
+            inputNotifier.unsetSelectedMessage();
             FocusScope.of(context).unfocus();
           },
           child: const Icon(Atlas.xmark_circle),
@@ -749,11 +706,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             if (mentionKey.currentState != null) {
               mentionState!.controller!.clear();
             }
-            inputNotifier.showReplyView(false);
-            inputNotifier.showEditView(false);
-            inputNotifier.setReplyWidget(null);
-            inputNotifier.setRepliedToMessage(null);
-            inputNotifier.setEditMessage(null);
+            inputNotifier.unsetSelectedMessage();
             FocusScope.of(context).unfocus();
           },
           child: const Icon(Atlas.xmark_circle),
@@ -800,20 +753,16 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     await widget.convo.typingNotice(false);
     final stream = widget.convo.timelineStream();
     final draft = client.textMarkdownDraft(markdownMessage);
-    if (inputState.repliedToMessage != null) {
-      await stream.replyMessage(inputState.repliedToMessage!.id, draft);
-    } else if (inputState.editMessage != null) {
-      await stream.editMessage(inputState.editMessage!.id, draft);
+
+    if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
+      await stream.replyMessage(inputState.selectedMessage!.id, draft);
+    } else if (inputState.selectedMessageState == SelectedMessageState.edit) {
+      await stream.editMessage(inputState.selectedMessage!.id, draft);
     } else {
       await stream.sendMessage(draft);
     }
-    if (inputState.repliedToMessage != null || inputState.editMessage != null) {
-      final notifier = ref.read(chatInputProvider(roomId).notifier);
-      notifier.setRepliedToMessage(null);
-      notifier.setEditMessage(null);
-      notifier.showReplyView(false);
-      notifier.showEditView(false);
-      notifier.setReplyWidget(null);
+    if (inputState.selectedMessage != null) {
+      ref.read(chatInputProvider(roomId).notifier).unsetSelectedMessage();
     }
   }
 }
@@ -1092,12 +1041,10 @@ class _TextInputWidget extends ConsumerWidget {
 class _ReplyContentWidget extends StatelessWidget {
   final Convo convo;
   final Message msg;
-  final Widget messageWidget;
 
   const _ReplyContentWidget({
     required this.convo,
     required this.msg,
-    required this.messageWidget,
   });
 
   @override
@@ -1128,8 +1075,31 @@ class _ReplyContentWidget extends StatelessWidget {
           maxLines: 3,
         ),
       );
+    } else if (msg is FileMessage) {
+      return Padding(
+        padding: const EdgeInsets.all(12),
+        child: Text(
+          msg.metadata?['content'],
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+      );
+    } else if (msg is CustomMessage) {
+      return CustomMessageBuilder(
+        message: msg as CustomMessage,
+        messageWidth: 100,
+      );
+    } else {
+      return Padding(
+        padding: const EdgeInsets.all(12),
+        child: Text(
+          L10n.of(context).replyPreviewUnavailable,
+          style: Theme.of(context)
+              .textTheme
+              .bodySmall!
+              .copyWith(fontStyle: FontStyle.italic),
+        ),
+      );
     }
-    return messageWidget;
   }
 }
 
