@@ -1,6 +1,7 @@
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/device.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -66,6 +67,10 @@ class HomeShellState extends ConsumerState<HomeShell> {
   void initState() {
     super.initState();
     initShake();
+    Future.delayed(
+      const Duration(seconds: 1),
+      () => bottomNavigationTutorials(context: context),
+    );
   }
 
   Future<void> initShake() async {
@@ -253,13 +258,41 @@ class HomeShellState extends ConsumerState<HomeShell> {
                   key: Keys.mainNav,
                   inAnimation: AdaptiveScaffold.bottomToTop,
                   outAnimation: AdaptiveScaffold.topToBottom,
-                  builder: (BuildContext ctx) => BottomNavigationBar(
-                    showSelectedLabels: false,
-                    showUnselectedLabels: false,
-                    currentIndex: widget.navigationShell.currentIndex,
-                    onTap: onBottomNavigated,
-                    items: bottomBarNav,
-                    type: BottomNavigationBarType.fixed,
+                  builder: (BuildContext ctx) => Stack(
+                    children: [
+                      SizedBox(
+                        height: 50,
+                        child: Row(
+                          children: bottomBarNav
+                              .map(
+                                (bottomBarNav) => Expanded(
+                                  child: Center(
+                                    child: SizedBox(
+                                      key: bottomBarNav.tutorialGlobalKey,
+                                      height: 40,
+                                      width: 40,
+                                    ),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ),
+                      BottomNavigationBar(
+                        showSelectedLabels: false,
+                        showUnselectedLabels: false,
+                        currentIndex: widget.navigationShell.currentIndex,
+                        onTap: (index) {
+                          widget.navigationShell.goBranch(
+                            index,
+                            initialLocation:
+                                index == widget.navigationShell.currentIndex,
+                          );
+                        },
+                        items: bottomBarNav,
+                        type: BottomNavigationBarType.fixed,
+                      ),
+                    ],
                   ),
                 ),
               },

@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/tutorial_dialogs/space_overview_tutorials/create_or_join_space_tutorials.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter/features/home/data/keys.dart';
@@ -19,6 +20,10 @@ class MySpacesSection extends ConsumerWidget {
 
     int spacesLimit =
         (limit != null && spaces.length > limit!) ? limit! : spaces.length;
+
+    if(spaces.isNotEmpty && spacesLimit <= spaces.length) {
+      createOrJoinSpaceTutorials(context: context);
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -61,12 +66,14 @@ class MySpacesSection extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               OutlinedButton(
+                                key: createNewSpaceKey,
                                 onPressed: () =>
                                     context.pushNamed(Routes.createSpace.name),
                                 child: Text(L10n.of(context).createSpace),
                               ),
                               const SizedBox(height: 10),
                               ElevatedButton(
+                                key: joinExistingSpaceKey,
                                 onPressed: () =>
                                     context.pushNamed(Routes.joinSpace.name),
                                 child: Text(L10n.of(context).joinSpace),
@@ -81,11 +88,22 @@ class MySpacesSection extends ConsumerWidget {
   }
 }
 
-class _NoSpacesWidget extends ConsumerWidget {
-  const _NoSpacesWidget();
+class _NoSpacesWidget extends ConsumerStatefulWidget {
+  const _NoSpacesWidget({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _NoSpacesWidgetState();
+}
+
+class _NoSpacesWidgetState extends ConsumerState<_NoSpacesWidget> {
+  @override
+  void initState() {
+    super.initState();
+    createOrJoinSpaceTutorials(context: context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
         const SizedBox(height: 15),
@@ -127,6 +145,7 @@ class _NoSpacesWidget extends ConsumerWidget {
         SizedBox(height: MediaQuery.of(context).size.height * 0.15),
         Center(
           child: ElevatedButton(
+            key: createNewSpaceKey,
             onPressed: () => context.pushNamed(Routes.createSpace.name),
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.neutral6,
@@ -151,6 +170,7 @@ class _NoSpacesWidget extends ConsumerWidget {
         const SizedBox(height: 36),
         Center(
           child: ElevatedButton(
+            key: joinExistingSpaceKey,
             onPressed: () {
               context.pushNamed(Routes.joinSpace.name);
             },

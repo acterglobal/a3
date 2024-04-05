@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 
 class BottomBarNavigationItem extends BottomNavigationBarItem {
   final String initialLocation;
+  final GlobalKey tutorialGlobalKey;
 
   const BottomBarNavigationItem({
     required this.initialLocation,
+    required this.tutorialGlobalKey,
     required super.icon,
     super.label,
     super.activeIcon,

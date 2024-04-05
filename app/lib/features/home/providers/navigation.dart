@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/home/data/keys.dart';
@@ -213,6 +214,7 @@ final bottomBarNavProvider =
       ),
       label: 'Dashboard',
       initialLocation: Routes.dashboard.route,
+      tutorialGlobalKey: dashboardKey,
     ),
     BottomBarNavigationItem(
       icon: const Icon(
@@ -225,6 +227,7 @@ final bottomBarNavProvider =
       ),
       label: 'Updates',
       initialLocation: Routes.updates.route,
+      tutorialGlobalKey: updateKey,
     ),
     BottomBarNavigationItem(
       icon: const Icon(
@@ -237,6 +240,7 @@ final bottomBarNavProvider =
       ),
       label: 'Chat',
       initialLocation: Routes.chat.route,
+      tutorialGlobalKey: chatsKey,
     ),
     BottomBarNavigationItem(
       icon: activitiesIcon,
@@ -245,6 +249,7 @@ final bottomBarNavProvider =
       ),
       label: 'Activities',
       initialLocation: Routes.activities.route,
+      tutorialGlobalKey: activityKey,
     ),
     BottomBarNavigationItem(
       icon: const Icon(
@@ -259,6 +264,7 @@ final bottomBarNavProvider =
       ),
       label: 'Search',
       initialLocation: Routes.search.route,
+      tutorialGlobalKey: jumpToKey,
     ),
   ];
 });
