@@ -120,10 +120,8 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     );
   }
 
-  Widget renderMain(BuildContext context, ChatInputState chatInputState) {
+  Widget renderMenu(BuildContext context, ChatInputState chatInputState) {
     final roomId = widget.convo.getRoomIdStr();
-    final isEncrypted =
-        ref.watch(isRoomEncryptedProvider(roomId)).valueOrNull ?? false;
     final currentMessageId = chatInputState.currentMessageId;
     final chatState = ref.watch(chatStateProvider(widget.convo));
     final userId = ref.watch(alwaysClientProvider).userId().toString();
@@ -142,50 +140,62 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
       return false;
     }();
 
-    if (chatInputState.emojiRowVisible) {
-      return FrostEffect(
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              if (!isAuthor)
-                InkWell(
-                  onTap: () =>
-                      onReportMessage(context, currentMessageId!, roomId),
-                  child: Text(
-                    L10n.of(context).report,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
-                    ),
+    return FrostEffect(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            if (!isAuthor)
+              InkWell(
+                onTap: () =>
+                    onReportMessage(context, currentMessageId!, roomId),
+                child: Text(
+                  L10n.of(context).report,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
                   ),
                 ),
-              // FIXME: should be a check whether the user can redact.
-              if (isAuthor)
-                InkWell(
-                  onTap: () => onDeleteOwnMessage(
-                    context,
-                    currentMessageId!,
-                    roomId,
-                    userId,
-                  ),
-                  child: Text(
-                    L10n.of(context).delete,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
-                    ),
+              ),
+            // FIXME: should be a check whether the user can redact.
+            if (isAuthor)
+              InkWell(
+                onTap: () => onDeleteOwnMessage(
+                  context,
+                  currentMessageId!,
+                  roomId,
+                  userId,
+                ),
+                child: Text(
+                  L10n.of(context).delete,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
                   ),
                 ),
-              if (showEditButton)
-                InkWell(
-                  onTap: () => onPressEditMessage(roomId, currentMessageId),
-                  child: Text(L10n.of(context).edit),
-                ),
-            ],
-          ),
+              ),
+            if (showEditButton)
+              InkWell(
+                onTap: () => onPressEditMessage(roomId, currentMessageId),
+                child: Text(L10n.of(context).edit),
+              ),
+          ],
         ),
-      );
+      ),
+    );
+  }
+
+  Widget renderMain(BuildContext context, ChatInputState chatInputState) {
+    if (chatInputState.emojiRowVisible) {
+      return renderMenu(context, chatInputState);
     }
+
+    return renderChatInput(context, chatInputState);
+  }
+
+  Widget renderChatInput(BuildContext context, ChatInputState chatInputState) {
+    final roomId = widget.convo.getRoomIdStr();
+    final isEncrypted =
+        ref.watch(isRoomEncryptedProvider(roomId)).valueOrNull ?? false;
 
     return FrostEffect(
       child: Container(
@@ -650,7 +660,6 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
       notifier.showReplyView(false);
       notifier.showEditView(false);
       notifier.setReplyWidget(null);
-      notifier.setEditWidget(null);
     }
   }
 
@@ -706,7 +715,6 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             inputNotifier.showReplyView(false);
             inputNotifier.showEditView(false);
             inputNotifier.setReplyWidget(null);
-            inputNotifier.setEditWidget(null);
             inputNotifier.setRepliedToMessage(null);
             inputNotifier.setEditMessage(null);
             FocusScope.of(context).unfocus();
@@ -744,7 +752,6 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             inputNotifier.showReplyView(false);
             inputNotifier.showEditView(false);
             inputNotifier.setReplyWidget(null);
-            inputNotifier.setEditWidget(null);
             inputNotifier.setRepliedToMessage(null);
             inputNotifier.setEditMessage(null);
             FocusScope.of(context).unfocus();
@@ -807,7 +814,6 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
       notifier.showReplyView(false);
       notifier.showEditView(false);
       notifier.setReplyWidget(null);
-      notifier.setEditWidget(null);
     }
   }
 }

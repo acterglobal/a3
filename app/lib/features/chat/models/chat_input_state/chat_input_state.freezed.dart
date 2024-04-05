@@ -19,7 +19,6 @@ mixin _$ChatInputState {
   bool get showReplyView => throw _privateConstructorUsedError;
   bool get showEditView => throw _privateConstructorUsedError;
   Widget? get replyWidget => throw _privateConstructorUsedError;
-  Widget? get editWidget => throw _privateConstructorUsedError;
   bool get allowEdit => throw _privateConstructorUsedError;
   bool get sendBtnVisible => throw _privateConstructorUsedError;
   bool get emojiRowVisible => throw _privateConstructorUsedError;
@@ -28,7 +27,6 @@ mixin _$ChatInputState {
   String? get currentMessageId => throw _privateConstructorUsedError;
   types.Message? get repliedToMessage => throw _privateConstructorUsedError;
   types.Message? get editMessage => throw _privateConstructorUsedError;
-  List<Map<String, String>> get mentions => throw _privateConstructorUsedError;
   Map<String, String> get mentionReplacements =>
       throw _privateConstructorUsedError;
   bool get editBtnVisible => throw _privateConstructorUsedError;
@@ -48,7 +46,6 @@ abstract class $ChatInputStateCopyWith<$Res> {
       {bool showReplyView,
       bool showEditView,
       Widget? replyWidget,
-      Widget? editWidget,
       bool allowEdit,
       bool sendBtnVisible,
       bool emojiRowVisible,
@@ -57,7 +54,6 @@ abstract class $ChatInputStateCopyWith<$Res> {
       String? currentMessageId,
       types.Message? repliedToMessage,
       types.Message? editMessage,
-      List<Map<String, String>> mentions,
       Map<String, String> mentionReplacements,
       bool editBtnVisible});
 }
@@ -78,7 +74,6 @@ class _$ChatInputStateCopyWithImpl<$Res, $Val extends ChatInputState>
     Object? showReplyView = null,
     Object? showEditView = null,
     Object? replyWidget = freezed,
-    Object? editWidget = freezed,
     Object? allowEdit = null,
     Object? sendBtnVisible = null,
     Object? emojiRowVisible = null,
@@ -87,7 +82,6 @@ class _$ChatInputStateCopyWithImpl<$Res, $Val extends ChatInputState>
     Object? currentMessageId = freezed,
     Object? repliedToMessage = freezed,
     Object? editMessage = freezed,
-    Object? mentions = null,
     Object? mentionReplacements = null,
     Object? editBtnVisible = null,
   }) {
@@ -103,10 +97,6 @@ class _$ChatInputStateCopyWithImpl<$Res, $Val extends ChatInputState>
       replyWidget: freezed == replyWidget
           ? _value.replyWidget
           : replyWidget // ignore: cast_nullable_to_non_nullable
-              as Widget?,
-      editWidget: freezed == editWidget
-          ? _value.editWidget
-          : editWidget // ignore: cast_nullable_to_non_nullable
               as Widget?,
       allowEdit: null == allowEdit
           ? _value.allowEdit
@@ -140,10 +130,6 @@ class _$ChatInputStateCopyWithImpl<$Res, $Val extends ChatInputState>
           ? _value.editMessage
           : editMessage // ignore: cast_nullable_to_non_nullable
               as types.Message?,
-      mentions: null == mentions
-          ? _value.mentions
-          : mentions // ignore: cast_nullable_to_non_nullable
-              as List<Map<String, String>>,
       mentionReplacements: null == mentionReplacements
           ? _value.mentionReplacements
           : mentionReplacements // ignore: cast_nullable_to_non_nullable
@@ -168,7 +154,6 @@ abstract class _$$ChatInputStateImplCopyWith<$Res>
       {bool showReplyView,
       bool showEditView,
       Widget? replyWidget,
-      Widget? editWidget,
       bool allowEdit,
       bool sendBtnVisible,
       bool emojiRowVisible,
@@ -177,7 +162,6 @@ abstract class _$$ChatInputStateImplCopyWith<$Res>
       String? currentMessageId,
       types.Message? repliedToMessage,
       types.Message? editMessage,
-      List<Map<String, String>> mentions,
       Map<String, String> mentionReplacements,
       bool editBtnVisible});
 }
@@ -196,7 +180,6 @@ class __$$ChatInputStateImplCopyWithImpl<$Res>
     Object? showReplyView = null,
     Object? showEditView = null,
     Object? replyWidget = freezed,
-    Object? editWidget = freezed,
     Object? allowEdit = null,
     Object? sendBtnVisible = null,
     Object? emojiRowVisible = null,
@@ -205,7 +188,6 @@ class __$$ChatInputStateImplCopyWithImpl<$Res>
     Object? currentMessageId = freezed,
     Object? repliedToMessage = freezed,
     Object? editMessage = freezed,
-    Object? mentions = null,
     Object? mentionReplacements = null,
     Object? editBtnVisible = null,
   }) {
@@ -221,10 +203,6 @@ class __$$ChatInputStateImplCopyWithImpl<$Res>
       replyWidget: freezed == replyWidget
           ? _value.replyWidget
           : replyWidget // ignore: cast_nullable_to_non_nullable
-              as Widget?,
-      editWidget: freezed == editWidget
-          ? _value.editWidget
-          : editWidget // ignore: cast_nullable_to_non_nullable
               as Widget?,
       allowEdit: null == allowEdit
           ? _value.allowEdit
@@ -258,10 +236,6 @@ class __$$ChatInputStateImplCopyWithImpl<$Res>
           ? _value.editMessage
           : editMessage // ignore: cast_nullable_to_non_nullable
               as types.Message?,
-      mentions: null == mentions
-          ? _value._mentions
-          : mentions // ignore: cast_nullable_to_non_nullable
-              as List<Map<String, String>>,
       mentionReplacements: null == mentionReplacements
           ? _value._mentionReplacements
           : mentionReplacements // ignore: cast_nullable_to_non_nullable
@@ -281,7 +255,6 @@ class _$ChatInputStateImpl implements _ChatInputState {
       {this.showReplyView = false,
       this.showEditView = false,
       this.replyWidget = null,
-      this.editWidget = null,
       this.allowEdit = true,
       this.sendBtnVisible = false,
       this.emojiRowVisible = false,
@@ -290,11 +263,9 @@ class _$ChatInputStateImpl implements _ChatInputState {
       this.currentMessageId = null,
       this.repliedToMessage = null,
       this.editMessage = null,
-      final List<Map<String, String>> mentions = const [],
       final Map<String, String> mentionReplacements = const {},
       this.editBtnVisible = false})
-      : _mentions = mentions,
-        _mentionReplacements = mentionReplacements;
+      : _mentionReplacements = mentionReplacements;
 
   @override
   @JsonKey()
@@ -305,9 +276,6 @@ class _$ChatInputStateImpl implements _ChatInputState {
   @override
   @JsonKey()
   final Widget? replyWidget;
-  @override
-  @JsonKey()
-  final Widget? editWidget;
   @override
   @JsonKey()
   final bool allowEdit;
@@ -332,15 +300,6 @@ class _$ChatInputStateImpl implements _ChatInputState {
   @override
   @JsonKey()
   final types.Message? editMessage;
-  final List<Map<String, String>> _mentions;
-  @override
-  @JsonKey()
-  List<Map<String, String>> get mentions {
-    if (_mentions is EqualUnmodifiableListView) return _mentions;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_mentions);
-  }
-
   final Map<String, String> _mentionReplacements;
   @override
   @JsonKey()
@@ -357,7 +316,7 @@ class _$ChatInputStateImpl implements _ChatInputState {
 
   @override
   String toString() {
-    return 'ChatInputState(showReplyView: $showReplyView, showEditView: $showEditView, replyWidget: $replyWidget, editWidget: $editWidget, allowEdit: $allowEdit, sendBtnVisible: $sendBtnVisible, emojiRowVisible: $emojiRowVisible, emojiPickerVisible: $emojiPickerVisible, attachmentVisible: $attachmentVisible, currentMessageId: $currentMessageId, repliedToMessage: $repliedToMessage, editMessage: $editMessage, mentions: $mentions, mentionReplacements: $mentionReplacements, editBtnVisible: $editBtnVisible)';
+    return 'ChatInputState(showReplyView: $showReplyView, showEditView: $showEditView, replyWidget: $replyWidget, allowEdit: $allowEdit, sendBtnVisible: $sendBtnVisible, emojiRowVisible: $emojiRowVisible, emojiPickerVisible: $emojiPickerVisible, attachmentVisible: $attachmentVisible, currentMessageId: $currentMessageId, repliedToMessage: $repliedToMessage, editMessage: $editMessage, mentionReplacements: $mentionReplacements, editBtnVisible: $editBtnVisible)';
   }
 
   @override
@@ -371,8 +330,6 @@ class _$ChatInputStateImpl implements _ChatInputState {
                 other.showEditView == showEditView) &&
             (identical(other.replyWidget, replyWidget) ||
                 other.replyWidget == replyWidget) &&
-            (identical(other.editWidget, editWidget) ||
-                other.editWidget == editWidget) &&
             (identical(other.allowEdit, allowEdit) ||
                 other.allowEdit == allowEdit) &&
             (identical(other.sendBtnVisible, sendBtnVisible) ||
@@ -389,7 +346,6 @@ class _$ChatInputStateImpl implements _ChatInputState {
                 other.repliedToMessage == repliedToMessage) &&
             (identical(other.editMessage, editMessage) ||
                 other.editMessage == editMessage) &&
-            const DeepCollectionEquality().equals(other._mentions, _mentions) &&
             const DeepCollectionEquality()
                 .equals(other._mentionReplacements, _mentionReplacements) &&
             (identical(other.editBtnVisible, editBtnVisible) ||
@@ -402,7 +358,6 @@ class _$ChatInputStateImpl implements _ChatInputState {
       showReplyView,
       showEditView,
       replyWidget,
-      editWidget,
       allowEdit,
       sendBtnVisible,
       emojiRowVisible,
@@ -411,7 +366,6 @@ class _$ChatInputStateImpl implements _ChatInputState {
       currentMessageId,
       repliedToMessage,
       editMessage,
-      const DeepCollectionEquality().hash(_mentions),
       const DeepCollectionEquality().hash(_mentionReplacements),
       editBtnVisible);
 
@@ -428,7 +382,6 @@ abstract class _ChatInputState implements ChatInputState {
       {final bool showReplyView,
       final bool showEditView,
       final Widget? replyWidget,
-      final Widget? editWidget,
       final bool allowEdit,
       final bool sendBtnVisible,
       final bool emojiRowVisible,
@@ -437,7 +390,6 @@ abstract class _ChatInputState implements ChatInputState {
       final String? currentMessageId,
       final types.Message? repliedToMessage,
       final types.Message? editMessage,
-      final List<Map<String, String>> mentions,
       final Map<String, String> mentionReplacements,
       final bool editBtnVisible}) = _$ChatInputStateImpl;
 
@@ -447,8 +399,6 @@ abstract class _ChatInputState implements ChatInputState {
   bool get showEditView;
   @override
   Widget? get replyWidget;
-  @override
-  Widget? get editWidget;
   @override
   bool get allowEdit;
   @override
@@ -465,8 +415,6 @@ abstract class _ChatInputState implements ChatInputState {
   types.Message? get repliedToMessage;
   @override
   types.Message? get editMessage;
-  @override
-  List<Map<String, String>> get mentions;
   @override
   Map<String, String> get mentionReplacements;
   @override

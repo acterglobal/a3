@@ -31,12 +31,6 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
     }
   }
 
-  void setEditWidget(Widget? child) {
-    if (mounted) {
-      state = state.copyWith(editWidget: child);
-    }
-  }
-
   void addMention(String displayName, String authorId) {
     final mentionReplacements = Map.of(state.mentionReplacements);
     mentionReplacements['@$displayName'] =

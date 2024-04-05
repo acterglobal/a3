@@ -10,7 +10,6 @@ class ChatInputState with _$ChatInputState {
     @Default(false) bool showReplyView,
     @Default(false) bool showEditView,
     @Default(null) Widget? replyWidget,
-    @Default(null) Widget? editWidget,
     @Default(true) bool allowEdit,
     @Default(false) bool sendBtnVisible,
     @Default(false) bool emojiRowVisible,

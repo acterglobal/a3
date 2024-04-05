@@ -89,7 +89,6 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
     if (ref.read(chatInputProvider(roomId)).showReplyView) {
       inputNotifier.showReplyView(false);
       inputNotifier.setReplyWidget(null);
-      inputNotifier.setEditWidget(null);
     }
     inputNotifier.setCurrentMessageId(message.id);
     inputNotifier.emojiRowVisible(true);
