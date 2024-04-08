@@ -589,6 +589,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
       mentionState.controller!.clear();
     } catch (error, stackTrace) {
       _log.severe('Sending chat message failed', error, stackTrace);
+      // ignore: use_build_context_synchronously
       EasyLoading.showError(L10n.of(context).errorSendingMessage(error));
       ref.read(chatInputProvider(roomId).notifier).sendingFailed();
     }
