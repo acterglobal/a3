@@ -7,7 +7,6 @@ import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::home::client_notifier');
 
-// ignore_for_file: avoid_print
 class ClientNotifier extends StateNotifier<Client?> {
   ClientNotifier(Ref ref) : super(null) {
     _loadUp(ref);
