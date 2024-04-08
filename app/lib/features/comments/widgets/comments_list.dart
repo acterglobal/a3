@@ -34,7 +34,14 @@ class CommentsList extends ConsumerWidget {
     return Column(
       children: [
         Column(
-          children: comments.map((c) => CommentWidget(comment: c)).toList(),
+          children: comments
+              .map(
+                (c) => CommentWidget(
+                  comment: c,
+                  manager: manager,
+                ),
+              )
+              .toList(),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
