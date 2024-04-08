@@ -1,7 +1,7 @@
 use anyhow::{bail, Result};
 use chrono::Local;
 use lazy_static::lazy_static;
-use log::{LevelFilter, Log, Metadata, Record};
+use log::{log_enabled, Level, LevelFilter, Log, Metadata, Record};
 use matrix_sdk::{Client, ClientBuilder};
 use matrix_sdk_base::store::StoreConfig;
 use matrix_sdk_sqlite::{OpenStoreError, SqliteCryptoStore, SqliteStateStore};
@@ -214,16 +214,38 @@ pub fn rotate_log_file() -> Result<String> {
     Ok("".to_string())
 }
 
-pub fn write_log(text: String, level: String) -> Result<()> {
-    match level.as_str() {
-        "debug" => log::debug!("{}", text),
-        "error" => log::error!("{}", text),
-        "info" => log::info!("{}", text),
-        "warn" => log::warn!("{}", text),
-        "trace" => log::trace!("{}", text),
-        _ => {}
+fn parse_log_level(level: &str) -> Level {
+    match level {
+        "debug" => Level::Debug,
+        "error" => Level::Error,
+        "info" => Level::Info,
+        "warn" => Level::Warn,
+        _ => Level::Trace,
     }
-    Ok(())
+}
+
+pub fn would_log(target: String, level: String) -> bool {
+    log_enabled!(target: &target, parse_log_level(&level))
+}
+
+pub fn write_log(
+    target: String,
+    level: String,
+    message: String,
+    file: Option<String>,
+    line: Option<u32>,
+    module_path: Option<String>,
+) {
+    log::logger().log(
+        &Record::builder()
+            .args(format_args!("{message}"))
+            .level(parse_log_level(&level))
+            .target(&target)
+            .file(file.as_deref())
+            .line(line)
+            .module_path(module_path.as_deref())
+            .build(),
+    );
 }
 
 pub fn sanitize(base_path: &str, home: &str) -> PathBuf {
