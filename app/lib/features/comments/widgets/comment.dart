@@ -5,8 +5,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import 'skeletons/comment_item_skeleton_widget.dart';
+import 'package:acter/features/comments/widgets/skeletons/comment_item_skeleton_widget.dart';
 
 class CommentWidget extends ConsumerWidget {
   final Comment comment;
