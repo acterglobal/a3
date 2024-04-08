@@ -6,6 +6,8 @@ import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'skeletons/comment_item_skeleton_widget.dart';
+
 class CommentWidget extends ConsumerWidget {
   final Comment comment;
   final CommentsManager manager;
@@ -73,8 +75,8 @@ class CommentWidget extends ConsumerWidget {
           ),
         );
       },
-      error: (err, stackTrace) => Container(),
-      loading: () => Container(),
+      error: (err, stackTrace) => const CommentItemSkeleton(),
+      loading: () => const CommentItemSkeleton(),
     );
   }
 }
