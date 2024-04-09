@@ -1521,5 +1521,7 @@
   "pin": "Pin",
   "poll": "Poll",
   "discussion": "Discussion",
-  "reportBug": "Report bug"
+  "reportBug": "Report bug",
+  "commentEmptyStateTitle": "No comments found",
+  "commentEmptyStateSubtitle": "Be the first to comment!"
 }
