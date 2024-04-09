@@ -222,7 +222,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     if (!formKey.currentState!.validate()) return;
     final network = ref.read(networkAwareProvider);
     if (!inCI && network == NetworkStatus.Off) {
-      showNoInternetNotification();
+      showNoInternetNotification(context);
       return;
     }
     final authNotifier = ref.read(authStateProvider.notifier);

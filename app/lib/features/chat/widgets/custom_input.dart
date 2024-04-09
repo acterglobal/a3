@@ -6,12 +6,11 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/attachments/attachment_container.dart';
 import 'package:acter/common/widgets/attachments/attachment_options.dart';
-import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
-import 'package:acter/common/widgets/report_content.dart';
-import 'package:acter/features/chat/chat_utils/chat_utils.dart';
+import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/chat/widgets/custom_message_builder.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
 import 'package:acter/features/chat/widgets/mention_profile_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -28,7 +27,6 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:html/parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 import 'package:logging/logging.dart';
@@ -37,9 +35,18 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 final _log = Logger('a3::chat::custom_input');
 
-// keep track of text controller values across rooms.
-final _textValuesProvider =
-    StateProvider.family<String, String>((ref, roomId) => '');
+final _sendButtonVisible = StateProvider.family<bool, String>(
+  (ref, roomId) => ref.watch(
+    textValuesProvider(roomId).select((value) => value.isNotEmpty),
+  ),
+);
+
+final _allowEdit = StateProvider.family<bool, String>(
+  (ref, roomId) => ref.watch(
+    chatInputProvider(roomId)
+        .select((state) => state.sendingState == SendingState.preparing),
+  ),
+);
 
 class CustomChatInput extends ConsumerStatefulWidget {
   final Convo convo;
@@ -54,303 +61,110 @@ class CustomChatInput extends ConsumerStatefulWidget {
 class _CustomChatInputState extends ConsumerState<CustomChatInput> {
   GlobalKey<FlutterMentionsState> mentionKey =
       GlobalKey<FlutterMentionsState>();
-  bool isEncrypted = false;
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      getEncryptionStatus();
-    });
+  void handleEmojiSelected(Category? category, Emoji emoji) {
+    final mentionState = mentionKey.currentState!;
+    // Get cursor current position
+    var cursorPos = mentionState.controller!.selection.base.offset;
+
+    // Right text of cursor position
+    String suffixText = mentionState.controller!.text.substring(cursorPos);
+
+    // Get the left text of cursor
+    String prefixText = mentionState.controller!.text.substring(0, cursorPos);
+
+    int emojiLength = emoji.emoji.length;
+
+    // Add emoji at current current cursor position
+    mentionState.controller!.text = prefixText + emoji.emoji + suffixText;
+
+    // Cursor move to end of added emoji character
+    mentionState.controller!.selection = TextSelection(
+      baseOffset: cursorPos + emojiLength,
+      extentOffset: cursorPos + emojiLength,
+    );
   }
 
-  void getEncryptionStatus() async {
-    isEncrypted = await ref
-        .read(isRoomEncryptedProvider(widget.convo.getRoomIdStr()).future);
+  void handleBackspacePressed() {
+    final newValue =
+        mentionKey.currentState!.controller!.text.characters.skipLast(1).string;
+    mentionKey.currentState!.controller!.text = newValue;
   }
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final userId = ref.watch(alwaysClientProvider).userId().toString();
     final roomId = widget.convo.getRoomIdStr();
     final chatInputState = ref.watch(chatInputProvider(roomId));
-    final chatState = ref.watch(chatStateProvider(widget.convo));
-    final repliedToMessage = chatInputState.repliedToMessage;
-    final editMessage = chatInputState.editMessage;
-    final currentMessageId = chatInputState.currentMessageId;
-    final showReplyView = ref.watch(
-      chatInputProvider(roomId).select((ci) => ci.showReplyView),
-    );
-    final showEditView = ref.watch(
-      chatInputProvider(roomId).select((ci) => ci.showEditView),
-    );
-    final showEditButton = ref.watch(
-      chatInputProvider(roomId).select((ci) => ci.editBtnVisible),
-    );
 
-    bool isAuthor() {
-      if (currentMessageId != null) {
-        final messages = chatState.messages;
-        int index = messages.indexWhere((x) => x.id == currentMessageId);
-        if (index != -1) {
-          return userId == messages[index].author.id;
-        }
-      }
-      return false;
+    if (chatInputState.selectedMessage == null) {
+      return renderMain(context);
     }
 
-    void handleEmojiSelected(Category? category, Emoji emoji) {
-      final mentionState = mentionKey.currentState!;
-      // Get cursor current position
-      var cursorPos = mentionState.controller!.selection.base.offset;
+    return switch (chatInputState.selectedMessageState) {
+      SelectedMessageState.replyTo =>
+        renderReplyView(context, chatInputState.selectedMessage!),
+      SelectedMessageState.edit =>
+        renderEditView(context, chatInputState.selectedMessage!),
+      SelectedMessageState.none ||
+      SelectedMessageState.actions =>
+        renderMain(context)
+    };
+  }
 
-      // Right text of cursor position
-      String suffixText = mentionState.controller!.text.substring(cursorPos);
+  Widget renderMain(BuildContext context) {
+    return renderChatInputArea(context, null);
+  }
 
-      // Get the left text of cursor
-      String prefixText = mentionState.controller!.text.substring(0, cursorPos);
-
-      int emojiLength = emoji.emoji.length;
-
-      // Add emoji at current current cursor position
-      mentionState.controller!.text = prefixText + emoji.emoji + suffixText;
-
-      // Cursor move to end of added emoji character
-      mentionState.controller!.selection = TextSelection(
-        baseOffset: cursorPos + emojiLength,
-        extentOffset: cursorPos + emojiLength,
-      );
-      ref.read(chatInputProvider(roomId).notifier).showSendBtn(true);
-    }
-
-    void handleBackspacePressed() {
-      final newValue = mentionKey.currentState!.controller!.text.characters
-          .skipLast(1)
-          .string;
-      mentionKey.currentState!.controller!.text = newValue;
-      if (newValue.isEmpty) {
-        ref.read(chatInputProvider(roomId).notifier).showSendBtn(false);
-      }
-    }
+  Widget renderChatInputArea(BuildContext context, Widget? child) {
+    final roomId = widget.convo.getRoomIdStr();
+    final isEncrypted =
+        ref.watch(isRoomEncryptedProvider(roomId)).valueOrNull ?? false;
 
     return Column(
       children: [
-        Visibility(
-          visible: showReplyView,
-          child: FrostEffect(
-            widgetWidth: size.width,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(
-                  top: 12.0,
-                  left: 16.0,
-                  right: 16.0,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    repliedToMessage != null
-                        ? Consumer(
-                            builder: (ctx, ref, child) => replyBuilder(roomId),
-                          )
-                        : const SizedBox.shrink(),
-                    if (repliedToMessage != null &&
-                        chatInputState.replyWidget != null)
-                      _ReplyContentWidget(
-                        convo: widget.convo,
-                        msg: repliedToMessage,
-                        messageWidget: chatInputState.replyWidget!,
-                      ),
-                  ],
-                ),
-              ),
+        if (child != null) child,
+        FrostEffect(
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 15),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.background,
             ),
-          ),
-        ),
-        Visibility(
-          visible: showEditView,
-          child: FrostEffect(
-            widgetWidth: size.width,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(
-                  top: 12.0,
-                  left: 16.0,
-                  right: 16.0,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: editMessage != null
-                      ? [
-                          Consumer(builder: editMessageBuilder),
-                          _EditMessageContentWidget(
-                            convo: widget.convo,
-                            msg: editMessage,
-                          ),
-                        ]
-                      : [],
-                ),
-              ),
-            ),
-          ),
-        ),
-        Visibility(
-          visible: !chatInputState.emojiRowVisible,
-          replacement: FrostEffect(
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  InkWell(
-                    onTap: () {
-                      if (isAuthor()) {
-                        showAdaptiveDialog(
-                          context: context,
-                          builder: (context) => DefaultDialog(
-                            title: Text(
-                              L10n.of(context)
-                                  .areYouSureYouWantToDeleteThisMessage,
-                            ),
-                            actions: <Widget>[
-                              OutlinedButton(
-                                onPressed: onDeleteNo,
-                                child: Text(L10n.of(context).no),
-                              ),
-                              ElevatedButton(
-                                onPressed: () async => await onDeleteYes(
-                                  currentMessageId,
-                                  userId,
-                                ),
-                                child: Text(L10n.of(context).yes),
-                              ),
-                            ],
-                          ),
-                        );
-                      } else {
-                        final message = ref
-                            .read(chatStateProvider(widget.convo))
-                            .messages
-                            .firstWhere(
-                              (element) => element.id == currentMessageId,
-                            );
-                        showAdaptiveDialog(
-                          context: context,
-                          builder: (context) => ReportContentWidget(
-                            title: L10n.of(context).reportThisMessage,
-                            description: L10n.of(context).reportMessageContent,
-                            senderId: message.author.id,
-                            roomId: roomId,
-                            eventId: currentMessageId!,
-                          ),
-                        );
-                      }
-                    },
-                    child: Text(
-                      isAuthor()
-                          ? L10n.of(context).delete
-                          : L10n.of(context).report,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.error,
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: InkWell(
+                      onTap: () => onSelectAttachment(context),
+                      child: const Icon(
+                        Atlas.paperclip_attachment_thin,
+                        size: 20,
                       ),
                     ),
                   ),
-                  if (showEditButton)
-                    InkWell(
-                      onTap: () => onPressEditMessage(currentMessageId),
-                      child: Text(L10n.of(context).edit),
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: _TextInputWidget(
+                        mentionKey: mentionKey,
+                        convo: widget.convo,
+                        onSendButtonPressed: () => onSendButtonPressed(context),
+                        isEncrypted: isEncrypted,
+                      ),
                     ),
-                  InkWell(
-                    onTap: onMoreTap,
-                    child: Text(L10n.of(context).more),
                   ),
+                  if (ref.watch(_sendButtonVisible(roomId)))
+                    renderSendButton(context, roomId),
                 ],
               ),
             ),
           ),
-          child: FrostEffect(
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.background,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(right: 10),
-                      child: InkWell(
-                        onTap: () => showModalBottomSheet(
-                          context: context,
-                          isDismissible: true,
-                          enableDrag: true,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(20),
-                              topLeft: Radius.circular(20),
-                            ),
-                          ),
-                          builder: (ctx) => AttachmentOptions(
-                            onTapCamera: onCameraTap,
-                            onTapImage: onImageTap,
-                            onTapVideo: onVideoTap,
-                            onTapFile: onFileTap,
-                          ),
-                        ),
-                        child: const Icon(
-                          Atlas.paperclip_attachment_thin,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                    Flexible(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: _TextInputWidget(
-                          mentionKey: mentionKey,
-                          convo: widget.convo,
-                          onSendButtonPressed: onSendButtonPressed,
-                          isEncrypted: isEncrypted,
-                        ),
-                      ),
-                    ),
-                    if (chatInputState.sendBtnVisible)
-                      InkWell(
-                        onTap: () => onSendButtonPressed(),
-                        child: CircleAvatar(
-                          radius: 22,
-                          backgroundColor:
-                              Theme.of(context).colorScheme.primary,
-                          child: Icon(
-                            Icons.send,
-                            size: 20,
-                            color: Theme.of(context).colorScheme.onPrimary,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ),
-          ),
         ),
-        Visibility(
-          visible: ref.watch(chatInputProvider(roomId)).emojiPickerVisible,
-          child: EmojiPickerWidget(
+        if (ref.watch(chatInputProvider(roomId)).emojiPickerVisible)
+          EmojiPickerWidget(
             size: Size(
               MediaQuery.of(context).size.width,
               MediaQuery.of(context).size.height / 3,
@@ -358,71 +172,176 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             onEmojiSelected: handleEmojiSelected,
             onBackspacePressed: handleBackspacePressed,
           ),
-        ),
       ],
     );
   }
 
-  void onPressEditMessage(String? currentMessageId) {
-    final roomId = widget.convo.getRoomIdStr();
-    final emojiRowVisible = ref.read(
-      chatInputProvider(roomId).select((ci) => ci.emojiRowVisible),
+  Widget renderSendButton(BuildContext context, String roomId) {
+    final allowEditing = ref.watch(_allowEdit(roomId));
+
+    if (allowEditing) {
+      return IconButton.filled(
+        iconSize: 20,
+        onPressed: () => onSendButtonPressed(context),
+        icon: const Icon(
+          Icons.send,
+        ),
+      );
+    }
+
+    return IconButton.filled(
+      iconSize: 20,
+      onPressed: () => {},
+      icon: Icon(
+        Icons.send,
+        color: Theme.of(context).colorScheme.inversePrimary,
+      ),
     );
-    final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
-    if (emojiRowVisible) {
-      inputNotifier.setCurrentMessageId(null);
-      inputNotifier.emojiRowVisible(false);
-    }
-
-    inputNotifier.showEditView(true);
-    final message = ref
-        .read(chatStateProvider(widget.convo))
-        .messages
-        .firstWhere((element) => element.id == currentMessageId);
-    inputNotifier.setEditMessage(message);
-    if (message is TextMessage) {
-      // Parse String Data to HTML document
-      final document = parse(message.text);
-
-      if (document.body != null) {
-        // Get message data
-        String msg = message.text.trim();
-
-        // Get list of 'A Tags' values
-        final aTagElementList = document.getElementsByTagName('a');
-
-        for (final aTagElement in aTagElementList) {
-          final userMentionMessageData =
-              parseUserMentionMessage(msg, aTagElement);
-          msg = userMentionMessageData.parsedMessage;
-
-          // Adding mentions data
-          ref.read(chatInputProvider(roomId).notifier).addMention(
-                userMentionMessageData.displayName,
-                userMentionMessageData.userName,
-              );
-        }
-
-        // Parse data
-        final messageDocument = parse(msg);
-        final messageBodyText = messageDocument.body?.text ?? '';
-
-        // Update text value with msg value
-        ref
-            .read(_textValuesProvider(roomId).notifier)
-            .update((state) => messageBodyText);
-      }
-    }
-
-    final chatInputFocusState = ref.read(chatInputFocusProvider.notifier);
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      FocusScope.of(context).requestFocus(chatInputFocusState.state);
-    });
   }
 
-  // delete message event
-  Future<void> redactRoomMessage(String eventId, String senderId) async {
-    await widget.convo.redactMessage(eventId, senderId, null, null);
+  Widget renderReplyView(BuildContext context, Message repliedToMessage) {
+    final size = MediaQuery.of(context).size;
+    final roomId = widget.convo.getRoomIdStr();
+
+    return renderChatInputArea(
+      context,
+      FrostEffect(
+        widgetWidth: size.width,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primaryContainer,
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(
+              top: 12.0,
+              left: 16.0,
+              right: 16.0,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Consumer(
+                  builder: (ctx, ref, child) =>
+                      replyBuilder(roomId, repliedToMessage),
+                ),
+                _ReplyContentWidget(
+                  convo: widget.convo,
+                  msg: repliedToMessage,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget renderEditView(BuildContext context, Message editMessage) {
+    final size = MediaQuery.of(context).size;
+    return renderChatInputArea(
+      context,
+      FrostEffect(
+        widgetWidth: size.width,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primaryContainer,
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(
+              top: 12.0,
+              left: 16.0,
+              right: 16.0,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Consumer(builder: editMessageBuilder),
+                _EditMessageContentWidget(
+                  convo: widget.convo,
+                  msg: editMessage,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void onSelectAttachment(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: true,
+      enableDrag: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topRight: Radius.circular(20),
+          topLeft: Radius.circular(20),
+        ),
+      ),
+      builder: (ctx) => AttachmentOptions(
+        onTapCamera: () async {
+          XFile? imageFile =
+              await ImagePicker().pickImage(source: ImageSource.camera);
+          if (imageFile != null) {
+            List<File> files = [File(imageFile.path)];
+
+            if (context.mounted) {
+              attachmentConfirmation(
+                files,
+                AttachmentType.camera,
+                handleFileUpload,
+              );
+            }
+          }
+        },
+        onTapImage: () async {
+          XFile? imageFile =
+              await ImagePicker().pickImage(source: ImageSource.gallery);
+          if (imageFile != null) {
+            List<File> files = [File(imageFile.path)];
+
+            if (context.mounted) {
+              attachmentConfirmation(
+                files,
+                AttachmentType.image,
+                handleFileUpload,
+              );
+            }
+          }
+        },
+        onTapVideo: () async {
+          XFile? imageFile =
+              await ImagePicker().pickVideo(source: ImageSource.gallery);
+          if (imageFile != null) {
+            List<File> files = [File(imageFile.path)];
+
+            if (context.mounted) {
+              attachmentConfirmation(
+                files,
+                AttachmentType.video,
+                handleFileUpload,
+              );
+            }
+          }
+        },
+        onTapFile: () async {
+          final selectedFiles = await handleFileSelection(ctx);
+
+          if (context.mounted) {
+            attachmentConfirmation(
+              selectedFiles,
+              AttachmentType.file,
+              handleFileUpload,
+            );
+          }
+        },
+      ),
+    );
   }
 
   // file selection
@@ -477,9 +396,8 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
   ) async {
     final roomId = widget.convo.getRoomIdStr();
     final client = ref.read(alwaysClientProvider);
-    final repliedToMessage =
-        ref.read(chatInputProvider(roomId)).repliedToMessage;
-    final stream = widget.convo.timelineStream();
+    final inputState = ref.read(chatInputProvider(roomId));
+    final stream = ref.read(timelineStreamProvider(widget.convo));
 
     try {
       for (File file in files) {
@@ -490,38 +408,55 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             attachmentType == AttachmentType.image) {
           final bytes = file.readAsBytesSync();
           final image = await decodeImageFromList(bytes);
-          final draft = client
+          final imageDraft = client
               .imageDraft(file.path, mimeType)
               .size(fileLen)
               .width(image.width)
               .height(image.height);
-          if (repliedToMessage != null) {
-            await stream.replyMessage(repliedToMessage.id, draft);
+          if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
+            await stream.replyMessage(
+              inputState.selectedMessage!.id,
+              imageDraft,
+            );
           } else {
-            await stream.sendMessage(draft);
+            await stream.sendMessage(imageDraft);
           }
         } else if (mimeType.startsWith('audio/') &&
             attachmentType == AttachmentType.audio) {
-          final draft = client.audioDraft(file.path, mimeType).size(fileLen);
-          if (repliedToMessage != null) {
-            await stream.replyMessage(repliedToMessage.id, draft);
+          final audioDraft =
+              client.audioDraft(file.path, mimeType).size(file.lengthSync());
+          if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
+            await stream.replyMessage(
+              inputState.selectedMessage!.id,
+              audioDraft,
+            );
           } else {
-            await stream.sendMessage(draft);
+            await stream.sendMessage(audioDraft);
           }
         } else if (mimeType.startsWith('video/') &&
             attachmentType == AttachmentType.video) {
-          final draft = client.videoDraft(file.path, mimeType).size(fileLen);
-          if (repliedToMessage != null) {
-            await stream.replyMessage(repliedToMessage.id, draft);
+          final videoDraft =
+              client.videoDraft(file.path, mimeType).size(file.lengthSync());
+
+          if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
+            await stream.replyMessage(
+              inputState.selectedMessage!.id,
+              videoDraft,
+            );
           } else {
-            await stream.sendMessage(draft);
+            await stream.sendMessage(videoDraft);
           }
         } else {
-          final draft = client.fileDraft(file.path, mimeType).size(fileLen);
-          if (repliedToMessage != null) {
-            await stream.replyMessage(repliedToMessage.id, draft);
+          final fileDraft =
+              client.fileDraft(file.path, mimeType).size(file.lengthSync());
+
+          if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
+            await stream.replyMessage(
+              inputState.selectedMessage!.id,
+              fileDraft,
+            );
           } else {
-            await stream.sendMessage(draft);
+            await stream.sendMessage(fileDraft);
           }
         }
       }
@@ -529,26 +464,13 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
       _log.severe('error occurred', e, s);
     }
 
-    if (repliedToMessage != null) {
-      final notifier = ref.read(chatInputProvider(roomId).notifier);
-      notifier.setRepliedToMessage(null);
-      notifier.setEditMessage(null);
-      notifier.showReplyView(false);
-      notifier.showEditView(false);
-      notifier.setReplyWidget(null);
-      notifier.setEditWidget(null);
-    }
+    ref.read(chatInputProvider(roomId).notifier).unsetSelectedMessage();
   }
 
-  Widget replyBuilder(String roomId) {
-    final roomId = widget.convo.getRoomIdStr();
-    final chatInputState = ref.watch(chatInputProvider(roomId));
-    final repliedToMessage = chatInputState.repliedToMessage;
-    if (repliedToMessage == null) return const SizedBox();
+  Widget replyBuilder(String roomId, Message repliedToMessage) {
     final authorId = repliedToMessage.author.id;
-    final replyProfile = ref.watch(
-      roomMemberProvider((userId: authorId, roomId: roomId)),
-    );
+    final replyProfile =
+        ref.watch(roomMemberProvider((userId: authorId, roomId: roomId)));
     final inputNotifier = ref.watch(chatInputProvider(roomId).notifier);
     return Row(
       children: [
@@ -589,12 +511,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
         const Spacer(),
         GestureDetector(
           onTap: () {
-            inputNotifier.showReplyView(false);
-            inputNotifier.showEditView(false);
-            inputNotifier.setReplyWidget(null);
-            inputNotifier.setEditWidget(null);
-            inputNotifier.setRepliedToMessage(null);
-            inputNotifier.setEditMessage(null);
+            inputNotifier.unsetSelectedMessage();
             FocusScope.of(context).unfocus();
           },
           child: const Icon(Atlas.xmark_circle),
@@ -624,12 +541,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             if (mentionKey.currentState != null) {
               mentionState!.controller!.clear();
             }
-            inputNotifier.showReplyView(false);
-            inputNotifier.showEditView(false);
-            inputNotifier.setReplyWidget(null);
-            inputNotifier.setEditWidget(null);
-            inputNotifier.setRepliedToMessage(null);
-            inputNotifier.setEditMessage(null);
+            inputNotifier.unsetSelectedMessage();
             FocusScope.of(context).unfocus();
           },
           child: const Icon(Atlas.xmark_circle),
@@ -638,145 +550,48 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     );
   }
 
-  Future<void> onSendButtonPressed() async {
+  Future<void> onSendButtonPressed(BuildContext context) async {
     if (mentionKey.currentState!.controller!.text.isEmpty) return;
+    final lang = L10n.of(context);
     final roomId = widget.convo.getRoomIdStr();
-    final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
-    final mentionReplacements =
-        ref.read(chatInputProvider(roomId)).mentionReplacements;
-    final mentionState = mentionKey.currentState!;
-    inputNotifier.prepareSending();
-    String markdownText = mentionState.controller!.text;
-    mentionReplacements.forEach((key, value) {
-      markdownText = markdownText.replaceAll(key, value);
-    });
-
+    ref.read(chatInputProvider(roomId).notifier).startSending();
     try {
-      await handleSendPressed(markdownText);
-      inputNotifier.messageSent();
-      mentionState.controller!.clear();
-    } catch (e) {
-      if (context.mounted) {
-        EasyLoading.showError(
-          '${L10n.of(context).errorSendingMessage}: $e',
-          duration: const Duration(seconds: 3),
-        );
+      // end the typing notification
+      await widget.convo.typingNotice(false);
+
+      final mentionReplacements =
+          ref.read(chatInputProvider(roomId)).mentionReplacements;
+      final mentionState = mentionKey.currentState!;
+      String markdownText = mentionState.controller!.text;
+      mentionReplacements.forEach((key, value) {
+        markdownText = markdownText.replaceAll(key, value);
+      });
+
+      // make the actual draft
+      final client = ref.read(alwaysClientProvider);
+      final draft = client.textMarkdownDraft(markdownText);
+
+      // actually send it out
+      final stream = ref.read(timelineStreamProvider(widget.convo));
+      final inputState = ref.read(chatInputProvider(roomId));
+
+      if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
+        await stream.replyMessage(inputState.selectedMessage!.id, draft);
+      } else if (inputState.selectedMessageState == SelectedMessageState.edit) {
+        await stream.editMessage(inputState.selectedMessage!.id, draft);
+      } else {
+        await stream.sendMessage(draft);
       }
-      inputNotifier.sendingFailed();
-    }
-  }
-
-  // push messages in convo
-  Future<void> handleSendPressed(String markdownMessage) async {
-    final roomId = widget.convo.getRoomIdStr();
-    final client = ref.read(alwaysClientProvider);
-    final inputState = ref.read(chatInputProvider(roomId));
-    final repliedToMessage = inputState.repliedToMessage;
-    final editMessage = inputState.editMessage;
-    // image or video is sent automatically
-    // user will click "send" button explicitly for text only
-    await widget.convo.typingNotice(false);
-    final stream = widget.convo.timelineStream();
-    final draft = client.textMarkdownDraft(markdownMessage);
-    if (repliedToMessage != null) {
-      await stream.replyMessage(repliedToMessage.id, draft);
-    } else if (editMessage != null) {
-      await stream.editMessage(editMessage.id, draft);
-    } else {
-      await stream.sendMessage(draft);
-    }
-    if (repliedToMessage != null || editMessage != null) {
-      final notifier = ref.read(chatInputProvider(roomId).notifier);
-      notifier.setRepliedToMessage(null);
-      notifier.setEditMessage(null);
-      notifier.showReplyView(false);
-      notifier.showEditView(false);
-      notifier.setReplyWidget(null);
-      notifier.setEditWidget(null);
-    }
-  }
-
-  Future<void> onDeleteYes(String? currentMessageId, String userId) async {
-    if (currentMessageId == null) {
-      _log.info(currentMessageId);
-      return;
-    }
-    final roomId = widget.convo.getRoomIdStr();
-    final chatInputNotifier = ref.read(chatInputProvider(roomId).notifier);
-    try {
-      redactRoomMessage(
-        currentMessageId,
-        userId, // editor is me
-      );
-      chatInputNotifier.emojiRowVisible(false);
-      chatInputNotifier.setCurrentMessageId(null);
-      if (!context.mounted) return;
-      Navigator.of(context, rootNavigator: true).pop();
-    } catch (e) {
-      if (!context.mounted) return;
-      Navigator.of(context, rootNavigator: true).pop();
+      ref.read(chatInputProvider(roomId).notifier).messageSent();
+      mentionState.controller!.clear();
+    } catch (error, stackTrace) {
+      _log.severe('Sending chat message failed', error, stackTrace);
       EasyLoading.showError(
-        e.toString(),
+        lang.errorSendingMessage(error),
         duration: const Duration(seconds: 3),
       );
+      ref.read(chatInputProvider(roomId).notifier).sendingFailed();
     }
-  }
-
-  void onDeleteNo() {
-    Navigator.of(context, rootNavigator: true).pop();
-  }
-
-  Future<void> onCameraTap() async {
-    XFile? imageFile = await ImagePicker().pickImage(
-      source: ImageSource.camera,
-    );
-    if (imageFile == null) return;
-    if (!mounted) return;
-    attachmentConfirmation(
-      [File(imageFile.path)],
-      AttachmentType.camera,
-      handleFileUpload,
-    );
-  }
-
-  Future<void> onImageTap() async {
-    XFile? imageFile = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-    );
-    if (imageFile == null) return;
-    if (!mounted) return;
-    attachmentConfirmation(
-      [File(imageFile.path)],
-      AttachmentType.image,
-      handleFileUpload,
-    );
-  }
-
-  Future<void> onVideoTap() async {
-    XFile? videoFile = await ImagePicker().pickVideo(
-      source: ImageSource.gallery,
-    );
-    if (videoFile == null) return;
-    if (!mounted) return;
-    attachmentConfirmation(
-      [File(videoFile.path)],
-      AttachmentType.video,
-      handleFileUpload,
-    );
-  }
-
-  Future<void> onFileTap() async {
-    final selectedFiles = await handleFileSelection(context);
-    if (!mounted) return;
-    attachmentConfirmation(
-      selectedFiles,
-      AttachmentType.file,
-      handleFileUpload,
-    );
-  }
-
-  void onMoreTap() {
-    EasyLoading.showToast(L10n.of(context).moreOptionsNotImplementedYet);
   }
 }
 
@@ -884,12 +699,6 @@ class _TextInputWidget extends ConsumerWidget {
     this.isEncrypted = false,
   });
 
-  void _updateTextValue(String roomId, WidgetRef ref) {
-    String textValue = '';
-    textValue += mentionKey.currentState!.controller!.text;
-    ref.read(_textValuesProvider(roomId).notifier).update((state) => textValue);
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final roomId = convo.getRoomIdStr();
@@ -905,8 +714,8 @@ class _TextInputWidget extends ConsumerWidget {
       child: Focus(
         child: FlutterMentions(
           key: mentionKey,
-          // restore input if available
-          defaultText: ref.watch(_textValuesProvider(roomId)),
+          // restore input if available, but only as a read on startup
+          defaultText: ref.read(textValuesProvider(roomId)),
           suggestionPosition: SuggestionPosition.Top,
           suggestionListWidth: width >= 770 ? width * 0.6 : width * 0.8,
           onMentionAdd: (roomMember) => onMentionAdd(roomMember, ref),
@@ -914,9 +723,22 @@ class _TextInputWidget extends ConsumerWidget {
             color: Theme.of(context).colorScheme.background,
             borderRadius: BorderRadius.circular(6),
           ),
-          onChanged: (value) => onTextChanged(value, ref),
+          onChanged: (String value) async {
+            ref
+                .read(textValuesProvider(roomId).notifier)
+                .update((state) => value);
+            if (value.isNotEmpty) {
+              Future.delayed(const Duration(milliseconds: 500), () async {
+                await typingNotice(true);
+              });
+            } else {
+              Future.delayed(const Duration(milliseconds: 500), () async {
+                await typingNotice(false);
+              });
+            }
+          },
           textInputAction: TextInputAction.newline,
-          enabled: chatInputState.allowEdit,
+          enabled: ref.watch(_allowEdit(roomId)),
           onSubmitted: (value) => onSendButtonPressed(),
           style: Theme.of(context).textTheme.bodyMedium,
           cursorColor: Theme.of(context).colorScheme.primary,
@@ -1030,23 +852,6 @@ class _TextInputWidget extends ConsumerWidget {
         .addMention(displayName, authorId);
   }
 
-  void onTextChanged(String value, WidgetRef ref) {
-    final roomId = convo.getRoomIdStr();
-    _updateTextValue(roomId, ref);
-    final chatInputNotifier = ref.read(chatInputProvider(roomId).notifier);
-    if (value.isNotEmpty) {
-      chatInputNotifier.showSendBtn(true);
-      Future.delayed(const Duration(milliseconds: 500), () async {
-        await typingNotice(true);
-      });
-    } else {
-      chatInputNotifier.showSendBtn(false);
-      Future.delayed(const Duration(milliseconds: 500), () async {
-        await typingNotice(false);
-      });
-    }
-  }
-
   void onTextTap(bool emojiPickerVisible, WidgetRef ref) {
     final roomId = convo.getRoomIdStr();
     final chatInputNotifier = ref.read(chatInputProvider(roomId).notifier);
@@ -1079,12 +884,10 @@ class _TextInputWidget extends ConsumerWidget {
 class _ReplyContentWidget extends StatelessWidget {
   final Convo convo;
   final Message msg;
-  final Widget messageWidget;
 
   const _ReplyContentWidget({
     required this.convo,
     required this.msg,
-    required this.messageWidget,
   });
 
   @override
@@ -1115,8 +918,31 @@ class _ReplyContentWidget extends StatelessWidget {
           maxLines: 3,
         ),
       );
+    } else if (msg is FileMessage) {
+      return Padding(
+        padding: const EdgeInsets.all(12),
+        child: Text(
+          msg.metadata?['content'],
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+      );
+    } else if (msg is CustomMessage) {
+      return CustomMessageBuilder(
+        message: msg as CustomMessage,
+        messageWidth: 100,
+      );
+    } else {
+      return Padding(
+        padding: const EdgeInsets.all(12),
+        child: Text(
+          L10n.of(context).replyPreviewUnavailable,
+          style: Theme.of(context)
+              .textTheme
+              .bodySmall!
+              .copyWith(fontStyle: FontStyle.italic),
+        ),
+      );
     }
-    return messageWidget;
   }
 }
 

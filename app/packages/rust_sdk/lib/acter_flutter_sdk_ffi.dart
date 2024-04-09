@@ -666,12 +666,11 @@ class Api {
     return tmp1;
   }
 
-  /// Allow flutter to call logging on rust side
-  void writeLog(
-    String text,
+  bool wouldLog(
+    String target,
     String level,
   ) {
-    final tmp0 = text;
+    final tmp0 = target;
     final tmp4 = level;
     var tmp1 = 0;
     var tmp2 = 0;
@@ -695,7 +694,7 @@ class Api {
     tmp5_1.setAll(0, tmp4_0);
     tmp5 = tmp5_0.address;
     tmp7 = tmp6;
-    final tmp8 = _writeLog(
+    final tmp8 = _wouldLog(
       tmp1,
       tmp2,
       tmp3,
@@ -703,22 +702,125 @@ class Api {
       tmp6,
       tmp7,
     );
-    final tmp10 = tmp8.arg0;
-    final tmp11 = tmp8.arg1;
-    final tmp12 = tmp8.arg2;
-    final tmp13 = tmp8.arg3;
-    if (tmp10 == 0) {
-      debugAllocation("handle error", tmp11, tmp12);
-      final ffi.Pointer<ffi.Uint8> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-      final tmp10_0 =
-          utf8.decode(tmp11_0.asTypedList(tmp12), allowMalformed: true);
-      if (tmp12 > 0) {
-        final ffi.Pointer<ffi.Void> tmp11_0;
-        tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-        this.__deallocate(tmp11_0, tmp13, 1);
-      }
-      throw tmp10_0;
+    final tmp10 = tmp8;
+    final tmp9 = tmp10 > 0;
+    return tmp9;
+  }
+
+  /// Log the entry to the rust logging
+  void writeLog(
+    String target,
+    String level,
+    String message,
+    String? file,
+    int? line,
+    String? modulePath,
+  ) {
+    final tmp0 = target;
+    final tmp4 = level;
+    final tmp8 = message;
+    final tmp12 = file;
+    final tmp18 = line;
+    final tmp22 = modulePath;
+    var tmp1 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp9 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp13 = 0;
+    var tmp15 = 0;
+    var tmp16 = 0;
+    var tmp17 = 0;
+    var tmp19 = 0;
+    var tmp21 = 0;
+    var tmp23 = 0;
+    var tmp25 = 0;
+    var tmp26 = 0;
+    var tmp27 = 0;
+    final tmp0_0 = utf8.encode(tmp0);
+    tmp2 = tmp0_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
+    final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
+    tmp1_1.setAll(0, tmp0_0);
+    tmp1 = tmp1_0.address;
+    tmp3 = tmp2;
+    final tmp4_0 = utf8.encode(tmp4);
+    tmp6 = tmp4_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp5_0 = this.__allocate(tmp6 * 1, 1);
+    final Uint8List tmp5_1 = tmp5_0.asTypedList(tmp6);
+    tmp5_1.setAll(0, tmp4_0);
+    tmp5 = tmp5_0.address;
+    tmp7 = tmp6;
+    final tmp8_0 = utf8.encode(tmp8);
+    tmp10 = tmp8_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp9_0 = this.__allocate(tmp10 * 1, 1);
+    final Uint8List tmp9_1 = tmp9_0.asTypedList(tmp10);
+    tmp9_1.setAll(0, tmp8_0);
+    tmp9 = tmp9_0.address;
+    tmp11 = tmp10;
+    if (tmp12 == null) {
+      tmp13 = 0;
+    } else {
+      tmp13 = 1;
+      final tmp14 = tmp12;
+      final tmp14_0 = utf8.encode(tmp14);
+      tmp16 = tmp14_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp15_0 = this.__allocate(tmp16 * 1, 1);
+      final Uint8List tmp15_1 = tmp15_0.asTypedList(tmp16);
+      tmp15_1.setAll(0, tmp14_0);
+      tmp15 = tmp15_0.address;
+      tmp17 = tmp16;
     }
+    if (tmp18 == null) {
+      tmp19 = 0;
+    } else {
+      tmp19 = 1;
+      final tmp20 = tmp18;
+      tmp21 = tmp20;
+    }
+    if (tmp22 == null) {
+      tmp23 = 0;
+    } else {
+      tmp23 = 1;
+      final tmp24 = tmp22;
+      final tmp24_0 = utf8.encode(tmp24);
+      tmp26 = tmp24_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp25_0 = this.__allocate(tmp26 * 1, 1);
+      final Uint8List tmp25_1 = tmp25_0.asTypedList(tmp26);
+      tmp25_1.setAll(0, tmp24_0);
+      tmp25 = tmp25_0.address;
+      tmp27 = tmp26;
+    }
+    _writeLog(
+      tmp1,
+      tmp2,
+      tmp3,
+      tmp5,
+      tmp6,
+      tmp7,
+      tmp9,
+      tmp10,
+      tmp11,
+      tmp13,
+      tmp15,
+      tmp16,
+      tmp17,
+      tmp19,
+      tmp21,
+      tmp23,
+      tmp25,
+      tmp26,
+      tmp27,
+    );
     return;
   }
 
@@ -13898,19 +14000,65 @@ class Api {
 
   late final _rotateLogFile =
       _rotateLogFilePtr.asFunction<_RotateLogFileReturn Function()>();
-  late final _writeLogPtr = _lookup<
+  late final _wouldLogPtr = _lookup<
       ffi.NativeFunction<
-          _WriteLogReturn Function(
+          ffi.Uint8 Function(
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__would_log");
+
+  late final _wouldLog = _wouldLogPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _writeLogPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Uint32,
+            ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
           )>>("__write_log");
 
   late final _writeLog = _writeLogPtr.asFunction<
-      _WriteLogReturn Function(
+      void Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
         int,
         int,
         int,
@@ -18412,6 +18560,17 @@ class Api {
       int Function(
         int,
       )>();
+  late final _commentsManagerRoomIdStrPtr = _lookup<
+      ffi.NativeFunction<
+          _CommentsManagerRoomIdStrReturn Function(
+            ffi.Int64,
+          )>>("__CommentsManager_room_id_str");
+
+  late final _commentsManagerRoomIdStr =
+      _commentsManagerRoomIdStrPtr.asFunction<
+          _CommentsManagerRoomIdStrReturn Function(
+            int,
+          )>();
   late final _commentsManagerHasCommentsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint8 Function(
@@ -38376,6 +38535,36 @@ class CommentsManager {
     return tmp2;
   }
 
+  /// String representation of the room id this comments manager is in
+  String roomIdStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._commentsManagerRoomIdStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
   /// Does this item have any comments?
   bool hasComments() {
     var tmp0 = 0;
@@ -50333,17 +50522,6 @@ class _RotateLogFileReturn extends ffi.Struct {
   external int arg6;
 }
 
-class _WriteLogReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-}
-
 class _ParseMarkdownReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -51479,6 +51657,15 @@ class _ConvoGetRoomIdStrReturn extends ffi.Struct {
 }
 
 class _ConvoRoomTypeReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _CommentsManagerRoomIdStrReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()

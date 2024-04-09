@@ -12,7 +12,6 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:overlay_support/overlay_support.dart';
 import 'package:video_player_media_kit/video_player_media_kit.dart';
 
 void main(List<String> args) async {
@@ -65,17 +64,15 @@ class _ActerState extends ConsumerState<Acter> {
     EasyLoading.instance.toastPosition = EasyLoadingToastPosition.bottom;
 
     return Portal(
-      child: OverlaySupport.global(
-        child: MaterialApp.router(
-          routerConfig: appRouter,
-          theme: ActerTheme.theme,
-          title: 'Acter',
-          builder: builder,
-          locale: Locale(language),
-          localizationsDelegates: L10n.localizationsDelegates,
-          supportedLocales: L10n.supportedLocales,
-          // MaterialApp contains our top-level Navigator
-        ),
+      child: MaterialApp.router(
+        routerConfig: appRouter,
+        theme: ActerTheme.theme,
+        title: 'Acter',
+        builder: builder,
+        locale: Locale(language),
+        localizationsDelegates: L10n.localizationsDelegates,
+        supportedLocales: L10n.supportedLocales,
+        // MaterialApp contains our top-level Navigator
       ),
     );
   }

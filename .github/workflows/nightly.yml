@@ -157,14 +157,14 @@ jobs:
         with:
           path: |
             ~/.cargo
-          key: ${{ runner.os }}-cargo-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
+          key: ${{ matrix.os }}-cargo-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
 
       - name: Cache Rust
         uses: actions/cache@v2
         with:
           path: |
             target
-          key: ${{ runner.os }}-nightly-${{matrix.artifact_prefix}}-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
+          key: ${{ matrix.os }}-nightly-${{matrix.artifact_prefix}}-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
 
       - name: Install extra deps
         if: matrix.apt_install

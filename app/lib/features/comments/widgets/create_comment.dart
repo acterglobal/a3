@@ -23,15 +23,23 @@ class _CreateCommentWidgetState extends ConsumerState<CreateCommentWidget> {
 
   @override
   Widget build(BuildContext context) {
-    if (!opened) {
-      return Center(
-        child: OutlinedButton.icon(
-          onPressed: () => setState(() => opened = true),
-          icon: const Icon(Icons.add_comment_outlined),
-          label: Text(L10n.of(context).comment),
-        ),
-      );
-    }
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 12),
+      child: opened ? commentInputUI() : createCommentButtonUI(),
+    );
+  }
+
+  Widget createCommentButtonUI() {
+    return Center(
+      child: OutlinedButton.icon(
+        onPressed: () => setState(() => opened = true),
+        icon: const Icon(Icons.add_comment_outlined),
+        label: Text(L10n.of(context).comment),
+      ),
+    );
+  }
+
+  Widget commentInputUI() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -60,18 +68,23 @@ class _CreateCommentWidgetState extends ConsumerState<CreateCommentWidget> {
             },
           ),
         ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            OutlinedButton(
-              onPressed: () => setState(() => opened = false),
-              child: Text(L10n.of(context).cancel),
-            ),
-            OutlinedButton(
-              onPressed: onSubmit,
-              child: Text(L10n.of(context).submit),
-            ),
-          ],
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              const Spacer(),
+              OutlinedButton(
+                onPressed: () => setState(() => opened = false),
+                child: Text(L10n.of(context).cancel),
+              ),
+              const SizedBox(width: 22),
+              ElevatedButton(
+                onPressed: onSubmit,
+                child: Text(L10n.of(context).submit),
+              ),
+            ],
+          ),
         ),
       ],
     );
