@@ -115,7 +115,8 @@ class _PinListItemConsumerState extends ConsumerState<PinListItem> {
   Widget build(BuildContext context) {
     final isLink = widget.pin.isLink();
     final spaceId = widget.pin.roomIdStr();
-    final asyncManager = ref.watch(pinAttachmentManagerProvider(widget.pin));
+    final asyncManager =
+        ref.watch(attachmentsManagerProvider(widget.pin.attachments()));
     final attachmentsWidget = [];
 
     if (asyncManager.valueOrNull != null) {

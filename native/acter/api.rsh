@@ -1355,6 +1355,13 @@ object Attachment {
 
 /// Reference to the attachments section of a particular item
 object AttachmentsManager {
+    /// the room this attachments manager lives in
+    fn room_id_str() -> string;
+
+    /// Whether or not the current user can post, edit and delete
+    /// attachments in this manager
+    fn can_edit_attachments() -> bool;
+
     /// Get the list of attachments (in arrival order)
     fn attachments() -> Future<Result<Vec<Attachment>>>;
 

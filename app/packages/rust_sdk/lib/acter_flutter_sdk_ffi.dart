@@ -18729,6 +18729,28 @@ class Api {
         int,
         int,
       )>();
+  late final _attachmentsManagerRoomIdStrPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentsManagerRoomIdStrReturn Function(
+            ffi.Int64,
+          )>>("__AttachmentsManager_room_id_str");
+
+  late final _attachmentsManagerRoomIdStr =
+      _attachmentsManagerRoomIdStrPtr.asFunction<
+          _AttachmentsManagerRoomIdStrReturn Function(
+            int,
+          )>();
+  late final _attachmentsManagerCanEditAttachmentsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__AttachmentsManager_can_edit_attachments");
+
+  late final _attachmentsManagerCanEditAttachments =
+      _attachmentsManagerCanEditAttachmentsPtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _attachmentsManagerAttachmentsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -38908,6 +38930,49 @@ class AttachmentsManager {
 
   AttachmentsManager._(this._api, this._box);
 
+  /// the room this attachments manager lives in
+  String roomIdStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentsManagerRoomIdStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Whether or not the current user can post, edit and delete
+  /// attachments in this manager
+  bool canEditAttachments() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentsManagerCanEditAttachments(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
   /// Get the list of attachments (in arrival order)
   Future<FfiListAttachment> attachments() {
     var tmp0 = 0;
@@ -51702,6 +51767,15 @@ class _AttachmentRoomIdStrReturn extends ffi.Struct {
 }
 
 class _AttachmentTypeStrReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _AttachmentsManagerRoomIdStrReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
