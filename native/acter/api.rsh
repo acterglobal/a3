@@ -1483,6 +1483,9 @@ object Task {
 
     /// get the comments manager for this task
     fn comments() -> Future<Result<CommentsManager>>;
+
+    /// get the attachments manager
+    fn attachments() -> Future<Result<AttachmentsManager>>;
 }
 
 object TaskUpdateBuilder {
@@ -1646,6 +1649,12 @@ object TaskList {
 
     /// the id of the space this TaskList belongs to
     fn space_id_str() -> string;
+
+    /// get the comments manager
+    fn comments() -> Future<Result<CommentsManager>>;
+
+    /// get the attachments manager
+    fn attachments() -> Future<Result<AttachmentsManager>>;
 }
 
 object TaskListDraft {
