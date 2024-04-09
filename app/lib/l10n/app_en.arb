@@ -1374,7 +1374,7 @@
   "eventShare": "Share event",
   "failedToAdd": "Failed to add: {error}",
   "failedToChangePowerLevel": "Failed to change power level: {error}",
-  "failedToSent": "Failed to sent: {error}",
+  "failedToSend": "Failed to send: {error}",
   "failedToUpdateTitle": "Failed to update title: {error}",
   "failedToCreateTaskList": "Failed to create task list:  {error}",
   "failedToConfirmToken": "Failed to confirm token: {error}",

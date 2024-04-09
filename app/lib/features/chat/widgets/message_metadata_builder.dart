@@ -60,7 +60,8 @@ class MessageMetadataBuilder extends ConsumerWidget {
                   onTap: () => _handleRetry(),
                   child: RichText(
                     text: TextSpan(
-                      text: L10n.of(context).failedToSent('${sendState.error()}'),
+                      text:
+                          L10n.of(context).failedToSend('${sendState.error()}'),
                       style: Theme.of(context).textTheme.labelSmall!.copyWith(
                             color: Theme.of(context).colorScheme.neutral5,
                           ),
