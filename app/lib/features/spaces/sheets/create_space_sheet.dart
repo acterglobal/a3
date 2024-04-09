@@ -227,7 +227,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
         return;
       }
       EasyLoading.showError(
-        '${L10n.of(context).creatingSpaceFailed} $err',
+        L10n.of(context).creatingSpaceFailed(err),
         duration: const Duration(seconds: 3),
       );
     }

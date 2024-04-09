@@ -116,7 +116,7 @@ class _CreateCommentWidgetState extends ConsumerState<CreateCommentWidget> {
         return;
       }
       EasyLoading.showError(
-        '${L10n.of(context).errorSubmittingComment}: $e',
+        L10n.of(context).errorSubmittingComment(e),
         duration: const Duration(seconds: 3),
       );
     }

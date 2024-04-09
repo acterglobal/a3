@@ -398,11 +398,12 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     final client = ref.read(alwaysClientProvider);
     final inputState = ref.read(chatInputProvider(roomId));
     final stream = ref.read(timelineStreamProvider(widget.convo));
+    final lang = L10n.of(context);
 
     try {
       for (File file in files) {
         String? mimeType = lookupMimeType(file.path);
-        if (mimeType == null) continue;
+        if (mimeType == null) throw lang.failedToDetectMimeType;
         final fileLen = file.lengthSync();
         if (mimeType.startsWith('image/') &&
             attachmentType == AttachmentType.image) {
@@ -587,7 +588,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     } catch (error, stackTrace) {
       _log.severe('Sending chat message failed', error, stackTrace);
       EasyLoading.showError(
-        lang.errorSendingMessage(error),
+        lang.failedToSend(error),
         duration: const Duration(seconds: 3),
       );
       ref.read(chatInputProvider(roomId).notifier).sendingFailed();

@@ -140,8 +140,9 @@ class _NotificationSettingsTile extends ConsumerWidget {
       );
       return;
     }
+    if (!context.mounted) return;
     EasyLoading.show(
-      status: 'Changing notification mode...',
+      status: L10n.of(context).changingNotificationMode,
       dismissOnTap: false,
     );
     // '' is a special case resetting to default.

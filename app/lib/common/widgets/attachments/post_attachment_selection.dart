@@ -97,7 +97,7 @@ class _PostAttachmentSelectionState
     /// converts user selected media to attachment draft and sends state list.
     /// only supports image/video/audio/file.
     final lang = L10n.of(context);
-    EasyLoading.show(status: 'Sending attachments', dismissOnTap: false);
+    EasyLoading.show(status: lang.sendingAttachment, dismissOnTap: false);
     final client = ref.read(alwaysClientProvider);
     List<AttachmentDraft> drafts = [];
     try {
@@ -151,7 +151,7 @@ class _PostAttachmentSelectionState
         return;
       }
       EasyLoading.showError(
-        'Error sending attachments $e',
+        lang.errorSendingAttachment(e),
         duration: const Duration(seconds: 3),
       );
     }

@@ -69,10 +69,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       context,
     );
     if (errorMsg != null) {
-      EasyLoading.showError(
-        errorMsg,
-        duration: const Duration(seconds: 3),
-      );
+      EasyLoading.showError(errorMsg, duration: const Duration(seconds: 3));
     }
     if (token.text.isNotEmpty) {
       final superInvites = ref.read(superInvitesProvider);

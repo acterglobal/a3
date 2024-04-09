@@ -8,6 +8,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:settings_ui/settings_ui.dart';
 
@@ -363,7 +364,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
     if (newPowerLevel == currentPw) return;
     await space.updateFeaturePowerLevels(powerLevels.newsKey(), newPowerLevel);
     if (context.mounted) {
-      EasyLoading.showToast('Power level update for updates submitted');
+      EasyLoading.showToast(L10n.of(context).powerLevelSubmitted('Updates'));
     }
   }
 
@@ -399,7 +400,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
     if (newPowerLevel == currentPw) return;
     await space.updateFeaturePowerLevels(powerLevels.pinsKey(), newPowerLevel);
     if (context.mounted) {
-      EasyLoading.showToast('Power level update for Pins submitted');
+      EasyLoading.showToast(L10n.of(context).powerLevelSubmitted('Pins'));
     }
   }
 
@@ -438,7 +439,9 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
       newPowerLevel,
     );
     if (context.mounted) {
-      EasyLoading.showToast('Power level update for calendar events submitted');
+      EasyLoading.showToast(
+        L10n.of(context).powerLevelSubmitted('Calendar Events'),
+      );
     }
   }
 
@@ -477,7 +480,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
       newPowerLevel,
     );
     if (context.mounted) {
-      EasyLoading.showToast('Power level update for task lists submitted');
+      EasyLoading.showToast(L10n.of(context).powerLevelSubmitted('Task Lists'));
     }
   }
 
@@ -500,7 +503,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
     if (newPowerLevel == currentPw) return;
     await space.updateFeaturePowerLevels(powerLevels.tasksKey(), newPowerLevel);
     if (context.mounted) {
-      EasyLoading.showToast('Power level update for tasks submitted');
+      EasyLoading.showToast(L10n.of(context).powerLevelSubmitted('Tasks'));
     }
   }
 

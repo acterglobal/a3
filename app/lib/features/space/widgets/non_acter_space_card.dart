@@ -78,7 +78,7 @@ class NonActerSpaceCard extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        '${L10n.of(context).upgradeFailed}: $e',
+        L10n.of(context).upgradeFailed(e),
         duration: const Duration(seconds: 3),
       );
     }

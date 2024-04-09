@@ -73,7 +73,7 @@ class _RedeemTokenConsumerState extends ConsumerState<RedeemToken> {
         return;
       }
       EasyLoading.showError(
-        '${L10n.of(context).redeemingFailed} $err',
+        L10n.of(context).redeemingFailed(err),
         duration: const Duration(seconds: 3),
       );
     }

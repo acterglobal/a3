@@ -151,7 +151,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
 
   Future<void> _handleCreatePin() async {
     if (!_formKey.currentState!.validate()) return;
-    EasyLoading.show(status: 'Creating pin...', dismissOnTap: false);
+    EasyLoading.show(status: L10n.of(context).creatingPin, dismissOnTap: false);
     try {
       final spaceId = ref.read(selectedSpaceIdProvider);
       final space = await ref.read(spaceProvider(spaceId!).future);
@@ -183,7 +183,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
         EasyLoading.dismiss();
         return;
       }
-      EasyLoading.showToast('Pin created successfully');
+      EasyLoading.showToast(L10n.of(context).pinCreatedSuccessfully);
       Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
       context.pushNamed(
         Routes.pin.name,
@@ -195,7 +195,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
         return;
       }
       EasyLoading.showError(
-        'An error occured creating pin $e',
+        L10n.of(context).errorCreatingPin(e),
         duration: const Duration(seconds: 3),
       );
     }

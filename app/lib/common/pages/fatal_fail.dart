@@ -4,6 +4,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -113,10 +114,10 @@ class _FatalFailPageState extends ConsumerState<FatalFailPage> {
     Clipboard.setData(
       ClipboardData(text: '${widget.error}\n$stack'),
     );
-    EasyLoading.showToast('Error & Stacktrace copied to clipboard');
+    EasyLoading.showToast(L10n.of(context).errorCopiedToClipboard);
   }
 
   void onNukePressed() {
-    EasyLoading.showToast('long press to activate');
+    EasyLoading.showToast(L10n.of(context).longPressToActivate);
   }
 }

@@ -168,7 +168,7 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
         return null;
       }
       EasyLoading.showError(
-        '${L10n.of(context).errorCreatingChat} $e',
+        L10n.of(context).errorCreatingChat(e),
         duration: const Duration(seconds: 3),
       );
       return null;

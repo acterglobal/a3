@@ -203,7 +203,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
       return;
     }
     EasyLoading.show(
-      status: 'Changing notification mode...',
+      status: L10n.of(context).changingNotificationMode,
       dismissOnTap: false,
     );
     try {
@@ -224,7 +224,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        '${L10n.of(context).notificationStatusUpdateFailed}: $e',
+        L10n.of(context).notificationStatusUpdateFailed(e),
         duration: const Duration(seconds: 3),
       );
     }
@@ -325,7 +325,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
       EasyLoading.dismiss();
       return;
     }
-    EasyLoading.showToast('$emailToAdd ${L10n.of(context).addedToPusherList}');
+    EasyLoading.showToast(L10n.of(context).addedToPusherList(emailToAdd));
   }
 
   SettingsTile _pusherTile(BuildContext context, WidgetRef ref, Pusher item) {
@@ -418,7 +418,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        '${L10n.of(context).deletionFailed}: $e',
+        L10n.of(context).deletionFailed(e),
         duration: const Duration(seconds: 3),
       );
     }

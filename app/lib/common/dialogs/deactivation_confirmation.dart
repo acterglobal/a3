@@ -128,7 +128,7 @@ Future<void> _onConfirm(
       return;
     }
     EasyLoading.showError(
-      '${L10n.of(context).deactivatingFailed}: \n $err"',
+      L10n.of(context).deactivatingFailed(err),
       duration: const Duration(seconds: 3),
     );
   }
