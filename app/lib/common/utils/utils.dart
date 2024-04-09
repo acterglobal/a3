@@ -295,6 +295,7 @@ enum LabsFeature {
   static List<LabsFeature> get defaults => [
         LabsFeature.events,
         LabsFeature.pins,
+        LabsFeature.comments,
         LabsFeature.mobilePushNotifications,
       ];
 }
