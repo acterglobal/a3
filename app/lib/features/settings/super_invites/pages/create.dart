@@ -204,8 +204,10 @@ class _CreateSuperInviteTokenPageConsumerState
       if (!context.mounted) return;
       Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
     } catch (err) {
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       final status = isEdit
           ? L10n.of(context).saveInviteCodeFailed(err)
           : L10n.of(context).createInviteCodeFailed(err);
@@ -286,8 +288,10 @@ class _CreateSuperInviteTokenPageConsumerState
       if (!context.mounted) return;
       Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
     } catch (err) {
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         L10n.of(context).deleteInviteCodeFailed(err),
         duration: const Duration(seconds: 3),

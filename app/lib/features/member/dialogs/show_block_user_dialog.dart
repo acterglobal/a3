@@ -34,12 +34,16 @@ Future<void> showBlockUserDialog(BuildContext context, Member member) async {
               );
               try {
                 await member.ignore();
-                EasyLoading.dismiss();
-                if (!context.mounted) return;
+                if (!context.mounted) {
+                  EasyLoading.dismiss();
+                  return;
+                }
                 EasyLoading.showToast(L10n.of(context).blockingUserSuccess);
               } catch (error) {
-                EasyLoading.dismiss();
-                if (!context.mounted) return;
+                if (!context.mounted) {
+                  EasyLoading.dismiss();
+                  return;
+                }
                 EasyLoading.showError(
                   L10n.of(context).blockingUserFailed(error),
                   duration: const Duration(seconds: 3),

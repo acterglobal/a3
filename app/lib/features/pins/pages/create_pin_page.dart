@@ -177,10 +177,12 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
       }
       final pinId = await pinDraft.send();
 
-      EasyLoading.dismiss();
       // reset controllers
       _linkController.text = '';
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showToast('Pin created successfully');
       Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
       context.pushNamed(
@@ -188,8 +190,10 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
         pathParameters: {'pinId': pinId.toString()},
       );
     } catch (e) {
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         'An error occured creating pin $e',
         duration: const Duration(seconds: 3),

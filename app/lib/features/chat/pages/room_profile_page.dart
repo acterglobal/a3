@@ -355,9 +355,12 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     );
     final convo = await ref.read(chatProvider(widget.roomId).future);
     final res = await convo.leave();
-    EasyLoading.dismiss();
-    if (!context.mounted) return;
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return;
+    }
     if (res) {
+      EasyLoading.dismiss();
       context.goNamed(Routes.chat.name);
     } else {
       EasyLoading.showError(

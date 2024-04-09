@@ -295,8 +295,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       ref.invalidate(myRsvpStatusProvider(widget.calendarId));
     } catch (e, s) {
       _log.severe('Error =>', e, s);
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(e.toString(), duration: const Duration(seconds: 3));
     }
   }

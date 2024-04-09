@@ -43,13 +43,17 @@ Future<void> showKickUserDialog(BuildContext context, Member member) async {
               try {
                 final maybeReason = reason.text.isNotEmpty ? reason.text : null;
                 await member.kick(maybeReason);
-                EasyLoading.dismiss();
-                if (!context.mounted) return;
+                if (!context.mounted) {
+                  EasyLoading.dismiss();
+                  return;
+                }
                 EasyLoading.showToast(L10n.of(context).kickSuccess);
                 Navigator.of(context, rootNavigator: true).pop();
               } catch (error) {
-                EasyLoading.dismiss();
-                if (!context.mounted) return;
+                if (!context.mounted) {
+                  EasyLoading.dismiss();
+                  return;
+                }
                 EasyLoading.showError(
                   L10n.of(context).kickFailed(error),
                   duration: const Duration(seconds: 3),

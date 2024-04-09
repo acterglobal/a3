@@ -109,21 +109,24 @@ Future<void> _onConfirm(
   );
   final sdk = await ref.read(sdkProvider.future);
   try {
-    if (!await sdk.deactivateAndDestroyCurrentClient(password)) {
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
-      EasyLoading.showError(
-        L10n.of(context).deactivationAndRemovingFailed,
-        duration: const Duration(seconds: 3),
-      );
+    final result = await sdk.deactivateAndDestroyCurrentClient(password);
+    if (!result) {
+      if (context.mounted) {
+        EasyLoading.showError(
+          L10n.of(context).deactivationAndRemovingFailed,
+          duration: const Duration(seconds: 3),
+        );
+      }
       return;
     }
     EasyLoading.dismiss();
     if (!context.mounted) return;
     context.goNamed(Routes.main.name);
   } catch (err) {
-    EasyLoading.dismiss();
-    if (!context.mounted) return;
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return;
+    }
     EasyLoading.showError(
       '${L10n.of(context).deactivatingFailed}: \n $err"',
       duration: const Duration(seconds: 3),

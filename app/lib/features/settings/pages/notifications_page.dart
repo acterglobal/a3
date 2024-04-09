@@ -213,12 +213,16 @@ class NotificationsSettingsPage extends ConsumerWidget {
         isOneToOne,
         newMode,
       );
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showToast(L10n.of(context).notificationStatusSubmitted);
     } catch (e) {
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         '${L10n.of(context).notificationStatusUpdateFailed}: $e',
         duration: const Duration(seconds: 3),
@@ -305,10 +309,11 @@ class NotificationsSettingsPage extends ConsumerWidget {
         null,
       );
       ref.invalidate(possibleEmailToAddForPushProvider);
-      EasyLoading.dismiss();
     } catch (e) {
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         L10n.of(context).failedToAdd('$emailToAdd: $e'),
         duration: const Duration(seconds: 3),
@@ -316,7 +321,10 @@ class NotificationsSettingsPage extends ConsumerWidget {
       return;
     }
     ref.invalidate(pushersProvider);
-    if (!context.mounted) return;
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return;
+    }
     EasyLoading.showToast('$emailToAdd ${L10n.of(context).addedToPusherList}');
   }
 
@@ -397,14 +405,18 @@ class NotificationsSettingsPage extends ConsumerWidget {
     );
     try {
       await item.delete();
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showToast(L10n.of(context).pushTargetDeleted);
       ref.invalidate(possibleEmailToAddForPushProvider);
       ref.invalidate(pushersProvider);
     } catch (e) {
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         '${L10n.of(context).deletionFailed}: $e',
         duration: const Duration(seconds: 3),

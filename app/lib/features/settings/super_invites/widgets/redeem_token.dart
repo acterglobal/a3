@@ -58,16 +58,20 @@ class _RedeemTokenConsumerState extends ConsumerState<RedeemToken> {
     );
     try {
       final rooms = (await superInvites.redeem(token)).toList();
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showToast(
         L10n.of(context).addedToSpacesAndChats(rooms.length),
       );
       _tokenController.clear();
       FocusManager.instance.primaryFocus?.unfocus();
     } catch (err) {
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         '${L10n.of(context).redeemingFailed} $err',
         duration: const Duration(seconds: 3),

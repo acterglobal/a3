@@ -101,8 +101,10 @@ class MyProfilePage extends StatelessWidget {
     await profile.account.setDisplayName(newText);
     ref.invalidate(accountProfileProvider);
 
-    EasyLoading.dismiss();
-    if (!context.mounted) return;
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return;
+    }
     EasyLoading.showToast(L10n.of(context).displayNameUpdateSubmitted);
   }
 

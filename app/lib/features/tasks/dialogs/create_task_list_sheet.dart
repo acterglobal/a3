@@ -69,8 +69,10 @@ class _CreateTaskListSheetConsumerState
         pathParameters: {'taskListId': taskListId.toString()},
       );
     } catch (e) {
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         L10n.of(context).failedToCreateTaskList(e),
         duration: const Duration(seconds: 3),

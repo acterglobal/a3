@@ -466,8 +466,10 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       Navigator.of(context).pop();
       context.goNamed(Routes.main.name); // go to the home / main updates
     } catch (err) {
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         '$displayMsg ${L10n.of(context).failed}: \n $err',
         duration: const Duration(seconds: 3),

@@ -222,8 +222,10 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
         pathParameters: {'spaceId': roomId.toString()},
       );
     } catch (err) {
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         '${L10n.of(context).creatingSpaceFailed} $err',
         duration: const Duration(seconds: 3),

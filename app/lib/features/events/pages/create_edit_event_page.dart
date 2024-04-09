@@ -495,8 +495,10 @@ class CreateEditEventPageConsumerState
         );
       }
     } catch (e) {
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         '${L10n.of(context).errorCreatingCalendarEvent}: $e',
         duration: const Duration(seconds: 3),
@@ -547,8 +549,10 @@ class CreateEditEventPageConsumerState
 
       if (context.mounted) context.pop();
     } catch (e) {
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         '${L10n.of(context).errorUpdatingEvent}: $e',
         duration: const Duration(seconds: 3),

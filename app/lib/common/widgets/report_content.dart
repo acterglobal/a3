@@ -129,8 +129,10 @@ class ReportContentWidget extends ConsumerWidget {
         }
       }
 
-      EasyLoading.dismiss();
-      if (!ctx.mounted) return;
+      if (!ctx.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       if (res) {
         EasyLoading.showToast(L10n.of(ctx).reportSent);
       } else {
@@ -140,8 +142,10 @@ class ReportContentWidget extends ConsumerWidget {
         );
       }
     } catch (e) {
-      EasyLoading.dismiss();
-      if (!ctx.mounted) return;
+      if (!ctx.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         L10n.of(ctx).reportSendingFailedDueTo(e),
         duration: const Duration(seconds: 3),

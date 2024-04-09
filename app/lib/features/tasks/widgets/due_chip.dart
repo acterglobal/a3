@@ -109,15 +109,19 @@ class _DueChipState extends State<DueChip> {
         updater.unsetUtcDueTimeOfDay();
       }
       await updater.send();
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showToast(
         L10n.of(context).dueSuccess,
         toastPosition: EasyLoadingToastPosition.bottom,
       );
     } catch (e) {
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         L10n.of(context).updatingDueFailed(e),
         duration: const Duration(seconds: 3),

@@ -156,13 +156,17 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
         ref.invalidate(spaceRelationsOverviewProvider(parentId));
       }
       final convo = await client.convoWithRetry(roomIdStr, 120);
-      EasyLoading.dismiss();
-      if (!context.mounted) return null;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return null;
+      }
       EasyLoading.showToast(L10n.of(context).chatRoomCreated);
       return convo;
     } catch (e) {
-      EasyLoading.dismiss();
-      if (!context.mounted) return null;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return null;
+      }
       EasyLoading.showError(
         '${L10n.of(context).errorCreatingChat} $e',
         duration: const Duration(seconds: 3),

@@ -161,12 +161,16 @@ class EmailAddressCard extends ConsumerWidget {
     try {
       await manager.tryConfirmEmailStatus(emailAddress, newValue);
       ref.invalidate(emailAddressesProvider);
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showToast(L10n.of(context).looksGoodAddressConfirmed);
     } catch (e) {
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         L10n.of(context).failedToConfirmToken(e),
         duration: const Duration(seconds: 3),

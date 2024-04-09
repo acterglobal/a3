@@ -53,12 +53,16 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
     try {
       final room = await ref.read(maybeRoomProvider(roomId).future);
       await room?.updatePowerLevel(userId, newPowerLevel);
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showToast(L10n.of(context).powerLevelUpdateSubmitted);
     } catch (e) {
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         L10n.of(context).failedToChangePowerLevel(e),
         duration: const Duration(seconds: 3),

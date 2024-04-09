@@ -146,8 +146,10 @@ class _PostAttachmentSelectionState
       EasyLoading.dismiss();
     } catch (e) {
       _log.severe('Error sending attachments', e);
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         'Error sending attachments $e',
         duration: const Duration(seconds: 3),

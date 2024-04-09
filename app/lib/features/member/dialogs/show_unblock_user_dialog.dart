@@ -37,12 +37,16 @@ Future<void> showUnblockUserDialog(BuildContext context, Member member) async {
               );
               try {
                 await member.unignore();
-                EasyLoading.dismiss();
-                if (!context.mounted) return;
+                if (!context.mounted) {
+                  EasyLoading.dismiss();
+                  return;
+                }
                 EasyLoading.showToast(L10n.of(context).unblockingUserSuccess);
               } catch (error) {
-                EasyLoading.dismiss();
-                if (!context.mounted) return;
+                if (!context.mounted) {
+                  EasyLoading.dismiss();
+                  return;
+                }
                 EasyLoading.showError(
                   L10n.of(context).unblockingUserFailed(error),
                   duration: const Duration(seconds: 3),

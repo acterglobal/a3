@@ -227,12 +227,16 @@ class EmailAddressesPage extends ConsumerWidget {
       try {
         await manager.requestTokenViaEmail(newValue);
         ref.invalidate(emailAddressesProvider);
-        EasyLoading.dismiss();
-        if (!context.mounted) return;
+        if (!context.mounted) {
+          EasyLoading.dismiss();
+          return;
+        }
         EasyLoading.showToast(L10n.of(context).pleaseCheckYourInbox);
       } catch (e) {
-        EasyLoading.dismiss();
-        if (!context.mounted) return;
+        if (!context.mounted) {
+          EasyLoading.dismiss();
+          return;
+        }
         EasyLoading.showError(
           L10n.of(context).failedToSubmitEmail(e),
           duration: const Duration(seconds: 3),

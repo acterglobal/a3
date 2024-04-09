@@ -107,15 +107,19 @@ class RedactContentWidget extends ConsumerWidget {
         );
       }
 
-      EasyLoading.dismiss();
-      if (!ctx.mounted) return;
+      if (!ctx.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showToast(L10n.of(ctx).contentSuccessfullyRemoved);
       if (onSuccess != null) {
         onSuccess!();
       }
     } catch (e) {
-      EasyLoading.dismiss();
-      if (!ctx.mounted) return;
+      if (!ctx.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         '${L10n.of(ctx).redactionFailed} $e',
         duration: const Duration(seconds: 3),

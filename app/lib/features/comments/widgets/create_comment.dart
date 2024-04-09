@@ -92,12 +92,16 @@ class _CreateCommentWidgetState extends ConsumerState<CreateCommentWidget> {
       final draft = widget.manager.commentDraft();
       draft.contentFormatted(plainDescription, htmlBodyDescription);
       await draft.send();
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showToast(L10n.of(context).commentSubmitted);
     } catch (e) {
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         '${L10n.of(context).errorSubmittingComment}: $e',
         duration: const Duration(seconds: 3),

@@ -197,8 +197,10 @@ class InvitationCard extends ConsumerWidget {
   void _onTapAcceptInvite(BuildContext context) async {
     EasyLoading.show(status: L10n.of(context).joining, dismissOnTap: false);
     bool res = await invitation.accept();
-    EasyLoading.dismiss();
-    if (!context.mounted) return;
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return;
+    }
     if (res) {
       EasyLoading.showToast(L10n.of(context).joined);
     } else {
@@ -212,8 +214,10 @@ class InvitationCard extends ConsumerWidget {
   void _onTapDeclineInvite(BuildContext context) async {
     EasyLoading.show(status: L10n.of(context).rejecting, dismissOnTap: false);
     bool res = await invitation.reject();
-    EasyLoading.dismiss();
-    if (!context.mounted) return;
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return;
+    }
     if (res) {
       EasyLoading.showToast(L10n.of(context).rejected);
     } else {

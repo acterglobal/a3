@@ -219,13 +219,17 @@ class _TaskTitleState extends State<TaskTitle> {
       final updater = widget.task.updateBuilder();
       updater.title(newString);
       await updater.send();
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showToast(L10n.of(context).titleUpdated);
       setState(() => editMode = false);
     } catch (e) {
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         L10n.of(context).failedToUpdateTitle(e),
         duration: const Duration(seconds: 3),
@@ -369,13 +373,17 @@ class _TaskBodyState extends State<TaskBody> {
       final updater = widget.task.updateBuilder();
       updater.descriptionText(newBody);
       await updater.send();
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showToast(L10n.of(context).notesUpdates);
       setState(() => editMode = false);
     } catch (e) {
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         L10n.of(context).failedToLoadUpdateNotes(e),
         duration: const Duration(seconds: 3),

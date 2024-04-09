@@ -67,12 +67,16 @@ class NonActerSpaceCard extends ConsumerWidget {
 
       await space.setActerSpaceStates();
       _log.info('after setting space state');
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showToast(L10n.of(context).successfullyUpgradedToActerSpace);
     } catch (e) {
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         '${L10n.of(context).upgradeFailed}: $e',
         duration: const Duration(seconds: 3),

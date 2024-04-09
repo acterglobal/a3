@@ -1,6 +1,5 @@
 import 'package:acter/common/dialogs/attachment_selection.dart';
 import 'package:acter/common/providers/attachment_providers.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:acter/common/widgets/attachments/attachment_item.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
@@ -8,6 +7,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -207,8 +207,10 @@ class AttachmentSectionWidget extends ConsumerWidget {
       EasyLoading.dismiss();
     } catch (e) {
       _log.severe('attachment redaction failed', e, null);
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         L10n.of(context).failedToDeleteAttachment(e),
         duration: const Duration(seconds: 3),
