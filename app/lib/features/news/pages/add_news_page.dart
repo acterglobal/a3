@@ -339,6 +339,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
     final client = ref.read(alwaysClientProvider);
     final spaceId = ref.read(newsStateProvider).newsPostSpaceId;
     final newsSlideList = ref.read(newsStateProvider).newsSlideList;
+    final lang = L10n.of(context);
 
     if (spaceId == null) {
       EasyLoading.showToast(L10n.of(context).pleaseFirstSelectASpace);
@@ -356,7 +357,10 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
         // If slide type is text
         if (slidePost.type == NewsSlideType.text) {
           if (slidePost.text == null || slidePost.text!.trim().isEmpty) {
-            if (!context.mounted) return;
+            if (!context.mounted) {
+              EasyLoading.dismiss();
+              return;
+            }
             EasyLoading.showError(
               L10n.of(context).yourTextSlidesMustContainsSomeText,
               duration: const Duration(seconds: 3),
@@ -384,16 +388,12 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
             slidePost.mediaFile != null) {
           final file = slidePost.mediaFile!;
           String? mimeType = file.mimeType ?? lookupMimeType(file.path);
-          if (mimeType == null) {
-            if (!context.mounted) return;
-            EasyLoading.showError(
-              L10n.of(context).invalidMediaFormat,
-              duration: const Duration(seconds: 3),
-            );
-            return;
-          }
+          if (mimeType == null) throw lang.failedToDetectMimeType;
           if (!mimeType.startsWith('image/')) {
-            if (!context.mounted) return;
+            if (!context.mounted) {
+              EasyLoading.dismiss();
+              return;
+            }
             EasyLoading.showError(
               L10n.of(context).postingOfTypeNotYetSupported(mimeType),
               duration: const Duration(seconds: 3),
@@ -423,16 +423,12 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
             slidePost.mediaFile != null) {
           final file = slidePost.mediaFile!;
           String? mimeType = file.mimeType ?? lookupMimeType(file.path);
-          if (mimeType == null) {
-            if (!context.mounted) return;
-            EasyLoading.showError(
-              L10n.of(context).invalidMediaFormat,
-              duration: const Duration(seconds: 3),
-            );
-            return;
-          }
+          if (mimeType == null) throw lang.failedToDetectMimeType;
           if (!mimeType.startsWith('video/')) {
-            if (!context.mounted) return;
+            if (!context.mounted) {
+              EasyLoading.dismiss();
+              return;
+            }
             EasyLoading.showError(
               L10n.of(context).postingOfTypeNotYetSupported(mimeType),
               duration: const Duration(seconds: 3),

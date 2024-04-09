@@ -262,7 +262,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
     if (titleInput.trim().isEmpty) return;
     // check permissions before updating space
     bool havePermission = await permissionCheck();
-    if (!havePermission && mounted) {
+    if (!havePermission && context.mounted) {
       EasyLoading.showError(
         L10n.of(context).cannotEditSpaceWithNoPermissions,
         duration: const Duration(seconds: 3),

@@ -200,8 +200,10 @@ class EmailAddressCard extends ConsumerWidget {
         newValue.token,
         newValue.password,
       );
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       if (result) {
         ref.invalidate(emailAddressesProvider);
         EasyLoading.showToast(L10n.of(context).looksGoodAddressConfirmed);
@@ -212,8 +214,10 @@ class EmailAddressCard extends ConsumerWidget {
         );
       }
     } catch (e) {
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         L10n.of(context).failedToConfirmToken(e),
         duration: const Duration(seconds: 3),

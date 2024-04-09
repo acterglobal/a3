@@ -146,9 +146,14 @@ class _NotificationSettingsTile extends ConsumerWidget {
     );
     // '' is a special case resetting to default.
     final res = await room.setNotificationMode(newMode == '' ? null : newMode);
-    EasyLoading.dismiss();
-    if (!res) return;
-    if (!context.mounted) return;
+    if (!res) {
+      EasyLoading.dismiss();
+      return;
+    }
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return;
+    }
     EasyLoading.showToast(L10n.of(context).notificationStatusSubmitted);
     await Future.delayed(const Duration(seconds: 1), () {
       // FIXME: we want to refresh the view but don't know
