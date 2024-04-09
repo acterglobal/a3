@@ -1,7 +1,7 @@
-import 'package:acter/common/providers/attachment_providers.dart';
+import 'package:acter/features/attachments/providers/attachment_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/attachments/attachment_item.dart';
+import 'package:acter/features/attachments/widgets/attachment_item.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';

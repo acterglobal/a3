@@ -1,4 +1,4 @@
-import 'package:acter/common/providers/attachment_providers.dart';
+import 'package:acter/features/attachments/providers/attachment_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/pins/models/pin_edit_state/pin_edit_state.dart';
 import 'package:acter/features/pins/providers/notifiers/edit_state_notifier.dart';

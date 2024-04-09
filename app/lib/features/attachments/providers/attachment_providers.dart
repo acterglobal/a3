@@ -1,5 +1,5 @@
 import 'package:acter/common/models/attachment_media_state/attachment_media_state.dart';
-import 'package:acter/common/providers/notifiers/attachments_notifiers.dart';
+import 'package:acter/features/attachments/providers/notifiers/attachments_notifiers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:riverpod/riverpod.dart';
 

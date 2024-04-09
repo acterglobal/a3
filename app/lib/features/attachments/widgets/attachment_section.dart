@@ -1,7 +1,7 @@
 import 'package:acter/common/dialogs/attachment_selection.dart';
-import 'package:acter/common/providers/attachment_providers.dart';
+import 'package:acter/features/attachments/providers/attachment_providers.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:acter/common/widgets/attachments/attachment_item.dart';
+import 'package:acter/features/attachments/widgets/attachment_item.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Attachment, AttachmentsManager;
