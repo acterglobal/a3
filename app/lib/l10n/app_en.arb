@@ -1545,8 +1545,7 @@
   "joinSpaceTutorialTitle": "Join Existing Space",
   "joinSpaceTutorialDescription": "Join an existing space on our Acter server or in the Matrix universe or set up your own space. [would just show the options & end there for now]",
   "spaceOverviewTutorialTitle": "Space Details",
-  "spaceOverviewTutorialDescription": "A space is the starting point for your organizing. Create & navigate through pins (resources), tasks and events. Add chats or subspaces."
-  "reportBug": "Report bug",
+  "spaceOverviewTutorialDescription": "A space is the starting point for your organizing. Create & navigate through pins (resources), tasks and events. Add chats or subspaces.",
   "commentEmptyStateTitle": "No comments found",
   "commentEmptyStateSubtitle": "Be the first to comment!"
 }
