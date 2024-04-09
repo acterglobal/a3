@@ -107,7 +107,8 @@ class _TaskListCardState extends ConsumerState<TaskListCard> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         child: Text(
-                          L10n.of(context).countTasksDone(overview.doneTasks.length, total),
+                          L10n.of(context)
+                              .countTasksDone(overview.doneTasks.length, total),
                         ),
                       ),
                     );
@@ -158,7 +159,8 @@ class _TaskListCardState extends ConsumerState<TaskListCard> {
                     ),
                   );
                 },
-                error: (error, stack) => Text(L10n.of(context).errorLoadingTasks(error)),
+                error: (error, stack) =>
+                    Text(L10n.of(context).errorLoadingTasks(error)),
                 loading: () => Text(L10n.of(context).loading),
               ),
             ],

@@ -589,6 +589,12 @@ object CalendarEvent {
     fn responded_by_me() -> Future<Result<OptionRsvpStatus>>;
     /// get the user id list who have responded with `Yes` on this event
     fn participants() -> Future<Result<Vec<string>>>;
+
+    /// get the comments manager
+    fn comments() -> Future<Result<CommentsManager>>;
+
+    /// get the attachments manager
+    fn attachments() -> Future<Result<AttachmentsManager>>;
 }
 
 object CalendarEventUpdateBuilder {
