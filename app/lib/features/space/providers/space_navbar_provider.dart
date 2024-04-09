@@ -77,7 +77,7 @@ final tabsProvider =
       );
     }
 
-    if (isActive(LabsFeature.events) && appSettings.events().active()) {
+    if (appSettings.events().active()) {
       tabs.add(
         TabEntry(
           key: TabEntry.events,

@@ -87,23 +87,19 @@ class QuickJump extends ConsumerWidget {
                     ),
                   )
                 : null,
-            isActive(LabsFeature.events)
-                ? IconButton(
-                    style: IconButton.styleFrom(
-                      side: BorderSide(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withOpacity(0.12),
-                      ),
-                    ),
-                    onPressed: () => navigateTo(Routes.calendarEvents),
-                    icon: const Padding(
-                      padding: EdgeInsets.all(5),
-                      child: Icon(Atlas.calendar_dots_thin, size: 24),
-                    ),
-                  )
-                : null,
+            IconButton(
+              style: IconButton.styleFrom(
+                side: BorderSide(
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
+                ),
+              ),
+              onPressed: () => navigateTo(Routes.calendarEvents),
+              icon: const Padding(
+                padding: EdgeInsets.all(5),
+                child: Icon(Atlas.calendar_dots_thin, size: 24),
+              ),
+            ),
             isActive(LabsFeature.tasks)
                 ? IconButton(
                     key: QuickJumpKeys.tasks,

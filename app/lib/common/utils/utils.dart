@@ -280,7 +280,7 @@ enum RoomVisibility { Public, Private, SpaceVisible }
 enum LabsFeature {
   // apps in general
   tasks,
-  events,
+  events, // not a lab anymore but needs to stay for backwards compat
   notes,
   pins,
   cobudget,
@@ -293,7 +293,6 @@ enum LabsFeature {
   mobilePushNotifications;
 
   static List<LabsFeature> get defaults => [
-        LabsFeature.events,
         LabsFeature.pins,
         LabsFeature.comments,
         LabsFeature.mobilePushNotifications,
