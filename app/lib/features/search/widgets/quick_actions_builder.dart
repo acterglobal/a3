@@ -34,8 +34,7 @@ class QuickActionsBuilder extends ConsumerWidget {
     final canPostPinProvider = ref.watch(
       hasSpaceWithPermissionProvider('CanPostPin'),
     );
-    final canPostPin =
-        isActive(LabsFeature.pins) && (canPostPinProvider.valueOrNull ?? false);
+    final canPostPin = canPostPinProvider.valueOrNull ?? false;
 
     final canPostEventProvider = ref.watch(
       hasSpaceWithPermissionProvider('CanPostEvent'),

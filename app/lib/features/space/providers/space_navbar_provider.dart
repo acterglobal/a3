@@ -46,7 +46,7 @@ final tabsProvider =
 
   if ((await space?.isActerSpace()) == true) {
     final appSettings = await space!.appSettings();
-    if (isActive(LabsFeature.pins) && appSettings.pins().active()) {
+    if (appSettings.pins().active()) {
       tabs.add(
         TabEntry(
           key: TabEntry.pins,

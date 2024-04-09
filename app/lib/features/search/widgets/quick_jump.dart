@@ -69,24 +69,20 @@ class QuickJump extends ConsumerWidget {
               ),
               onPressed: () => navigateTo(Routes.settings),
             ),
-            isActive(LabsFeature.pins)
-                ? IconButton(
-                    key: QuickJumpKeys.pins,
-                    style: IconButton.styleFrom(
-                      side: BorderSide(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withOpacity(0.12),
-                      ),
-                    ),
-                    onPressed: () => navigateTo(Routes.pins),
-                    icon: const Padding(
-                      padding: EdgeInsets.all(5),
-                      child: Icon(Atlas.pin_thin, size: 24),
-                    ),
-                  )
-                : null,
+            IconButton(
+              key: QuickJumpKeys.pins,
+              style: IconButton.styleFrom(
+                side: BorderSide(
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
+                ),
+              ),
+              onPressed: () => navigateTo(Routes.pins),
+              icon: const Padding(
+                padding: EdgeInsets.all(5),
+                child: Icon(Atlas.pin_thin, size: 24),
+              ),
+            ),
             IconButton(
               style: IconButton.styleFrom(
                 side: BorderSide(
