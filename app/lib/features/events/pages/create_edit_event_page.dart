@@ -492,8 +492,8 @@ class CreateEditEventPageConsumerState
 
       EasyLoading.dismiss();
 
-      ref.invalidate(calendarEventProvider(eventId.toString())); // edit page
-      ref.invalidate(spaceEventsProvider(spaceId)); // events page in space
+      // ref.invalidate(calendarEventProvider(eventId.toString())); // edit page
+      // ref.invalidate(spaceEventsProvider(spaceId)); // events page in space
 
       if (context.mounted) {
         context.pop();
@@ -548,9 +548,9 @@ class CreateEditEventPageConsumerState
 
       EasyLoading.dismiss();
 
-      ref.invalidate(calendarEventProvider(eventId.toString())); // edit page
-      final spaceId = calendarEvent.roomIdStr();
-      ref.invalidate(spaceEventsProvider(spaceId)); // events page in space
+      // ref.invalidate(calendarEventProvider(eventId.toString())); // edit page
+      // final spaceId = calendarEvent.roomIdStr();
+      // ref.invalidate(spaceEventsProvider(spaceId)); // events page in space
 
       if (context.mounted) context.pop();
     } catch (e) {

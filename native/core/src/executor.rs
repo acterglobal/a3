@@ -2,7 +2,7 @@ use ruma_events::{room::redaction::OriginalRoomRedactionEvent, UnsignedRoomRedac
 use scc::hash_map::{Entry, HashMap};
 use std::sync::Arc;
 use tokio::sync::broadcast::{channel, Receiver, Sender};
-use tracing::{error, trace, trace_span, warn};
+use tracing::{error, info, trace, trace_span, warn};
 
 use crate::{
     models::{ActerModel, AnyActerModel, EventMeta, RedactedActerModel},
@@ -100,6 +100,7 @@ impl Executor {
             }
             Ok(keys) => {
                 trace!(?event_id, "handling done");
+                info!("******************** executor handled: {:?}", keys.clone());
                 self.notify(keys);
                 Ok(())
             }
@@ -122,7 +123,12 @@ impl Executor {
                     event_meta,
                     reason.into(),
                 );
-                self.notify(model.redact(&self.store, redacted).await?);
+                let keys = model.redact(&self.store, redacted).await?;
+                info!(
+                    "******************** found model redacted: {:?}",
+                    keys.clone()
+                );
+                self.notify(keys);
             }
             Err(Error::ModelNotFound(_)) => {
                 trace!("no model found, storing redaction model");
@@ -132,7 +138,12 @@ impl Executor {
                     event_meta,
                     reason.into(),
                 );
-                self.notify(redacted.execute(&self.store).await?);
+                let keys = redacted.execute(&self.store).await?;
+                info!(
+                    "******************** not found redacted: {:?}",
+                    keys.clone()
+                );
+                self.notify(keys);
             }
             Err(error) => return Err(error),
         }
@@ -154,10 +165,19 @@ impl Executor {
                     meta,
                     event.into(),
                 );
-                self.notify(model.redact(&self.store, redacted).await?);
+                let keys = model.redact(&self.store, redacted).await?;
+                info!(
+                    "******************** found model live redacted: {:?}",
+                    keys.clone()
+                );
+                self.notify(keys);
             }
             Err(Error::ModelNotFound(_)) => {
                 trace!("no model found");
+                info!(
+                    "******************** not found live redacted: {:?}",
+                    meta.event_id.clone()
+                );
                 self.notify(vec![meta.event_id.to_string()]);
             }
             Err(error) => return Err(error),

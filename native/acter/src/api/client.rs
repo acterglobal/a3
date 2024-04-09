@@ -597,6 +597,10 @@ impl Client {
 
             updated
         };
+        info!(
+            "******************** refreshed room: {:?}",
+            update_keys.clone()
+        );
         self.executor().notify(update_keys);
     }
 
@@ -750,13 +754,13 @@ impl Client {
                         }
                     }
 
-                    let mut changed_rooms = response
+                    let changed_rooms = response
                         .rooms
                         .join
                         .keys()
                         .chain(response.rooms.leave.keys())
                         .chain(response.rooms.invite.keys())
-                        .collect::<Vec<_>>();
+                        .collect::<Vec<&OwnedRoomId>>();
 
                     if (!changed_rooms.is_empty()) {
                         me.refresh_rooms(changed_rooms).await;
