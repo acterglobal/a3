@@ -19,20 +19,21 @@ class CommentWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final roomID = manager.roomIdStr();
+    final userId = comment.sender().toString();
     final msgContent = comment.msgContent();
     final formatted = msgContent.formattedBody();
     var commentTime =
         DateTime.fromMillisecondsSinceEpoch(comment.originServerTs());
     final time = commentTime.timeago();
     final memberInfo = ref.watch(
-      roomMemberProvider(
-        (roomId: manager.roomIdStr(), userId: comment.sender().toString()),
-      ),
+      roomMemberProvider((roomId: roomID, userId: userId)),
     );
 
     return memberInfo.when(
       data: (data) {
-        final profileData = data.profile;
+        final displayName = data.profile.displayName;
+        final avatarImage = data.profile.getAvatarImage();
         return Card(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -41,17 +42,17 @@ class CommentWidget extends ConsumerWidget {
                 leading: ActerAvatar(
                   mode: DisplayMode.DM,
                   avatarInfo: AvatarInfo(
-                    uniqueId: manager.roomIdStr(),
-                    displayName: profileData.displayName ?? manager.roomIdStr(),
-                    avatar: profileData.getAvatarImage(),
+                    uniqueId: userId,
+                    displayName: displayName ?? userId,
+                    avatar: avatarImage,
                   ),
                   size: 18,
                 ),
                 title: Text(
-                  profileData.displayName ?? manager.roomIdStr(),
+                  displayName ?? userId,
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
-                subtitle: Text(comment.sender().toString()),
+                subtitle: displayName == null ? null : Text(userId) ,
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
