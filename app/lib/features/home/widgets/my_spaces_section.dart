@@ -63,14 +63,12 @@ class MySpacesSection extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               OutlinedButton(
-                                key: createNewSpaceKey,
                                 onPressed: () =>
                                     context.pushNamed(Routes.createSpace.name),
                                 child: Text(L10n.of(context).createSpace),
                               ),
                               const SizedBox(height: 10),
                               ElevatedButton(
-                                key: joinExistingSpaceKey,
                                 onPressed: () =>
                                     context.pushNamed(Routes.joinSpace.name),
                                 child: Text(L10n.of(context).joinSpace),
@@ -96,7 +94,7 @@ class _NoSpacesWidgetState extends ConsumerState<_NoSpacesWidget> {
   @override
   void initState() {
     super.initState();
-    createOrJoinSpaceTutorials(context: context);
+    if (!isDesktop) createOrJoinSpaceTutorials(context: context);
   }
 
   @override

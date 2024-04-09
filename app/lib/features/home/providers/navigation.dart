@@ -129,6 +129,7 @@ final sidebarItemsProvider = Provider.autoDispose
       ),
       location: Routes.quickJump.route,
       pushToNavigate: true,
+      tutorialGlobalKey: jumpToKey,
     ),
     SidebarNavigationItem(
       icon: const Icon(
@@ -141,6 +142,7 @@ final sidebarItemsProvider = Provider.autoDispose
         softWrap: false,
       ),
       location: Routes.dashboard.route,
+      tutorialGlobalKey: dashboardKey,
     ),
     SidebarNavigationItem(
       // icon: const Badge(child: Icon(Atlas.chats_thin)), // TODO: Badge example
@@ -154,6 +156,7 @@ final sidebarItemsProvider = Provider.autoDispose
         softWrap: false,
       ),
       location: Routes.chat.route,
+      tutorialGlobalKey: chatsKey,
     ),
     SidebarNavigationItem(
       icon: activitiesIcon,
@@ -169,6 +172,7 @@ final sidebarItemsProvider = Provider.autoDispose
         ],
       ),
       location: Routes.activities.route,
+      tutorialGlobalKey: activityKey,
     ),
   ];
 

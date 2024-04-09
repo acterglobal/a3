@@ -17,10 +17,13 @@ class SidebarNavigationItem extends NavigationRailDestination {
   final String? location;
   final bool pushToNavigate;
   final bool isSpaceTab;
+  final GlobalKey? tutorialGlobalKey;
+
   const SidebarNavigationItem({
     this.location,
     this.pushToNavigate = false,
     this.isSpaceTab = false,
+    this.tutorialGlobalKey,
     required super.icon,
     required super.label,
   });

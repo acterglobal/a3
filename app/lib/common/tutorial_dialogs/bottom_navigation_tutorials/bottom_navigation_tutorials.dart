@@ -1,4 +1,6 @@
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/tutorial_dialogs/show_tutorials.dart';
+import 'package:acter/common/tutorial_dialogs/space_overview_tutorials/create_or_join_space_tutorials.dart';
 import 'package:acter/common/tutorial_dialogs/target_focus.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +22,10 @@ Future<void> onSkip() async {
   }
 }
 
+void showCreateOrJoinSpaceTutorials(BuildContext context) {
+  if (isDesktop) createOrJoinSpaceTutorials(context: context);
+}
+
 void bottomNavigationTutorials({required BuildContext context}) async {
   final prefs = await sharedPrefs();
   final isShow = prefs.getBool(bottomNavigationPrefKey) ?? true;
@@ -27,25 +33,30 @@ void bottomNavigationTutorials({required BuildContext context}) async {
   if (context.mounted && isShow) {
     showTutorials(
       context: context,
-      onFinish: onSkip,
+      onFinish: () {
+        onSkip();
+        showCreateOrJoinSpaceTutorials(context);
+      },
       onClickTarget: (targetFocus) => onSkip(),
       onSkip: () {
         onSkip();
+        showCreateOrJoinSpaceTutorials(context);
         return true;
       },
       targets: [
-        targetFocus(
-          identify: 'updateKey',
-          keyTarget: updateKey,
-          contentAlign: ContentAlign.top,
-          contentImageUrl: 'assets/images/empty_updates.svg',
-          contentTitle: L10n.of(context).updatesTabTutorialTitle,
-          contentDescription: L10n.of(context).updatesTabTutorialDescription,
-        ),
+        if (!isDesktop)
+          targetFocus(
+            identify: 'updateKey',
+            keyTarget: updateKey,
+            contentAlign: ContentAlign.top,
+            contentImageUrl: 'assets/images/empty_updates.svg',
+            contentTitle: L10n.of(context).updatesTabTutorialTitle,
+            contentDescription: L10n.of(context).updatesTabTutorialDescription,
+          ),
         targetFocus(
           identify: 'dashboardKey',
           keyTarget: dashboardKey,
-          contentAlign: ContentAlign.top,
+          contentAlign: isDesktop ? ContentAlign.right : ContentAlign.top,
           contentImageUrl: 'assets/images/empty_home.svg',
           contentTitle: L10n.of(context).homeTabTutorialTitle,
           contentDescription: L10n.of(context).homeTabTutorialDescription,
@@ -53,7 +64,7 @@ void bottomNavigationTutorials({required BuildContext context}) async {
         targetFocus(
           identify: 'chatsKey',
           keyTarget: chatsKey,
-          contentAlign: ContentAlign.top,
+          contentAlign: isDesktop ? ContentAlign.right : ContentAlign.top,
           contentImageUrl: 'assets/images/empty_chat.svg',
           contentTitle: L10n.of(context).chatsTabTutorialTitle,
           contentDescription: L10n.of(context).chatsTabTutorialDescription,
@@ -62,7 +73,7 @@ void bottomNavigationTutorials({required BuildContext context}) async {
           identify: 'activityKey',
           keyTarget: activityKey,
           alignSkip: Alignment.bottomLeft,
-          contentAlign: ContentAlign.top,
+          contentAlign: isDesktop ? ContentAlign.right : ContentAlign.top,
           contentImageUrl: 'assets/images/empty_activity.svg',
           contentTitle: L10n.of(context).activityTabTutorialTitle,
           contentDescription: L10n.of(context).activityTabTutorialDescription,
@@ -70,7 +81,7 @@ void bottomNavigationTutorials({required BuildContext context}) async {
         targetFocus(
           identify: 'jumpToKey',
           keyTarget: jumpToKey,
-          contentAlign: ContentAlign.top,
+          contentAlign: isDesktop ? ContentAlign.right : ContentAlign.top,
           alignSkip: Alignment.bottomLeft,
           iconData: Icons.search,
           contentTitle: L10n.of(context).jumpToTabTutorialTitle,
