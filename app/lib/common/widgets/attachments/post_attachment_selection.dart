@@ -7,6 +7,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show AttachmentDraft, AttachmentsManager;
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mime/mime.dart';
@@ -95,6 +96,7 @@ class _PostAttachmentSelectionState
   Future<void> handleAttachmentSend() async {
     /// converts user selected media to attachment draft and sends state list.
     /// only supports image/video/audio/file.
+    final lang = L10n.of(context);
     EasyLoading.show(status: 'Sending attachments', dismissOnTap: false);
     final client = ref.read(alwaysClientProvider);
     List<AttachmentDraft> drafts = [];
@@ -103,7 +105,7 @@ class _PostAttachmentSelectionState
         final type = selected.type;
         final file = selected.file;
         final mimeType = lookupMimeType(file.path);
-        if (mimeType == null) continue;
+        if (mimeType == null) throw lang.failedToDetectMimeType;
         final manager = widget.manager;
         if (type == AttachmentType.camera || type == AttachmentType.image) {
           Uint8List bytes = await file.readAsBytes();

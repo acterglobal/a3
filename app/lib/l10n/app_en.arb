@@ -1381,6 +1381,7 @@
   "failedToSubmitEmail": "Failed to submit email: {error}",
   "failedToDecryptMessage": "Failed to decrypt message. Re-request session keys",
   "failedToDeleteAttachment": "Failed to delete attachment due to: {error}",
+  "failedToDetectMimeType": "Failed to detect mime type",
   "failedToLoadSpace": "Failed to load space: {error}",
   "failedToLoadEvent": "Failed to load event: {error}",
   "failedToLoadTask": "Failed to load task: {error}",
