@@ -1,17 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:overlay_support/overlay_support.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
-OverlaySupportEntry showNoInternetNotification() {
-  return showSimpleNotification(
-    const Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(Icons.wifi_off),
-        SizedBox(width: 12),
-        Text('Network connectivity limited or unavailable'),
-      ],
-    ),
-    slideDismissDirection: DismissDirection.up,
-    duration: const Duration(seconds: 10),
-  );
+void showNoInternetNotification(context) {
+  EasyLoading.showToast(L10n.of(context).limitedInternConnection);
 }

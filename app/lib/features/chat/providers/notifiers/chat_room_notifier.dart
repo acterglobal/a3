@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -31,7 +32,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   Future<void> _init() async {
     try {
-      timeline = convo.timelineStream();
+      timeline = ref.read(timelineStreamProvider(convo));
       _listener = timeline.messagesStream(); // keep it resident in memory
       _poller = _listener.listen(_handleDiff);
       ref.onDispose(() => _poller.cancel());

@@ -44,7 +44,6 @@ dependencies:
   swipe_to: ^1.0.5
   image_picker: ^1.0.0
   cross_file_image: ^1.0.0
-  overlay_support: ^2.1.0
   flutter_keyboard_visibility: ^6.0.0
   expandable_text: ^2.3.0
   cached_network_image: ^3.2.1
