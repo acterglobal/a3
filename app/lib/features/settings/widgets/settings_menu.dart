@@ -17,6 +17,7 @@ class SettingsMenu extends ConsumerWidget {
   static Key deactivateAccount = const Key('settings-auth-deactivate-account');
   static Key logoutAccount = const Key('settings-auth-logout-account');
   static Key superInvitations = const Key('settings-super-invitations');
+  static Key chat = const Key('settings-chat');
   static Key labs = const Key('settings-labs');
 
   const SettingsMenu({super.key = defaultSettingsMenuKey});
@@ -112,6 +113,17 @@ class SettingsMenu extends ConsumerWidget {
           context: context,
           sectionTitle: L10n.of(context).acterApp,
           children: [
+            MenuItemWidget(
+              key: SettingsMenu.chat,
+              iconData: Atlas.chat_conversation_thin,
+              iconColor: colorSelected(Routes.settingsChat),
+              title: L10n.of(context).chat,
+              subTitle: L10n.of(context).chatSettingsExplainer,
+              titleStyles: titleStylesSelected(Routes.settingsChat),
+              onTap: () => shouldGoNotNamed
+                  ? context.goNamed(Routes.settingsChat.name)
+                  : context.pushNamed(Routes.settingsChat.name),
+            ),
             MenuItemWidget(
               iconData: Atlas.language_translation,
               iconColor: colorSelected(Routes.settingLanguage),
