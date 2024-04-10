@@ -46,10 +46,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
     if (newPowerLevel == null) return;
 
     if (!context.mounted) return;
-    EasyLoading.show(
-      status: L10n.of(context).updatingPowerLevelOf(userId),
-      dismissOnTap: false,
-    );
+    EasyLoading.show(status: L10n.of(context).updatingPowerLevelOf(userId));
     try {
       final room = await ref.read(maybeRoomProvider(roomId).future);
       await room?.updatePowerLevel(userId, newPowerLevel);

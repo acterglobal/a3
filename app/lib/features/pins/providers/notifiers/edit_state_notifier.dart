@@ -42,7 +42,7 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
   void setEditMode(bool editMode) => state = state.copyWith(editMode: editMode);
 
   Future<void> onSave() async {
-    EasyLoading.show(status: 'Saving Pin', dismissOnTap: false);
+    EasyLoading.show(status: 'Saving Pin');
     try {
       final updateBuilder = pin.updateBuilder();
       bool hasChanges = false;

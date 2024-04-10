@@ -12,7 +12,7 @@ Future<void> joinRoom(
   String? server,
   Function(String) forward,
 ) async {
-  EasyLoading.show(status: displayMsg, dismissOnTap: false);
+  EasyLoading.show(status: displayMsg);
   final client = ref.read(alwaysClientProvider);
   try {
     final newSpace = await client.joinSpace(roomIdOrAlias, server);

@@ -97,10 +97,7 @@ class _CreateCommentWidgetState extends ConsumerState<CreateCommentWidget> {
       EasyLoading.showToast(L10n.of(context).youNeedToEnterAComment);
       return;
     }
-    EasyLoading.show(
-      status: L10n.of(context).submittingComment,
-      dismissOnTap: false,
-    );
+    EasyLoading.show(status: L10n.of(context).submittingComment);
     try {
       final draft = widget.manager.commentDraft();
       draft.contentFormatted(plainDescription, htmlBodyDescription);

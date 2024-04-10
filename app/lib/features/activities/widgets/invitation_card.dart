@@ -195,7 +195,7 @@ class InvitationCard extends ConsumerWidget {
 
   // method for post-process invitation accept
   void _onTapAcceptInvite(BuildContext context) async {
-    EasyLoading.show(status: L10n.of(context).joining, dismissOnTap: false);
+    EasyLoading.show(status: L10n.of(context).joining);
     bool res = await invitation.accept();
     if (!context.mounted) {
       EasyLoading.dismiss();
@@ -212,7 +212,7 @@ class InvitationCard extends ConsumerWidget {
   }
 
   void _onTapDeclineInvite(BuildContext context) async {
-    EasyLoading.show(status: L10n.of(context).rejecting, dismissOnTap: false);
+    EasyLoading.show(status: L10n.of(context).rejecting);
     bool res = await invitation.reject();
     if (!context.mounted) {
       EasyLoading.dismiss();

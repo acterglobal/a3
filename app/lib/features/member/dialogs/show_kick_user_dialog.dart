@@ -36,10 +36,7 @@ Future<void> showKickUserDialog(BuildContext context, Member member) async {
           ),
           TextButton(
             onPressed: () async {
-              EasyLoading.show(
-                status: L10n.of(context).kickProgress,
-                dismissOnTap: false,
-              );
+              EasyLoading.show(status: L10n.of(context).kickProgress);
               try {
                 final maybeReason = reason.text.isNotEmpty ? reason.text : null;
                 await member.kick(maybeReason);

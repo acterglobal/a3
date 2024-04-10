@@ -154,10 +154,7 @@ class EmailAddressCard extends ConsumerWidget {
     );
     if (!context.mounted) return;
     if (newValue == null) return;
-    EasyLoading.show(
-      status: L10n.of(context).tryingToConfirmToken,
-      dismissOnTap: false,
-    );
+    EasyLoading.show(status: L10n.of(context).tryingToConfirmToken);
     try {
       await manager.tryConfirmEmailStatus(emailAddress, newValue);
       ref.invalidate(emailAddressesProvider);
@@ -190,10 +187,7 @@ class EmailAddressCard extends ConsumerWidget {
     );
     if (!context.mounted) return;
     if (newValue == null) return;
-    EasyLoading.show(
-      status: L10n.of(context).tryingToConfirmToken,
-      dismissOnTap: false,
-    );
+    EasyLoading.show(status: L10n.of(context).tryingToConfirmToken);
     try {
       final result = await manager.submitTokenFromEmail(
         emailAddress,

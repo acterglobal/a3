@@ -151,7 +151,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
 
   Future<void> _handleCreatePin() async {
     if (!_formKey.currentState!.validate()) return;
-    EasyLoading.show(status: L10n.of(context).creatingPin, dismissOnTap: false);
+    EasyLoading.show(status: L10n.of(context).creatingPin);
     try {
       final spaceId = ref.read(selectedSpaceIdProvider);
       final space = await ref.read(spaceProvider(spaceId!).future);

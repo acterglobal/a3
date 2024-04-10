@@ -31,10 +31,7 @@ Future<void> showUnblockUserDialog(BuildContext context, Member member) async {
           ),
           TextButton(
             onPressed: () async {
-              EasyLoading.show(
-                status: L10n.of(context).unblockingUserProgress,
-                dismissOnTap: false,
-              );
+              EasyLoading.show(status: L10n.of(context).unblockingUserProgress);
               try {
                 await member.unignore();
                 if (!context.mounted) {

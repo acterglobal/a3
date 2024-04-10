@@ -348,7 +348,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
 
     String displayMsg = L10n.of(context).slidePosting;
     // Show loading message
-    EasyLoading.show(status: displayMsg, dismissOnTap: false);
+    EasyLoading.show(status: displayMsg);
     try {
       final space = await ref.read(spaceProvider(spaceId).future);
       NewsEntryDraft draft = space.newsDraft();

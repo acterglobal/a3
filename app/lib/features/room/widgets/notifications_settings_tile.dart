@@ -141,10 +141,7 @@ class _NotificationSettingsTile extends ConsumerWidget {
       return;
     }
     if (!context.mounted) return;
-    EasyLoading.show(
-      status: L10n.of(context).changingNotificationMode,
-      dismissOnTap: false,
-    );
+    EasyLoading.show(status: L10n.of(context).changingNotificationMode);
     // '' is a special case resetting to default.
     final res = await room.setNotificationMode(newMode == '' ? null : newMode);
     if (!res) {

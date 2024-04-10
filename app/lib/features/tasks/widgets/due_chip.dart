@@ -95,7 +95,7 @@ class _DueChipState extends State<DueChip> {
     ); // FIXME: add unsetting support
     if (!context.mounted) return;
     if (newDue == null) return;
-    EasyLoading.show(status: L10n.of(context).updatingDue, dismissOnTap: false);
+    EasyLoading.show(status: L10n.of(context).updatingDue);
     try {
       final updater = widget.task.updateBuilder();
       updater.dueDate(newDue.due.year, newDue.due.month, newDue.due.day);

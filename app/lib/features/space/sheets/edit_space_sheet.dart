@@ -270,10 +270,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
       return;
     }
     if (!context.mounted) return;
-    EasyLoading.show(
-      status: L10n.of(context).updatingSpace,
-      dismissOnTap: false,
-    );
+    EasyLoading.show(status: L10n.of(context).updatingSpace);
     final roomId = await _handleUpdateSpace(context);
     _log.info('Space Updated: $roomId');
     EasyLoading.dismiss();

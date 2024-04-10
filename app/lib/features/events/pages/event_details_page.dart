@@ -265,10 +265,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   Future<void> onRsvp(RsvpStatusTag status, WidgetRef ref) async {
-    EasyLoading.show(
-      status: L10n.of(context).updatingRSVP,
-      dismissOnTap: false,
-    );
+    EasyLoading.show(status: L10n.of(context).updatingRSVP);
     try {
       final event =
           await ref.read(calendarEventProvider(widget.calendarId).future);

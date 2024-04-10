@@ -103,10 +103,7 @@ Future<void> _onConfirm(
   WidgetRef ref,
   String password,
 ) async {
-  EasyLoading.show(
-    status: L10n.of(context).deactivatingYourAccount,
-    dismissOnTap: false,
-  );
+  EasyLoading.show(status: L10n.of(context).deactivatingYourAccount);
   final sdk = await ref.read(sdkProvider.future);
   try {
     final result = await sdk.deactivateAndDestroyCurrentClient(password);

@@ -42,10 +42,7 @@ class _CreateTaskListSheetConsumerState
 
   Future<void> submitForm(BuildContext context) async {
     if (!_formKey.currentState!.validate()) return;
-    EasyLoading.show(
-      status: L10n.of(context).postingTaskList,
-      dismissOnTap: false,
-    );
+    EasyLoading.show(status: L10n.of(context).postingTaskList);
     try {
       final spaceId = ref.read(selectedSpaceIdProvider);
       final space = await ref.read(spaceProvider(spaceId!).future);

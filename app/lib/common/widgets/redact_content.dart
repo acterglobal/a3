@@ -89,7 +89,7 @@ class RedactContentWidget extends ConsumerWidget {
   }
 
   void redactContent(BuildContext ctx, WidgetRef ref, String reason) async {
-    EasyLoading.show(status: L10n.of(ctx).removingContent, dismissOnTap: false);
+    EasyLoading.show(status: L10n.of(ctx).removingContent);
     try {
       if (isSpace) {
         final space = await ref.read(spaceProvider(roomId).future);

@@ -52,10 +52,7 @@ class _RedeemTokenConsumerState extends ConsumerState<RedeemToken> {
     if (token.isEmpty) return;
     final superInvites = ref.read(superInvitesProvider);
 
-    EasyLoading.show(
-      status: L10n.of(context).redeeming(token),
-      dismissOnTap: false,
-    );
+    EasyLoading.show(status: L10n.of(context).redeeming(token));
     try {
       final rooms = (await superInvites.redeem(token)).toList();
       if (!context.mounted) {

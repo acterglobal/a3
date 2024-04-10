@@ -444,10 +444,7 @@ class CreateEditEventPageConsumerState
       return;
     }
 
-    EasyLoading.show(
-      status: L10n.of(context).creatingCalendarEvent,
-      dismissOnTap: false,
-    );
+    EasyLoading.show(status: L10n.of(context).creatingCalendarEvent);
     try {
       // Replacing hours and minutes from DateTime
       // Start Date
@@ -510,10 +507,7 @@ class CreateEditEventPageConsumerState
   Future<void> _handleUpdateEvent() async {
     if (!_formKey.currentState!.validate()) return;
 
-    EasyLoading.show(
-      status: L10n.of(context).updatingEvent,
-      dismissOnTap: false,
-    );
+    EasyLoading.show(status: L10n.of(context).updatingEvent);
     try {
       // We always have calendar object at this stage.
       final calendarEvent =

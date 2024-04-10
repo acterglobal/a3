@@ -202,10 +202,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
       );
       return;
     }
-    EasyLoading.show(
-      status: L10n.of(context).changingNotificationMode,
-      dismissOnTap: false,
-    );
+    EasyLoading.show(status: L10n.of(context).changingNotificationMode);
     try {
       final notifier = ref.read(notificationSettingsProvider).valueOrNull!;
       await notifier.setDefaultNotificationMode(
@@ -294,10 +291,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
     );
     if (!context.mounted) return;
     if (emailToAdd == null) return;
-    EasyLoading.show(
-      status: L10n.of(context).adding(emailToAdd),
-      dismissOnTap: false,
-    );
+    EasyLoading.show(status: L10n.of(context).adding(emailToAdd));
     final client = ref.read(
       alwaysClientProvider,
     ); // is guaranteed because of the ignoredUsersProvider using it
@@ -399,10 +393,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
     Pusher item,
   ) async {
     Navigator.pop(context, null);
-    EasyLoading.show(
-      status: L10n.of(context).deletingPushTarget,
-      dismissOnTap: false,
-    );
+    EasyLoading.show(status: L10n.of(context).deletingPushTarget);
     try {
       await item.delete();
       if (!context.mounted) {

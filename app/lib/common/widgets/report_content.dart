@@ -107,7 +107,7 @@ class ReportContentWidget extends ConsumerWidget {
   void reportContent(BuildContext ctx, WidgetRef ref, String reason) async {
     bool res = false;
     final ignoreFlag = ref.read(_ignoreUserProvider);
-    EasyLoading.show(status: L10n.of(ctx).sendingReport, dismissOnTap: false);
+    EasyLoading.show(status: L10n.of(ctx).sendingReport);
     try {
       if (isSpace) {
         final space = await ref.read(spaceProvider(roomId).future);

@@ -94,10 +94,7 @@ class MyProfilePage extends StatelessWidget {
     if (!context.mounted) return;
     if (newText == null) return;
 
-    EasyLoading.show(
-      status: L10n.of(context).updatingDisplayName,
-      dismissOnTap: false,
-    );
+    EasyLoading.show(status: L10n.of(context).updatingDisplayName);
     await profile.account.setDisplayName(newText);
     ref.invalidate(accountProfileProvider);
 
@@ -119,10 +116,7 @@ class MyProfilePage extends StatelessWidget {
     );
     if (!context.mounted) return;
     if (result != null) {
-      EasyLoading.show(
-        status: L10n.of(context).updatingProfileImage,
-        dismissOnTap: false,
-      );
+      EasyLoading.show(status: L10n.of(context).updatingProfileImage);
       final file = result.files.first;
       await profile.account.uploadAvatar(file.path!);
       ref.invalidate(accountProfileProvider);

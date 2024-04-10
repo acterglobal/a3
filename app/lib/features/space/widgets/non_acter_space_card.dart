@@ -56,10 +56,7 @@ class NonActerSpaceCard extends ConsumerWidget {
   }
 
   void upgradeSpace(BuildContext context, WidgetRef ref) async {
-    EasyLoading.show(
-      status: L10n.of(context).convertingToActerSpace,
-      dismissOnTap: false,
-    );
+    EasyLoading.show(status: L10n.of(context).convertingToActerSpace);
 
     try {
       final space = await ref.read(spaceProvider(spaceId).future);

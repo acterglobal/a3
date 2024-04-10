@@ -97,7 +97,7 @@ class _PostAttachmentSelectionState
     /// converts user selected media to attachment draft and sends state list.
     /// only supports image/video/audio/file.
     final lang = L10n.of(context);
-    EasyLoading.show(status: lang.sendingAttachment, dismissOnTap: false);
+    EasyLoading.show(status: lang.sendingAttachment);
     final client = ref.read(alwaysClientProvider);
     List<AttachmentDraft> drafts = [];
     try {

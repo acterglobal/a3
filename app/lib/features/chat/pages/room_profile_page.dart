@@ -349,10 +349,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
 
   Future<void> _handleLeaveRoom() async {
     Navigator.of(context, rootNavigator: true).pop();
-    EasyLoading.show(
-      status: L10n.of(context).leavingRoom,
-      dismissOnTap: false,
-    );
+    EasyLoading.show(status: L10n.of(context).leavingRoom);
     final convo = await ref.read(chatProvider(widget.roomId).future);
     final res = await convo.leave();
     if (!context.mounted) {

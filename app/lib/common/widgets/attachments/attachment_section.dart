@@ -197,10 +197,7 @@ class AttachmentSectionWidget extends ConsumerWidget {
     String reason,
     BuildContext context,
   ) async {
-    EasyLoading.show(
-      status: L10n.of(context).removingAttachment,
-      dismissOnTap: false,
-    );
+    EasyLoading.show(status: L10n.of(context).removingAttachment);
     try {
       await attachmentManager.redact(eventId, reason, null);
       _log.info('attachment redacted: $eventId');
