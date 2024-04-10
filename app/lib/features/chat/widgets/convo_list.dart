@@ -8,6 +8,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class ConvosList extends ConsumerStatefulWidget {
   final Function(String)? onSelected;
@@ -27,9 +28,9 @@ class _ConvosListConsumerState extends ConsumerState<ConvosList> {
       return ref.watch(filteredChatsProvider).when(
             data: (chats) {
               if (chats.isEmpty) {
-                return const Center(
+                return Center(
                   heightFactor: 10,
-                  child: Text('No chats found matching your filters & search'),
+                  child: Text(L10n.of(context).noChatsFoundMatchingYourFilter),
                 );
               }
               return renderList(context, chats);
@@ -41,7 +42,7 @@ class _ConvosListConsumerState extends ConsumerState<ConvosList> {
             error: (e, s) => Center(
               heightFactor: 10,
               child: Text(
-                'Searching failed: $e',
+                '${L10n.of(context).searchingFailed}: $e',
               ),
             ),
           );
@@ -51,15 +52,14 @@ class _ConvosListConsumerState extends ConsumerState<ConvosList> {
       return Center(
         heightFactor: 1.5,
         child: EmptyState(
-          title: 'You have no DMs at the moment',
-          subtitle:
-              'Get in touch with other change makers, organizers or activists and chat directly with them.',
+          title: L10n.of(context).youHaveNoDMsAtTheMoment,
+          subtitle: L10n.of(context).getInTouchWithOtherChangeMakers,
           image: 'assets/images/empty_chat.svg',
           primaryButton: ElevatedButton(
             onPressed: () async => context.pushNamed(
               Routes.createChat.name,
             ),
-            child: const Text('Send DM'),
+            child: Text(L10n.of(context).sendDM),
           ),
         ),
       );

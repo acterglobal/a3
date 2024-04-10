@@ -1,7 +1,7 @@
 import 'package:acter/features/pins/models/pin_edit_state/pin_edit_state.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show ActerPin;
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 
 class PinEditNotifier extends StateNotifier<PinEditState> {
   final ActerPin pin;

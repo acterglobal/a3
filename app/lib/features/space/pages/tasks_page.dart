@@ -10,6 +10,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SpaceTasksPage extends ConsumerWidget {
   static const createTaskKey = Key('space-create-task');
@@ -36,8 +37,9 @@ class SpaceTasksPage extends ConsumerWidget {
                 Expanded(
                   child: Text(
                     taskLists.hasValue && taskLists.valueOrNull!.isNotEmpty
-                        ? 'Tasks (${taskLists.valueOrNull!.length})'
-                        : 'Tasks',
+                        ? L10n.of(context)
+                            .tasksCount(taskLists.valueOrNull!.length)
+                        : L10n.of(context).tasks,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
@@ -76,15 +78,15 @@ class SpaceTasksPage extends ConsumerWidget {
               child: SizedBox(
                 height: 450,
                 child: Center(
-                  child: Text('Loading tasks failed: $error'),
+                  child: Text(L10n.of(context).loadingFailed(error)),
                 ),
               ),
             ),
-            loading: () => const SliverToBoxAdapter(
+            loading: () => SliverToBoxAdapter(
               child: SizedBox(
                 height: 450,
                 child: Center(
-                  child: Text('Loading'),
+                  child: Text(L10n.of(context).loading),
                 ),
               ),
             ),

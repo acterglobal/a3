@@ -14,6 +14,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class ActivitiesPage extends ConsumerWidget {
   static const Key oneUnverifiedSessionsCard =
@@ -30,13 +31,12 @@ class ActivitiesPage extends ConsumerWidget {
         ? Duration(seconds: syncState.countDown!)
         : null;
     if (!hasFirstSynced) {
-      return const SliverToBoxAdapter(
+      return SliverToBoxAdapter(
         child: Card(
           child: ListTile(
-            leading: Icon(Atlas.arrows_dots_rotate),
-            title: Text('Syncing with your homeserver'),
-            subtitle:
-                Text('This might take a while if you have a large account'),
+            leading: const Icon(Atlas.arrows_dots_rotate),
+            title: Text(L10n.of(context).renderSyncingTitle),
+            subtitle: Text(L10n.of(context).renderSyncingSubTitle),
           ),
         ),
       );
@@ -45,11 +45,20 @@ class ActivitiesPage extends ConsumerWidget {
         child: Card(
           child: ListTile(
             leading: const Icon(Atlas.warning),
-            title: Text('Error syncing: $errorMsg'),
+            title: Text(L10n.of(context).errorSyncing(errorMsg)),
             subtitle: Text(
               retryDuration == null
-                  ? 'retrying ...'
-                  : 'Will retry in ${retryDuration.inMinutes.remainder(60).toString().padLeft(2, '0')}:${retryDuration.inSeconds.remainder(60).toString().padLeft(2, '0')}',
+                  ? L10n.of(context).retrying
+                  : L10n.of(context).retryIn(
+                      retryDuration.inMinutes
+                          .remainder(60)
+                          .toString()
+                          .padLeft(2, '0'),
+                      retryDuration.inSeconds
+                          .remainder(60)
+                          .toString()
+                          .padLeft(2, '0'),
+                    ),
             ),
           ),
         ),
@@ -71,7 +80,7 @@ class ActivitiesPage extends ConsumerWidget {
             vertical: 5,
           ),
           child: Text(
-            'Invitations',
+            L10n.of(context).invitations,
             style: Theme.of(context).textTheme.headlineSmall,
           ),
         ),
@@ -94,7 +103,10 @@ class ActivitiesPage extends ConsumerWidget {
     final allSessions = ref.watch(unknownSessionsProvider);
     if (allSessions.error != null) {
       return SliverToBoxAdapter(
-        child: Text("Couldn't load unverified sessions: ${allSessions.error}"),
+        child: Text(
+          L10n.of(context)
+              .errorUnverifiedSessions(allSessions.error.toString()),
+        ),
       );
     } else if (!allSessions.hasValue) {
       // we can ignore
@@ -119,7 +131,7 @@ class ActivitiesPage extends ConsumerWidget {
           child: ListTile(
             leading: const Icon(Atlas.warning_bold),
             title: Text(
-              'There are ${sessions.length} unverified sessions logged in',
+              L10n.of(context).unverifiedSessionsTitle(sessions.length),
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             trailing: ElevatedButton(
@@ -137,7 +149,7 @@ class ActivitiesPage extends ConsumerWidget {
                 foregroundColor: Theme.of(context).colorScheme.neutral6,
                 textStyle: Theme.of(context).textTheme.bodySmall,
               ),
-              child: const Text('Review'),
+              child: Text(L10n.of(context).review),
             ),
           ),
         ),
@@ -183,25 +195,24 @@ class ActivitiesPage extends ConsumerWidget {
       body: CustomScrollView(
         slivers: <Widget>[
           PageHeaderWidget(
-            title: 'Activities',
+            title: L10n.of(context).activities,
             sectionDecoration: const BoxDecoration(
               gradient: primaryGradient,
             ),
             expandedContent: Text(
-              'All the important stuff requiring your attention can be found here',
+              L10n.of(context).activitiesDescription,
               softWrap: true,
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ),
           ...children,
           if (renderEmptyState)
-            const SliverToBoxAdapter(
+            SliverToBoxAdapter(
               child: Center(
                 heightFactor: 1.5,
                 child: EmptyState(
-                  title: 'No Activity for you yet',
-                  subtitle:
-                      'Notifies you about important things such as messages, invitations or requests.',
+                  title: L10n.of(context).noActivityTitle,
+                  subtitle: L10n.of(context).noActivitySubtitle,
                   image: 'assets/images/empty_activity.svg',
                 ),
               ),

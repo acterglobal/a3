@@ -54,27 +54,26 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   final usernamePattern = RegExp(r'^[a-z0-9._=\-/]+$');
 
   Future<void> handleSubmit() async {
-    if (formKey.currentState!.validate()) {
-      final network = ref.read(networkAwareProvider);
-      if (!inCI && network == NetworkStatus.Off) {
-        showNoInternetNotification();
-      } else {
-        final authNotifier = ref.read(authStateProvider.notifier);
-        final errorMsg = await authNotifier.register(
-          username.text,
-          password.text,
-          name.text,
-          token.text,
-          context,
-        );
-        if (errorMsg != null) {
-          EasyLoading.showError(errorMsg);
-        }
-        if (token.text.isNotEmpty) {
-          final superInvites = ref.read(superInvitesProvider);
-          tryRedeem(superInvites, token.text);
-        }
-      }
+    if (!formKey.currentState!.validate()) return;
+    final network = ref.read(networkAwareProvider);
+    if (!inCI && network == NetworkStatus.Off) {
+      showNoInternetNotification(context);
+      return;
+    }
+    final authNotifier = ref.read(authStateProvider.notifier);
+    final errorMsg = await authNotifier.register(
+      username.text,
+      password.text,
+      name.text,
+      token.text,
+      context,
+    );
+    if (errorMsg != null) {
+      EasyLoading.showError(errorMsg);
+    }
+    if (token.text.isNotEmpty) {
+      final superInvites = ref.read(superInvitesProvider);
+      tryRedeem(superInvites, token.text);
     }
   }
 

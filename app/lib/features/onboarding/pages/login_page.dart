@@ -56,6 +56,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   Widget _buildLoginPage(BuildContext context) {
+    var screenHeight = MediaQuery.of(context).size.height;
+    var imageSize = screenHeight / 5;
     return Expanded(
       child: SingleChildScrollView(
         child: Container(
@@ -65,9 +67,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 12),
-              const LogoWidget(width: 150, height: 150),
-              const SizedBox(height: 20),
+              if (screenHeight > 650)
+                LogoWidget(width: imageSize, height: imageSize),
               _buildHeadlineText(context),
               const SizedBox(height: 24),
               _buildUsernameInputField(context),
@@ -192,7 +193,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       alignment: Alignment.centerRight,
       child: TextButton(
         key: LoginPageKeys.forgotPassBtn,
-        onPressed: () {},
+        onPressed: () => context.pushNamed(Routes.forgotPassword.name),
         child: Text(
           L10n.of(context).forgotPassword,
         ),
@@ -218,31 +219,26 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   Future<void> handleSubmit(BuildContext context) async {
-    if (formKey.currentState!.validate()) {
-      final network = ref.read(networkAwareProvider);
-      if (!inCI && network == NetworkStatus.Off) {
-        showNoInternetNotification();
-      } else {
-        final authNotifier = ref.read(authStateProvider.notifier);
-        final loginSuccess = await authNotifier.login(
-          username.text,
-          password.text,
-        );
+    if (!formKey.currentState!.validate()) return;
+    final network = ref.read(networkAwareProvider);
+    if (!inCI && network == NetworkStatus.Off) {
+      showNoInternetNotification(context);
+      return;
+    }
+    final authNotifier = ref.read(authStateProvider.notifier);
+    final loginSuccess = await authNotifier.login(
+      username.text,
+      password.text,
+    );
 
-        // We are doing as expected, but the lints triggers.
-        // ignore: use_build_context_synchronously
-        if (!context.mounted) {
-          return;
-        }
-        if (loginSuccess == null) {
-          // no message means, login was successful.
-          context.goNamed(Routes.main.name);
-        } else {
-          EasyLoading.showError(
-            loginSuccess,
-          );
-        }
-      }
+    // We are doing as expected, but the lints triggers.
+    // ignore: use_build_context_synchronously
+    if (!context.mounted) return;
+    if (loginSuccess == null) {
+      // no message means, login was successful.
+      context.goNamed(Routes.main.name);
+    } else {
+      EasyLoading.showError(loginSuccess);
     }
   }
 }

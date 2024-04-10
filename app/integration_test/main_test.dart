@@ -3,6 +3,7 @@ import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'support/appstart.dart';
+import 'tests/attachments.dart';
 import 'tests/auth.dart';
 import 'tests/events.dart';
 import 'tests/pins.dart';
@@ -22,6 +23,7 @@ void main() {
     group('Tasks', tasksTests);
     group('Pins', pinsTests);
     group('Bug Reporting', bugReporterTests);
+    group('Attachments', attachmentTests);
   });
 }
 

@@ -10,6 +10,7 @@ import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class ActerSpaceChecker extends ConsumerWidget {
   final Widget child;
@@ -29,7 +30,7 @@ class ActerSpaceChecker extends ConsumerWidget {
     final expCheck = expectation ?? (a) => a != null;
     return appSettings.when(
       data: (data) => expCheck(data) ? child : const SizedBox.shrink(),
-      error: (error, stackTrace) => Text('Failed to load space: $error'),
+      error: (error, stackTrace) => Text(L10n.of(context).failedToLoadSpace(error)),
       loading: () => const SizedBox.shrink(),
     );
   }

@@ -143,15 +143,5 @@ mod api {
         }
     }
 }
-
-fn init_logging(log_dir: String, filter: String) -> Result<()> {
-    platform::init_logging(log_dir, filter)
-}
-
-fn rotate_log_file() -> Result<String> {
-    platform::rotate_log_file()
-}
-
-fn write_log(text: String, level: String) -> Result<()> {
-    platform::write_log(text, level)
-}
+// reexport
+pub use platform::{init_logging, rotate_log_file, would_log, write_log};

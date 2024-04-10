@@ -1,7 +1,6 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/chat/models/room_list_filter_state/room_list_filter_state.dart';
-import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
 import 'package:acter/features/chat/widgets/convo_list.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -15,9 +14,13 @@ import 'package:go_router/go_router.dart';
 final bucketGlobal = PageStorageBucket();
 
 class RoomsListWidget extends ConsumerStatefulWidget {
+  final Function(String) onSelected;
   static const roomListMenuKey = Key('room-list');
 
-  const RoomsListWidget({super.key = roomListMenuKey});
+  const RoomsListWidget({
+    required this.onSelected,
+    super.key = roomListMenuKey,
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -69,10 +72,10 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
           ref.watch(roomListFilterProvider.select((value) => value.selection));
       switch (selection) {
         case FilterSelection.dmsOnly:
-          title = 'DMs';
+          title = L10n.of(context).dms;
           break;
         case FilterSelection.favorites:
-          title = 'Bookmarked';
+          title = L10n.of(context).bookmarked;
         default:
           break;
       }
@@ -90,7 +93,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
     final searchTerm =
         ref.watch(roomListFilterProvider.select((value) => value.searchTerm));
     if (searchTerm != null && searchTerm.isNotEmpty) {
-      searchFilterText = "Search result for '$searchTerm'..";
+      searchFilterText = L10n.of(context).searchResultFor(searchTerm);
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Text(searchFilterText),
@@ -126,7 +129,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
             padding: EdgeInsets.all(8.0),
             child: Icon(Atlas.magnifying_glass),
           ),
-          hintText: 'Search chats',
+          hintText: L10n.of(context).searchChats,
           trailing: hasSearchTerm
               ? [
                   InkWell(
@@ -157,7 +160,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
                     _isSearchVisible = false;
                   });
                 },
-                child: const Text('clear'),
+                child: Text(L10n.of(context).clear.toLowerCase()),
               ),
             if (!hasFilters)
               TextButton(
@@ -166,7 +169,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
                     _isSearchVisible = false;
                   });
                 },
-                child: const Text('close'),
+                child: Text(L10n.of(context).close.toLowerCase()),
               ),
           ],
         ),
@@ -190,7 +193,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
         children: [
           FilterChip(
             selected: selected == FilterSelection.all,
-            label: const Text('All'),
+            label: Text(L10n.of(context).all),
             onSelected: (value) async {
               await ref
                   .read(roomListFilterProvider.notifier)
@@ -200,7 +203,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
           const SizedBox(width: 10),
           FilterChip(
             selected: selected == FilterSelection.favorites,
-            label: const Text('Bookmarked'),
+            label: Text(L10n.of(context).bookmarked),
             onSelected: (value) async {
               await ref
                   .read(roomListFilterProvider.notifier)
@@ -210,7 +213,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
           const SizedBox(width: 10),
           FilterChip(
             selected: selected == FilterSelection.dmsOnly,
-            label: const Text('DMs'),
+            label: Text(L10n.of(context).dms),
             onSelected: (value) async {
               await ref
                   .read(roomListFilterProvider.notifier)
@@ -227,7 +230,6 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
   Widget build(BuildContext context) {
     final client = ref.watch(alwaysClientProvider);
     final hasFilters = ref.watch(hasRoomFilters);
-    final inSideBar = ref.watch(inSideBarProvider);
     return PageStorage(
       bucket: bucketGlobal,
       child: CustomScrollView(
@@ -307,17 +309,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
             child: client.isGuest()
                 ? empty
                 : ConvosList(
-                    onSelected: (String roomId) {
-                      inSideBar
-                          ? context.goNamed(
-                              Routes.chatroom.name,
-                              pathParameters: {'roomId': roomId},
-                            )
-                          : context.pushNamed(
-                              Routes.chatroom.name,
-                              pathParameters: {'roomId': roomId},
-                            );
-                    },
+                    onSelected: widget.onSelected,
                   ),
           ),
         ],

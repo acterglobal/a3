@@ -1,11 +1,11 @@
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/onboarding/pages/login_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 void main() {
   group('login page test', () {

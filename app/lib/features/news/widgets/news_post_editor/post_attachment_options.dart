@@ -1,6 +1,7 @@
 import 'package:acter/features/news/model/keys.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class PostAttachmentOptions extends StatelessWidget {
   final VoidCallback? onTapAddText;
@@ -20,8 +21,8 @@ class PostAttachmentOptions extends StatelessWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       children: [
-        const ListTile(
-          title: Text('New Update'),
+        ListTile(
+          title: Text(L10n.of(context).newUpdate),
         ),
         ListTile(
           key: NewsUpdateKeys.addTextSlide,
@@ -30,7 +31,7 @@ class PostAttachmentOptions extends StatelessWidget {
             if (onTapAddText != null) onTapAddText!();
           },
           leading: const Icon(Atlas.size_text),
-          title: const Text('Add Text Slide'),
+          title: Text(L10n.of(context).addTextSlide),
         ),
         ListTile(
           key: NewsUpdateKeys.addImageSlide,
@@ -39,7 +40,7 @@ class PostAttachmentOptions extends StatelessWidget {
             if (onTapImage != null) onTapImage!();
           },
           leading: const Icon(Atlas.file_image),
-          title: const Text('Select Picture'),
+          title: Text(L10n.of(context).selectPicture),
         ),
         ListTile(
           key: NewsUpdateKeys.addVideoSlide,
@@ -48,13 +49,13 @@ class PostAttachmentOptions extends StatelessWidget {
             if (onTapVideo != null) onTapVideo!();
           },
           leading: const Icon(Atlas.file_video),
-          title: const Text('Select Video'),
+          title: Text(L10n.of(context).selectVideo),
         ),
         ListTile(
           key: NewsUpdateKeys.cancelButton,
           onTap: () => Navigator.of(context).pop(),
           contentPadding: const EdgeInsets.all(0),
-          title: const Text('Cancel', textAlign: TextAlign.center),
+          title: Text(L10n.of(context).cancel, textAlign: TextAlign.center),
         ),
       ],
     );

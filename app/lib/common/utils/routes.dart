@@ -11,6 +11,7 @@ enum Routes {
   start('/start'),
   introProfile('/introProfile'),
   authLogin('/login'),
+  forgotPassword('/forgotPassword'),
   authRegister('/register'),
 
   // --- profile

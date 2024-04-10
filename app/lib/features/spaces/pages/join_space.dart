@@ -8,6 +8,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class JoinSpacePage extends ConsumerWidget {
   const JoinSpacePage({super.key});
@@ -53,7 +54,7 @@ class JoinSpacePage extends ConsumerWidget {
     await joinRoom(
       context,
       ref,
-      'Trying to join ${alias ?? roomId}',
+      L10n.of(context).tryingToJoin('${alias ?? roomId}'),
       (alias ?? roomId)!,
       serverNames.first,
       (roomId) => context.pushNamed(
@@ -86,14 +87,14 @@ class JoinSpacePage extends ConsumerWidget {
     if (joinRule != 'Public') {
       customMsgSnackbar(
         context,
-        'Join Rule "$joinRule" not supported yet. Sorry',
+        L10n.of(context).joinRuleNotSupportedYet(joinRule),
       );
       return;
     }
     await joinRoom(
       context,
       ref,
-      'Trying to join ${spaceSearchResult.name()}',
+      L10n.of(context).tryingToJoin('${spaceSearchResult.name()}'),
       spaceSearchResult.roomIdStr(),
       searchServer,
       (roomId) => context.pushNamed(

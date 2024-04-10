@@ -1,19 +1,21 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter_avatar/acter_avatar.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/common/utils/routes.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 const defaultSpaceSettingsMenuKey = Key('space-settings-menu');
 
 class SpaceSettingsMenu extends ConsumerWidget {
   static const appsMenu = Key('space-settings-apps');
   final String spaceId;
+
   const SpaceSettingsMenu({
     required this.spaceId,
     super.key = defaultSpaceSettingsMenuKey,
@@ -62,7 +64,9 @@ class SpaceSettingsMenu extends ConsumerWidget {
                   child: Text(spaceProfile.profile.displayName ?? spaceId),
                 ),
               ],
-              error: (e, s) => [Text('Loading space failed: $e')],
+              error: (e, s) => [
+                Text(L10n.of(context).loadingFailed(e)),
+              ],
               loading: () => [
                 ActerAvatar(
                   mode: DisplayMode.Space,
@@ -76,9 +80,9 @@ class SpaceSettingsMenu extends ConsumerWidget {
                 ),
               ],
             ),
-            const Padding(
-              padding: EdgeInsets.only(left: 15),
-              child: Text('Settings'),
+            Padding(
+              padding: const EdgeInsets.only(left: 15),
+              child: Text(L10n.of(context).settings),
             ),
           ],
         ),
@@ -89,13 +93,13 @@ class SpaceSettingsMenu extends ConsumerWidget {
           child: SettingsList(
             sections: [
               SettingsSection(
-                title: const Text('Personal Settings'),
+                title: Text(L10n.of(context).personalSettings),
                 tiles: [
                   SettingsTile(
                     key: appsMenu,
-                    title: const Text('Notifications Overwrites'),
-                    description: const Text(
-                      'Overwrite your notifications configurations for this space',
+                    title: Text(L10n.of(context).notificationsOverwrites),
+                    description: Text(
+                      L10n.of(context).notificationsOverwritesDescription,
                     ),
                     leading: curNotifStatus == 'muted'
                         ? const Icon(Atlas.bell_dash_bold, size: 18)
@@ -115,12 +119,12 @@ class SpaceSettingsMenu extends ConsumerWidget {
                 ],
               ),
               SettingsSection(
-                title: const Text('Space Configuration'),
+                title: Text(L10n.of(context).spaceConfiguration),
                 tiles: <SettingsTile>[
                   SettingsTile(
-                    title: const Text('Access & Visibility'),
-                    description: const Text(
-                      'Configure, who can view and how to join this space',
+                    title: Text(L10n.of(context).accessAndVisibility),
+                    description: Text(
+                      L10n.of(context).spaceConfigurationDescription,
                     ),
                     leading: const Icon(Atlas.lab_appliance_thin),
                     enabled: false,
@@ -132,9 +136,10 @@ class SpaceSettingsMenu extends ConsumerWidget {
                   ),
                   SettingsTile(
                     key: appsMenu,
-                    title: const Text('Apps'),
-                    description:
-                        const Text('Customize Apps and their features'),
+                    title: Text(L10n.of(context).apps),
+                    description: Text(
+                      L10n.of(context).customizeAppsAndTheirFeatures,
+                    ),
                     leading: const Icon(Atlas.info_circle_thin),
                     onPressed: (context) {
                       isDesktop || size.width > 770

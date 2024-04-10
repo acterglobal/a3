@@ -1,15 +1,18 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class ActerVideoPlayer extends StatefulWidget {
   final File videoFile;
   final VoidCallback? onTapFullScreen;
+  final bool? hasPlayerControls;
 
   const ActerVideoPlayer({
     super.key,
     required this.videoFile,
     this.onTapFullScreen,
+    this.hasPlayerControls = true,
   });
 
   @override
@@ -84,7 +87,7 @@ class _ActerVideoPlayerState extends State<ActerVideoPlayer> {
     return Stack(
       children: <Widget>[
         playButtonUI(),
-        playPauseControls(),
+        if (widget.hasPlayerControls!) playPauseControls(),
         playbackSpeedMenu(),
         if (widget.onTapFullScreen != null) fullScreenActionButton(),
       ],
@@ -99,11 +102,11 @@ class _ActerVideoPlayerState extends State<ActerVideoPlayer> {
           ? const SizedBox.shrink()
           : Container(
               color: Colors.black26,
-              child: const Center(
+              child: Center(
                 child: Icon(
                   Icons.play_arrow,
                   size: 50.0,
-                  semanticLabel: 'Play',
+                  semanticLabel: L10n.of(context).play,
                 ),
               ),
             ),
@@ -123,7 +126,7 @@ class _ActerVideoPlayerState extends State<ActerVideoPlayer> {
       alignment: Alignment.topLeft,
       child: PopupMenuButton<double>(
         initialValue: _controller.value.playbackSpeed,
-        tooltip: 'Playback speed',
+        tooltip: L10n.of(context).playbackSpeed,
         onSelected: (double speed) {
           _controller.setPlaybackSpeed(speed);
         },

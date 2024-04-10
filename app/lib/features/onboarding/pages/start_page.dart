@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -28,168 +26,89 @@ class _StartPageState extends State<StartPage> {
     onBoardingPages = [
       OnBoarding(
         image: 'assets/images/spaces_onboard.png',
-        title: RichText(
+        title: Text(
+          L10n.of(context).onBoardingSpaceTitle,
           textAlign: TextAlign.center,
+          style: Theme.of(context)
+              .textTheme
+              .titleLarge!
+              .copyWith(fontWeight: FontWeight.bold, color: Colors.green),
+        ),
+        description: RichText(
           text: TextSpan(
-            text: L10n.of(context).onBoardingSpaceTitle('title1'),
-            style: const TextStyle(color: Colors.green, fontSize: 24),
-            children: <TextSpan>[
+            style: Theme.of(context).textTheme.bodyMedium,
+            children: [
               TextSpan(
-                text: L10n.of(context).onBoardingSpaceTitle('title2'),
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  decoration: TextDecoration.underline,
-                ),
+                text: L10n.of(context).onBoardingSpaceDescription1,
+              ),
+              TextSpan(
+                text: L10n.of(context).onBoardingSpaceDescription2,
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: Colors.green,
+                    ),
+              ),
+              TextSpan(
+                text: L10n.of(context).onBoardingSpaceDescription3,
               ),
             ],
           ),
-        ),
-        description: Column(
-          children: [
-            RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: L10n.of(context).onBoardingSpaceDescription('desc1'),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green,
-                      fontSize: 17,
-                    ),
-                  ),
-                  TextSpan(
-                    text: L10n.of(context).onBoardingSpaceDescription('desc2'),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 17,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            Text(
-              L10n.of(context).onBoardingSpaceDescription('desc3'),
-              style: const TextStyle(fontSize: 17, color: Colors.white),
-            ),
-          ],
         ),
       ),
       OnBoarding(
         image: 'assets/images/comms_onboard.png',
-        title: RichText(
+        title: Text(
+          L10n.of(context).onBoardingCommunicationTitle,
           textAlign: TextAlign.center,
+          style: Theme.of(context)
+              .textTheme
+              .titleLarge!
+              .copyWith(fontWeight: FontWeight.bold, color: Colors.green),
+        ),
+        description: RichText(
           text: TextSpan(
-            style: const TextStyle(color: Colors.green),
-            children: <TextSpan>[
+            style: Theme.of(context).textTheme.bodyMedium,
+            children: [
               TextSpan(
-                text: L10n.of(context).onBoardingCommunicationTitle('title1'),
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  decoration: TextDecoration.underline,
-                ),
+                text: L10n.of(context)
+                    .onBoardingCommunicationDescription1,
               ),
               TextSpan(
-                text: L10n.of(context).onBoardingCommunicationTitle('title2'),
-                style: const TextStyle(fontSize: 24),
+                text: L10n.of(context)
+                    .onBoardingCommunicationDescription2,
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: Colors.green,
+                    ),
+              ),
+              TextSpan(
+                text: L10n.of(context)
+                    .onBoardingCommunicationDescription3,
               ),
             ],
           ),
-        ),
-        description: Column(
-          children: [
-            RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: L10n.of(context)
-                        .onBoardingCommunicationDescription('desc1'),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green,
-                      fontSize: 17,
-                    ),
-                  ),
-                  TextSpan(
-                    text: L10n.of(context)
-                        .onBoardingCommunicationDescription('desc2'),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 17,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: L10n.of(context)
-                        .onBoardingCommunicationDescription('desc3'),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green,
-                      fontSize: 17,
-                    ),
-                  ),
-                  TextSpan(
-                    text: L10n.of(context)
-                        .onBoardingCommunicationDescription('desc4'),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 17,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
         ),
       ),
       OnBoarding(
         image: 'assets/images/update_onboard.png',
-        title: RichText(
+        title: Text(
+          L10n.of(context).onBoardingUpdateTitle,
           textAlign: TextAlign.center,
-          text: TextSpan(
-            text: L10n.of(context).onBoardingUpdateTitle('title1'),
-            style: const TextStyle(
-              color: Colors.green,
-              fontSize: 24,
-            ),
-            children: <TextSpan>[
-              TextSpan(
-                text: L10n.of(context).onBoardingUpdateTitle('title2'),
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  decoration: TextDecoration.underline,
-                ),
-              ),
-            ],
-          ),
+          style: Theme.of(context)
+              .textTheme
+              .titleLarge!
+              .copyWith(fontWeight: FontWeight.bold, color: Colors.green),
         ),
         description: RichText(
           text: TextSpan(
-            text: L10n.of(context).onBoardingUpdateDescription('desc1'),
-            style: const TextStyle(color: Colors.white, fontSize: 17),
-            children: <TextSpan>[
+            style: Theme.of(context).textTheme.bodyMedium,
+            children: [
               TextSpan(
-                text: L10n.of(context).onBoardingUpdateDescription('desc2'),
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green,
-                  fontSize: 17,
-                ),
+                text: L10n.of(context).onBoardingUpdateDescription1,
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: Colors.green,
+                    ),
               ),
               TextSpan(
-                text: L10n.of(context).onBoardingUpdateDescription('desc3'),
-                style: const TextStyle(color: Colors.white, fontSize: 17),
+                text: L10n.of(context).onBoardingUpdateDescription2,
               ),
             ],
           ),
@@ -197,45 +116,28 @@ class _StartPageState extends State<StartPage> {
       ),
       OnBoarding(
         image: 'assets/images/modularity_onboard.png',
-        title: RichText(
+        title: Text(
+          L10n.of(context).onBoardingSimpleToUseTitle,
           textAlign: TextAlign.center,
-          text: TextSpan(
-            style: const TextStyle(color: Colors.green),
-            children: <TextSpan>[
-              TextSpan(
-                text: L10n.of(context).onBoardingSimpleToUseTitle('title1'),
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  decoration: TextDecoration.underline,
-                ),
-              ),
-              TextSpan(
-                text: L10n.of(context).onBoardingSimpleToUseTitle('title2'),
-                style: const TextStyle(fontSize: 24),
-              ),
-            ],
-          ),
+          style: Theme.of(context)
+              .textTheme
+              .titleLarge!
+              .copyWith(fontWeight: FontWeight.bold, color: Colors.green),
         ),
         description: RichText(
           text: TextSpan(
+            style: Theme.of(context).textTheme.bodyMedium,
             children: [
               TextSpan(
                 text:
-                    L10n.of(context).onBoardingSimpleToUseDescription('desc1'),
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green,
-                  fontSize: 17,
-                ),
+                    L10n.of(context).onBoardingSimpleToUseDescription1,
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: Colors.green,
+                    ),
               ),
               TextSpan(
                 text:
-                    L10n.of(context).onBoardingSimpleToUseDescription('desc2'),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 17,
-                ),
+                    L10n.of(context).onBoardingSimpleToUseDescription2,
               ),
             ],
           ),
@@ -253,113 +155,112 @@ class _StartPageState extends State<StartPage> {
   @override
   Widget build(BuildContext context) {
     initData();
-    final imageHeight =
-        min(MediaQuery.of(context).size.height * 0.45, 280).toDouble();
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      body: Container(
-        padding: const EdgeInsets.only(top: kToolbarHeight),
-        decoration: const BoxDecoration(
-          gradient: introGradient,
+      body: _buildBody(context),
+    );
+  }
+
+  Widget _buildBody(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.only(top: kToolbarHeight),
+      decoration: const BoxDecoration(
+        gradient: introGradient,
+      ),
+      child: Center(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 500),
+          child: Column(
+            children: [
+              _buildPageView(),
+              _buildBottomButtons(),
+            ],
+          ),
         ),
-        child: Column(
-          children: [
-            Expanded(
-              child: PageView.builder(
-                onPageChanged: (index) {
-                  if (mounted) {
-                    setState(() => _pageIndex = index);
-                  }
-                },
-                itemCount: onBoardingPages.length,
-                controller: _pageController,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 10,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const SizedBox(
-                          height: 2,
-                        ),
-                        onBoardingPages[index].title,
-                        SizedBox(
-                          height: imageHeight,
-                          child: Image.asset(
-                            onBoardingPages[index].image,
-                          ),
-                        ),
-                        SizedBox(
-                          child: FittedBox(
-                            child: onBoardingPages[index].description,
-                            fit: BoxFit.scaleDown,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-            GestureDetector(
-              onTap: () => context.goNamed(Routes.introProfile.name),
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      key: Keys.skipBtn,
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: Text(L10n.of(context).skip),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ...List.generate(
-                            onBoardingPages.length,
-                            (index) => Padding(
-                              padding: const EdgeInsets.only(right: 4),
-                              child: DotIndicator(
-                                isActive: index == _pageIndex,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        next();
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: Row(
-                          children: [
-                            Text(L10n.of(context).next),
-                            const SizedBox(
-                              width: 8,
-                            ),
-                            const Icon(
-                              Icons.arrow_forward_ios,
-                              size: 16,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+      ),
+    );
+  }
+
+  Widget _buildPageView() {
+    return Expanded(
+      child: PageView.builder(
+        onPageChanged: (index) {
+          if (mounted) {
+            setState(() => _pageIndex = index);
+          }
+        },
+        itemCount: onBoardingPages.length,
+        controller: _pageController,
+        itemBuilder: (context, index) {
+          return _buildPageViewItem(index);
+        },
+      ),
+    );
+  }
+
+  Widget _buildPageViewItem(int index) {
+    final imageSize = MediaQuery.of(context).size.height / 4;
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 10,
+      ),
+      child: Column(
+        children: [
+          const SizedBox(height: 10),
+          onBoardingPages[index].title,
+          const Spacer(),
+          Image.asset(
+            onBoardingPages[index].image,
+            height: imageSize,
+            width: imageSize,
+          ),
+          const Spacer(),
+          onBoardingPages[index].description,
+          const SizedBox(height: 50),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomButtons() {
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          GestureDetector(
+            key: Keys.skipBtn,
+            onTap: () => context.goNamed(Routes.introProfile.name),
+            child: Text(L10n.of(context).skip),
+          ),
+          Row(
+            children: [
+              ...List.generate(
+                onBoardingPages.length,
+                (index) => Padding(
+                  padding: const EdgeInsets.only(right: 4),
+                  child: DotIndicator(
+                    isActive: index == _pageIndex,
+                  ),
                 ),
               ),
+            ],
+          ),
+          GestureDetector(
+            onTap: () => next(),
+            child: Row(
+              children: [
+                Text(L10n.of(context).next),
+                const SizedBox(width: 8),
+                const Icon(
+                  Icons.arrow_forward_ios,
+                  size: 16,
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

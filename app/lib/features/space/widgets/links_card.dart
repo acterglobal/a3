@@ -3,6 +3,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class LinksCard extends ConsumerWidget {
   final String spaceId;
@@ -19,7 +20,7 @@ class LinksCard extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Links',
+            L10n.of(context).links,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 10),
@@ -33,7 +34,7 @@ class LinksCard extends ConsumerWidget {
                   if (pins.isEmpty) {
                     return [
                       Text(
-                        'There are no pins in this space',
+                        L10n.of(context).noPinsInSpace,
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ];
@@ -64,8 +65,10 @@ class LinksCard extends ConsumerWidget {
                     ),
                   );
                 },
-                error: (error, stack) => [Text('Loading pins failed: $error')],
-                loading: () => [const Text('Loading')],
+                error: (error, stack) => [
+                  Text(L10n.of(context).loadingPinsFailed(error)),
+                ],
+                loading: () => [Text(L10n.of(context).loading)],
               ),
             ],
           ),

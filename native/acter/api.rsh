@@ -17,14 +17,17 @@ fn set_proxy(proxy: Option<string>);
 /// Rotate the logging file
 fn rotate_log_file() -> Result<string>;
 
-/// Allow flutter to call logging on rust side
-fn write_log(text: string, level: string) -> Result<()>;
+// would this get logged?
+fn would_log(target: string, level: string) -> bool;
+
+/// Log the entry to the rust logging
+fn write_log(target: string, level: string, message: string, file: Option<string>, line: Option<u32>, module_path: Option<string>);
 
 /// Create a new client for homeserver at url with storage at data_path
 fn login_new_client(base_path: string, media_cache_base_path: string, username: string, password: string, default_homeserver_name: string, default_homeserver_url: string, device_name: Option<string>) -> Future<Result<Client>>;
 
 /// Create a new client from the restore token
-fn login_with_token(base_path: string, restore_token: string) -> Future<Result<Client>>;
+fn login_with_token(base_path: string, media_cache_base_path: string, restore_token: string) -> Future<Result<Client>>;
 
 /// Create an anonymous client connecting to the homeserver
 fn guest_client(base_path: string, media_cache_base_path: string, default_homeserver_name: string, default_homeserver_url: string, device_name: Option<string>) -> Future<Result<Client>>;
@@ -239,6 +242,12 @@ object UserProfile {
 }
 
 object RoomProfile {
+    /// get room id
+    fn room_id() -> RoomId;
+
+    /// get room id as String
+    fn room_id_str() -> string;
+
     /// whether to have avatar
     fn has_avatar() -> bool;
 
@@ -943,6 +952,9 @@ object Room {
     /// the RoomId as a String
     fn room_id_str() -> string;
 
+    /// whether this is a Space
+    fn is_space() -> bool;
+
     /// the JoinRule as a String
     fn join_rule_str() -> string;
 
@@ -961,8 +973,8 @@ object Room {
     /// get the room profile that contains avatar and display name
     fn space_relations() -> Future<Result<SpaceRelations>>;
 
-    /// Whether this is a space (or, if this returns `false`, consider it a chat)
-    fn is_space() -> bool;
+    /// Whether this is a direct message (in chat)
+    fn is_direct() -> Future<Result<bool>>;
 
     /// add the following as a parent room and return event id of that event
     /// room can have multiple parents
@@ -1280,6 +1292,9 @@ object CommentsManager {
     /// Get the list of comments (in arrival order)
     fn comments() -> Future<Result<Vec<Comment>>>;
 
+    /// String representation of the room id this comments manager is in
+    fn room_id_str() -> string;
+
     /// Does this item have any comments?
     fn has_comments() -> bool;
 
@@ -1327,8 +1342,15 @@ object Attachment {
     fn msg_content() -> MsgContent;
     /// if this is a media, hand over the data
     /// if thumb size is given, media thumbnail is returned
+
+    /// download media (image/audio/video/file/location) to specified path
+    /// if thumb size is given, media thumbnail is returned
     /// if thumb size is not given, media file is returned
-    fn source_binary(thumb_size: Option<ThumbnailSize>) -> Future<Result<buffer<u8>>>;
+    fn download_media(thumb_size: Option<ThumbnailSize>, dir_path: string) -> Future<Result<OptionString>>;
+
+    /// get the path that media (image/audio/video/file) was saved
+    /// return None when never downloaded
+    fn media_path(is_thumb: bool) -> Future<Result<OptionString>>;
 }
 
 /// Reference to the attachments section of a particular item
@@ -1993,6 +2015,9 @@ object Member {
     /// Full user_id
     fn user_id() -> UserId;
 
+    /// RoomId this member is attachd to
+    fn room_id_str() -> string;
+
     /// The status of this member.
     fn membership_status_str() -> string;
 
@@ -2011,6 +2036,15 @@ object Member {
 
     /// remove this member from ignore list
     fn unignore() -> Future<Result<bool>>;
+
+    /// kick this member from this room
+    fn kick(msg: Option<string>) -> Future<Result<bool>>;
+
+    /// ban this member from this room
+    fn ban(msg: Option<string>) -> Future<Result<bool>>;
+
+    /// remove the member ban from this room
+    fn unban(msg: Option<string>) -> Future<Result<bool>>;
 }
 
 object Account {
@@ -2356,6 +2390,16 @@ object Client {
     /// Get session manager that returns all/verified/unverified/inactive session list
     fn session_manager() -> SessionManager;
 
+    /// Trigger verification of another device
+    /// returns flow id of verification
+    fn request_verification(dev_id: string) -> Future<Result<VerificationEvent>>;
+
+    /// install verification request event handler
+    fn install_request_event_handler(flow_id: string) -> Future<Result<bool>>;
+
+    /// install sas verification event handler
+    fn install_sas_event_handler(flow_id: string) -> Future<Result<bool>>;
+
     /// Return the event handler of device new
     fn device_new_event_rx() -> Option<Stream<DeviceNewEvent>>;
 
@@ -2521,17 +2565,20 @@ object Invitation {
     /// get the timestamp of this invitation in milliseconds
     fn origin_server_ts() -> Option<u64>;
 
-    /// get the room id of this invitation
-    fn room_id() -> RoomId;
+    /// whether this is an invite to a DM
+    fn is_dm() -> bool;
 
-    /// get the room name of this invitation
-    fn room_name() -> Future<Result<string>>;
+    /// the RoomId as a String
+    fn room_id_str() -> string;
 
-    /// get the user id of this invitation sender
-    fn sender() -> UserId;
+    /// get the room of this invitation
+    fn room() -> Room;
+
+    /// get the user id of this invitation sender as string
+    fn sender_id_str() -> string;
 
     /// get the user profile that contains avatar and display name
-    fn get_sender_profile() -> Future<Result<UserProfile>>;
+    fn sender_profile() -> Option<UserProfile>;
 
     /// accept invitation about me to this room
     fn accept() -> Future<Result<bool>>;
@@ -2615,7 +2662,7 @@ object VerificationEvent {
     fn event_type() -> string;
 
     /// Get flow id (EventId or TransactionId)
-    fn flow_id() -> Option<string>;
+    fn flow_id() -> string;
 
     /// Get user id of event sender
     fn sender() -> string;
@@ -2633,6 +2680,7 @@ object VerificationEvent {
     fn accept_verification_request() -> Future<Result<bool>>;
 
     /// Bob cancels the verification request from Alice
+    /// alternative of terminate_verification
     fn cancel_verification_request() -> Future<Result<bool>>;
 
     /// Bob accepts the verification request from Alice with specified methods
@@ -2647,17 +2695,11 @@ object VerificationEvent {
     /// Bob cancels the SAS verification
     fn cancel_sas_verification() -> Future<Result<bool>>;
 
-    /// Alice sends the verification key to Bob and vice versa
-    fn send_verification_key() -> Future<Result<bool>>;
-
     /// Alice says to Bob that SAS verification matches and vice versa
     fn confirm_sas_verification() -> Future<Result<bool>>;
 
     /// Alice says to Bob that SAS verification doesn't match and vice versa
     fn mismatch_sas_verification() -> Future<Result<bool>>;
-
-    /// Alice and Bob reviews the AnyToDeviceEvent::KeyVerificationMac
-    fn review_verification_mac() -> Future<Result<bool>>;
 }
 
 object VerificationEmoji {
@@ -2687,7 +2729,13 @@ object SessionManager {
     fn delete_devices(dev_ids: Vec<string>, username: string, password: string) -> Future<Result<bool>>;
 
     /// Trigger verification of another device
-    fn request_verification(dev_id: string) -> Future<Result<bool>>;
+    /// returns flow id of verification
+    fn request_verification(dev_id: string) -> Future<Result<string>>;
+
+    /// Terminate verification of another device
+    /// alternative of cancel_verification_request
+    /// this fn is used in case without verification event
+    fn terminate_verification(flow_id: string) -> Future<Result<bool>>;
 }
 
 //  ########  ######## ##     ## ####  ######  ########  ######  
@@ -2706,16 +2754,20 @@ object DeviceNewEvent {
     fn device_id() -> DeviceId;
 
     /// Request verification to any devices of user
-    fn request_verification_to_user() -> Future<Result<bool>>;
+    /// returns flow id of verification
+    fn request_verification_to_user() -> Future<Result<string>>;
 
     /// Request verification to specific device
-    fn request_verification_to_device(dev_id: string) -> Future<Result<bool>>;
+    /// returns flow id of verification
+    fn request_verification_to_device(dev_id: string) -> Future<Result<string>>;
 
     /// Request verification to any devices of user with methods
-    fn request_verification_to_user_with_methods(methods: Vec<string>) -> Future<Result<bool>>;
+    /// returns flow id of verification
+    fn request_verification_to_user_with_methods(methods: Vec<string>) -> Future<Result<string>>;
 
     /// Request verification to specific device with methods
-    fn request_verification_to_device_with_methods(dev_id: string, methods: Vec<string>) -> Future<Result<bool>>;
+    /// returns flow id of verification
+    fn request_verification_to_device_with_methods(dev_id: string, methods: Vec<string>) -> Future<Result<string>>;
 }
 
 /// Deliver devices changed event from rust to flutter

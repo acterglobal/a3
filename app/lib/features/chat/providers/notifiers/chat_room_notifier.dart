@@ -3,10 +3,11 @@ import 'dart:convert';
 
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:riverpod/riverpod.dart';
 
 class PostProcessItem {
   final types.Message message;
@@ -31,21 +32,18 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   Future<void> _init() async {
     try {
-      timeline = convo.timelineStream();
+      timeline = ref.read(timelineStreamProvider(convo));
       _listener = timeline.messagesStream(); // keep it resident in memory
-      _poller = _listener.listen((diff) async {
-        await _handleDiff(diff);
-      });
+      _poller = _listener.listen(_handleDiff);
+      ref.onDispose(() => _poller.cancel());
       do {
         await loadMore();
         await Future.delayed(const Duration(milliseconds: 100), () => null);
       } while (state.hasMore && state.messages.length < 10);
-      ref.onDispose(() => _poller.cancel());
     } catch (e) {
+      final err = 'Some error occurred loading room ${e.toString()}';
       state = state.copyWith(
-        loading: ChatRoomLoadingState.error(
-          'Some error occurred loading room ${e.toString()}',
-        ),
+        loading: ChatRoomLoadingState.error(err),
       );
     }
   }

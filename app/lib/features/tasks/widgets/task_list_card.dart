@@ -1,14 +1,14 @@
+import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/tasks/providers/tasks.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/features/tasks/widgets/task_entry.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
 
 class TaskListCard extends ConsumerStatefulWidget {
@@ -16,6 +16,7 @@ class TaskListCard extends ConsumerStatefulWidget {
   final bool showSpace;
   final bool showTitle;
   final bool showDescription;
+
   const TaskListCard({
     super.key,
     required this.taskList,
@@ -106,7 +107,7 @@ class _TaskListCardState extends ConsumerState<TaskListCard> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         child: Text(
-                          '${overview.doneTasks.length} / $total Tasks done',
+                          L10n.of(context).countTasksDone(overview.doneTasks.length, total),
                         ),
                       ),
                     );
@@ -138,7 +139,7 @@ class _TaskListCardState extends ConsumerState<TaskListCard> {
                           onPressed: () =>
                               {setState(() => showInlineAddTask = true)},
                           child: Text(
-                            'Add Task',
+                            L10n.of(context).addTask,
                             style: Theme.of(context).textTheme.bodySmall!,
                           ),
                         ),
@@ -157,8 +158,8 @@ class _TaskListCardState extends ConsumerState<TaskListCard> {
                     ),
                   );
                 },
-                error: (error, stack) => Text('error loading tasks: $error'),
-                loading: () => const Text('loading'),
+                error: (error, stack) => Text(L10n.of(context).errorLoadingTasks(error)),
+                loading: () => Text(L10n.of(context).loading),
               ),
             ],
           ),
@@ -203,7 +204,7 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
           focusedBorder: const UnderlineInputBorder(),
           errorBorder: const UnderlineInputBorder(),
           enabledBorder: const UnderlineInputBorder(),
-          labelText: 'Title the new task..',
+          labelText: L10n.of(context).titleTheNewTask,
           suffix: IconButton(
             key: Key('task-list-$tlId-add-task-inline-cancel'),
             onPressed: widget.cancel,
@@ -221,7 +222,7 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
         },
         validator: (value) {
           if (value == null || value.isEmpty) {
-            return 'A task must have a title';
+            return L10n.of(context).aTaskMustHaveATitle;
           }
           return null;
         },
@@ -236,7 +237,7 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
       await taskDraft.send();
     } catch (e) {
       if (context.mounted) {
-        customMsgSnackbar(context, 'Creating Task failed: $e');
+        customMsgSnackbar(context, L10n.of(context).creatingTaskFailed(e));
       }
       return;
     }

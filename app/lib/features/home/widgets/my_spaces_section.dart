@@ -6,6 +6,7 @@ import 'package:acter/features/home/data/keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class MySpacesSection extends ConsumerWidget {
   final int? limit;
@@ -25,7 +26,7 @@ class MySpacesSection extends ConsumerWidget {
           key: DashboardKeys.widgetMySpacesHeader,
           onTap: () => context.pushNamed(Routes.spaces.name),
           child: Text(
-            'My Spaces',
+            L10n.of(context).mySpaces,
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
@@ -52,7 +53,9 @@ class MySpacesSection extends ConsumerWidget {
                             onPressed: () {
                               context.pushNamed(Routes.spaces.name);
                             },
-                            child: Text('See all my ${spaces.length} spaces'),
+                            child: Text(
+                              L10n.of(context).seeAllMySpaces(spaces.length),
+                            ),
                           )
                         : Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -60,13 +63,13 @@ class MySpacesSection extends ConsumerWidget {
                               OutlinedButton(
                                 onPressed: () =>
                                     context.pushNamed(Routes.createSpace.name),
-                                child: const Text('Create Space'),
+                                child: Text(L10n.of(context).createSpace),
                               ),
                               const SizedBox(height: 10),
                               ElevatedButton(
                                 onPressed: () =>
                                     context.pushNamed(Routes.joinSpace.name),
-                                child: const Text('Join Space'),
+                                child: Text(L10n.of(context).joinSpace),
                               ),
                             ],
                           ),
@@ -87,7 +90,7 @@ class _NoSpacesWidget extends ConsumerWidget {
       children: <Widget>[
         const SizedBox(height: 15),
         Text(
-          'You are currently not connected to any spaces',
+          L10n.of(context).youAreCurrentlyNotConnectedToAnySpaces,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         const SizedBox(height: 30),
@@ -95,22 +98,26 @@ class _NoSpacesWidget extends ConsumerWidget {
           text: TextSpan(
             children: <TextSpan>[
               TextSpan(
-                text: 'Create\t',
+                text: L10n.of(context).create,
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                       decoration: TextDecoration.underline,
                       fontWeight: FontWeight.bold,
                     ),
               ),
-              const TextSpan(text: 'or\t'),
+              TextSpan(text: L10n.of(context).or),
               TextSpan(
-                text: 'join\t',
+                text: L10n.of(context).join,
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                       decoration: TextDecoration.underline,
                       fontWeight: FontWeight.bold,
                     ),
               ),
               TextSpan(
-                text: 'a space, to start organizing and collaborating',
+                text: ' ',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              TextSpan(
+                text: L10n.of(context).spaceShortDescription,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ],
@@ -131,12 +138,12 @@ class _NoSpacesWidget extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(6),
               ),
             ),
-            child: const Row(
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Create New Space'),
-                SizedBox(width: 10),
-                Icon(Icons.chevron_right_outlined),
+                Text(L10n.of(context).createNewSpace),
+                const SizedBox(width: 10),
+                const Icon(Icons.chevron_right_outlined),
               ],
             ),
           ),
@@ -159,7 +166,7 @@ class _NoSpacesWidget extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(6),
               ),
             ),
-            child: const Text('Join Existing Space'),
+            child: Text(L10n.of(context).joinExistingSpace),
           ),
         ),
       ],

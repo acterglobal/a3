@@ -2,7 +2,7 @@ import 'package:acter/features/tasks/models/tasks.dart';
 import 'package:acter/features/tasks/providers/notifiers.dart';
 import 'package:acter/features/tasks/providers/tasklists.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 
 final tasksProvider =
     AsyncNotifierProvider.family<TasksNotifier, TasksOverview, TaskList>(() {

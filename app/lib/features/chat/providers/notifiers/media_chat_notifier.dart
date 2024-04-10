@@ -1,10 +1,11 @@
 import 'dart:io';
+
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:riverpod/riverpod.dart';
 
 class MediaChatNotifier extends StateNotifier<MediaChatState> {
   final Ref ref;

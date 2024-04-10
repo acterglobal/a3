@@ -2,11 +2,10 @@ import 'dart:async';
 
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 
 class MyOpenTasksNotifier extends AsyncNotifier<List<Task>> {
   late Stream<bool> _listener;
-  // ignore: unused_field
   late StreamSubscription<bool> _poller;
 
   @override

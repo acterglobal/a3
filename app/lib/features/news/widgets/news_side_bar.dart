@@ -15,6 +15,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 final _log = Logger('a3::news::sidebar');
 
@@ -168,7 +169,10 @@ class ActionBox extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final senderId = news.sender().toString();
     final isAuthor = senderId == userId;
-    List<Widget> actions = [const Text('Actions'), const Divider()];
+    List<Widget> actions = [
+      Text(L10n.of(context).actions),
+      const Divider(),
+    ];
 
     if (!isAuthor) {
       actions.add(
@@ -177,17 +181,16 @@ class ActionBox extends ConsumerWidget {
           onPressed: () => showAdaptiveDialog(
             context: context,
             builder: (context) => ReportContentWidget(
-              title: 'Report this post',
+              title: L10n.of(context).reportThisPost,
               eventId: news.eventId().toString(),
-              description:
-                  'Report this post to your homeserver administrator. Please note that administrator would\'t be able to read or view any files in encrypted spaces.',
+              description: L10n.of(context).reportPostContent,
               senderId: senderId,
               roomId: roomId,
               isSpace: true,
             ),
           ),
           icon: const Icon(Atlas.exclamation_chat_thin),
-          label: const Text('Report this'),
+          label: Text(L10n.of(context).reportThis),
         ),
       );
     }
@@ -199,7 +202,7 @@ class ActionBox extends ConsumerWidget {
           onPressed: () => showAdaptiveDialog(
             context: context,
             builder: (context) => RedactContentWidget(
-              title: 'Remove this post',
+              title: L10n.of(context).removeThisPost,
               eventId: news.eventId().toString(),
               onSuccess: () {
                 context.pop();
@@ -212,7 +215,7 @@ class ActionBox extends ConsumerWidget {
             ),
           ),
           icon: const Icon(Atlas.trash_thin),
-          label: const Text('Remove'),
+          label: Text(L10n.of(context).remove),
         ),
       );
     }

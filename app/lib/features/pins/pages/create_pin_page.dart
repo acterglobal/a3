@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class CreatePinPage extends ConsumerStatefulWidget {
   final String? initialSelectedSpace;
@@ -30,6 +31,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   EditorState textEditorState = EditorState.blank();
   AttachmentsManager? manager;
+
   @override
   void initState() {
     super.initState();
@@ -43,7 +45,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
   Widget build(BuildContext context) {
     return SliverScaffold(
       confirmActionKey: CreatePinPage.submitBtn,
-      header: 'Create new Pin',
+      header: L10n.of(context).createNewPin,
       addActions: true,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -69,13 +71,9 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
           ),
         ),
       ),
-      confirmActionTitle: 'Create Pin',
+      confirmActionTitle: L10n.of(context).createPin,
       cancelActionTitle: null,
-      confirmActionOnPressed: () async {
-        if (_formKey.currentState!.validate()) {
-          _handleCreatePin();
-        }
-      },
+      confirmActionOnPressed: _handleCreatePin,
     );
   }
 
@@ -83,18 +81,18 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.only(bottom: 5),
-          child: Text('Title'),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 5),
+          child: Text(L10n.of(context).title),
         ),
         InputTextField(
-          hintText: 'Pin Name',
+          hintText: L10n.of(context).pinName,
           key: CreatePinPage.titleFieldKey,
           textInputType: TextInputType.text,
           controller: _titleController,
           validator: (value) => (value != null && value.trim().isNotEmpty)
               ? null
-              : 'Please enter a title',
+              : L10n.of(context).pleaseEnterATitle,
         ),
       ],
     );
@@ -104,9 +102,9 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        const Padding(
-          padding: EdgeInsets.only(bottom: 5),
-          child: Text('Link'),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 5),
+          child: Text(L10n.of(context).link),
         ),
         InputTextField(
           hintText: 'https://',
@@ -122,9 +120,9 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        const Padding(
-          padding: EdgeInsets.only(bottom: 5),
-          child: Text('Description'),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 5),
+          child: Text(L10n.of(context).description),
         ),
         Container(
           height: 200,
@@ -151,7 +149,8 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
     );
   }
 
-  void _handleCreatePin() async {
+  Future<void> _handleCreatePin() async {
+    if (!_formKey.currentState!.validate()) return;
     EasyLoading.show(status: 'Creating pin...', dismissOnTap: false);
     try {
       final spaceId = ref.read(selectedSpaceIdProvider);
@@ -183,9 +182,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
       EasyLoading.showSuccess('Pin created successfully');
       // We are doing as expected, but the lints triggers.
       // ignore: use_build_context_synchronously
-      if (!context.mounted) {
-        return;
-      }
+      if (!context.mounted) return;
 
       // ignore: use_build_context_synchronously
       Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
@@ -197,9 +194,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
     } catch (e) {
       // We are doing as expected, but the lints triggers.
       // ignore: use_build_context_synchronously
-      if (!context.mounted) {
-        return;
-      }
+      if (!context.mounted) return;
       EasyLoading.showError('An error occured creating pin $e');
     }
   }

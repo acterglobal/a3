@@ -1,7 +1,7 @@
 use anyhow::{bail, Result};
 use chrono::Local;
 use lazy_static::lazy_static;
-use log::{LevelFilter, Log, Metadata, Record};
+use log::{log_enabled, Level, LevelFilter, Log, Metadata, Record};
 use matrix_sdk::{Client, ClientBuilder};
 use matrix_sdk_base::store::StoreConfig;
 use matrix_sdk_sqlite::{OpenStoreError, SqliteCryptoStore, SqliteStateStore};
@@ -56,13 +56,11 @@ fn make_data_path(
 pub async fn new_client_config(
     db_base_path: String,
     home_dir: String,
-    media_cache_base_path: Option<String>,
+    media_cache_base_path: String,
     db_passphrase: Option<String>,
     reset_if_existing: bool,
 ) -> Result<ClientBuilder> {
-    let media_cached_path = media_cache_base_path
-        .map(|p| make_data_path(&p, &home_dir, false))
-        .transpose()?;
+    let media_cached_path = make_data_path(&media_cache_base_path, &home_dir, false)?;
     RUNTIME
         .spawn(async move {
             let data_path = make_data_path(&db_base_path, &home_dir, reset_if_existing)?;
@@ -216,16 +214,38 @@ pub fn rotate_log_file() -> Result<String> {
     Ok("".to_string())
 }
 
-pub fn write_log(text: String, level: String) -> Result<()> {
-    match level.as_str() {
-        "debug" => log::debug!("{}", text),
-        "error" => log::error!("{}", text),
-        "info" => log::info!("{}", text),
-        "warn" => log::warn!("{}", text),
-        "trace" => log::trace!("{}", text),
-        _ => {}
+fn parse_log_level(level: &str) -> Level {
+    match level {
+        "debug" => Level::Debug,
+        "error" => Level::Error,
+        "info" => Level::Info,
+        "warn" => Level::Warn,
+        _ => Level::Trace,
     }
-    Ok(())
+}
+
+pub fn would_log(target: String, level: String) -> bool {
+    log_enabled!(target: &target, parse_log_level(&level))
+}
+
+pub fn write_log(
+    target: String,
+    level: String,
+    message: String,
+    file: Option<String>,
+    line: Option<u32>,
+    module_path: Option<String>,
+) {
+    log::logger().log(
+        &Record::builder()
+            .args(format_args!("{message}"))
+            .level(parse_log_level(&level))
+            .target(&target)
+            .file(file.as_deref())
+            .line(line)
+            .module_path(module_path.as_deref())
+            .build(),
+    );
 }
 
 pub fn sanitize(base_path: &str, home: &str) -> PathBuf {
@@ -290,7 +310,7 @@ impl From<StoreCacheWrapperError> for MakeStoreConfigError {
 
 async fn make_store_config(
     path: &Path,
-    media_cache_path: Option<PathBuf>,
+    media_cache_path: PathBuf,
     passphrase: Option<&str>,
 ) -> Result<StoreConfig, MakeStoreConfigError> {
     let config = StoreConfig::new().crypto_store(SqliteCryptoStore::open(path, passphrase).await?);
@@ -299,13 +319,10 @@ async fn make_store_config(
     let Some(passphrase) = passphrase else {
         return Ok(config.state_store(sql_state_store));
     };
-    let Some(media_path) = media_cache_path else {
-        return Ok(config.state_store(sql_state_store));
-    };
 
     let wrapped_state_store = matrix_sdk_store_media_cache_wrapper::wrap_with_file_cache(
         sql_state_store,
-        media_path,
+        media_cache_path,
         passphrase,
     )
     .await?;

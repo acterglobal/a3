@@ -15,6 +15,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 final _log = Logger('a3::event::createOrEdit');
 
@@ -37,7 +38,7 @@ class CreateEditEventPage extends ConsumerStatefulWidget {
 
 class CreateEditEventPageConsumerState
     extends ConsumerState<CreateEditEventPage> {
-  final _eventFromKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
   final _eventNameController = TextEditingController();
   final _startDateController = TextEditingController();
   final _startTimeController = TextEditingController();
@@ -112,7 +113,9 @@ class CreateEditEventPageConsumerState
   AppBar _buildAppbar() {
     return AppBar(
       title: Text(
-        widget.calendarId != null ? 'Edit event' : 'Create new event',
+        widget.calendarId != null
+            ? L10n.of(context).eventEdit
+            : L10n.of(context).eventCreate,
         style: Theme.of(context).textTheme.titleMedium,
       ),
     );
@@ -122,7 +125,7 @@ class CreateEditEventPageConsumerState
   Widget _buildBody() {
     return SingleChildScrollView(
       child: Form(
-        key: _eventFromKey,
+        key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -149,19 +152,19 @@ class CreateEditEventPageConsumerState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Event Name'),
+        Text(L10n.of(context).eventName),
         const SizedBox(height: 10),
         TextFormField(
           key: EventsKeys.eventNameTextField,
           keyboardType: TextInputType.text,
           textInputAction: TextInputAction.next,
           controller: _eventNameController,
-          decoration: const InputDecoration(
-            hintText: 'Name of the event',
+          decoration: InputDecoration(
+            hintText: L10n.of(context).nameOfTheEvent,
           ),
           validator: (value) {
             if (value != null && value.isEmpty) {
-              return 'Please enter event name';
+              return L10n.of(context).pleaseEnterEventName;
             }
             return null;
           },
@@ -180,21 +183,21 @@ class CreateEditEventPageConsumerState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Start Date'),
+                  Text(L10n.of(context).startDate),
                   const SizedBox(height: 10),
                   TextFormField(
                     key: EventsKeys.eventStartDate,
                     readOnly: true,
                     keyboardType: TextInputType.text,
                     controller: _startDateController,
-                    decoration: const InputDecoration(
-                      hintText: 'Select date',
-                      suffixIcon: Icon(Icons.calendar_month_outlined),
+                    decoration: InputDecoration(
+                      hintText: L10n.of(context).selectDate,
+                      suffixIcon: const Icon(Icons.calendar_month_outlined),
                     ),
                     onTap: () => _selectDate(isStartDate: true),
                     validator: (value) {
                       if (value != null && value.isEmpty) {
-                        return 'Start date required!';
+                        return L10n.of(context).startDateRequired;
                       }
                       return null;
                     },
@@ -207,21 +210,21 @@ class CreateEditEventPageConsumerState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Start Time'),
+                  Text(L10n.of(context).startTime),
                   const SizedBox(height: 10),
                   TextFormField(
                     key: EventsKeys.eventStartTime,
                     readOnly: true,
                     keyboardType: TextInputType.text,
                     controller: _startTimeController,
-                    decoration: const InputDecoration(
-                      hintText: 'Select time',
-                      suffixIcon: Icon(Icons.access_time_outlined),
+                    decoration: InputDecoration(
+                      hintText: L10n.of(context).selectTime,
+                      suffixIcon: const Icon(Icons.access_time_outlined),
                     ),
                     onTap: () => _selectTime(isStartTime: true),
                     validator: (value) {
                       if (value != null && value.isEmpty) {
-                        return 'End date required!';
+                        return L10n.of(context).startTimeRequired;
                       }
                       return null;
                     },
@@ -238,21 +241,21 @@ class CreateEditEventPageConsumerState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('End Date'),
+                  Text(L10n.of(context).endDate),
                   const SizedBox(height: 10),
                   TextFormField(
                     key: EventsKeys.eventEndDate,
                     readOnly: true,
                     keyboardType: TextInputType.text,
                     controller: _endDateController,
-                    decoration: const InputDecoration(
-                      hintText: 'Select date',
-                      suffixIcon: Icon(Icons.calendar_month_outlined),
+                    decoration: InputDecoration(
+                      hintText: L10n.of(context).selectDate,
+                      suffixIcon: const Icon(Icons.calendar_month_outlined),
                     ),
                     onTap: () => _selectDate(isStartDate: false),
                     validator: (value) {
                       if (value != null && value.isEmpty) {
-                        return 'Start time required!';
+                        return L10n.of(context).endDateRequired;
                       }
                       return null;
                     },
@@ -265,21 +268,21 @@ class CreateEditEventPageConsumerState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('End Time'),
+                  Text(L10n.of(context).endTime),
                   const SizedBox(height: 10),
                   TextFormField(
                     key: EventsKeys.eventEndTime,
                     readOnly: true,
                     keyboardType: TextInputType.text,
                     controller: _endTimeController,
-                    decoration: const InputDecoration(
-                      hintText: 'Select time',
-                      suffixIcon: Icon(Icons.access_time_outlined),
+                    decoration: InputDecoration(
+                      hintText: L10n.of(context).selectTime,
+                      suffixIcon: const Icon(Icons.access_time_outlined),
                     ),
                     onTap: () => _selectTime(isStartTime: false),
                     validator: (value) {
                       if (value != null && value.isEmpty) {
-                        return 'End time required!';
+                        return L10n.of(context).endTimeRequired;
                       }
                       return null;
                     },
@@ -319,8 +322,9 @@ class CreateEditEventPageConsumerState
           // When user change date that time end time is reset
           _endTimeController.text = '';
         } else {
+          if (!context.mounted) return;
           EasyLoading.showToast(
-            'Please select valid end date',
+            L10n.of(context).pleaseSelectValidEndDate,
             toastPosition: EasyLoadingToastPosition.bottom,
           );
         }
@@ -352,7 +356,7 @@ class CreateEditEventPageConsumerState
         if (_selectedStartDate.isSameDay(_selectedEndDate) &&
             startTime > endTime) {
           EasyLoading.showToast(
-            'Please select valid end time',
+            L10n.of(context).pleaseSelectValidEndTime,
             toastPosition: EasyLoadingToastPosition.bottom,
           );
         } else {
@@ -369,7 +373,7 @@ class CreateEditEventPageConsumerState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Description'),
+        Text(L10n.of(context).description),
         const SizedBox(height: 10),
         Container(
           height: 200,
@@ -401,7 +405,7 @@ class CreateEditEventPageConsumerState
       children: [
         OutlinedButton(
           onPressed: context.pop,
-          child: const Text('Cancel'),
+          child: Text(L10n.of(context).cancel),
         ),
         const SizedBox(width: 10),
         ElevatedButton(
@@ -409,8 +413,11 @@ class CreateEditEventPageConsumerState
           onPressed: widget.calendarId != null
               ? _handleUpdateEvent
               : _handleCreateEvent,
-          child:
-              Text(widget.calendarId != null ? 'Update Event' : 'Create Event'),
+          child: Text(
+            widget.calendarId != null
+                ? L10n.of(context).eventUpdate
+                : L10n.of(context).eventCreate,
+          ),
         ),
       ],
     );
@@ -434,14 +441,17 @@ class CreateEditEventPageConsumerState
 
   // Create event handler
   Future<void> _handleCreateEvent() async {
-    if (!(_eventFromKey.currentState!.validate())) return;
+    if (!_formKey.currentState!.validate()) return;
 
-    EasyLoading.show(status: 'Creating Calendar Event', dismissOnTap: false);
+    EasyLoading.show(
+      status: L10n.of(context).creatingCalendarEvent,
+      dismissOnTap: false,
+    );
     try {
       final spaceId = ref.read(selectedSpaceIdProvider);
       if (spaceId == null) {
         EasyLoading.showError(
-          'Please select space',
+          L10n.of(context).pleaseSelectSpace,
           duration: const Duration(seconds: 2),
         );
         return;
@@ -479,9 +489,13 @@ class CreateEditEventPageConsumerState
       rsvpDraft.status('yes');
       await rsvpDraft.send();
       _log.info('Created Calendar Event: ${eventId.toString()}');
+
       EasyLoading.dismiss();
+
+      ref.invalidate(calendarEventProvider(eventId.toString())); // edit page
+      ref.invalidate(spaceEventsProvider(spaceId)); // events page in space
+
       if (context.mounted) {
-        ref.invalidate(calendarEventProvider);
         context.pop();
         context.pushNamed(
           Routes.calendarEvent.name,
@@ -490,16 +504,21 @@ class CreateEditEventPageConsumerState
       }
     } catch (e) {
       EasyLoading.dismiss();
-      EasyLoading.showError('Error Creating Calendar Event: $e');
-      return;
+      if (!mounted) return;
+      EasyLoading.showError(
+        '${L10n.of(context).errorCreatingCalendarEvent}: $e',
+      );
     }
   }
 
   // Edit event handler
   Future<void> _handleUpdateEvent() async {
-    if (!(_eventFromKey.currentState!.validate())) return;
+    if (!_formKey.currentState!.validate()) return;
 
-    EasyLoading.show(status: 'Updating Event', dismissOnTap: false);
+    EasyLoading.show(
+      status: L10n.of(context).updatingEvent,
+      dismissOnTap: false,
+    );
     try {
       // We always have calendar object at this stage.
       final calendarEvent =
@@ -528,13 +547,16 @@ class CreateEditEventPageConsumerState
       _log.info('Calendar Event updated $eventId');
 
       EasyLoading.dismiss();
-      if (context.mounted) {
-        context.pop();
-      }
+
+      ref.invalidate(calendarEventProvider(eventId.toString())); // edit page
+      final spaceId = calendarEvent.roomIdStr();
+      ref.invalidate(spaceEventsProvider(spaceId)); // events page in space
+
+      if (context.mounted) context.pop();
     } catch (e) {
       EasyLoading.dismiss();
-      EasyLoading.showError('Error updating event: $e');
-      return;
+      if (!mounted) return;
+      EasyLoading.showError('${L10n.of(context).errorUpdatingEvent}: $e');
     }
   }
 }

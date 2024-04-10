@@ -12,6 +12,7 @@ import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class QuickJump extends ConsumerWidget {
   final NavigateTo navigateTo;
@@ -201,7 +202,7 @@ class QuickJump extends ConsumerWidget {
                         color: Theme.of(context).colorScheme.neutral6,
                         size: 18,
                       ),
-                      hintText: 'jump to',
+                      hintText: L10n.of(context).jumpTo,
                     ),
                     onChanged: (String value) async {
                       ref.read(searchValueProvider.notifier).state = value;

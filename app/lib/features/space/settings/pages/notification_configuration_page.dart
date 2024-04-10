@@ -4,9 +4,11 @@ import 'package:acter/features/space/settings/widgets/space_settings_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SpaceNotificationConfigurationPage extends ConsumerWidget {
   final String spaceId;
+
   const SpaceNotificationConfigurationPage({super.key, required this.spaceId});
 
   @override
@@ -16,16 +18,16 @@ class SpaceNotificationConfigurationPage extends ConsumerWidget {
         spaceId: spaceId,
       ),
       child: Scaffold(
-        appBar: AppBar(title: const Text('Space Notifications')),
+        appBar: AppBar(title: Text(L10n.of(context).spaceNotifications)),
         body: SettingsList(
           sections: [
             SettingsSection(
-              title: const Text('General'),
+              title: Text(L10n.of(context).general),
               tiles: [
                 NotificationsSettingsTile(
                   roomId: spaceId,
-                  title: 'Space notification overwrite',
-                  defaultTitle: 'No Overwrite',
+                  title: L10n.of(context).spaceNotificationOverwrite,
+                  defaultTitle: L10n.of(context).noOverwrite,
                   includeMentions: false,
                 ),
               ],

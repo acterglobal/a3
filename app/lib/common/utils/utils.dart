@@ -12,8 +12,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:logging/logging.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 final _log = Logger('a3::common::util');
 
@@ -135,6 +135,12 @@ Future<bool> openLink(String target, BuildContext context) async {
     _log.info('Opening external URL: $url');
     return await launchUrl(url);
   }
+}
+
+Future<void> mailTo({required String toAddress, String? subject}) async {
+  final Uri emailLaunchUri =
+      Uri(scheme: 'mailto', path: toAddress, query: subject);
+  await launchUrl(emailLaunchUri);
 }
 
 String randomString() {
@@ -292,7 +298,6 @@ enum LabsFeature {
         LabsFeature.mobilePushNotifications,
       ];
 }
-
 
 // typedef ChatWithProfileData = ({Convo chat, ProfileData profile});
 // typedef SpaceWithProfileData = ({Space space, ProfileData profile});

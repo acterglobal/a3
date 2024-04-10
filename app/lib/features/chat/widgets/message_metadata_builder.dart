@@ -1,14 +1,16 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Convo, EventSendState;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:quds_popup_menu/quds_popup_menu.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:quds_popup_menu/quds_popup_menu.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 final _log = Logger('a3::chat::message_metadata_builder');
 
@@ -43,9 +45,9 @@ class MessageMetadataBuilder extends ConsumerWidget {
             return Row(
               children: <Widget>[
                 GestureDetector(
-                  onTap: () => _handleCancelRetrySend(),
+                  onTap: () => _handleCancelRetrySend(ref),
                   child: Text(
-                    'Cancel Send',
+                    L10n.of(context).cancelSend,
                     style: Theme.of(context).textTheme.labelSmall!.copyWith(
                           color: Theme.of(context).colorScheme.neutral5,
                           decoration: TextDecoration.underline,
@@ -56,16 +58,17 @@ class MessageMetadataBuilder extends ConsumerWidget {
                   width: 10,
                 ),
                 GestureDetector(
-                  onTap: () => _handleRetry(),
+                  onTap: () => _handleRetry(ref),
                   child: RichText(
                     text: TextSpan(
-                      text: 'Failed to sent: ${sendState.error()}. ',
+                      text:
+                          L10n.of(context).failedToSent('${sendState.error()}'),
                       style: Theme.of(context).textTheme.labelSmall!.copyWith(
                             color: Theme.of(context).colorScheme.neutral5,
                           ),
                       children: <TextSpan>[
                         TextSpan(
-                          text: 'Retry',
+                          text: L10n.of(context).retry,
                           style: Theme.of(context)
                               .textTheme
                               .labelSmall!
@@ -96,14 +99,14 @@ class MessageMetadataBuilder extends ConsumerWidget {
     }
   }
 
-  Future<void> _handleRetry() async {
-    final stream = convo.timelineStream();
+  Future<void> _handleRetry(WidgetRef ref) async {
+    final stream = ref.read(timelineStreamProvider(convo));
     // attempts to retry sending local echo to server
     await stream.retrySend(message.id);
   }
 
-  Future<void> _handleCancelRetrySend() async {
-    final stream = convo.timelineStream();
+  Future<void> _handleCancelRetrySend(WidgetRef ref) async {
+    final stream = ref.read(timelineStreamProvider(convo));
     // cancels the retry sending of local echos
     await stream.cancelSend(message.id);
   }
@@ -245,7 +248,7 @@ class _UserReceiptsWidget extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  'Seen By',
+                  L10n.of(context).seenBy,
                   style: Theme.of(context).textTheme.labelLarge,
                 ),
               ),

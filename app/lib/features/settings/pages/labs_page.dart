@@ -1,11 +1,11 @@
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
-import 'package:acter/features/settings/widgets/labs_notifications_settings_tile.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:acter/features/settings/providers/settings_providers.dart';
+import 'package:acter/features/settings/widgets/labs_notifications_settings_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:settings_ui/settings_ui.dart';
 
 class SettingsLabsPage extends ConsumerWidget {
@@ -19,21 +19,21 @@ class SettingsLabsPage extends ConsumerWidget {
     return WithSidebar(
       sidebar: const SettingsPage(),
       child: Scaffold(
-        appBar: AppBar(title: const Text('Acter Labs')),
+        appBar: AppBar(title: Text(L10n.of(context).labs)),
         body: SettingsList(
           sections: [
-            const SettingsSection(
-              title: Text('Notifications'),
-              tiles: [
+            SettingsSection(
+              title: Text(L10n.of(context).notifications),
+              tiles: const [
                 LabsNotificationsSettingsTile(),
               ],
             ),
             SettingsSection(
-              title: const Text('Spaces'),
+              title: Text(L10n.of(context).spaces),
               tiles: [
                 SettingsTile.switchTile(
-                  title: const Text('Encrypted spaces'),
-                  description: const Text('not yet supported'),
+                  title: Text(L10n.of(context).encryptedSpace),
+                  description: Text(L10n.of(context).notYetSupported),
                   enabled: false,
                   initialValue: false,
                   onToggle: (newVal) {},
@@ -41,20 +41,21 @@ class SettingsLabsPage extends ConsumerWidget {
               ],
             ),
             SettingsSection(
-              title: const Text('Apps'),
+              title: Text(L10n.of(context).apps),
               tiles: [
                 SettingsTile.switchTile(
-                  title: const Text('Events'),
-                  description: const Text('Shared Calendar and events'),
+                  title: Text(L10n.of(context).events),
+                  description: Text(L10n.of(context).sharedCalendarAndEvents),
                   initialValue: ref.watch(isActiveProvider(LabsFeature.events)),
                   onToggle: (newVal) =>
                       updateFeatureState(ref, LabsFeature.events, newVal),
                 ),
                 SettingsTile.switchTile(
                   key: tasksLabSwitch,
-                  title: const Text('Tasks'),
-                  description:
-                      const Text('Manage Tasks lists and ToDos together'),
+                  title: Text(L10n.of(context).tasks),
+                  description: Text(
+                    L10n.of(context).manageTasksListsAndToDosTogether,
+                  ),
                   initialValue: ref.watch(isActiveProvider(LabsFeature.tasks)),
                   onToggle: (newVal) =>
                       updateFeatureState(ref, LabsFeature.tasks, newVal),
@@ -68,16 +69,17 @@ class SettingsLabsPage extends ConsumerWidget {
                       updateFeatureState(ref, LabsFeature.comments, newVal),
                 ),
                 SettingsTile.switchTile(
-                  title: const Text('Polls'),
-                  description: const Text('Polls and Surveys'),
+                  title: Text(L10n.of(context).polls),
+                  description: Text(L10n.of(context).pollsAndSurveys),
                   initialValue: ref.watch(isActiveProvider(LabsFeature.polls)),
                   onToggle: (newVal) =>
                       updateFeatureState(ref, LabsFeature.polls, newVal),
                   enabled: false,
                 ),
                 SettingsTile.switchTile(
-                  title: const Text('CoBudget'),
-                  description: const Text('Manage budgets cooperatively'),
+                  title: Text(L10n.of(context).coBudget),
+                  description:
+                      Text(L10n.of(context).manageBudgetsCooperatively),
                   initialValue: ref.watch(
                     isActiveProvider(LabsFeature.cobudget),
                   ),

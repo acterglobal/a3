@@ -12,6 +12,7 @@ import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SpaceEventsPage extends ConsumerWidget {
   final String spaceIdOrAlias;
@@ -34,7 +35,7 @@ class SpaceEventsPage extends ConsumerWidget {
               child: Row(
                 children: [
                   Text(
-                    'Events',
+                    L10n.of(context).events,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const Spacer(),
@@ -64,9 +65,9 @@ class SpaceEventsPage extends ConsumerWidget {
                   child: Center(
                     heightFactor: 1,
                     child: EmptyState(
-                      title: 'No events planned yet',
+                      title: L10n.of(context).noEventsPlannedYet,
                       subtitle:
-                          'Create new event and bring your community together',
+                          L10n.of(context).createEventAndBringYourCommunity,
                       image: 'assets/images/empty_event.svg',
                       primaryButton: canCreateEvent
                           ? ElevatedButton(
@@ -74,7 +75,7 @@ class SpaceEventsPage extends ConsumerWidget {
                                 Routes.createEvent.name,
                                 queryParameters: {'spaceId': spaceIdOrAlias},
                               ),
-                              child: const Text('Create Event'),
+                              child: Text(L10n.of(context).eventCreate),
                             )
                           : null,
                     ),
@@ -94,7 +95,7 @@ class SpaceEventsPage extends ConsumerWidget {
             },
             error: (error, stackTrace) => SliverToBoxAdapter(
               child: Center(
-                child: Text('Failed to load events due to $error'),
+                child: Text(L10n.of(context).failedToLoadEventsDueTo(error)),
               ),
             ),
             loading: () => const SliverToBoxAdapter(

@@ -5,6 +5,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 final isActerSpaceForSpace =
     FutureProvider.autoDispose.family<bool, Space>((ref, space) async {
@@ -19,6 +20,7 @@ final isEncryptedForSpace =
 class SpaceInfo extends ConsumerWidget {
   final String spaceId;
   final double size;
+
   const SpaceInfo({super.key, this.size = 16, required this.spaceId});
 
   @override
@@ -35,7 +37,7 @@ class SpaceInfo extends ConsumerWidget {
           switch (joinRuleStr) {
             case 'invite':
               joinRule = Tooltip(
-                message: 'This space is invite-only',
+                message: L10n.of(context).thisSpaceIsInviteOnly,
                 child: Icon(
                   Atlas.shield_envelope_thin,
                   size: size,
@@ -46,7 +48,7 @@ class SpaceInfo extends ConsumerWidget {
               final roomIds =
                   asDartStringList(space.restrictedRoomIdsStr()).join(', ');
               joinRule = Tooltip(
-                message: 'Anyone from these rooms can join: $roomIds',
+                message: L10n.of(context).anyoneFromTheseRoomsCanJoin(roomIds),
                 child: Icon(
                   Atlas.arrow_down_shield_thin,
                   size: size,
@@ -55,7 +57,7 @@ class SpaceInfo extends ConsumerWidget {
               );
             case 'knock':
               joinRule = Tooltip(
-                message: 'Anyone can ask to join this space',
+                message: L10n.of(context).anyoneCanAskToJoinThisSpace,
                 child: Icon(
                   Atlas.arrow_down_shield_thin,
                   size: size,
@@ -66,7 +68,8 @@ class SpaceInfo extends ConsumerWidget {
               final roomIds =
                   asDartStringList(space.restrictedRoomIdsStr()).join(', ');
               joinRule = Tooltip(
-                message: 'Anyone from these rooms can ask to join: $roomIds',
+                message:
+                    L10n.of(context).anyoneFromTheseRoomsCanAskToJoin(roomIds),
                 child: Icon(
                   Atlas.arrow_down_shield_thin,
                   size: size,
@@ -75,7 +78,7 @@ class SpaceInfo extends ConsumerWidget {
               );
             case 'public':
               joinRule = Tooltip(
-                message: 'This space is publicly accessible',
+                message: L10n.of(context).thisSpaceIsPubliclyAccessible,
                 child: Icon(
                   Atlas.glasses_vision_thin,
                   size: size,
@@ -85,7 +88,7 @@ class SpaceInfo extends ConsumerWidget {
             case 'private':
             default:
               joinRule = Tooltip(
-                message: 'Unclear join rule: $joinRuleStr',
+                message: L10n.of(context).unclearJoinRule(joinRuleStr),
                 child: Icon(
                   Atlas.shield_exclamation_thin,
                   size: size,
@@ -104,8 +107,8 @@ class SpaceInfo extends ConsumerWidget {
                             : Padding(
                                 padding: const EdgeInsets.only(right: 3),
                                 child: Tooltip(
-                                  message:
-                                      'This is not a proper acter space. Some features may not be available.',
+                                  message: L10n.of(context)
+                                      .thisIsNotAProperActerSpace,
                                   child: Icon(
                                     Atlas.triangle_exclamation_thin,
                                     size: size,
@@ -120,7 +123,8 @@ class SpaceInfo extends ConsumerWidget {
                       .whenData(
                         (isEnc) => isEnc
                             ? Tooltip(
-                                message: 'This space is end-to-end-encrypted',
+                                message: L10n.of(context)
+                                    .thisApaceIsEndToEndEncrypted,
                                 child: Icon(
                                   Atlas.lock_clipboard_thin,
                                   size: size,
@@ -128,8 +132,8 @@ class SpaceInfo extends ConsumerWidget {
                                 ),
                               )
                             : Tooltip(
-                                message:
-                                    'This space is not end-to-end-encrypted.',
+                                message: L10n.of(context)
+                                    .thisApaceIsNotEndToEndEncrypted,
                                 child: Icon(
                                   Atlas.unlock_keyhole_thin,
                                   size: size,
@@ -144,7 +148,7 @@ class SpaceInfo extends ConsumerWidget {
           );
         },
       ),
-      error: (e, s) => Text('error: $e'),
+      error: (e, s) => Text('${L10n.of(context).error}: $e'),
       loading: () => const SizedBox.shrink(),
     );
   }

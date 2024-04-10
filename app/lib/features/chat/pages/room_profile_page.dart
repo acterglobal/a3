@@ -6,7 +6,6 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/base_body_widget.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/render_html.dart';
-import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/member_list.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/chat/widgets/skeletons/action_item_skeleton_widget.dart';
@@ -17,18 +16,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:logging/logging.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 final _log = Logger('a3::chat::room_profile_page');
 
 class RoomProfilePage extends ConsumerStatefulWidget {
   final String roomId;
+  final bool inSidebar;
 
   const RoomProfilePage({
     required this.roomId,
+    required this.inSidebar,
     super.key,
   });
 
@@ -52,23 +54,14 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
   }
 
   AppBar _buildAppBar(BuildContext context) {
-    final inSideBar = ref.watch(inSideBarProvider);
-    final isExpanded = ref.watch(hasExpandedPanel);
-
     return AppBar(
-      automaticallyImplyLeading: false,
-      leading: Visibility(
-        visible: inSideBar && isExpanded,
-        replacement: IconButton(
-          onPressed: () => context.pop(),
-          icon: const Icon(Icons.arrow_back_ios),
-        ),
-        child: IconButton(
-          onPressed: () =>
-              ref.read(hasExpandedPanel.notifier).update((state) => false),
-          icon: const Icon(Atlas.xmark_circle_thin),
-        ),
-      ),
+      // custom x-circle when we are in widescreen mode;
+      leading: widget.inSidebar
+          ? IconButton(
+              onPressed: () => context.pop(),
+              icon: const Icon(Atlas.xmark_circle_thin),
+            )
+          : null,
       backgroundColor: Colors.transparent,
       elevation: 0.0,
     );
@@ -134,8 +127,10 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         text: data.topic() ?? '',
         defaultTextStyle: Theme.of(context).textTheme.bodySmall,
       ),
-      loading: () => const Skeletonizer(child: Text('loading...')),
-      error: (e, s) => Text('Error: $e'),
+      loading: () => Skeletonizer(
+        child: Text(L10n.of(context).loading),
+      ),
+      error: (e, s) => Text('${L10n.of(context).error}: $e'),
     );
   }
 
@@ -153,7 +148,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
             return _actionItem(
               context: context,
               iconData: isFav ? Icons.bookmark : Icons.bookmark_border,
-              actionName: 'Bookmark',
+              actionName: L10n.of(context).bookmark,
               onTap: () async {
                 await conv.setFavorite(!isFav);
               },
@@ -168,9 +163,9 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
               onPressed: () {},
             ),
           ),
-          loading: () => const ActionItemSkeleton(
+          loading: () => ActionItemSkeleton(
             iconData: Icons.bookmark_add_outlined,
-            actionName: 'Bookmark',
+            actionName: L10n.of(context).bookmark,
           ),
         ),
 
@@ -180,7 +175,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
             return _actionItem(
               context: context,
               iconData: Atlas.user_plus_thin,
-              actionName: 'Invite',
+              actionName: L10n.of(context).invite,
               actionItemColor: membership!.canString('CanInvite')
                   ? null
                   : Theme.of(context).colorScheme.onSurface,
@@ -192,15 +187,15 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
                       )
                     : customMsgSnackbar(
                         context,
-                        'Not enough power level for invites, ask room administrator to change it',
+                        L10n.of(context).notEnoughPowerLevelForInvites,
                       );
               },
             );
           },
-          error: (e, st) => Text('Error loading tile due to $e'),
-          loading: () => const ActionItemSkeleton(
+          error: (e, st) => Text(L10n.of(context).errorLoadingTileDueTo(e)),
+          loading: () => ActionItemSkeleton(
             iconData: Atlas.user_plus_thin,
-            actionName: 'Invite',
+            actionName: L10n.of(context).invite,
           ),
         ),
 
@@ -208,14 +203,15 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         _actionItem(
           context: context,
           iconData: Icons.ios_share,
-          actionName: 'Share',
+          actionName: L10n.of(context).share,
           onTap: () async {
             final roomLink =
                 await (await ref.read(chatProvider(widget.roomId).future))
                     .permalink();
+            if (!mounted) return;
             Share.share(
               roomLink,
-              subject: 'Link to Chat',
+              subject: L10n.of(context).linkToChat,
             );
           },
         ),
@@ -224,7 +220,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         _actionItem(
           context: context,
           iconData: Icons.exit_to_app,
-          actionName: 'Leave',
+          actionName: L10n.of(context).leave,
           actionItemColor: Theme.of(context).colorScheme.error,
           onTap: () => showLeaveRoomDialog(context: context),
         ),
@@ -322,23 +318,23 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Text(
-                  'Members (${list.length})',
+                  L10n.of(context).membersCount(list.length),
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
               );
             },
-            loading: () => const Skeletonizer(
+            loading: () => Skeletonizer(
               child: Text(
-                'Members (0)',
+                L10n.of(context).membersCount(0),
               ),
             ),
             error: (error, stackTrace) =>
-                Text('Error loading members count $error'),
+                Text(L10n.of(context).errorLoadingMembersCount(error)),
           ),
           convo.when(
             data: (data) => MemberList(convo: data),
             loading: () => const MembersListSkeleton(),
-            error: (e, s) => Text('Error: $e'),
+            error: (e, s) => Text('${L10n.of(context).error}: $e'),
           ),
         ],
       ),
@@ -352,23 +348,24 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
       context: context,
       builder: (ctx) => DefaultDialog(
         title: Text(
-          'Leave Room',
+          L10n.of(context).leaveRoom,
           style: Theme.of(context).textTheme.titleSmall,
         ),
         subtitle: Text(
-          'Are you sure you want to leave room? This action cannot be undone',
+          L10n.of(context).areYouSureYouWantToLeaveRoom,
           style: Theme.of(context).textTheme.bodySmall,
         ),
         actions: [
           OutlinedButton(
             onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-            child: const Text('No'),
+            child: Text(L10n.of(context).no),
           ),
           ElevatedButton(
             onPressed: () async {
               Navigator.of(context, rootNavigator: true).pop();
-              EasyLoading.show(status: 'Leaving Room');
+              EasyLoading.show(status: L10n.of(context).leavingRoom);
               var res = await _handleLeaveRoom(ref, widget.roomId);
+              if (!mounted) return;
               if (res) {
                 if (context.mounted) {
                   EasyLoading.dismiss();
@@ -377,11 +374,11 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
               } else {
                 EasyLoading.dismiss();
                 EasyLoading.showError(
-                  'Some error occurred leaving room',
+                  L10n.of(context).someErrorOccurredLeavingRoom,
                 );
               }
             },
-            child: const Text('Yes'),
+            child: Text(L10n.of(context).yes),
           ),
         ],
       ),

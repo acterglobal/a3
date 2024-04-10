@@ -5,8 +5,10 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 const Key selectSpaceDrawerKey = Key('space-widgets-select-space-drawer');
+
 Future<String?> selectSpaceDrawer({
   required BuildContext context,
   Key? key = selectSpaceDrawerKey,
@@ -33,20 +35,20 @@ Future<String?> selectSpaceDrawer({
               Row(
                 children: [
                   Expanded(
-                    child: title ?? const Text('Select Space'),
+                    child: title ?? Text(L10n.of(context).selectSpace),
                   ),
                   OutlinedButton.icon(
                     icon: const Icon(Atlas.minus_circle_thin),
                     onPressed: () {
                       Navigator.pop(context, '');
                     },
-                    label: const Text('Clear'),
+                    label: Text(L10n.of(context).clear),
                   ),
                 ],
               ),
               Flexible(
                 child: spaces.isEmpty
-                    ? const Text('no spaces found')
+                    ? Text(L10n.of(context).noSpacesFound)
                     : ListView.builder(
                         padding: const EdgeInsets.all(8),
                         itemCount: spaces.length,

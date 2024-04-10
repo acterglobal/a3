@@ -1,5 +1,6 @@
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SelectActionItem extends StatelessWidget {
   final Function onShareEventSelected;
@@ -18,7 +19,7 @@ class SelectActionItem extends StatelessWidget {
         actionItemUI(
           context: context,
           actionIcon: Atlas.calendar_dots,
-          actionName: 'Share Event',
+          actionName: L10n.of(context).eventShare,
           onTap: () => onShareEventSelected(),
         ),
         const SizedBox(height: 20.0),

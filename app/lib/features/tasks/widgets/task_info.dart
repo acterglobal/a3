@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class TaskInfo extends ConsumerWidget {
   static const statusBtnNotDone = Key('task-info-status-not-done');
@@ -70,7 +71,7 @@ class TaskInfo extends ConsumerWidget {
                       canChange: true,
                       task: task,
                       noneChild: Text(
-                        'No due date',
+                        L10n.of(context).noDueDate,
                         style: Theme.of(context).textTheme.bodySmall!.copyWith(
                               fontWeight: FontWeight.w100,
                               fontStyle: FontStyle.italic,
@@ -114,8 +115,9 @@ class TaskInfo extends ConsumerWidget {
               onDeleted: account.userId().toString() == userId
                   ? () async {
                       await task.unassignSelf();
+                      if (!context.mounted) return;
                       EasyLoading.showToast(
-                        'Assignment withdrawn',
+                        L10n.of(context).assignmentWithdrawn,
                         toastPosition: EasyLoadingToastPosition.bottom,
                       );
                     }
@@ -125,11 +127,12 @@ class TaskInfo extends ConsumerWidget {
           !task.isAssignedToMe()
               ? ActionChip(
                   key: selfAssignKey,
-                  label: const Text('Volunteer'),
+                  label: Text(L10n.of(context).volunteer),
                   onPressed: () async {
                     await task.assignSelf();
+                    if (!context.mounted) return;
                     EasyLoading.showToast(
-                      'assigned yourself',
+                      L10n.of(context).assignedYourself,
                       toastPosition: EasyLoadingToastPosition.bottom,
                     );
                   },
@@ -176,15 +179,10 @@ class _TaskTitleState extends State<TaskTitle> {
                   child: const Icon(Atlas.xmark_circle_thin),
                 ),
               ),
-              onFieldSubmitted: (value) async {
-                if (_formKey.currentState!.validate()) {
-                  _formKey.currentState!.save();
-                  await _handleSubmit();
-                }
-              },
+              onFieldSubmitted: _handleSubmit,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'A task must have a title';
+                  return L10n.of(context).aTaskMustHaveATitle;
                 }
                 return null;
               },
@@ -204,24 +202,30 @@ class _TaskTitleState extends State<TaskTitle> {
           );
   }
 
-  Future<void> _handleSubmit() async {
+  Future<void> _handleSubmit(String value) async {
+    if (!_formKey.currentState!.validate()) return;
+    _formKey.currentState!.save();
     final newString = _textController.text;
-    if (newString != widget.task.title()) {
-      try {
-        EasyLoading.show(status: 'Updating task title');
-        final updater = widget.task.updateBuilder();
-        updater.title(newString);
-        await updater.send();
-        EasyLoading.showToast(
-          'Title updated',
-          toastPosition: EasyLoadingToastPosition.bottom,
-        );
-        setState(() => editMode = false);
-      } catch (e) {
-        EasyLoading.showError('Failed to update title: $e');
-      }
+    if (newString == widget.task.title()) {
+      setState(() => editMode = false);
+      return;
     }
-    setState(() => editMode = false);
+    try {
+      EasyLoading.show(status: L10n.of(context).updatingTaskTitle);
+      final updater = widget.task.updateBuilder();
+      updater.title(newString);
+      await updater.send();
+      if (!mounted) return;
+      EasyLoading.showToast(
+        L10n.of(context).titleUpdated,
+        toastPosition: EasyLoadingToastPosition.bottom,
+      );
+      setState(() => editMode = false);
+    } catch (e) {
+      EasyLoading.showError(
+        L10n.of(context).failedToUpdateTitle(e),
+      );
+    }
   }
 }
 
@@ -261,7 +265,7 @@ class _TaskBodyState extends State<TaskBody> {
           children: [
             MdEditorWithPreview(
               key: TaskBody.editorKey,
-              labelText: 'Notes',
+              labelText: L10n.of(context).notes,
               controller: _textEditingController,
             ),
             Wrap(
@@ -270,7 +274,7 @@ class _TaskBodyState extends State<TaskBody> {
                 OutlinedButton(
                   key: TaskBody.cancelEditKey,
                   onPressed: () => setState(() => editMode = false),
-                  child: const Text('Cancel'),
+                  child: Text(L10n.of(context).cancel),
                 ),
                 const SizedBox(
                   width: 10,
@@ -289,20 +293,25 @@ class _TaskBodyState extends State<TaskBody> {
                     }
 
                     try {
-                      EasyLoading.show(status: 'Updating task note');
+                      EasyLoading.show(
+                        status: L10n.of(context).updatingTaskNote,
+                      );
                       final updater = widget.task.updateBuilder();
                       updater.descriptionText(newBody);
                       await updater.send();
+                      if (!mounted) return;
                       EasyLoading.showToast(
-                        'Notes updates',
+                        L10n.of(context).notesUpdates,
                         toastPosition: EasyLoadingToastPosition.bottom,
                       );
                       setState(() => editMode = false);
                     } catch (e) {
-                      EasyLoading.showError('Failed to update notes: $e');
+                      EasyLoading.showError(
+                        L10n.of(context).failedToLoadUpdateNotes(e),
+                      );
                     }
                   },
-                  child: const Text('Save'),
+                  child: Text(L10n.of(context).save),
                 ),
               ],
             ),
@@ -333,7 +342,7 @@ class _TaskBodyState extends State<TaskBody> {
         child: ActionChip(
           key: TaskBody.editKey,
           avatar: const Icon(Atlas.notebook_thin),
-          label: const Text('add notes'),
+          label: Text(L10n.of(context).addNotes),
           onPressed: () => setState(() => editMode = true),
         ),
       ),
@@ -385,28 +394,28 @@ class TaskInfoSkeleton extends StatelessWidget {
               title: Wrap(
                 children: [
                   Text(
-                    'Loading a task with a lengthy name so we have something nice to show',
+                    L10n.of(context).loadingATaskWithALengthyName,
                     style: Theme.of(context).textTheme.headlineMedium!,
                   ),
                 ],
               ),
             ),
-            const ListTile(
+            ListTile(
               dense: true,
-              leading: Icon(Atlas.calendar_date_thin),
+              leading: const Icon(Atlas.calendar_date_thin),
               title: Chip(
-                label: Text('Due date'),
+                label: Text(L10n.of(context).dueDate),
               ),
             ),
-            const ListTile(
+            ListTile(
               dense: true,
-              leading: Icon(Atlas.business_man_thin),
-              title: Text('no one is responsible yet'),
+              leading: const Icon(Atlas.business_man_thin),
+              title: Text(L10n.of(context).noOneIsResponsibleYet),
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               child: Text(
-                'This is a multiline description of the task with lengthy texts and stuff',
+                L10n.of(context).thisIsAMultilineDescription,
               ),
             ),
           ],

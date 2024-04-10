@@ -3,14 +3,13 @@ import 'dart:async';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/tasks/models/tasks.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::tasks::providers');
 
 class TasksNotifier extends FamilyAsyncNotifier<TasksOverview, TaskList> {
   late Stream<bool> _listener;
-  // ignore: unused_field
   late StreamSubscription<bool> _poller;
 
   Future<TasksOverview> _refresh(TaskList taskList) async {
@@ -49,7 +48,6 @@ class TasksNotifier extends FamilyAsyncNotifier<TasksOverview, TaskList> {
 
 class TaskListNotifier extends FamilyAsyncNotifier<TaskList, String> {
   late Stream<bool> _listener;
-  // ignore: unused_field
   late StreamSubscription<bool> _poller;
 
   Future<TaskList> _refresh(Client client, String taskListId) async {
@@ -73,7 +71,6 @@ class TaskListNotifier extends FamilyAsyncNotifier<TaskList, String> {
 
 class TaskNotifier extends FamilyAsyncNotifier<Task, Task> {
   late Stream<bool> _listener;
-  // ignore: unused_field
   late StreamSubscription<bool> _poller;
 
   @override

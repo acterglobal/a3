@@ -9,10 +9,12 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class TasksPage extends ConsumerWidget {
   static const createNewTaskListKey = Key('tasks-create-list');
   static const taskListsKey = Key('tasks-task-lists');
+
   const TasksPage({super.key});
 
   @override
@@ -22,7 +24,7 @@ class TasksPage extends ConsumerWidget {
       body: CustomScrollView(
         slivers: <Widget>[
           PageHeaderWidget(
-            title: 'Tasks',
+            title: L10n.of(context).tasks,
             sectionDecoration: const BoxDecoration(
               gradient: primaryGradient,
             ),
@@ -36,7 +38,7 @@ class TasksPage extends ConsumerWidget {
               ),
             ],
             expandedContent: Text(
-              'ToDo Lists and Tasks of all your spaces can be found here',
+              L10n.of(context).todoListsAndTasksOfAllYourSpaces,
               softWrap: true,
               style: Theme.of(context).textTheme.bodySmall,
             ),
@@ -61,15 +63,17 @@ class TasksPage extends ConsumerWidget {
               child: SizedBox(
                 height: 450,
                 child: Center(
-                  child: Text('Loading tasks failed: $error'),
+                  child: Text(
+                    L10n.of(context).loadingTasksFailed(error),
+                  ),
                 ),
               ),
             ),
-            loading: () => const SliverToBoxAdapter(
+            loading: () => SliverToBoxAdapter(
               child: SizedBox(
                 height: 450,
                 child: Center(
-                  child: Text('Loading'),
+                  child: Text(L10n.of(context).loading),
                 ),
               ),
             ),

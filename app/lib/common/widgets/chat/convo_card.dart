@@ -12,6 +12,7 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class ConvoCard extends ConsumerStatefulWidget {
   final Convo room;
@@ -68,7 +69,7 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
       ),
       error: (error, stackTrace) => LoadingConvoCard(
         roomId: roomId,
-        subtitle: const Text('Failed to load Conversation'),
+        subtitle: Text(L10n.of(context).failedToLoadConversation(error)),
       ),
       loading: () => LoadingConvoCard(
         roomId: roomId,
@@ -113,17 +114,19 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
               },
               menuChildren: [
                 MenuItemButton(
-                  child: const Text('Unmute'),
+                  child: Text(L10n.of(context).unmute),
                   onPressed: () async {
                     final room =
                         await ref.read(maybeRoomProvider(roomId).future);
                     if (room == null) {
-                      EasyLoading.showError('Room not found');
+                      if (!mounted) return;
+                      EasyLoading.showError(L10n.of(context).roomNotFound);
                       return;
                     }
                     await room.unmute();
+                    if (!mounted) return;
                     EasyLoading.showSuccess(
-                      'Notifications unmuted',
+                      L10n.of(context).notificationsUnmuted,
                     );
                     await Future.delayed(const Duration(seconds: 1), () {
                       // FIXME: we want to refresh the view but don't know
@@ -326,7 +329,7 @@ class _SubtitleWidget extends ConsumerWidget {
             ),
             Flexible(
               child: Text(
-                'This message has been deleted',
+                L10n.of(context).thisMessageHasBeenDeleted,
                 style: Theme.of(context).textTheme.bodySmall!.copyWith(
                       color: Theme.of(context).colorScheme.neutral5,
                       fontStyle: FontStyle.italic,
@@ -356,7 +359,7 @@ class _SubtitleWidget extends ConsumerWidget {
             ),
             Expanded(
               child: Text(
-                'Failed to decrypt message. Re-request session keys',
+                L10n.of(context).failedToDecryptMessage,
                 style: Theme.of(context).textTheme.bodySmall!.copyWith(
                       color: Theme.of(context).colorScheme.neutral5,
                       fontStyle: FontStyle.italic,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:settings_ui/settings_ui.dart';
 
 class SettingsSectionWithTitleActions extends AbstractSettingsSection {
@@ -6,6 +7,7 @@ class SettingsSectionWithTitleActions extends AbstractSettingsSection {
   final Widget title;
   final List<Widget> actions;
   final List<AbstractSettingsTile> tiles;
+
   const SettingsSectionWithTitleActions({
     super.key,
     required this.title,
@@ -91,8 +93,7 @@ class SettingsSectionWithTitleActions extends AbstractSettingsSection {
       case DevicePlatform.web:
       case DevicePlatform.device:
         throw Exception(
-          'You can\'t use the DevicePlatform.device/web in this context. '
-          'Incorrect platform: SettingsSection.build',
+          L10n.of(context).devicePlatformException,
         );
     }
   }

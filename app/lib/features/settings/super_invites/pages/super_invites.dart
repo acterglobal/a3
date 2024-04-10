@@ -6,11 +6,13 @@ import 'package:acter/features/settings/super_invites/providers/super_invites_pr
 import 'package:acter/features/settings/super_invites/widgets/redeem_token.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class SuperInvitesPage extends ConsumerWidget {
   static Key createNewToken = const Key('super-invites-create');
+
   const SuperInvitesPage({super.key});
 
   @override
@@ -22,7 +24,7 @@ class SuperInvitesPage extends ConsumerWidget {
         appBar: AppBar(
           backgroundColor: const AppBarTheme().backgroundColor,
           elevation: 0.0,
-          title: const Text('Super Invites'),
+          title: Text(L10n.of(context).superInvites),
           centerTitle: true,
           actions: [
             IconButton(
@@ -56,8 +58,9 @@ class SuperInvitesPage extends ConsumerWidget {
                               padding: const EdgeInsets.all(10),
                               child: Text(tokenStr),
                             ),
-                            subtitle:
-                                Text('Used ${token.acceptedCount()} times'),
+                            subtitle: Text(
+                              L10n.of(context).usedTimes(token.acceptedCount()),
+                            ),
                             onTap: () {
                               context.pushNamed(
                                 Routes.actionCreateSuperInvite.name,
@@ -69,16 +72,19 @@ class SuperInvitesPage extends ConsumerWidget {
                       },
                       itemCount: tokens.length,
                     )
-                  : const SliverToBoxAdapter(
+                  : SliverToBoxAdapter(
                       child: Center(
-                        child:
-                            Text('You have not yet created any invite codes'),
+                        child: Text(
+                          L10n.of(context).youHaveNotCreatedInviteCodes,
+                        ),
                       ),
                     ),
               error: (error, stack) {
                 return SliverToBoxAdapter(
                   child: Center(
-                    child: Text('Failed to load invite codes: $error'),
+                    child: Text(
+                      L10n.of(context).failedToLoadInviteCodes(error),
+                    ),
                   ),
                 );
               },

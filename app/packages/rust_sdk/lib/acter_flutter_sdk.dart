@@ -192,7 +192,7 @@ const mOptions = MacOsOptions(
 
 class ActerSdk {
   late final ffi.Api _api;
-  late final String _previousLogPath;
+  String? _previousLogPath;
   static String _sessionKey = defaultSessionKey;
   int _index = 0;
   static final List<ffi.Client> _clients = [];
@@ -263,11 +263,15 @@ class ActerSdk {
     return await client.getNotificationItem(roomId, eventId);
   }
 
-  Future<void> _maybeMigrateFromPrefs(appDocPath) async {
+  Future<void> _maybeMigrateFromPrefs(
+    String appDocPath,
+    String appCachePath,
+  ) async {
     SharedPreferences prefs = await sharedPrefs();
     List<String> sessions = (prefs.getStringList(_sessionKey) ?? []);
     for (final token in sessions) {
-      ffi.Client client = await _api.loginWithToken(appDocPath, token);
+      ffi.Client client =
+          await _api.loginWithToken(appDocPath, appCachePath, token);
       _clients.add(client);
     }
     _index = prefs.getInt('$_sessionKey::currentClientIdx') ?? 0;
@@ -285,43 +289,54 @@ class ActerSdk {
       return;
     }
     String appDocPath = await appDir();
+    String appCachePath = await appCacheDir();
     int delayedCounter = 0;
     while (!await storage.isCupertinoProtectedDataAvailable()) {
       if (delayedCounter > 10) {
-        _log.severe('Secure Store not available after 10 seconds');
-        throw 'Secure Store not available';
+        _log.severe('Secure Store: not available after 10 seconds');
+        throw 'Secure Store: not available';
       }
       delayedCounter += 1;
-      _log.info("Secure Storage isn't available yet. Delaying");
+      _log.info('Secure Store: not available yet. Delaying');
       await Future.delayed(const Duration(milliseconds: 50));
     }
 
-    _log.info('Secure Storage is available. Attempting to read.');
+    _log.info('Secure Store: available. Attempting to read.');
     if (Platform.isAndroid) {
       // fake read for https://github.com/mogol/flutter_secure_storage/issues/566
+      _log.info('Secure Store: fake read for android');
       await storage.read(key: _sessionKey);
     }
-    if (!await storage.containsKey(key: _sessionKey)) {
+    _log.info('Secure Store: attempting to check if $_sessionKey exists');
+    final sessionsStr = await storage.read(key: _sessionKey);
+
+    if (sessionsStr == null) {
+      _log.info('Secure Store: session key not found, checking for migration');
       // not yet set. let's see if we maybe want to migrate instead:
-      await _maybeMigrateFromPrefs(appDocPath);
+      await _maybeMigrateFromPrefs(appDocPath, appCachePath);
       return;
     }
 
-    final sessionsStr = await storage.read(key: _sessionKey);
-    if (sessionsStr != null) {
-      final List<dynamic> sessionKeys = json.decode(sessionsStr);
-      for (final deviceId in sessionKeys) {
-        final token = await storage.read(key: deviceId as String);
-        if (token != null) {
-          ffi.Client client = await _api.loginWithToken(appDocPath, token);
-          _clients.add(client);
-        } else {
-          _log.severe('$deviceId not found. despite in session list');
-        }
+    _log.info('Secure Store: decoding sessions');
+    final List<dynamic> sessionKeys = json.decode(sessionsStr);
+    _log.info('Secure Store: decoding sessions: ${sessionKeys.length} found');
+    for (final deviceId in sessionKeys) {
+      _log.info('Secure Store[$deviceId]: attempting to read session');
+      final token = await storage.read(key: deviceId as String);
+      if (token != null) {
+        _log.info('Secure Store[$deviceId]: token found');
+        ffi.Client client =
+            await _api.loginWithToken(appDocPath, appCachePath, token);
+        _log.info('Secure Store[$deviceId]: login successful');
+        _clients.add(client);
+      } else {
+        _log.severe(
+          'Secure Store[$deviceId]: not found. despite in session list',
+        );
       }
-      final key = await storage.read(key: '$_sessionKey::currentClientIdx');
-      _index = int.tryParse(key ?? '0') ?? 0;
     }
+    final key = await storage.read(key: '$_sessionKey::currentClientIdx');
+    _index = int.tryParse(key ?? '0') ?? 0;
     _log.info('loading configuration from $appDocPath');
     _log.info('restored ${_clients.length} clients');
   }

@@ -2,14 +2,13 @@ import 'dart:async';
 
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show NewsEntry;
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::news::list_notifier');
 
 class AsyncNewsListNotifier extends AutoDisposeAsyncNotifier<List<NewsEntry>> {
   late Stream<bool> _listener;
-  // ignore: unused_field
   late StreamSubscription<bool> _poller;
 
   @override

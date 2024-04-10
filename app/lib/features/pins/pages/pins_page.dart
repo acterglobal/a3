@@ -1,6 +1,8 @@
 import 'dart:math';
 
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/features/pins/widgets/pin_list_item.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
@@ -10,8 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
-import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/themes/app_theme.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class PinsPage extends ConsumerWidget {
   const PinsPage({super.key});
@@ -34,7 +35,7 @@ class PinsPage extends ConsumerWidget {
   // pins section header
   Widget _buildPageHeader(BuildContext context) {
     return PageHeaderWidget(
-      title: 'Pins',
+      title: L10n.of(context).pins,
       sectionDecoration: const BoxDecoration(
         gradient: primaryGradient,
       ),
@@ -53,7 +54,7 @@ class PinsPage extends ConsumerWidget {
         ),
       ],
       expandedContent: Text(
-        'Pinned items from all the Spaces you are part of',
+        L10n.of(context).pinnedItemsFromAllSpaces,
         softWrap: true,
         style: Theme.of(context).textTheme.bodySmall,
       ),
@@ -70,9 +71,9 @@ class PinsPage extends ConsumerWidget {
         const int minCount = 2;
 
         if (pins.isEmpty) {
-          return const SliverToBoxAdapter(
+          return SliverToBoxAdapter(
             child: Center(
-              child: Text('there is nothing pinned yet'),
+              child: Text(L10n.of(context).thereIsNothingPinnedYet),
             ),
           );
         }
@@ -92,12 +93,12 @@ class PinsPage extends ConsumerWidget {
       },
       error: (error, stack) => SliverToBoxAdapter(
         child: Center(
-          child: Text('Loading failed: $error'),
+          child: Text(L10n.of(context).loadingFailed(error)),
         ),
       ),
-      loading: () => const SliverToBoxAdapter(
+      loading: () => SliverToBoxAdapter(
         child: Center(
-          child: Text('Loading'),
+          child: Text(L10n.of(context).loading),
         ),
       ),
     );

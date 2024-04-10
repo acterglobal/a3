@@ -3,6 +3,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -14,16 +15,16 @@ class SettingsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Column(
       children: [
-        _buildAppbar(),
+        _buildAppbar(context),
         Expanded(child: _buildBody(context, ref)),
       ],
     );
   }
 
-  AppBar _buildAppbar() {
+  AppBar _buildAppbar(BuildContext context) {
     return AppBar(
       backgroundColor: Colors.transparent,
-      title: const Text('Settings'),
+      title: Text(L10n.of(context).settings),
     );
   }
 
@@ -74,9 +75,9 @@ class SettingsPage extends ConsumerWidget {
                 ),
                 trailing: const Icon(Icons.arrow_forward_ios),
               ),
-              const Padding(
-                padding: EdgeInsets.only(bottom: 10),
-                child: Text('Edit Profile'),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Text(L10n.of(context).editProfile),
               ),
             ],
           ),
@@ -98,12 +99,12 @@ class SettingsPage extends ConsumerWidget {
                 backgroundColor: Theme.of(context).colorScheme.onSurface,
               ),
               const SizedBox(width: 10),
-              const Column(
+              Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Display Name'),
-                  Text('Username'),
+                  Text(L10n.of(context).displayName),
+                  Text(L10n.of(context).username),
                 ],
               ),
             ],

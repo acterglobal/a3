@@ -5,6 +5,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class AboutCard extends ConsumerWidget {
   final String spaceId;
@@ -30,7 +31,7 @@ class AboutCard extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Text(
-                  'About',
+                  L10n.of(context).about,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const Spacer(),
@@ -45,7 +46,7 @@ class AboutCard extends ConsumerWidget {
                             color: Theme.of(context).colorScheme.success,
                           ),
                         ),
-                        child: const Text('Invite'),
+                        child: Text(L10n.of(context).invite),
                       )
                     : const SizedBox.shrink(),
               ],
@@ -54,12 +55,14 @@ class AboutCard extends ConsumerWidget {
               data: (space) {
                 final topic = space.topic();
                 return Text(
-                  topic ?? 'no topic found',
+                  topic ?? L10n.of(context).noTopicFound,
                   style: Theme.of(context).textTheme.bodySmall,
                 );
               },
-              error: (error, stack) => Text('Loading failed: $error'),
-              loading: () => const Text('Loading'),
+              error: (error, stack) => Text(
+                L10n.of(context).loadingFailed(error),
+              ),
+              loading: () => Text(L10n.of(context).loading),
             ),
             const SizedBox(height: 10),
           ],

@@ -1,4 +1,5 @@
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/features/cross_signing/providers/verification_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -10,15 +11,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class SessionCard extends ConsumerWidget {
   final DeviceRecord deviceRecord;
 
-  const SessionCard({
-    super.key,
-    required this.deviceRecord,
-  });
+  const SessionCard({super.key, required this.deviceRecord});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     bool isVerified = deviceRecord.isVerified();
-    final fields = [isVerified ? 'Verified' : 'Unverified'];
+    final fields = [
+      isVerified ? L10n.of(context).verified : L10n.of(context).unverified,
+    ];
     final lastSeenTs = deviceRecord.lastSeenTs();
     if (lastSeenTs != null) {
       final dateTime = DateTime.fromMillisecondsSinceEpoch(
@@ -59,7 +59,7 @@ class SessionCard extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: Text(
-                      L10n.of(ctx).logOut,
+                      L10n.of(context).logOut,
                       style: Theme.of(ctx).textTheme.labelSmall,
                       softWrap: false,
                     ),
@@ -75,7 +75,7 @@ class SessionCard extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: Text(
-                      L10n.of(ctx).verifySession,
+                      L10n.of(context).verifySession,
                       style: Theme.of(ctx).textTheme.labelSmall,
                       softWrap: false,
                     ),
@@ -95,39 +95,36 @@ class SessionCard extends ConsumerWidget {
       context: context,
       builder: (BuildContext ctx) {
         return AlertDialog(
-          title: const Text('Authentication required'),
+          title: Text(L10n.of(context).authenticationRequired),
           content: Wrap(
             children: [
-              const Text(
-                'Please provide your user password to confirm you want to end that session.',
-              ),
+              Text(L10n.of(context).pleaseProvideYourUserPassword),
               TextField(
                 controller: passwordController,
                 obscureText: true,
-                decoration: const InputDecoration(hintText: 'Password'),
+                decoration: InputDecoration(
+                  hintText: L10n.of(context).password,
+                ),
               ),
             ],
           ),
           actions: [
             OutlinedButton(
-              child: const Text('Cancel'),
+              child: Text(L10n.of(context).cancel),
               onPressed: () {
                 if (ctx.mounted) {
-                  // remove pop up
-                  Navigator.of(context, rootNavigator: true).pop();
+                  Navigator.of(context).pop(false);
                 }
               },
             ),
             ElevatedButton(
-              child: const Text('Ok'),
+              child: Text(L10n.of(context).ok),
               onPressed: () {
                 if (passwordController.text.isEmpty) {
                   return;
                 }
-                //FIXME : Need to implement session logout feature here
                 if (ctx.mounted) {
-                  // remove pop up
-                  Navigator.of(context, rootNavigator: true).pop();
+                  Navigator.of(context).pop(true);
                 }
               },
             ),
@@ -148,8 +145,15 @@ class SessionCard extends ConsumerWidget {
   }
 
   Future<void> onVerify(BuildContext context, WidgetRef ref) async {
+    final devId = deviceRecord.deviceId().toString();
     final client = ref.read(alwaysClientProvider);
-    final manager = client.sessionManager();
-    await manager.requestVerification(deviceRecord.deviceId().toString());
+    // final manager = client.sessionManager();
+
+    final event = await client.requestVerification(devId);
+    // start request event loop
+    await client.installRequestEventHandler(event.flowId());
+
+    // force request.created, because above loop starts from request.ready
+    ref.read(verificationStateProvider.notifier).launchFlow(event);
   }
 }

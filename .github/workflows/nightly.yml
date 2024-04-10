@@ -91,7 +91,7 @@ jobs:
             artifact_path: app/build/linux/x64/release/bundle/
             tar_files: lib/ data/ acter
           - name: iOS
-            os: macos-latest
+            os: macos-14
             target: ios
             with_apple_cert: true
             cargo_make_setup: setup-ios
@@ -157,14 +157,14 @@ jobs:
         with:
           path: |
             ~/.cargo
-          key: ${{ runner.os }}-cargo-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
+          key: ${{ matrix.os }}-cargo-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
 
       - name: Cache Rust
         uses: actions/cache@v2
         with:
           path: |
             target
-          key: ${{ runner.os }}-nightly-${{matrix.artifact_prefix}}-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
+          key: ${{ matrix.os }}-nightly-${{matrix.artifact_prefix}}-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
 
       - name: Install extra deps
         if: matrix.apt_install

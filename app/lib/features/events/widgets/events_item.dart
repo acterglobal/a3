@@ -6,6 +6,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class EventItem extends StatelessWidget {
   final CalendarEvent event;
@@ -105,30 +106,33 @@ class EventItem extends StatelessWidget {
         return myRsvpStatus.when(
           data: (data) {
             final status = data.statusStr(); // kebab-case
-            return Chip(label: Text(_getStatusLabel(status)));
+            return Chip(label: Text(_getStatusLabel(context, status)));
           },
           error: (e, st) => Chip(
-            label: Text('Error loading rsvp status: $e', softWrap: true),
+            label: Text(
+              L10n.of(context).errorLoadingRsvpStatus(e),
+              softWrap: true,
+            ),
           ),
-          loading: () => const Chip(
-            label: Text('Loading rsvp status'),
+          loading: () => Chip(
+            label: Text(L10n.of(context).loadingRsvpStatus),
           ),
         );
       },
     );
   }
 
-  String _getStatusLabel(String? status) {
+  String _getStatusLabel(BuildContext context, String? status) {
     if (status != null) {
       switch (status) {
         case 'yes':
-          return 'Going';
+          return L10n.of(context).going;
         case 'no':
-          return 'Not Going';
+          return L10n.of(context).notGoing;
         case 'maybe':
-          return 'Maybe';
+          return L10n.of(context).maybe;
       }
     }
-    return 'Pending';
+    return L10n.of(context).pending;
   }
 }

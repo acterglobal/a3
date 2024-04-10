@@ -9,6 +9,7 @@ import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 // interface data providers
 final textProvider = StateProvider<String>((ref) => '');
@@ -18,6 +19,7 @@ class CreateTaskListSheet extends ConsumerStatefulWidget {
   static const descKey = Key('task-list-desc');
   static const submitKey = Key('task-list-submit');
   final String? initialSelectedSpace;
+
   const CreateTaskListSheet({super.key, this.initialSelectedSpace});
 
   @override
@@ -43,7 +45,7 @@ class _CreateTaskListSheetConsumerState
     if (_formKey.currentState!.validate()) {
       DefaultDialog(
         title: Text(
-          'Posting TaskList',
+          L10n.of(context).postingTaskList,
           style: Theme.of(context).textTheme.titleSmall,
         ),
         isLoader: true,
@@ -79,7 +81,10 @@ class _CreateTaskListSheetConsumerState
         if (!context.mounted) {
           return;
         }
-        customMsgSnackbar(context, 'Failed to create task list: $e');
+        customMsgSnackbar(
+          context,
+          L10n.of(context).failedToCreateTaskList(e),
+        );
       }
     }
   }
@@ -89,7 +94,7 @@ class _CreateTaskListSheetConsumerState
     final textNotifier = ref.watch(textProvider.notifier);
 
     return SliverScaffold(
-      header: 'Create new task list',
+      header: L10n.of(context).createNewTaskList,
       addActions: true,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
@@ -107,8 +112,8 @@ class _CreateTaskListSheetConsumerState
                         child: TextFormField(
                           key: CreateTaskListSheet.titleKey,
                           decoration: InputDecoration(
-                            hintText: 'Task list name',
-                            labelText: 'Name',
+                            hintText: L10n.of(context).taskListName,
+                            labelText: L10n.of(context).name,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(5),
                             ),
@@ -117,7 +122,7 @@ class _CreateTaskListSheetConsumerState
                           controller: _titleController,
                           validator: (value) => (value?.isNotEmpty == true)
                               ? null
-                              : 'Please enter a name',
+                              : L10n.of(context).pleaseEnterAName,
                         ),
                       ),
                     ),
@@ -147,7 +152,7 @@ class _CreateTaskListSheetConsumerState
             foregroundColor: Theme.of(context).colorScheme.neutral6,
             textStyle: Theme.of(context).textTheme.bodySmall,
           ),
-          child: const Text('Cancel'),
+          child: Text(L10n.of(context).cancel),
         ),
         const SizedBox(width: 10),
         ElevatedButton(
@@ -162,7 +167,7 @@ class _CreateTaskListSheetConsumerState
             ),
             textStyle: Theme.of(context).textTheme.bodySmall,
           ),
-          child: const Text('Create task list'),
+          child: Text(L10n.of(context).createTaskList),
         ),
       ],
     );

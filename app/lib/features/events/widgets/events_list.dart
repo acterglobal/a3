@@ -6,6 +6,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class EventsList extends ConsumerWidget {
   final int? limit;
@@ -17,7 +18,7 @@ class EventsList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return events.when(
       error: (error, stackTrace) => Text(
-        'Loading events failed: $error',
+        L10n.of(context).loadingEventsFailed(error),
       ),
       data: (events) {
         int eventsLimit =
@@ -36,7 +37,7 @@ class EventsList extends ConsumerWidget {
                 : Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      'At this moment, you are not joining any upcoming events. To find out what events are scheduled, check your spaces.',
+                      L10n.of(context).atThisMomentYouAreNotJoiningEvents,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),
@@ -46,7 +47,9 @@ class EventsList extends ConsumerWidget {
                     child: OutlinedButton(
                       onPressed: () =>
                           context.pushNamed(Routes.calendarEvents.name),
-                      child: Text('See all my ${events.length} events'),
+                      child: Text(
+                        L10n.of(context).seeAllMyEvents(events.length),
+                      ),
                     ),
                   )
                 : const SizedBox.shrink(),

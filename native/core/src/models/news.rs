@@ -35,10 +35,6 @@ impl NewsEntry {
         &self.meta.sender
     }
 
-    pub fn key_from_event(event_id: &EventId) -> String {
-        event_id.to_string()
-    }
-
     pub fn updater(&self) -> NewsEntryUpdateBuilder {
         NewsEntryUpdateBuilder::default()
             .news_entry(self.meta.event_id.clone())
@@ -122,8 +118,7 @@ impl ActerModel for NewsEntryUpdate {
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
-        let event_ids = vec![NewsEntry::key_from_event(&self.inner.news_entry.event_id)];
-        Some(event_ids)
+        Some(vec![self.inner.news_entry.event_id.to_string()])
     }
 }
 

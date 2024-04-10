@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:acter/common/models/sync_state/sync_state.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 
 // ignore_for_file: avoid_print
 class SyncNotifier extends StateNotifier<SyncState> {
@@ -12,25 +12,23 @@ class SyncNotifier extends StateNotifier<SyncState> {
   final Ref ref;
 
   late ffi.SyncState syncState;
-  late Stream<bool> syncListener;
-  late StreamSubscription<bool> syncPoller;
-  late Stream<String>? notifications;
-  late Stream<String> errorListener;
-  late StreamSubscription<String> errorPoller;
-  Timer? retryTimer;
+  late Stream<bool> _syncListener;
+  late StreamSubscription<bool> _syncPoller;
+  late Stream<String> _errorListener;
+  late StreamSubscription<String> _errorPoller;
+  Timer? _retryTimer;
 
   SyncNotifier(this.client, this.ref)
       : super(const SyncState(initialSync: true)) {
     _startSync(ref);
   }
 
-  Future<void> _startSync(Ref ref) async {
+  void _startSync(Ref ref) {
     // on release we have a really weird behavior, where, if we schedule
     // any async call in rust too early, they just pend forever. this
     // hack unfortunately means we have two wait a bit but that means
     // we get past the threshold where it is okay to schedule...
-    await Future.delayed(const Duration(milliseconds: 1500));
-    _restartSync();
+    Future.delayed(const Duration(milliseconds: 1500), () => _restartSync());
   }
 
   void _tickSyncState() {
@@ -44,28 +42,26 @@ class SyncNotifier extends StateNotifier<SyncState> {
     }
   }
 
-  Future<void> _restartSync() async {
+  void _restartSync() {
     syncState = client.startSync();
-    if (retryTimer != null) {
-      retryTimer!.cancel();
-      retryTimer = null;
+    if (_retryTimer != null) {
+      _retryTimer!.cancel();
+      _retryTimer = null;
     }
 
-    syncListener = syncState.firstSyncedRx(); // keep it resident in memory
-    syncPoller = syncListener.listen((synced) {
+    _syncListener = syncState.firstSyncedRx(); // keep it resident in memory
+    _syncPoller = _syncListener.listen((synced) {
       if (synced) {
         if (mounted) {
-          state = const SyncState(
-            initialSync: false,
-          );
+          state = const SyncState(initialSync: false);
         }
         ref.invalidate(spacesProvider);
       }
     });
-    ref.onDispose(() => syncPoller.cancel());
+    ref.onDispose(() => _syncPoller.cancel());
 
-    errorListener = syncState.syncErrorRx(); // keep it resident in memory
-    errorPoller = errorListener.listen((msg) {
+    _errorListener = syncState.syncErrorRx(); // keep it resident in memory
+    _errorPoller = _errorListener.listen((msg) {
       if (mounted) {
         if (msg == 'SoftLogout' || msg == 'Unauthorized') {
           // regular logout, we do nothing here
@@ -81,13 +77,13 @@ class SyncNotifier extends StateNotifier<SyncState> {
             countDown: retry,
             nextRetry: retry,
           );
-          retryTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+          _retryTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
             _tickSyncState();
           });
           // custom errors, means we will start the retry loop
         }
       }
     });
-    ref.onDispose(() => errorPoller.cancel());
+    ref.onDispose(() => _errorPoller.cancel());
   }
 }

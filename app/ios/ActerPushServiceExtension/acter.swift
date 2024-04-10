@@ -638,11 +638,12 @@ fileprivate class ContinuationHolder {
         return Unmanaged<ContinuationHolder>.fromOpaque(ptr).takeRetainedValue()
     }
 }
-public func getNotificationItem(_ basePath: String, _ tempDir: String, _ restoreToken: String, _ roomId: String, _ eventId: String) async throws  -> NotificationItem {
+public func getNotificationItem(_ basePath: String, _ mediaCachePath: String, _ tempDir: String, _ restoreToken: String, _ roomId: String, _ eventId: String) async throws  -> NotificationItem {
     return try  await uniffiRustCallAsync(
         rustFutureFunc: {
             uniffi_acter_fn_func_get_notification_item(
                 FfiConverterString.lower(basePath),
+                FfiConverterString.lower(mediaCachePath),
                 FfiConverterString.lower(tempDir),
                 FfiConverterString.lower(restoreToken),
                 FfiConverterString.lower(roomId),
@@ -674,7 +675,7 @@ private var initializationResult: InitializationResult {
     if bindings_contract_version != scaffolding_contract_version {
         return InitializationResult.contractVersionMismatch
     }
-    if (uniffi_acter_checksum_func_get_notification_item() != 30207) {
+    if (uniffi_acter_checksum_func_get_notification_item() != 5899) {
         return InitializationResult.apiChecksumMismatch
     }
 

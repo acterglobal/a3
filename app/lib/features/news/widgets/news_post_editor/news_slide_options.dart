@@ -11,6 +11,7 @@ import 'package:cross_file_image/cross_file_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class NewsSlideOptions extends ConsumerStatefulWidget {
   const NewsSlideOptions({super.key});
@@ -164,7 +165,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
                     .read(newsStateProvider.notifier)
                     .changeNewsPostSpaceId(context);
               },
-              child: const Text('Select Space'),
+              child: Text(L10n.of(context).selectSpace),
             ),
     );
   }

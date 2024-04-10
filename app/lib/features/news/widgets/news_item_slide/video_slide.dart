@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -52,7 +52,7 @@ class _VideoSlideState extends State<VideoSlide> {
               videoFile: snapshot.data!,
             );
           } else {
-            return const Center(child: Text('Loading video'));
+            return Center(child: Text(L10n.of(context).loadingVideo));
           }
         },
       ),

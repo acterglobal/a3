@@ -1,5 +1,6 @@
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
@@ -11,12 +12,16 @@ import 'package:acter/features/chat/providers/notifiers/media_chat_notifier.dart
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 
 final chatInputProvider =
     StateNotifierProvider.family<ChatInputNotifier, ChatInputState, String>(
   (ref, roomId) => ChatInputNotifier(),
 );
+
+// keep track of text controller values across rooms.
+final textValuesProvider =
+    StateProvider.family<String, String>((ref, roomId) => '');
 
 final chatInputFocusProvider = StateProvider<FocusNode>((ref) => FocusNode());
 final chatStateProvider =
@@ -24,9 +29,20 @@ final chatStateProvider =
   (ref, convo) => ChatRoomNotifier(ref: ref, convo: convo),
 );
 
+final isAuthorOfSelectedMessage =
+    StateProvider.family<bool, String>((ref, roomId) {
+  final chatInputState = ref.watch(chatInputProvider(roomId));
+  final myUserId = ref.watch(myUserIdStrProvider);
+  return chatInputState.selectedMessage?.author.id == myUserId;
+});
+
 final mediaChatStateProvider = StateNotifierProvider.family<MediaChatNotifier,
     MediaChatState, ChatMessageInfo>(
   (ref, messageInfo) => MediaChatNotifier(ref: ref, messageInfo: messageInfo),
+);
+
+final timelineStreamProvider = StateProvider.family<TimelineStream, Convo>(
+  (ref, convo) => convo.timelineStream(),
 );
 
 final filteredChatsProvider =
@@ -47,10 +63,6 @@ final filteredChatsProvider =
 
   return foundRooms;
 });
-
-// for desktop only
-final inSideBarProvider = StateProvider<bool>((ref) => false);
-final hasExpandedPanel = StateProvider<bool>((ref) => false);
 
 // get status of room encryption
 final isRoomEncryptedProvider =

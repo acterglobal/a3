@@ -14,20 +14,17 @@ use futures::{
 };
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
 use matrix_sdk::{
-    config::SyncSettings, deserialized_responses::RawAnySyncOrStrippedTimelineEvent,
-    event_handler::EventHandlerHandle, media::MediaRequest, room::Room as SdkRoom,
-    Client as SdkClient, LoopCtrl, RoomState, RumaApiError,
+    config::SyncSettings, event_handler::EventHandlerHandle, media::MediaRequest,
+    room::Room as SdkRoom, Client as SdkClient, LoopCtrl, RoomState, RumaApiError,
 };
 use matrix_sdk_base::media::UniqueKey;
 use ruma_client_api::{
     error::{ErrorBody, ErrorKind},
-    push::get_notifications,
     Error,
 };
 use ruma_common::{
-    device_id, IdParseError, MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedMxcUri,
-    OwnedRoomAliasId, OwnedRoomId, OwnedServerName, OwnedUserId, RoomAliasId, RoomId,
-    RoomOrAliasId, UserId,
+    device_id, IdParseError, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId,
+    OwnedServerName, OwnedUserId, RoomAliasId, RoomId, RoomOrAliasId, UserId,
 };
 use ruma_events::room::MediaSource;
 use std::{
@@ -42,7 +39,7 @@ use std::{
 };
 use tokio::{
     sync::{
-        broadcast::{channel, Receiver, Sender},
+        broadcast::{channel, Receiver},
         Mutex, RwLock, RwLockWriteGuard,
     },
     task::JoinHandle,
@@ -74,9 +71,6 @@ pub struct ClientState {
 
     #[builder(default)]
     pub db_passphrase: Option<String>,
-
-    #[builder(default)]
-    pub media_cache_base_path: Option<String>,
 }
 
 #[derive(Clone, Debug)]
@@ -96,36 +90,6 @@ impl Deref for Client {
     type Target = SdkClient;
     fn deref(&self) -> &SdkClient {
         self.core.client()
-    }
-}
-
-#[derive(Debug, Builder)]
-pub struct SpaceFilter {
-    #[builder(default = "true")]
-    include_joined: bool,
-    #[builder(default = "false")]
-    include_left: bool,
-    #[builder(default = "true")]
-    include_invited: bool,
-}
-
-impl SpaceFilter {
-    pub fn should_include(&self, room: &SdkRoom) -> bool {
-        match room.state() {
-            RoomState::Joined => self.include_joined,
-            RoomState::Left => self.include_left,
-            RoomState::Invited => self.include_invited,
-        }
-    }
-}
-
-impl Default for SpaceFilter {
-    fn default() -> Self {
-        SpaceFilter {
-            include_joined: true,
-            include_left: true,
-            include_invited: true,
-        }
     }
 }
 
@@ -500,11 +464,11 @@ impl Client {
     pub async fn new(client: SdkClient, state: ClientState) -> Result<Self> {
         let core = CoreClient::new(client.clone()).await?;
         let mut cl = Client {
-            core,
+            core: core.clone(),
             state: Arc::new(RwLock::new(state)),
             spaces: Default::default(),
             convos: Default::default(),
-            invitation_controller: InvitationController::new(),
+            invitation_controller: InvitationController::new(core.clone()),
             verification_controller: VerificationController::new(),
             device_controller: DeviceController::new(client),
             typing_controller: TypingController::new(),
@@ -515,7 +479,7 @@ impl Client {
     }
 
     async fn load_from_cache(&self) {
-        let (spaces, chats) = self.get_spaces_and_chats(None).await;
+        let (spaces, chats) = self.get_spaces_and_chats().await;
         // FIXME for a lack of a better system, we just sort by room-id
         let mut space_types: Vector<Space> = spaces
             .into_iter()
@@ -529,19 +493,15 @@ impl Client {
         self.convos.write().await.append(values.into());
     }
 
-    async fn get_spaces_and_chats(&self, filter: Option<SpaceFilter>) -> (Vec<Room>, Vec<Room>) {
-        let filter = filter.unwrap_or_default();
+    async fn get_spaces_and_chats(&self) -> (Vec<Room>, Vec<Room>) {
         let client = self.core.clone();
         self.rooms()
             .into_iter()
-            .filter(|room| filter.should_include(room))
+            .filter(|room| matches!(room.state(), RoomState::Joined))
+            // only include items we are ourselves are currently joined in
             .fold(
                 (Vec::new(), Vec::new()),
                 move |(mut spaces, mut convos), room| {
-                    if matches!(room.state(), RoomState::Left) {
-                        // ignore rooms we aren't in anymore ... maybe make them available somewhere else at some point
-                        return (spaces, convos);
-                    }
                     let inner = Room::new(client.clone(), room);
 
                     if inner.is_space() {
@@ -568,8 +528,8 @@ impl Client {
                     continue;
                 };
 
-                if matches!(room.state(), RoomState::Left) {
-                    // remove rooms we aren't in anymore
+                if !matches!(room.state(), RoomState::Joined) {
+                    // remove rooms we aren't in (anymore)
                     remove_from(&mut spaces, r_id);
                     remove_from_chat(&mut chats, r_id);
                     updated.push(r_id.to_string());
@@ -637,7 +597,7 @@ impl Client {
         let executor = self.executor().clone();
         let client = self.core.client().clone();
 
-        self.invitation_controller.add_event_handler(&client);
+        self.invitation_controller.add_event_handler();
         self.typing_controller.add_event_handler(&client);
         self.receipt_controller.add_event_handler(&client);
 
@@ -715,7 +675,7 @@ impl Client {
                     {
                         info!("received first sync");
                         trace!(user_id=?client.user_id(), "initial synced");
-                        invitation_controller.load_invitations(&client).await;
+                        invitation_controller.load_invitations().await;
 
                         initial.store(false, Ordering::SeqCst);
 
@@ -819,16 +779,12 @@ impl Client {
     pub async fn restore_token(&self) -> Result<String> {
         let session = self.session().context("Missing session")?;
         let homeurl = self.homeserver();
-        let (is_guest, db_passphrase, media_cache_base_path) = {
+        let (is_guest, db_passphrase) = {
             let state = self.state.try_read()?;
-            (
-                state.is_guest,
-                state.db_passphrase.clone(),
-                state.media_cache_base_path.clone(),
-            )
+            (state.is_guest, state.db_passphrase.clone())
         };
-        let result = serde_json::to_string(&RestoreToken {
-            session: CustomAuthSession {
+        let result = RestoreToken::serialized(
+            CustomAuthSession {
                 user_id: session.meta().user_id.clone(),
                 device_id: session.meta().device_id.clone(),
                 access_token: session.access_token().to_string(),
@@ -836,8 +792,7 @@ impl Client {
             homeurl,
             is_guest,
             db_passphrase,
-            media_cache_base_path,
-        })?;
+        )?;
         Ok(result)
     }
 
@@ -985,7 +940,7 @@ impl Client {
         }
         let client = self.core.client().clone();
 
-        self.invitation_controller.remove_event_handler(&client);
+        self.invitation_controller.remove_event_handler();
         self.verification_controller
             .remove_to_device_event_handler(&client);
         self.verification_controller

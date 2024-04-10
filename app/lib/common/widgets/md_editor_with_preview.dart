@@ -4,6 +4,7 @@ import 'package:acter/common/widgets/render_html.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 final markdownProvider =
     FutureProvider.family<String, String>((ref, input) async {
@@ -14,16 +15,16 @@ final markdownProvider =
 class MdEditorWithPreview extends ConsumerStatefulWidget {
   final ValueChanged<String>? onChanged;
   final FormFieldValidator<String>? validator;
-  final String hintText;
-  final String labelText;
+  final String? hintText;
+  final String? labelText;
   final TextEditingController? controller;
 
   const MdEditorWithPreview({
     super.key,
     this.onChanged,
     this.validator,
-    this.hintText = 'Description',
-    this.labelText = 'Description',
+    this.hintText,
+    this.labelText,
     this.controller,
   });
 
@@ -61,13 +62,16 @@ class _MdEditorWithPreviewState extends ConsumerState<MdEditorWithPreview> {
                       ),
                       child: SingleChildScrollView(
                         child: Consumer(
-                          builder: (context, ref, child) =>
-                              ref.watch(markdownProvider(controller.text)).when(
-                                    data: (text) => RenderHtml(text: text),
-                                    error: (error, stackTrace) =>
-                                        Text('Parsing markdown failed: $error'),
-                                    loading: () => const Text('Parsing ...'),
-                                  ),
+                          builder: (context, ref, child) => ref
+                              .watch(markdownProvider(controller.text))
+                              .when(
+                                data: (text) => RenderHtml(text: text),
+                                error: (error, stackTrace) => Text(
+                                    L10n.of(context)
+                                        .parsingMarkdownFailed(error),
+                                ),
+                                loading: () => Text(L10n.of(context).parsing),
+                              ),
                         ),
                       ),
                     ),
@@ -77,7 +81,7 @@ class _MdEditorWithPreviewState extends ConsumerState<MdEditorWithPreview> {
                 )
               : InputTextField(
                   controller: controller,
-                  hintText: widget.hintText,
+                  hintText: widget.hintText ?? L10n.of(context).description,
                   maxLines: 10,
                   textInputType: TextInputType.multiline,
                   textInputAction: TextInputAction.newline,
@@ -90,7 +94,7 @@ class _MdEditorWithPreviewState extends ConsumerState<MdEditorWithPreview> {
             right: 10,
             bottom: 10,
             child: Tooltip(
-              message: 'Toggle preview',
+              message: L10n.of(context).togglePreview,
               child: IconButton(
                 onPressed: () => setState(() => _showPreview = !_showPreview),
                 icon: _showPreview

@@ -9,8 +9,8 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:logging/logging.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 final _log = Logger('a3::search::quick_actions_builder');
 
@@ -63,7 +63,7 @@ class QuickActionsBuilder extends ConsumerWidget {
                     size: 18,
                   ),
                   label: Text(
-                    'Update',
+                    L10n.of(context).update,
                     style: Theme.of(context).textTheme.labelMedium,
                   ),
                 )
@@ -77,7 +77,7 @@ class QuickActionsBuilder extends ConsumerWidget {
                     size: 18,
                   ),
                   label: Text(
-                    'Pin',
+                    L10n.of(context).pin,
                     style: Theme.of(context).textTheme.labelMedium,
                   ),
                 )
@@ -88,7 +88,7 @@ class QuickActionsBuilder extends ConsumerWidget {
                   onPressed: () => navigateTo(Routes.createEvent, push: true),
                   icon: const Icon(Atlas.plus_circle_thin, size: 18),
                   label: Text(
-                    'Event',
+                    L10n.of(context).event,
                     style: Theme.of(context).textTheme.labelMedium,
                   ),
                 )
@@ -100,7 +100,7 @@ class QuickActionsBuilder extends ConsumerWidget {
                       navigateTo(Routes.actionAddTaskList, push: true),
                   icon: const Icon(Atlas.plus_circle_thin, size: 18),
                   label: Text(
-                    'Task List',
+                    L10n.of(context).taskList,
                     style: Theme.of(context).textTheme.labelMedium,
                   ),
                 )
@@ -112,7 +112,7 @@ class QuickActionsBuilder extends ConsumerWidget {
                   },
                   icon: const Icon(Atlas.plus_circle_thin, size: 18),
                   label: Text(
-                    'Poll',
+                    L10n.of(context).poll,
                     style: Theme.of(context).textTheme.labelMedium,
                   ),
                 )
@@ -131,7 +131,7 @@ class QuickActionsBuilder extends ConsumerWidget {
                     size: 18,
                   ),
                   label: Text(
-                    'Discussion',
+                    L10n.of(context).discussion,
                     style: Theme.of(context).textTheme.labelMedium,
                   ),
                 )
@@ -144,7 +144,7 @@ class QuickActionsBuilder extends ConsumerWidget {
             ),
             icon: const Icon(Atlas.bug_clipboard_thin, size: 18),
             label: Text(
-              'Report bug',
+              L10n.of(context).reportBug,
               style: Theme.of(context).textTheme.labelMedium,
             ),
             onPressed: () => navigateTo(

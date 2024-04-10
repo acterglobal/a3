@@ -27,15 +27,16 @@ void logoutConfirmationDialog(BuildContext context, WidgetRef ref) {
         ),
         content: RichText(
           textAlign: TextAlign.left,
-          text: const TextSpan(
-            text: 'Attention: ',
-            style: TextStyle(color: Colors.white, fontSize: 15),
+          text: TextSpan(
+            text: L10n.of(context).logOutConformationDescription1,
+            style: const TextStyle(color: Colors.white, fontSize: 15),
             children: <TextSpan>[
               TextSpan(
-                text:
-                    'Logging out removes the local data, including encryption keys. If this is your last signed-in device you might no be able to decrypt any previous content.',
+                text: L10n.of(context).logOutConformationDescription2,
               ),
-              TextSpan(text: 'Are you sure you want to log out?'),
+              TextSpan(
+                text: L10n.of(context).logOutConformationDescription3,
+              ),
             ],
           ),
         ),
@@ -49,11 +50,12 @@ void logoutConfirmationDialog(BuildContext context, WidgetRef ref) {
                     border: Border.all(color: Colors.grey),
                   ),
                   child: TextButton(
-                    onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-                    child: const Text(
-                      'No',
+                    onPressed: () =>
+                        Navigator.of(context, rootNavigator: true).pop(),
+                    child: Text(
+                      L10n.of(context).no,
                       key: LogoutDialogKeys.cancel,
-                      style: TextStyle(color: Colors.white, fontSize: 17),
+                      style: const TextStyle(color: Colors.white, fontSize: 17),
                     ),
                   ),
                 ),
@@ -70,10 +72,10 @@ void logoutConfirmationDialog(BuildContext context, WidgetRef ref) {
                     onPressed: () async {
                       await ref.read(authStateProvider.notifier).logout(ctx);
                     },
-                    child: const Text(
-                      'Yes',
+                    child: Text(
+                      L10n.of(context).yes,
                       key: LogoutDialogKeys.confirm,
-                      style: TextStyle(color: Colors.white, fontSize: 17),
+                      style: const TextStyle(color: Colors.white, fontSize: 17),
                     ),
                   ),
                 ),
