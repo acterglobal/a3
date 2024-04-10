@@ -314,7 +314,7 @@
   "@dms": {},
   "doYouWantToDeleteInviteCode": "Do you really want to irreversibly delete the super invite code? It can’t be used again after.",
   "@doYouWantToDeleteInviteCode": {},
-  "due": "Due",
+  "due": "Due: {date}",
   "@due": {},
   "dueDate": "Due date",
   "@dueDate": {},

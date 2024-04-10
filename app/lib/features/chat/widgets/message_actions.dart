@@ -62,17 +62,7 @@ class MessageActions extends ConsumerWidget {
           ),
           if (isTextMessage)
             makeMenuItem(
-              pressed: () {
-                String msg = (message as TextMessage).text.trim();
-                Clipboard.setData(
-                  ClipboardData(text: msg),
-                );
-                EasyLoading.showToast(
-                  L10n.of(context).messageCopiedToClipboard,
-                  toastPosition: EasyLoadingToastPosition.bottom,
-                );
-                ref.read(chatInputProvider(roomId).notifier).unsetActions();
-              },
+              pressed: () => onCopyMessage(context, ref, message),
               text: Text(L10n.of(context).copyMessage),
               icon: const Icon(Icons.copy_all_outlined, size: 14),
             ),
@@ -139,11 +129,16 @@ class MessageActions extends ConsumerWidget {
     );
   }
 
-  void onReportMessage(
-    BuildContext context,
-    Message message,
-    String roomId,
-  ) {
+  void onCopyMessage(BuildContext context, WidgetRef ref, Message message) {
+    String msg = (message as TextMessage).text.trim();
+    Clipboard.setData(
+      ClipboardData(text: msg),
+    );
+    EasyLoading.showToast(L10n.of(context).messageCopiedToClipboard);
+    ref.read(chatInputProvider(roomId).notifier).unsetActions();
+  }
+
+  void onReportMessage(BuildContext context, Message message, String roomId) {
     showAdaptiveDialog(
       context: context,
       builder: (context) => ReportContentWidget(
