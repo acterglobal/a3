@@ -23,9 +23,20 @@ class SettingsLabsPage extends ConsumerWidget {
         body: SettingsList(
           sections: [
             SettingsSection(
-              title: Text(L10n.of(context).notifications),
-              tiles: const [
-                LabsNotificationsSettingsTile(),
+              title: Text(L10n.of(context).labsAppFeatures),
+              tiles: [
+                const LabsNotificationsSettingsTile(),
+                SettingsTile.switchTile(
+                  title: Text(L10n.of(context).encryptionBackupKeyBackup),
+                  description: Text(L10n.of(context).sharedCalendarAndEvents),
+                  initialValue:
+                      ref.watch(isActiveProvider(LabsFeature.encryptionBackup)),
+                  onToggle: (newVal) => updateFeatureState(
+                    ref,
+                    LabsFeature.encryptionBackup,
+                    newVal,
+                  ),
+                ),
               ],
             ),
             SettingsSection(

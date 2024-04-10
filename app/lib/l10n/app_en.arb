@@ -531,6 +531,8 @@
   "@kickUserTitle": {},
   "labs": "Labs",
   "@labs": {},
+  "labsAppFeatures": "App Features",
+  "@labsAppFeatures": {},
   "language": "Language",
   "@language": {},
   "leave": "Leave",

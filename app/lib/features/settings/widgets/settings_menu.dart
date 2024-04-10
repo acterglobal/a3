@@ -3,6 +3,8 @@ import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/toolkit/menu_item_widget.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/settings/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -82,16 +84,19 @@ class SettingsMenu extends ConsumerWidget {
                   ? context.goNamed(Routes.settingSessions.name)
                   : context.pushNamed(Routes.settingSessions.name),
             ),
-            MenuItemWidget(
-              iconData: Atlas.key_website_thin,
-              iconColor: colorSelected(Routes.settingBackup),
-              title: L10n.of(context).settingsKeyBackUpTitle,
-              subTitle: L10n.of(context).settingsKeyBackUpDesc,
-              titleStyles: titleStylesSelected(Routes.settingBackup),
-              onTap: () => shouldGoNotNamed
-                  ? context.goNamed(Routes.settingBackup.name)
-                  : context.pushNamed(Routes.settingBackup.name),
-            ),
+            if (ref
+                .watch(featuresProvider)
+                .isActive(LabsFeature.encryptionBackup))
+              MenuItemWidget(
+                iconData: Atlas.key_website_thin,
+                iconColor: colorSelected(Routes.settingBackup),
+                title: L10n.of(context).settingsKeyBackUpTitle,
+                subTitle: L10n.of(context).settingsKeyBackUpDesc,
+                titleStyles: titleStylesSelected(Routes.settingBackup),
+                onTap: () => shouldGoNotNamed
+                    ? context.goNamed(Routes.settingBackup.name)
+                    : context.pushNamed(Routes.settingBackup.name),
+              ),
             MenuItemWidget(
               iconData: Atlas.users_thin,
               iconColor: colorSelected(Routes.blockedUsers),
