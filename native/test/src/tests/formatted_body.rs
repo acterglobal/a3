@@ -42,7 +42,7 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
         let invited = invited_room_id.clone();
         async move {
             if client.convo(invited.to_string()).await.is_err() {
-                bail!("invited room not found");
+                bail!("kyra couldn't find invited room");
             } else {
                 Ok(())
             }

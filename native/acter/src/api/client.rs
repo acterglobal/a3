@@ -93,36 +93,6 @@ impl Deref for Client {
     }
 }
 
-#[derive(Debug, Builder)]
-pub struct SpaceFilter {
-    #[builder(default = "true")]
-    include_joined: bool,
-    #[builder(default = "false")]
-    include_left: bool,
-    #[builder(default = "true")]
-    include_invited: bool,
-}
-
-impl SpaceFilter {
-    pub fn should_include(&self, room: &SdkRoom) -> bool {
-        match room.state() {
-            RoomState::Joined => self.include_joined,
-            RoomState::Left => self.include_left,
-            RoomState::Invited => self.include_invited,
-        }
-    }
-}
-
-impl Default for SpaceFilter {
-    fn default() -> Self {
-        SpaceFilter {
-            include_joined: true,
-            include_left: true,
-            include_invited: true,
-        }
-    }
-}
-
 #[derive(Clone, Debug, Default)]
 pub struct HistoryLoadState {
     pub has_started: bool,
@@ -509,7 +479,7 @@ impl Client {
     }
 
     async fn load_from_cache(&self) {
-        let (spaces, chats) = self.get_spaces_and_chats(None).await;
+        let (spaces, chats) = self.get_spaces_and_chats().await;
         // FIXME for a lack of a better system, we just sort by room-id
         let mut space_types: Vector<Space> = spaces
             .into_iter()
@@ -523,24 +493,21 @@ impl Client {
         self.convos.write().await.append(values.into());
     }
 
-    async fn get_spaces_and_chats(&self, filter: Option<SpaceFilter>) -> (Vec<Room>, Vec<Room>) {
-        let filter = filter.unwrap_or_default();
+    async fn get_spaces_and_chats(&self) -> (Vec<Room>, Vec<Room>) {
         let client = self.core.clone();
         self.rooms()
             .into_iter()
-            .filter(|room| filter.should_include(room))
+            .filter(|room| matches!(room.state(), RoomState::Joined))
+            // only include items we are ourselves are currently joined in
             .fold(
                 (Vec::new(), Vec::new()),
                 move |(mut spaces, mut convos), room| {
-                    // only include items we are ourselves are currently joined in
-                    if matches!(room.state(), RoomState::Joined) {
-                        let inner = Room::new(client.clone(), room);
+                    let inner = Room::new(client.clone(), room);
 
-                        if inner.is_space() {
-                            spaces.push(inner);
-                        } else {
-                            convos.push(inner);
-                        }
+                    if inner.is_space() {
+                        spaces.push(inner);
+                    } else {
+                        convos.push(inner);
                     }
                     (spaces, convos)
                 },
@@ -561,8 +528,8 @@ impl Client {
                     continue;
                 };
 
-                if matches!(room.state(), RoomState::Left) {
-                    // remove rooms we aren't in anymore
+                if !matches!(room.state(), RoomState::Joined) {
+                    // remove rooms we aren't in (anymore)
                     remove_from(&mut spaces, r_id);
                     remove_from_chat(&mut chats, r_id);
                     updated.push(r_id.to_string());
