@@ -1,9 +1,8 @@
-import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/providers/network_provider.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
 import 'package:acter/features/settings/super_invites/providers/super_invites_providers.dart';
@@ -55,8 +54,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
   Future<void> handleSubmit() async {
     if (!formKey.currentState!.validate()) return;
-    final network = ref.read(networkAwareProvider);
-    if (!inCI && network == NetworkStatus.Off) {
+    if (!inCI && !ref.read(hasNetworkProvider)) {
       showNoInternetNotification();
       return;
     }
