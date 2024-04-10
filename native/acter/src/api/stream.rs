@@ -331,6 +331,17 @@ impl TimelineStream {
             .await?
     }
 
+    #[cfg(feature = "testing")]
+    pub async fn find_item_by_event_id(&self, event_id: OwnedEventId) -> Result<bool> {
+        let timeline = self.timeline.clone();
+        RUNTIME
+            .spawn(async move {
+                let result = timeline.item_by_event_id(&event_id).await;
+                Ok(result.is_some())
+            })
+            .await?
+    }
+
     pub async fn send_single_receipt(
         &self,
         receipt_type: String,

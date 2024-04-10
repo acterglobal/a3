@@ -104,6 +104,24 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
     info!("loop finished - {:?}", received);
     let received = received.context("Even after 30 seconds, text msg not received")?;
 
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_timeline = kyra_timeline.clone();
+    let received_event_id = received.clone();
+    Retry::spawn(retry_strategy, move || {
+        let timeline_stream = fetcher_timeline.clone();
+        let received = received_event_id.clone();
+        async move {
+            let found = timeline_stream.find_item_by_event_id(received).await?;
+            if !found {
+                bail!("kyra couldn't find received msg by event id");
+            } else {
+                Ok(())
+            }
+        }
+    })
+    .await?;
+
     let draft = kyra.text_plain_draft("Sorry, it's my bad".to_string());
     kyra_timeline
         .reply_message(received.to_string(), Box::new(draft))
