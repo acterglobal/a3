@@ -1,8 +1,12 @@
 use acter::{api::RoomMessage, ruma_common::OwnedEventId};
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
 use tokio::time::sleep;
+use tokio_retry::{
+    strategy::{jitter, FibonacciBackoff},
+    Retry,
+};
 use tracing::info;
 
 use crate::utils::random_users_with_random_convo;
@@ -27,6 +31,28 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     let kyra_sync = kyra.start_sync();
     kyra_sync.await_has_synced_history().await?;
 
+    for invited in kyra.invited_rooms().iter() {
+        info!(" - accepting {:?}", invited.room_id());
+        invited.join().await?;
+    }
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = kyra.clone();
+    let invited_room_id = room_id.clone();
+    Retry::spawn(retry_strategy, move || {
+        let client = fetcher_client.clone();
+        let invited = invited_room_id.clone();
+        async move {
+            if client.convo(invited.to_string()).await.is_err() {
+                bail!("kyra couldn't find invited room");
+            } else {
+                Ok(())
+            }
+        }
+    })
+    .await?;
+
     let kyra_convo = kyra
         .convo(room_id.to_string())
         .await
@@ -35,14 +61,30 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     let kyra_stream = kyra_timeline.messages_stream();
     pin_mut!(kyra_stream);
 
-    kyra_stream.next().await;
-    for invited in kyra.invited_rooms().iter() {
+    let worf_sync = worf.start_sync();
+    worf_sync.await_has_synced_history().await?;
+
+    for invited in worf.invited_rooms().iter() {
         info!(" - accepting {:?}", invited.room_id());
         invited.join().await?;
     }
 
-    let worf_sync = worf.start_sync();
-    worf_sync.await_has_synced_history().await?;
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = worf.clone();
+    let invited_room_id = room_id.clone();
+    Retry::spawn(retry_strategy, move || {
+        let client = fetcher_client.clone();
+        let invited = invited_room_id.clone();
+        async move {
+            if client.convo(invited.to_string()).await.is_err() {
+                bail!("worf couldn't find invited room");
+            } else {
+                Ok(())
+            }
+        }
+    })
+    .await?;
 
     let worf_convo = worf
         .convo(room_id.to_string())
@@ -51,12 +93,6 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     let worf_timeline = worf_convo.timeline_stream();
     let worf_stream = worf_timeline.messages_stream();
     pin_mut!(worf_stream);
-
-    worf_stream.next().await;
-    for invited in worf.invited_rooms().iter() {
-        info!(" - accepting {:?}", invited.room_id());
-        invited.join().await?;
-    }
 
     let draft = sisko.text_plain_draft("Hi, everyone".to_string());
     sisko_timeline.send_message(Box::new(draft)).await?;

@@ -1,7 +1,10 @@
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
 use core::time::Duration;
-use futures::stream::StreamExt;
 use tokio::time::sleep;
+use tokio_retry::{
+    strategy::{jitter, FibonacciBackoff},
+    Retry,
+};
 use tracing::info;
 
 use crate::utils::random_users_with_random_convo;
@@ -21,12 +24,28 @@ async fn kyra_detects_sisko_typing() -> Result<()> {
 
     let kyra_sync = kyra.start_sync();
     kyra_sync.await_has_synced_history().await?;
-    let mut kyra_stream = Box::pin(kyra.sync_stream(Default::default()).await);
-    kyra_stream.next().await;
+
     for invited in kyra.invited_rooms().iter() {
         info!(" - accepting {:?}", invited.room_id());
         invited.join().await?;
     }
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = kyra.clone();
+    let invited_room_id = room_id.clone();
+    Retry::spawn(retry_strategy, move || {
+        let client = fetcher_client.clone();
+        let invited = invited_room_id.clone();
+        async move {
+            if client.convo(invited.to_string()).await.is_err() {
+                bail!("kyra couldn't find invited room");
+            } else {
+                Ok(())
+            }
+        }
+    })
+    .await?;
 
     let sent = sisko_convo.typing_notice(true).await?;
     println!("sent: {sent:?}");
