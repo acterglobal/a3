@@ -52,7 +52,9 @@ class ChatSettingsPage extends ConsumerWidget {
             ),
           ),
           loading: () => SettingsTile.switchTile(
-            title: Skeletonizer(child: Text(L10n.of(context).events)),
+            title: Skeletonizer(
+              child: Text(L10n.of(context).chatSettingsAutoDownload),
+            ),
             enabled: false,
             description: Skeletonizer(
               child: Text(L10n.of(context).sharedCalendarAndEvents),
@@ -75,43 +77,24 @@ class ChatSettingsPage extends ConsumerWidget {
               title: Text(L10n.of(context).defaultModes),
               tiles: [
                 _autoDownload(context, ref),
-
-                // SettingsTile.switchTile(
-                //   key: tasksLabSwitch,
-                //   title: Text(L10n.of(context).tasks),
-                //   description: Text(
-                //     L10n.of(context).manageTasksListsAndToDosTogether,
-                //   ),
-                //   initialValue: ref.watch(isActiveProvider(LabsFeature.tasks)),
-                //   onToggle: (newVal) =>
-                //       updateFeatureState(ref, LabsFeature.tasks, newVal),
-                // ),
-                // SettingsTile.switchTile(
-                //   title: const Text('Comments'),
-                //   description: const Text('Commenting on space objects'),
-                //   initialValue:
-                //       ref.watch(isActiveProvider(LabsFeature.comments)),
-                //   onToggle: (newVal) =>
-                //       updateFeatureState(ref, LabsFeature.comments, newVal),
-                // ),
-                // SettingsTile.switchTile(
-                //   title: Text(L10n.of(context).polls),
-                //   description: Text(L10n.of(context).pollsAndSurveys),
-                //   initialValue: ref.watch(isActiveProvider(LabsFeature.polls)),
-                //   onToggle: (newVal) =>
-                //       updateFeatureState(ref, LabsFeature.polls, newVal),
-                //   enabled: false,
-                // ),
-                // SettingsTile.switchTile(
-                //   title: Text(L10n.of(context).coBudget),
-                //   description:
-                //       Text(L10n.of(context).manageBudgetsCooperatively),
-                //   initialValue: ref.watch(
-                //     isActiveProvider(LabsFeature.cobudget),
-                //   ),
-                //   onToggle: (newVal) =>
-                //       updateFeatureState(ref, LabsFeature.cobudget, newVal),
-                //   enabled: false,
+                SettingsTile.switchTile(
+                  title: Text(L10n.of(context).chatSettingsTyping),
+                  description: Text(
+                    L10n.of(context).chatSettingsTypingExplainer,
+                  ),
+                  enabled: false,
+                  initialValue: false,
+                  onToggle: (newVal) {},
+                ),
+                SettingsTile.switchTile(
+                  title: Text(L10n.of(context).chatSettingsReadReceipts),
+                  description: Text(
+                    L10n.of(context).chatSettingsReadReceiptsExplainer,
+                  ),
+                  enabled: false,
+                  initialValue: false,
+                  onToggle: (newVal) {},
+                ),
               ],
             ),
           ],
