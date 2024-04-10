@@ -54,31 +54,22 @@ class _FatalFailPageState extends ConsumerState<FatalFailPage> {
                   child: SvgPicture.asset('assets/images/genericError.svg'),
                 ),
                 Text(L10n.of(context).somethingWrong),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(widget.error),
-                    IconButton(
-                      onPressed: onCopy,
-                      icon: const Icon(Icons.copy_all_outlined),
-                    ),
-                  ],
+                Text(widget.error),
+                TextButton.icon(
+                  onPressed: onCopy,
+                  icon: const Icon(Icons.copy_all_outlined),
+                  label: Text(L10n.of(context).copyToClipboard),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        setState(() => showStack = !showStack);
-                      },
-                      icon: Icon(
-                        showStack
-                            ? Icons.toggle_off_outlined
-                            : Icons.toggle_on_outlined,
-                      ),
-                    ),
-                    Text(L10n.of(context).stacktrace),
-                  ],
+                TextButton.icon(
+                  onPressed: onStacktraceToggle,
+                  icon: Icon(
+                    showStack
+                        ? Icons.toggle_off_outlined
+                        : Icons.toggle_on_outlined,
+                  ),
+                  label: showStack
+                      ? Text(L10n.of(context).hideStacktrace)
+                      : Text(L10n.of(context).showStacktrace),
                 ),
               ],
             ),
@@ -102,7 +93,7 @@ class _FatalFailPageState extends ConsumerState<FatalFailPage> {
                 OutlinedButton.icon(
                   icon: const Icon(Atlas.bug_clipboard_thin),
                   label: Text(L10n.of(context).reportBug),
-                  onPressed: () => context.goNamed(Routes.bugReport.name),
+                  onPressed: () => context.pushNamed(Routes.bugReport.name),
                 ),
               ],
             ),
@@ -117,6 +108,10 @@ class _FatalFailPageState extends ConsumerState<FatalFailPage> {
       ClipboardData(text: '${widget.error}\n$stack'),
     );
     EasyLoading.showToast(L10n.of(context).errorCopiedToClipboard);
+  }
+
+  void onStacktraceToggle() {
+    setState(() => showStack = !showStack);
   }
 
   void onNukePressed() {

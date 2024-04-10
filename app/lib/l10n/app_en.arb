@@ -353,8 +353,6 @@
   "@encrypted": {},
   "error": "Error {error}",
   "@error": {},
-  "errorCopiedToClipboard": "Error & Stacktrace copied to clipboard",
-  "@errorCopiedToClipboard": {},
   "errorCreatingCalendarEvent": "Error Creating Calendar Event: {error}",
   "@errorCreatingCalendarEvent": {},
   "errorCreatingChat": "Error creating chat: {error}",
@@ -1546,7 +1544,11 @@
   "nukeLocalData": "Nuke local data",
   "reportBug": "Report bug",
   "somethingWrong": "Something went terribly wrong:",
+  "copyToClipboard": "Copy to clipboard",
+  "errorCopiedToClipboard": "Error & Stacktrace copied to clipboard",
   "stacktrace": "Stacktrace",
+  "showStacktrace": "Show Stacktrace",
+  "hideStacktrace": "Hide Stacktrace",
   "commentEmptyStateTitle": "No comments found",
   "commentEmptyStateSubtitle": "Be the first to comment!"
 }
