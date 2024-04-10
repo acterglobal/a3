@@ -146,6 +146,10 @@ impl CommentsManager {
             .await?
     }
 
+    pub fn room_id_str(&self) -> String {
+        self.room.room_id().to_string()
+    }
+
     pub fn stats(&self) -> models::CommentsStats {
         self.inner.stats().clone()
     }

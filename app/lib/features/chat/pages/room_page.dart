@@ -80,19 +80,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
       }
     }
     final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
-    final userId = ref.read(myUserIdStrProvider);
-    if (userId == message.author.id && message is types.TextMessage) {
-      inputNotifier.showEditButton(true);
-    } else {
-      inputNotifier.showEditButton(false);
-    }
-    if (ref.read(chatInputProvider(roomId)).showReplyView) {
-      inputNotifier.showReplyView(false);
-      inputNotifier.setReplyWidget(null);
-      inputNotifier.setEditWidget(null);
-    }
-    inputNotifier.setCurrentMessageId(message.id);
-    inputNotifier.emojiRowVisible(true);
+    inputNotifier.setActionsMessage(message);
   }
 
   @override
@@ -224,16 +212,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
               .handleEndReached,
           onEndReachedThreshold: 0.75,
           onBackgroundTap: () {
-            final emojiRowVisible = ref.read(
-              chatInputProvider(roomId).select((ci) {
-                return ci.emojiRowVisible;
-              }),
-            );
-            final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
-            if (emojiRowVisible) {
-              inputNotifier.setCurrentMessageId(null);
-              inputNotifier.emojiRowVisible(false);
-            }
+            ref.read(chatInputProvider(roomId).notifier).unsetActions();
           },
           //Custom Theme class, see lib/common/store/chatTheme.dart
           theme: const ActerChatTheme(

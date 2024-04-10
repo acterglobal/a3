@@ -17,8 +17,11 @@ fn set_proxy(proxy: Option<string>);
 /// Rotate the logging file
 fn rotate_log_file() -> Result<string>;
 
-/// Allow flutter to call logging on rust side
-fn write_log(text: string, level: string) -> Result<()>;
+// would this get logged?
+fn would_log(target: string, level: string) -> bool;
+
+/// Log the entry to the rust logging
+fn write_log(target: string, level: string, message: string, file: Option<string>, line: Option<u32>, module_path: Option<string>);
 
 /// Create a new client for homeserver at url with storage at data_path
 fn login_new_client(base_path: string, media_cache_base_path: string, username: string, password: string, default_homeserver_name: string, default_homeserver_url: string, device_name: Option<string>) -> Future<Result<Client>>;
@@ -1288,6 +1291,9 @@ object Comment {
 object CommentsManager {
     /// Get the list of comments (in arrival order)
     fn comments() -> Future<Result<Vec<Comment>>>;
+
+    /// String representation of the room id this comments manager is in
+    fn room_id_str() -> string;
 
     /// Does this item have any comments?
     fn has_comments() -> bool;

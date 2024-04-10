@@ -17,4 +17,4 @@ mod desktop;
 #[cfg(not(any(target_os = "android", target_os = "ios")))]
 pub use desktop::*;
 
-pub use native::{rotate_log_file, sanitize, write_log};
+pub use native::{rotate_log_file, sanitize, would_log, write_log};

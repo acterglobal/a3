@@ -16,18 +16,11 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$ChatInputState {
-  bool get showReplyView => throw _privateConstructorUsedError;
-  bool get showEditView => throw _privateConstructorUsedError;
-  Widget? get replyWidget => throw _privateConstructorUsedError;
-  Widget? get editWidget => throw _privateConstructorUsedError;
-  bool get allowEdit => throw _privateConstructorUsedError;
-  bool get sendBtnVisible => throw _privateConstructorUsedError;
-  bool get emojiRowVisible => throw _privateConstructorUsedError;
+  SelectedMessageState get selectedMessageState =>
+      throw _privateConstructorUsedError;
+  SendingState get sendingState => throw _privateConstructorUsedError;
   bool get emojiPickerVisible => throw _privateConstructorUsedError;
-  bool get attachmentVisible => throw _privateConstructorUsedError;
-  String? get currentMessageId => throw _privateConstructorUsedError;
-  types.Message? get repliedToMessage => throw _privateConstructorUsedError;
-  types.Message? get editMessage => throw _privateConstructorUsedError;
+  types.Message? get selectedMessage => throw _privateConstructorUsedError;
   Map<String, String> get mentionReplacements =>
       throw _privateConstructorUsedError;
   bool get editBtnVisible => throw _privateConstructorUsedError;
@@ -44,18 +37,10 @@ abstract class $ChatInputStateCopyWith<$Res> {
       _$ChatInputStateCopyWithImpl<$Res, ChatInputState>;
   @useResult
   $Res call(
-      {bool showReplyView,
-      bool showEditView,
-      Widget? replyWidget,
-      Widget? editWidget,
-      bool allowEdit,
-      bool sendBtnVisible,
-      bool emojiRowVisible,
+      {SelectedMessageState selectedMessageState,
+      SendingState sendingState,
       bool emojiPickerVisible,
-      bool attachmentVisible,
-      String? currentMessageId,
-      types.Message? repliedToMessage,
-      types.Message? editMessage,
+      types.Message? selectedMessage,
       Map<String, String> mentionReplacements,
       bool editBtnVisible});
 }
@@ -73,69 +58,29 @@ class _$ChatInputStateCopyWithImpl<$Res, $Val extends ChatInputState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? showReplyView = null,
-    Object? showEditView = null,
-    Object? replyWidget = freezed,
-    Object? editWidget = freezed,
-    Object? allowEdit = null,
-    Object? sendBtnVisible = null,
-    Object? emojiRowVisible = null,
+    Object? selectedMessageState = null,
+    Object? sendingState = null,
     Object? emojiPickerVisible = null,
-    Object? attachmentVisible = null,
-    Object? currentMessageId = freezed,
-    Object? repliedToMessage = freezed,
-    Object? editMessage = freezed,
+    Object? selectedMessage = freezed,
     Object? mentionReplacements = null,
     Object? editBtnVisible = null,
   }) {
     return _then(_value.copyWith(
-      showReplyView: null == showReplyView
-          ? _value.showReplyView
-          : showReplyView // ignore: cast_nullable_to_non_nullable
-              as bool,
-      showEditView: null == showEditView
-          ? _value.showEditView
-          : showEditView // ignore: cast_nullable_to_non_nullable
-              as bool,
-      replyWidget: freezed == replyWidget
-          ? _value.replyWidget
-          : replyWidget // ignore: cast_nullable_to_non_nullable
-              as Widget?,
-      editWidget: freezed == editWidget
-          ? _value.editWidget
-          : editWidget // ignore: cast_nullable_to_non_nullable
-              as Widget?,
-      allowEdit: null == allowEdit
-          ? _value.allowEdit
-          : allowEdit // ignore: cast_nullable_to_non_nullable
-              as bool,
-      sendBtnVisible: null == sendBtnVisible
-          ? _value.sendBtnVisible
-          : sendBtnVisible // ignore: cast_nullable_to_non_nullable
-              as bool,
-      emojiRowVisible: null == emojiRowVisible
-          ? _value.emojiRowVisible
-          : emojiRowVisible // ignore: cast_nullable_to_non_nullable
-              as bool,
+      selectedMessageState: null == selectedMessageState
+          ? _value.selectedMessageState
+          : selectedMessageState // ignore: cast_nullable_to_non_nullable
+              as SelectedMessageState,
+      sendingState: null == sendingState
+          ? _value.sendingState
+          : sendingState // ignore: cast_nullable_to_non_nullable
+              as SendingState,
       emojiPickerVisible: null == emojiPickerVisible
           ? _value.emojiPickerVisible
           : emojiPickerVisible // ignore: cast_nullable_to_non_nullable
               as bool,
-      attachmentVisible: null == attachmentVisible
-          ? _value.attachmentVisible
-          : attachmentVisible // ignore: cast_nullable_to_non_nullable
-              as bool,
-      currentMessageId: freezed == currentMessageId
-          ? _value.currentMessageId
-          : currentMessageId // ignore: cast_nullable_to_non_nullable
-              as String?,
-      repliedToMessage: freezed == repliedToMessage
-          ? _value.repliedToMessage
-          : repliedToMessage // ignore: cast_nullable_to_non_nullable
-              as types.Message?,
-      editMessage: freezed == editMessage
-          ? _value.editMessage
-          : editMessage // ignore: cast_nullable_to_non_nullable
+      selectedMessage: freezed == selectedMessage
+          ? _value.selectedMessage
+          : selectedMessage // ignore: cast_nullable_to_non_nullable
               as types.Message?,
       mentionReplacements: null == mentionReplacements
           ? _value.mentionReplacements
@@ -158,18 +103,10 @@ abstract class _$$ChatInputStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {bool showReplyView,
-      bool showEditView,
-      Widget? replyWidget,
-      Widget? editWidget,
-      bool allowEdit,
-      bool sendBtnVisible,
-      bool emojiRowVisible,
+      {SelectedMessageState selectedMessageState,
+      SendingState sendingState,
       bool emojiPickerVisible,
-      bool attachmentVisible,
-      String? currentMessageId,
-      types.Message? repliedToMessage,
-      types.Message? editMessage,
+      types.Message? selectedMessage,
       Map<String, String> mentionReplacements,
       bool editBtnVisible});
 }
@@ -185,69 +122,29 @@ class __$$ChatInputStateImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? showReplyView = null,
-    Object? showEditView = null,
-    Object? replyWidget = freezed,
-    Object? editWidget = freezed,
-    Object? allowEdit = null,
-    Object? sendBtnVisible = null,
-    Object? emojiRowVisible = null,
+    Object? selectedMessageState = null,
+    Object? sendingState = null,
     Object? emojiPickerVisible = null,
-    Object? attachmentVisible = null,
-    Object? currentMessageId = freezed,
-    Object? repliedToMessage = freezed,
-    Object? editMessage = freezed,
+    Object? selectedMessage = freezed,
     Object? mentionReplacements = null,
     Object? editBtnVisible = null,
   }) {
     return _then(_$ChatInputStateImpl(
-      showReplyView: null == showReplyView
-          ? _value.showReplyView
-          : showReplyView // ignore: cast_nullable_to_non_nullable
-              as bool,
-      showEditView: null == showEditView
-          ? _value.showEditView
-          : showEditView // ignore: cast_nullable_to_non_nullable
-              as bool,
-      replyWidget: freezed == replyWidget
-          ? _value.replyWidget
-          : replyWidget // ignore: cast_nullable_to_non_nullable
-              as Widget?,
-      editWidget: freezed == editWidget
-          ? _value.editWidget
-          : editWidget // ignore: cast_nullable_to_non_nullable
-              as Widget?,
-      allowEdit: null == allowEdit
-          ? _value.allowEdit
-          : allowEdit // ignore: cast_nullable_to_non_nullable
-              as bool,
-      sendBtnVisible: null == sendBtnVisible
-          ? _value.sendBtnVisible
-          : sendBtnVisible // ignore: cast_nullable_to_non_nullable
-              as bool,
-      emojiRowVisible: null == emojiRowVisible
-          ? _value.emojiRowVisible
-          : emojiRowVisible // ignore: cast_nullable_to_non_nullable
-              as bool,
+      selectedMessageState: null == selectedMessageState
+          ? _value.selectedMessageState
+          : selectedMessageState // ignore: cast_nullable_to_non_nullable
+              as SelectedMessageState,
+      sendingState: null == sendingState
+          ? _value.sendingState
+          : sendingState // ignore: cast_nullable_to_non_nullable
+              as SendingState,
       emojiPickerVisible: null == emojiPickerVisible
           ? _value.emojiPickerVisible
           : emojiPickerVisible // ignore: cast_nullable_to_non_nullable
               as bool,
-      attachmentVisible: null == attachmentVisible
-          ? _value.attachmentVisible
-          : attachmentVisible // ignore: cast_nullable_to_non_nullable
-              as bool,
-      currentMessageId: freezed == currentMessageId
-          ? _value.currentMessageId
-          : currentMessageId // ignore: cast_nullable_to_non_nullable
-              as String?,
-      repliedToMessage: freezed == repliedToMessage
-          ? _value.repliedToMessage
-          : repliedToMessage // ignore: cast_nullable_to_non_nullable
-              as types.Message?,
-      editMessage: freezed == editMessage
-          ? _value.editMessage
-          : editMessage // ignore: cast_nullable_to_non_nullable
+      selectedMessage: freezed == selectedMessage
+          ? _value.selectedMessage
+          : selectedMessage // ignore: cast_nullable_to_non_nullable
               as types.Message?,
       mentionReplacements: null == mentionReplacements
           ? _value._mentionReplacements
@@ -265,58 +162,26 @@ class __$$ChatInputStateImplCopyWithImpl<$Res>
 
 class _$ChatInputStateImpl implements _ChatInputState {
   const _$ChatInputStateImpl(
-      {this.showReplyView = false,
-      this.showEditView = false,
-      this.replyWidget = null,
-      this.editWidget = null,
-      this.allowEdit = true,
-      this.sendBtnVisible = false,
-      this.emojiRowVisible = false,
+      {this.selectedMessageState = SelectedMessageState.none,
+      this.sendingState = SendingState.preparing,
       this.emojiPickerVisible = false,
-      this.attachmentVisible = false,
-      this.currentMessageId = null,
-      this.repliedToMessage = null,
-      this.editMessage = null,
+      this.selectedMessage = null,
       final Map<String, String> mentionReplacements = const {},
       this.editBtnVisible = false})
       : _mentionReplacements = mentionReplacements;
 
   @override
   @JsonKey()
-  final bool showReplyView;
+  final SelectedMessageState selectedMessageState;
   @override
   @JsonKey()
-  final bool showEditView;
-  @override
-  @JsonKey()
-  final Widget? replyWidget;
-  @override
-  @JsonKey()
-  final Widget? editWidget;
-  @override
-  @JsonKey()
-  final bool allowEdit;
-  @override
-  @JsonKey()
-  final bool sendBtnVisible;
-  @override
-  @JsonKey()
-  final bool emojiRowVisible;
+  final SendingState sendingState;
   @override
   @JsonKey()
   final bool emojiPickerVisible;
   @override
   @JsonKey()
-  final bool attachmentVisible;
-  @override
-  @JsonKey()
-  final String? currentMessageId;
-  @override
-  @JsonKey()
-  final types.Message? repliedToMessage;
-  @override
-  @JsonKey()
-  final types.Message? editMessage;
+  final types.Message? selectedMessage;
   final Map<String, String> _mentionReplacements;
   @override
   @JsonKey()
@@ -333,7 +198,7 @@ class _$ChatInputStateImpl implements _ChatInputState {
 
   @override
   String toString() {
-    return 'ChatInputState(showReplyView: $showReplyView, showEditView: $showEditView, replyWidget: $replyWidget, editWidget: $editWidget, allowEdit: $allowEdit, sendBtnVisible: $sendBtnVisible, emojiRowVisible: $emojiRowVisible, emojiPickerVisible: $emojiPickerVisible, attachmentVisible: $attachmentVisible, currentMessageId: $currentMessageId, repliedToMessage: $repliedToMessage, editMessage: $editMessage, mentionReplacements: $mentionReplacements, editBtnVisible: $editBtnVisible)';
+    return 'ChatInputState(selectedMessageState: $selectedMessageState, sendingState: $sendingState, emojiPickerVisible: $emojiPickerVisible, selectedMessage: $selectedMessage, mentionReplacements: $mentionReplacements, editBtnVisible: $editBtnVisible)';
   }
 
   @override
@@ -341,30 +206,14 @@ class _$ChatInputStateImpl implements _ChatInputState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ChatInputStateImpl &&
-            (identical(other.showReplyView, showReplyView) ||
-                other.showReplyView == showReplyView) &&
-            (identical(other.showEditView, showEditView) ||
-                other.showEditView == showEditView) &&
-            (identical(other.replyWidget, replyWidget) ||
-                other.replyWidget == replyWidget) &&
-            (identical(other.editWidget, editWidget) ||
-                other.editWidget == editWidget) &&
-            (identical(other.allowEdit, allowEdit) ||
-                other.allowEdit == allowEdit) &&
-            (identical(other.sendBtnVisible, sendBtnVisible) ||
-                other.sendBtnVisible == sendBtnVisible) &&
-            (identical(other.emojiRowVisible, emojiRowVisible) ||
-                other.emojiRowVisible == emojiRowVisible) &&
+            (identical(other.selectedMessageState, selectedMessageState) ||
+                other.selectedMessageState == selectedMessageState) &&
+            (identical(other.sendingState, sendingState) ||
+                other.sendingState == sendingState) &&
             (identical(other.emojiPickerVisible, emojiPickerVisible) ||
                 other.emojiPickerVisible == emojiPickerVisible) &&
-            (identical(other.attachmentVisible, attachmentVisible) ||
-                other.attachmentVisible == attachmentVisible) &&
-            (identical(other.currentMessageId, currentMessageId) ||
-                other.currentMessageId == currentMessageId) &&
-            (identical(other.repliedToMessage, repliedToMessage) ||
-                other.repliedToMessage == repliedToMessage) &&
-            (identical(other.editMessage, editMessage) ||
-                other.editMessage == editMessage) &&
+            (identical(other.selectedMessage, selectedMessage) ||
+                other.selectedMessage == selectedMessage) &&
             const DeepCollectionEquality()
                 .equals(other._mentionReplacements, _mentionReplacements) &&
             (identical(other.editBtnVisible, editBtnVisible) ||
@@ -374,18 +223,10 @@ class _$ChatInputStateImpl implements _ChatInputState {
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      showReplyView,
-      showEditView,
-      replyWidget,
-      editWidget,
-      allowEdit,
-      sendBtnVisible,
-      emojiRowVisible,
+      selectedMessageState,
+      sendingState,
       emojiPickerVisible,
-      attachmentVisible,
-      currentMessageId,
-      repliedToMessage,
-      editMessage,
+      selectedMessage,
       const DeepCollectionEquality().hash(_mentionReplacements),
       editBtnVisible);
 
@@ -399,45 +240,21 @@ class _$ChatInputStateImpl implements _ChatInputState {
 
 abstract class _ChatInputState implements ChatInputState {
   const factory _ChatInputState(
-      {final bool showReplyView,
-      final bool showEditView,
-      final Widget? replyWidget,
-      final Widget? editWidget,
-      final bool allowEdit,
-      final bool sendBtnVisible,
-      final bool emojiRowVisible,
+      {final SelectedMessageState selectedMessageState,
+      final SendingState sendingState,
       final bool emojiPickerVisible,
-      final bool attachmentVisible,
-      final String? currentMessageId,
-      final types.Message? repliedToMessage,
-      final types.Message? editMessage,
+      final types.Message? selectedMessage,
       final Map<String, String> mentionReplacements,
       final bool editBtnVisible}) = _$ChatInputStateImpl;
 
   @override
-  bool get showReplyView;
+  SelectedMessageState get selectedMessageState;
   @override
-  bool get showEditView;
-  @override
-  Widget? get replyWidget;
-  @override
-  Widget? get editWidget;
-  @override
-  bool get allowEdit;
-  @override
-  bool get sendBtnVisible;
-  @override
-  bool get emojiRowVisible;
+  SendingState get sendingState;
   @override
   bool get emojiPickerVisible;
   @override
-  bool get attachmentVisible;
-  @override
-  String? get currentMessageId;
-  @override
-  types.Message? get repliedToMessage;
-  @override
-  types.Message? get editMessage;
+  types.Message? get selectedMessage;
   @override
   Map<String, String> get mentionReplacements;
   @override

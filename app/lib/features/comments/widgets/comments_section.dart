@@ -1,8 +1,6 @@
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/comments/models.dart';
 import 'package:acter/features/comments/providers/comments.dart';
 import 'package:acter/features/comments/widgets/comments_list.dart';
-import 'package:acter/features/comments/widgets/create_comment.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -11,11 +9,10 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class CommentsSection extends ConsumerWidget {
   final Future<CommentsManager> manager;
-  final NewCommentLocation newCommentLocation;
+
   const CommentsSection({
     super.key,
     required this.manager,
-    this.newCommentLocation = NewCommentLocation.before,
   });
 
   @override
@@ -37,17 +34,7 @@ class CommentsSection extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(L10n.of(context).comments),
-        // create comment on top
-        if (newCommentLocation == NewCommentLocation.before)
-          CreateCommentWidget(manager: manager),
-        // the actual list
-        CommentsList(
-          manager: manager,
-          emptyChild: const SizedBox.shrink(),
-        ),
-        // create comment after
-        if (newCommentLocation == NewCommentLocation.after)
-          CreateCommentWidget(manager: manager),
+        CommentsList(manager: manager),
       ],
     );
   }

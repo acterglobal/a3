@@ -220,7 +220,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Future<void> handleSubmit(BuildContext context) async {
     if (!formKey.currentState!.validate()) return;
     if (!inCI && !ref.read(hasNetworkProvider)) {
-      showNoInternetNotification();
+      showNoInternetNotification(context);
       return;
     }
     final authNotifier = ref.read(authStateProvider.notifier);
