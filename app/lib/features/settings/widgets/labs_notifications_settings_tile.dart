@@ -1,4 +1,5 @@
 import 'package:acter/common/notifications/notifications.dart';
+import 'package:acter/common/notifications/util.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
@@ -18,16 +19,16 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return SettingsTile.switchTile(
       title: Text(title ?? L10n.of(context).mobilePushNotifications),
-      description: !supportedPlatforms
+      description: !isOnSupportedPlatform
           ? Text(L10n.of(context).onlySupportedIosAndAndroid)
           : (pushServer.isEmpty
               ? Text(L10n.of(context).noPushServerConfigured)
               : null),
-      initialValue: supportedPlatforms &&
+      initialValue: isOnSupportedPlatform &&
           ref.watch(
             isActiveProvider(LabsFeature.mobilePushNotifications),
           ),
-      enabled: supportedPlatforms && pushServer.isNotEmpty,
+      enabled: isOnSupportedPlatform && pushServer.isNotEmpty,
       onToggle: (newVal) async {
         updateFeatureState(
           ref,
