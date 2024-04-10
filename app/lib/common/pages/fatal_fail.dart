@@ -38,7 +38,9 @@ class _FatalFailPageState extends ConsumerState<FatalFailPage> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height / 4;
     return Scaffold(
-      appBar: AppBar(title: const Text('Fatal Error')),
+      appBar: AppBar(
+        title: Text(L10n.of(context).fatalError),
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Column(
@@ -51,7 +53,7 @@ class _FatalFailPageState extends ConsumerState<FatalFailPage> {
                   width: height,
                   child: SvgPicture.asset('assets/images/genericError.svg'),
                 ),
-                const Text('Something went terribly wrong:'),
+                Text(L10n.of(context).somethingWrong),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -75,7 +77,7 @@ class _FatalFailPageState extends ConsumerState<FatalFailPage> {
                             : Icons.toggle_on_outlined,
                       ),
                     ),
-                    const Text('Stacktrace'),
+                    Text(L10n.of(context).stacktrace),
                   ],
                 ),
               ],
@@ -90,7 +92,7 @@ class _FatalFailPageState extends ConsumerState<FatalFailPage> {
                     color: Theme.of(context).colorScheme.error,
                   ),
                   label: Text(
-                    'Nuke local data',
+                    L10n.of(context).nukeLocalData,
                     style:
                         TextStyle(color: Theme.of(context).colorScheme.error),
                   ),
@@ -99,7 +101,7 @@ class _FatalFailPageState extends ConsumerState<FatalFailPage> {
                 ),
                 OutlinedButton.icon(
                   icon: const Icon(Atlas.bug_clipboard_thin),
-                  label: const Text('Report bug'),
+                  label: Text(L10n.of(context).reportBug),
                   onPressed: () => context.goNamed(Routes.bugReport.name),
                 ),
               ],
