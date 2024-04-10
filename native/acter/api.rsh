@@ -2041,6 +2041,46 @@ object Member {
     fn unban(msg: Option<string>) -> Future<Result<bool>>;
 }
 
+
+//     ###    ########  ########      ######  ######## ######## ######## #### ##    ##  ######    ######  
+//    ## ##   ##     ## ##     ##    ##    ## ##          ##       ##     ##  ###   ## ##    ##  ##    ## 
+//   ##   ##  ##     ## ##     ##    ##       ##          ##       ##     ##  ####  ## ##        ##       
+//  ##     ## ########  ########      ######  ######      ##       ##     ##  ## ## ## ##   ####  ######  
+//  ######### ##        ##                 ## ##          ##       ##     ##  ##  #### ##    ##        ## 
+//  ##     ## ##        ##           ##    ## ##          ##       ##     ##  ##   ### ##    ##  ##    ## 
+//  ##     ## ##        ##            ######  ########    ##       ##    #### ##    ##  ######    ######  
+
+
+
+
+object ActerUserAppSettings {
+    /// either of 'always', 'never' or 'wifiOnly'
+    fn auto_download_chat() -> Option<string>;
+
+    /// if you intend to change anything
+    fn update_builder() -> ActerUserAppSettingsBuilder;
+}
+
+object ActerUserAppSettingsBuilder {
+    /// either of 'always', 'never' or 'wifiOnly'
+    fn auto_download_chat(value: string);
+
+    /// submit this updated version
+    fn send() -> Future<Result<bool>>;
+}
+
+
+
+//     ###     ######   ######   #######  ##     ## ##    ## ######## 
+//    ## ##   ##    ## ##    ## ##     ## ##     ## ###   ##    ##    
+//   ##   ##  ##       ##       ##     ## ##     ## ####  ##    ##    
+//  ##     ## ##       ##       ##     ## ##     ## ## ## ##    ##    
+//  ######### ##       ##       ##     ## ##     ## ##  ####    ##    
+//  ##     ## ##    ## ##    ## ##     ## ##     ## ##   ###    ##    
+//  ##     ##  ######   ######   #######   #######  ##    ##    ##    
+
+
+
 object Account {
     /// get user id of this account
     fn user_id() -> UserId;
@@ -2068,6 +2108,12 @@ object Account {
 
     /// remove user_id from ignore list
     fn unignore_user(user_id: string) -> Future<Result<bool>>;
+
+    /// the current app settings
+    fn acter_app_settings() -> Future<Result<ActerUserAppSettings>>;
+
+    /// listen to updates to the app settings
+    fn subscribe_app_settings_stream() -> Stream<bool>;
 }
 
 object ThreePidManager {

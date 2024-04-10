@@ -941,7 +941,7 @@ impl Client {
     pub fn account(&self) -> Result<Account> {
         let account = self.core.client().account();
         let user_id = self.user_id()?;
-        Ok(Account::new(account, user_id, self.core.client().clone()))
+        Ok(Account::new(account, user_id, self.clone()))
     }
 
     pub fn device_id(&self) -> Result<OwnedDeviceId> {

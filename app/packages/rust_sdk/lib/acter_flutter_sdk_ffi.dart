@@ -8762,6 +8762,50 @@ class Api {
     return tmp7;
   }
 
+  bool? __acterUserAppSettingsBuilderSendFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _acterUserAppSettingsBuilderSendFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   OptionString? __accountDisplayNameFuturePoll(
     int boxed,
     int postCobject,
@@ -9080,6 +9124,53 @@ class Api {
       throw tmp9_0;
     }
     final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  ActerUserAppSettings? __accountActerAppSettingsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _accountActerAppSettingsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_ActerUserAppSettings");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = ActerUserAppSettings._(this, tmp13_1);
     return tmp7;
   }
 
@@ -13370,6 +13461,39 @@ class Api {
     tmp5 = tmp4;
     tmp7 = tmp6;
     final tmp8 = _taskListSubscribeStreamStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final tmp9 = tmp11 > 0;
+    return tmp9;
+  }
+
+  bool? __accountSubscribeAppSettingsStreamStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _accountSubscribeAppSettingsStreamStreamPoll(
       tmp1,
       tmp3,
       tmp5,
@@ -21437,6 +21561,56 @@ class Api {
         int,
         int,
       )>();
+  late final _acterUserAppSettingsAutoDownloadChatPtr = _lookup<
+      ffi.NativeFunction<
+          _ActerUserAppSettingsAutoDownloadChatReturn Function(
+            ffi.Int64,
+          )>>("__ActerUserAppSettings_auto_download_chat");
+
+  late final _acterUserAppSettingsAutoDownloadChat =
+      _acterUserAppSettingsAutoDownloadChatPtr.asFunction<
+          _ActerUserAppSettingsAutoDownloadChatReturn Function(
+            int,
+          )>();
+  late final _acterUserAppSettingsUpdateBuilderPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__ActerUserAppSettings_update_builder");
+
+  late final _acterUserAppSettingsUpdateBuilder =
+      _acterUserAppSettingsUpdateBuilderPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _acterUserAppSettingsBuilderAutoDownloadChatPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__ActerUserAppSettingsBuilder_auto_download_chat");
+
+  late final _acterUserAppSettingsBuilderAutoDownloadChat =
+      _acterUserAppSettingsBuilderAutoDownloadChatPtr.asFunction<
+          void Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _acterUserAppSettingsBuilderSendPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__ActerUserAppSettingsBuilder_send");
+
+  late final _acterUserAppSettingsBuilderSend =
+      _acterUserAppSettingsBuilderSendPtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _accountUserIdPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -21545,6 +21719,27 @@ class Api {
         int,
         int,
       )>();
+  late final _accountActerAppSettingsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Account_acter_app_settings");
+
+  late final _accountActerAppSettings = _accountActerAppSettingsPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _accountSubscribeAppSettingsStreamPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Account_subscribe_app_settings_stream");
+
+  late final _accountSubscribeAppSettingsStream =
+      _accountSubscribeAppSettingsStreamPtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _threePidManagerConfirmedEmailAddressesPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -26517,6 +26712,21 @@ class Api {
         int,
         int,
       )>();
+  late final _acterUserAppSettingsBuilderSendFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ActerUserAppSettingsBuilderSendFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__ActerUserAppSettingsBuilder_send_future_poll");
+
+  late final _acterUserAppSettingsBuilderSendFuturePoll =
+      _acterUserAppSettingsBuilderSendFuturePollPtr.asFunction<
+          _ActerUserAppSettingsBuilderSendFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _accountDisplayNameFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _AccountDisplayNameFuturePollReturn Function(
@@ -26617,6 +26827,21 @@ class Api {
   late final _accountUnignoreUserFuturePoll =
       _accountUnignoreUserFuturePollPtr.asFunction<
           _AccountUnignoreUserFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _accountActerAppSettingsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _AccountActerAppSettingsFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Account_acter_app_settings_future_poll");
+
+  late final _accountActerAppSettingsFuturePoll =
+      _accountActerAppSettingsFuturePollPtr.asFunction<
+          _AccountActerAppSettingsFuturePollReturn Function(
             int,
             int,
             int,
@@ -28043,6 +28268,23 @@ class Api {
   late final _taskListSubscribeStreamStreamPoll =
       _taskListSubscribeStreamStreamPollPtr.asFunction<
           _TaskListSubscribeStreamStreamPollReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _accountSubscribeAppSettingsStreamStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _AccountSubscribeAppSettingsStreamStreamPollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Account_subscribe_app_settings_stream_stream_poll");
+
+  late final _accountSubscribeAppSettingsStreamStreamPoll =
+      _accountSubscribeAppSettingsStreamStreamPollPtr.asFunction<
+          _AccountSubscribeAppSettingsStreamStreamPollReturn Function(
             int,
             int,
             int,
@@ -43893,6 +44135,123 @@ class Member {
   }
 }
 
+class ActerUserAppSettings {
+  final Api _api;
+  final _Box _box;
+
+  ActerUserAppSettings._(this._api, this._box);
+
+  /// either of 'always', 'never' or 'wifiOnly'
+  String? autoDownloadChat() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterUserAppSettingsAutoDownloadChat(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// if you intend to change anything
+  ActerUserAppSettingsBuilder updateBuilder() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterUserAppSettingsUpdateBuilder(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_ActerUserAppSettingsBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = ActerUserAppSettingsBuilder._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class ActerUserAppSettingsBuilder {
+  final Api _api;
+  final _Box _box;
+
+  ActerUserAppSettingsBuilder._(this._api, this._box);
+
+  /// either of 'always', 'never' or 'wifiOnly'
+  void autoDownloadChat(
+    String value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._acterUserAppSettingsBuilderAutoDownloadChat(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// submit this updated version
+  Future<bool> send() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterUserAppSettingsBuilderSend(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__ActerUserAppSettingsBuilder_send_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__acterUserAppSettingsBuilderSendFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 class Account {
   final Api _api;
   final _Box _box;
@@ -44102,6 +44461,40 @@ class Account {
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp6 = _nativeFuture(tmp7_1, _api.__accountUnignoreUserFuturePoll);
     return tmp6;
+  }
+
+  /// the current app settings
+  Future<ActerUserAppSettings> acterAppSettings() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._accountActerAppSettings(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__Account_acter_app_settings_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__accountActerAppSettingsFuturePoll);
+    return tmp2;
+  }
+
+  /// listen to updates to the app settings
+  Stream<bool> subscribeAppSettingsStream() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._accountSubscribeAppSettingsStream(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(
+        _api, tmp3_0, "__Account_subscribe_app_settings_stream_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeStream(
+        tmp3_1, _api.__accountSubscribeAppSettingsStreamStreamPoll);
+    return tmp2;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -52096,6 +52489,17 @@ class _MemberMembershipStatusStrReturn extends ffi.Struct {
   external int arg2;
 }
 
+class _ActerUserAppSettingsAutoDownloadChatReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
 class _PublicSearchResultItemNameReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -54809,6 +55213,21 @@ class _MemberUnbanFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ActerUserAppSettingsBuilderSendFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
 class _AccountDisplayNameFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -54911,6 +55330,21 @@ class _AccountUnignoreUserFuturePollReturn extends ffi.Struct {
   @ffi.Uint64()
   external int arg4;
   @ffi.Uint8()
+  external int arg5;
+}
+
+class _AccountActerAppSettingsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
   external int arg5;
 }
 
@@ -56281,6 +56715,13 @@ class _TaskSubscribeStreamStreamPollReturn extends ffi.Struct {
 }
 
 class _TaskListSubscribeStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+}
+
+class _AccountSubscribeAppSettingsStreamStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

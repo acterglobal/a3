@@ -103,9 +103,9 @@ pub use room::{
 pub use rsvp::{Rsvp, RsvpDraft, RsvpManager, RsvpStatus};
 pub use search::{PublicSearchResult, PublicSearchResultItem};
 pub use settings::{
-    ActerAppSettings, ActerAppSettingsBuilder, EventsSettings, NewsSettings, PinsSettings,
-    RoomPowerLevels, SimpleSettingWithTurnOff, SimpleSettingWithTurnOffBuilder, TasksSettings,
-    TasksSettingsBuilder,
+    ActerAppSettings, ActerAppSettingsBuilder, ActerUserAppSettings, ActerUserAppSettingsBuilder,
+    EventsSettings, NewsSettings, PinsSettings, RoomPowerLevels, SimpleSettingWithTurnOff,
+    SimpleSettingWithTurnOffBuilder, TasksSettings, TasksSettingsBuilder,
 };
 pub use spaces::{
     new_space_settings_builder, CreateSpaceSettings, CreateSpaceSettingsBuilder,
