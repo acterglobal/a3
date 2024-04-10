@@ -13,8 +13,6 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     let (mut sisko, mut kyra, mut worf, room_id) =
         random_users_with_random_convo("reaction").await?;
 
-    info!("1");
-
     let sisko_sync = sisko.start_sync();
     sisko_sync.await_has_synced_history().await?;
 
@@ -25,8 +23,6 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     let sisko_timeline = sisko_convo.timeline_stream();
     let sisko_stream = sisko_timeline.messages_stream();
     pin_mut!(sisko_stream);
-
-    info!("2");
 
     let kyra_sync = kyra.start_sync();
     kyra_sync.await_has_synced_history().await?;
@@ -45,8 +41,6 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
         invited.join().await?;
     }
 
-    info!("3");
-
     let worf_sync = worf.start_sync();
     worf_sync.await_has_synced_history().await?;
 
@@ -64,12 +58,8 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
         invited.join().await?;
     }
 
-    info!("4");
-
     let draft = sisko.text_plain_draft("Hi, everyone".to_string());
     sisko_timeline.send_message(Box::new(draft)).await?;
-
-    info!("5");
 
     // text msg may reach via reset action or set action
     let mut i = 30;
@@ -114,8 +104,6 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     info!("loop finished");
     let kyra_received = received.context("Even after 30 seconds, text msg not received")?;
 
-    info!("6");
-
     // text msg may reach via reset action or set action
     i = 30;
     received = None;
@@ -159,16 +147,12 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     info!("loop finished");
     let worf_received = received.context("Even after 30 seconds, text msg not received")?;
 
-    info!("7");
-
     kyra_timeline
         .toggle_reaction(kyra_received.to_string(), "👏".to_string())
         .await?;
     worf_timeline
         .toggle_reaction(worf_received.to_string(), "😎".to_string())
         .await?;
-
-    info!("8");
 
     // msg reaction may reach via set action
     i = 10;
