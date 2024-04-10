@@ -6,6 +6,7 @@ import 'package:acter/features/backups/providers/backup_state_providers.dart';
 import 'package:acter/features/backups/types.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -38,12 +39,12 @@ class BackupStateWidget extends ConsumerWidget {
       child: Card(
         child: ListTile(
           leading: const Icon(Icons.warning),
-          title: const Text('Encryption backups missing'),
-          subtitle: const Text(
-            'We recommend to use automatic encryption key backups',
+          title: Text(L10n.of(context).encryptionBackupMissing),
+          subtitle: Text(L10n.of(context).encryptionBackupMissingExplainer),
+          trailing: OutlinedButton(
+            onPressed: () {},
+            child: Text(L10n.of(context).loading),
           ),
-          trailing:
-              OutlinedButton(onPressed: () {}, child: const Text('loading')),
         ),
       ),
     );
@@ -53,16 +54,12 @@ class BackupStateWidget extends ConsumerWidget {
     return Card(
       child: ListTile(
         leading: const Icon(Atlas.check_website_thin),
-        title: const Text('Backup enabled'),
-        subtitle: const Text(
-          'Your keys are stored in an encrypted backup on your home server',
-        ),
+        title: Text(L10n.of(context).encryptionBackupEnabled),
+        subtitle: Text(L10n.of(context).encryptionBackupEnabledExplainer),
         trailing: OutlinedButton.icon(
           icon: const Icon(Icons.toggle_on_outlined),
           onPressed: () => showConfirmResetDialog(context, ref),
-          label: const Text(
-            'reset',
-          ),
+          label: Text(L10n.of(context).reset),
         ),
       ),
     );
@@ -72,24 +69,18 @@ class BackupStateWidget extends ConsumerWidget {
     return Card(
       child: ListTile(
         leading: const Icon(Icons.warning),
-        title: const Text('Provide Recovery Key'),
-        subtitle: const Text(
-          'We have found an automatic encryption backup',
-        ),
+        title: Text(L10n.of(context).encryptionBackupProvideKey),
+        subtitle: Text(L10n.of(context).encryptionBackupProvideKeyExplainer),
         trailing: Wrap(
           children: [
             OutlinedButton(
               onPressed: () => showProviderRecoveryKeyDialog(context, ref),
-              child: const Text(
-                'Provide Key',
-              ),
+              child: Text(L10n.of(context).encryptionBackupProvideKeyAction),
             ),
             if (allowDisabling)
               OutlinedButton(
                 onPressed: () => showConfirmResetDialog(context, ref),
-                child: const Text(
-                  'reset',
-                ),
+                child: Text(L10n.of(context).reset),
               ),
           ],
         ),
@@ -101,39 +92,33 @@ class BackupStateWidget extends ConsumerWidget {
     return Card(
       child: ListTile(
         leading: const Icon(Icons.warning),
-        title: const Text('No encryption backup found'),
-        subtitle: const Text(
-          'If you lose access to your account, conversations might become unrecoverable. We recommend enabling automatic encryption backups.',
-        ),
+        title: Text(L10n.of(context).encryptionBackupNoBackup),
+        subtitle: Text(L10n.of(context).encryptionBackupNoBackupExplainer),
         trailing: OutlinedButton(
           onPressed: () => startAction(context, ref),
-          child: const Text(
-            'Enable Backup',
-          ),
+          child: Text(L10n.of(context).encryptionBackupNoBackupAction),
         ),
       ),
     );
   }
 
   void startAction(BuildContext context, WidgetRef ref) async {
-    EasyLoading.show(status: 'enabling backup');
+    EasyLoading.show(status: L10n.of(context).encryptionBackupEnabling);
     String secret;
     try {
       final manager = ref.read(backupManagerProvider);
       secret = await manager.enable();
-      print('Secret: $secret');
       EasyLoading.dismiss();
-    } catch (e) {
+    } catch (error) {
       EasyLoading.showError(
-        'enabling backup failed: $e',
+        // ignore: use_build_context_synchronously
+        L10n.of(context).encryptionBackupEnablingFailed(error),
         duration: const Duration(seconds: 5),
       );
       return;
     }
     if (context.mounted) {
       showRecoveryKeyDialog(context, ref, secret);
-    } else {
-      print('Dialog closed. Your backup encryption recovery key is: $secret');
     }
   }
 

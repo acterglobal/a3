@@ -2,6 +2,7 @@ import 'package:acter/features/backups/providers/backup_manager_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class _RecoveryKeyDialog extends ConsumerStatefulWidget {
   const _RecoveryKeyDialog();
@@ -21,7 +22,7 @@ class __RecoveryKeyDialogState extends ConsumerState<_RecoveryKeyDialog> {
     return Form(
       key: formKey,
       child: AlertDialog(
-        title: const Text('Recover Encryption Backup'),
+        title: Text(L10n.of(context).encryptionBackupRecover),
         content: Container(
           constraints: const BoxConstraints(
             maxWidth: 500,
@@ -30,9 +31,7 @@ class __RecoveryKeyDialogState extends ConsumerState<_RecoveryKeyDialog> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'Provider you recovery key to decrypt the encryption backup',
-              ),
+              Text(L10n.of(context).encryptionBackupRecoverExplainer),
               const SizedBox(
                 height: 10,
               ),
@@ -40,7 +39,7 @@ class __RecoveryKeyDialogState extends ConsumerState<_RecoveryKeyDialog> {
                 controller: recoveryKey,
                 obscureText: !showInput,
                 decoration: InputDecoration(
-                  hintText: 'Recovery key',
+                  hintText: L10n.of(context).encryptionBackupRecoverInputHint,
                   suffixIcon: IconButton(
                     icon: Icon(
                       showInput ? Icons.visibility : Icons.visibility_off,
@@ -52,8 +51,9 @@ class __RecoveryKeyDialogState extends ConsumerState<_RecoveryKeyDialog> {
                     },
                   ),
                 ),
-                validator: (v) =>
-                    (v == null || v.isEmpty) ? 'Please provide the key' : null,
+                validator: (v) => (v == null || v.isEmpty)
+                    ? L10n.of(context).encryptionBackupRecoverProvideKey
+                    : null,
               ),
             ],
           ),
@@ -64,16 +64,12 @@ class __RecoveryKeyDialogState extends ConsumerState<_RecoveryKeyDialog> {
               OutlinedButton(
                 onPressed: () =>
                     Navigator.of(context, rootNavigator: true).pop(),
-                child: const Text(
-                  'Cancel',
-                ),
+                child: Text(L10n.of(context).cancel),
               ),
               const SizedBox(width: 10),
               OutlinedButton(
                 onPressed: () => submit(context),
-                child: const Text(
-                  'Recover',
-                ),
+                child: Text(L10n.of(context).encryptionBackupRecoverAction),
               ),
             ],
           ),
@@ -86,21 +82,32 @@ class __RecoveryKeyDialogState extends ConsumerState<_RecoveryKeyDialog> {
     if (!formKey.currentState!.validate()) {
       return;
     }
-    EasyLoading.show(status: 'Trying to recover');
+    EasyLoading.show(
+      status: L10n.of(context).encryptionBackupRecoverRecovering,
+    );
     try {
       final key = recoveryKey.text;
       final manager = ref.read(backupManagerProvider);
       final recoveryWorked = await manager.recover(key);
       if (recoveryWorked) {
-        EasyLoading.showToast('Recovery successful');
+        EasyLoading.showToast(
+          // ignore: use_build_context_synchronously
+          L10n.of(context).encryptionBackupRecoverRecoveringSuccess,
+        );
         if (context.mounted) {
           Navigator.of(context, rootNavigator: true).pop();
         }
       } else {
-        EasyLoading.showToast('Import failed');
+        // ignore: use_build_context_synchronously
+        EasyLoading.showError(
+          L10n.of(context).encryptionBackupRecoverRecoveringImportFailed,
+        );
       }
-    } catch (e) {
-      EasyLoading.showToast('Failed to recover: $e');
+    } catch (error) {
+      // ignore: use_build_context_synchronously
+      EasyLoading.showError(
+        L10n.of(context).encryptionBackupRecoverRecoveringFailed(error),
+      );
     }
   }
 }

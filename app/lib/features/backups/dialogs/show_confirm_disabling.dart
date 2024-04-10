@@ -3,6 +3,7 @@ import 'package:acter/features/backups/providers/backup_manager_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class _ShowConfirmResetDialog extends ConsumerWidget {
   const _ShowConfirmResetDialog();
@@ -10,19 +11,17 @@ class _ShowConfirmResetDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AlertDialog(
-      title: const Text('Disable your Key Backup?'),
+      title: Text(L10n.of(context).encryptionBackupDisable),
       content: Container(
         constraints: const BoxConstraints(
           maxWidth: 500,
         ),
-        child: const Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              "Resetting the key backup will destroy it locally and on your homeserver. This can't be undone. Are you sure you want to continue? ",
-            ),
-            SizedBox(
+            Text(L10n.of(context).encryptionBackupDisableExplainer),
+            const SizedBox(
               height: 10,
             ),
           ],
@@ -33,16 +32,13 @@ class _ShowConfirmResetDialog extends ConsumerWidget {
           children: [
             OutlinedButton(
               onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-              child: const Text(
-                'No, keep it',
-              ),
+              child: Text(L10n.of(context).encryptionBackupDisableActionKeepIt),
             ),
             const SizedBox(width: 10),
             OutlinedButton(
               onPressed: () => disable(context, ref),
-              child: const Text(
-                'Yes, destroy it',
-              ),
+              child:
+                  Text(L10n.of(context).encryptionBackupDisableActionDestroyIt),
             ),
           ],
         ),
@@ -51,17 +47,21 @@ class _ShowConfirmResetDialog extends ConsumerWidget {
   }
 
   void disable(BuildContext context, WidgetRef ref) async {
-    EasyLoading.show(status: 'Resetting Backup');
+    EasyLoading.show(status: L10n.of(context).encryptionBackupResetting);
     try {
       final manager = ref.read(backupManagerProvider);
       final newKey = await manager.reset();
-      EasyLoading.showToast('Reset successful');
+      // ignore: use_build_context_synchronously
+      EasyLoading.showToast(L10n.of(context).encryptionBackupResettingSuccess);
       if (context.mounted) {
         Navigator.of(context, rootNavigator: true).pop();
         showRecoveryKeyDialog(context, ref, newKey);
       }
-    } catch (e) {
-      EasyLoading.showToast('Failed to disable: $e');
+    } catch (error) {
+      EasyLoading.showToast(
+        // ignore: use_build_context_synchronously
+        L10n.of(context).encryptionBackupResettingFailed(error),
+      );
     }
   }
 }

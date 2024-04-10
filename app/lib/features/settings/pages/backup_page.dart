@@ -3,6 +3,7 @@ import 'package:acter/features/backups/widgets/backup_state_widget.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class BackupPage extends ConsumerWidget {
   const BackupPage({super.key});
@@ -15,13 +16,13 @@ class BackupPage extends ConsumerWidget {
         appBar: AppBar(
           backgroundColor: const AppBarTheme().backgroundColor,
           elevation: 0.0,
-          title: const Text('Key backup'),
+          title: Text(L10n.of(context).encryptionBackupKeyBackup),
           centerTitle: true,
         ),
-        body: const Column(
+        body: Column(
           children: [
-            Text('Here you configure the Key Backup'),
-            BackupStateWidget(allowDisabling: true),
+            Text(L10n.of(context).encryptionBackupKeyBackupExplainer),
+            const BackupStateWidget(allowDisabling: true),
           ],
         ),
       ),

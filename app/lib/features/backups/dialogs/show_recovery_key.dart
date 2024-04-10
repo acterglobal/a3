@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class _ShowRecoveryDialog extends StatelessWidget {
   final String recoveryKey;
@@ -10,7 +11,7 @@ class _ShowRecoveryDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Your Backup Recover key'),
+      title: Text(L10n.of(context).encryptionBackupRecovery),
       content: Container(
         constraints: const BoxConstraints(
           maxWidth: 500,
@@ -19,9 +20,7 @@ class _ShowRecoveryDialog extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              'Store this Backup Recovery Key securely.',
-            ),
+            Text(L10n.of(context).encryptionBackupRecoveryExplainer),
             const SizedBox(
               height: 10,
             ),
@@ -40,7 +39,8 @@ class _ShowRecoveryDialog extends StatelessWidget {
                       ),
                     );
                     EasyLoading.showToast(
-                      'Recovery Key copied to clipboard',
+                      L10n.of(context)
+                          .encryptionBackupRecoveryCopiedToClipboard,
                       toastPosition: EasyLoadingToastPosition.bottom,
                     );
                   },
@@ -55,9 +55,7 @@ class _ShowRecoveryDialog extends StatelessWidget {
           children: [
             OutlinedButton(
               onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-              child: const Text(
-                'Okay',
-              ),
+              child: Text(L10n.of(context).okay),
             ),
           ],
         ),
@@ -67,7 +65,10 @@ class _ShowRecoveryDialog extends StatelessWidget {
 }
 
 void showRecoveryKeyDialog(
-    BuildContext context, WidgetRef ref, String recoveryKey,) {
+  BuildContext context,
+  WidgetRef ref,
+  String recoveryKey,
+) {
   showDialog(
     context: context,
     builder: (BuildContext ctx) => _ShowRecoveryDialog(recoveryKey),

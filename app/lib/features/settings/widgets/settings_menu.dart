@@ -70,7 +70,7 @@ class SettingsMenu extends ConsumerWidget {
         ),
         _settingMenuSection(
           context: context,
-          sectionTitle: 'Security & Privacy',
+          sectionTitle: L10n.of(context).securityAndPrivacy,
           children: [
             MenuItemWidget(
               iconData: Atlas.key_monitor_thin,
@@ -85,8 +85,8 @@ class SettingsMenu extends ConsumerWidget {
             MenuItemWidget(
               iconData: Atlas.key_website_thin,
               iconColor: colorSelected(Routes.settingBackup),
-              title: 'Key Backup',
-              subTitle: 'Manage the key backup',
+              title: L10n.of(context).settingsKeyBackUpTitle,
+              subTitle: L10n.of(context).settingsKeyBackUpDesc,
               titleStyles: titleStylesSelected(Routes.settingBackup),
               onTap: () => shouldGoNotNamed
                   ? context.goNamed(Routes.settingBackup.name)
@@ -131,8 +131,8 @@ class SettingsMenu extends ConsumerWidget {
             MenuItemWidget(
               iconData: Atlas.language_translation,
               iconColor: colorSelected(Routes.settingLanguage),
-              title: 'Language',
-              subTitle: 'Change app language',
+              title: L10n.of(context).language,
+              subTitle: L10n.of(context).changeAppLanguage,
               titleStyles: titleStylesSelected(Routes.settingLanguage),
               onTap: () => shouldGoNotNamed
                   ? context.goNamed(Routes.settingLanguage.name)
