@@ -24,6 +24,11 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     let kyra_sync = kyra.start_sync();
     kyra_sync.await_has_synced_history().await?;
 
+    for invited in kyra.invited_rooms().iter() {
+        info!(" - accepting {:?}", invited.room_id());
+        invited.join().await?;
+    }
+
     let kyra_convo = kyra
         .convo(room_id.to_string())
         .await
@@ -31,12 +36,6 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     let kyra_timeline = kyra_convo.timeline_stream();
     let kyra_stream = kyra_timeline.messages_stream();
     pin_mut!(kyra_stream);
-
-    kyra_stream.next().await;
-    for invited in kyra.invited_rooms().iter() {
-        info!(" - accepting {:?}", invited.room_id());
-        invited.join().await?;
-    }
 
     // sisko sends the formatted text message to kyra
     let draft = sisko.text_markdown_draft("**Hello**".to_string());
