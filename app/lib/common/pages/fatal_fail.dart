@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stack_trace/stack_trace.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class FatalFailPage extends ConsumerStatefulWidget {
   final String error;
@@ -52,45 +53,38 @@ class _FatalFailPageState extends ConsumerState<FatalFailPage> {
                 const Text(
                   'Something went terribly wrong:',
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(widget.error),
-                    IconButton(
-                      onPressed: () {
-                        Clipboard.setData(
-                          ClipboardData(
-                            text: '${widget.error}\n$stack',
-                          ),
-                        );
-                        customMsgSnackbar(
-                          context,
-                          'Error & Stacktrace copied to clipboard',
-                        );
-                      },
-                      icon: const Icon(
-                        Icons.copy_all_outlined,
+                Text(widget.error),
+                TextButton.icon(
+                  onPressed: () {
+                    Clipboard.setData(
+                      ClipboardData(
+                        text: '${widget.error}\n$stack',
                       ),
-                    ),
-                  ],
+                    );
+                    customMsgSnackbar(
+                      context,
+                      'Error & Stacktrace copied to clipboard',
+                    );
+                  },
+                  icon: const Icon(
+                    Icons.copy_all_outlined,
+                  ),
+                  label: const Text('Copy to clipboard'),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          showStack = !showStack;
-                        });
-                      },
-                      icon: Icon(
-                        showStack
-                            ? Icons.toggle_off_outlined
-                            : Icons.toggle_on_outlined,
-                      ),
-                    ),
-                    const Text('Stacktrace'),
-                  ],
+                TextButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      showStack = !showStack;
+                    });
+                  },
+                  icon: Icon(
+                    showStack
+                        ? Icons.toggle_off_outlined
+                        : Icons.toggle_on_outlined,
+                  ),
+                  label: showStack
+                      ? const Text('Hide Stacktrace')
+                      : const Text('Show Stacktrace'),
                 ),
               ],
             ),
@@ -114,8 +108,8 @@ class _FatalFailPageState extends ConsumerState<FatalFailPage> {
                 ),
                 OutlinedButton.icon(
                   icon: const Icon(Atlas.bug_clipboard_thin),
-                  label: const Text('Report bug'),
-                  onPressed: () => context.goNamed(Routes.bugReport.name),
+                  label: Text(L10n.of(context).reportBug),
+                  onPressed: () => context.pushNamed(Routes.bugReport.name),
                 ),
               ],
             ),
