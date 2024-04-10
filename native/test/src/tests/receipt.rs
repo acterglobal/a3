@@ -23,8 +23,6 @@ async fn sisko_detects_kyra_read() -> Result<()> {
     let sisko_stream = sisko_timeline.messages_stream();
     pin_mut!(sisko_stream);
 
-    info!("1");
-
     let kyra_sync = kyra.start_sync();
     kyra_sync.await_has_synced_history().await?;
     let mut kyra_stream = Box::pin(kyra.sync_stream(Default::default()).await);
@@ -34,12 +32,8 @@ async fn sisko_detects_kyra_read() -> Result<()> {
         invited.join().await?;
     }
 
-    info!("2");
-
     let draft = sisko.text_plain_draft("Hi, everyone".to_string());
     sisko_timeline.send_message(Box::new(draft)).await?;
-
-    info!("3");
 
     // text msg may reach via reset action or set action
     let mut i = 30;
@@ -84,8 +78,6 @@ async fn sisko_detects_kyra_read() -> Result<()> {
     info!("loop finished");
     let received = received.context("Even after 30 seconds, text msg not received")?;
 
-    info!("4 - {:?}", received);
-
     let kyra_convo = kyra
         .convo(room_id.to_string())
         .await
@@ -98,8 +90,6 @@ async fn sisko_detects_kyra_read() -> Result<()> {
             received.to_string(),
         )
         .await?;
-
-    info!("5");
 
     let mut event_rx = sisko
         .receipt_event_rx()
