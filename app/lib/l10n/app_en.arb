@@ -961,6 +961,7 @@
   "settings": "Settings",
   "@settings": {},
   "share": "Share",
+  "shareFailed": "Sharing failed: {error}",
   "@share": {},
   "sharedCalendarAndEvents": "Shared Calendar and events",
   "@sharedCalendarAndEvents": {},

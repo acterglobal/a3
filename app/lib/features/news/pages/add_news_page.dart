@@ -237,8 +237,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
                   loading: () =>
                       const SizedBox(width: 300, child: EventItemSkeleton()),
                   error: (e, s) => Center(
-                    child:
-                        Text(L10n.of(context).failedToLoadEvent(e)),
+                    child: Text(L10n.of(context).failedToLoadEvent(e)),
                   ),
                 ),
         ],

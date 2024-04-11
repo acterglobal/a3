@@ -23,6 +23,9 @@ import 'package:go_router/go_router.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:logging/logging.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:path/path.dart' show join;
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 final _log = Logger('a3::event::details');
 
@@ -356,9 +359,42 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             actionName: L10n.of(context).maybe,
             isSelected: rsvp.single == RsvpStatusTag.Maybe,
           ),
+          _buildVerticalDivider(),
+          _buildShareEventActionItem(context),
         ],
       ),
     );
+  }
+
+  Widget _buildShareEventActionItem(BuildContext context) {
+    return _buildEventRsvpActionItem(
+      key: EventsKeys.eventShareAction,
+      onTap: () => onShareEvent(context),
+      iconData: Icons.share,
+      actionName: L10n.of(context).share,
+      isSelected: false,
+    );
+  }
+
+  Future<void> onShareEvent(BuildContext context) async {
+    try {
+      final event =
+          await ref.read(calendarEventProvider(widget.calendarId).future);
+      final tempDir = await getTemporaryDirectory();
+      final filename = event.title().replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_');
+      final icalPath = join(tempDir.path, '$filename.ical');
+      event.icalForSharing(icalPath);
+
+      await Share.shareXFiles([
+        XFile(
+          icalPath,
+          mimeType: 'text/calendar',
+        ),
+      ]);
+    } catch (error, stack) {
+      _log.severe('Creating iCal Share Event failed:', error, stack);
+      EasyLoading.showError(L10n.of(context).shareFailed(error));
+    }
   }
 
   Widget _buildEventRsvpActionItem({
