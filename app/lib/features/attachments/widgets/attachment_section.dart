@@ -15,6 +15,10 @@ import 'package:skeletonizer/skeletonizer.dart';
 final _log = Logger('a3::common::attachments');
 
 class AttachmentSectionWidget extends ConsumerWidget {
+  static const attachmentsKey = Key('attachments');
+  static const redactBtnKey = Key('attachments-redact-btn');
+  static const addAttachmentBtnKey = Key('attachments-add-btn');
+  static const confirmRedactKey = Key('attachments-confirm-redact');
   final Future<AttachmentsManager> manager;
 
   const AttachmentSectionWidget({
@@ -25,8 +29,10 @@ class AttachmentSectionWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(attachmentsManagerProvider(manager)).when(
-          data: (manager) =>
-              _FoundAttachmentSectionWidget(attachmentManager: manager),
+          data: (manager) => FoundAttachmentSectionWidget(
+            attachmentManager: manager,
+            key: attachmentsKey,
+          ),
           error: (e, st) => onError(context, e),
           loading: () => loading(context),
         );
@@ -51,16 +57,13 @@ class AttachmentSectionWidget extends ConsumerWidget {
   }
 }
 
-/// Attachment Section Widget
-class _FoundAttachmentSectionWidget extends ConsumerWidget {
-  static const redactBtnKey = Key('attachments-redact-btn');
-  static const addAttachmentBtnKey = Key('attachments-add-btn');
-  static const confirmRedactKey = Key('attachments-confirm-redact');
-
+/// Attachment Section Widget, only exposed for integration testing.
+class FoundAttachmentSectionWidget extends ConsumerWidget {
   final AttachmentsManager attachmentManager;
 
-  const _FoundAttachmentSectionWidget({
+  const FoundAttachmentSectionWidget({
     required this.attachmentManager,
+    super.key,
   });
 
   @override
@@ -135,7 +138,7 @@ class _FoundAttachmentSectionWidget extends ConsumerWidget {
           child: Visibility(
             visible: canEdit,
             child: IconButton(
-              key: redactBtnKey,
+              key: AttachmentSectionWidget.redactBtnKey,
               onPressed: () => showRedactionWidget(
                 context,
                 eventId,
@@ -204,7 +207,7 @@ class _FoundAttachmentSectionWidget extends ConsumerWidget {
                     ),
                     const SizedBox(width: 10),
                     ElevatedButton(
-                      key: confirmRedactKey,
+                      key: AttachmentSectionWidget.confirmRedactKey,
                       onPressed: () {
                         Navigator.of(context).pop();
                         _handleRedactAttachment(
@@ -255,7 +258,7 @@ class _FoundAttachmentSectionWidget extends ConsumerWidget {
     final iconColor = Theme.of(context).colorScheme.secondary;
     final iconTextStyle = Theme.of(context).textTheme.labelLarge;
     return InkWell(
-      key: _FoundAttachmentSectionWidget.addAttachmentBtnKey,
+      key: AttachmentSectionWidget.addAttachmentBtnKey,
       onTap: () => showAttachmentSelection(context, manager),
       child: Container(
         height: 100,
