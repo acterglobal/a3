@@ -102,13 +102,7 @@ class _PinListItemConsumerState extends ConsumerState<PinListItem> {
 
   // handler for gesture interaction on pin
   Future<void> onTap(BuildContext context) async {
-    final bool isLink = widget.pin.isLink();
-    if (isLink) {
-      final target = widget.pin.url()!;
-      await openLink(target, context);
-    } else {
       await openItem(context);
-    }
   }
 
   @override
@@ -141,7 +135,6 @@ class _PinListItemConsumerState extends ConsumerState<PinListItem> {
     return InkWell(
       key: Key(widget.pin.eventIdStr()),
       onTap: () => onTap(context),
-      onLongPress: () => openItem(context),
       child: Card(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
