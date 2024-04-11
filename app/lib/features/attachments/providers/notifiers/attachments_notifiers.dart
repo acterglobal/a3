@@ -9,22 +9,23 @@ import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::common::attachments');
 
-class AttachmentsManagerNotifier
-    extends FamilyNotifier<AttachmentsManager, AttachmentsManager> {
+class AttachmentsManagerNotifier extends AutoDisposeFamilyAsyncNotifier<
+    AttachmentsManager, Future<AttachmentsManager>> {
   late Stream<void> _listener;
   late StreamSubscription<void> _poller;
 
   @override
-  AttachmentsManager build(AttachmentsManager arg) {
-    _listener = arg.subscribeStream(); // keep it resident in memory
+  FutureOr<AttachmentsManager> build(Future<AttachmentsManager> arg) async {
+    final manager = await arg;
+    _listener = manager.subscribeStream(); // keep it resident in memory
     _poller = _listener.listen(
       (e) async {
         _log.info('attempting to reload');
-        final newManager = await arg.reload();
+        final newManager = await manager.reload();
         _log.info(
           'manager updated. attachments: ${newManager.attachmentsCount()}',
         );
-        state = newManager;
+        state = AsyncValue.data(newManager);
       },
       onError: (e, stack) {
         _log.severe('stream errored.', e, stack);
@@ -34,7 +35,7 @@ class AttachmentsManagerNotifier
       },
     );
     ref.onDispose(() => _poller.cancel());
-    return arg;
+    return manager;
   }
 }
 

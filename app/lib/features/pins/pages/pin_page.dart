@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
-import 'package:acter/common/widgets/attachments/attachment_section.dart';
+import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
@@ -179,7 +179,7 @@ class PinPage extends ConsumerWidget {
                 children: <Widget>[
                   PinItem(acterPin),
                   const SizedBox(height: 20),
-                  _buildAttachmentBody(acterPin),
+                  AttachmentSectionWidget(manager: acterPin.attachments()),
                   const SizedBox(height: 20),
                   CommentsSection(manager: acterPin.comments()),
                 ],
@@ -192,48 +192,6 @@ class PinPage extends ConsumerWidget {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildAttachmentBody(ActerPin pin) {
-    var canPostAttachment = false;
-    var canRedact = false;
-
-    return Consumer(
-      builder: (context, ref, child) {
-        final spaceId = pin.roomIdStr();
-        final asyncManager = ref.watch(pinAttachmentManagerProvider(pin));
-        final membership = ref.watch(roomMembershipProvider(spaceId));
-        if (membership.valueOrNull != null) {
-          final memb = membership.requireValue!;
-          if (memb.canString('CanPostPin')) {
-            canPostAttachment = true;
-          }
-          if (memb.canString('CanRedactOwn') &&
-              memb.userId().toString() == pin.sender().toString()) {
-            canRedact = true;
-          }
-        }
-
-        return asyncManager.when(
-          data: (manager) {
-            return AttachmentSectionWidget(
-              key: PinPage.pinAttachmentsKey,
-              attachmentManager: manager,
-              canPostAttachment: canPostAttachment,
-              canRedact: canRedact,
-            );
-          },
-          error: (err, st) =>
-              Text(L10n.of(context).errorLoadingAttachments(err)),
-          loading: () => const Skeletonizer(
-            child: SizedBox(
-              height: 100,
-              width: 100,
-            ),
-          ),
-        );
-      },
     );
   }
 

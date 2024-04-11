@@ -35,9 +35,7 @@ class Dashboard extends ConsumerWidget {
       children.add(const MyTasksSection(limit: 5));
     }
 
-    if (isActive(LabsFeature.events)) {
-      children.add(const MyEventsSection(limit: 5));
-    }
+    children.add(const MyEventsSection(limit: 5));
 
     if (children.isEmpty) {
       children.add(const SliverToBoxAdapter(child: MySpacesSection()));

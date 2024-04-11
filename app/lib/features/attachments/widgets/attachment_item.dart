@@ -1,7 +1,7 @@
-import 'package:acter/common/widgets/attachments/attachment_container.dart';
-import 'package:acter/common/widgets/attachments/views/file_view.dart';
-import 'package:acter/common/widgets/attachments/views/image_view.dart';
-import 'package:acter/common/widgets/attachments/views/video_view.dart';
+import 'package:acter/features/attachments/widgets/attachment_container.dart';
+import 'package:acter/features/attachments/widgets/views/file_view.dart';
+import 'package:acter/features/attachments/widgets/views/image_view.dart';
+import 'package:acter/features/attachments/widgets/views/video_view.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Attachment;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
