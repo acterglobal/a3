@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:acter/common/notifications/android.dart';
 import 'package:acter/common/notifications/util.dart';
+import 'package:acter/common/providers/app_state_provider.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
@@ -271,7 +272,10 @@ bool handleMessageTap(Map<String?, Object?> data) {
     final uri = data['payload'] as String?;
     if (uri != null) {
       _log.info('Uri found $uri');
-      rootNavKey.currentContext!.push(uri);
+      if (!isCurrentRoute(uri)) {
+        _log.info('Different page, routing');
+        rootNavKey.currentContext!.push(uri);
+      }
       return true;
     }
 
@@ -319,9 +323,20 @@ Future<bool> handleMessage(
   _log.info('Received msg $roomId: $eventId');
   try {
     final instance = await ActerSdk.instance;
-    final notif = await instance.getNotificationFor(deviceId, roomId, eventId);
+    final notification =
+        await instance.getNotificationFor(deviceId, roomId, eventId);
     _log.info('got a notification');
-    await _showNotification(notif);
+
+    // we ignore if we are in foreground and looking at that URL
+    if (isCurrentRoute(notification.targetUrl()) &&
+        // ignore: use_build_context_synchronously
+        rootNavKey.currentContext!.read(isAppInForeground)) {
+      _log.info(
+        'Ignoring notification: user is looking at this screen already',
+      );
+      return false;
+    }
+    await _showNotification(notification);
     return true;
   } catch (e, s) {
     _log.severe('Parsing Notification failed', e, s);
@@ -332,16 +347,12 @@ Future<bool> handleMessage(
 Future<void> _showNotification(
   NotificationItem notification,
 ) async {
-  String pushStyle = notification.pushStyle();
-
-  _log.info('notification style: $pushStyle');
   if (Platform.isAndroid) {
     return await showNotificationOnAndroid(notification);
   }
   // fallback for non-android
   String? body;
   String title = notification.title();
-  String? payload = notification.targetUrl();
   List<DarwinNotificationAttachment> attachments = [];
 
   final msg = notification.body();
@@ -370,7 +381,7 @@ Future<void> _showNotification(
     title,
     body,
     notificationDetails,
-    payload: payload,
+    payload: notification.targetUrl(),
   );
 }
 

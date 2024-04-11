@@ -1,8 +1,9 @@
 import 'dart:io';
 
 import 'package:acter/common/notifications/notifications.dart';
+import 'package:acter/common/utils/utils.dart';
+import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter/router/router.dart';
-import 'package:go_router/go_router.dart';
 
 final isOnSupportedPlatform =
     Platform.isAndroid || Platform.isIOS; // || Platform.isMacOS;
@@ -30,7 +31,6 @@ Future<void> cancelInThread(String threadId) async {
 }
 
 bool isCurrentRoute(String uri) {
-  final router = GoRouter.of(rootNavKey.currentContext!);
-  final currentUri = router.routeInformationProvider.value.uri;
-  return currentUri.path == uri;
+  final currentUri = rootNavKey.currentContext!.read(currentRoutingLocation);
+  return currentUri == uri;
 }
