@@ -12,6 +12,18 @@ async fn onboarding_is_created() -> Result<()> {
     let (mut user, room_id) = random_user_with_random_space("onboarding").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = user.clone();
+    let target_id = room_id.clone();
+    Retry::spawn(retry_strategy, move || {
+        let client = fetcher_client.clone();
+        let room_id = target_id.clone();
+        async move { client.space(room_id.to_string()).await }
+    })
+    .await?;
+
     let space = user.space(room_id.to_string()).await?;
 
     assert_eq!(
