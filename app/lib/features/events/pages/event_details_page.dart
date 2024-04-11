@@ -209,6 +209,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           _buildEventDataSet(calendarEvent),
           const SizedBox(height: 10),
           _buildEventDescription(calendarEvent),
+          const SizedBox(height: 10),
+          _buildEventActions(calendarEvent),
           const SizedBox(height: 40),
           AttachmentSectionWidget(manager: calendarEvent.attachments()),
           const SizedBox(height: 40),
@@ -359,27 +361,33 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             actionName: L10n.of(context).maybe,
             isSelected: rsvp.single == RsvpStatusTag.Maybe,
           ),
-          _buildVerticalDivider(),
-          _buildShareEventActionItem(context),
         ],
       ),
     );
   }
 
-  Widget _buildShareEventActionItem(BuildContext context) {
-    return _buildEventRsvpActionItem(
-      key: EventsKeys.eventShareAction,
-      onTap: () => onShareEvent(context),
-      iconData: Icons.share,
-      actionName: L10n.of(context).share,
-      isSelected: false,
+  Widget _buildEventActions(CalendarEvent calendarEvent) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 15.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          InkWell(
+            onTap: () => onShareEvent(calendarEvent),
+            child: Chip(
+              backgroundColor: Colors.transparent,
+              padding: const EdgeInsets.symmetric(horizontal: 5.0),
+              avatar: const Icon(Icons.share),
+              label: Text(L10n.of(context).shareIcal),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Future<void> onShareEvent(BuildContext context) async {
+  Future<void> onShareEvent(CalendarEvent event) async {
     try {
-      final event =
-          await ref.read(calendarEventProvider(widget.calendarId).future);
       final tempDir = await getTemporaryDirectory();
       final filename = event.title().replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_');
       final icalPath = join(tempDir.path, '$filename.ical');
