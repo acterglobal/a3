@@ -3,6 +3,8 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/md_editor_with_preview.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/user_chip.dart';
+import 'package:acter/features/attachments/widgets/attachment_section.dart';
+import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/tasks/widgets/due_chip.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -84,6 +86,11 @@ class TaskInfo extends ConsumerWidget {
               ),
               buildAssignees(context, ref),
               TaskBody(task: task),
+              const SizedBox(height: 20),
+              AttachmentSectionWidget(manager: task.attachments()),
+              const SizedBox(height: 20),
+              CommentsSection(manager: task.comments()),
+              const SizedBox(height: 20),
             ],
           ),
         ),

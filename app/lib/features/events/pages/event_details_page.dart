@@ -5,6 +5,8 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/report_content.dart';
+import 'package:acter/features/attachments/widgets/attachment_section.dart';
+import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/events/model/keys.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/skeletons/event_details_skeleton_widget.dart';
@@ -204,6 +206,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           _buildEventDataSet(calendarEvent),
           const SizedBox(height: 10),
           _buildEventDescription(calendarEvent),
+          const SizedBox(height: 40),
+          AttachmentSectionWidget(manager: calendarEvent.attachments()),
+          const SizedBox(height: 40),
+          CommentsSection(manager: calendarEvent.comments()),
           const SizedBox(height: 40),
         ],
       ),

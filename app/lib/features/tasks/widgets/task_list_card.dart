@@ -1,5 +1,7 @@
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/render_html.dart';
+import 'package:acter/features/attachments/widgets/attachment_section.dart';
+import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/tasks/providers/tasks.dart';
 import 'package:acter/features/tasks/widgets/task_entry.dart';
@@ -16,6 +18,7 @@ class TaskListCard extends ConsumerStatefulWidget {
   final bool showSpace;
   final bool showTitle;
   final bool showDescription;
+  final bool showAttachmentsAndComments;
 
   const TaskListCard({
     super.key,
@@ -23,6 +26,7 @@ class TaskListCard extends ConsumerStatefulWidget {
     this.showSpace = true,
     this.showTitle = true,
     this.showDescription = false,
+    this.showAttachmentsAndComments = false,
   });
 
   @override
@@ -163,6 +167,13 @@ class _TaskListCardState extends ConsumerState<TaskListCard> {
                     Text(L10n.of(context).errorLoadingTasks(error)),
                 loading: () => Text(L10n.of(context).loading),
               ),
+              if (widget.showAttachmentsAndComments) ...[
+                const SizedBox(height: 20),
+                AttachmentSectionWidget(manager: taskList.attachments()),
+                const SizedBox(height: 20),
+                CommentsSection(manager: taskList.comments()),
+                const SizedBox(height: 20),
+              ],
             ],
           ),
         ),

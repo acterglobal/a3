@@ -229,6 +229,12 @@ impl CalendarEvent {
         let event_id = self.inner.event_id().to_owned();
         crate::CommentsManager::new(client, room, event_id).await
     }
+    pub async fn attachments(&self) -> Result<crate::AttachmentsManager> {
+        let client = self.client.clone();
+        let room = self.room.clone();
+        let event_id = self.inner.event_id().to_owned();
+        crate::AttachmentsManager::new(client, room, event_id).await
+    }
 
     pub async fn rsvps(&self) -> Result<crate::RsvpManager> {
         let client = self.client.clone();
