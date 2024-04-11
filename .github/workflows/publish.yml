@@ -778,9 +778,16 @@ jobs:
       - uses: actions/checkout@v2
         with:
           token: ${{ secrets.PAT }}
+
       - uses: actions/download-artifact@v3
         with:
           name: Changelog
+
+      - name: Configure git
+        run: | # make sure we have the tags and all
+          git fetch --prune --unshallow --tags
+          git config --global user.name 'Sari'
+          git config --global user.email 'acter-sari@users.noreply.github.com'
 
       - name: "Generate docs"
         run: |
@@ -792,10 +799,6 @@ jobs:
           echo "" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
           cat CHANGELOG.md >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
 
-      - name: Configure git
-        run: |
-          git config --global user.name 'Sari'
-          git config --global user.email 'acter-sari@users.noreply.github.com'
 
       - name: Clear old docs
         run: |
@@ -821,7 +824,6 @@ jobs:
           name: Acter ${{ needs.tags.outputs.tag }}
           tag_name: v${{ needs.tags.outputs.tag }}
           body_path: CHANGELOG.md
-          prerelease: true
       # publish this full release now
       - uses: eregon/publish-release@v1
         env:
