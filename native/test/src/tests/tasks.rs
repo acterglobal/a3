@@ -182,7 +182,7 @@ async fn task_smoketests() -> Result<()> {
     Retry::spawn(retry_strategy.clone(), || async {
         if task_list_listener.is_empty() {
             bail!("all still empty");
-        };
+        }
         Ok(())
     })
     .await?;
@@ -208,7 +208,7 @@ async fn task_smoketests() -> Result<()> {
     Retry::spawn(retry_strategy.clone(), || async {
         if task_list_listener.is_empty() {
             bail!("all still empty");
-        };
+        }
         Ok(())
     })
     .await?;
@@ -235,7 +235,7 @@ async fn task_smoketests() -> Result<()> {
     Retry::spawn(retry_strategy.clone(), || async {
         if task_1_updater.is_empty() {
             bail!("all still empty");
-        };
+        }
         Ok(())
     })
     .await?;
@@ -258,7 +258,7 @@ async fn task_smoketests() -> Result<()> {
     Retry::spawn(retry_strategy.clone(), || async {
         if task_list_listener.is_empty() {
             bail!("all still empty");
-        };
+        }
         Ok(())
     })
     .await?;
@@ -335,7 +335,7 @@ async fn task_lists_comments_smoketests() -> Result<()> {
     Retry::spawn(retry_strategy.clone(), || async {
         if comments_listener.is_empty() {
             bail!("all still empty");
-        };
+        }
         Ok(())
     })
     .await?;
@@ -410,7 +410,7 @@ async fn task_comment_smoketests() -> Result<()> {
     Retry::spawn(retry_strategy.clone(), || async {
         if task_list_listener.is_empty() {
             bail!("all still empty");
-        };
+        }
         Ok(())
     })
     .await?;
@@ -440,7 +440,7 @@ async fn task_comment_smoketests() -> Result<()> {
     Retry::spawn(retry_strategy.clone(), || async {
         if comments_listener.is_empty() {
             bail!("all still empty");
-        };
+        }
         Ok(())
     })
     .await?;

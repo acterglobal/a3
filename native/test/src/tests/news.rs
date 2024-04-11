@@ -78,9 +78,8 @@ async fn news_smoketest() -> Result<()> {
         async move {
             if client.latest_news_entries(10).await?.len() != 3 {
                 bail!("not all news found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
@@ -137,9 +136,8 @@ async fn news_plain_text_test() -> Result<()> {
         async move {
             if inner_space.latest_news_entries(1).await?.len() != 1 {
                 bail!("news not found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
@@ -202,9 +200,8 @@ async fn news_slide_color_test() -> Result<()> {
         async move {
             if inner_space.latest_news_entries(1).await?.len() != 1 {
                 bail!("news not found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
@@ -259,9 +256,8 @@ async fn news_markdown_text_test() -> Result<()> {
         async move {
             if inner_space.latest_news_entries(1).await?.len() != 1 {
                 bail!("news not found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
@@ -333,9 +329,8 @@ async fn news_jpg_image_with_text_test() -> Result<()> {
         async move {
             if inner_space.latest_news_entries(1).await?.len() != 1 {
                 bail!("news not found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
@@ -402,9 +397,8 @@ async fn news_png_image_with_text_test() -> Result<()> {
         async move {
             if inner_space.latest_news_entries(1).await?.len() != 1 {
                 bail!("news not found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
@@ -483,9 +477,8 @@ async fn news_multiple_slide_test() -> Result<()> {
         async move {
             if inner_space.latest_news_entries(1).await?.len() != 1 {
                 bail!("news not found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
@@ -556,9 +549,8 @@ async fn news_like_reaction_test() -> Result<()> {
         async move {
             if inner_space.latest_news_entries(1).await?.len() != 1 {
                 bail!("news not found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
