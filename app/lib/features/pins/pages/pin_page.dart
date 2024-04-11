@@ -19,7 +19,6 @@ class PinPage extends ConsumerWidget {
   static const actionMenuKey = Key('pin-action-menu');
   static const editBtnKey = Key('pin-edit-btn');
   static const titleFieldKey = Key('edit-pin-title-field');
-  static const pinAttachmentsKey = Key('pin-attachments');
 
   final String pinId;
 
