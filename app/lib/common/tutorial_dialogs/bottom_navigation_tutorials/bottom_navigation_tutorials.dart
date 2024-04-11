@@ -15,7 +15,7 @@ final jumpToKey = GlobalKey();
 
 const bottomNavigationPrefKey = 'bottomNavigationPrefKey';
 
-Future<void> onSkip() async {
+Future<void> setBottomNavigationTutorialsAsViewed() async {
   final prefs = await sharedPrefs();
   if (prefs.getBool(bottomNavigationPrefKey) ?? true) {
     await prefs.setBool(bottomNavigationPrefKey, false);
@@ -34,12 +34,12 @@ void bottomNavigationTutorials({required BuildContext context}) async {
     showTutorials(
       context: context,
       onFinish: () {
-        onSkip();
+        setBottomNavigationTutorialsAsViewed();
         showCreateOrJoinSpaceTutorials(context);
       },
-      onClickTarget: (targetFocus) => onSkip(),
+      onClickTarget: (targetFocus) => setBottomNavigationTutorialsAsViewed(),
       onSkip: () {
-        onSkip();
+        setBottomNavigationTutorialsAsViewed();
         showCreateOrJoinSpaceTutorials(context);
         return true;
       },

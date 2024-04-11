@@ -84,7 +84,7 @@ class MySpacesSection extends ConsumerWidget {
 }
 
 class _NoSpacesWidget extends ConsumerStatefulWidget {
-  const _NoSpacesWidget({super.key});
+  const _NoSpacesWidget();
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _NoSpacesWidgetState();

@@ -10,7 +10,7 @@ final joinExistingSpaceKey = GlobalKey();
 
 const createOrJoinSpacePrefKey = 'createOrJoinSpacePrefKey';
 
-Future<void> onSkip() async {
+Future<void> setCreateOrJoinSpaceTutorialAsViewed() async {
   final prefs = await sharedPrefs();
   if (prefs.getBool(createOrJoinSpacePrefKey) ?? true) {
     await prefs.setBool(createOrJoinSpacePrefKey, false);
@@ -24,10 +24,10 @@ Future<void> createOrJoinSpaceTutorials({required BuildContext context}) async {
   if (context.mounted && isShow) {
     showTutorials(
       context: context,
-      onFinish: onSkip,
-      onClickTarget: (targetFocus) => onSkip(),
+      onFinish: setCreateOrJoinSpaceTutorialAsViewed,
+      onClickTarget: (targetFocus) => setCreateOrJoinSpaceTutorialAsViewed(),
       onSkip: () {
-        onSkip();
+        setCreateOrJoinSpaceTutorialAsViewed();
         return true;
       },
       targets: [

@@ -9,7 +9,7 @@ final spaceOverviewKey = GlobalKey();
 
 const spaceOverviewPrefKey = 'spaceOverviewPrefKey';
 
-Future<void> onSkip() async {
+Future<void> setSpaceOverviewTutorialsAsViewed() async {
   final prefs = await sharedPrefs();
   if (prefs.getBool(spaceOverviewPrefKey) ?? true) {
     await prefs.setBool(spaceOverviewPrefKey, false);
@@ -23,10 +23,10 @@ void spaceOverviewTutorials({required BuildContext context}) async {
   if (context.mounted && isShow) {
     showTutorials(
       context: context,
-      onFinish: onSkip,
-      onClickTarget: (targetFocus) => onSkip(),
+      onFinish: setSpaceOverviewTutorialsAsViewed,
+      onClickTarget: (targetFocus) => setSpaceOverviewTutorialsAsViewed(),
       onSkip: () {
-        onSkip();
+        setSpaceOverviewTutorialsAsViewed();
         return true;
       },
       targets: [
