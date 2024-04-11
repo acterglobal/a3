@@ -454,7 +454,7 @@ impl AttachmentsManager {
             .stats()
             .user_attachments
             .into_iter()
-            .any(|inner| inner.to_string() == attachment_id);
+            .any(|inner| inner == attachment_id);
 
         if !has_entry {
             bail!("attachment doesn't exist");
