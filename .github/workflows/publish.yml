@@ -475,7 +475,7 @@ jobs:
 ##       ##       ##     ##    ##    ##        ##     ## ##   ##  
 ##       ######## ##     ##    ##    ##        ##     ## ##    ## 
 
-  build-flatpak:
+  deploy-flatpak:
     environment: release
     name: Build flatpak
     runs-on: ubuntu-latest
@@ -485,8 +485,14 @@ jobs:
     needs:
       - tags
       - build
+      - changelog
     steps:
       - uses: actions/checkout@v2
+
+      # add the previously added build
+      - uses: actions/download-artifact@v3
+        with:
+          name: Changelog
 
       # add the previously added build
       - uses: actions/download-artifact@v3
@@ -497,6 +503,10 @@ jobs:
         run: |
           mkdir -p app/flatpak/build
           tar -xvf *.tar.bz2 -C app/flatpak/build/
+
+          # add the version info
+          bash app/flatpak/add_release_info.sh ${{ needs.tags.outputs.tag }}
+
           cd app/flatpak
           # for whatever reason git submodules complains otherwise
           git config --global --add safe.directory /__w/a3/a3
@@ -510,17 +520,6 @@ jobs:
           gpg_private_key: ${{ secrets.GPG_KEY }}
           passphrase: ${{ secrets.GPG_KEY_PASSPHRASE }}
           trust_level: 5
-      - name: List GPG keys
-        run: gpg -K
-
-      - name: "debug info"
-        run: |
-            echo "--- root"
-            ls -ltas .
-            echo "---- app"
-            ls -ltas app
-            echo "----  app/flatpak/build"
-            ls -ltas app/flatpak/build
 
       - name: Build .flatpak
         uses: andyholmes/flatter@main
@@ -532,7 +531,6 @@ jobs:
               app/flatpak/global.acter.a3.yml
           flatpak-builder-args: |
               --default-branch=stable
-        # FIXME: how to only create deltas and not overwrite the entire thing every time?
 
       # need to a add some metadata to the repo:
       - name: Add repo metadata
@@ -551,6 +549,14 @@ jobs:
           repository-name: acterglobal/a3-flatpak
 
 
+  publish-flatpak-bundle:
+    environment: release
+    name: Publish flatpak bundle
+    runs-on: ubuntu-latest
+    needs:
+      - tags
+      - deploy-flatpak
+    steps:
       # add the previously added flatpak build to release
       - uses: actions/download-artifact@v3
         with:
@@ -671,7 +677,6 @@ jobs:
  ##  ##     ##       ##    ######### ##        ##              ##    ##    ##     ## ##   ##   ##       
  ##  ##     ## ##    ##    ##     ## ##        ##        ##    ##    ##    ##     ## ##    ##  ##       
 ####  #######   ######     ##     ## ##        ##         ######     ##     #######  ##     ## ######## 
-
 
 
   apple-store-ios:
@@ -798,7 +803,6 @@ jobs:
       - tags
       - build
       - changelog
-      - build-flatpak
     steps:
       - uses: actions/checkout@v2
         with:
@@ -824,11 +828,15 @@ jobs:
           echo "" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
           cat CHANGELOG.md >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
 
-
       - name: Clear old docs
         run: |
           git rm .changes/*.md
           git commit -m "Clearing .changes for v${{ needs.tags.outputs.tag }}"
+
+      - name: "Update flatpack version"
+        run : |
+          bash app/flatpak/add_release_info.sh ${{ needs.tags.outputs.tag }}
+          git add app/flatpak/global.acter.a3.metainfo_versions.xml
 
       - name: Tag for release
         run: |

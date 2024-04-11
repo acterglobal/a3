@@ -37,6 +37,10 @@ desktopFileDir=/app/share/applications
 mkdir -p $desktopFileDir
 cp -r $projectId.desktop $desktopFileDir/
 
+# generate the appstream metainfo file
+cat $projectId.metainfo_header.xml > $projectId.metainfo.xml
+cat $projectId.metainfo_versions.xml >> $projectId.metainfo.xml
+
 # Install the AppStream metadata file.
 metadataDir=/app/share/metainfo
 mkdir -p $metadataDir
