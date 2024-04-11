@@ -16,6 +16,9 @@ projectName=Acter
 projectId=global.acter.a3
 executableName=acter
 
+ls -ltas .
+ls -ltas build/
+ls -ltas /app
 
 # ------------------------------- Build Flatpak ----------------------------- #
 # Copy the app to the Flatpak-based location.
