@@ -487,20 +487,21 @@ jobs:
       - build
     steps:
       - uses: actions/checkout@v2
-      - name: Prepare for flatpack build
-        run: |
-          mkdir -p app/flatpak/build
-          cd app/flatpak
-          # for whatever reason git submodules complains otherwise
-          git config --global --add safe.directory /__w/a3/a3
-          # for libsecret
-          git submodule add -f https://github.com/flathub/shared-modules.git
 
       # add the previously added build
       - uses: actions/download-artifact@v3
         with:
           name: Linux x64
-          path: app/flatpak/build
+
+      - name: Prepare for flatpack build
+        run: |
+          mkdir -p app/flatpak/build
+          tar -xvf *.tar.bz2 -C app/flatpak/build/
+          cd app/flatpak
+          # for whatever reason git submodules complains otherwise
+          git config --global --add safe.directory /__w/a3/a3
+          # for libsecret
+          git submodule add -f https://github.com/flathub/shared-modules.git
 
       - name: Import GPG key
         id: gpg
