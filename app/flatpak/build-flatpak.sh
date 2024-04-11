@@ -16,12 +16,15 @@ projectName=Acter
 projectId=global.acter.a3
 executableName=acter
 
+ls -ltas .
+ls -ltas build/
+ls -ltas /app
 
 # ------------------------------- Build Flatpak ----------------------------- #
 # Copy the app to the Flatpak-based location.
+mkdir -p /app/bin
 cp -r build/ /app/$projectName
 chmod +x /app/$projectName/$executableName
-mkdir -p /app/bin
 ln -s /app/$projectName/$executableName /app/bin/$executableName
 
 # Install the icon.

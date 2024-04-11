@@ -413,7 +413,7 @@ jobs:
         if: ${{ github.event.schedule && failure() }}
         uses: JasonEtco/create-an-issue@v2
         env:
-          GITHUB_TOKEN: ${{ github.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ needs.tags.outputs.tag }}
           NAME: ${{matrix.name}}
           FAILED_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job }}
@@ -487,9 +487,21 @@ jobs:
       - build
     steps:
       - uses: actions/checkout@v2
+
+      # add the previously added build
       - uses: actions/download-artifact@v3
         with:
           name: Linux x64
+
+      - name: Prepare for flatpack build
+        run: |
+          mkdir -p app/flatpak/build
+          tar -xvf *.tar.bz2 -C app/flatpak/build/
+          cd app/flatpak
+          # for whatever reason git submodules complains otherwise
+          git config --global --add safe.directory /__w/a3/a3
+          # for libsecret
+          git submodule add -f https://github.com/flathub/shared-modules.git
 
       - name: Import GPG key
         id: gpg
@@ -501,20 +513,14 @@ jobs:
       - name: List GPG keys
         run: gpg -K
 
-      # - uses: actions/download-artifact@v3
-      #   with:
-      #     name: Linux arm64
-
-      # extract upload
-      - name: Prepare for flatpack build
+      - name: "debug info"
         run: |
-          mkdir -p app/flatpak/build
-          tar -xvf *.tar.bz2 -C app/flatpak/build
-          cd app/flatpak
-          # for whatever reason git submodules complains otherwise
-          git config --global --add safe.directory /__w/a3/a3
-          # for libsecret
-          git submodule add -f https://github.com/flathub/shared-modules.git
+            echo "--- root"
+            ls -ltas .
+            echo "---- app"
+            ls -ltas app
+            echo "----  app/flatpak/build"
+            ls -ltas app/flatpak/build
 
       - name: Build .flatpak
         uses: andyholmes/flatter@main
@@ -526,7 +532,6 @@ jobs:
               app/flatpak/global.acter.a3.yml
           flatpak-builder-args: |
               --default-branch=stable
-              --skip-if-unchanged
         # FIXME: how to only create deltas and not overwrite the entire thing every time?
 
       # need to a add some metadata to the repo:
@@ -544,6 +549,26 @@ jobs:
           folder: ${{ steps.flatpak.outputs.repository }}
           token: ${{ secrets.FLATPAK_PAT }}
           repository-name: acterglobal/a3-flatpak
+
+
+      # add the previously added flatpak build to release
+      - uses: actions/download-artifact@v3
+        with:
+          name: global.acter.a3-x86_64
+
+      - name: Rename flatpak file
+        run: |
+          mv global.acter.a3.flatpak global.acter.a3-x86_64.flatpak
+
+      - name: Add flatpak to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          name: Release ${{ needs.tags.outputs.tag }}
+          tag_name: v${{ needs.tags.outputs.tag }}
+          generate_release_notes: false
+          files: |
+            global.acter.a3-x86_64.flatpak
 
 ##     ##  ######      ######  ########  #######  ########  ######## 
 ###   ### ##    ##    ##    ##    ##    ##     ## ##     ## ##       
@@ -778,9 +803,16 @@ jobs:
       - uses: actions/checkout@v2
         with:
           token: ${{ secrets.PAT }}
+
       - uses: actions/download-artifact@v3
         with:
           name: Changelog
+
+      - name: Configure git
+        run: | # make sure we have the tags and all
+          git fetch --prune --unshallow --tags
+          git config --global user.name 'Sari'
+          git config --global user.email 'acter-sari@users.noreply.github.com'
 
       - name: "Generate docs"
         run: |
@@ -792,10 +824,6 @@ jobs:
           echo "" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
           cat CHANGELOG.md >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
 
-      - name: Configure git
-        run: |
-          git config --global user.name 'Sari'
-          git config --global user.email 'acter-sari@users.noreply.github.com'
 
       - name: Clear old docs
         run: |
@@ -821,7 +849,6 @@ jobs:
           name: Acter ${{ needs.tags.outputs.tag }}
           tag_name: v${{ needs.tags.outputs.tag }}
           body_path: CHANGELOG.md
-          prerelease: true
       # publish this full release now
       - uses: eregon/publish-release@v1
         env:
