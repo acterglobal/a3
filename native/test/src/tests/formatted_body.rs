@@ -74,7 +74,9 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
                         .value()
                         .expect("diff pushback action should have valid value");
                     info!("diff pushback - {:?}", value);
-                    if let Some(event_id) = match_room_msg(&value, "<p><strong>Hello</strong></p>\n") {
+                    if let Some(event_id) =
+                        match_room_msg(&value, "<p><strong>Hello</strong></p>\n")
+                    {
                         received = Some(event_id);
                     }
                 }
@@ -84,7 +86,9 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
                         .expect("diff reset action should have valid values");
                     info!("diff reset - {:?}", values);
                     for value in values.iter() {
-                        if let Some(event_id) = match_room_msg(value, "<p><strong>Hello</strong></p>\n") {
+                        if let Some(event_id) =
+                            match_room_msg(value, "<p><strong>Hello</strong></p>\n")
+                        {
                             received = Some(event_id);
                             break;
                         }
