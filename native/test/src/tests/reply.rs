@@ -112,8 +112,7 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
         let timeline_stream = fetcher_timeline.clone();
         let received = received_event_id.clone();
         async move {
-            let found = timeline_stream.find_item_by_event_id(received).await?;
-            if !found {
+            if timeline_stream.get_message(received.to_string()).await.is_err() {
                 bail!("kyra couldn't find received msg by event id");
             } else {
                 Ok(())
