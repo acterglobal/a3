@@ -103,6 +103,17 @@ async fn sisko_detects_kyra_read() -> Result<()> {
     info!("loop finished");
     let received = received.context("Even after 30 seconds, text msg not received")?;
 
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_timeline = kyra_timeline.clone();
+    let target_id = received.clone();
+    Retry::spawn(retry_strategy, move || {
+        let timeline = fetcher_timeline.clone();
+        let received = target_id.clone();
+        async move { timeline.get_message(received.to_string()).await }
+    })
+    .await?;
+
     kyra_timeline
         .send_single_receipt(
             "Read".to_string(), // will test only Read, because ReadPrivate not reached

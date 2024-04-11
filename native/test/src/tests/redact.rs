@@ -78,6 +78,17 @@ async fn message_redaction() -> Result<()> {
     }
     let received = received.context("Even after 30 seconds, text msg not received")?;
 
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_timeline = timeline.clone();
+    let target_id = received.clone();
+    Retry::spawn(retry_strategy, move || {
+        let timeline = fetcher_timeline.clone();
+        let received = target_id.clone();
+        async move { timeline.get_message(received.to_string()).await }
+    })
+    .await?;
+
     let redact_id = convo
         .redact_message(
             received.clone().to_string(),
@@ -87,6 +98,11 @@ async fn message_redaction() -> Result<()> {
         )
         .await?;
 
+    // timeline reorders events and doesn't assign redaction as separate event
+    // it is impossible to get redaction event by event id on timeline
+    // so we don't use retry-loop about redact_id
+
+    // but it is possible to get redaction event by event id on convo
     let ev = convo.event(&redact_id).await?;
     let event_content = ev.event.deserialize_as::<RoomRedactionEvent>()?;
     let original = event_content

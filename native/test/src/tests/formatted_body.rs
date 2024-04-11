@@ -1,5 +1,5 @@
 use acter::{api::RoomMessage, ruma_common::OwnedEventId};
-use anyhow::Result;
+use anyhow::{Context, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
 use tokio::time::sleep;
@@ -63,7 +63,7 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
 
     // text msg may reach via pushback action or reset action
     let mut i = 30;
-    let mut received = false;
+    let mut received = None;
     while i > 0 {
         info!("stream loop - {i}");
         if let Some(diff) = kyra_stream.next().now_or_never().flatten() {
@@ -74,8 +74,8 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
                         .value()
                         .expect("diff pushback action should have valid value");
                     info!("diff pushback - {:?}", value);
-                    if match_room_msg(&value, "<p><strong>Hello</strong></p>\n").is_some() {
-                        received = true;
+                    if let Some(event_id) = match_room_msg(&value, "<p><strong>Hello</strong></p>\n") {
+                        received = Some(event_id);
                     }
                 }
                 "Reset" => {
@@ -84,8 +84,8 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
                         .expect("diff reset action should have valid values");
                     info!("diff reset - {:?}", values);
                     for value in values.iter() {
-                        if match_room_msg(value, "<p><strong>Hello</strong></p>\n").is_some() {
-                            received = true;
+                        if let Some(event_id) = match_room_msg(value, "<p><strong>Hello</strong></p>\n") {
+                            received = Some(event_id);
                             break;
                         }
                     }
@@ -93,7 +93,7 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
                 _ => {}
             }
             // yay
-            if received {
+            if received.is_some() {
                 break;
             }
         }
@@ -102,7 +102,18 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
         sleep(Duration::from_secs(1)).await;
     }
     info!("loop finished");
-    assert!(received, "Even after 30 seconds, text msg not received");
+    let received = received.context("Even after 30 seconds, text msg not received")?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_timeline = kyra_timeline.clone();
+    let target_id = received.clone();
+    Retry::spawn(retry_strategy, move || {
+        let timeline = fetcher_timeline.clone();
+        let received = target_id.clone();
+        async move { timeline.get_message(received.to_string()).await }
+    })
+    .await?;
 
     Ok(())
 }

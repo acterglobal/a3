@@ -84,6 +84,17 @@ async fn edit_text_msg() -> Result<()> {
     info!("loop finished");
     let sent_event_id = sent_event_id.context("Even after 30 seconds, text msg not received")?;
 
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_timeline = timeline.clone();
+    let target_id = sent_event_id.clone();
+    Retry::spawn(retry_strategy, move || {
+        let timeline = fetcher_timeline.clone();
+        let event_id = target_id.clone();
+        async move { timeline.get_message(event_id.to_string()).await }
+    })
+    .await?;
+
     let draft = user.text_plain_draft("This is message edition".to_string());
     timeline
         .edit_message(sent_event_id.to_string(), Box::new(draft))
@@ -217,6 +228,17 @@ async fn edit_image_msg() -> Result<()> {
         sleep(Duration::from_secs(1)).await;
     }
     let sent_event_id = sent_event_id.context("Even after 30 seconds, image msg not received")?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_timeline = timeline.clone();
+    let target_id = sent_event_id.clone();
+    Retry::spawn(retry_strategy, move || {
+        let timeline = fetcher_timeline.clone();
+        let event_id = target_id.clone();
+        async move { timeline.get_message(event_id.to_string()).await }
+    })
+    .await?;
 
     let bytes = include_bytes!("./fixtures/PNG_transparency_demonstration_1.png");
     let mut tmp_png = NamedTempFile::new()?;

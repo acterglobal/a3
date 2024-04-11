@@ -130,6 +130,17 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     info!("loop finished");
     let kyra_received = received.context("Even after 30 seconds, text msg not received")?;
 
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_timeline = kyra_timeline.clone();
+    let target_id = kyra_received.clone();
+    Retry::spawn(retry_strategy, move || {
+        let timeline = fetcher_timeline.clone();
+        let received = target_id.clone();
+        async move { timeline.get_message(received.to_string()).await }
+    })
+    .await?;
+
     // text msg may reach via reset action or set action
     i = 30;
     received = None;
@@ -172,6 +183,17 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     }
     info!("loop finished");
     let worf_received = received.context("Even after 30 seconds, text msg not received")?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_timeline = worf_timeline.clone();
+    let target_id = worf_received.clone();
+    Retry::spawn(retry_strategy, move || {
+        let timeline = fetcher_timeline.clone();
+        let received = target_id.clone();
+        async move { timeline.get_message(received.to_string()).await }
+    })
+    .await?;
 
     kyra_timeline
         .toggle_reaction(kyra_received.to_string(), "👏".to_string())
