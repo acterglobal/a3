@@ -41,6 +41,7 @@ class TaskListPage extends ConsumerWidget {
                   taskList: taskList,
                   showDescription: true,
                   showTitle: false,
+                  showAttachmentsAndComments: true,
                 ),
                 orElse: () => Text(L10n.of(context).loading),
               ),

@@ -1,5 +1,5 @@
 import 'package:acter/common/models/attachment_media_state/attachment_media_state.dart';
-import 'package:acter/common/providers/attachment_providers.dart';
+import 'package:acter/features/attachments/providers/attachment_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Attachment;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';

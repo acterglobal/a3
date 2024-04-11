@@ -1,17 +1,20 @@
 import 'package:acter/common/models/attachment_media_state/attachment_media_state.dart';
-import 'package:acter/common/providers/attachment_providers.dart';
-import 'package:acter/common/widgets/acter_video_player.dart';
-import 'package:acter/common/widgets/video_dialog.dart';
+import 'package:acter/features/attachments/providers/attachment_providers.dart';
+import 'package:acter/common/widgets/image_dialog.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Attachment;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// Video attachment preview
-class VideoView extends ConsumerWidget {
+// Image Attachment preview
+class ImageView extends ConsumerWidget {
   final Attachment attachment;
   final bool? openView;
-  const VideoView({super.key, required this.attachment, this.openView = true});
+  const ImageView({
+    super.key,
+    required this.attachment,
+    this.openView = true,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -19,9 +22,9 @@ class VideoView extends ConsumerWidget {
     if (mediaState.mediaLoadingState.isLoading || mediaState.isDownloading) {
       return loadingIndication(context);
     } else if (mediaState.mediaFile == null) {
-      return videoPlaceholder(context, attachment, mediaState, ref);
+      return imagePlaceholder(context, attachment, mediaState, ref);
     } else {
-      return videoUI(context, mediaState);
+      return imageUI(context, mediaState);
     }
   }
 
@@ -33,7 +36,7 @@ class VideoView extends ConsumerWidget {
     );
   }
 
-  Widget videoPlaceholder(
+  Widget imagePlaceholder(
     BuildContext context,
     Attachment attachment,
     AttachmentMediaState mediaState,
@@ -47,9 +50,9 @@ class VideoView extends ConsumerWidget {
             context: context,
             barrierDismissible: false,
             useRootNavigator: false,
-            builder: (ctx) => VideoDialog(
+            builder: (ctx) => ImageDialog(
               title: msgContent.body(),
-              videoFile: mediaState.mediaFile!,
+              imageFile: mediaState.mediaFile!,
             ),
           );
         } else {
@@ -76,7 +79,7 @@ class VideoView extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Icon(
-                  Icons.video_file,
+                  Icons.image,
                   size: 14,
                 ),
                 const SizedBox(width: 5),
@@ -93,25 +96,50 @@ class VideoView extends ConsumerWidget {
     );
   }
 
-  Widget videoUI(BuildContext context, AttachmentMediaState mediaState) {
-    final msgContent = attachment.msgContent();
+  Widget imageUI(BuildContext context, AttachmentMediaState mediaState) {
     return InkWell(
       onTap: openView!
-          ? () => showAdaptiveDialog(
+          ? () {
+              final msgContent = attachment.msgContent();
+              showAdaptiveDialog(
                 context: context,
                 barrierDismissible: false,
                 useRootNavigator: false,
-                builder: (ctx) => VideoDialog(
+                builder: (ctx) => ImageDialog(
                   title: msgContent.body(),
-                  videoFile: mediaState.mediaFile!,
+                  imageFile: mediaState.mediaFile!,
                 ),
-              )
+              );
+            }
           : null,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(6),
-        child: ActerVideoPlayer(
-          hasPlayerControls: false,
-          videoFile: mediaState.mediaFile!,
+        child: Image.file(
+          mediaState.mediaFile!,
+          frameBuilder: (
+            BuildContext context,
+            Widget child,
+            int? frame,
+            bool wasSynchronouslyLoaded,
+          ) {
+            if (wasSynchronouslyLoaded) {
+              return child;
+            }
+            return AnimatedOpacity(
+              opacity: frame == null ? 0 : 1,
+              duration: const Duration(seconds: 1),
+              curve: Curves.easeOut,
+              child: child,
+            );
+          },
+          errorBuilder: (
+            BuildContext context,
+            Object url,
+            StackTrace? error,
+          ) {
+            return Text('Could not load image due to $error');
+          },
+          fit: BoxFit.cover,
         ),
       ),
     );
