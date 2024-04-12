@@ -1,0 +1,28 @@
+
+    <release version="1.24.3411" date="2024-04-11">
+        <url type="details">https://github.com/acterglobal/a3/releases/tag/v1.24.3402</url>
+        <description>
+        # Changes since 1.24.3405
+- [feat.]: More interactivity comes with Attachments, now image and video attachments are enabled to be viewed in full screen while other files can be shared natively.
+- [fix]: Attachments selection is also now shown on the desktop, allowing you to choose specific file types for upload.
+- Comments & Attachments are available for Tasks, TaskLists and Events
+- The comments lab feature is now on by default. You can still turn it if it bothers you
+        </description>
+    </release>
+    <release version="1.24.3405" date="2024-04-05">
+        <url type="details">https://github.com/acterglobal/a3/releases/tag/v1.24.3405</url>
+        <description>
+        # Changes since v1.24.2328 
+        - [Enhancement] : UI-UX enhancements on user onboarding flow
+        - new labs feature: Pins have comments now (if you activate the labs)
+
+        - You can now delete attachments from pin with the help of minus icon (showing, if having necessary permissions) on attachment item.
+
+        - You can now kick (and ban) any user from a space or chat through the recently introduced member-info-drawer (by clicking on the user avatar almost everywhere).
+
+        - [Enhancement] : Now user can toggle password visibility on login and register account screens
+        - [Enhancement] : UI-UX enhancements on user onboarding flow
+        </description>
+    </release>
+  </releases>
+<component>

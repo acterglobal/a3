@@ -1,6 +1,5 @@
 import 'package:acter/features/attachments/providers/attachment_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/attachments/widgets/attachment_item.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
@@ -102,13 +101,7 @@ class _PinListItemConsumerState extends ConsumerState<PinListItem> {
 
   // handler for gesture interaction on pin
   Future<void> onTap(BuildContext context) async {
-    final bool isLink = widget.pin.isLink();
-    if (isLink) {
-      final target = widget.pin.url()!;
-      await openLink(target, context);
-    } else {
       await openItem(context);
-    }
   }
 
   @override
@@ -141,7 +134,6 @@ class _PinListItemConsumerState extends ConsumerState<PinListItem> {
     return InkWell(
       key: Key(widget.pin.eventIdStr()),
       onTap: () => onTap(context),
-      onLongPress: () => openItem(context),
       child: Card(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
