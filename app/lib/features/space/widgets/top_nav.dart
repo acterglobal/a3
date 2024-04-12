@@ -1,3 +1,4 @@
+import 'package:acter/common/tutorial_dialogs/space_overview_tutorials/space_overview_tutorials.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,6 +32,7 @@ class _TopNavBarState extends ConsumerState<TopNavBar>
   @override
   void initState() {
     super.initState();
+    spaceOverviewTutorials(context: context);
     recentWatchScreenTabStateTestProvider = FutureProvider.autoDispose
         .family<TabsState, BuildContext>((ref, context) async {
       final tabs = await ref.watch(tabsProvider(widget.spaceId).future);
@@ -57,6 +59,7 @@ class _TopNavBarState extends ConsumerState<TopNavBar>
         final tabs = tabState.tabs;
 
         return LayoutBuilder(
+          key: spaceOverviewKey,
           builder: (context, constraints) {
             final useCols = constraints.maxWidth < (150 * tabs.length);
             int minItemWidth = useCols ? 90 : 150;
