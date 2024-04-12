@@ -39,7 +39,6 @@ final chatRoomUriMatcher = RegExp('/chat/.+');
 
 bool shouldReplaceCurrentRoute(String uri) {
   if (!uri.startsWith(chatRoomUriMatcher)) {
-    print('not a chat notification');
     return false;
   }
 
