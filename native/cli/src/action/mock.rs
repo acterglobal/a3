@@ -4,7 +4,7 @@ use acter::{
     Client, CreateSpaceSettingsBuilder,
 };
 use acter_core::models::ActerModel;
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
 use clap::{crate_version, Parser, Subcommand};
 use futures::StreamExt;
 use matrix_sdk::HttpError;
