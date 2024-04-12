@@ -400,6 +400,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       ]);
     } catch (error, stack) {
       _log.severe('Creating iCal Share Event failed:', error, stack);
+      // ignore: use_build_context_synchronously
       EasyLoading.showError(L10n.of(context).shareFailed(error));
     }
   }
