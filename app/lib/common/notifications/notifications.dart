@@ -344,6 +344,16 @@ Future<bool> handleMessage(
   return false;
 }
 
+Future<void> removeNotificationsForRoom(String roomId) async {
+  if (!isOnSupportedPlatform) {
+    return; // nothing for us to do here.
+  }
+  await cancelInThread(roomId);
+  if (Platform.isAndroid) {
+    androidClearNotificationsCache(roomId);
+  }
+}
+
 Future<void> _showNotification(
   NotificationItem notification,
 ) async {

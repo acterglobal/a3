@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:acter/common/notifications/notifications.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/widgets.dart';
@@ -157,6 +158,9 @@ class SelectedChatIdNotifier extends Notifier<String?> {
   }
 
   void select(String? input) {
+    if (input != null) {
+      removeNotificationsForRoom(input);
+    }
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
       state = input;
     });

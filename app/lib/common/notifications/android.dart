@@ -10,6 +10,10 @@ final _log = Logger('a3::notifications::android');
 
 final Map<String, List<Message>> pendingMessage = {};
 
+void androidClearNotificationsCache(String threadId) {
+  pendingMessage.remove(threadId);
+}
+
 Future<ByteArrayAndroidBitmap?> _fetchImage(
   NotificationItem notification,
 ) async {
