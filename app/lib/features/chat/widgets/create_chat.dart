@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:acter/common/dialogs/invite_to_room_dialog.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
@@ -124,14 +125,14 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
         config.addInvitee(userId);
       }
 
-      if (convoName != null) {
+      if (convoName != null && convoName.isNotEmpty) {
         // set the name
-        if (convoName.isNotEmpty) config.setName(convoName);
+        config.setName(convoName);
       }
 
-      if (description != null) {
+      if (description != null && description.isNotEmpty) {
         // and an optional description
-        if (description.isNotEmpty) config.setTopic(description);
+        config.setTopic(description);
       }
 
       final avatarUri = ref.read(_avatarProvider);

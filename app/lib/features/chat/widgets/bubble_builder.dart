@@ -336,8 +336,9 @@ class __EmojiContainerState extends ConsumerState<_EmojiContainer>
         Map<String, dynamic> reactions = {};
         List<String> keys = [];
         final metadata = widget.message.metadata;
-        if (metadata == null) return const SizedBox();
-        if (!metadata.containsKey('reactions')) return const SizedBox();
+        if (metadata == null || !metadata.containsKey('reactions')) {
+          return const SizedBox();
+        }
         reactions = metadata['reactions'];
         keys = reactions.keys.toList();
         return Padding(
