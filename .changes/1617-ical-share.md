@@ -1,0 +1,1 @@
+- You can now share any Event as an iCalendar item with the outside world.

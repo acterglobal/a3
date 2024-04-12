@@ -34,6 +34,7 @@ dependencies = [
  "ffi-gen-macro",
  "futures",
  "futures-signals",
+ "icalendar",
  "indexmap 2.2.5",
  "infer",
  "lazy_static",
@@ -111,6 +112,7 @@ dependencies = [
  "enum_dispatch",
  "env_logger",
  "futures",
+ "icalendar",
  "indexmap 2.2.5",
  "matrix-sdk",
  "matrix-sdk-base",
@@ -2354,6 +2356,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "icalendar"
+version = "0.16.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cd83e81e8a329918d84e49032f8e596f4f079380942d172724cea3599a80807e"
+dependencies = [
+ "chrono",
+ "iso8601",
+ "nom",
+ "uuid 1.6.1",
+]
+
+[[package]]
 name = "ident_case"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2506,6 +2520,15 @@ dependencies = [
  "hermit-abi 0.3.2",
  "rustix",
  "windows-sys 0.48.0",
+]
+
+[[package]]
+name = "iso8601"
+version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "924e5d73ea28f59011fec52a0d12185d496a9b075d360657aed2a5707f701153"
+dependencies = [
+ "nom",
 ]
 
 [[package]]

@@ -10,6 +10,7 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use chrono::DateTime;
 use futures::stream::StreamExt;
+use icalendar::Calendar as iCalendar;
 use matrix_sdk::{room::Room, RoomState};
 use ruma::serde::PartialEqAsRefStr;
 use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};
@@ -274,6 +275,12 @@ impl CalendarEvent {
                 manager.responded_by_me().await
             })
             .await?
+    }
+
+    pub fn ical_for_sharing(&self, file_name: String) -> Result<bool> {
+        let ical_data: String = (&iCalendar::from([self.inner.as_ical_event()])).try_into()?;
+        std::fs::write(file_name, ical_data)?;
+        Ok(true)
     }
 }
 

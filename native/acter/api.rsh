@@ -595,6 +595,9 @@ object CalendarEvent {
 
     /// get the attachments manager
     fn attachments() -> Future<Result<AttachmentsManager>>;
+
+    /// Generate a iCal as a String for sharing with others
+    fn ical_for_sharing(file_name: string) -> Result<bool>;
 }
 
 object CalendarEventUpdateBuilder {

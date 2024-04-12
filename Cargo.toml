@@ -66,6 +66,7 @@ strum = { version = "0.26.1", features = ["derive"] }
 base64ct = "1.6.0"
 derive-getters = "0.3.0"
 derive_builder = "0.20.0"
+icalendar = "0.16.1"
 
 [profile.release]
 panic = "unwind"
