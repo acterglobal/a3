@@ -272,9 +272,18 @@ bool handleMessageTap(Map<String?, Object?> data) {
     final uri = data['payload'] as String?;
     if (uri != null) {
       _log.info('Uri found $uri');
-      if (!isCurrentRoute(uri)) {
+      if (isCurrentRoute(uri)) {
+        // ensure we reload
+        rootNavKey.currentContext!.replace(uri);
+      } else {
         _log.info('Different page, routing');
-        rootNavKey.currentContext!.push(uri);
+        if (shouldReplaceCurrentRoute(uri)) {
+          // this is a chat-room page, replace this to allow for
+          // a smother "back"-navigation story
+          rootNavKey.currentContext!.pushReplacement(uri);
+        } else {
+          rootNavKey.currentContext!.push(uri);
+        }
       }
       return true;
     }

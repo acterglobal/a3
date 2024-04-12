@@ -34,3 +34,15 @@ bool isCurrentRoute(String uri) {
   final currentUri = rootNavKey.currentContext!.read(currentRoutingLocation);
   return currentUri == uri;
 }
+
+final chatRoomUriMatcher = RegExp('/chat/.+');
+
+bool shouldReplaceCurrentRoute(String uri) {
+  if (!uri.startsWith(chatRoomUriMatcher)) {
+    print('not a chat notification');
+    return false;
+  }
+
+  final currentUri = rootNavKey.currentContext!.read(currentRoutingLocation);
+  return currentUri.startsWith(chatRoomUriMatcher);
+}
