@@ -1,5 +1,5 @@
 use acter::{api::RoomMessage, ruma_common::OwnedEventId};
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
 use tokio::time::sleep;
@@ -19,10 +19,18 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
     let sisko_sync = sisko.start_sync();
     sisko_sync.await_has_synced_history().await?;
 
-    let sisko_convo = sisko
-        .convo(room_id.to_string())
-        .await
-        .expect("sisko should belong to convo");
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = sisko.clone();
+    let target_id = room_id.clone();
+    Retry::spawn(retry_strategy, move || {
+        let client = fetcher_client.clone();
+        let room_id = target_id.clone();
+        async move { client.convo(room_id.to_string()).await }
+    })
+    .await?;
+
+    let sisko_convo = sisko.convo(room_id.to_string()).await?;
     let sisko_timeline = sisko_convo.timeline_stream();
     let sisko_stream = sisko_timeline.messages_stream();
     pin_mut!(sisko_stream);
@@ -38,24 +46,15 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_client = kyra.clone();
-    let invited_room_id = room_id.clone();
+    let target_id = room_id.clone();
     Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
-        let invited = invited_room_id.clone();
-        async move {
-            if client.convo(invited.to_string()).await.is_err() {
-                bail!("kyra couldn't find invited room");
-            } else {
-                Ok(())
-            }
-        }
+        let room_id = target_id.clone();
+        async move { client.convo(room_id.to_string()).await }
     })
     .await?;
 
-    let kyra_convo = kyra
-        .convo(room_id.to_string())
-        .await
-        .expect("kyra should belong to convo");
+    let kyra_convo = kyra.convo(room_id.to_string()).await?;
     let kyra_timeline = kyra_convo.timeline_stream();
 
     let draft = sisko.text_plain_draft("Hi, everyone".to_string());
@@ -107,17 +106,11 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_timeline = kyra_timeline.clone();
-    let received_event_id = received.clone();
+    let target_id = received.clone();
     Retry::spawn(retry_strategy, move || {
-        let timeline_stream = fetcher_timeline.clone();
-        let received = received_event_id.clone();
-        async move {
-            if timeline_stream.get_message(received.to_string()).await.is_err() {
-                bail!("kyra couldn't find received msg by event id");
-            } else {
-                Ok(())
-            }
-        }
+        let timeline = fetcher_timeline.clone();
+        let received = target_id.clone();
+        async move { timeline.get_message(received.to_string()).await }
     })
     .await?;
 

@@ -1,4 +1,4 @@
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result};
 use core::time::Duration;
 use tokio::time::sleep;
 use tokio_retry::{
@@ -17,10 +17,18 @@ async fn kyra_detects_sisko_typing() -> Result<()> {
     let sisko_sync = sisko.start_sync();
     sisko_sync.await_has_synced_history().await?;
 
-    let sisko_convo = sisko
-        .convo(room_id.to_string())
-        .await
-        .expect("sisko should belong to convo");
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = sisko.clone();
+    let target_id = room_id.clone();
+    Retry::spawn(retry_strategy, move || {
+        let client = fetcher_client.clone();
+        let room_id = target_id.clone();
+        async move { client.convo(room_id.to_string()).await }
+    })
+    .await?;
+
+    let sisko_convo = sisko.convo(room_id.to_string()).await?;
 
     let kyra_sync = kyra.start_sync();
     kyra_sync.await_has_synced_history().await?;
@@ -33,17 +41,11 @@ async fn kyra_detects_sisko_typing() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_client = kyra.clone();
-    let invited_room_id = room_id.clone();
+    let target_id = room_id.clone();
     Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
-        let invited = invited_room_id.clone();
-        async move {
-            if client.convo(invited.to_string()).await.is_err() {
-                bail!("kyra couldn't find invited room");
-            } else {
-                Ok(())
-            }
-        }
+        let room_id = target_id.clone();
+        async move { client.convo(room_id.to_string()).await }
     })
     .await?;
 

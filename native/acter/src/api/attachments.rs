@@ -465,13 +465,13 @@ impl AttachmentsManager {
             .stats()
             .user_attachments
             .into_iter()
-            .any(|inner| OwnedEventId::to_string(&inner) == attachment_id);
+            .any(|inner| inner == attachment_id);
 
         if !has_entry {
             bail!("attachment doesn't exist");
         }
 
-        let event_id = OwnedEventId::from_str(&attachment_id).expect("invalid event ID");
+        let event_id = EventId::parse(&attachment_id)?;
         let txn_id = txn_id.map(OwnedTransactionId::from);
 
         RUNTIME

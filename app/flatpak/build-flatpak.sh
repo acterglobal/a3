@@ -16,12 +16,15 @@ projectName=Acter
 projectId=global.acter.a3
 executableName=acter
 
+ls -ltas .
+ls -ltas build/
+ls -ltas /app
 
 # ------------------------------- Build Flatpak ----------------------------- #
 # Copy the app to the Flatpak-based location.
+mkdir -p /app/bin
 cp -r build/ /app/$projectName
 chmod +x /app/$projectName/$executableName
-mkdir -p /app/bin
 ln -s /app/$projectName/$executableName /app/bin/$executableName
 
 # Install the icon.
@@ -33,6 +36,10 @@ cp -r acter-logo.svg $iconDir/$projectId.svg
 desktopFileDir=/app/share/applications
 mkdir -p $desktopFileDir
 cp -r $projectId.desktop $desktopFileDir/
+
+# generate the appstream metainfo file
+cat $projectId.metainfo_header.xml > $projectId.metainfo.xml
+cat $projectId.metainfo_versions.xml >> $projectId.metainfo.xml
 
 # Install the AppStream metadata file.
 metadataDir=/app/share/metainfo

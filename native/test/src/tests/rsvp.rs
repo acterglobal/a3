@@ -49,9 +49,8 @@ async fn rsvp_last_status() -> Result<()> {
         async move {
             if client.calendar_events().await?.len() != 3 {
                 bail!("not all calendar_events found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
@@ -73,7 +72,7 @@ async fn rsvp_last_status() -> Result<()> {
     Retry::spawn(retry_strategy.clone(), || async {
         if rsvp_listener.is_empty() {
             bail!("all still empty");
-        };
+        }
         Ok(())
     })
     .await?;
@@ -93,7 +92,7 @@ async fn rsvp_last_status() -> Result<()> {
     Retry::spawn(retry_strategy.clone(), || async {
         if rsvp_listener.is_empty() {
             bail!("all still empty");
-        };
+        }
         Ok(())
     })
     .await?;
@@ -121,9 +120,8 @@ async fn rsvp_my_status() -> Result<()> {
         async move {
             if client.calendar_events().await?.len() != 3 {
                 bail!("not all calendar_events found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
@@ -145,7 +143,7 @@ async fn rsvp_my_status() -> Result<()> {
     Retry::spawn(retry_strategy.clone(), || async {
         if rsvp_listener.is_empty() {
             bail!("all still empty");
-        };
+        }
         Ok(())
     })
     .await?;
@@ -165,7 +163,7 @@ async fn rsvp_my_status() -> Result<()> {
     Retry::spawn(retry_strategy.clone(), || async {
         if rsvp_listener.is_empty() {
             bail!("all still empty");
-        };
+        }
         Ok(())
     })
     .await?;
@@ -198,9 +196,8 @@ async fn rsvp_count_at_status() -> Result<()> {
         async move {
             if client.calendar_events().await?.len() != 3 {
                 bail!("not all calendar_events found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
@@ -222,7 +219,7 @@ async fn rsvp_count_at_status() -> Result<()> {
     Retry::spawn(retry_strategy.clone(), || async {
         if rsvp_listener.is_empty() {
             bail!("all still empty");
-        };
+        }
         Ok(())
     })
     .await?;
@@ -242,7 +239,7 @@ async fn rsvp_count_at_status() -> Result<()> {
     Retry::spawn(retry_strategy.clone(), || async {
         if rsvp_listener.is_empty() {
             bail!("all still empty");
-        };
+        }
         Ok(())
     })
     .await?;
@@ -275,9 +272,8 @@ async fn rsvp_users_at_status() -> Result<()> {
         async move {
             if client.calendar_events().await?.len() != 3 {
                 bail!("not all calendar_events found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
@@ -299,7 +295,7 @@ async fn rsvp_users_at_status() -> Result<()> {
     Retry::spawn(retry_strategy.clone(), || async {
         if rsvp_listener.is_empty() {
             bail!("all still empty");
-        };
+        }
         Ok(())
     })
     .await?;
@@ -319,7 +315,7 @@ async fn rsvp_users_at_status() -> Result<()> {
     Retry::spawn(retry_strategy.clone(), || async {
         if rsvp_listener.is_empty() {
             bail!("all still empty");
-        };
+        }
         Ok(())
     })
     .await?;
