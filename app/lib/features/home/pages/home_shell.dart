@@ -94,20 +94,32 @@ class HomeShellState extends ConsumerState<HomeShell> {
   }
 
   Future<void> initNotifications() async {
-    if (!ref.read(
-      isActiveProvider(LabsFeature.mobilePushNotifications),
-    )) {
-      return;
-    }
-    _log.info('Attempting to ask for push notifications');
-    final client = context.read(alwaysClientProvider);
-    setupPushNotifications(client);
-    return;
+    ref.listenManual(clientProvider, (previous, next) {
+      if (next != null) {
+        if (!ref.read(
+          isActiveProvider(LabsFeature.mobilePushNotifications),
+        )) {
+          return;
+        }
+        _log.info('Attempting to ask for push notifications');
+        setupPushNotifications(next);
+        return;
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     // get platform of context.
+    if (ref.watch(clientProvider) == null) {
+      // at the very startup we might not yet have a client loaded
+      // show a loading spinner meanwhile.
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
     final syncState = ref.watch(syncStateProvider);
     final hasFirstSynced = !syncState.initialSync;
     final errorMsg = syncState.errorMsg;
