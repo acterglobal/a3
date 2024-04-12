@@ -589,6 +589,15 @@ object CalendarEvent {
     fn responded_by_me() -> Future<Result<OptionRsvpStatus>>;
     /// get the user id list who have responded with `Yes` on this event
     fn participants() -> Future<Result<Vec<string>>>;
+
+    /// get the comments manager
+    fn comments() -> Future<Result<CommentsManager>>;
+
+    /// get the attachments manager
+    fn attachments() -> Future<Result<AttachmentsManager>>;
+
+    /// Generate a iCal as a String for sharing with others
+    fn ical_for_sharing(file_name: string) -> Result<bool>;
 }
 
 object CalendarEventUpdateBuilder {
@@ -1355,6 +1364,13 @@ object Attachment {
 
 /// Reference to the attachments section of a particular item
 object AttachmentsManager {
+    /// the room this attachments manager lives in
+    fn room_id_str() -> string;
+
+    /// Whether or not the current user can post, edit and delete
+    /// attachments in this manager
+    fn can_edit_attachments() -> bool;
+
     /// Get the list of attachments (in arrival order)
     fn attachments() -> Future<Result<Vec<Attachment>>>;
 
@@ -1470,6 +1486,9 @@ object Task {
 
     /// get the comments manager for this task
     fn comments() -> Future<Result<CommentsManager>>;
+
+    /// get the attachments manager
+    fn attachments() -> Future<Result<AttachmentsManager>>;
 }
 
 object TaskUpdateBuilder {
@@ -1633,6 +1652,12 @@ object TaskList {
 
     /// the id of the space this TaskList belongs to
     fn space_id_str() -> string;
+
+    /// get the comments manager
+    fn comments() -> Future<Result<CommentsManager>>;
+
+    /// get the attachments manager
+    fn attachments() -> Future<Result<AttachmentsManager>>;
 }
 
 object TaskListDraft {

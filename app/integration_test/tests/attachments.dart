@@ -1,9 +1,8 @@
 import 'dart:typed_data';
 
-import 'package:acter/common/widgets/attachments/attachment_section.dart';
+import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/pins/pages/pin_page.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show AttachmentDraft;
@@ -21,9 +20,10 @@ import 'pins.dart';
 extension ActerAttachments on ConvenientTest {
   Future<AttachmentDraft> imageAttachmentDraft({String? filepath}) async {
     // ensure attachments exists and permissible to post
-    final attachmentsFinder = find.byKey(PinPage.pinAttachmentsKey);
-    final attachmentWidget =
-        attachmentsFinder.evaluate().first.widget as AttachmentSectionWidget;
+    final attachmentsFinder =
+        find.byKey(AttachmentSectionWidget.attachmentsKey);
+    final attachmentWidget = attachmentsFinder.evaluate().first.widget
+        as FoundAttachmentSectionWidget;
     final attachmentsManager = attachmentWidget.attachmentManager;
     await attachmentsFinder.should(findsOneWidget);
     final addAttachmentFinder =
@@ -50,10 +50,11 @@ extension ActerAttachments on ConvenientTest {
 
   Future<AttachmentDraft> videoAttachmentDraft({String? filepath}) async {
     // ensure attachments exists and permissible to post
-    final attachmentsFinder = find.byKey(PinPage.pinAttachmentsKey);
+    final attachmentsFinder =
+        find.byKey(AttachmentSectionWidget.attachmentsKey);
     await attachmentsFinder.should(findsOneWidget);
-    final attachmentWidget =
-        attachmentsFinder.evaluate().first.widget as AttachmentSectionWidget;
+    final attachmentWidget = attachmentsFinder.evaluate().first.widget
+        as FoundAttachmentSectionWidget;
     final attachmentsManager = attachmentWidget.attachmentManager;
     final addAttachmentFinder =
         find.byKey(AttachmentSectionWidget.addAttachmentBtnKey);
@@ -75,10 +76,11 @@ extension ActerAttachments on ConvenientTest {
 
   Future<AttachmentDraft> fileAttachmentDraft({String? filepath}) async {
     // ensure attachments exists and permissible to post
-    final attachmentsFinder = find.byKey(PinPage.pinAttachmentsKey);
+    final attachmentsFinder =
+        find.byKey(AttachmentSectionWidget.attachmentsKey);
     await attachmentsFinder.should(findsOneWidget);
-    final attachmentWidget =
-        attachmentsFinder.evaluate().first.widget as AttachmentSectionWidget;
+    final attachmentWidget = attachmentsFinder.evaluate().first.widget
+        as FoundAttachmentSectionWidget;
     final attachmentsManager = attachmentWidget.attachmentManager;
 
     final addAttachmentFinder =

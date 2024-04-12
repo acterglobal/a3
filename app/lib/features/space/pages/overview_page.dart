@@ -30,7 +30,8 @@ class ActerSpaceChecker extends ConsumerWidget {
     final expCheck = expectation ?? (a) => a != null;
     return appSettings.when(
       data: (data) => expCheck(data) ? child : const SizedBox.shrink(),
-      error: (error, stackTrace) => Text(L10n.of(context).failedToLoadSpace(error)),
+      error: (error, stackTrace) =>
+          Text(L10n.of(context).failedToLoadSpace(error)),
       loading: () => const SizedBox.shrink(),
     );
   }
@@ -46,40 +47,31 @@ class SpaceOverview extends ConsumerWidget {
     // get platform of context.
     return DecoratedBox(
       decoration: const BoxDecoration(gradient: primaryGradient),
-      child: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
-          ),
-          SliverToBoxAdapter(
-            child: AboutCard(spaceId: spaceIdOrAlias),
-          ),
-          SliverToBoxAdapter(
-            child: ActerSpaceChecker(
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
+            AboutCard(spaceId: spaceIdOrAlias),
+            ActerSpaceChecker(
               spaceId: spaceIdOrAlias,
               expectation: (a) => a == null,
               child: NonActerSpaceCard(spaceId: spaceIdOrAlias),
             ),
-          ),
-          SliverToBoxAdapter(
-            child: ActerSpaceChecker(
+            ActerSpaceChecker(
               spaceId: spaceIdOrAlias,
               expectation: (a) => a?.events().active() ?? false,
               child: EventsCard(spaceId: spaceIdOrAlias),
             ),
-          ),
-          SliverToBoxAdapter(
-            child: ActerSpaceChecker(
+            ActerSpaceChecker(
               spaceId: spaceIdOrAlias,
               expectation: (a) => a?.pins().active() ?? false,
               child: LinksCard(spaceId: spaceIdOrAlias),
             ),
-          ),
-          SliverToBoxAdapter(
-            child: ChatsCard(spaceId: spaceIdOrAlias),
-          ),
-          RelatedSpacesCard(spaceId: spaceIdOrAlias),
-        ],
+            ChatsCard(spaceId: spaceIdOrAlias),
+            RelatedSpacesCard(spaceId: spaceIdOrAlias),
+          ],
+        ),
       ),
     );
   }

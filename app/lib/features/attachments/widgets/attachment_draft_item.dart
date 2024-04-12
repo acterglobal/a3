@@ -1,5 +1,5 @@
 import 'package:acter/common/models/types.dart';
-import 'package:acter/common/widgets/attachments/attachment_container.dart';
+import 'package:acter/features/attachments/widgets/attachment_container.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 

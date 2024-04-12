@@ -10,6 +10,7 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use chrono::DateTime;
 use futures::stream::StreamExt;
+use icalendar::Calendar as iCalendar;
 use matrix_sdk::{room::Room, RoomState};
 use ruma::serde::PartialEqAsRefStr;
 use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};
@@ -229,6 +230,12 @@ impl CalendarEvent {
         let event_id = self.inner.event_id().to_owned();
         crate::CommentsManager::new(client, room, event_id).await
     }
+    pub async fn attachments(&self) -> Result<crate::AttachmentsManager> {
+        let client = self.client.clone();
+        let room = self.room.clone();
+        let event_id = self.inner.event_id().to_owned();
+        crate::AttachmentsManager::new(client, room, event_id).await
+    }
 
     pub async fn rsvps(&self) -> Result<crate::RsvpManager> {
         let client = self.client.clone();
@@ -268,6 +275,12 @@ impl CalendarEvent {
                 manager.responded_by_me().await
             })
             .await?
+    }
+
+    pub fn ical_for_sharing(&self, file_name: String) -> Result<bool> {
+        let ical_data: String = (&iCalendar::from([self.inner.as_ical_event()])).try_into()?;
+        std::fs::write(file_name, ical_data)?;
+        Ok(true)
     }
 }
 

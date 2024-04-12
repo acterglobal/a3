@@ -5,6 +5,8 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/report_content.dart';
+import 'package:acter/features/attachments/widgets/attachment_section.dart';
+import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/events/model/keys.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/skeletons/event_details_skeleton_widget.dart';
@@ -21,6 +23,9 @@ import 'package:go_router/go_router.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:logging/logging.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:path/path.dart' show join;
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 final _log = Logger('a3::event::details');
 
@@ -73,7 +78,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     return SliverAppBar(
       expandedHeight: 200.0,
       pinned: true,
-      actions: [_buildActionMenu(calendarEvent)],
+      actions: [
+        _buildShareAction(calendarEvent),
+        _buildActionMenu(calendarEvent),
+      ],
       flexibleSpace: Container(
         padding: const EdgeInsets.only(top: 20),
         decoration: const BoxDecoration(gradient: primaryGradient),
@@ -204,6 +212,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           _buildEventDataSet(calendarEvent),
           const SizedBox(height: 10),
           _buildEventDescription(calendarEvent),
+          const SizedBox(height: 40),
+          AttachmentSectionWidget(manager: calendarEvent.attachments()),
+          const SizedBox(height: 40),
+          CommentsSection(manager: calendarEvent.comments()),
           const SizedBox(height: 40),
         ],
       ),
@@ -353,6 +365,44 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         ],
       ),
     );
+  }
+
+  Widget _buildShareAction(CalendarEvent calendarEvent) {
+    return PopupMenuButton(
+      icon: const Icon(Icons.share),
+      itemBuilder: (ctx) => [
+        PopupMenuItem(
+          onTap: () => onShareEvent(calendarEvent),
+          child: Row(
+            children: <Widget>[
+              const Icon(Icons.share),
+              const SizedBox(width: 10),
+              Text(L10n.of(context).shareIcal),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> onShareEvent(CalendarEvent event) async {
+    try {
+      final tempDir = await getTemporaryDirectory();
+      final filename = event.title().replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_');
+      final icalPath = join(tempDir.path, '$filename.ical');
+      event.icalForSharing(icalPath);
+
+      await Share.shareXFiles([
+        XFile(
+          icalPath,
+          mimeType: 'text/calendar',
+        ),
+      ]);
+    } catch (error, stack) {
+      _log.severe('Creating iCal Share Event failed:', error, stack);
+      // ignore: use_build_context_synchronously
+      EasyLoading.showError(L10n.of(context).shareFailed(error));
+    }
   }
 
   Widget _buildEventRsvpActionItem({

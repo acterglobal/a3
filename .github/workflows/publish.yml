@@ -413,7 +413,7 @@ jobs:
         if: ${{ github.event.schedule && failure() }}
         uses: JasonEtco/create-an-issue@v2
         env:
-          GITHUB_TOKEN: ${{ github.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ needs.tags.outputs.tag }}
           NAME: ${{matrix.name}}
           FAILED_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job }}
@@ -475,7 +475,7 @@ jobs:
 ##       ##       ##     ##    ##    ##        ##     ## ##   ##  
 ##       ######## ##     ##    ##    ##        ##     ## ##    ## 
 
-  build-flatpak:
+  deploy-flatpak:
     environment: release
     name: Build flatpak
     runs-on: ubuntu-latest
@@ -485,11 +485,33 @@ jobs:
     needs:
       - tags
       - build
+      - changelog
     steps:
       - uses: actions/checkout@v2
+
+      # add the previously added build
+      - uses: actions/download-artifact@v3
+        with:
+          name: Changelog
+
+      # add the previously added build
       - uses: actions/download-artifact@v3
         with:
           name: Linux x64
+
+      - name: Prepare for flatpack build
+        run: |
+          mkdir -p app/flatpak/build
+          tar -xvf *.tar.bz2 -C app/flatpak/build/
+
+          # add the version info
+          bash app/flatpak/add_release_info.sh ${{ needs.tags.outputs.tag }}
+
+          cd app/flatpak
+          # for whatever reason git submodules complains otherwise
+          git config --global --add safe.directory /__w/a3/a3
+          # for libsecret
+          git submodule add -f https://github.com/flathub/shared-modules.git
 
       - name: Import GPG key
         id: gpg
@@ -498,23 +520,6 @@ jobs:
           gpg_private_key: ${{ secrets.GPG_KEY }}
           passphrase: ${{ secrets.GPG_KEY_PASSPHRASE }}
           trust_level: 5
-      - name: List GPG keys
-        run: gpg -K
-
-      # - uses: actions/download-artifact@v3
-      #   with:
-      #     name: Linux arm64
-
-      # extract upload
-      - name: Prepare for flatpack build
-        run: |
-          mkdir -p app/flatpak/build
-          tar -xvf *.tar.bz2 -C app/flatpak/build
-          cd app/flatpak
-          # for whatever reason git submodules complains otherwise
-          git config --global --add safe.directory /__w/a3/a3
-          # for libsecret
-          git submodule add -f https://github.com/flathub/shared-modules.git
 
       - name: Build .flatpak
         uses: andyholmes/flatter@main
@@ -526,8 +531,6 @@ jobs:
               app/flatpak/global.acter.a3.yml
           flatpak-builder-args: |
               --default-branch=stable
-              --skip-if-unchanged
-        # FIXME: how to only create deltas and not overwrite the entire thing every time?
 
       # need to a add some metadata to the repo:
       - name: Add repo metadata
@@ -544,6 +547,34 @@ jobs:
           folder: ${{ steps.flatpak.outputs.repository }}
           token: ${{ secrets.FLATPAK_PAT }}
           repository-name: acterglobal/a3-flatpak
+
+
+  publish-flatpak-bundle:
+    environment: release
+    name: Publish flatpak bundle
+    runs-on: ubuntu-latest
+    needs:
+      - tags
+      - deploy-flatpak
+    steps:
+      # add the previously added flatpak build to release
+      - uses: actions/download-artifact@v3
+        with:
+          name: global.acter.a3-x86_64
+
+      - name: Rename flatpak file
+        run: |
+          mv global.acter.a3.flatpak global.acter.a3-x86_64.flatpak
+
+      - name: Add flatpak to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          name: Release ${{ needs.tags.outputs.tag }}
+          tag_name: v${{ needs.tags.outputs.tag }}
+          generate_release_notes: false
+          files: |
+            global.acter.a3-x86_64.flatpak
 
 ##     ##  ######      ######  ########  #######  ########  ######## 
 ###   ### ##    ##    ##    ##    ##    ##     ## ##     ## ##       
@@ -646,7 +677,6 @@ jobs:
  ##  ##     ##       ##    ######### ##        ##              ##    ##    ##     ## ##   ##   ##       
  ##  ##     ## ##    ##    ##     ## ##        ##        ##    ##    ##    ##     ## ##    ##  ##       
 ####  #######   ######     ##     ## ##        ##         ######     ##     #######  ##     ## ######## 
-
 
 
   apple-store-ios:
@@ -773,14 +803,20 @@ jobs:
       - tags
       - build
       - changelog
-      - build-flatpak
     steps:
       - uses: actions/checkout@v2
         with:
           token: ${{ secrets.PAT }}
+
       - uses: actions/download-artifact@v3
         with:
           name: Changelog
+
+      - name: Configure git
+        run: | # make sure we have the tags and all
+          git fetch --prune --unshallow --tags
+          git config --global user.name 'Sari'
+          git config --global user.email 'acter-sari@users.noreply.github.com'
 
       - name: "Generate docs"
         run: |
@@ -792,15 +828,15 @@ jobs:
           echo "" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
           cat CHANGELOG.md >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
 
-      - name: Configure git
-        run: |
-          git config --global user.name 'Sari'
-          git config --global user.email 'acter-sari@users.noreply.github.com'
-
       - name: Clear old docs
         run: |
           git rm .changes/*.md
           git commit -m "Clearing .changes for v${{ needs.tags.outputs.tag }}"
+
+      - name: "Update flatpack version"
+        run : |
+          bash app/flatpak/add_release_info.sh ${{ needs.tags.outputs.tag }}
+          git add app/flatpak/global.acter.a3.metainfo_versions.xml
 
       - name: Tag for release
         run: |
@@ -821,7 +857,6 @@ jobs:
           name: Acter ${{ needs.tags.outputs.tag }}
           tag_name: v${{ needs.tags.outputs.tag }}
           body_path: CHANGELOG.md
-          prerelease: true
       # publish this full release now
       - uses: eregon/publish-release@v1
         env:

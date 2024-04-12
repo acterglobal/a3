@@ -20,6 +20,8 @@ class EventsKeys {
   // Appbar action button
   static const appbarMenuActionBtn = Key('event-appbar-menu-action-btn');
 
+  static const eventShareAction = Key('event-share-event');
+
   // Edit Event
   static const eventEditBtn = Key('event-edit-btn');
 

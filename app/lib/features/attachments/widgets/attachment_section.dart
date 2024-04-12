@@ -1,7 +1,7 @@
 import 'package:acter/common/dialogs/attachment_selection.dart';
-import 'package:acter/common/providers/attachment_providers.dart';
+import 'package:acter/features/attachments/providers/attachment_providers.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:acter/common/widgets/attachments/attachment_item.dart';
+import 'package:acter/features/attachments/widgets/attachment_item.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Attachment, AttachmentsManager;
@@ -14,27 +14,65 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 final _log = Logger('a3::common::attachments');
 
-/// Attachment Section Widget
 class AttachmentSectionWidget extends ConsumerWidget {
+  static const attachmentsKey = Key('attachments');
   static const redactBtnKey = Key('attachments-redact-btn');
   static const addAttachmentBtnKey = Key('attachments-add-btn');
   static const confirmRedactKey = Key('attachments-confirm-redact');
-
-  final AttachmentsManager attachmentManager;
-  final bool? canPostAttachment;
-  final bool? canRedact;
+  final Future<AttachmentsManager> manager;
 
   const AttachmentSectionWidget({
     super.key,
+    required this.manager,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ref.watch(attachmentsManagerProvider(manager)).when(
+          data: (manager) => FoundAttachmentSectionWidget(
+            attachmentManager: manager,
+            key: attachmentsKey,
+          ),
+          error: (e, st) => onError(context, e),
+          loading: () => loading(context),
+        );
+  }
+
+  Widget onError(BuildContext context, Object error) {
+    return Column(
+      children: [
+        Text(L10n.of(context).attachments),
+        Text(L10n.of(context).loadingFailed(error)),
+      ],
+    );
+  }
+
+  Widget loading(BuildContext context) {
+    return const Skeletonizer(
+      child: SizedBox(
+        height: 100,
+        width: 100,
+      ),
+    );
+  }
+}
+
+/// Attachment Section Widget, only exposed for integration testing.
+class FoundAttachmentSectionWidget extends ConsumerWidget {
+  final AttachmentsManager attachmentManager;
+
+  const FoundAttachmentSectionWidget({
     required this.attachmentManager,
-    this.canPostAttachment = false,
-    this.canRedact = false,
+    super.key,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final attachmentTitleTextStyle = Theme.of(context).textTheme.labelLarge;
     final attachments = ref.watch(attachmentsProvider(attachmentManager));
+
+    bool canEdit = attachmentManager.canEditAttachments();
+
     return attachments.when(
       data: (list) {
         return Padding(
@@ -60,9 +98,9 @@ class AttachmentSectionWidget extends ConsumerWidget {
                 runSpacing: 10.0,
                 children: <Widget>[
                   if (list.isNotEmpty)
-                    for (var item in list) _buildAttachmentItem(context, item),
-                  if (canPostAttachment!)
-                    _buildAddAttachment(context, attachmentManager),
+                    for (var item in list)
+                      _buildAttachmentItem(context, item, canEdit),
+                  if (canEdit) _buildAddAttachment(context, attachmentManager),
                 ],
               ),
             ],
@@ -83,6 +121,7 @@ class AttachmentSectionWidget extends ConsumerWidget {
   Widget _buildAttachmentItem(
     BuildContext context,
     Attachment item,
+    bool canEdit,
   ) {
     final eventId = item.attachmentIdStr();
     final roomId = item.roomIdStr();
@@ -97,9 +136,9 @@ class AttachmentSectionWidget extends ConsumerWidget {
           top: -12,
           right: -12,
           child: Visibility(
-            visible: canRedact!,
+            visible: canEdit,
             child: IconButton(
-              key: redactBtnKey,
+              key: AttachmentSectionWidget.redactBtnKey,
               onPressed: () => showRedactionWidget(
                 context,
                 eventId,
@@ -168,7 +207,7 @@ class AttachmentSectionWidget extends ConsumerWidget {
                     ),
                     const SizedBox(width: 10),
                     ElevatedButton(
-                      key: confirmRedactKey,
+                      key: AttachmentSectionWidget.confirmRedactKey,
                       onPressed: () {
                         Navigator.of(context).pop();
                         _handleRedactAttachment(

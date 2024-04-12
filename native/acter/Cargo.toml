@@ -35,6 +35,7 @@ fern = { git = "https://github.com/acterglobal/fern", branch = "rotate", feature
 ffi-gen-macro = { git = "https://github.com/acterglobal/ffi-gen" }
 futures = "0.3.30"
 futures-signals = "0.3.33"
+icalendar = { workspace = true }
 infer = "0.15.0"
 indexmap = { version = "2.2.5", features = ["serde"]}
 lazy_static = "1.4"
