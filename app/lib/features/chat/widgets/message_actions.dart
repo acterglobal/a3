@@ -9,8 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/parser.dart';
 import 'package:logging/logging.dart';
 
@@ -19,6 +19,7 @@ final _log = Logger('a3::chat::message_actions');
 class MessageActions extends ConsumerWidget {
   final String roomId;
   final Convo convo;
+
   const MessageActions({super.key, required this.convo, required this.roomId});
 
   @override
@@ -56,52 +57,27 @@ class MessageActions extends ConsumerWidget {
             pressed: () => ref
                 .read(chatInputProvider(roomId).notifier)
                 .setReplyToMessage(message),
-            text: Text(
-              L10n.of(context).reply,
-            ),
-            icon: const Icon(
-              Icons.reply_rounded,
-              size: 18,
-            ),
+            text: Text(L10n.of(context).reply),
+            icon: const Icon(Icons.reply_rounded, size: 18),
           ),
           if (isTextMessage)
             makeMenuItem(
-              pressed: () {
-                String msg = (message as TextMessage).text.trim();
-                Clipboard.setData(
-                  ClipboardData(
-                    text: msg,
-                  ),
-                );
-                EasyLoading.showToast(
-                  L10n.of(context).messageCopiedToClipboard,
-                  toastPosition: EasyLoadingToastPosition.bottom,
-                );
-                ref.read(chatInputProvider(roomId).notifier).unsetActions();
-              },
+              pressed: () => onCopyMessage(context, ref, message),
               text: Text(L10n.of(context).copyMessage),
-              icon: const Icon(
-                Icons.copy_all_outlined,
-                size: 14,
-              ),
+              icon: const Icon(Icons.copy_all_outlined, size: 14),
             ),
           if (isAuthor)
             makeMenuItem(
               pressed: () => onPressEditMessage(context, ref, roomId, message),
               text: Text(L10n.of(context).edit),
-              icon: const Icon(
-                Atlas.pencil_box_bold,
-                size: 14,
-              ),
+              icon: const Icon(Atlas.pencil_box_bold, size: 14),
             ),
           if (!isAuthor)
             makeMenuItem(
               pressed: () => onReportMessage(context, message, roomId),
               text: Text(
                 L10n.of(context).report,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
-                ),
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
               icon: Icon(
                 Icons.flag_outlined,
@@ -120,9 +96,7 @@ class MessageActions extends ConsumerWidget {
               ),
               text: Text(
                 L10n.of(context).delete,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
-                ),
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
               icon: Icon(
                 Atlas.trash_can_thin,
@@ -155,11 +129,16 @@ class MessageActions extends ConsumerWidget {
     );
   }
 
-  void onReportMessage(
-    BuildContext context,
-    Message message,
-    String roomId,
-  ) {
+  void onCopyMessage(BuildContext context, WidgetRef ref, Message message) {
+    String msg = (message as TextMessage).text.trim();
+    Clipboard.setData(
+      ClipboardData(text: msg),
+    );
+    EasyLoading.showToast(L10n.of(context).messageCopiedToClipboard);
+    ref.read(chatInputProvider(roomId).notifier).unsetActions();
+  }
+
+  void onReportMessage(BuildContext context, Message message, String roomId) {
     showAdaptiveDialog(
       context: context,
       builder: (context) => ReportContentWidget(
@@ -182,15 +161,10 @@ class MessageActions extends ConsumerWidget {
     showAdaptiveDialog(
       context: context,
       builder: (context) => DefaultDialog(
-        title: Text(
-          L10n.of(context).areYouSureYouWantToDeleteThisMessage,
-        ),
+        title: Text(L10n.of(context).areYouSureYouWantToDeleteThisMessage),
         actions: <Widget>[
           OutlinedButton(
-            onPressed: () => Navigator.of(
-              context,
-              rootNavigator: true,
-            ).pop(),
+            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
             child: Text(L10n.of(context).no),
           ),
           ElevatedButton(
@@ -204,22 +178,14 @@ class MessageActions extends ConsumerWidget {
                 );
                 chatInputNotifier.unsetSelectedMessage();
                 if (context.mounted) {
-                  Navigator.of(
-                    context,
-                    rootNavigator: true,
-                  ).pop();
+                  Navigator.of(context, rootNavigator: true).pop();
                 }
               } catch (error, stackTrace) {
                 _log.severe('Redacting message failed', error, stackTrace);
                 if (context.mounted) {
-                  Navigator.of(
-                    context,
-                    rootNavigator: true,
-                  ).pop();
+                  Navigator.of(context, rootNavigator: true).pop();
                 }
-                EasyLoading.showError(
-                  error.toString(),
-                );
+                EasyLoading.showError(error.toString());
               }
             },
             child: Text(L10n.of(context).yes),

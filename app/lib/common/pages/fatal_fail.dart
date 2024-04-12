@@ -1,18 +1,19 @@
 import 'package:acter/common/dialogs/nuke_confirmation.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stack_trace/stack_trace.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class FatalFailPage extends ConsumerStatefulWidget {
   final String error;
   final String trace;
+
   const FatalFailPage({
     super.key,
     required this.error,
@@ -37,7 +38,9 @@ class _FatalFailPageState extends ConsumerState<FatalFailPage> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height / 4;
     return Scaffold(
-      appBar: AppBar(title: const Text('Fatal Error')),
+      appBar: AppBar(
+        title: Text(L10n.of(context).fatalError),
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Column(
@@ -50,41 +53,23 @@ class _FatalFailPageState extends ConsumerState<FatalFailPage> {
                   width: height,
                   child: SvgPicture.asset('assets/images/genericError.svg'),
                 ),
-                const Text(
-                  'Something went terribly wrong:',
-                ),
+                Text(L10n.of(context).somethingWrong),
                 Text(widget.error),
                 TextButton.icon(
-                  onPressed: () {
-                    Clipboard.setData(
-                      ClipboardData(
-                        text: '${widget.error}\n$stack',
-                      ),
-                    );
-                    customMsgSnackbar(
-                      context,
-                      'Error & Stacktrace copied to clipboard',
-                    );
-                  },
-                  icon: const Icon(
-                    Icons.copy_all_outlined,
-                  ),
-                  label: const Text('Copy to clipboard'),
+                  onPressed: onCopy,
+                  icon: const Icon(Icons.copy_all_outlined),
+                  label: Text(L10n.of(context).copyToClipboard),
                 ),
                 TextButton.icon(
-                  onPressed: () {
-                    setState(() {
-                      showStack = !showStack;
-                    });
-                  },
+                  onPressed: onStacktraceToggle,
                   icon: Icon(
                     showStack
                         ? Icons.toggle_off_outlined
                         : Icons.toggle_on_outlined,
                   ),
                   label: showStack
-                      ? const Text('Hide Stacktrace')
-                      : const Text('Show Stacktrace'),
+                      ? Text(L10n.of(context).hideStacktrace)
+                      : Text(L10n.of(context).showStacktrace),
                 ),
               ],
             ),
@@ -98,12 +83,11 @@ class _FatalFailPageState extends ConsumerState<FatalFailPage> {
                     color: Theme.of(context).colorScheme.error,
                   ),
                   label: Text(
-                    'Nuke local data',
+                    L10n.of(context).nukeLocalData,
                     style:
                         TextStyle(color: Theme.of(context).colorScheme.error),
                   ),
-                  onPressed: () =>
-                      customMsgSnackbar(context, 'long press to activate'),
+                  onPressed: onNukePressed,
                   onLongPress: () => nukeConfirmationDialog(context, ref),
                 ),
                 OutlinedButton.icon(
@@ -117,5 +101,20 @@ class _FatalFailPageState extends ConsumerState<FatalFailPage> {
         ),
       ),
     );
+  }
+
+  void onCopy() {
+    Clipboard.setData(
+      ClipboardData(text: '${widget.error}\n$stack'),
+    );
+    EasyLoading.showToast(L10n.of(context).errorCopiedToClipboard);
+  }
+
+  void onStacktraceToggle() {
+    setState(() => showStack = !showStack);
+  }
+
+  void onNukePressed() {
+    EasyLoading.showToast(L10n.of(context).longPressToActivate);
   }
 }

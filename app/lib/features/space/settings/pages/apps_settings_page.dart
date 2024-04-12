@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
@@ -8,8 +7,13 @@ import 'package:acter/features/space/settings/widgets/space_settings_menu.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:settings_ui/settings_ui.dart';
+
+final _log = Logger('a3::space::settings::app_settings');
 
 String powerLevelName(int? pw) {
   if (pw == null) {
@@ -55,6 +59,7 @@ final spaceAppSettingsProvider = FutureProvider.autoDispose
 class SpaceAppsSettingsPage extends ConsumerWidget {
   static const tasksSwitch = Key('space-settings-tasks');
   final String spaceId;
+
   const SpaceAppsSettingsPage({super.key, required this.spaceId});
 
   @override
@@ -64,9 +69,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
     bool isActive(f) => provider.isActive(f);
 
     return WithSidebar(
-      sidebar: SpaceSettingsMenu(
-        spaceId: spaceId,
-      ),
+      sidebar: SpaceSettingsMenu(spaceId: spaceId),
       child: spaceSettingsWatcher.when(
         data: (appSettingsAndMembership) {
           final appSettings = appSettingsAndMembership.settings;
@@ -81,10 +84,9 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
             defaultDesc = 'default [everyone has $usersDefaultPw]';
           }
           final space = appSettingsAndMembership.space;
-          final canEdit = appSettingsAndMembership.member != null
-              ? appSettingsAndMembership.member!
-                  .canString('CanChangeAppSettings')
-              : false;
+          final canEdit = appSettingsAndMembership.member
+                  ?.canString('CanChangeAppSettings') ==
+              true;
 
           final news = appSettings.news();
           final events = appSettings.events();
@@ -110,30 +112,13 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                     ),
                     trailing:
                         currentPw != null ? Text(pwText) : Text(defaultDesc),
-                    onPressed: (context) async {
-                      final newPowerLevel = await showDialog<int?>(
-                        context: context,
-                        builder: (BuildContext context) => ChangePowerLevel(
-                          featureName: 'Updates',
-                          currentPowerLevelName: maxPowerLevel == 100
-                              ? powerLevelName(currentPw)
-                              : 'Custom',
-                          currentPowerLevel: currentPw,
-                        ),
-                      );
-                      if (newPowerLevel != currentPw) {
-                        await space.updateFeaturePowerLevels(
-                          powerLevels.newsKey(),
-                          newPowerLevel,
-                        );
-                        if (context.mounted) {
-                          customMsgSnackbar(
-                            context,
-                            'Power level update for updates submitted',
-                          );
-                        }
-                      }
-                    },
+                    onPressed: (context) async => await onNewsLevelChange(
+                      context,
+                      maxPowerLevel,
+                      currentPw,
+                      space,
+                      powerLevels,
+                    ),
                   ),
                   SettingsTile.switchTile(
                     title: const Text('Comments on Updates'),
@@ -163,30 +148,13 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                     ),
                     trailing:
                         currentPw != null ? Text(pwText) : Text(defaultDesc),
-                    onPressed: (context) async {
-                      final newPowerLevel = await showDialog<int?>(
-                        context: context,
-                        builder: (BuildContext context) => ChangePowerLevel(
-                          featureName: 'Pin',
-                          currentPowerLevelName: maxPowerLevel == 100
-                              ? powerLevelName(currentPw)
-                              : 'Custom',
-                          currentPowerLevel: currentPw,
-                        ),
-                      );
-                      if (newPowerLevel != currentPw) {
-                        await space.updateFeaturePowerLevels(
-                          powerLevels.pinsKey(),
-                          newPowerLevel,
-                        );
-                        if (context.mounted) {
-                          customMsgSnackbar(
-                            context,
-                            'Power level update for Pins submitted',
-                          );
-                        }
-                      }
-                    },
+                    onPressed: (context) async => await onPinLevelChange(
+                      context,
+                      maxPowerLevel,
+                      currentPw,
+                      space,
+                      powerLevels,
+                    ),
                   ),
                   SettingsTile.switchTile(
                     title: const Text('Comments on Pins'),
@@ -216,30 +184,14 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                     ),
                     trailing:
                         currentPw != null ? Text(pwText) : Text(defaultDesc),
-                    onPressed: (context) async {
-                      final newPowerLevel = await showDialog<int?>(
-                        context: context,
-                        builder: (BuildContext context) => ChangePowerLevel(
-                          featureName: 'Calendar Events',
-                          currentPowerLevelName: maxPowerLevel == 100
-                              ? powerLevelName(currentPw)
-                              : 'Custom',
-                          currentPowerLevel: currentPw,
-                        ),
-                      );
-                      if (newPowerLevel != currentPw) {
-                        await space.updateFeaturePowerLevels(
-                          powerLevels.eventsKey(),
-                          newPowerLevel,
-                        );
-                        if (context.mounted) {
-                          customMsgSnackbar(
-                            context,
-                            'Power level update for calendar events submitted',
-                          );
-                        }
-                      }
-                    },
+                    onPressed: (context) async =>
+                        await onCalendarEventLevelChange(
+                      context,
+                      maxPowerLevel,
+                      currentPw,
+                      space,
+                      powerLevels,
+                    ),
                   ),
                   SettingsTile(
                     enabled: false,
@@ -267,17 +219,15 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                 title: const Text('Tasks'),
                 key: tasksSwitch,
                 enabled: canEdit,
-                description: const Text(
-                  'ToDo-Lists & Tasks',
-                ),
+                description: const Text('ToDo-Lists & Tasks'),
                 initialValue: tasks.active(),
-                onToggle: (newVal) async {
-                  final updated = tasks.updater();
-                  updated.active(newVal);
-                  final builder = appSettings.updateBuilder();
-                  builder.tasks(updated.build());
-                  await space.updateAppSettings(builder);
-                },
+                onToggle: (newVal) async => await onTaskToggle(
+                  context,
+                  tasks,
+                  newVal,
+                  appSettings,
+                  space,
+                ),
               ),
             );
             if (tasks.active()) {
@@ -302,30 +252,13 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                       trailing: taskListCurrentPw != null
                           ? Text(pwTextTL)
                           : Text(defaultDesc),
-                      onPressed: (context) async {
-                        final newPowerLevel = await showDialog<int?>(
-                          context: context,
-                          builder: (BuildContext context) => ChangePowerLevel(
-                            featureName: 'Task Lists',
-                            currentPowerLevelName: maxPowerLevel == 100
-                                ? powerLevelName(taskListCurrentPw)
-                                : 'Custom',
-                            currentPowerLevel: taskListCurrentPw,
-                          ),
-                        );
-                        if (newPowerLevel != taskListCurrentPw) {
-                          await space.updateFeaturePowerLevels(
-                            powerLevels.taskListsKey(),
-                            newPowerLevel,
-                          );
-                          if (context.mounted) {
-                            customMsgSnackbar(
-                              context,
-                              'Power level update for task lists submitted',
-                            );
-                          }
-                        }
-                      },
+                      onPressed: (context) async => await onTaskListLevelChange(
+                        context,
+                        maxPowerLevel,
+                        taskListCurrentPw,
+                        space,
+                        powerLevels,
+                      ),
                     ),
                     SettingsTile(
                       enabled: canEdit,
@@ -336,30 +269,13 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                       trailing: tasksCurrentPw != null
                           ? Text(pwTextT)
                           : Text(defaultDesc),
-                      onPressed: (context) async {
-                        final newPowerLevel = await showDialog<int?>(
-                          context: context,
-                          builder: (BuildContext context) => ChangePowerLevel(
-                            featureName: 'Tasks',
-                            currentPowerLevelName: maxPowerLevel == 100
-                                ? powerLevelName(tasksCurrentPw)
-                                : 'Custom',
-                            currentPowerLevel: tasksCurrentPw,
-                          ),
-                        );
-                        if (newPowerLevel != tasksCurrentPw) {
-                          await space.updateFeaturePowerLevels(
-                            powerLevels.tasksKey(),
-                            newPowerLevel,
-                          );
-                          if (context.mounted) {
-                            customMsgSnackbar(
-                              context,
-                              'Power level update for tasks submitted',
-                            );
-                          }
-                        }
-                      },
+                      onPressed: (context) async => await onTaskLevelChange(
+                        context,
+                        maxPowerLevel,
+                        tasksCurrentPw,
+                        space,
+                        powerLevels,
+                      ),
                     ),
                     SettingsTile.switchTile(
                       title: const Text('Comments'),
@@ -384,47 +300,41 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                     SettingsTile.switchTile(
                       title: const Text('Updates'),
                       enabled: canEdit,
-                      description: const Text(
-                        'Post space-wide updates',
-                      ),
+                      description: const Text('Post space-wide updates'),
                       initialValue: news.active(),
-                      onToggle: (newVal) async {
-                        final updated = news.updater();
-                        updated.active(newVal);
-                        final builder = appSettings.updateBuilder();
-                        builder.news(updated.build());
-                        await space.updateAppSettings(builder);
-                      },
+                      onToggle: (newVal) async => await onNewsToggle(
+                        context,
+                        news,
+                        newVal,
+                        appSettings,
+                        space,
+                      ),
                     ),
                     SettingsTile.switchTile(
                       title: const Text('Pins'),
                       enabled: canEdit,
-                      description: const Text(
-                        'Pin important information',
-                      ),
+                      description: const Text('Pin important information'),
                       initialValue: pins.active(),
-                      onToggle: (newVal) async {
-                        final updated = pins.updater();
-                        updated.active(newVal);
-                        final builder = appSettings.updateBuilder();
-                        builder.pins(updated.build());
-                        await space.updateAppSettings(builder);
-                      },
+                      onToggle: (newVal) async => onPinToggle(
+                        context,
+                        pins,
+                        newVal,
+                        appSettings,
+                        space,
+                      ),
                     ),
                     SettingsTile.switchTile(
                       title: const Text('Events Calendar'),
                       enabled: canEdit,
-                      description: const Text(
-                        'Calender with Events',
-                      ),
+                      description: const Text('Calender with Events'),
                       initialValue: events.active(),
-                      onToggle: (newVal) async {
-                        final updated = events.updater();
-                        updated.active(newVal);
-                        final builder = appSettings.updateBuilder();
-                        builder.events(updated.build());
-                        await space.updateAppSettings(builder);
-                      },
+                      onToggle: (newVal) async => await onCalendarEventToggle(
+                        context,
+                        events,
+                        newVal,
+                        appSettings,
+                        space,
+                      ),
                     ),
                     ...labActions,
                   ],
@@ -440,6 +350,361 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Future<void> onNewsLevelChange(
+    BuildContext context,
+    int maxPowerLevel,
+    int? currentPw,
+    Space space,
+    RoomPowerLevels powerLevels,
+  ) async {
+    final newPowerLevel = await showDialog<int?>(
+      context: context,
+      builder: (BuildContext context) => ChangePowerLevel(
+        featureName: 'Updates',
+        currentPowerLevelName:
+            maxPowerLevel == 100 ? powerLevelName(currentPw) : 'Custom',
+        currentPowerLevel: currentPw,
+      ),
+    );
+    if (newPowerLevel == currentPw) return;
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return;
+    }
+    EasyLoading.show(status: L10n.of(context).changingPowerLevelOf('Updates'));
+    try {
+      await space.updateFeaturePowerLevels(
+        powerLevels.newsKey(),
+        newPowerLevel,
+      );
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showToast(L10n.of(context).powerLevelSubmitted('Updates'));
+    } catch (e, st) {
+      _log.severe('Failed to change power level of Updates', e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToChangePowerLevel(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
+  }
+
+  Future<void> onNewsToggle(
+    BuildContext context,
+    NewsSettings news,
+    bool newVal,
+    ActerAppSettings appSettings,
+    Space space,
+  ) async {
+    EasyLoading.show(status: L10n.of(context).changingSettingOf('Updates'));
+    try {
+      final updated = news.updater();
+      updated.active(newVal);
+      final builder = appSettings.updateBuilder();
+      builder.news(updated.build());
+      await space.updateAppSettings(builder);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showToast(L10n.of(context).changedSettingOf('Updates'));
+    } catch (e, st) {
+      _log.severe('Failed to change setting of Updates', e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToToggleSettingOf('Updates', e),
+        duration: const Duration(seconds: 3),
+      );
+    }
+  }
+
+  Future<void> onPinLevelChange(
+    BuildContext context,
+    int maxPowerLevel,
+    int? currentPw,
+    Space space,
+    RoomPowerLevels powerLevels,
+  ) async {
+    final newPowerLevel = await showDialog<int?>(
+      context: context,
+      builder: (BuildContext context) => ChangePowerLevel(
+        featureName: 'Pin',
+        currentPowerLevelName:
+            maxPowerLevel == 100 ? powerLevelName(currentPw) : 'Custom',
+        currentPowerLevel: currentPw,
+      ),
+    );
+    if (newPowerLevel == currentPw) return;
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return;
+    }
+    EasyLoading.show(status: L10n.of(context).changingSettingOf('Pins'));
+    try {
+      await space.updateFeaturePowerLevels(
+        powerLevels.pinsKey(),
+        newPowerLevel,
+      );
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showToast(L10n.of(context).powerLevelSubmitted('Pins'));
+    } catch (e, st) {
+      _log.severe('Failed to change power level of Pins', e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToChangePowerLevel(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
+  }
+
+  Future<void> onPinToggle(
+    BuildContext context,
+    PinsSettings pins,
+    bool newVal,
+    ActerAppSettings appSettings,
+    Space space,
+  ) async {
+    EasyLoading.show(status: L10n.of(context).changingSettingOf('Pins'));
+    try {
+      final updated = pins.updater();
+      updated.active(newVal);
+      final builder = appSettings.updateBuilder();
+      builder.pins(updated.build());
+      await space.updateAppSettings(builder);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showToast(L10n.of(context).changedSettingOf('Pins'));
+    } catch (e, st) {
+      _log.severe('Failed to change setting of Pins', e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToToggleSettingOf('Pins', e),
+        duration: const Duration(seconds: 3),
+      );
+    }
+  }
+
+  Future<void> onCalendarEventLevelChange(
+    BuildContext context,
+    int maxPowerLevel,
+    int? currentPw,
+    Space space,
+    RoomPowerLevels powerLevels,
+  ) async {
+    final newPowerLevel = await showDialog<int?>(
+      context: context,
+      builder: (BuildContext context) => ChangePowerLevel(
+        featureName: 'Calendar Events',
+        currentPowerLevelName:
+            maxPowerLevel == 100 ? powerLevelName(currentPw) : 'Custom',
+        currentPowerLevel: currentPw,
+      ),
+    );
+    if (newPowerLevel == currentPw) return;
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return;
+    }
+    EasyLoading.show(status: L10n.of(context).changingPowerLevelOf('Events'));
+    try {
+      await space.updateFeaturePowerLevels(
+        powerLevels.eventsKey(),
+        newPowerLevel,
+      );
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showToast(L10n.of(context).powerLevelSubmitted('Events'));
+    } catch (e, st) {
+      _log.severe('Failed to change power level of Events', e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToChangePowerLevel(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
+  }
+
+  Future<void> onCalendarEventToggle(
+    BuildContext context,
+    EventsSettings events,
+    bool newVal,
+    ActerAppSettings appSettings,
+    Space space,
+  ) async {
+    EasyLoading.show(status: L10n.of(context).changingSettingOf('Events'));
+    try {
+      final updated = events.updater();
+      updated.active(newVal);
+      final builder = appSettings.updateBuilder();
+      builder.events(updated.build());
+      await space.updateAppSettings(builder);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showToast(L10n.of(context).changedSettingOf('Events'));
+    } catch (e, st) {
+      _log.severe('Failed to change setting of Events', e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToToggleSettingOf('Events', e),
+        duration: const Duration(seconds: 3),
+      );
+    }
+  }
+
+  Future<void> onTaskListLevelChange(
+    BuildContext context,
+    int maxPowerLevel,
+    int? currentPw,
+    Space space,
+    RoomPowerLevels powerLevels,
+  ) async {
+    final newPowerLevel = await showDialog<int?>(
+      context: context,
+      builder: (BuildContext context) => ChangePowerLevel(
+        featureName: 'Task Lists',
+        currentPowerLevelName:
+            maxPowerLevel == 100 ? powerLevelName(currentPw) : 'Custom',
+        currentPowerLevel: currentPw,
+      ),
+    );
+    if (newPowerLevel == currentPw) return;
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return;
+    }
+    EasyLoading.show(
+      status: L10n.of(context).changingPowerLevelOf('Tasklists'),
+    );
+    try {
+      await space.updateFeaturePowerLevels(
+        powerLevels.taskListsKey(),
+        newPowerLevel,
+      );
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showToast(L10n.of(context).powerLevelSubmitted('Tasklists'));
+    } catch (e, st) {
+      _log.severe('Failed to change power level of Tasklists', e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToChangePowerLevel(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
+  }
+
+  Future<void> onTaskLevelChange(
+    BuildContext context,
+    int maxPowerLevel,
+    int? currentPw,
+    Space space,
+    RoomPowerLevels powerLevels,
+  ) async {
+    final newPowerLevel = await showDialog<int?>(
+      context: context,
+      builder: (BuildContext context) => ChangePowerLevel(
+        featureName: 'Tasks',
+        currentPowerLevelName:
+            maxPowerLevel == 100 ? powerLevelName(currentPw) : 'Custom',
+        currentPowerLevel: currentPw,
+      ),
+    );
+    if (newPowerLevel == currentPw) return;
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return;
+    }
+    EasyLoading.show(status: L10n.of(context).changingPowerLevelOf('Updates'));
+    try {
+      await space.updateFeaturePowerLevels(
+        powerLevels.tasksKey(),
+        newPowerLevel,
+      );
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showToast(L10n.of(context).powerLevelSubmitted('Tasks'));
+    } catch (e, st) {
+      _log.severe('Failed to change power level of Tasks', e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToChangePowerLevel(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
+  }
+
+  Future<void> onTaskToggle(
+    BuildContext context,
+    TasksSettings tasks,
+    bool newVal,
+    ActerAppSettings appSettings,
+    Space space,
+  ) async {
+    EasyLoading.show(status: L10n.of(context).changingSettingOf('Tasks'));
+    try {
+      final updated = tasks.updater();
+      updated.active(newVal);
+      final builder = appSettings.updateBuilder();
+      builder.tasks(updated.build());
+      await space.updateAppSettings(builder);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showToast(L10n.of(context).changedSettingOf('Tasks'));
+    } catch (e, st) {
+      _log.severe('Failed to change setting of Tasks', e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToToggleSettingOf('Tasks', e),
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 }
 
@@ -569,43 +834,53 @@ class _ChangePowerLevelState extends State<ChangePowerLevel> {
       ),
       actions: <Widget>[
         TextButton(
-          onPressed: () => Navigator.pop(context, widget.currentPowerLevel),
+          onPressed: onCancel,
           child: const Text('Cancel'),
         ),
         TextButton(
-          onPressed: () => Navigator.pop(context, null),
+          onPressed: onUnset,
           child: const Text('Unset'),
         ),
         TextButton(
-          onPressed: () {
-            if (!_formKey.currentState!.validate()) return;
-            final freshMemberStatus = widget.currentPowerLevelName;
-            if (freshMemberStatus == currentMemberStatus) {
-              // nothing to do, all the same.
-              Navigator.pop(context, null);
-              return;
-            }
-            int? newValue;
-            if (currentMemberStatus == 'Admin') {
-              newValue = 100;
-            } else if (currentMemberStatus == 'Mod') {
-              newValue = 50;
-            } else if (currentMemberStatus == 'Regular') {
-              newValue = 0;
-            } else {
-              newValue = customValue ?? 0;
-            }
-
-            if (currentPowerLevel == newValue) {
-              // nothing to be done.
-              newValue = null;
-            }
-
-            Navigator.pop(context, newValue);
-          },
+          onPressed: onSubmit,
           child: const Text('Submit'),
         ),
       ],
     );
+  }
+
+  void onCancel() {
+    Navigator.pop(context, widget.currentPowerLevel);
+  }
+
+  void onUnset() {
+    Navigator.pop(context, null);
+  }
+
+  void onSubmit() {
+    if (!_formKey.currentState!.validate()) return;
+    final freshMemberStatus = widget.currentPowerLevelName;
+    if (freshMemberStatus == currentMemberStatus) {
+      // nothing to do, all the same.
+      Navigator.pop(context, null);
+      return;
+    }
+    int? newValue;
+    if (currentMemberStatus == 'Admin') {
+      newValue = 100;
+    } else if (currentMemberStatus == 'Mod') {
+      newValue = 50;
+    } else if (currentMemberStatus == 'Regular') {
+      newValue = 0;
+    } else {
+      newValue = customValue ?? 0;
+    }
+
+    if (widget.currentPowerLevel == newValue) {
+      // nothing to be done.
+      newValue = null;
+    }
+
+    Navigator.pop(context, newValue);
   }
 }

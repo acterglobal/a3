@@ -58,12 +58,17 @@ class _ActerState extends ConsumerState<Acter> {
   Widget build(BuildContext context) {
     final appRouter = ref.watch(goRouterProvider);
     final language = ref.watch(languageProvider);
+
+    // all toast msgs will appear at bottom
+    final builder = EasyLoading.init();
+    EasyLoading.instance.toastPosition = EasyLoadingToastPosition.bottom;
+
     return Portal(
       child: MaterialApp.router(
         routerConfig: appRouter,
         theme: ActerTheme.theme,
         title: 'Acter',
-        builder: EasyLoading.init(),
+        builder: builder,
         locale: Locale(language),
         localizationsDelegates: L10n.localizationsDelegates,
         supportedLocales: L10n.supportedLocales,

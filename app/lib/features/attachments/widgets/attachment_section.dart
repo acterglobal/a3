@@ -1,13 +1,13 @@
 import 'package:acter/common/dialogs/attachment_selection.dart';
-import 'package:acter/features/attachments/providers/attachment_providers.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:acter/features/attachments/widgets/attachment_item.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
+import 'package:acter/features/attachments/providers/attachment_providers.dart';
+import 'package:acter/features/attachments/widgets/attachment_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Attachment, AttachmentsManager;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -236,19 +236,20 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
     String reason,
     BuildContext context,
   ) async {
-    EasyLoading.show(
-      status: L10n.of(context).removingAttachment,
-      dismissOnTap: false,
-    );
+    EasyLoading.show(status: L10n.of(context).removingAttachment);
     try {
       await attachmentManager.redact(eventId, reason, null);
       _log.info('attachment redacted: $eventId');
       EasyLoading.dismiss();
     } catch (e) {
       _log.severe('attachment redaction failed', e, null);
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         L10n.of(context).failedToDeleteAttachment(e),
+        duration: const Duration(seconds: 3),
       );
     }
   }

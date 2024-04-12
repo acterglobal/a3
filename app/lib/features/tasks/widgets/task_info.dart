@@ -10,9 +10,12 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::tasks::task_info');
 
 class TaskInfo extends ConsumerWidget {
   static const statusBtnNotDone = Key('task-info-status-not-done');
@@ -119,35 +122,62 @@ class TaskInfo extends ConsumerWidget {
                 key: selfUnassignKey,
                 size: 20,
               ),
-              onDeleted: account.userId().toString() == userId
-                  ? () async {
-                      await task.unassignSelf();
-                      if (!context.mounted) return;
-                      EasyLoading.showToast(
-                        L10n.of(context).assignmentWithdrawn,
-                        toastPosition: EasyLoadingToastPosition.bottom,
-                      );
-                    }
-                  : null,
+              onDeleted: () => onUnassign(context, account, userId),
             ),
           ),
           !task.isAssignedToMe()
               ? ActionChip(
                   key: selfAssignKey,
                   label: Text(L10n.of(context).volunteer),
-                  onPressed: () async {
-                    await task.assignSelf();
-                    if (!context.mounted) return;
-                    EasyLoading.showToast(
-                      L10n.of(context).assignedYourself,
-                      toastPosition: EasyLoadingToastPosition.bottom,
-                    );
-                  },
+                  onPressed: () => onAssign(context),
                 )
               : const SizedBox.shrink(),
         ],
       ),
     );
+  }
+
+  Future<void> onUnassign(
+    BuildContext context,
+    Account account,
+    String userId,
+  ) async {
+    if (account.userId().toString() == userId) return;
+    EasyLoading.show(status: L10n.of(context).unassigningSelf);
+    try {
+      await task.unassignSelf();
+      if (!context.mounted) return;
+      EasyLoading.showToast(L10n.of(context).assignmentWithdrawn);
+    } catch (e, st) {
+      _log.severe('Failed to unassign self', e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToUnassignSelf(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
+  }
+
+  Future<void> onAssign(BuildContext context) async {
+    EasyLoading.show(status: L10n.of(context).assigningSelf);
+    try {
+      await task.assignSelf();
+      if (!context.mounted) return;
+      EasyLoading.showToast(L10n.of(context).assignedYourself);
+    } catch (e, st) {
+      _log.severe('Failed to assign self', e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToAssignSelf(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 }
 
@@ -217,20 +247,25 @@ class _TaskTitleState extends State<TaskTitle> {
       setState(() => editMode = false);
       return;
     }
+    EasyLoading.show(status: L10n.of(context).updatingTaskTitle);
     try {
-      EasyLoading.show(status: L10n.of(context).updatingTaskTitle);
       final updater = widget.task.updateBuilder();
       updater.title(newString);
       await updater.send();
-      if (!mounted) return;
-      EasyLoading.showToast(
-        L10n.of(context).titleUpdated,
-        toastPosition: EasyLoadingToastPosition.bottom,
-      );
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showToast(L10n.of(context).titleUpdated);
       setState(() => editMode = false);
     } catch (e) {
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         L10n.of(context).failedToUpdateTitle(e),
+        duration: const Duration(seconds: 3),
       );
     }
   }
@@ -288,36 +323,7 @@ class _TaskBodyState extends State<TaskBody> {
                 ),
                 OutlinedButton(
                   key: TaskBody.saveEditKey,
-                  onPressed: () async {
-                    final newBody = _textEditingController.text;
-                    final description = widget.task.description();
-
-                    final isNothing = description == null && newBody.isEmpty;
-                    final isSame = description?.body() == newBody;
-                    if (isNothing || isSame) {
-                      // close and ignore, nothing actually changed
-                      setState(() => editMode = false);
-                    }
-
-                    try {
-                      EasyLoading.show(
-                        status: L10n.of(context).updatingTaskNote,
-                      );
-                      final updater = widget.task.updateBuilder();
-                      updater.descriptionText(newBody);
-                      await updater.send();
-                      if (!mounted) return;
-                      EasyLoading.showToast(
-                        L10n.of(context).notesUpdates,
-                        toastPosition: EasyLoadingToastPosition.bottom,
-                      );
-                      setState(() => editMode = false);
-                    } catch (e) {
-                      EasyLoading.showError(
-                        L10n.of(context).failedToLoadUpdateNotes(e),
-                      );
-                    }
-                  },
+                  onPressed: onSave,
                   child: Text(L10n.of(context).save),
                 ),
               ],
@@ -360,8 +366,12 @@ class _TaskBodyState extends State<TaskBody> {
     return Stack(
       children: [
         Padding(
-          padding:
-              const EdgeInsets.only(left: 5, right: 5, bottom: 30, top: 10),
+          padding: const EdgeInsets.only(
+            left: 5,
+            right: 5,
+            bottom: 30,
+            top: 10,
+          ),
           child: child,
         ),
         Positioned(
@@ -369,15 +379,47 @@ class _TaskBodyState extends State<TaskBody> {
           bottom: 0,
           child: IconButton(
             key: TaskBody.editKey,
-            icon: const Icon(
-              Atlas.pencil_edit_thin,
-              size: 24,
-            ),
+            icon: const Icon(Atlas.pencil_edit_thin, size: 24),
             onPressed: () => setState(() => editMode = true),
           ),
         ),
       ],
     );
+  }
+
+  Future<void> onSave() async {
+    final newBody = _textEditingController.text;
+    final description = widget.task.description();
+
+    final isNothing = description == null && newBody.isEmpty;
+    final isSame = description?.body() == newBody;
+    if (isNothing || isSame) {
+      // close and ignore, nothing actually changed
+      setState(() => editMode = false);
+      return;
+    }
+
+    EasyLoading.show(status: L10n.of(context).updatingTaskNote);
+    try {
+      final updater = widget.task.updateBuilder();
+      updater.descriptionText(newBody);
+      await updater.send();
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showToast(L10n.of(context).notesUpdates);
+      setState(() => editMode = false);
+    } catch (e) {
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToLoadUpdateNotes(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 }
 
@@ -393,10 +435,7 @@ class TaskInfoSkeleton extends StatelessWidget {
             ListTile(
               leading: const Padding(
                 padding: EdgeInsets.only(right: 5),
-                child: Icon(
-                  Icons.radio_button_off_outlined,
-                  size: 48,
-                ),
+                child: Icon(Icons.radio_button_off_outlined, size: 48),
               ),
               title: Wrap(
                 children: [
@@ -421,9 +460,7 @@ class TaskInfoSkeleton extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              child: Text(
-                L10n.of(context).thisIsAMultilineDescription,
-              ),
+              child: Text(L10n.of(context).thisIsAMultilineDescription),
             ),
           ],
         ),

@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -29,9 +28,7 @@ class EmailAddressCard extends ConsumerWidget {
                 Atlas.envelope_check_thin,
                 color: Theme.of(context).colorScheme.success,
               )
-            : const Icon(
-                Atlas.envelope_minus_thin,
-              ),
+            : const Icon(Atlas.envelope_minus_thin),
         title: Text(emailAddress),
         trailing: isConfirmed
             ? PopupMenuButton(
@@ -122,15 +119,10 @@ class EmailAddressCard extends ConsumerWidget {
     showAdaptiveDialog(
       context: context,
       builder: (context) => DefaultDialog(
-        title: Text(
-          L10n.of(context).areYouSureYouWantToUnregisterEmailAddress,
-        ),
+        title: Text(L10n.of(context).areYouSureYouWantToUnregisterEmailAddress),
         actions: <Widget>[
           OutlinedButton(
-            onPressed: () => Navigator.of(
-              context,
-              rootNavigator: true,
-            ).pop(),
+            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
             child: Text(L10n.of(context).no),
           ),
           ElevatedButton(
@@ -140,9 +132,7 @@ class EmailAddressCard extends ConsumerWidget {
               await manager.removeEmailAddress(emailAddress);
               ref.invalidate(emailAddressesProvider);
 
-              if (!context.mounted) {
-                return;
-              }
+              if (!context.mounted) return;
               Navigator.of(context, rootNavigator: true).pop();
             },
             child: Text(L10n.of(context).yes),
@@ -162,19 +152,26 @@ class EmailAddressCard extends ConsumerWidget {
       context: context,
       builder: (BuildContext context) => const PasswordConfirm(),
     );
-    if (newValue != null && context.mounted) {
-      EasyLoading.show(status: L10n.of(context).tryingToConfirmToken);
-      try {
-        await manager.tryConfirmEmailStatus(emailAddress, newValue);
-        ref.invalidate(emailAddressesProvider);
-        if (!context.mounted) return;
-        EasyLoading.showSuccess(L10n.of(context).looksGoodAddressConfirmed);
-      } catch (e) {
-        EasyLoading.showError(
-          L10n.of(context).failedToConfirmToken(e),
-          duration: const Duration(seconds: 3),
-        );
+    if (!context.mounted) return;
+    if (newValue == null) return;
+    EasyLoading.show(status: L10n.of(context).tryingToConfirmToken);
+    try {
+      await manager.tryConfirmEmailStatus(emailAddress, newValue);
+      ref.invalidate(emailAddressesProvider);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
       }
+      EasyLoading.showToast(L10n.of(context).looksGoodAddressConfirmed);
+    } catch (e) {
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToConfirmToken(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 
@@ -188,30 +185,37 @@ class EmailAddressCard extends ConsumerWidget {
       context: context,
       builder: (BuildContext context) => const TokenConfirm(),
     );
-    if (newValue != null && context.mounted) {
-      EasyLoading.show(status: L10n.of(context).tryingToConfirmToken);
-      try {
-        final result = await manager.submitTokenFromEmail(
-          emailAddress,
-          newValue.token,
-          newValue.password,
-        );
-        if (!context.mounted) return;
-        if (result) {
-          ref.invalidate(emailAddressesProvider);
-          EasyLoading.showSuccess(L10n.of(context).looksGoodAddressConfirmed);
-        } else {
-          EasyLoading.showError(
-            L10n.of(context).invalidTokenOrPassword,
-            duration: const Duration(seconds: 3),
-          );
-        }
-      } catch (e) {
+    if (!context.mounted) return;
+    if (newValue == null) return;
+    EasyLoading.show(status: L10n.of(context).tryingToConfirmToken);
+    try {
+      final result = await manager.submitTokenFromEmail(
+        emailAddress,
+        newValue.token,
+        newValue.password,
+      );
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      if (result) {
+        ref.invalidate(emailAddressesProvider);
+        EasyLoading.showToast(L10n.of(context).looksGoodAddressConfirmed);
+      } else {
         EasyLoading.showError(
-          L10n.of(context).failedToConfirmToken(e),
+          L10n.of(context).invalidTokenOrPassword,
           duration: const Duration(seconds: 3),
         );
       }
+    } catch (e) {
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToConfirmToken(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 }
@@ -238,9 +242,7 @@ class _PasswordConfirmState extends State<PasswordConfirm> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(
-        L10n.of(context).needYourPasswordToConfirm,
-      ),
+      title: Text(L10n.of(context).needYourPasswordToConfirm),
       // The token-reset path is just the process by which control over that email address is confirmed.
       content: Form(
         key: _formKey,
@@ -309,9 +311,7 @@ class _TokenConfirmState extends State<TokenConfirm> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(
-        L10n.of(context).confirmationToken,
-      ),
+      title: Text(L10n.of(context).confirmationToken),
       // The token-reset path is just the process by which control over that email address is confirmed.
       content: Form(
         key: _formKey,
@@ -322,9 +322,7 @@ class _TokenConfirmState extends State<TokenConfirm> {
               padding: const EdgeInsets.all(5),
               child: TextFormField(
                 controller: tokenField,
-                decoration: InputDecoration(
-                  hintText: L10n.of(context).token,
-                ),
+                decoration: InputDecoration(hintText: L10n.of(context).token),
               ),
             ),
             Padding(
@@ -369,9 +367,9 @@ class _TokenConfirmState extends State<TokenConfirm> {
 
   void onSubmit(BuildContext context) {
     if (!_formKey.currentState!.validate()) {
-      customMsgSnackbar(
-        context,
+      EasyLoading.showError(
         L10n.of(context).tokenAndPasswordMustBeProvided,
+        duration: const Duration(seconds: 3),
       );
       return;
     }

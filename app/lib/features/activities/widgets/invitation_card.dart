@@ -195,24 +195,36 @@ class InvitationCard extends ConsumerWidget {
 
   // method for post-process invitation accept
   void _onTapAcceptInvite(BuildContext context) async {
-    EasyLoading.show(status: L10n.of(context).joining, dismissOnTap: false);
+    EasyLoading.show(status: L10n.of(context).joining);
     bool res = await invitation.accept();
-    if (!res && context.mounted) {
-      EasyLoading.showError(L10n.of(context).failedToJoin);
+    if (!context.mounted) {
+      EasyLoading.dismiss();
       return;
     }
-    if(!context.mounted) return;
-    EasyLoading.showSuccess(L10n.of(context).joined);
+    if (res) {
+      EasyLoading.showToast(L10n.of(context).joined);
+    } else {
+      EasyLoading.showError(
+        L10n.of(context).failedToJoin,
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 
   void _onTapDeclineInvite(BuildContext context) async {
-    EasyLoading.show(status: L10n.of(context).rejecting, dismissOnTap: false);
+    EasyLoading.show(status: L10n.of(context).rejecting);
     bool res = await invitation.reject();
-    if (!res && context.mounted) {
-      EasyLoading.showError(L10n.of(context).failedToReject);
+    if (!context.mounted) {
+      EasyLoading.dismiss();
       return;
     }
-    if(!context.mounted) return;
-    EasyLoading.showSuccess(L10n.of(context).rejected);
+    if (res) {
+      EasyLoading.showToast(L10n.of(context).rejected);
+    } else {
+      EasyLoading.showError(
+        L10n.of(context).failedToReject,
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 }
