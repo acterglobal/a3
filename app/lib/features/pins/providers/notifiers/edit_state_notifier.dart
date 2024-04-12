@@ -41,6 +41,7 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
 
   void setEditMode(bool editMode) => state = state.copyWith(editMode: editMode);
 
+  // FIXME: move it to UI widget in order to implement l10n
   Future<void> onSave() async {
     EasyLoading.show(status: 'Saving Pin');
     try {
