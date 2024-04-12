@@ -20,7 +20,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::chat::create_chat');
 
 /// Room title
 final _titleProvider = StateProvider.autoDispose<String>((ref) => '');
@@ -438,9 +441,38 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
       return;
     }
 
-    if (selectedUsers.length > 1) {
-      final userIds = selectedUsers.map((u) => u.userId().toString()).toList();
-      final convo = await widget.onCreateConvo(null, null, userIds);
+    EasyLoading.show(status: L10n.of(context).creatingChat);
+    try {
+      if (selectedUsers.length > 1) {
+        final userIds =
+            selectedUsers.map((u) => u.userId().toString()).toList();
+        final convo = await widget.onCreateConvo(null, null, userIds);
+        EasyLoading.dismiss();
+        if (!context.mounted) return;
+        Navigator.of(context).pop();
+        if (convo == null) return;
+        context.pushNamed(
+          Routes.chatroom.name,
+          pathParameters: {'roomId': convo.getRoomIdStr()},
+        );
+        return;
+      }
+
+      final othersUserId = selectedUsers[0].userId().toString();
+      final client = ref.read(alwaysClientProvider);
+      String? id = checkUserDMExists(othersUserId, client);
+      if (id != null) {
+        EasyLoading.dismiss();
+        Navigator.of(context).pop();
+        context.pushNamed(
+          Routes.chatroom.name,
+          pathParameters: {'roomId': id},
+        );
+        return;
+      }
+
+      final convo = await widget.onCreateConvo(null, null, [othersUserId]);
+      EasyLoading.dismiss();
       if (!context.mounted) return;
       Navigator.of(context).pop();
       if (convo == null) return;
@@ -448,29 +480,17 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
         Routes.chatroom.name,
         pathParameters: {'roomId': convo.getRoomIdStr()},
       );
-      return;
-    }
-
-    final othersUserId = selectedUsers[0].userId().toString();
-    final client = ref.read(alwaysClientProvider);
-    String? id = checkUserDMExists(othersUserId, client);
-    if (id != null) {
-      Navigator.of(context).pop();
-      context.pushNamed(
-        Routes.chatroom.name,
-        pathParameters: {'roomId': id},
+    } catch (e, st) {
+      _log.severe("Couldn't create chat", e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToCreateChat(e),
+        duration: const Duration(seconds: 3),
       );
-      return;
     }
-
-    final convo = await widget.onCreateConvo(null, null, [othersUserId]);
-    if (!context.mounted) return;
-    Navigator.of(context).pop();
-    if (convo == null) return;
-    context.pushNamed(
-      Routes.chatroom.name,
-      pathParameters: {'roomId': convo.getRoomIdStr()},
-    );
   }
 }
 
@@ -670,16 +690,27 @@ class _CreateRoomFormWidgetConsumerState
       );
       return;
     }
-    final convo = await widget.onCreateConvo(
-      title,
-      _descriptionController.text.trim(),
-      [],
-    );
-    if (context.mounted && convo != null) {
-      Navigator.pop(context);
-      context.pushNamed(
-        Routes.chatroom.name,
-        pathParameters: {'roomId': convo.getRoomIdStr()},
+    EasyLoading.show(status: L10n.of(context).creatingChat);
+    try {
+      final description = _descriptionController.text.trim();
+      final convo = await widget.onCreateConvo(title, description, []);
+      EasyLoading.dismiss();
+      if (context.mounted && convo != null) {
+        Navigator.pop(context);
+        context.pushNamed(
+          Routes.chatroom.name,
+          pathParameters: {'roomId': convo.getRoomIdStr()},
+        );
+      }
+    } catch (e, st) {
+      _log.severe("Couldn't create chat", e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToCreateChat(e),
+        duration: const Duration(seconds: 3),
       );
     }
   }

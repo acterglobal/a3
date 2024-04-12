@@ -366,7 +366,8 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
           duration: const Duration(seconds: 3),
         );
       }
-    } catch (e) {
+    } catch (e, st) {
+      _log.severe("Couldn't leave room", e, st);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
@@ -406,7 +407,8 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         subject: L10n.of(context).linkToChat,
       );
       EasyLoading.showToast(L10n.of(context).sharedSuccessfully);
-    } catch (e) {
+    } catch (e, st) {
+      _log.severe("Couldn't share this room", e, st);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;

@@ -1388,6 +1388,7 @@
   "failedToChangePowerLevel": "Failed to change power level: {error}",
   "failedToSend": "Failed to send: {error}",
   "failedToUpdateTitle": "Failed to update title: {error}",
+  "failedToCreateChat": "Failed to create chat:  {error}",
   "failedToCreateTaskList": "Failed to create task list:  {error}",
   "failedToConfirmToken": "Failed to confirm token: {error}",
   "failedToSubmitEmail": "Failed to submit email: {error}",
