@@ -368,14 +368,20 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   Widget _buildShareAction(CalendarEvent calendarEvent) {
-    return InkWell(
-      onTap: () => onShareEvent(calendarEvent),
-      child: Chip(
-        backgroundColor: Colors.transparent,
-        padding: const EdgeInsets.symmetric(horizontal: 5.0),
-        avatar: const Icon(Icons.share),
-        label: Text(L10n.of(context).shareIcal),
-      ),
+    return PopupMenuButton(
+      icon: const Icon(Icons.share),
+      itemBuilder: (ctx) => [
+        PopupMenuItem(
+          onTap: () => onShareEvent(calendarEvent),
+          child: Row(
+            children: <Widget>[
+              const Icon(Icons.share),
+              const SizedBox(width: 10),
+              Text(L10n.of(context).shareIcal),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
