@@ -396,6 +396,7 @@ class _TaskBodyState extends State<TaskBody> {
     if (isNothing || isSame) {
       // close and ignore, nothing actually changed
       setState(() => editMode = false);
+      return;
     }
 
     EasyLoading.show(status: L10n.of(context).updatingTaskNote);
