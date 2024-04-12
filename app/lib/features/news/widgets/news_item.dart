@@ -1,7 +1,7 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
-import 'package:acter/features/events/widgets/events_item.dart';
+import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/events/widgets/skeletons/event_item_skeleton_widget.dart';
 import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/news/widgets/news_item_slide/video_slide.dart';

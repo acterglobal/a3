@@ -40,7 +40,9 @@ async fn onboarding_is_created() -> Result<()> {
         let client = calendar_client.clone();
         async move {
             let task_lists = client.task_lists().await?;
-            let tk = task_lists.first().context("task list not found")?;
+            let Some(tk) = task_lists.first() else {
+                bail!("task list not found")
+            };
             if tk.tasks().await?.len() != 2 {
                 bail!("not all tasks found yet");
             }

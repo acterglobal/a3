@@ -16357,6 +16357,23 @@ class Api {
           int Function(
             int,
           )>();
+  late final _calendarEventIcalForSharingPtr = _lookup<
+      ffi.NativeFunction<
+          _CalendarEventIcalForSharingReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__CalendarEvent_ical_for_sharing");
+
+  late final _calendarEventIcalForSharing =
+      _calendarEventIcalForSharingPtr.asFunction<
+          _CalendarEventIcalForSharingReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
   late final _calendarEventUpdateBuilderTitlePtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -33724,6 +33741,51 @@ class CalendarEvent {
     final tmp2 =
         _nativeFuture(tmp3_1, _api.__calendarEventAttachmentsFuturePoll);
     return tmp2;
+  }
+
+  /// Generate a iCal as a String for sharing with others
+  bool icalForSharing(
+    String fileName,
+  ) {
+    final tmp1 = fileName;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._calendarEventIcalForSharing(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 =
+          utf8.decode(tmp8_0.asTypedList(tmp9), allowMalformed: true);
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    final tmp6 = tmp11 > 0;
+    return tmp6;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -51589,6 +51651,19 @@ class _CalendarEventUpdateBuilderReturn extends ffi.Struct {
   @ffi.Uint64()
   external int arg3;
   @ffi.Int64()
+  external int arg4;
+}
+
+class _CalendarEventIcalForSharingReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint8()
   external int arg4;
 }
 
