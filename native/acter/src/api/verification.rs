@@ -123,11 +123,14 @@ impl VerificationEvent {
         let flow_id = self.flow_id.clone();
         RUNTIME
             .spawn(async move {
-                let request = client
+                let Some(request) = client
                     .encryption()
                     .get_verification_request(&sender, &flow_id)
                     .await
-                    .context("Could not get verification request")?; // request may be timed out
+                else {
+                    // request may be timed out
+                    bail!("Could not get verification request")
+                };
                 info!(
                     "Accepting verification request from {}",
                     request.other_user_id()
@@ -145,11 +148,14 @@ impl VerificationEvent {
         let flow_id = self.flow_id.clone();
         RUNTIME
             .spawn(async move {
-                let request = client
+                let Some(request) = client
                     .encryption()
                     .get_verification_request(&sender, &flow_id)
                     .await
-                    .context("Could not get verification request")?; // request may be timed out
+                else {
+                    // request may be timed out
+                    bail!("Could not get verification request")
+                };
                 request.cancel().await?;
                 Ok(true)
             })
@@ -167,11 +173,14 @@ impl VerificationEvent {
         let values = (*methods).iter().map(|e| e.as_str().into()).collect();
         RUNTIME
             .spawn(async move {
-                let request = client
+                let Some(request) = client
                     .encryption()
                     .get_verification_request(&sender, &flow_id)
                     .await
-                    .context("Could not get verification request")?; // request may be timed out
+                else {
+                    // request may be timed out
+                    bail!("Could not get verification request")
+                };
                 info!(
                     "Accepting verification request from {}",
                     request.other_user_id()
@@ -188,11 +197,14 @@ impl VerificationEvent {
         let flow_id = self.flow_id.clone();
         RUNTIME
             .spawn(async move {
-                let request = client
+                let Some(request) = client
                     .encryption()
                     .get_verification_request(&sender, &flow_id)
                     .await
-                    .context("Could not get verification request")?; // request may be timed out
+                else {
+                    // request may be timed out
+                    bail!("Could not get verification request")
+                };
                 let sas = request.start_sas().await?;
                 Ok(sas.is_some())
             })
@@ -1021,11 +1033,13 @@ impl SessionManager {
                 let user_id = client
                     .user_id()
                     .context("You must be logged in to do that")?;
-                let device = client
+                let Some(device) = client
                     .encryption()
                     .get_device(user_id, device_id!(dev_id.as_str()))
                     .await?
-                    .context("Could not get device from encryption")?;
+                else {
+                    bail!("Could not get device from encryption")
+                };
                 let is_verified =
                     device.is_cross_signed_by_owner() || device.is_verified_with_cross_signing();
                 if is_verified {
@@ -1046,11 +1060,14 @@ impl SessionManager {
                 let user_id = client
                     .user_id()
                     .context("You must be logged in to do that")?;
-                let request = client
+                let Some(request) = client
                     .encryption()
                     .get_verification_request(user_id, flow_id)
                     .await
-                    .context("Could not get verification request")?; // request may be timed out
+                else {
+                    // request may be timed out
+                    bail!("Could not get verification request")
+                };
                 request.cancel().await?;
                 Ok(true)
             })
@@ -1080,12 +1097,14 @@ impl Client {
                     .user_id()
                     .context("You must be logged in to do that")?
                     .to_owned();
-                let device = client
+                let Some(device) = client
                     .clone()
                     .encryption()
                     .get_device(&user_id, device_id!(dev_id.as_str()))
                     .await?
-                    .context("Could not get device from encryption")?;
+                else {
+                    bail!("Could not get device from encryption")
+                };
                 let is_verified =
                     device.is_cross_signed_by_owner() || device.is_verified_with_cross_signing();
                 if is_verified {
@@ -1112,11 +1131,14 @@ impl Client {
         let sender = client.user_id().context("User not found")?.to_owned();
         RUNTIME
             .spawn(async move {
-                let request = client
+                let Some(request) = client
                     .encryption()
                     .get_verification_request(&sender, &flow_id)
                     .await
-                    .context("Could not get verification request")?; // request may be timed out
+                else {
+                    // request may be timed out
+                    bail!("Could not get verification request")
+                };
                 tokio::spawn(request_verification_handler(
                     client, controller, request, flow_id, sender,
                 ));

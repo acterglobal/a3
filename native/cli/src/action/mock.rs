@@ -316,7 +316,7 @@ impl<'a> Mock<'a> {
                 //kyra.sync_once(Default::default()).await?;
 
                 let cloned_odo = odo.clone();
-                let odo_ops = wait_for(move || {
+                let Some(odo_ops) = wait_for(move || {
                     let cloned_odo = cloned_odo.clone();
                     let alias = alias.clone();
                     async move {
@@ -326,7 +326,9 @@ impl<'a> Mock<'a> {
                     }
                 })
                 .await?
-                .context("Odo couldn't be found in Ops")?;
+                else {
+                    bail!("Odo couldn't be found in Ops")
+                };
                 let mut draft = odo_ops.task_list_draft()?;
 
                 let task_list_id = draft
