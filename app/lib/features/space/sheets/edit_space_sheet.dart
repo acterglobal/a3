@@ -82,9 +82,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(
-              L10n.of(context).hereYouCanChangeTheSpaceDetails,
-            ),
+            Text(L10n.of(context).hereYouCanChangeTheSpaceDetails),
             const SizedBox(height: 15),
             Row(
               children: <Widget>[
@@ -271,15 +269,27 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
     }
     if (!context.mounted) return;
     EasyLoading.show(status: L10n.of(context).updatingSpace);
-    final roomId = await _handleUpdateSpace(context);
-    _log.info('Space Updated: $roomId');
-    EasyLoading.dismiss();
-    if (!context.mounted) return;
-    Navigator.of(context, rootNavigator: true).pop();
-    context.pushNamed(
-      Routes.space.name,
-      pathParameters: {'spaceId': roomId.toString()},
-    );
+    try {
+      final roomId = await _handleUpdateSpace(context);
+      _log.info('Space Updated: $roomId');
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
+      Navigator.of(context, rootNavigator: true).pop();
+      context.pushNamed(
+        Routes.space.name,
+        pathParameters: {'spaceId': roomId.toString()},
+      );
+    } catch (e, st) {
+      _log.severe('Failed to edit space', e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToEditSpace(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 
   void _handleCancel() {

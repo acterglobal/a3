@@ -15,14 +15,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:settings_ui/settings_ui.dart';
+
+final _log = Logger('a3::settings::notifications_page');
 
 class _AddEmail extends StatefulWidget {
   final List<String> emails;
 
-  const _AddEmail(
-    this.emails,
-  );
+  const _AddEmail(this.emails);
 
   @override
   State<_AddEmail> createState() => __AddEmailState();
@@ -194,14 +195,6 @@ class NotificationsSettingsPage extends ConsumerWidget {
     bool isOneToOne,
     String newMode,
   ) async {
-    final client = ref.read(clientProvider);
-    if (client == null) {
-      EasyLoading.showError(
-        L10n.of(context).clientNotFound,
-        duration: const Duration(seconds: 3),
-      );
-      return;
-    }
     EasyLoading.show(status: L10n.of(context).changingNotificationMode);
     try {
       final notifier = ref.read(notificationSettingsProvider).valueOrNull!;
@@ -215,7 +208,8 @@ class NotificationsSettingsPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showToast(L10n.of(context).notificationStatusSubmitted);
-    } catch (e) {
+    } catch (e, st) {
+      _log.severe('Failed to update notification status', e, st);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;

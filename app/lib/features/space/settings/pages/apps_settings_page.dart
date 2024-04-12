@@ -10,7 +10,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:settings_ui/settings_ui.dart';
+
+final _log = Logger('a3::space::settings::app_settings');
 
 String powerLevelName(int? pw) {
   if (pw == null) {
@@ -219,6 +222,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                 description: const Text('ToDo-Lists & Tasks'),
                 initialValue: tasks.active(),
                 onToggle: (newVal) async => await onTaskToggle(
+                  context,
                   tasks,
                   newVal,
                   appSettings,
@@ -299,6 +303,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                       description: const Text('Post space-wide updates'),
                       initialValue: news.active(),
                       onToggle: (newVal) async => await onNewsToggle(
+                        context,
                         news,
                         newVal,
                         appSettings,
@@ -311,6 +316,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                       description: const Text('Pin important information'),
                       initialValue: pins.active(),
                       onToggle: (newVal) async => onPinToggle(
+                        context,
                         pins,
                         newVal,
                         appSettings,
@@ -323,6 +329,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                       description: const Text('Calender with Events'),
                       initialValue: events.active(),
                       onToggle: (newVal) async => await onCalendarEventToggle(
+                        context,
                         events,
                         newVal,
                         appSettings,
@@ -362,23 +369,64 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
       ),
     );
     if (newPowerLevel == currentPw) return;
-    await space.updateFeaturePowerLevels(powerLevels.newsKey(), newPowerLevel);
-    if (context.mounted) {
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return;
+    }
+    EasyLoading.show(status: L10n.of(context).changingPowerLevelOf('Updates'));
+    try {
+      await space.updateFeaturePowerLevels(
+        powerLevels.newsKey(),
+        newPowerLevel,
+      );
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showToast(L10n.of(context).powerLevelSubmitted('Updates'));
+    } catch (e, st) {
+      _log.severe('Failed to change power level of Updates', e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToChangePowerLevel(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 
   Future<void> onNewsToggle(
+    BuildContext context,
     NewsSettings news,
     bool newVal,
     ActerAppSettings appSettings,
     Space space,
   ) async {
-    final updated = news.updater();
-    updated.active(newVal);
-    final builder = appSettings.updateBuilder();
-    builder.news(updated.build());
-    await space.updateAppSettings(builder);
+    EasyLoading.show(status: L10n.of(context).changingSettingOf('Updates'));
+    try {
+      final updated = news.updater();
+      updated.active(newVal);
+      final builder = appSettings.updateBuilder();
+      builder.news(updated.build());
+      await space.updateAppSettings(builder);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showToast(L10n.of(context).changedSettingOf('Updates'));
+    } catch (e, st) {
+      _log.severe('Failed to change setting of Updates', e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToToggleSettingOf('Updates', e),
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 
   Future<void> onPinLevelChange(
@@ -398,23 +446,64 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
       ),
     );
     if (newPowerLevel == currentPw) return;
-    await space.updateFeaturePowerLevels(powerLevels.pinsKey(), newPowerLevel);
-    if (context.mounted) {
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return;
+    }
+    EasyLoading.show(status: L10n.of(context).changingSettingOf('Pins'));
+    try {
+      await space.updateFeaturePowerLevels(
+        powerLevels.pinsKey(),
+        newPowerLevel,
+      );
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showToast(L10n.of(context).powerLevelSubmitted('Pins'));
+    } catch (e, st) {
+      _log.severe('Failed to change power level of Pins', e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToChangePowerLevel(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 
   Future<void> onPinToggle(
+    BuildContext context,
     PinsSettings pins,
     bool newVal,
     ActerAppSettings appSettings,
     Space space,
   ) async {
-    final updated = pins.updater();
-    updated.active(newVal);
-    final builder = appSettings.updateBuilder();
-    builder.pins(updated.build());
-    await space.updateAppSettings(builder);
+    EasyLoading.show(status: L10n.of(context).changingSettingOf('Pins'));
+    try {
+      final updated = pins.updater();
+      updated.active(newVal);
+      final builder = appSettings.updateBuilder();
+      builder.pins(updated.build());
+      await space.updateAppSettings(builder);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showToast(L10n.of(context).changedSettingOf('Pins'));
+    } catch (e, st) {
+      _log.severe('Failed to change setting of Pins', e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToToggleSettingOf('Pins', e),
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 
   Future<void> onCalendarEventLevelChange(
@@ -434,28 +523,64 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
       ),
     );
     if (newPowerLevel == currentPw) return;
-    await space.updateFeaturePowerLevels(
-      powerLevels.eventsKey(),
-      newPowerLevel,
-    );
-    if (context.mounted) {
-      EasyLoading.showToast(
-        L10n.of(context).powerLevelSubmitted('Calendar Events'),
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return;
+    }
+    EasyLoading.show(status: L10n.of(context).changingPowerLevelOf('Events'));
+    try {
+      await space.updateFeaturePowerLevels(
+        powerLevels.eventsKey(),
+        newPowerLevel,
+      );
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showToast(L10n.of(context).powerLevelSubmitted('Events'));
+    } catch (e, st) {
+      _log.severe('Failed to change power level of Events', e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToChangePowerLevel(e),
+        duration: const Duration(seconds: 3),
       );
     }
   }
 
   Future<void> onCalendarEventToggle(
+    BuildContext context,
     EventsSettings events,
     bool newVal,
     ActerAppSettings appSettings,
     Space space,
   ) async {
-    final updated = events.updater();
-    updated.active(newVal);
-    final builder = appSettings.updateBuilder();
-    builder.events(updated.build());
-    await space.updateAppSettings(builder);
+    EasyLoading.show(status: L10n.of(context).changingSettingOf('Events'));
+    try {
+      final updated = events.updater();
+      updated.active(newVal);
+      final builder = appSettings.updateBuilder();
+      builder.events(updated.build());
+      await space.updateAppSettings(builder);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showToast(L10n.of(context).changedSettingOf('Events'));
+    } catch (e, st) {
+      _log.severe('Failed to change setting of Events', e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToToggleSettingOf('Events', e),
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 
   Future<void> onTaskListLevelChange(
@@ -475,12 +600,33 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
       ),
     );
     if (newPowerLevel == currentPw) return;
-    await space.updateFeaturePowerLevels(
-      powerLevels.taskListsKey(),
-      newPowerLevel,
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return;
+    }
+    EasyLoading.show(
+      status: L10n.of(context).changingPowerLevelOf('Tasklists'),
     );
-    if (context.mounted) {
-      EasyLoading.showToast(L10n.of(context).powerLevelSubmitted('Task Lists'));
+    try {
+      await space.updateFeaturePowerLevels(
+        powerLevels.taskListsKey(),
+        newPowerLevel,
+      );
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showToast(L10n.of(context).powerLevelSubmitted('Tasklists'));
+    } catch (e, st) {
+      _log.severe('Failed to change power level of Tasklists', e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToChangePowerLevel(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 
@@ -501,23 +647,64 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
       ),
     );
     if (newPowerLevel == currentPw) return;
-    await space.updateFeaturePowerLevels(powerLevels.tasksKey(), newPowerLevel);
-    if (context.mounted) {
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return;
+    }
+    EasyLoading.show(status: L10n.of(context).changingPowerLevelOf('Updates'));
+    try {
+      await space.updateFeaturePowerLevels(
+        powerLevels.tasksKey(),
+        newPowerLevel,
+      );
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showToast(L10n.of(context).powerLevelSubmitted('Tasks'));
+    } catch (e, st) {
+      _log.severe('Failed to change power level of Tasks', e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToChangePowerLevel(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 
   Future<void> onTaskToggle(
+    BuildContext context,
     TasksSettings tasks,
     bool newVal,
     ActerAppSettings appSettings,
     Space space,
   ) async {
-    final updated = tasks.updater();
-    updated.active(newVal);
-    final builder = appSettings.updateBuilder();
-    builder.tasks(updated.build());
-    await space.updateAppSettings(builder);
+    EasyLoading.show(status: L10n.of(context).changingSettingOf('Tasks'));
+    try {
+      final updated = tasks.updater();
+      updated.active(newVal);
+      final builder = appSettings.updateBuilder();
+      builder.tasks(updated.build());
+      await space.updateAppSettings(builder);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showToast(L10n.of(context).changedSettingOf('Tasks'));
+    } catch (e, st) {
+      _log.severe('Failed to change setting of Tasks', e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToToggleSettingOf('Tasks', e),
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 }
 

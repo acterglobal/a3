@@ -489,7 +489,8 @@ class CreateEditEventPageConsumerState
           pathParameters: {'calendarId': eventId.toString()},
         );
       }
-    } catch (e) {
+    } catch (e, st) {
+      _log.severe('Failed to create calendar event', e, st);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
@@ -540,7 +541,8 @@ class CreateEditEventPageConsumerState
       ref.invalidate(spaceEventsProvider(spaceId)); // events page in space
 
       if (context.mounted) context.pop();
-    } catch (e) {
+    } catch (e, st) {
+      _log.severe('Failed to update calendar event', e, st);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;

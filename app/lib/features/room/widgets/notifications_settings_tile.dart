@@ -131,34 +131,53 @@ class _NotificationSettingsTile extends ConsumerWidget {
     String newMode,
   ) async {
     _log.info('new value: $newMode');
-    final room = await ref.read(maybeRoomProvider(roomId).future);
-    if (room == null) {
-      if (!context.mounted) return;
+    EasyLoading.show(status: L10n.of(context).changingNotificationMode);
+    try {
+      final room = await ref.read(maybeRoomProvider(roomId).future);
+      if (room == null) {
+        if (!context.mounted) {
+          EasyLoading.dismiss();
+          return;
+        }
+        EasyLoading.showError(
+          L10n.of(context).roomNotFound,
+          duration: const Duration(seconds: 3),
+        );
+        return;
+      }
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      // '' is a special case resetting to default.
+      final res =
+          await room.setNotificationMode(newMode == '' ? null : newMode);
+      if (!res) {
+        EasyLoading.dismiss();
+        return;
+      }
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showToast(L10n.of(context).notificationStatusSubmitted);
+      await Future.delayed(const Duration(seconds: 1), () {
+        // FIXME: we want to refresh the view but don't know
+        //        when the event was confirmed form sync :(
+        // let's hope that a second delay is reasonable enough
+        ref.invalidate(maybeRoomProvider(roomId));
+      });
+    } catch (e, st) {
+      _log.severe('Failed to change notification mode', e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
-        L10n.of(context).roomNotFound,
+        L10n.of(context).failedToChangeNotificationMode(e),
         duration: const Duration(seconds: 3),
       );
-      return;
     }
-    if (!context.mounted) return;
-    EasyLoading.show(status: L10n.of(context).changingNotificationMode);
-    // '' is a special case resetting to default.
-    final res = await room.setNotificationMode(newMode == '' ? null : newMode);
-    if (!res) {
-      EasyLoading.dismiss();
-      return;
-    }
-    if (!context.mounted) {
-      EasyLoading.dismiss();
-      return;
-    }
-    EasyLoading.showToast(L10n.of(context).notificationStatusSubmitted);
-    await Future.delayed(const Duration(seconds: 1), () {
-      // FIXME: we want to refresh the view but don't know
-      //        when the event was confirmed form sync :(
-      // let's hope that a second delay is reasonable enough
-      ref.invalidate(maybeRoomProvider(roomId));
-    });
   }
 }
 

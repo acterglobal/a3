@@ -8,6 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::settings::blocked_users');
 
 class AddUserToBlock extends StatefulWidget {
   const AddUserToBlock({super.key});
@@ -136,10 +139,30 @@ class BlockedUsersPage extends ConsumerWidget {
       builder: (BuildContext context) => const AddUserToBlock(),
     );
     if (userToAdd == null) return;
-    final account = ref.read(accountProvider);
-    await account.ignoreUser(userToAdd);
-    if (!context.mounted) return;
-    EasyLoading.showToast(L10n.of(context).userAddedToBlockList(userToAdd));
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return;
+    }
+    EasyLoading.show(status: L10n.of(context).blockingUserProgress);
+    try {
+      final account = ref.read(accountProvider);
+      await account.ignoreUser(userToAdd);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showToast(L10n.of(context).userAddedToBlockList(userToAdd));
+    } catch (e, st) {
+      _log.severe('Failed to block user', e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).blockingUserFailed(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 
   Future<void> onDelete(
@@ -147,9 +170,25 @@ class BlockedUsersPage extends ConsumerWidget {
     WidgetRef ref,
     String userId,
   ) async {
-    final account = ref.read(accountProvider);
-    await account.unignoreUser(userId);
-    if (!context.mounted) return;
-    EasyLoading.showToast(L10n.of(context).userRemovedFromList);
+    EasyLoading.show(status: L10n.of(context).unblockingUser);
+    try {
+      final account = ref.read(accountProvider);
+      await account.unignoreUser(userId);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showToast(L10n.of(context).userRemovedFromList);
+    } catch (e, st) {
+      _log.severe('Failed to unblock user', e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).unblockingUserFailed(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 }
