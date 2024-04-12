@@ -78,9 +78,8 @@ async fn news_smoketest() -> Result<()> {
         async move {
             if client.latest_news_entries(10).await?.len() != 3 {
                 bail!("not all news found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
@@ -107,22 +106,22 @@ async fn news_smoketest() -> Result<()> {
 #[tokio::test]
 async fn news_plain_text_test() -> Result<()> {
     let _ = env_logger::try_init();
-    let (mut user, space_id) = random_user_with_random_space("news_plain").await?;
+    let (mut user, room_id) = random_user_with_random_space("news_plain").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_client = user.clone();
-    let space_id_str = space_id.to_string();
+    let target_id = room_id.clone();
     Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
-        let space_id = space_id_str.clone();
-        async move { client.space(space_id).await }
+        let room_id = target_id.clone();
+        async move { client.space(room_id.to_string()).await }
     })
     .await?;
 
-    let space = user.space(space_id.to_string()).await?;
+    let space = user.space(room_id.to_string()).await?;
     let mut draft = space.news_draft()?;
     let text_draft = user.text_plain_draft("This is a simple text".to_owned());
     draft
@@ -137,9 +136,8 @@ async fn news_plain_text_test() -> Result<()> {
         async move {
             if inner_space.latest_news_entries(1).await?.len() != 1 {
                 bail!("news not found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
@@ -171,22 +169,22 @@ async fn news_plain_text_test() -> Result<()> {
 #[tokio::test]
 async fn news_slide_color_test() -> Result<()> {
     let _ = env_logger::try_init();
-    let (mut user, space_id) = random_user_with_random_space("news_plain").await?;
+    let (mut user, room_id) = random_user_with_random_space("news_plain").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_client = user.clone();
-    let space_id_str = space_id.to_string();
+    let target_id = room_id.to_string();
     Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
-        let space_id = space_id_str.clone();
-        async move { client.space(space_id).await }
+        let room_id = target_id.clone();
+        async move { client.space(room_id.to_string()).await }
     })
     .await?;
 
-    let space = user.space(space_id.to_string()).await?;
+    let space = user.space(room_id.to_string()).await?;
     let mut draft = space.news_draft()?;
     let mut slide_draft = user
         .text_plain_draft("This is a simple text".to_owned())
@@ -202,9 +200,8 @@ async fn news_slide_color_test() -> Result<()> {
         async move {
             if inner_space.latest_news_entries(1).await?.len() != 1 {
                 bail!("news not found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
@@ -229,22 +226,22 @@ async fn news_slide_color_test() -> Result<()> {
 #[tokio::test]
 async fn news_markdown_text_test() -> Result<()> {
     let _ = env_logger::try_init();
-    let (mut user, space_id) = random_user_with_random_space("news_mkd").await?;
+    let (mut user, room_id) = random_user_with_random_space("news_mkd").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_client = user.clone();
-    let space_id_str = space_id.to_string();
+    let target_id = room_id.clone();
     Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
-        let space_id = space_id_str.clone();
-        async move { client.space(space_id).await }
+        let room_id = target_id.clone();
+        async move { client.space(room_id.to_string()).await }
     })
     .await?;
 
-    let space = user.space(space_id.to_string()).await?;
+    let space = user.space(room_id.to_string()).await?;
     let mut draft = space.news_draft()?;
     let text_draft = user.text_markdown_draft("## This is a simple text".to_owned());
     draft
@@ -259,9 +256,8 @@ async fn news_markdown_text_test() -> Result<()> {
         async move {
             if inner_space.latest_news_entries(1).await?.len() != 1 {
                 bail!("news not found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
@@ -296,18 +292,18 @@ async fn news_markdown_text_test() -> Result<()> {
 #[tokio::test]
 async fn news_jpg_image_with_text_test() -> Result<()> {
     let _ = env_logger::try_init();
-    let (mut user, space_id) = random_user_with_random_space("news_jpg").await?;
+    let (mut user, room_id) = random_user_with_random_space("news_jpg").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_client = user.clone();
-    let space_id_str = space_id.to_string();
+    let target_id = room_id.clone();
     Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
-        let space_id = space_id_str.clone();
-        async move { client.space(space_id).await }
+        let room_id = target_id.clone();
+        async move { client.space(room_id.to_string()).await }
     })
     .await?;
 
@@ -315,7 +311,7 @@ async fn news_jpg_image_with_text_test() -> Result<()> {
     let mut tmp_file = NamedTempFile::new()?;
     tmp_file.as_file_mut().write_all(bytes)?;
 
-    let space = user.space(space_id.to_string()).await?;
+    let space = user.space(room_id.to_string()).await?;
     let mut draft = space.news_draft()?;
     let image_draft = user.image_draft(
         tmp_file.path().to_string_lossy().to_string(),
@@ -333,9 +329,8 @@ async fn news_jpg_image_with_text_test() -> Result<()> {
         async move {
             if inner_space.latest_news_entries(1).await?.len() != 1 {
                 bail!("news not found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
@@ -365,18 +360,18 @@ async fn news_jpg_image_with_text_test() -> Result<()> {
 #[tokio::test]
 async fn news_png_image_with_text_test() -> Result<()> {
     let _ = env_logger::try_init();
-    let (mut user, space_id) = random_user_with_random_space("news_png").await?;
+    let (mut user, room_id) = random_user_with_random_space("news_png").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_client = user.clone();
-    let space_id_str = space_id.to_string();
+    let target_id = room_id.clone();
     Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
-        let space_id = space_id_str.clone();
-        async move { client.space(space_id).await }
+        let room_id = target_id.clone();
+        async move { client.space(room_id.to_string()).await }
     })
     .await?;
 
@@ -384,7 +379,7 @@ async fn news_png_image_with_text_test() -> Result<()> {
     let mut tmp_file = NamedTempFile::new()?;
     tmp_file.as_file_mut().write_all(bytes)?;
 
-    let space = user.space(space_id.to_string()).await?;
+    let space = user.space(room_id.to_string()).await?;
     let mut draft = space.news_draft()?;
     let image_draft = user.image_draft(
         tmp_file.path().to_string_lossy().to_string(),
@@ -402,9 +397,8 @@ async fn news_png_image_with_text_test() -> Result<()> {
         async move {
             if inner_space.latest_news_entries(1).await?.len() != 1 {
                 bail!("news not found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
@@ -420,18 +414,18 @@ async fn news_png_image_with_text_test() -> Result<()> {
 #[tokio::test]
 async fn news_multiple_slide_test() -> Result<()> {
     let _ = env_logger::try_init();
-    let (mut user, space_id) = random_user_with_random_space("news_png").await?;
+    let (mut user, room_id) = random_user_with_random_space("news_png").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_client = user.clone();
-    let space_id_str = space_id.to_string();
+    let target_id = room_id.clone();
     Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
-        let space_id = space_id_str.clone();
-        async move { client.space(space_id).await }
+        let room_id = target_id.clone();
+        async move { client.space(room_id.to_string()).await }
     })
     .await?;
 
@@ -440,7 +434,7 @@ async fn news_multiple_slide_test() -> Result<()> {
         "./fixtures/PNG_transparency_demonstration_1.png"
     ))?;
 
-    let space = user.space(space_id.to_string()).await?;
+    let space = user.space(room_id.to_string()).await?;
     let mut draft = space.news_draft()?;
     let image_draft = user.image_draft(
         tmp_file.path().to_string_lossy().to_string(),
@@ -483,9 +477,8 @@ async fn news_multiple_slide_test() -> Result<()> {
         async move {
             if inner_space.latest_news_entries(1).await?.len() != 1 {
                 bail!("news not found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
@@ -519,18 +512,18 @@ async fn news_multiple_slide_test() -> Result<()> {
 #[tokio::test]
 async fn news_like_reaction_test() -> Result<()> {
     let _ = env_logger::try_init();
-    let (mut user, space_id) = random_user_with_random_space("news_like").await?;
+    let (mut user, room_id) = random_user_with_random_space("news_like").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_client = user.clone();
-    let space_id_str = space_id.to_string();
+    let target_id = room_id.clone();
     Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
-        let space_id = space_id_str.clone();
-        async move { client.space(space_id).await }
+        let room_id = target_id.clone();
+        async move { client.space(room_id.to_string()).await }
     })
     .await?;
 
@@ -538,7 +531,7 @@ async fn news_like_reaction_test() -> Result<()> {
     let mut tmp_file = NamedTempFile::new()?;
     tmp_file.as_file_mut().write_all(bytes)?;
 
-    let space = user.space(space_id.to_string()).await?;
+    let space = user.space(room_id.to_string()).await?;
     let mut draft = space.news_draft()?;
     let image_draft = user.image_draft(
         tmp_file.path().to_string_lossy().to_string(),
@@ -556,9 +549,8 @@ async fn news_like_reaction_test() -> Result<()> {
         async move {
             if inner_space.latest_news_entries(1).await?.len() != 1 {
                 bail!("news not found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;

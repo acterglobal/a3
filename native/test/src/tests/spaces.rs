@@ -42,9 +42,8 @@ async fn spaces_deleted() -> Result<()> {
         async move {
             if client.spaces().await?.len() != 3 {
                 bail!("not all spaces found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
@@ -68,9 +67,8 @@ async fn spaces_deleted() -> Result<()> {
         async move {
             if client.spaces().await?.len() != 2 {
                 bail!("not the right number of spaces found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
@@ -79,7 +77,7 @@ async fn spaces_deleted() -> Result<()> {
     Retry::spawn(retry_strategy.clone(), || async {
         if user.spaces().await?.is_empty() {
             bail!("still no spaces found");
-        };
+        }
         Ok(())
     })
     .await?;
@@ -104,9 +102,8 @@ async fn spaces_deleted() -> Result<()> {
         async move {
             if client.spaces().await?.len() != 1 {
                 bail!("not the right number of spaces found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
@@ -152,9 +149,8 @@ async fn create_subspace() -> Result<()> {
         async move {
             if client.spaces().await?.len() != 1 {
                 bail!("not all spaces found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
@@ -178,9 +174,8 @@ async fn create_subspace() -> Result<()> {
         async move {
             if client.spaces().await?.len() != 2 {
                 bail!("not the right number of spaces found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
@@ -197,7 +192,7 @@ async fn create_subspace() -> Result<()> {
     Retry::spawn(retry_strategy.clone(), || async {
         if user.spaces().await?.is_empty() {
             bail!("still no spaces found");
-        };
+        }
         Ok(())
     })
     .await?;
@@ -218,9 +213,8 @@ async fn update_name() -> Result<()> {
         async move {
             if client.spaces().await?.len() != 1 {
                 bail!("not all spaces found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
@@ -244,11 +238,11 @@ async fn update_name() -> Result<()> {
         let client = fetcher_client.clone();
         let space_id = space_id_clone.clone();
         async move {
-            if client.space(space_id).await?.name() == Some("New Name".to_owned()) {
-                Ok(())
-            } else {
-                bail!("Name not set")
+            let space = client.space(space_id).await?;
+            if space.name() != Some("New Name".to_owned()) {
+                bail!("Name not set");
             }
+            Ok(())
         }
     })
     .await?;
@@ -280,11 +274,10 @@ async fn update_name() -> Result<()> {
     //     let client = fetcher_client.clone();
     //     let space_id = space_id_clone.clone();
     //     async move {
-    //         if client.space(space_id).await?.name().is_none() {
-    //             Ok(())
-    //         } else {
-    //             bail!("Name not set")
+    //         if client.space(space_id).await?.name().is_some() {
+    //             bail!("Name not set");
     //         }
+    //         Ok(())
     //     }
     // })
     // .await?;
@@ -324,9 +317,8 @@ async fn update_topic() -> Result<()> {
         async move {
             if client.spaces().await?.len() != 1 {
                 bail!("not all spaces found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
@@ -350,11 +342,11 @@ async fn update_topic() -> Result<()> {
         let client = fetcher_client.clone();
         let space_id = space_id_clone.clone();
         async move {
-            if client.space(space_id).await?.topic() == Some("New topic".to_owned()) {
-                Ok(())
-            } else {
-                bail!("Topic not set")
+            let space = client.space(space_id).await?;
+            if space.topic() != Some("New topic".to_owned()) {
+                bail!("Topic not set");
             }
+            Ok(())
         }
     })
     .await?;
@@ -364,7 +356,7 @@ async fn update_topic() -> Result<()> {
     Retry::spawn(retry_strategy.clone(), || async {
         if listener.is_empty() {
             bail!("no updates received");
-        };
+        }
         Ok(())
     })
     .await?;

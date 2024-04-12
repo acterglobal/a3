@@ -1,5 +1,9 @@
 use acter::api::SuperInvitesTokenUpdateBuilder;
 use anyhow::Result;
+use tokio_retry::{
+    strategy::{jitter, FibonacciBackoff},
+    Retry,
+};
 
 use crate::utils::{random_user_under_token, random_user_with_random_space};
 
@@ -7,8 +11,21 @@ use crate::utils::{random_user_under_token, random_user_with_random_space};
 async fn super_invites_flow_with_registration_and_rooms() -> Result<()> {
     let _ = env_logger::try_init();
     let (mut user, room_id) = random_user_with_random_space("super_invites_flow").await?;
+
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = user.clone();
+    let target_id = room_id.clone();
+    Retry::spawn(retry_strategy, move || {
+        let client = fetcher_client.clone();
+        let room_id = target_id.clone();
+        async move { client.space(room_id.to_string()).await }
+    })
+    .await?;
+
     let _space = user.space(room_id.to_string()).await?;
     let super_invites = user.super_invites();
     let tokens = super_invites.tokens().await?;
@@ -55,8 +72,21 @@ async fn super_invites_flow_with_registration_and_rooms() -> Result<()> {
 async fn super_invites_manage() -> Result<()> {
     let _ = env_logger::try_init();
     let (mut user, room_id) = random_user_with_random_space("super_invites_manage").await?;
+
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = user.clone();
+    let target_id = room_id.clone();
+    Retry::spawn(retry_strategy, move || {
+        let client = fetcher_client.clone();
+        let room_id = target_id.clone();
+        async move { client.space(room_id.to_string()).await }
+    })
+    .await?;
+
     let _space = user.space(room_id.to_string()).await?;
     let super_invites = user.super_invites();
     let tokens = super_invites.tokens().await?;
