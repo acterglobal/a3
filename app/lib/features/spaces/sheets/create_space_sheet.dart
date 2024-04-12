@@ -212,21 +212,19 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       }
 
       EasyLoading.dismiss();
-      // We are doing as expected, but the lints triggers.
-      // ignore: use_build_context_synchronously
-      if (!context.mounted) {
-        return;
-      }
+      if (!context.mounted) return;
       Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
       context.goNamed(
         Routes.space.name,
-        pathParameters: {
-          'spaceId': roomId.toString(),
-        },
+        pathParameters: {'spaceId': roomId.toString()},
       );
     } catch (err) {
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
-        '${L10n.of(context).creatingSpaceFailed} $err',
+        L10n.of(context).creatingSpaceFailed(err),
         duration: const Duration(seconds: 3),
       );
     }

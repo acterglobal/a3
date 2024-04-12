@@ -151,7 +151,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
 
   Future<void> _handleCreatePin() async {
     if (!_formKey.currentState!.validate()) return;
-    EasyLoading.show(status: 'Creating pin...', dismissOnTap: false);
+    EasyLoading.show(status: L10n.of(context).creatingPin);
     try {
       final spaceId = ref.read(selectedSpaceIdProvider);
       final space = await ref.read(spaceProvider(spaceId!).future);
@@ -179,23 +179,25 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
 
       // reset controllers
       _linkController.text = '';
-      EasyLoading.showSuccess('Pin created successfully');
-      // We are doing as expected, but the lints triggers.
-      // ignore: use_build_context_synchronously
-      if (!context.mounted) return;
-
-      // ignore: use_build_context_synchronously
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showToast(L10n.of(context).pinCreatedSuccessfully);
       Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
-      // ignore: use_build_context_synchronously
       context.pushNamed(
         Routes.pin.name,
         pathParameters: {'pinId': pinId.toString()},
       );
     } catch (e) {
-      // We are doing as expected, but the lints triggers.
-      // ignore: use_build_context_synchronously
-      if (!context.mounted) return;
-      EasyLoading.showError('An error occured creating pin $e');
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).errorCreatingPin(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 }

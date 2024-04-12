@@ -131,20 +131,19 @@ class _BugReportState extends ConsumerState<BugReportPage> {
       );
       String? issueId = getIssueId(reportUrl);
       loadingNotifier.update((state) => false);
-      if (mounted) {
-        EasyLoading.showToast(
-          issueId != null
-              ? L10n.of(context).reportedBugSuccessful(issueId)
-              : L10n.of(context).thanksForReport,
-          toastPosition: EasyLoadingToastPosition.bottom,
-        );
+      if (context.mounted) {
+        final status = issueId != null
+            ? L10n.of(context).reportedBugSuccessful(issueId)
+            : L10n.of(context).thanksForReport;
+        EasyLoading.showToast(status);
       }
       return true;
     } catch (e) {
       loadingNotifier.update((state) => false);
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(L10n.of(context).bugReportingError(e))),
+        EasyLoading.showError(
+          L10n.of(context).bugReportingError(e),
+          duration: const Duration(seconds: 3),
         );
       }
       return false;

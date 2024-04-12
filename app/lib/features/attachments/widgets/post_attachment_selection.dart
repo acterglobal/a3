@@ -7,6 +7,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show AttachmentDraft, AttachmentsManager;
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mime/mime.dart';
@@ -95,14 +96,16 @@ class _PostAttachmentSelectionState
   Future<void> handleAttachmentSend() async {
     /// converts user selected media to attachment draft and sends state list.
     /// only supports image/video/audio/file.
-    EasyLoading.show(status: 'Sending attachments', dismissOnTap: false);
+    final lang = L10n.of(context);
+    EasyLoading.show(status: lang.sendingAttachment);
     final client = ref.read(alwaysClientProvider);
     List<AttachmentDraft> drafts = [];
     try {
       for (var selected in widget.attachments) {
         final type = selected.type;
         final file = selected.file;
-        final mimeType = lookupMimeType(file.path)!;
+        final mimeType = lookupMimeType(file.path);
+        if (mimeType == null) throw lang.failedToDetectMimeType;
         final manager = widget.manager;
         if (type == AttachmentType.camera || type == AttachmentType.image) {
           Uint8List bytes = await file.readAsBytes();
@@ -142,8 +145,15 @@ class _PostAttachmentSelectionState
       }
       EasyLoading.dismiss();
     } catch (e) {
-      EasyLoading.showError('Error sending attachments $e');
       _log.severe('Error sending attachments', e);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        lang.errorSendingAttachment(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 }

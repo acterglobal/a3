@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/base_body_widget.dart';
@@ -11,16 +10,17 @@ import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/chat/widgets/skeletons/action_item_skeleton_widget.dart';
 import 'package:acter/features/chat/widgets/skeletons/members_list_skeleton_widget.dart';
 import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 final _log = Logger('a3::chat::room_profile_page');
 
@@ -149,9 +149,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
               context: context,
               iconData: isFav ? Icons.bookmark : Icons.bookmark_border,
               actionName: L10n.of(context).bookmark,
-              onTap: () async {
-                await conv.setFavorite(!isFav);
-              },
+              onTap: () async => await conv.setFavorite(!isFav),
             );
           },
           error: (e, st) => Skeletonizer(
@@ -172,24 +170,15 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         // Invite
         myMembership.when(
           data: (membership) {
+            if (membership == null) return const SizedBox();
             return _actionItem(
               context: context,
               iconData: Atlas.user_plus_thin,
               actionName: L10n.of(context).invite,
-              actionItemColor: membership!.canString('CanInvite')
+              actionItemColor: membership.canString('CanInvite')
                   ? null
                   : Theme.of(context).colorScheme.onSurface,
-              onTap: () {
-                membership.canString('CanInvite')
-                    ? context.pushNamed(
-                        Routes.spaceInvite.name,
-                        pathParameters: {'spaceId': widget.roomId},
-                      )
-                    : customMsgSnackbar(
-                        context,
-                        L10n.of(context).notEnoughPowerLevelForInvites,
-                      );
-              },
+              onTap: () => _handleInvite(membership),
             );
           },
           error: (e, st) => Text(L10n.of(context).errorLoadingTileDueTo(e)),
@@ -204,16 +193,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
           context: context,
           iconData: Icons.ios_share,
           actionName: L10n.of(context).share,
-          onTap: () async {
-            final roomLink =
-                await (await ref.read(chatProvider(widget.roomId).future))
-                    .permalink();
-            if (!mounted) return;
-            Share.share(
-              roomLink,
-              subject: L10n.of(context).linkToChat,
-            );
-          },
+          onTap: _handleShare,
         ),
 
         // Leave room
@@ -222,7 +202,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
           iconData: Icons.exit_to_app,
           actionName: L10n.of(context).leave,
           actionItemColor: Theme.of(context).colorScheme.error,
-          onTap: () => showLeaveRoomDialog(context: context),
+          onTap: showLeaveRoomDialog,
         ),
       ],
     );
@@ -315,8 +295,10 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
           members.when(
             data: (list) {
               return Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 child: Text(
                   L10n.of(context).membersCount(list.length),
                   style: Theme.of(context).textTheme.titleSmall,
@@ -324,9 +306,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
               );
             },
             loading: () => Skeletonizer(
-              child: Text(
-                L10n.of(context).membersCount(0),
-              ),
+              child: Text(L10n.of(context).membersCount(0)),
             ),
             error: (error, stackTrace) =>
                 Text(L10n.of(context).errorLoadingMembersCount(error)),
@@ -341,9 +321,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     );
   }
 
-  Future<void> showLeaveRoomDialog({
-    required BuildContext context,
-  }) async {
+  Future<void> showLeaveRoomDialog() async {
     showAdaptiveDialog(
       context: context,
       builder: (ctx) => DefaultDialog(
@@ -361,23 +339,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
             child: Text(L10n.of(context).no),
           ),
           ElevatedButton(
-            onPressed: () async {
-              Navigator.of(context, rootNavigator: true).pop();
-              EasyLoading.show(status: L10n.of(context).leavingRoom);
-              var res = await _handleLeaveRoom(ref, widget.roomId);
-              if (!mounted) return;
-              if (res) {
-                if (context.mounted) {
-                  EasyLoading.dismiss();
-                  context.goNamed(Routes.chat.name);
-                }
-              } else {
-                EasyLoading.dismiss();
-                EasyLoading.showError(
-                  L10n.of(context).someErrorOccurredLeavingRoom,
-                );
-              }
-            },
+            onPressed: _handleLeaveRoom,
             child: Text(L10n.of(context).yes),
           ),
         ],
@@ -385,8 +347,76 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     );
   }
 
-  Future<bool> _handleLeaveRoom(WidgetRef ref, String roomId) async {
-    final convo = await ref.read(chatProvider(roomId).future);
-    return await convo.leave();
+  Future<void> _handleLeaveRoom() async {
+    Navigator.of(context, rootNavigator: true).pop();
+    EasyLoading.show(status: L10n.of(context).leavingRoom);
+    try {
+      final convo = await ref.read(chatProvider(widget.roomId).future);
+      final res = await convo.leave();
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      if (res) {
+        EasyLoading.dismiss();
+        context.goNamed(Routes.chat.name);
+      } else {
+        EasyLoading.showError(
+          L10n.of(context).someErrorOccurredLeavingRoom,
+          duration: const Duration(seconds: 3),
+        );
+      }
+    } catch (e, st) {
+      _log.severe("Couldn't leave room", e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToLeaveRoom(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
+  }
+
+  void _handleInvite(Member membership) {
+    if (membership.canString('CanInvite')) {
+      context.pushNamed(
+        Routes.spaceInvite.name,
+        pathParameters: {'spaceId': widget.roomId},
+      );
+    } else {
+      EasyLoading.showError(
+        L10n.of(context).notEnoughPowerLevelForInvites,
+        duration: const Duration(seconds: 3),
+      );
+    }
+  }
+
+  Future<void> _handleShare() async {
+    EasyLoading.show(status: L10n.of(context).sharingRoom);
+    try {
+      final convo = await ref.read(chatProvider(widget.roomId).future);
+      final roomLink = await convo.permalink();
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      Share.share(
+        roomLink,
+        subject: L10n.of(context).linkToChat,
+      );
+      EasyLoading.showToast(L10n.of(context).sharedSuccessfully);
+    } catch (e, st) {
+      _log.severe("Couldn't share this room", e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToShareRoom(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 }

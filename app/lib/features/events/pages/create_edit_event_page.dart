@@ -12,10 +12,10 @@ import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 final _log = Logger('a3::event::createOrEdit');
 
@@ -304,33 +304,28 @@ class CreateEditEventPageConsumerState
       firstDate: DateTime.now(),
       lastDate: DateTime.now().addYears(1),
     );
-    if (date != null) {
-      if (isStartDate) {
-        _selectedStartDate = date;
-        _startDateController.text = eventDateFormat(date);
-        // if end date is empty and if start date is same or after end date
-        if (_endDateController.text.isEmpty ||
-            date.isSameOrAfter(_selectedEndDate)) {
-          _selectedEndDate = date;
-          _endDateController.text = eventDateFormat(date);
-        }
-      } else {
-        // if date is same or after start date
-        if (date.isSameOrAfter(_selectedStartDate)) {
-          _selectedEndDate = date;
-          _endDateController.text = eventDateFormat(date);
-          // When user change date that time end time is reset
-          _endTimeController.text = '';
-        } else {
-          if (!context.mounted) return;
-          EasyLoading.showToast(
-            L10n.of(context).pleaseSelectValidEndDate,
-            toastPosition: EasyLoadingToastPosition.bottom,
-          );
-        }
+    if (date == null || !context.mounted) return;
+    if (isStartDate) {
+      _selectedStartDate = date;
+      _startDateController.text = eventDateFormat(date);
+      // if end date is empty and if start date is same or after end date
+      if (_endDateController.text.isEmpty ||
+          date.isSameOrAfter(_selectedEndDate)) {
+        _selectedEndDate = date;
+        _endDateController.text = eventDateFormat(date);
       }
-      setState(() {});
+    } else {
+      // if date is same or after start date
+      if (date.isSameOrAfter(_selectedStartDate)) {
+        _selectedEndDate = date;
+        _endDateController.text = eventDateFormat(date);
+        // When user change date that time end time is reset
+        _endTimeController.text = '';
+      } else {
+        EasyLoading.showToast(L10n.of(context).pleaseSelectValidEndDate);
+      }
     }
+    setState(() {});
   }
 
   // Selecting Time
@@ -339,33 +334,28 @@ class CreateEditEventPageConsumerState
       context: context,
       initialTime: isStartTime ? _selectedStartTime : _selectedEndTime,
     );
-    if (time != null) {
-      if (!mounted) return;
-      if (isStartTime) {
-        _selectedStartTime = time;
-        _startTimeController.text = _selectedStartTime.format(context);
-        // select end time after one of start time
-        if (_endTimeController.text.isEmpty) {
-          _selectedEndTime = time.replacing(hour: _selectedStartTime.hour + 1);
-          _endTimeController.text = _selectedEndTime.format(context);
-        }
-      } else {
-        // Checking if end time is before start time
-        final double startTime = _selectedStartTime.toDouble();
-        final double endTime = time.toDouble();
-        if (_selectedStartDate.isSameDay(_selectedEndDate) &&
-            startTime > endTime) {
-          EasyLoading.showToast(
-            L10n.of(context).pleaseSelectValidEndTime,
-            toastPosition: EasyLoadingToastPosition.bottom,
-          );
-        } else {
-          _selectedEndTime = time;
-          _endTimeController.text = _selectedEndTime.format(context);
-        }
+    if (time == null || !context.mounted) return;
+    if (isStartTime) {
+      _selectedStartTime = time;
+      _startTimeController.text = _selectedStartTime.format(context);
+      // select end time after one of start time
+      if (_endTimeController.text.isEmpty) {
+        _selectedEndTime = time.replacing(hour: _selectedStartTime.hour + 1);
+        _endTimeController.text = _selectedEndTime.format(context);
       }
-      setState(() {});
+    } else {
+      // Checking if end time is before start time
+      final double startTime = _selectedStartTime.toDouble();
+      final double endTime = time.toDouble();
+      if (_selectedStartDate.isSameDay(_selectedEndDate) &&
+          startTime > endTime) {
+        EasyLoading.showToast(L10n.of(context).pleaseSelectValidEndTime);
+      } else {
+        _selectedEndTime = time;
+        _endTimeController.text = _selectedEndTime.format(context);
+      }
     }
+    setState(() {});
   }
 
   // Description field
@@ -443,20 +433,17 @@ class CreateEditEventPageConsumerState
   Future<void> _handleCreateEvent() async {
     if (!_formKey.currentState!.validate()) return;
 
-    EasyLoading.show(
-      status: L10n.of(context).creatingCalendarEvent,
-      dismissOnTap: false,
-    );
-    try {
-      final spaceId = ref.read(selectedSpaceIdProvider);
-      if (spaceId == null) {
-        EasyLoading.showError(
-          L10n.of(context).pleaseSelectSpace,
-          duration: const Duration(seconds: 2),
-        );
-        return;
-      }
+    final spaceId = ref.read(selectedSpaceIdProvider);
+    if (spaceId == null) {
+      EasyLoading.showError(
+        L10n.of(context).pleaseSelectSpace,
+        duration: const Duration(seconds: 2),
+      );
+      return;
+    }
 
+    EasyLoading.show(status: L10n.of(context).creatingCalendarEvent);
+    try {
       // Replacing hours and minutes from DateTime
       // Start Date
       final startDateTime = _calculateStartDate();
@@ -502,11 +489,15 @@ class CreateEditEventPageConsumerState
           pathParameters: {'calendarId': eventId.toString()},
         );
       }
-    } catch (e) {
-      EasyLoading.dismiss();
-      if (!mounted) return;
+    } catch (e, st) {
+      _log.severe('Failed to create calendar event', e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
-        '${L10n.of(context).errorCreatingCalendarEvent}: $e',
+        L10n.of(context).errorCreatingCalendarEvent(e),
+        duration: const Duration(seconds: 3),
       );
     }
   }
@@ -515,10 +506,7 @@ class CreateEditEventPageConsumerState
   Future<void> _handleUpdateEvent() async {
     if (!_formKey.currentState!.validate()) return;
 
-    EasyLoading.show(
-      status: L10n.of(context).updatingEvent,
-      dismissOnTap: false,
-    );
+    EasyLoading.show(status: L10n.of(context).updatingEvent);
     try {
       // We always have calendar object at this stage.
       final calendarEvent =
@@ -553,10 +541,16 @@ class CreateEditEventPageConsumerState
       ref.invalidate(spaceEventsProvider(spaceId)); // events page in space
 
       if (context.mounted) context.pop();
-    } catch (e) {
-      EasyLoading.dismiss();
-      if (!mounted) return;
-      EasyLoading.showError('${L10n.of(context).errorUpdatingEvent}: $e');
+    } catch (e, st) {
+      _log.severe('Failed to update calendar event', e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).errorUpdatingEvent(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 }

@@ -277,11 +277,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   Future<void> onRsvp(RsvpStatusTag status, WidgetRef ref) async {
+    EasyLoading.show(status: L10n.of(context).updatingRSVP);
     try {
-      EasyLoading.show(
-        status: L10n.of(context).updatingRSVP,
-        dismissOnTap: false,
-      );
       final event =
           await ref.read(calendarEventProvider(widget.calendarId).future);
       final rsvpManager = await event.rsvps();
@@ -302,12 +299,16 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       // refresh cache
       final client = ref.read(alwaysClientProvider);
       await client.waitForRsvp(rsvpId.toString(), null);
+      EasyLoading.dismiss();
       // refresh UI of this page & outer page
       ref.invalidate(myRsvpStatusProvider(widget.calendarId));
     } catch (e, s) {
       _log.severe('Error =>', e, s);
-    } finally {
-      EasyLoading.dismiss();
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(e.toString(), duration: const Duration(seconds: 3));
     }
   }
 

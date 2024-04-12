@@ -1,11 +1,10 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:logging/logging.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 
 final _log = Logger('a3::space::non_acter_space_card');
 
@@ -17,7 +16,7 @@ class NonActerSpaceCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final myMembership = ref.watch(roomMembershipProvider(spaceId));
-    var fallback = Text(
+    final fallback = Text(
       L10n.of(context).askASpaceAdminToConvertThis,
       style: Theme.of(context).textTheme.bodySmall,
     );
@@ -57,7 +56,7 @@ class NonActerSpaceCard extends ConsumerWidget {
   }
 
   void upgradeSpace(BuildContext context, WidgetRef ref) async {
-    customMsgSnackbar(context, L10n.of(context).convertingToActerSpace);
+    EasyLoading.show(status: L10n.of(context).convertingToActerSpace);
 
     try {
       final space = await ref.read(spaceProvider(spaceId).future);
@@ -65,21 +64,20 @@ class NonActerSpaceCard extends ConsumerWidget {
 
       await space.setActerSpaceStates();
       _log.info('after setting space state');
-      // We are doing as expected, but the lint still triggers.
-      // ignore: use_build_context_synchronously
       if (!context.mounted) {
+        EasyLoading.dismiss();
         return;
       }
-      customMsgSnackbar(
-        context,
-        L10n.of(context).successfullyUpgradedToActerSpace,
-      );
+      EasyLoading.showToast(L10n.of(context).successfullyUpgradedToActerSpace);
     } catch (e) {
       if (!context.mounted) {
+        EasyLoading.dismiss();
         return;
       }
-      context.pop();
-      customMsgSnackbar(context, '${L10n.of(context).upgradeFailed}: $e');
+      EasyLoading.showError(
+        L10n.of(context).upgradeFailed(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 }
