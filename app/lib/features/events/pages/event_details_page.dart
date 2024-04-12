@@ -78,7 +78,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     return SliverAppBar(
       expandedHeight: 200.0,
       pinned: true,
-      actions: [_buildActionMenu(calendarEvent)],
+      actions: [
+        _buildShareAction(calendarEvent),
+        _buildActionMenu(calendarEvent),
+      ],
       flexibleSpace: Container(
         padding: const EdgeInsets.only(top: 20),
         decoration: const BoxDecoration(gradient: primaryGradient),
@@ -209,8 +212,6 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           _buildEventDataSet(calendarEvent),
           const SizedBox(height: 10),
           _buildEventDescription(calendarEvent),
-          const SizedBox(height: 10),
-          _buildEventActions(calendarEvent),
           const SizedBox(height: 40),
           AttachmentSectionWidget(manager: calendarEvent.attachments()),
           const SizedBox(height: 40),
@@ -366,22 +367,14 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     );
   }
 
-  Widget _buildEventActions(CalendarEvent calendarEvent) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 15.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          InkWell(
-            onTap: () => onShareEvent(calendarEvent),
-            child: Chip(
-              backgroundColor: Colors.transparent,
-              padding: const EdgeInsets.symmetric(horizontal: 5.0),
-              avatar: const Icon(Icons.share),
-              label: Text(L10n.of(context).shareIcal),
-            ),
-          ),
-        ],
+  Widget _buildShareAction(CalendarEvent calendarEvent) {
+    return InkWell(
+      onTap: () => onShareEvent(calendarEvent),
+      child: Chip(
+        backgroundColor: Colors.transparent,
+        padding: const EdgeInsets.symmetric(horizontal: 5.0),
+        avatar: const Icon(Icons.share),
+        label: Text(L10n.of(context).shareIcal),
       ),
     );
   }
