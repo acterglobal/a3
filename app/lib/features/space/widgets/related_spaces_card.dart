@@ -23,10 +23,8 @@ class RelatedSpacesCard extends ConsumerWidget {
           style: Theme.of(context).textTheme.bodySmall,
         ),
       ),
-      error: (error, stack) => SliverToBoxAdapter(
-        child: Text(L10n.of(context).loadingSpacesFailed(error)),
-      ),
-      loading: () => SliverToBoxAdapter(child: Text(L10n.of(context).loading)),
+      error: (error, stack) => Text(L10n.of(context).loadingSpacesFailed(error)),
+      loading: () => Text(L10n.of(context).loading),
     );
   }
 }
