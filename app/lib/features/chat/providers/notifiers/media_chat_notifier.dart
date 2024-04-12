@@ -85,6 +85,7 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
       } catch (error, stackTrace) {
         _log.severe('Error downloading media:', error, stackTrace);
         state = state.copyWith(
+          isDownloading: false,
           mediaChatLoadingState: MediaChatLoadingState.error(
             'Some error occurred ${error.toString()}',
           ),
