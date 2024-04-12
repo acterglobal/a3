@@ -68,7 +68,9 @@ class MyTasksSection extends ConsumerWidget {
                           (task) => TaskEntry(
                             task: task,
                             showBreadCrumb: true,
-                            onDone: () => onTaskDone(context),
+                            onDone: () => EasyLoading.showToast(
+                              L10n.of(context).markedAsDone,
+                            ),
                           ),
                         )
                         .toList(),
@@ -80,9 +82,5 @@ class MyTasksSection extends ConsumerWidget {
         ],
       ),
     );
-  }
-
-  void onTaskDone(BuildContext context) {
-    EasyLoading.showToast(L10n.of(context).markedAsDone);
   }
 }

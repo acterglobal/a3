@@ -12,10 +12,10 @@ import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 final _log = Logger('a3::event::createOrEdit');
 
@@ -304,8 +304,7 @@ class CreateEditEventPageConsumerState
       firstDate: DateTime.now(),
       lastDate: DateTime.now().addYears(1),
     );
-    if (date == null) return;
-    if (!context.mounted) return;
+    if (date == null || !context.mounted) return;
     if (isStartDate) {
       _selectedStartDate = date;
       _startDateController.text = eventDateFormat(date);
@@ -335,8 +334,7 @@ class CreateEditEventPageConsumerState
       context: context,
       initialTime: isStartTime ? _selectedStartTime : _selectedEndTime,
     );
-    if (time == null) return;
-    if (!context.mounted) return;
+    if (time == null || !context.mounted) return;
     if (isStartTime) {
       _selectedStartTime = time;
       _startTimeController.text = _selectedStartTime.format(context);

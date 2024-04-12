@@ -4,10 +4,10 @@ import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/attachments/widgets/attachment_container.dart';
-import 'package:acter/features/attachments/widgets/attachment_options.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
+import 'package:acter/features/attachments/widgets/attachment_container.dart';
+import 'package:acter/features/attachments/widgets/attachment_options.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/custom_message_builder.dart';
@@ -532,7 +532,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
       children: [
         const SizedBox(width: 5),
         Text(
-          '${L10n.of(context).editMessage}:',
+          L10n.of(context).editMessage,
           style: const TextStyle(color: Colors.grey, fontSize: 12),
         ),
         const Spacer(),

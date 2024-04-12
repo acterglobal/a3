@@ -27,10 +27,10 @@ class MessageMetadataBuilder extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final receipts = message.metadata?['receipts'];
     EventSendState? sendState = message.metadata?['eventState'];
-    if (receipts?.isNotEmpty == true) {
+    if (receipts != null && receipts.isNotEmpty == true) {
       return _UserReceiptsWidget(
         roomId: convo.getRoomIdStr(),
-        seenList: (receipts! as Map<String, int>).keys.toList(),
+        seenList: (receipts as Map<String, int>).keys.toList(),
       );
     } else {
       if (sendState != null) {
@@ -42,6 +42,7 @@ class MessageMetadataBuilder extends ConsumerWidget {
               child: CircularProgressIndicator(),
             );
           case 'SendingFailed':
+            final err = sendState.error();
             return Row(
               children: <Widget>[
                 GestureDetector(
@@ -54,15 +55,12 @@ class MessageMetadataBuilder extends ConsumerWidget {
                         ),
                   ),
                 ),
-                const SizedBox(
-                  width: 10,
-                ),
+                const SizedBox(width: 10),
                 GestureDetector(
                   onTap: () => _handleRetry(ref),
                   child: RichText(
                     text: TextSpan(
-                      text:
-                          L10n.of(context).failedToSend('${sendState.error()}'),
+                      text: L10n.of(context).failedToSend(err.toString()),
                       style: Theme.of(context).textTheme.labelSmall!.copyWith(
                             color: Theme.of(context).colorScheme.neutral5,
                           ),
@@ -81,9 +79,7 @@ class MessageMetadataBuilder extends ConsumerWidget {
                     ),
                   ),
                 ),
-                const SizedBox(
-                  width: 5,
-                ),
+                const SizedBox(width: 5),
                 Icon(
                   Atlas.warning_thin,
                   color: Theme.of(context).colorScheme.error,
