@@ -350,25 +350,36 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
   Future<void> _handleLeaveRoom() async {
     Navigator.of(context, rootNavigator: true).pop();
     EasyLoading.show(status: L10n.of(context).leavingRoom);
-    final convo = await ref.read(chatProvider(widget.roomId).future);
-    final res = await convo.leave();
-    if (!context.mounted) {
-      EasyLoading.dismiss();
-      return;
-    }
-    if (res) {
-      EasyLoading.dismiss();
-      context.goNamed(Routes.chat.name);
-    } else {
+    try {
+      final convo = await ref.read(chatProvider(widget.roomId).future);
+      final res = await convo.leave();
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      if (res) {
+        EasyLoading.dismiss();
+        context.goNamed(Routes.chat.name);
+      } else {
+        EasyLoading.showError(
+          L10n.of(context).someErrorOccurredLeavingRoom,
+          duration: const Duration(seconds: 3),
+        );
+      }
+    } catch (e) {
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
-        L10n.of(context).someErrorOccurredLeavingRoom,
+        L10n.of(context).failedToLeaveRoom(e),
         duration: const Duration(seconds: 3),
       );
     }
   }
 
   void _handleInvite(Member membership) {
-    if (membership.canString('CanInvite') == true) {
+    if (membership.canString('CanInvite')) {
       context.pushNamed(
         Routes.spaceInvite.name,
         pathParameters: {'spaceId': widget.roomId},
@@ -382,12 +393,28 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
   }
 
   Future<void> _handleShare() async {
-    final convo = await ref.read(chatProvider(widget.roomId).future);
-    final roomLink = await convo.permalink();
-    if (!mounted) return;
-    Share.share(
-      roomLink,
-      subject: L10n.of(context).linkToChat,
-    );
+    EasyLoading.show(status: L10n.of(context).sharingRoom);
+    try {
+      final convo = await ref.read(chatProvider(widget.roomId).future);
+      final roomLink = await convo.permalink();
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      Share.share(
+        roomLink,
+        subject: L10n.of(context).linkToChat,
+      );
+      EasyLoading.showToast(L10n.of(context).sharedSuccessfully);
+    } catch (e) {
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToShareRoom(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 }
