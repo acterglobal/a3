@@ -1,9 +1,11 @@
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/search/model/util.dart';
+import 'package:acter/features/search/providers/search.dart';
 import 'package:acter/features/search/providers/spaces.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:go_router/go_router.dart';
 
 class SpacesBuilder extends ConsumerWidget {
   final NavigateTo navigateTo;
@@ -22,7 +24,19 @@ class SpacesBuilder extends ConsumerWidget {
       data: (data) {
         final Widget body;
         if (data.isEmpty) {
-          body = Text(L10n.of(context).noMatchingSpacesFound);
+          body = OutlinedButton.icon(
+            onPressed: () {
+              final query = ref.read(searchValueProvider);
+              context.pushNamed(
+                Routes.joinSpace.name,
+                queryParameters: {'query': query},
+              );
+            },
+            icon: const Icon(Icons.search),
+            label: Text(
+              L10n.of(context).noMatchingSpacesFound,
+            ),
+          );
         } else {
           final List<Widget> children = data
               .map(

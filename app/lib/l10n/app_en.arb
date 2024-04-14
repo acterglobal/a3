@@ -1547,7 +1547,7 @@
   "includePrevLog": "Include logs from previous run",
   "includeScreenshot": "Include screenshot",
   "jumpTo": "jump to",
-  "noMatchingSpacesFound": "no matching spaces found",
+  "noMatchingSpacesFound": "No matches. Search public directory",
   "noMatchingPinsFound": "no matching pins found",
   "update": "Update",
   "event": "Event",

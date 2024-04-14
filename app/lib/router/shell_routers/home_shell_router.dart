@@ -280,7 +280,9 @@ List<RouteBase> makeHomeShellRoutes(ref) {
       pageBuilder: (context, state) {
         return NoTransitionPage(
           key: state.pageKey,
-          child: const JoinSpacePage(),
+          child: JoinSpacePage(
+            query: state.uri.queryParameters['query'],
+          ),
         );
       },
     ),

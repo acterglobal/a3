@@ -13,17 +13,37 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 
-class SearchField extends ConsumerStatefulWidget {
-  const SearchField({super.key});
+class _SearchField extends ConsumerStatefulWidget {
+  final String? initialQuery;
+  const _SearchField({this.initialQuery});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _SearchFieldState();
+  ConsumerState<ConsumerStatefulWidget> createState() => __SearchFieldState();
 }
 
-class _SearchFieldState extends ConsumerState<SearchField> {
+class __SearchFieldState extends ConsumerState<_SearchField> {
   bool hasSearchTerm = false;
 
   final TextEditingController searchTextController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _checkInitialQuery();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _checkInitialQuery();
+  }
+
+  void _checkInitialQuery() {
+    if (widget.initialQuery != null) {
+      searchTextController.text =
+          ref.read(searchFilterProvider).searchTerm ?? '';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,19 +83,50 @@ class _SearchFieldState extends ConsumerState<SearchField> {
   }
 }
 
-class PublicRoomSearch extends ConsumerWidget {
+class PublicRoomSearch extends ConsumerStatefulWidget {
   final Widget? title;
   final bool autofocus;
   final OnSelectedFn onSelected;
+  final String? initialQuery;
 
   const PublicRoomSearch({
     super.key,
     this.title,
     this.autofocus = false,
+    this.initialQuery,
     required this.onSelected,
   });
 
-  Widget _searchBar(BuildContext context, WidgetRef ref) {
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _PublicRoomSearchState();
+}
+
+class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
+  @override
+  void initState() {
+    super.initState();
+    _checkInitialQuery();
+  }
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    _checkInitialQuery();
+  }
+
+  void _checkInitialQuery() {
+    if (widget.initialQuery != null) {
+      WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+        ref
+            .read(searchFilterProvider.notifier)
+            .updateSearchTerm(widget.initialQuery!);
+      });
+    }
+  }
+
+  Widget _searchBar(BuildContext context) {
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -85,7 +136,7 @@ class PublicRoomSearch extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SearchField(),
+              _SearchField(initialQuery: widget.initialQuery),
               Container(
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.background,
@@ -97,8 +148,8 @@ class PublicRoomSearch extends ConsumerWidget {
                 padding: const EdgeInsets.fromLTRB(10, 20, 10, 10),
                 child: Row(
                   children: [
-                    _filterChipsButtons(context, ref),
-                    _serverSelectionBuilder(context, ref),
+                    _filterChipsButtons(context),
+                    _serverSelectionBuilder(context),
                   ],
                 ),
               ),
@@ -109,7 +160,7 @@ class PublicRoomSearch extends ConsumerWidget {
     );
   }
 
-  Widget _filterChipsButtons(BuildContext context, WidgetRef ref) {
+  Widget _filterChipsButtons(BuildContext context) {
     final selected =
         ref.watch(searchFilterProvider.select((value) => value.filterBy));
     return DropdownMenu<FilterBy>(
@@ -151,7 +202,7 @@ class PublicRoomSearch extends ConsumerWidget {
       itemBuilder: (context, item, index) => PublicRoomItem(
         item: item,
         onSelected: (item) =>
-            onSelected(item, ref.read(searchFilterProvider).server),
+            widget.onSelected(item, ref.read(searchFilterProvider).server),
       ),
       pagedBuilder: (controller, builder) => PagedSliverList(
         pagingController: controller,
@@ -161,14 +212,14 @@ class PublicRoomSearch extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: title ?? Text(L10n.of(context).joinSpace),
+        title: widget.title ?? Text(L10n.of(context).joinSpace),
       ),
       body: CustomScrollView(
         slivers: [
-          _searchBar(context, ref),
+          _searchBar(context),
           SliverToBoxAdapter(
             child: MaybeDirectRoomActionWidget(
               searchVal: ref.watch(
@@ -184,7 +235,7 @@ class PublicRoomSearch extends ConsumerWidget {
     );
   }
 
-  Widget _serverSelectionBuilder(BuildContext context, WidgetRef ref) {
+  Widget _serverSelectionBuilder(BuildContext context) {
     String? currentSelection = ref.watch(searchFilterProvider).server;
     if (currentSelection != null) {
       final foundEntry = defaultServers

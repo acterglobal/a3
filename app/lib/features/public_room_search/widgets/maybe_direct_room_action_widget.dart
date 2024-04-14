@@ -137,7 +137,7 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
   }
 
   Widget noMemberButton(BuildContext context, WidgetRef ref, Room room,
-      String roomId, List<String> servers) {
+      String roomId, List<String> servers,) {
     if (room.joinRuleStr() == 'Public') {
       return OutlinedButton(
         onPressed: () => onSelectedMatch(

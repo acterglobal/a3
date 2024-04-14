@@ -11,7 +11,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class JoinSpacePage extends ConsumerWidget {
-  const JoinSpacePage({super.key});
+  final String? query;
+  const JoinSpacePage({super.key, this.query});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -19,6 +20,7 @@ class JoinSpacePage extends ConsumerWidget {
       body: Container(
         decoration: const BoxDecoration(gradient: primaryGradient),
         child: PublicRoomSearch(
+          initialQuery: query,
           autofocus: true,
           onSelected: (searchResult, searchServerName) => onSelectedKnown(
             context,
