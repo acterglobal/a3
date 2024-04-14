@@ -1,25 +1,25 @@
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/public_room_search/models/publiic_search_state.dart';
+import 'package:acter/features/public_room_search/models/publiic_search_result_state.dart';
 import 'package:acter/features/public_room_search/providers/public_search_providers.dart';
 import 'package:acter/features/public_room_search/types.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 
-class PublicSearchNotifier extends StateNotifier<PublicSearchState>
-    with PagedNotifierMixin<Next?, PublicSearchResultItem, PublicSearchState> {
+class PublicSearchNotifier extends StateNotifier<PublicSearchResultState>
+    with
+        PagedNotifierMixin<Next?, PublicSearchResultItem,
+            PublicSearchResultState> {
   final Ref ref;
 
-  PublicSearchNotifier(this.ref) : super(const PublicSearchState()) {
+  PublicSearchNotifier(this.ref)
+      : super(PublicSearchResultState(filter: ref.read(searchFilterProvider))) {
     setup();
   }
 
   void setup() {
-    ref.read(searchValueProvider.notifier).addListener((state) {
-      readData();
-    });
-    ref.read(selectedServerProvider.notifier).addListener((state) {
+    ref.read(searchFilterProvider.notifier).addListener((state) {
       readData();
     });
   }
@@ -27,21 +27,19 @@ class PublicSearchNotifier extends StateNotifier<PublicSearchState>
   void readData() async {
     try {
       await ref.debounce(const Duration(milliseconds: 300));
-      final newSearchValue = ref.read(searchValueProvider);
-      final newSelectedSever = ref.read(selectedServerProvider);
-      refresh(newSearchValue, newSelectedSever);
+      refresh();
     } catch (e) {
       // we do not care.
     }
   }
 
-  void refresh(searchValue, server) {
+  void refresh() {
     const nextPageKey = Next(isStart: true);
+    final currentFilters = ref.read(searchFilterProvider);
     state = state.copyWith(
       records: [],
       nextPageKey: nextPageKey,
-      searchValue: searchValue,
-      server: server,
+      filter: currentFilters,
     );
     load(nextPageKey, 30);
   }
@@ -54,8 +52,8 @@ class PublicSearchNotifier extends StateNotifier<PublicSearchState>
 
     final pageReq = page.next ?? '';
     final client = ref.read(alwaysClientProvider);
-    final searchValue = state.searchValue;
-    final server = state.server;
+    final searchValue = state.filter.searchTerm;
+    final server = state.filter.server;
     try {
       final res = await client.publicSpaces(searchValue, server, pageReq);
       final entries = res.chunks();
@@ -70,8 +68,6 @@ class PublicSearchNotifier extends StateNotifier<PublicSearchState>
             ? [...entries]
             : [...(state.records ?? []), ...entries],
         nextPageKey: finalPageKey,
-        searchValue: searchValue,
-        server: server,
       );
     } catch (e) {
       state = state.copyWith(error: e.toString());

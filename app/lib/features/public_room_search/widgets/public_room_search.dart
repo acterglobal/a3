@@ -25,7 +25,7 @@ class _MaybeQuickActionWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final searchVal = ref.watch(searchValueProvider);
+    final searchVal = ref.watch(searchFilterProvider).searchTerm;
     if (onSelectedMatch != null && searchVal?.isNotEmpty == true) {
       final aliased = RegExp(r'https://matrix.to/#/(?<alias>#.+):(?<server>.+)')
           .firstMatch(searchVal!);
@@ -109,8 +109,7 @@ class PublicRoomSearch extends ConsumerWidget {
   });
 
   Widget _searchBar(BuildContext context, WidgetRef ref) {
-    final searchTextCtrl = ref.watch(searchController);
-    final searchValueNotifier = ref.watch(searchValueProvider.notifier);
+    final searchFilterNotifier = ref.watch(searchFilterProvider.notifier);
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -121,7 +120,6 @@ class PublicRoomSearch extends ConsumerWidget {
             Flexible(
               flex: 5,
               child: TextField(
-                controller: searchTextCtrl,
                 autofocus: autofocus,
                 decoration: InputDecoration(
                   prefixIcon: const Icon(
@@ -131,7 +129,7 @@ class PublicRoomSearch extends ConsumerWidget {
                   labelText: L10n.of(context).searchSpace,
                 ),
                 onChanged: (String value) {
-                  searchValueNotifier.state = value;
+                  searchFilterNotifier.updateSearchTerm(value);
                 },
               ),
             ),
@@ -149,7 +147,7 @@ class PublicRoomSearch extends ConsumerWidget {
       itemBuilder: (context, item, index) => PublicRoomItem(
         item: item,
         onSelected: (item) =>
-            onSelected(item, ref.read(selectedServerProvider)),
+            onSelected(item, ref.read(searchFilterProvider).server),
       ),
       pagedBuilder: (controller, builder) => PagedSliverList(
         pagingController: controller,
@@ -182,7 +180,7 @@ class PublicRoomSearch extends ConsumerWidget {
   }
 
   Widget _serverSelectionBuilder(BuildContext context, WidgetRef ref) {
-    String? currentSelection = ref.watch(selectedServerProvider);
+    String? currentSelection = ref.watch(searchFilterProvider).server;
     if (currentSelection != null) {
       final foundEntry = defaultServers
           .where(
@@ -202,8 +200,8 @@ class PublicRoomSearch extends ConsumerWidget {
           autofocus: true,
           currentSelection: currentSelection ?? 'Acter.global',
           onSelect: (newServer) => ref
-              .read(selectedServerProvider.notifier)
-              .update((s) => newServer),
+              .read(searchFilterProvider.notifier)
+              .updateSearchServer(newServer),
         ),
       ),
     );
