@@ -1,4 +1,5 @@
 import 'package:acter/common/utils/constants.dart';
+import 'package:acter/features/public_room_search/models/public_search_filters.dart';
 import 'package:acter/features/public_room_search/providers/public_search_providers.dart';
 import 'package:acter/features/public_room_search/types.dart';
 import 'package:acter/features/public_room_search/widgets/public_room_item.dart';
@@ -90,6 +91,56 @@ class _MaybeQuickActionWidget extends ConsumerWidget {
   }
 }
 
+class SearchField extends ConsumerStatefulWidget {
+  const SearchField({super.key});
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _SearchFieldState();
+}
+
+class _SearchFieldState extends ConsumerState<SearchField> {
+  bool hasSearchTerm = false;
+
+  final TextEditingController searchTextController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    final hasSearchTerm = ref.watch(searchFilterProvider).searchTerm != null;
+    return SearchBar(
+      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+        const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(16),
+            topRight: Radius.circular(16),
+          ),
+        ),
+      ),
+      controller: searchTextController,
+      leading: const Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Icon(Atlas.magnifying_glass),
+      ),
+      hintText: L10n.of(context).searchSpace,
+      trailing: hasSearchTerm
+          ? [
+              InkWell(
+                onTap: () {
+                  searchTextController.clear();
+                  ref
+                      .read(searchFilterProvider.notifier)
+                      .updateSearchTerm(null);
+                },
+                child: const Icon(Icons.clear),
+              ),
+            ]
+          : null,
+      onChanged: (value) {
+        ref.read(searchFilterProvider.notifier).updateSearchTerm(value);
+      },
+    );
+  }
+}
+
 class PublicRoomSearch extends ConsumerWidget {
   final Widget? title;
   final bool autofocus;
@@ -109,34 +160,71 @@ class PublicRoomSearch extends ConsumerWidget {
   });
 
   Widget _searchBar(BuildContext context, WidgetRef ref) {
-    final searchFilterNotifier = ref.watch(searchFilterProvider.notifier);
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Flexible(
-              flex: 5,
-              child: TextField(
-                autofocus: autofocus,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(
-                    Atlas.magnifying_glass_thin,
-                    color: Colors.white,
+        child: SizedBox(
+          height: 160,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SearchField(),
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.background,
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(16),
+                    bottomRight: Radius.circular(16),
                   ),
-                  labelText: L10n.of(context).searchSpace,
                 ),
-                onChanged: (String value) {
-                  searchFilterNotifier.updateSearchTerm(value);
-                },
+                padding: const EdgeInsets.fromLTRB(10, 20, 10, 10),
+                child: Row(
+                  children: [
+                    _filterChipsButtons(context, ref),
+                    _serverSelectionBuilder(context, ref),
+                  ],
+                ),
               ),
-            ),
-            _serverSelectionBuilder(context, ref),
-          ],
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _filterChipsButtons(BuildContext context, WidgetRef ref) {
+    final selected =
+        ref.watch(searchFilterProvider.select((value) => value.filterBy));
+    return DropdownMenu<FilterBy>(
+      initialSelection: selected,
+      // requestFocusOnTap is enabled/disabled by platforms when it is null.
+      // On mobile platforms, this is false by default. Setting this to true will
+      // trigger focus request on the text field and virtual keyboard will appear
+      // afterward. On desktop platforms however, this defaults to true.
+      requestFocusOnTap: true,
+      enableSearch: false,
+      label: const Text('Show only'),
+      menuStyle: const MenuStyle(visualDensity: VisualDensity.compact),
+      onSelected: (FilterBy? newFilter) {
+        ref
+            .read(searchFilterProvider.notifier)
+            .updateFilters(newFilter ?? FilterBy.both);
+      },
+      dropdownMenuEntries: const [
+        DropdownMenuEntry<FilterBy>(
+          value: FilterBy.both,
+          label: 'All',
+        ),
+        DropdownMenuEntry<FilterBy>(
+          value: FilterBy.spaces,
+          label: 'Spaces',
+        ),
+        DropdownMenuEntry<FilterBy>(
+          value: FilterBy.chats,
+          label: 'Chats',
+        ),
+      ],
     );
   }
 

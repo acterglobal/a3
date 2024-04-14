@@ -10453,53 +10453,6 @@ class Api {
     return tmp7;
   }
 
-  PublicSearchResult? __clientPublicSpacesFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _clientPublicSpacesFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_PublicSearchResult");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = PublicSearchResult._(this, tmp13_1);
-    return tmp7;
-  }
-
   Space? __clientSpaceFuturePoll(
     int boxed,
     int postCobject,
@@ -10688,6 +10641,53 @@ class Api {
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp14 = FfiListUserProfile._(this, tmp13_1);
     final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  PublicSearchResult? __clientSearchPublicRoomFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientSearchPublicRoomFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_PublicSearchResult");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = PublicSearchResult._(this, tmp13_1);
     return tmp7;
   }
 
@@ -23226,40 +23226,6 @@ class Api {
         int,
         int,
       )>();
-  late final _clientPublicSpacesPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__Client_public_spaces");
-
-  late final _clientPublicSpaces = _clientPublicSpacesPtr.asFunction<
-      int Function(
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-      )>();
   late final _clientSpacePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -23324,6 +23290,48 @@ class Api {
 
   late final _clientSearchUsers = _clientSearchUsersPtr.asFunction<
       int Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _clientSearchPublicRoomPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__Client_search_public_room");
+
+  late final _clientSearchPublicRoom = _clientSearchPublicRoomPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
         int,
         int,
         int,
@@ -27579,21 +27587,6 @@ class Api {
             int,
             int,
           )>();
-  late final _clientPublicSpacesFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientPublicSpacesFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Client_public_spaces_future_poll");
-
-  late final _clientPublicSpacesFuturePoll =
-      _clientPublicSpacesFuturePollPtr.asFunction<
-          _ClientPublicSpacesFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
   late final _clientSpaceFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ClientSpaceFuturePollReturn Function(
@@ -27649,6 +27642,21 @@ class Api {
   late final _clientSearchUsersFuturePoll =
       _clientSearchUsersFuturePollPtr.asFunction<
           _ClientSearchUsersFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _clientSearchPublicRoomFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientSearchPublicRoomFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Client_search_public_room_future_poll");
+
+  late final _clientSearchPublicRoomFuturePoll =
+      _clientSearchPublicRoomFuturePollPtr.asFunction<
+          _ClientSearchPublicRoomFuturePollReturn Function(
             int,
             int,
             int,
@@ -47424,94 +47432,6 @@ class Client {
     return tmp12;
   }
 
-  /// search the public directory for spaces
-  Future<PublicSearchResult> publicSpaces(
-    String? searchTerm,
-    String? server,
-    String? since,
-  ) {
-    final tmp1 = searchTerm;
-    final tmp7 = server;
-    final tmp13 = since;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp4 = 0;
-    var tmp5 = 0;
-    var tmp6 = 0;
-    var tmp8 = 0;
-    var tmp10 = 0;
-    var tmp11 = 0;
-    var tmp12 = 0;
-    var tmp14 = 0;
-    var tmp16 = 0;
-    var tmp17 = 0;
-    var tmp18 = 0;
-    tmp0 = _box.borrow();
-    if (tmp1 == null) {
-      tmp2 = 0;
-    } else {
-      tmp2 = 1;
-      final tmp3 = tmp1;
-      final tmp3_0 = utf8.encode(tmp3);
-      tmp5 = tmp3_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp4_0 = _api.__allocate(tmp5 * 1, 1);
-      final Uint8List tmp4_1 = tmp4_0.asTypedList(tmp5);
-      tmp4_1.setAll(0, tmp3_0);
-      tmp4 = tmp4_0.address;
-      tmp6 = tmp5;
-    }
-    if (tmp7 == null) {
-      tmp8 = 0;
-    } else {
-      tmp8 = 1;
-      final tmp9 = tmp7;
-      final tmp9_0 = utf8.encode(tmp9);
-      tmp11 = tmp9_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
-      final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
-      tmp10_1.setAll(0, tmp9_0);
-      tmp10 = tmp10_0.address;
-      tmp12 = tmp11;
-    }
-    if (tmp13 == null) {
-      tmp14 = 0;
-    } else {
-      tmp14 = 1;
-      final tmp15 = tmp13;
-      final tmp15_0 = utf8.encode(tmp15);
-      tmp17 = tmp15_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
-      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
-      tmp16_1.setAll(0, tmp15_0);
-      tmp16 = tmp16_0.address;
-      tmp18 = tmp17;
-    }
-    final tmp19 = _api._clientPublicSpaces(
-      tmp0,
-      tmp2,
-      tmp4,
-      tmp5,
-      tmp6,
-      tmp8,
-      tmp10,
-      tmp11,
-      tmp12,
-      tmp14,
-      tmp16,
-      tmp17,
-      tmp18,
-    );
-    final tmp21 = tmp19;
-    final ffi.Pointer<ffi.Void> tmp21_0 = ffi.Pointer.fromAddress(tmp21);
-    final tmp21_1 = _Box(_api, tmp21_0, "__Client_public_spaces_future_drop");
-    tmp21_1._finalizer = _api._registerFinalizer(tmp21_1);
-    final tmp20 = _nativeFuture(tmp21_1, _api.__clientPublicSpacesFuturePoll);
-    return tmp20;
-  }
-
   /// Get the space that user belongs to
   Future<Space> space(
     String roomIdOrAlias,
@@ -47638,6 +47558,120 @@ class Client {
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp6 = _nativeFuture(tmp7_1, _api.__clientSearchUsersFuturePoll);
     return tmp6;
+  }
+
+  /// search the public directory for rooms
+  Future<PublicSearchResult> searchPublicRoom(
+    String? searchTerm,
+    String? server,
+    String? roomFilter,
+    String? since,
+  ) {
+    final tmp1 = searchTerm;
+    final tmp7 = server;
+    final tmp13 = roomFilter;
+    final tmp19 = since;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    var tmp5 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp17 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    var tmp23 = 0;
+    var tmp24 = 0;
+    tmp0 = _box.borrow();
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      final tmp3_0 = utf8.encode(tmp3);
+      tmp5 = tmp3_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = _api.__allocate(tmp5 * 1, 1);
+      final Uint8List tmp4_1 = tmp4_0.asTypedList(tmp5);
+      tmp4_1.setAll(0, tmp3_0);
+      tmp4 = tmp4_0.address;
+      tmp6 = tmp5;
+    }
+    if (tmp7 == null) {
+      tmp8 = 0;
+    } else {
+      tmp8 = 1;
+      final tmp9 = tmp7;
+      final tmp9_0 = utf8.encode(tmp9);
+      tmp11 = tmp9_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+      final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+      tmp10_1.setAll(0, tmp9_0);
+      tmp10 = tmp10_0.address;
+      tmp12 = tmp11;
+    }
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      final tmp15_0 = utf8.encode(tmp15);
+      tmp17 = tmp15_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
+      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
+      tmp16_1.setAll(0, tmp15_0);
+      tmp16 = tmp16_0.address;
+      tmp18 = tmp17;
+    }
+    if (tmp19 == null) {
+      tmp20 = 0;
+    } else {
+      tmp20 = 1;
+      final tmp21 = tmp19;
+      final tmp21_0 = utf8.encode(tmp21);
+      tmp23 = tmp21_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp22_0 = _api.__allocate(tmp23 * 1, 1);
+      final Uint8List tmp22_1 = tmp22_0.asTypedList(tmp23);
+      tmp22_1.setAll(0, tmp21_0);
+      tmp22 = tmp22_0.address;
+      tmp24 = tmp23;
+    }
+    final tmp25 = _api._clientSearchPublicRoom(
+      tmp0,
+      tmp2,
+      tmp4,
+      tmp5,
+      tmp6,
+      tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+      tmp14,
+      tmp16,
+      tmp17,
+      tmp18,
+      tmp20,
+      tmp22,
+      tmp23,
+      tmp24,
+    );
+    final tmp27 = tmp25;
+    final ffi.Pointer<ffi.Void> tmp27_0 = ffi.Pointer.fromAddress(tmp27);
+    final tmp27_1 =
+        _Box(_api, tmp27_0, "__Client_search_public_room_future_drop");
+    tmp27_1._finalizer = _api._registerFinalizer(tmp27_1);
+    final tmp26 =
+        _nativeFuture(tmp27_1, _api.__clientSearchPublicRoomFuturePoll);
+    return tmp26;
   }
 
   /// Whether the user already verified the device
@@ -56228,21 +56262,6 @@ class _ClientJoinConvoFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ClientPublicSpacesFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
 class _ClientSpaceFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -56289,6 +56308,21 @@ class _ClientSuggestedUsersToInviteFuturePollReturn extends ffi.Struct {
 }
 
 class _ClientSearchUsersFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ClientSearchPublicRoomFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

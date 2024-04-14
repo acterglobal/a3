@@ -2393,9 +2393,6 @@ object Client {
     /// attempt to join a room
     fn join_convo(room_id_or_alias: string, server_name: Option<string>) -> Future<Result<Convo>>;
 
-    /// search the public directory for spaces
-    fn public_spaces(search_term: Option<string>, server: Option<string>, since: Option<string>) -> Future<Result<PublicSearchResult>>;
-
     /// Get the space that user belongs to
     fn space(room_id_or_alias: string) -> Future<Result<Space>>;
 
@@ -2410,6 +2407,9 @@ object Client {
 
     /// search the user directory
     fn search_users(search_term: string) -> Future<Result<Vec<UserProfile>>>;
+
+    /// search the public directory for rooms
+    fn search_public_room(search_term: Option<string>, server: Option<string>, room_filter: Option<string>, since: Option<string>) -> Future<Result<PublicSearchResult>>;
 
     /// Whether the user already verified the device
     fn verified_device(dev_id: string) -> Future<Result<bool>>;

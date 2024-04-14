@@ -141,6 +141,24 @@ impl PublicSearchResult {
     }
 }
 
+// public API
+impl Client {
+    pub async fn search_public_room(
+        &self,
+        search_term: Option<String>,
+        server: Option<String>,
+        filter_only: Option<String>,
+        since: Option<String>,
+    ) -> Result<PublicSearchResult> {
+        let filter = filter_only.and_then(|s| match s.to_lowercase().as_str() {
+            "spaces" => Some(RoomTypeFilter::Space),
+            "chats" => Some(RoomTypeFilter::Default),
+            _ => None,
+        });
+        self.search_public(search_term, server, since, filter).await
+    }
+}
+
 // internal API
 impl Client {
     pub(crate) async fn search_public(

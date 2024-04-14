@@ -54,8 +54,14 @@ class PublicSearchNotifier extends StateNotifier<PublicSearchResultState>
     final client = ref.read(alwaysClientProvider);
     final searchValue = state.filter.searchTerm;
     final server = state.filter.server;
+    final roomFilter = state.filter.filterBy.name;
     try {
-      final res = await client.publicSpaces(searchValue, server, pageReq);
+      final res = await client.searchPublicRoom(
+        searchValue,
+        server,
+        roomFilter,
+        pageReq,
+      );
       final entries = res.chunks();
       final next = res.nextBatch();
       Next? finalPageKey;

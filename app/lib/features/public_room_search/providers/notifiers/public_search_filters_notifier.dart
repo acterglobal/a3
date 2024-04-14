@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class PublicSearchFiltersNotifier extends StateNotifier<PublicSearchFilters> {
   PublicSearchFiltersNotifier() : super(const PublicSearchFilters());
 
-  void updateSearchTerm(String newTerm) {
+  void updateSearchTerm(String? newTerm) {
     state = state.copyWith(searchTerm: newTerm);
   }
 

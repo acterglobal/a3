@@ -32,12 +32,17 @@ class _ServerSelectionFieldState extends State<ServerSelectionField> {
   @override
   Widget build(BuildContext context) {
     if (!editMode) {
-      return InkWell(
-        onTap: () => setEditing(),
-        child: Chip(
-          label: Text(widget.currentSelection),
-          deleteIcon: const Icon(Icons.edit),
-          onDeleted: () => setEditing(),
+      return TextFormField(
+        initialValue: widget.currentSelection,
+        onTap: () {
+          setState(() {
+            editMode = true;
+          });
+        },
+        decoration: InputDecoration(
+          border: const OutlineInputBorder(),
+          labelText: L10n.of(context).server,
+          suffix: const Icon(Icons.edit),
         ),
       );
     }
