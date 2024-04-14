@@ -2,7 +2,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/rooms.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/spaces/widgets/public_spaces_selector.dart';
+import 'package:acter/features/public_room_search/widgets/public_room_search.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -18,7 +18,7 @@ class JoinSpacePage extends ConsumerWidget {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(gradient: primaryGradient),
-        child: PublicSpaceSelector(
+        child: PublicRoomSearch(
           autofocus: true,
           canMatchAlias: true,
           canMatchId: true,
