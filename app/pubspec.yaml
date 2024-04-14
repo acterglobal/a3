@@ -125,6 +125,7 @@ dependencies:
   carousel_indicator: ^1.0.6
   stack_trace: ^1.11.1
   tutorial_coach_mark: ^1.2.11
+  flutter_typeahead: ^5.2.0
 
 # FIXME keep until a new version has been published
 dependency_overrides:

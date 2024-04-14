@@ -5,20 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 
-final serverTypeAheadController =
-    Provider.autoDispose<TextEditingController>((ref) {
-  final controller = TextEditingController();
-  final typeNotifier = ref.read(serverTypeAheadProvider.notifier);
-  controller.addListener(() {
-    typeNotifier.state = controller.text;
-  });
-  ref.onDispose(() {
-    controller.dispose();
-    typeNotifier.state = null;
-  });
-  return controller;
-});
-
 final searchController = Provider.autoDispose<TextEditingController>((ref) {
   final controller = TextEditingController();
   ref.onDispose(() {
@@ -34,5 +20,4 @@ final publicSearchProvider = StateNotifierProvider.autoDispose<
 });
 
 final searchValueProvider = StateProvider<String?>((ref) => null);
-final serverTypeAheadProvider = StateProvider<String?>((ref) => null);
 final selectedServerProvider = StateProvider<String?>((ref) => null);

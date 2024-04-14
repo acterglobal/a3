@@ -2,6 +2,7 @@ import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/public_room_search/providers/public_search_providers.dart';
 import 'package:acter/features/public_room_search/types.dart';
 import 'package:acter/features/public_room_search/widgets/public_room_item.dart';
+import 'package:acter/features/public_room_search/widgets/server_selection_field.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -114,10 +115,11 @@ class PublicRoomSearch extends ConsumerWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Expanded(
+            Flexible(
+              flex: 5,
               child: TextField(
                 controller: searchTextCtrl,
                 autofocus: autofocus,
@@ -133,10 +135,7 @@ class PublicRoomSearch extends ConsumerWidget {
                 },
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 5),
-              child: Consumer(builder: serverTypeBuilder),
-            ),
+            _serverSelectionBuilder(context, ref),
           ],
         ),
       ),
@@ -182,40 +181,31 @@ class PublicRoomSearch extends ConsumerWidget {
     );
   }
 
-  Widget serverTypeBuilder(BuildContext context, WidgetRef ref, Widget? child) {
-    final selectedServer = ref.watch(selectedServerProvider);
-
-    final controller = ref.watch(serverTypeAheadController);
-    final val = ref.watch(serverTypeAheadProvider);
-    final List<DropdownMenuEntry<String>> menuItems = [
-      ...defaultServers.map(
-        (e) => DropdownMenuEntry(
-          label: e.name ?? e.value,
-          value: e.value,
+  Widget _serverSelectionBuilder(BuildContext context, WidgetRef ref) {
+    String? currentSelection = ref.watch(selectedServerProvider);
+    if (currentSelection != null) {
+      final foundEntry = defaultServers
+          .where(
+            (element) => element.value == currentSelection,
+          )
+          .firstOrNull;
+      if (foundEntry != null) {
+        currentSelection = foundEntry.name ?? foundEntry.value;
+      }
+    }
+    return Flexible(
+      flex: 3,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 5),
+        child: ServerSelectionField(
+          options: defaultServers,
+          autofocus: true,
+          currentSelection: currentSelection ?? 'Acter.global',
+          onSelect: (newServer) => ref
+              .read(selectedServerProvider.notifier)
+              .update((s) => newServer),
         ),
       ),
-    ];
-    if (val?.isNotEmpty == true) {
-      menuItems.add(
-        DropdownMenuEntry(
-          leadingIcon: const Icon(Atlas.plus_circle_thin),
-          label: val!,
-          value: val,
-        ),
-      );
-    }
-
-    return DropdownMenu<String>(
-      controller: controller,
-      initialSelection: selectedServer,
-      label: Text(L10n.of(context).server),
-      dropdownMenuEntries: menuItems,
-      onSelected: (String? typus) {
-        if (typus != null) {
-          final notifier = ref.read(selectedServerProvider.notifier);
-          notifier.state = typus;
-        }
-      },
     );
   }
 }
