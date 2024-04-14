@@ -336,6 +336,86 @@ class PublicSpaceItem extends ConsumerWidget {
   }
 }
 
+class QuickActionWidget extends ConsumerWidget {
+  final OnSelectedFn onSelected;
+  final OnSelectedMatchFn? onSelectedMatch;
+  final bool canMatchAlias;
+  final bool canMatchId;
+  const QuickActionWidget({
+    super.key,
+    required this.onSelected,
+    this.onSelectedMatch,
+    this.canMatchAlias = false,
+    this.canMatchId = false,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final searchVal = ref.watch(searchValueProvider);
+    if (onSelectedMatch != null && searchVal?.isNotEmpty == true) {
+      final aliased = RegExp(r'https://matrix.to/#/(?<alias>#.+):(?<server>.+)')
+          .firstMatch(searchVal!);
+      if (canMatchAlias && aliased != null) {
+        final alias = aliased.namedGroup('alias')!;
+        final server = aliased.namedGroup('server')!;
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          child: Card(
+            child: ListTile(
+              onTap: () => onSelectedMatch!(alias: alias, servers: [server]),
+              title: Text(alias),
+              subtitle: Text('${L10n.of(context).on} $server'),
+              trailing: OutlinedButton.icon(
+                onPressed: () =>
+                    onSelectedMatch!(alias: alias, servers: [server]),
+                icon: const Icon(Atlas.entrance_thin),
+                label: Text(L10n.of(context).tryToJoin),
+              ),
+            ),
+          ),
+        );
+      }
+
+      final id = RegExp(
+        r'https://matrix.to/#/(?<id>![^?]+)(\?via=(?<server_name>[^&]+))?(&via=(?<server_name2>[^&]+))?(&via=(?<server_name3>[^&]+))?',
+      ).firstMatch(searchVal);
+      if (canMatchId && id != null) {
+        final targetId = id.namedGroup('id')!;
+        final List<String> servers = [
+          id.namedGroup('server_name') ?? '',
+          id.namedGroup('server_name2') ?? '',
+          id.namedGroup('server_name3') ?? '',
+        ].where((e) => e.isNotEmpty).toList();
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          child: Card(
+            child: ListTile(
+              onTap: () => onSelectedMatch!(
+                roomId: targetId,
+                servers: servers,
+              ),
+              title: Text(targetId),
+              subtitle: servers.isNotEmpty
+                  ? Text('${L10n.of(context).via} ${servers.join(', ')}')
+                  : null,
+              trailing: OutlinedButton.icon(
+                onPressed: () => onSelectedMatch!(
+                  roomId: targetId,
+                  servers: servers,
+                ),
+                icon: const Icon(Atlas.entrance_thin),
+                label: Text(L10n.of(context).tryToJoin),
+              ),
+            ),
+          ),
+        );
+      }
+    }
+
+    return const SizedBox(height: 0);
+  }
+}
+
 class PublicSpaceSelector extends ConsumerWidget {
   final Widget? title;
   final bool autofocus;
@@ -354,127 +434,78 @@ class PublicSpaceSelector extends ConsumerWidget {
     this.canMatchId = false,
   });
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget _searchBar(BuildContext context, WidgetRef ref) {
     final searchTextCtrl = ref.watch(searchController);
     final searchValueNotifier = ref.watch(searchValueProvider.notifier);
-    return CustomScrollView(
-      slivers: [
-        SliverAppBar(
-          title: title ?? Text(L10n.of(context).joinSpace),
-        ),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: searchTextCtrl,
-                    autofocus: autofocus,
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(
-                        Atlas.magnifying_glass_thin,
-                        color: Colors.white,
-                      ),
-                      labelText: L10n.of(context).searchSpace,
-                    ),
-                    onChanged: (String value) {
-                      searchValueNotifier.state = value;
-                    },
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Expanded(
+              child: TextField(
+                controller: searchTextCtrl,
+                autofocus: autofocus,
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(
+                    Atlas.magnifying_glass_thin,
+                    color: Colors.white,
                   ),
+                  labelText: L10n.of(context).searchSpace,
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 5),
-                  child: Consumer(builder: serverTypeBuilder),
-                ),
-              ],
+                onChanged: (String value) {
+                  searchValueNotifier.state = value;
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 5),
+              child: Consumer(builder: serverTypeBuilder),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _searchResults(BuildContext context, WidgetRef ref) {
+    return RiverPagedBuilder<Next?, PublicSearchResultItem>.autoDispose(
+      firstPageKey: const Next(isStart: true),
+      provider: publicSearchProvider,
+      itemBuilder: (context, item, index) => PublicSpaceItem(
+        space: item,
+        onSelected: (item) =>
+            onSelected(item, ref.read(selectedServerProvider)),
+      ),
+      pagedBuilder: (controller, builder) => PagedSliverList(
+        pagingController: controller,
+        builderDelegate: builder,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Scaffold(
+      appBar: AppBar(
+        title: title ?? Text(L10n.of(context).joinSpace),
+      ),
+      body: CustomScrollView(
+        slivers: [
+          _searchBar(context, ref),
+          SliverToBoxAdapter(
+            child: QuickActionWidget(
+              onSelected: onSelected,
+              onSelectedMatch: onSelectedMatch,
+              canMatchAlias: canMatchAlias,
+              canMatchId: canMatchId,
             ),
           ),
-        ),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            child: Consumer(
-              builder: (context, ref, child) {
-                final searchVal = ref.watch(searchValueProvider);
-                if (onSelectedMatch != null && searchVal?.isNotEmpty == true) {
-                  final aliased =
-                      RegExp(r'https://matrix.to/#/(?<alias>#.+):(?<server>.+)')
-                          .firstMatch(searchVal!);
-                  if (canMatchAlias && aliased != null) {
-                    final alias = aliased.namedGroup('alias')!;
-                    final server = aliased.namedGroup('server')!;
-                    return Card(
-                      child: ListTile(
-                        onTap: () =>
-                            onSelectedMatch!(alias: alias, servers: [server]),
-                        title: Text(alias),
-                        subtitle: Text('${L10n.of(context).on} $server'),
-                        trailing: OutlinedButton.icon(
-                          onPressed: () =>
-                              onSelectedMatch!(alias: alias, servers: [server]),
-                          icon: const Icon(Atlas.entrance_thin),
-                          label: Text(L10n.of(context).tryToJoin),
-                        ),
-                      ),
-                    );
-                  }
-
-                  final id = RegExp(
-                    r'https://matrix.to/#/(?<id>![^?]+)(\?via=(?<server_name>[^&]+))?(&via=(?<server_name2>[^&]+))?(&via=(?<server_name3>[^&]+))?',
-                  ).firstMatch(searchVal);
-                  if (canMatchId && id != null) {
-                    final targetId = id.namedGroup('id')!;
-                    final List<String> servers = [
-                      id.namedGroup('server_name') ?? '',
-                      id.namedGroup('server_name2') ?? '',
-                      id.namedGroup('server_name3') ?? '',
-                    ].where((e) => e.isNotEmpty).toList();
-                    return Card(
-                      child: ListTile(
-                        onTap: () => onSelectedMatch!(
-                          roomId: targetId,
-                          servers: servers,
-                        ),
-                        title: Text(targetId),
-                        subtitle: servers.isNotEmpty
-                            ? Text('${L10n.of(context).via} ${servers.join(', ')}')
-                            : null,
-                        trailing: OutlinedButton.icon(
-                          onPressed: () => onSelectedMatch!(
-                            roomId: targetId,
-                            servers: servers,
-                          ),
-                          icon: const Icon(Atlas.entrance_thin),
-                          label: Text(L10n.of(context).tryToJoin),
-                        ),
-                      ),
-                    );
-                  }
-                }
-
-                return const SizedBox(height: 0);
-              },
-            ),
-          ),
-        ),
-        RiverPagedBuilder<Next?, PublicSearchResultItem>.autoDispose(
-          firstPageKey: const Next(isStart: true),
-          provider: publicSearchProvider,
-          itemBuilder: (context, item, index) => PublicSpaceItem(
-            space: item,
-            onSelected: (item, info) =>
-                onSelected(item, ref.read(selectedServerProvider), info),
-          ),
-          pagedBuilder: (controller, builder) => PagedSliverList(
-            pagingController: controller,
-            builderDelegate: builder,
-          ),
-        ),
-      ],
+          _searchResults(context, ref),
+        ],
+      ),
     );
   }
 
