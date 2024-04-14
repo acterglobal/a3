@@ -2,6 +2,7 @@ import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/public_room_search/models/public_search_filters.dart';
 import 'package:acter/features/public_room_search/providers/public_search_providers.dart';
 import 'package:acter/features/public_room_search/types.dart';
+import 'package:acter/features/public_room_search/widgets/maybe_direct_room_action_widget.dart';
 import 'package:acter/features/public_room_search/widgets/public_room_item.dart';
 import 'package:acter/features/public_room_search/widgets/server_selection_field.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -11,85 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
-
-class _MaybeQuickActionWidget extends ConsumerWidget {
-  final OnSelectedFn onSelected;
-  final OnSelectedMatchFn? onSelectedMatch;
-  final bool canMatchAlias;
-  final bool canMatchId;
-  const _MaybeQuickActionWidget({
-    required this.onSelected,
-    this.onSelectedMatch,
-    this.canMatchAlias = false,
-    this.canMatchId = false,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final searchVal = ref.watch(searchFilterProvider).searchTerm;
-    if (onSelectedMatch != null && searchVal?.isNotEmpty == true) {
-      final aliased = RegExp(r'https://matrix.to/#/(?<alias>#.+):(?<server>.+)')
-          .firstMatch(searchVal!);
-      if (canMatchAlias && aliased != null) {
-        final alias = aliased.namedGroup('alias')!;
-        final server = aliased.namedGroup('server')!;
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          child: Card(
-            child: ListTile(
-              onTap: () => onSelectedMatch!(alias: alias, servers: [server]),
-              title: Text(alias),
-              subtitle: Text('${L10n.of(context).on} $server'),
-              trailing: OutlinedButton.icon(
-                onPressed: () =>
-                    onSelectedMatch!(alias: alias, servers: [server]),
-                icon: const Icon(Atlas.entrance_thin),
-                label: Text(L10n.of(context).tryToJoin),
-              ),
-            ),
-          ),
-        );
-      }
-
-      final id = RegExp(
-        r'https://matrix.to/#/(?<id>![^?]+)(\?via=(?<server_name>[^&]+))?(&via=(?<server_name2>[^&]+))?(&via=(?<server_name3>[^&]+))?',
-      ).firstMatch(searchVal);
-      if (canMatchId && id != null) {
-        final targetId = id.namedGroup('id')!;
-        final List<String> servers = [
-          id.namedGroup('server_name') ?? '',
-          id.namedGroup('server_name2') ?? '',
-          id.namedGroup('server_name3') ?? '',
-        ].where((e) => e.isNotEmpty).toList();
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          child: Card(
-            child: ListTile(
-              onTap: () => onSelectedMatch!(
-                roomId: targetId,
-                servers: servers,
-              ),
-              title: Text(targetId),
-              subtitle: servers.isNotEmpty
-                  ? Text('${L10n.of(context).via} ${servers.join(', ')}')
-                  : null,
-              trailing: OutlinedButton.icon(
-                onPressed: () => onSelectedMatch!(
-                  roomId: targetId,
-                  servers: servers,
-                ),
-                icon: const Icon(Atlas.entrance_thin),
-                label: Text(L10n.of(context).tryToJoin),
-              ),
-            ),
-          ),
-        );
-      }
-    }
-
-    return const SizedBox(height: 0);
-  }
-}
 
 class SearchField extends ConsumerStatefulWidget {
   const SearchField({super.key});
@@ -145,18 +67,12 @@ class PublicRoomSearch extends ConsumerWidget {
   final Widget? title;
   final bool autofocus;
   final OnSelectedFn onSelected;
-  final OnSelectedMatchFn? onSelectedMatch;
-  final bool canMatchAlias;
-  final bool canMatchId;
 
   const PublicRoomSearch({
     super.key,
     this.title,
     this.autofocus = false,
     required this.onSelected,
-    this.onSelectedMatch,
-    this.canMatchAlias = false,
-    this.canMatchId = false,
   });
 
   Widget _searchBar(BuildContext context, WidgetRef ref) {
@@ -254,11 +170,12 @@ class PublicRoomSearch extends ConsumerWidget {
         slivers: [
           _searchBar(context, ref),
           SliverToBoxAdapter(
-            child: _MaybeQuickActionWidget(
-              onSelected: onSelected,
-              onSelectedMatch: onSelectedMatch,
-              canMatchAlias: canMatchAlias,
-              canMatchId: canMatchId,
+            child: MaybeDirectRoomActionWidget(
+              searchVal: ref.watch(
+                searchFilterProvider.select((v) => v.searchTerm ?? ''),
+              ),
+              canMatchAlias: true,
+              canMatchId: true,
             ),
           ),
           _searchResults(context, ref),

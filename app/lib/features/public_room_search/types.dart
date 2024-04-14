@@ -5,12 +5,6 @@ typedef OnSelectedFn = void Function(
   String? searchServerName,
 );
 
-typedef OnSelectedMatchFn = void Function({
-  String? roomId,
-  String? alias,
-  required List<String> servers,
-});
-
 typedef OnSelectedInnerFn = void Function(
   PublicSearchResultItem spaceSearchResult,
 );

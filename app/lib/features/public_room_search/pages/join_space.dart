@@ -20,15 +20,6 @@ class JoinSpacePage extends ConsumerWidget {
         decoration: const BoxDecoration(gradient: primaryGradient),
         child: PublicRoomSearch(
           autofocus: true,
-          canMatchAlias: true,
-          canMatchId: true,
-          onSelectedMatch: ({alias, roomId, required servers}) => onUnknown(
-            context,
-            ref,
-            alias,
-            roomId,
-            servers,
-          ),
           onSelected: (searchResult, searchServerName) => onSelectedKnown(
             context,
             ref,
@@ -36,26 +27,6 @@ class JoinSpacePage extends ConsumerWidget {
             searchServerName,
           ),
         ),
-      ),
-    );
-  }
-
-  void onUnknown(
-    BuildContext context,
-    WidgetRef ref,
-    String? roomId,
-    String? alias,
-    List<String> serverNames,
-  ) async {
-    await joinRoom(
-      context,
-      ref,
-      L10n.of(context).tryingToJoin('${alias ?? roomId}'),
-      (alias ?? roomId)!,
-      serverNames.first,
-      (roomId) => context.pushNamed(
-        Routes.space.name,
-        pathParameters: {'spaceId': roomId},
       ),
     );
   }
