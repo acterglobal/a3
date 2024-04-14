@@ -6,6 +6,9 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+// FIXME: add matrix://-support:
+// https://spec.matrix.org/v1.10/appendices/#matrix-uri-scheme
+
 final aliasedHttpRegexp =
     RegExp(r'https://matrix.to/#/(?<alias>#.+):(?<server>.+)');
 
