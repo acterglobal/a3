@@ -1,7 +1,8 @@
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/spaces/providers/public_space_info_provider.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -11,13 +12,13 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:logging/logging.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 final _log = Logger('a3::spaces::public_spaces_selector');
 
 typedef OnSelectedFn = void Function(
   PublicSearchResultItem spaceSearchResult,
   String? searchServerName,
-  SpaceItem? spaceInfo,
 );
 
 typedef OnSelectedMatchFn = void Function({
@@ -28,7 +29,6 @@ typedef OnSelectedMatchFn = void Function({
 
 typedef OnSelectedInnerFn = void Function(
   PublicSearchResultItem spaceSearchResult,
-  SpaceItem? spaceInfo,
 );
 
 class Next {
@@ -184,6 +184,64 @@ final publicSearchProvider = StateNotifierProvider.autoDispose<
   return PublicSearchNotifier(ref);
 });
 
+class JoinBtn extends ConsumerWidget {
+  final PublicSearchResultItem space;
+  final OnSelectedInnerFn onSelected;
+
+  const JoinBtn({
+    super.key,
+    required this.space,
+    required this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ref.watch(roomMembershipProvider(space.roomIdStr())).when(
+          data: (data) =>
+              data == null ? noMember(context) : alreadyMember(context),
+          error: (error, st) {
+            _log.severe('loading membership info failed', error, st);
+            return Text(L10n.of(context).loadingFailed(error));
+          },
+          loading: () => Skeletonizer(
+            child: OutlinedButton(
+              onPressed: () => onSelected(
+                space,
+              ),
+              child: Text(L10n.of(context).requestToJoin),
+            ),
+          ),
+        );
+  }
+
+  Widget alreadyMember(BuildContext context) {
+    return OutlinedButton(
+      onPressed: () => onSelected(
+        space,
+      ),
+      child: Text(L10n.of(context).member),
+    );
+  }
+
+  Widget noMember(BuildContext context) {
+    if (space.joinRuleStr() == 'Public') {
+      return OutlinedButton(
+        onPressed: () => onSelected(
+          space,
+        ),
+        child: Text(L10n.of(context).join),
+      );
+    } else {
+      return OutlinedButton(
+        onPressed: () => onSelected(
+          space,
+        ),
+        child: Text(L10n.of(context).requestToJoin),
+      );
+    }
+  }
+}
+
 class PublicSpaceItem extends ConsumerWidget {
   final PublicSearchResultItem space;
   final OnSelectedInnerFn onSelected;
@@ -196,8 +254,7 @@ class PublicSpaceItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final spaceId = space.roomIdStr();
-    final withInfo = ref.watch(maybeSpaceInfoProvider(spaceId));
+    final profileInfo = ref.watch(searchItemProfileData(space));
 
     return Card(
       shape: RoundedRectangleBorder(
@@ -219,28 +276,19 @@ class PublicSpaceItem extends ConsumerWidget {
               child: ListTile(
                 onTap: () => onSelected(
                   space,
-                  withInfo.valueOrNull,
                 ),
-                leading: withInfo.when(
-                  data: (data) => data != null
-                      ? ActerAvatar(
-                          mode: DisplayMode.Space,
-                          avatarInfo: AvatarInfo(
-                            uniqueId: spaceId,
-                            displayName: data.spaceProfileData.displayName,
-                            avatar: data.spaceProfileData.getAvatarImage(),
-                          ),
-                        )
-                      : fallbackAvatar(),
+                leading: profileInfo.when(
+                  data: (profile) => ActerAvatar(
+                    mode: DisplayMode.Space,
+                    avatarInfo: AvatarInfo(
+                      uniqueId: space.roomIdStr(),
+                      displayName: profile.displayName,
+                      avatar: profile.getAvatarImage(),
+                    ),
+                  ),
                   error: (e, s) {
                     _log.severe('loading failed', e, s);
-                    return ActerAvatar(
-                      mode: DisplayMode.Space,
-                      avatarInfo: AvatarInfo(
-                        uniqueId: spaceId,
-                        displayName: spaceId,
-                      ),
-                    );
+                    return fallbackAvatar();
                   },
                   loading: fallbackAvatar,
                 ),
@@ -254,29 +302,9 @@ class PublicSpaceItem extends ConsumerWidget {
                   style: Theme.of(context).textTheme.labelSmall,
                   softWrap: false,
                 ),
-                trailing: withInfo.when(
-                  data: (data) => data != null
-                      ? Chip(label: Text(L10n.of(context).member))
-                      : space.joinRuleStr() == 'Public'
-                          ? OutlinedButton(
-                              onPressed: () => onSelected(
-                                space,
-                                withInfo.valueOrNull,
-                              ),
-                              child: Text(L10n.of(context).join),
-                            )
-                          : OutlinedButton(
-                              onPressed: () => onSelected(
-                                space,
-                                withInfo.valueOrNull,
-                              ),
-                              child: Text(L10n.of(context).requestToJoin),
-                            ),
-                  error: (e, s) => Text(
-                    '$e',
-                    softWrap: true,
-                  ),
-                  loading: () => Text(L10n.of(context).loading),
+                trailing: JoinBtn(
+                  space: space,
+                  onSelected: onSelected,
                 ),
               ),
             ),

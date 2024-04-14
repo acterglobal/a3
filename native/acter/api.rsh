@@ -2160,6 +2160,14 @@ object PublicSearchResultItem {
     fn join_rule_str() -> string;
     // fn room_type() -> Option<RoomType>;
     fn room_type_str() -> string;
+
+    /// whether to have avatar
+    fn has_avatar() -> bool;
+
+    /// get the binary data of avatar
+    /// if thumb size is given, avatar thumbnail is returned
+    /// if thumb size is not given, avatar file is returned
+    fn get_avatar(thumb_size: Option<ThumbnailSize>) -> Future<Result<OptionBuffer>>;
 }
 
 object PublicSearchResult {

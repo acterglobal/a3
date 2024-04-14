@@ -9692,6 +9692,53 @@ class Api {
     return tmp7;
   }
 
+  OptionBuffer? __publicSearchResultItemGetAvatarFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _publicSearchResultItemGetAvatarFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = OptionBuffer._(this, tmp13_1);
+    return tmp7;
+  }
+
   FfiBufferUint8? __notificationSenderImageFuturePoll(
     int boxed,
     int postCobject,
@@ -22277,6 +22324,32 @@ class Api {
           _PublicSearchResultItemRoomTypeStrReturn Function(
             int,
           )>();
+  late final _publicSearchResultItemHasAvatarPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__PublicSearchResultItem_has_avatar");
+
+  late final _publicSearchResultItemHasAvatar =
+      _publicSearchResultItemHasAvatarPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _publicSearchResultItemGetAvatarPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint8,
+            ffi.Int64,
+          )>>("__PublicSearchResultItem_get_avatar");
+
+  late final _publicSearchResultItemGetAvatar =
+      _publicSearchResultItemGetAvatarPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+          )>();
   late final _publicSearchResultNextBatchPtr = _lookup<
       ffi.NativeFunction<
           _PublicSearchResultNextBatchReturn Function(
@@ -27266,6 +27339,21 @@ class Api {
   late final _threePidManagerRemoveEmailAddressFuturePoll =
       _threePidManagerRemoveEmailAddressFuturePollPtr.asFunction<
           _ThreePidManagerRemoveEmailAddressFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _publicSearchResultItemGetAvatarFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _PublicSearchResultItemGetAvatarFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__PublicSearchResultItem_get_avatar_future_poll");
+
+  late final _publicSearchResultItemGetAvatarFuturePoll =
+      _publicSearchResultItemGetAvatarFuturePollPtr.asFunction<
+          _PublicSearchResultItemGetAvatarFuturePollReturn Function(
             int,
             int,
             int,
@@ -45406,6 +45494,51 @@ class PublicSearchResultItem {
     return tmp2;
   }
 
+  /// whether to have avatar
+  bool hasAvatar() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._publicSearchResultItemHasAvatar(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// get the binary data of avatar
+  /// if thumb size is given, avatar thumbnail is returned
+  /// if thumb size is not given, avatar file is returned
+  Future<OptionBuffer> getAvatar(
+    ThumbnailSize? thumbSize,
+  ) {
+    final tmp1 = thumbSize;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      tmp4 = tmp3._box.move();
+    }
+    final tmp5 = _api._publicSearchResultItemGetAvatar(
+      tmp0,
+      tmp2,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 =
+        _Box(_api, tmp7_0, "__PublicSearchResultItem_get_avatar_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 =
+        _nativeFuture(tmp7_1, _api.__publicSearchResultItemGetAvatarFuturePoll);
+    return tmp6;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -55852,6 +55985,21 @@ class _ThreePidManagerRemoveEmailAddressFuturePollReturn extends ffi.Struct {
   @ffi.Uint64()
   external int arg4;
   @ffi.Uint8()
+  external int arg5;
+}
+
+class _PublicSearchResultItemGetAvatarFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
   external int arg5;
 }
 
