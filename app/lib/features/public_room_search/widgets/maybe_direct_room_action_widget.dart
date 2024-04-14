@@ -1,10 +1,17 @@
+import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/rooms.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/chat/convo_card.dart';
+import 'package:acter/common/widgets/spaces/space_card.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 // FIXME: add matrix://-support:
 // https://spec.matrix.org/v1.10/appendices/#matrix-uri-scheme
@@ -12,8 +19,16 @@ import 'package:go_router/go_router.dart';
 final aliasedHttpRegexp =
     RegExp(r'https://matrix.to/#/(?<alias>#.+):(?<server>.+)');
 
+final idAliasRegexp = RegExp(
+  r'matrix:r/(?<id>[^?]+)(\?via=(?<server_name>[^&]+))?(&via=(?<server_name2>[^&]+))?(&via=(?<server_name3>[^&]+))?',
+);
+
 final idHttpRegexp = RegExp(
-  r'https://matrix.to/#/(?<id>![^?]+)(\?via=(?<server_name>[^&]+))?(&via=(?<server_name2>[^&]+))?(&via=(?<server_name3>[^&]+))?',
+  r'https://matrix.to/#/!(?<id>[^?]+)(\?via=(?<server_name>[^&]+))?(&via=(?<server_name2>[^&]+))?(&via=(?<server_name3>[^&]+))?',
+);
+
+final idMatrixRegexp = RegExp(
+  r'matrix:roomid/(?<id>[^?]+)(\?via=(?<server_name>[^&]+))?(&via=(?<server_name2>[^&]+))?(&via=(?<server_name3>[^&]+))?',
 );
 
 class MaybeDirectRoomActionWidget extends ConsumerWidget {
@@ -27,66 +42,198 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     this.canMatchId = true,
   });
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final aliased = aliasedHttpRegexp.firstMatch(searchVal);
-    if (canMatchAlias && aliased != null) {
-      final alias = aliased.namedGroup('alias')!;
-      final server = aliased.namedGroup('server')!;
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        child: Card(
-          child: ListTile(
-            onTap: () => onSelectedMatch(context, ref, [server], alias: alias),
-            title: Text(alias),
-            subtitle: Text('${L10n.of(context).on} $server'),
-            trailing: OutlinedButton.icon(
-              onPressed: () =>
-                  onSelectedMatch(context, ref, [server], alias: alias),
-              icon: const Icon(Atlas.entrance_thin),
-              label: Text(L10n.of(context).tryToJoin),
+  Widget renderAliased(
+    BuildContext context,
+    WidgetRef ref,
+    String alias,
+    String server,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      child: Card(
+        child: ListTile(
+          onTap: () => onSelectedMatch(context, ref, [server], alias: alias),
+          title: Text(alias),
+          subtitle: Text('${L10n.of(context).on} $server'),
+          trailing: OutlinedButton.icon(
+            onPressed: () =>
+                onSelectedMatch(context, ref, [server], alias: alias),
+            icon: const Icon(Atlas.entrance_thin),
+            label: Text(L10n.of(context).tryToJoin),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget renderForRoomId(
+    BuildContext context,
+    WidgetRef ref,
+    String roomId,
+    List<String> servers,
+  ) {
+    final roomWatch = ref.watch(maybeRoomProvider(roomId));
+    if (roomWatch.valueOrNull == null) {
+      return Card(
+        child: ListTile(
+          onTap: () => onSelectedMatch(
+            context,
+            ref,
+            servers,
+            roomId: roomId,
+          ),
+          title: Text(roomId),
+          subtitle: servers.isNotEmpty
+              ? Text('${L10n.of(context).via} ${servers.join(', ')}')
+              : null,
+          trailing: OutlinedButton.icon(
+            onPressed: () => onSelectedMatch(
+              context,
+              ref,
+              servers,
+              roomId: roomId,
             ),
+            icon: const Icon(Atlas.entrance_thin),
+            label: Text(L10n.of(context).tryToJoin),
           ),
         ),
       );
     }
+    final room = roomWatch.value!;
 
-    final id = idHttpRegexp.firstMatch(searchVal);
+    if (room.isJoined()) {
+      if (room.isSpace()) {
+        return renderSpaceCard(
+          context,
+          ref,
+          roomId,
+          onTap: () => context.pushNamed(
+            Routes.space.name,
+            pathParameters: {
+              'spaceId': roomId,
+            },
+          ),
+        );
+      }
+      return renderConvoCard(
+        context,
+        ref,
+        roomId,
+        onTap: () => context.pushNamed(
+          Routes.chatroom.name,
+          pathParameters: {
+            'roomId': roomId,
+          },
+        ),
+      );
+    }
+
+    final trailing = noMemberButton(context, ref, room, roomId, servers);
+
+    if (room.isSpace()) {
+      return renderSpaceCard(context, ref, roomId, trailing: trailing);
+    }
+    return renderConvoCard(context, ref, roomId, trailing: trailing);
+  }
+
+  Widget noMemberButton(BuildContext context, WidgetRef ref, Room room,
+      String roomId, List<String> servers) {
+    if (room.joinRuleStr() == 'Public') {
+      return OutlinedButton(
+        onPressed: () => onSelectedMatch(
+          context,
+          ref,
+          servers,
+          roomId: roomId,
+        ),
+        child: Text(L10n.of(context).join),
+      );
+    } else {
+      return OutlinedButton(
+        onPressed: () => onSelectedMatch(
+          context,
+          ref,
+          servers,
+          roomId: roomId,
+        ),
+        child: Text(L10n.of(context).requestToJoin),
+      );
+    }
+  }
+
+  Widget loadingCard() {
+    return const Card(
+      child: ListTile(
+        title: Skeletonizer(child: Text('something random ...')),
+        subtitle: Skeletonizer(child: Text('another random thing')),
+      ),
+    );
+  }
+
+  Widget renderSpaceCard(
+    BuildContext context,
+    WidgetRef ref,
+    String roomId, {
+    void Function()? onTap,
+    Widget? trailing,
+  }) {
+    final space = ref.watch(spaceProvider(roomId)).valueOrNull;
+    if (space != null) {
+      return SpaceCard(
+        space: space,
+        showParent: true,
+        onTap: onTap,
+        trailing: trailing,
+      );
+    }
+    return loadingCard();
+  }
+
+  Widget renderConvoCard(
+    BuildContext context,
+    WidgetRef ref,
+    String roomId, {
+    void Function()? onTap,
+    Widget? trailing,
+  }) {
+    final chat = ref.watch(chatProvider(roomId)).valueOrNull;
+    if (chat != null) {
+      return ConvoCard(
+        room: chat,
+        showParent: true,
+        onTap: onTap,
+        trailing: trailing,
+      );
+    }
+    return loadingCard();
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final aliased = aliasedHttpRegexp.firstMatch(searchVal) ??
+        idAliasRegexp.firstMatch(searchVal);
+    if (canMatchAlias && aliased != null) {
+      final alias = aliased.namedGroup('alias')!;
+      final server = aliased.namedGroup('server')!;
+      return renderAliased(context, ref, alias, server);
+    }
+
+    final id = idHttpRegexp.firstMatch(searchVal) ??
+        idMatrixRegexp.firstMatch(searchVal);
+
     if (canMatchId && id != null) {
-      final targetId = id.namedGroup('id')!;
+      final roomId = id.namedGroup('id')!;
       final List<String> servers = [
         id.namedGroup('server_name') ?? '',
         id.namedGroup('server_name2') ?? '',
         id.namedGroup('server_name3') ?? '',
       ].where((e) => e.isNotEmpty).toList();
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        child: Card(
-          child: ListTile(
-            onTap: () => onSelectedMatch(
-              context,
-              ref,
-              servers,
-              roomId: targetId,
-            ),
-            title: Text(targetId),
-            subtitle: servers.isNotEmpty
-                ? Text('${L10n.of(context).via} ${servers.join(', ')}')
-                : null,
-            trailing: OutlinedButton.icon(
-              onPressed: () => onSelectedMatch(
-                context,
-                ref,
-                servers,
-                roomId: targetId,
-              ),
-              icon: const Icon(Atlas.entrance_thin),
-              label: Text(L10n.of(context).tryToJoin),
-            ),
-          ),
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        child: renderForRoomId(context, ref, '!$roomId', servers),
       );
     }
+
     return const SizedBox(height: 0);
   }
 
