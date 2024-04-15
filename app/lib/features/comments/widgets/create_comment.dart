@@ -97,15 +97,25 @@ class _CreateCommentWidgetState extends ConsumerState<CreateCommentWidget> {
       EasyLoading.showToast(L10n.of(context).youNeedToEnterAComment);
       return;
     }
+    EasyLoading.show(status: L10n.of(context).submittingComment);
     try {
-      EasyLoading.show(status: L10n.of(context).submittingComment);
       final draft = widget.manager.commentDraft();
       draft.contentFormatted(plainDescription, htmlBodyDescription);
       await draft.send();
-      if (!mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showToast(L10n.of(context).commentSubmitted);
     } catch (e) {
-      EasyLoading.showToast('${L10n.of(context).errorSubmittingComment}: $e');
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).errorSubmittingComment(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 }

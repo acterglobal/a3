@@ -15,14 +15,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:settings_ui/settings_ui.dart';
+
+final _log = Logger('a3::settings::notifications_page');
 
 class _AddEmail extends StatefulWidget {
   final List<String> emails;
 
-  const _AddEmail(
-    this.emails,
-  );
+  const _AddEmail(this.emails);
 
   @override
   State<_AddEmail> createState() => __AddEmailState();
@@ -155,43 +156,20 @@ class NotificationsSettingsPage extends ConsumerWidget {
             .valueOrNull ??
         '';
     return SettingsTile(
-      title: Text(
-        title,
-      ),
+      title: Text(title),
       description: Text(
         notifToText(context, curNotifStatus) ?? '(${L10n.of(context).unset})',
       ),
       trailing: PopupMenuButton<String>(
         initialValue: curNotifStatus,
         // Callback that sets the selected popup menu item.
-        onSelected: (String newMode) async {
-          final client = ref.read(clientProvider);
-          if (client == null) {
-            // ignore: use_build_context_synchronously
-            EasyLoading.showError(L10n.of(context).clientNotFound);
-            return;
-          }
-          EasyLoading.show();
-          try {
-            await ref
-                .read(notificationSettingsProvider)
-                .valueOrNull!
-                .setDefaultNotificationMode(
-                  isEncrypted,
-                  isOneToOne,
-                  newMode,
-                );
-            if (!context.mounted) return;
-            EasyLoading.showSuccess(
-              L10n.of(context).notificationStatusSubmitted,
-            );
-          } catch (e) {
-            EasyLoading.showError(
-              '${L10n.of(context).notificationStatusUpdateFailed}: $e',
-              duration: const Duration(seconds: 3),
-            );
-          }
-        },
+        onSelected: (newMode) => _onNotifSectionChange(
+          context,
+          ref,
+          isEncrypted,
+          isOneToOne,
+          newMode,
+        ),
         itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
           PopupMenuItem<String>(
             value: 'all',
@@ -208,6 +186,39 @@ class NotificationsSettingsPage extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _onNotifSectionChange(
+    BuildContext context,
+    WidgetRef ref,
+    bool isEncrypted,
+    bool isOneToOne,
+    String newMode,
+  ) async {
+    EasyLoading.show(status: L10n.of(context).changingNotificationMode);
+    try {
+      final notifier = ref.read(notificationSettingsProvider).valueOrNull!;
+      await notifier.setDefaultNotificationMode(
+        isEncrypted,
+        isOneToOne,
+        newMode,
+      );
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showToast(L10n.of(context).notificationStatusSubmitted);
+    } catch (e, st) {
+      _log.severe('Failed to update notification status', e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).notificationStatusUpdateFailed(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 
   SettingsSectionWithTitleActions _pushTargets(
@@ -231,40 +242,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
               ),
               iconSize: 20,
               color: Theme.of(context).colorScheme.surface,
-              onPressed: () async {
-                final emailToAdd = await showDialog<String?>(
-                  context: context,
-                  builder: (BuildContext context) => _AddEmail(emails),
-                );
-                if (emailToAdd != null && context.mounted) {
-                  EasyLoading.show(
-                    status: L10n.of(context).adding(emailToAdd),
-                  );
-                  final client = ref.read(
-                    alwaysClientProvider,
-                  ); // is guaranteed because of the ignoredUsersProvider using it
-                  try {
-                    await client.addEmailPusher(
-                      appIdPrefix,
-                      (await deviceName()),
-                      emailToAdd,
-                      null,
-                    );
-                    ref.invalidate(possibleEmailToAddForPushProvider);
-                  } catch (e) {
-                    if (!context.mounted) return;
-                    EasyLoading.showError(
-                      L10n.of(context).failedToAdd('$emailToAdd: $e'),
-                    );
-                    return;
-                  }
-                  ref.invalidate(pushersProvider);
-                  if (!context.mounted) return;
-                  EasyLoading.showSuccess(
-                    '$emailToAdd ${L10n.of(context).addedToPusherList}',
-                  );
-                }
-              },
+              onPressed: () => _onTargetAdd(context, ref, emails),
             ),
           ];
         },
@@ -279,9 +257,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
                 ];
               }
               return items
-                  .map(
-                    (item) => _pusherTile(context, ref, item),
-                  )
+                  .map((item) => _pusherTile(context, ref, item))
                   .toList();
             },
             error: (e, s) => [
@@ -298,13 +274,53 @@ class NotificationsSettingsPage extends ConsumerWidget {
     );
   }
 
+  Future<void> _onTargetAdd(
+    BuildContext context,
+    WidgetRef ref,
+    List<String> emails,
+  ) async {
+    final emailToAdd = await showDialog<String?>(
+      context: context,
+      builder: (BuildContext context) => _AddEmail(emails),
+    );
+    if (!context.mounted) return;
+    if (emailToAdd == null) return;
+    EasyLoading.show(status: L10n.of(context).adding(emailToAdd));
+    final client = ref.read(
+      alwaysClientProvider,
+    ); // is guaranteed because of the ignoredUsersProvider using it
+    try {
+      await client.addEmailPusher(
+        appIdPrefix,
+        (await deviceName()),
+        emailToAdd,
+        null,
+      );
+      ref.invalidate(possibleEmailToAddForPushProvider);
+    } catch (e) {
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToAdd('$emailToAdd: $e'),
+        duration: const Duration(seconds: 3),
+      );
+      return;
+    }
+    ref.invalidate(pushersProvider);
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return;
+    }
+    EasyLoading.showToast(L10n.of(context).addedToPusherList(emailToAdd));
+  }
+
   SettingsTile _pusherTile(BuildContext context, WidgetRef ref, Pusher item) {
     final isEmail = item.isEmailPusher();
     return SettingsTile(
-      leading: isEmail
-          ? const Icon(Atlas.envelope)
-          : const Icon(Atlas.mobile_portrait_thin),
-      title: isEmail ? Text(item.pushkey()) : Text(item.deviceDisplayName()),
+      leading: Icon(isEmail ? Atlas.envelope : Atlas.mobile_portrait_thin),
+      title: Text(isEmail ? item.pushkey() : item.deviceDisplayName()),
       description: isEmail ? null : Text(item.appDisplayName()),
       trailing: const Icon(Atlas.dots_vertical_thin),
       onPressed: (context) => showDialog(
@@ -348,22 +364,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: TextButton(
-                onPressed: () async {
-                  Navigator.pop(context, null);
-                  EasyLoading.show(status: L10n.of(context).deletingPushTarget);
-                  try {
-                    await item.delete();
-                    if (!context.mounted) return;
-                    EasyLoading.showSuccess(L10n.of(context).pushTargetDeleted);
-                    ref.invalidate(possibleEmailToAddForPushProvider);
-                    ref.invalidate(pushersProvider);
-                  } catch (e) {
-                    EasyLoading.showSuccess(
-                      '${L10n.of(context).deletionFailed}: $e',
-                      duration: const Duration(seconds: 3),
-                    );
-                  }
-                },
+                onPressed: () => _onTargetDelete(context, ref, item),
                 child: Text(
                   L10n.of(context).deleteTarget,
                   style: const TextStyle(color: Colors.white, fontSize: 17),
@@ -378,5 +379,33 @@ class NotificationsSettingsPage extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _onTargetDelete(
+    BuildContext context,
+    WidgetRef ref,
+    Pusher item,
+  ) async {
+    Navigator.pop(context, null);
+    EasyLoading.show(status: L10n.of(context).deletingPushTarget);
+    try {
+      await item.delete();
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showToast(L10n.of(context).pushTargetDeleted);
+      ref.invalidate(possibleEmailToAddForPushProvider);
+      ref.invalidate(pushersProvider);
+    } catch (e) {
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).deletionFailed(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 }

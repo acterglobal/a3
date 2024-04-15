@@ -48,9 +48,8 @@ async fn pins_smoketest() -> Result<()> {
         async move {
             if client.pins().await?.len() != 3 {
                 bail!("not all pins found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
@@ -79,9 +78,8 @@ async fn pin_comments() -> Result<()> {
         async move {
             if client.pins().await?.len() != 3 {
                 bail!("not all pins found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
@@ -111,7 +109,7 @@ async fn pin_comments() -> Result<()> {
     Retry::spawn(retry_strategy.clone(), || async {
         if comments_listener.is_empty() {
             bail!("all still empty");
-        };
+        }
         Ok(())
     })
     .await?;
@@ -136,9 +134,8 @@ async fn pin_attachments() -> Result<()> {
         async move {
             if client.pins().await?.len() != 3 {
                 bail!("not all pins found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
@@ -176,7 +173,7 @@ async fn pin_attachments() -> Result<()> {
     Retry::spawn(retry_strategy.clone(), || async {
         if attachments_listener.is_empty() {
             bail!("all still empty");
-        };
+        }
         Ok(())
     })
     .await?;
@@ -207,7 +204,7 @@ async fn pin_attachments() -> Result<()> {
     Retry::spawn(retry_strategy.clone(), || async {
         if attachments_listener.is_empty() {
             bail!("all still empty");
-        };
+        }
         Ok(())
     })
     .await?;

@@ -81,18 +81,16 @@ class RelatedSpaces extends StatelessWidget {
     bool canLinkSpace = false,
     bool withTools = false,
   }) {
-    return SliverToBoxAdapter(
-      child: Row(
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Text(title),
-            ),
+    return Row(
+      children: [
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Text(title),
           ),
-          if (canLinkSpace && withTools) renderTools(context),
-        ],
-      ),
+        ),
+        if (canLinkSpace && withTools) renderTools(context),
+      ],
     );
   }
 
@@ -100,17 +98,15 @@ class RelatedSpaces extends StatelessWidget {
     if (!showParents || (spaces.parents.isEmpty && spaces.mainParent != null)) {
       return null;
     }
-    return SliverToBoxAdapter(
-      child: Row(
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Text(L10n.of(context).parents),
-            ),
+    return Row(
+      children: [
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Text(L10n.of(context).parents),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -119,11 +115,9 @@ class RelatedSpaces extends StatelessWidget {
       return null;
     }
     final space = spaces.mainParent!;
-    return SliverToBoxAdapter(
-      child: SpaceCard(
-        key: Key(space.getRoomIdStr()),
-        space: space,
-      ),
+    return SpaceCard(
+      key: Key(space.getRoomIdStr()),
+      space: space,
     );
   }
 
@@ -131,13 +125,9 @@ class RelatedSpaces extends StatelessWidget {
     if (!showParents || spaces.parents.isEmpty) {
       return null;
     }
-    return SliverGrid.builder(
+    return ListView.builder(
       itemCount: spaces.parents.length,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: crossAxisCount,
-        childAspectRatio: 4.0,
-        mainAxisExtent: 100,
-      ),
+      shrinkWrap: true,
       itemBuilder: (context, index) {
         final space = spaces.parents[index];
         return SpaceCard(
@@ -171,13 +161,9 @@ class RelatedSpaces extends StatelessWidget {
               canLinkSpace: canLinkSpace,
               withTools: true,
             ),
-      SliverGrid.builder(
+      ListView.builder(
         itemCount: spaces.knownSubspaces.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: crossAxisCount,
-          childAspectRatio: 9.0,
-          mainAxisExtent: 100,
-        ),
+        shrinkWrap: true,
         itemBuilder: (context, index) {
           final space = spaces.knownSubspaces[index];
           return SpaceCard(
@@ -219,7 +205,8 @@ class RelatedSpaces extends StatelessWidget {
           key: Key('subspace-list-item-${item.roomIdStr()}'),
           space: item,
         ),
-        pagedBuilder: (controller, builder) => PagedSliverList(
+        pagedBuilder: (controller, builder) => PagedListView(
+          shrinkWrap: true,
           pagingController: controller,
           builderDelegate: builder,
         ),
@@ -256,31 +243,25 @@ class RelatedSpaces extends StatelessWidget {
 
     return [
       if (spaces.otherRelations.isNotEmpty || canLinkSpace)
-        SliverToBoxAdapter(
-          child: Row(
-            children: [
-              Expanded(child: Text(L10n.of(context).recommendedSpaces)),
-              IconButton(
-                icon: Icon(
-                  Atlas.plus_circle,
-                  color: Theme.of(context).colorScheme.neutral5,
-                ),
-                onPressed: () => context.pushNamed(
-                  Routes.linkRecommended.name,
-                  pathParameters: {'spaceId': spaceIdOrAlias},
-                ),
+        Row(
+          children: [
+            Expanded(child: Text(L10n.of(context).recommendedSpaces)),
+            IconButton(
+              icon: Icon(
+                Atlas.plus_circle,
+                color: Theme.of(context).colorScheme.neutral5,
               ),
-            ],
-          ),
+              onPressed: () => context.pushNamed(
+                Routes.linkRecommended.name,
+                pathParameters: {'spaceId': spaceIdOrAlias},
+              ),
+            ),
+          ],
         ),
       if (spaces.otherRelations.isNotEmpty)
-        SliverGrid.builder(
+        ListView.builder(
           itemCount: spaces.otherRelations.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: crossAxisCount,
-            childAspectRatio: 4.0,
-            mainAxisExtent: 100,
-          ),
+          shrinkWrap: true,
           itemBuilder: (context, index) {
             final space = spaces.otherRelations[index];
             return SpaceCard(
@@ -326,7 +307,11 @@ class RelatedSpaces extends StatelessWidget {
     ];
 
     if (items.isNotEmpty) {
-      return SliverMainAxisGroup(slivers: items);
+      return SingleChildScrollView(
+        child: Column(
+          children: items,
+        ),
+      );
     } else {
       return fallback;
     }

@@ -114,27 +114,8 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
               },
               menuChildren: [
                 MenuItemButton(
+                  onPressed: onUnmute,
                   child: Text(L10n.of(context).unmute),
-                  onPressed: () async {
-                    final room =
-                        await ref.read(maybeRoomProvider(roomId).future);
-                    if (room == null) {
-                      if (!mounted) return;
-                      EasyLoading.showError(L10n.of(context).roomNotFound);
-                      return;
-                    }
-                    await room.unmute();
-                    if (!mounted) return;
-                    EasyLoading.showSuccess(
-                      L10n.of(context).notificationsUnmuted,
-                    );
-                    await Future.delayed(const Duration(seconds: 1), () {
-                      // FIXME: we want to refresh the view but don't know
-                      //        when the event was confirmed form sync :(
-                      // let's hope that a second delay is reasonable enough
-                      ref.invalidate(maybeRoomProvider(roomId));
-                    });
-                  },
                 ),
               ],
             ),
@@ -145,6 +126,28 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
 
   Future<void> getActiveMembers() async {
     activeMembers = (await widget.room.activeMembers()).toList();
+  }
+
+  Future<void> onUnmute() async {
+    String roomId = widget.room.getRoomIdStr();
+    final room = await ref.read(maybeRoomProvider(roomId).future);
+    if (room == null) {
+      if (!context.mounted) return;
+      EasyLoading.showError(
+        L10n.of(context).roomNotFound,
+        duration: const Duration(seconds: 3),
+      );
+      return;
+    }
+    await room.unmute();
+    if (!context.mounted) return;
+    EasyLoading.showToast(L10n.of(context).notificationsUnmuted);
+    await Future.delayed(const Duration(seconds: 1), () {
+      // FIXME: we want to refresh the view but don't know
+      //        when the event was confirmed form sync :(
+      // let's hope that a second delay is reasonable enough
+      ref.invalidate(maybeRoomProvider(roomId));
+    });
   }
 }
 

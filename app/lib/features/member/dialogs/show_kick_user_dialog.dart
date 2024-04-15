@@ -32,7 +32,7 @@ Future<void> showKickUserDialog(BuildContext context, Member member) async {
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-            child:  Text(L10n.of(context).no),
+            child: Text(L10n.of(context).no),
           ),
           TextButton(
             onPressed: () async {
@@ -40,17 +40,24 @@ Future<void> showKickUserDialog(BuildContext context, Member member) async {
               try {
                 final maybeReason = reason.text.isNotEmpty ? reason.text : null;
                 await member.kick(maybeReason);
-                // ignore: use_build_context_synchronously
-                EasyLoading.showToast(L10n.of(context).kickSuccess);
-                if (context.mounted) {
-                  Navigator.of(context, rootNavigator: true).pop();
+                if (!context.mounted) {
+                  EasyLoading.dismiss();
+                  return;
                 }
+                EasyLoading.showToast(L10n.of(context).kickSuccess);
+                Navigator.of(context, rootNavigator: true).pop();
               } catch (error) {
-                // ignore: use_build_context_synchronously
-                EasyLoading.showError(L10n.of(context).kickFailed(error));
+                if (!context.mounted) {
+                  EasyLoading.dismiss();
+                  return;
+                }
+                EasyLoading.showError(
+                  L10n.of(context).kickFailed(error),
+                  duration: const Duration(seconds: 3),
+                );
               }
             },
-            child:  Text(L10n.of(context).yes),
+            child: Text(L10n.of(context).yes),
           ),
         ],
       );

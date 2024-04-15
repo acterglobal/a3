@@ -1,6 +1,6 @@
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/events/widgets/skeletons/event_list_skeleton_widget.dart';
-import 'package:acter/features/events/widgets/events_item.dart';
+import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show CalendarEvent;
 import 'package:flutter/material.dart';

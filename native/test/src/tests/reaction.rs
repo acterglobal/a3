@@ -3,6 +3,10 @@ use anyhow::{Context, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
 use tokio::time::sleep;
+use tokio_retry::{
+    strategy::{jitter, FibonacciBackoff},
+    Retry,
+};
 use tracing::info;
 
 use crate::utils::random_users_with_random_convo;
@@ -13,63 +17,75 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     let (mut sisko, mut kyra, mut worf, room_id) =
         random_users_with_random_convo("reaction").await?;
 
-    info!("1");
-
     let sisko_sync = sisko.start_sync();
     sisko_sync.await_has_synced_history().await?;
 
-    let sisko_convo = sisko
-        .convo(room_id.to_string())
-        .await
-        .expect("sisko should belong to convo");
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = sisko.clone();
+    let target_id = room_id.clone();
+    Retry::spawn(retry_strategy, move || {
+        let client = fetcher_client.clone();
+        let room_id = target_id.clone();
+        async move { client.convo(room_id.to_string()).await }
+    })
+    .await?;
+
+    let sisko_convo = sisko.convo(room_id.to_string()).await?;
     let sisko_timeline = sisko_convo.timeline_stream();
     let sisko_stream = sisko_timeline.messages_stream();
     pin_mut!(sisko_stream);
 
-    info!("2");
-
     let kyra_sync = kyra.start_sync();
     kyra_sync.await_has_synced_history().await?;
 
-    let kyra_convo = kyra
-        .convo(room_id.to_string())
-        .await
-        .expect("kyra should belong to convo");
-    let kyra_timeline = kyra_convo.timeline_stream();
-    let kyra_stream = kyra_timeline.messages_stream();
-    pin_mut!(kyra_stream);
-
-    kyra_stream.next().await;
     for invited in kyra.invited_rooms().iter() {
         info!(" - accepting {:?}", invited.room_id());
         invited.join().await?;
     }
 
-    info!("3");
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = kyra.clone();
+    let target_id = room_id.clone();
+    Retry::spawn(retry_strategy, move || {
+        let client = fetcher_client.clone();
+        let room_id = target_id.clone();
+        async move { client.convo(room_id.to_string()).await }
+    })
+    .await?;
+
+    let kyra_convo = kyra.convo(room_id.to_string()).await?;
+    let kyra_timeline = kyra_convo.timeline_stream();
+    let kyra_stream = kyra_timeline.messages_stream();
+    pin_mut!(kyra_stream);
 
     let worf_sync = worf.start_sync();
     worf_sync.await_has_synced_history().await?;
 
-    let worf_convo = worf
-        .convo(room_id.to_string())
-        .await
-        .expect("worf should belong to convo");
-    let worf_timeline = worf_convo.timeline_stream();
-    let worf_stream = worf_timeline.messages_stream();
-    pin_mut!(worf_stream);
-
-    worf_stream.next().await;
     for invited in worf.invited_rooms().iter() {
         info!(" - accepting {:?}", invited.room_id());
         invited.join().await?;
     }
 
-    info!("4");
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = worf.clone();
+    let target_id = room_id.clone();
+    Retry::spawn(retry_strategy, move || {
+        let client = fetcher_client.clone();
+        let room_id = target_id.clone();
+        async move { client.convo(room_id.to_string()).await }
+    })
+    .await?;
+
+    let worf_convo = worf.convo(room_id.to_string()).await?;
+    let worf_timeline = worf_convo.timeline_stream();
+    let worf_stream = worf_timeline.messages_stream();
+    pin_mut!(worf_stream);
 
     let draft = sisko.text_plain_draft("Hi, everyone".to_string());
     sisko_timeline.send_message(Box::new(draft)).await?;
-
-    info!("5");
 
     // text msg may reach via reset action or set action
     let mut i = 30;
@@ -114,7 +130,16 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     info!("loop finished");
     let kyra_received = received.context("Even after 30 seconds, text msg not received")?;
 
-    info!("6");
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_timeline = kyra_timeline.clone();
+    let target_id = kyra_received.clone();
+    Retry::spawn(retry_strategy, move || {
+        let timeline = fetcher_timeline.clone();
+        let received = target_id.clone();
+        async move { timeline.get_message(received.to_string()).await }
+    })
+    .await?;
 
     // text msg may reach via reset action or set action
     i = 30;
@@ -159,7 +184,16 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     info!("loop finished");
     let worf_received = received.context("Even after 30 seconds, text msg not received")?;
 
-    info!("7");
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_timeline = worf_timeline.clone();
+    let target_id = worf_received.clone();
+    Retry::spawn(retry_strategy, move || {
+        let timeline = fetcher_timeline.clone();
+        let received = target_id.clone();
+        async move { timeline.get_message(received.to_string()).await }
+    })
+    .await?;
 
     kyra_timeline
         .toggle_reaction(kyra_received.to_string(), "👏".to_string())
@@ -167,8 +201,6 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     worf_timeline
         .toggle_reaction(worf_received.to_string(), "😎".to_string())
         .await?;
-
-    info!("8");
 
     // msg reaction may reach via set action
     i = 10;

@@ -51,12 +51,12 @@ async fn template_creates_space() -> Result<()> {
         async move {
             if client.pins().await?.is_empty() {
                 bail!("no pins found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
+
     assert_eq!(user.pins().await?.len(), 2);
     assert_eq!(user.task_lists().await?.len(), 1);
 

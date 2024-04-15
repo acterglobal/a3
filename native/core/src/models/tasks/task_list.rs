@@ -95,7 +95,11 @@ impl ActerModel for TaskList {
     }
 
     fn capabilities(&self) -> &[Capability] {
-        &[Capability::Commentable, Capability::Reactable]
+        &[
+            Capability::Commentable,
+            Capability::Reactable,
+            Capability::Attachmentable,
+        ]
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<String>> {

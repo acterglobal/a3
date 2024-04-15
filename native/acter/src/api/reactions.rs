@@ -169,9 +169,8 @@ impl ReactionManager {
         let room = self.room.clone();
         let stats = self.inner.stats();
         let Some(event_id) = stats.user_likes.last().cloned() else {
-            bail!("User hasn't liked");
+            bail!("User hasn't liked")
         };
-
         let txn_id = txn_id.map(OwnedTransactionId::from);
 
         RUNTIME

@@ -90,7 +90,7 @@ impl NotificationSender {
     pub async fn image(&self) -> Result<FfiBuffer<u8>> {
         #[allow(clippy::diverging_sub_expression)]
         let Some(source) = self.image.clone() else {
-            return bail!("No media found in item");
+            bail!("No media found in item")
         };
         let client = self.client.clone();
 
@@ -131,7 +131,7 @@ impl NotificationRoom {
     pub async fn image(&self) -> Result<FfiBuffer<u8>> {
         #[allow(clippy::diverging_sub_expression)]
         let Some(source) = self.image.clone() else {
-            return bail!("No media found in item");
+            bail!("No media found in item")
         };
         let client = self.client.clone();
 
@@ -200,7 +200,7 @@ impl NotificationItem {
     pub async fn image(&self) -> Result<FfiBuffer<u8>> {
         #[allow(clippy::diverging_sub_expression)]
         let Some(source) = self.image.clone() else {
-            return bail!("No media found in item");
+            bail!("No media found in item")
         };
         let client = self.client.clone();
 
@@ -212,7 +212,7 @@ impl NotificationItem {
     pub async fn image_path(&self, tmp_dir: String) -> Result<String> {
         #[allow(clippy::diverging_sub_expression)]
         let Some(source) = self.image.clone() else {
-            return bail!("No media found in item");
+            bail!("No media found in item")
         };
         self.client
             .source_binary_tmp_path(source, None, tmp_dir, "png")
