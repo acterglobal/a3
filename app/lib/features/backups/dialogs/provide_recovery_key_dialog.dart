@@ -90,21 +90,30 @@ class __RecoveryKeyDialogState extends ConsumerState<_RecoveryKeyDialog> {
       final manager = ref.read(backupManagerProvider);
       final recoveryWorked = await manager.recover(key);
       if (recoveryWorked) {
+        if (!context.mounted) {
+          EasyLoading.dismiss();
+          return;
+        }
         EasyLoading.showToast(
-          // ignore: use_build_context_synchronously
           L10n.of(context).encryptionBackupRecoverRecoveringSuccess,
         );
         if (context.mounted) {
           Navigator.of(context, rootNavigator: true).pop();
         }
       } else {
-        // ignore: use_build_context_synchronously
+        if (!context.mounted) {
+          EasyLoading.dismiss();
+          return;
+        }
         EasyLoading.showError(
           L10n.of(context).encryptionBackupRecoverRecoveringImportFailed,
         );
       }
     } catch (error) {
-      // ignore: use_build_context_synchronously
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         L10n.of(context).encryptionBackupRecoverRecoveringFailed(error),
       );

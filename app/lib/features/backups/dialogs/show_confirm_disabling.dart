@@ -51,7 +51,10 @@ class _ShowConfirmResetDialog extends ConsumerWidget {
     try {
       final manager = ref.read(backupManagerProvider);
       final newKey = await manager.reset();
-      // ignore: use_build_context_synchronously
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showToast(
         L10n.of(context).encryptionBackupResettingSuccess,
         toastPosition: EasyLoadingToastPosition.bottom,
@@ -61,8 +64,11 @@ class _ShowConfirmResetDialog extends ConsumerWidget {
         showRecoveryKeyDialog(context, ref, newKey);
       }
     } catch (error) {
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showToast(
-        // ignore: use_build_context_synchronously
         L10n.of(context).encryptionBackupResettingFailed(error),
       );
     }
