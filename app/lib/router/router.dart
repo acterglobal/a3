@@ -1,3 +1,4 @@
+import 'package:acter/common/pages/not_found.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -188,4 +189,14 @@ List<StatefulShellBranch> desktopShellBranches(Ref ref) {
       routes: makeActivitiesShellRoutes(ref),
     ),
   ];
+}
+
+GoRouter makeRouter(Ref ref) {
+  return GoRouter(
+    errorBuilder: (context, state) => NotFoundPage(routerState: state),
+    navigatorKey: rootNavKey,
+    initialLocation: '/',
+    debugLogDiagnostics: true,
+    routes: makeRoutes(ref),
+  );
 }
