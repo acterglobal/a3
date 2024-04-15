@@ -34,6 +34,7 @@ dependencies = [
  "ffi-gen-macro",
  "futures",
  "futures-signals",
+ "icalendar",
  "indexmap 2.2.6",
  "infer",
  "lazy_static",
@@ -111,6 +112,7 @@ dependencies = [
  "enum_dispatch",
  "env_logger",
  "futures",
+ "icalendar",
  "indexmap 2.2.6",
  "matrix-sdk",
  "matrix-sdk-base",
@@ -2437,7 +2439,7 @@ dependencies = [
  "chrono",
  "iso8601",
  "nom",
- "uuid 1.6.1",
+ "uuid",
 ]
 
 [[package]]
