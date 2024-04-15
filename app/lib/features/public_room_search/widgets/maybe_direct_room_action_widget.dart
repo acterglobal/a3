@@ -13,9 +13,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-// FIXME: add matrix://-support:
-// https://spec.matrix.org/v1.10/appendices/#matrix-uri-scheme
-
 final aliasedHttpRegexp =
     RegExp(r'https://matrix.to/#/(?<alias>#.+):(?<server>.+)');
 
@@ -136,8 +133,13 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     return renderConvoCard(context, ref, roomId, trailing: trailing);
   }
 
-  Widget noMemberButton(BuildContext context, WidgetRef ref, Room room,
-      String roomId, List<String> servers,) {
+  Widget noMemberButton(
+    BuildContext context,
+    WidgetRef ref,
+    Room room,
+    String roomId,
+    List<String> servers,
+  ) {
     if (room.joinRuleStr() == 'Public') {
       return OutlinedButton(
         onPressed: () => onSelectedMatch(
