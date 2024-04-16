@@ -186,5 +186,19 @@
   "clearDBAndReLogin": "Wyczyść DB i zaloguj się ponownie",
   "@clearDBAndReLogin": {},
   "close": "Zamknij",
-  "@close": {}
+  "@close": {},
+  "contactActerSupport": "Kontakt z pomocą techniczną Acter",
+  "@contactActerSupport": {},
+  "contentSuccessfullyRemoved": "Zawartość została pomyślnie usunięta",
+  "@contentSuccessfullyRemoved": {},
+  "convertingToActerSpace": "Konwersja do przestrzeni Acter",
+  "@convertingToActerSpace": {},
+  "copyUsername": "Kopiuj nazwę użytkownika",
+  "@copyUsername": {},
+  "copyMessage": "Kopiuj",
+  "@copyMessage": {},
+  "continueAsGuest": "Kontynuuj jako gość",
+  "@continueAsGuest": {},
+  "continueQuestion": "Kontynuować?",
+  "@continueQuestion": {}
 }
