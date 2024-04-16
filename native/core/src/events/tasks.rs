@@ -25,7 +25,9 @@ pub enum SpecialTaskListRole {
 #[repr(u8)]
 /// Implementing Priority according to
 /// <https://www.rfc-editor.org/rfc/rfc8984.html#section-4.4.1>
+#[derive(Default)]
 pub enum Priority {
+    #[default]
     Undefined = 0,
     Highest = 1,
     SecondHighest = 2,
@@ -41,12 +43,6 @@ pub enum Priority {
 impl Priority {
     fn is_undefinied(&self) -> bool {
         matches!(self, Priority::Undefined)
-    }
-}
-
-impl Default for Priority {
-    fn default() -> Self {
-        Priority::Undefined
     }
 }
 

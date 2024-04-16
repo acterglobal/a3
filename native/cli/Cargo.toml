@@ -2,7 +2,7 @@
 name = "acter-cli"
 version = "0.1.0"
 edition = "2021"
-rust-version = "1.58"
+rust-version = "1.70"
 description = "CLI of acter app to interact with an acter setup"
 homepage = "https://effekto.org"
 repository = "https://github.com/acterglobal/a3"

@@ -336,13 +336,8 @@ impl Store {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{
-        models::{TestModel, TestModelBuilder},
-        Result,
-    };
+    use crate::models::{TestModel, TestModelBuilder};
     use anyhow::bail;
-    use env_logger;
-    use matrix_sdk::Client;
     use matrix_sdk_base::store::{MemoryStore, StoreConfig};
     use ruma::{event_id, OwnedEventId};
     use ruma_common::{api::MatrixVersion, user_id};
