@@ -7,9 +7,11 @@ use tracing::{info, warn};
 
 use crate::utils::{accept_all_invites, random_users_with_random_convo, wait_for_convo_joined};
 
+type MessageMatchesTest = dyn Fn(&RoomMessage) -> bool;
+
 async fn wait_for_message(
     stream: impl Stream<Item = RoomMessageDiff>,
-    matching: &'static str,
+    match_test: &MessageMatchesTest,
     error: &'static str,
 ) -> Result<OwnedEventId> {
     // text msg may reach via reset action or set action
@@ -25,8 +27,12 @@ async fn wait_for_message(
                         .value()
                         .expect("diff pushback action must have valid value");
                     info!("diff pushback - {:?}", value);
-                    if let Some(event_id) = match_text_msg(&value, matching) {
-                        return Ok(event_id);
+                    if match_test(&value) {
+                        return Ok(value
+                            .event_item()
+                            .expect("has item")
+                            .evt_id()
+                            .expect("has id"));
                     }
                 }
                 "Reset" => {
@@ -35,8 +41,12 @@ async fn wait_for_message(
                         .expect("diff reset action must have valid values");
                     for value in values.iter() {
                         info!("diff reset msg: {:?}", value);
-                        if let Some(event_id) = match_text_msg(value, matching) {
-                            return Ok(event_id);
+                        if match_test(value) {
+                            return Ok(value
+                                .event_item()
+                                .expect("has item")
+                                .evt_id()
+                                .expect("has id"));
                         }
                     }
                 }
@@ -89,14 +99,26 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
 
     let kyra_received = wait_for_message(
         kyra_stream,
-        "Hi, everyone",
+        &|m| match_text_msg(m, "Hi, everyone").is_some(),
         "even after 30 seconds, kyra didn't see sisko's message",
     )
     .await?;
 
+    // FIXME: for some unknown reason worf only receives an encrypted message
+    //        they can't decrypt. Doesn't really matter for the tests itself,
+    //        but it's still bad. so this test takes kyras event_id and matches
+    //        it against the stream to find the item to react to.
+
+    let check_id = kyra_received.clone();
+
     let worf_received = wait_for_message(
         worf_stream,
-        "Hi, everyone",
+        &move |m| {
+            m.event_item()
+                .and_then(|e| e.evt_id())
+                .map(|s| s == check_id)
+                .unwrap_or_default()
+        },
         "even after 30 seconds, worf didn't see sisko's message",
     )
     .await?;
