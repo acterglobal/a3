@@ -729,6 +729,20 @@ impl Client {
                         me.refresh_rooms(changed_rooms).await;
                     }
 
+                    if (!response.account_data.is_empty()) {
+                        println!("account data found!");
+                        // account data has been updated, inform the listeners
+                        let keys = response
+                            .account_data
+                            .iter()
+                            .filter_map(|raw| raw.get_field::<String>("type").ok().flatten())
+                            .collect::<Vec<String>>();
+                        if (!keys.is_empty()) {
+                            println!("account data keys: {keys:?}");
+                            me.executor().notify(keys);
+                        }
+                    }
+
                     if let Ok(mut w) = state.try_write() {
                         if w.should_stop_syncing {
                             w.is_syncing = false;
@@ -908,7 +922,7 @@ impl Client {
     pub fn account(&self) -> Result<Account> {
         let account = self.core.client().account();
         let user_id = self.user_id()?;
-        Ok(Account::new(account, user_id, self.core.client().clone()))
+        Ok(Account::new(account, user_id, self.clone()))
     }
 
     pub fn device_id(&self) -> Result<OwnedDeviceId> {
