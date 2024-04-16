@@ -93,6 +93,7 @@ features = [
     "markdown",
 #   "qrcode",
     "rustls-tls",
+    "e2e-encryption",
 ]
 
 [dependencies.matrix-sdk-base]
