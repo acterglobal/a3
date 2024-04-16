@@ -145,7 +145,7 @@ impl RoomEventItem {
                 me.edited(msg.is_edited());
             }
             TimelineItemContent::RedactedMessage => {
-                info!("Edit event applies to a redacted message, discarding");
+                info!("Edit event applies to a redacted message");
                 me.event_type("m.room.redaction".to_string());
             }
             TimelineItemContent::Sticker(s) => {
@@ -153,11 +153,11 @@ impl RoomEventItem {
                 me.msg_content(Some(MsgContent::from(s.content())));
             }
             TimelineItemContent::UnableToDecrypt(encrypted_msg) => {
-                info!("Edit event applies to event that couldn't be decrypted, discarding");
+                info!("Edit event applies to event that couldn't be decrypted");
                 me.event_type("m.room.encrypted".to_string());
             }
             TimelineItemContent::MembershipChange(m) => {
-                info!("Edit event applies to a state event, discarding");
+                info!("Edit event applies to a state event");
                 me.event_type("m.room.member".to_string());
                 let fallback = match m.change() {
                     Some(MembershipChange::None) => {
@@ -234,7 +234,7 @@ impl RoomEventItem {
                 me.msg_content(Some(msg_content));
             }
             TimelineItemContent::ProfileChange(p) => {
-                info!("Edit event applies to a state event, discarding");
+                info!("Edit event applies to a state event");
                 me.event_type("ProfileChange".to_string());
                 if let Some(change) = p.displayname_change() {
                     let msg_content = match (&change.old, &change.new) {
@@ -259,11 +259,11 @@ impl RoomEventItem {
                 }
             }
             TimelineItemContent::OtherState(s) => {
-                info!("Edit event applies to a state event, discarding");
+                info!("Edit event applies to a state event");
                 me.event_type(s.content().event_type().to_string());
             }
             TimelineItemContent::FailedToParseMessageLike { event_type, error } => {
-                info!("Edit event applies to message that couldn't be parsed, discarding");
+                info!("Edit event applies to message that couldn't be parsed");
                 me.event_type(event_type.to_string());
             }
             TimelineItemContent::FailedToParseState {
@@ -271,11 +271,11 @@ impl RoomEventItem {
                 state_key,
                 error,
             } => {
-                info!("Edit event applies to state that couldn't be parsed, discarding");
+                info!("Edit event applies to state that couldn't be parsed");
                 me.event_type(event_type.to_string());
             }
             TimelineItemContent::Poll(s) => {
-                info!("Edit event applies to a poll state, discarding");
+                info!("Edit event applies to a poll state");
                 me.event_type("m.poll.start".to_string());
                 if let Some(fallback) = s.fallback_text() {
                     let msg_content = MsgContent::from_text(fallback);
