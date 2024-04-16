@@ -1,8 +1,16 @@
+use crate::{ActerUserAppSettings, Client};
+use acter_core::events::settings::{
+    ActerUserAppSettingsContent, ActerUserAppSettingsContentBuilder, APP_USER_SETTINGS,
+};
 use anyhow::{Context, Result};
-use matrix_sdk::{media::MediaRequest, Account as SdkAccount, Client as SdkClient};
+use futures::StreamExt;
+use matrix_sdk::{media::MediaRequest, Account as SdkAccount};
 use ruma_common::{OwnedMxcUri, OwnedUserId, UserId};
 use ruma_events::{ignored_user_list::IgnoredUserListEventContent, room::MediaSource};
 use std::{ops::Deref, path::PathBuf};
+use tokio::sync::broadcast::Receiver;
+use tokio_stream::wrappers::BroadcastStream;
+use tokio_stream::Stream;
 
 use super::{
     common::{OptionBuffer, OptionString, ThumbnailSize},
@@ -12,7 +20,7 @@ use super::{
 #[derive(Clone, Debug)]
 pub struct Account {
     account: SdkAccount,
-    client: SdkClient,
+    client: Client,
     user_id: OwnedUserId,
 }
 
@@ -24,7 +32,7 @@ impl Deref for Account {
 }
 
 impl Account {
-    pub fn new(account: SdkAccount, user_id: OwnedUserId, client: SdkClient) -> Self {
+    pub fn new(account: SdkAccount, user_id: OwnedUserId, client: Client) -> Self {
         Account {
             account,
             client,
@@ -63,7 +71,7 @@ impl Account {
 
     pub async fn avatar(&self, thumb_size: Option<Box<ThumbnailSize>>) -> Result<OptionBuffer> {
         let account = self.account.clone();
-        let client = self.client.clone();
+        let client = self.client.core.client().clone();
         RUNTIME
             .spawn(async move {
                 let source = match account.get_cached_avatar_url().await? {
@@ -133,5 +141,32 @@ impl Account {
                 Ok(content.ignored_users.keys().cloned().collect())
             })
             .await?
+    }
+
+    pub async fn acter_app_settings(&self) -> Result<ActerUserAppSettings> {
+        let account = self.account.clone();
+
+        RUNTIME
+            .spawn(async move {
+                let inner = if let Some(raw) = account
+                    .account_data::<ActerUserAppSettingsContent>()
+                    .await?
+                {
+                    raw.deserialize()?
+                } else {
+                    ActerUserAppSettingsContent::default()
+                };
+
+                Ok(ActerUserAppSettings::new(account, inner))
+            })
+            .await?
+    }
+
+    pub fn subscribe_app_settings_stream(&self) -> impl Stream<Item = bool> {
+        BroadcastStream::new(self.subscribe()).map(|_| true)
+    }
+
+    pub fn subscribe(&self) -> Receiver<()> {
+        self.client.subscribe(APP_USER_SETTINGS.to_string())
     }
 }

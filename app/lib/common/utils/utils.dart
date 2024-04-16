@@ -272,9 +272,6 @@ List<String> asDartStringList(FfiListFfiString data) {
 }
 
 // ignore: constant_identifier_names
-enum NetworkStatus { NotDetermined, On, Off }
-
-// ignore: constant_identifier_names
 enum RoomVisibility { Public, Private, SpaceVisible }
 
 enum LabsFeature {
