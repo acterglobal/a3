@@ -390,7 +390,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     try {
       final tempDir = await getTemporaryDirectory();
       final filename = event.title().replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_');
-      final icalPath = join(tempDir.path, '$filename.ical');
+      final icalPath = join(tempDir.path, '$filename.ics');
       event.icalForSharing(icalPath);
 
       await Share.shareXFiles([
