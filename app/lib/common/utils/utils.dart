@@ -288,6 +288,7 @@ enum LabsFeature {
   pins,
 
   // searchOptions
+  encryptionBackup,
   showNotifications, // FIXME: old name for desktop notifications
   mobilePushNotifications;
 

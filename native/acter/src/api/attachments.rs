@@ -665,7 +665,7 @@ impl MsgContentDraft {
                     FileMessageEventContent::plain(body, response.content_uri)
                 };
                 file_content.info = Some(Box::new(info));
-                file_content.filename = filename.clone();
+                file_content.filename = filename;
                 Ok(Some(AttachmentContent::File(file_content)))
             }
             MsgContentDraft::Location {

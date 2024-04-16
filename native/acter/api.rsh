@@ -2599,6 +2599,9 @@ object Client {
 
     /// make draft to send location msg
     fn location_draft(body: string, source: string) -> MsgContentDraft;
+
+    /// get access to the backup manager
+    fn backup_manager() -> BackupManager;
 }
 
 object NotificationSettings {
@@ -2866,4 +2869,38 @@ object DeviceRecord {
     fn is_active() -> bool;
     /// whether it is this session
     fn is_me() -> bool;
+}
+
+
+
+//     ########     ###     ######  ##    ## ##     ## ########     ##     ##    ###    ##    ##    ###     ######   ######## ########  
+//     ##     ##   ## ##   ##    ## ##   ##  ##     ## ##     ##    ###   ###   ## ##   ###   ##   ## ##   ##    ##  ##       ##     ## 
+//     ##     ##  ##   ##  ##       ##  ##   ##     ## ##     ##    #### ####  ##   ##  ####  ##  ##   ##  ##        ##       ##     ## 
+//     ########  ##     ## ##       #####    ##     ## ########     ## ### ## ##     ## ## ## ## ##     ## ##   #### ######   ########  
+//     ##     ## ######### ##       ##  ##   ##     ## ##           ##     ## ######### ##  #### ######### ##    ##  ##       ##   ##   
+//     ##     ## ##     ## ##    ## ##   ##  ##     ## ##           ##     ## ##     ## ##   ### ##     ## ##    ##  ##       ##    ##  
+//     ########  ##     ##  ######  ##    ##  #######  ##           ##     ## ##     ## ##    ## ##     ##  ######   ######## ##     ## 
+
+
+/// Manage Encryption Backups
+object BackupManager {
+
+    /// Create a new backup version, encrypted with a new backup recovery key.
+    fn enable() -> Future<Result<string>>;
+
+    /// Reset the existing backup version, encrypted with a new backup recovery key.
+    fn reset() -> Future<Result<string>>;
+
+    /// Disable and delete the currently active backup.
+    fn disable() -> Future<Result<bool>>;
+
+    /// Current state as a string
+    fn state_str() -> string;
+
+    /// state as a string via a stream. Issues the current state immediately
+    fn state_stream() -> Stream<string>;
+
+    /// Open the existing secret store using the given key and import the keys 
+    fn recover(secret: string) -> Future<Result<bool>>;
+
 }

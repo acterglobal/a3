@@ -730,7 +730,7 @@ impl Client {
                     }
 
                     if (!response.account_data.is_empty()) {
-                        println!("account data found!");
+                        info!("account data found!");
                         // account data has been updated, inform the listeners
                         let keys = response
                             .account_data
@@ -738,7 +738,7 @@ impl Client {
                             .filter_map(|raw| raw.get_field::<String>("type").ok().flatten())
                             .collect::<Vec<String>>();
                         if (!keys.is_empty()) {
-                            println!("account data keys: {keys:?}");
+                            info!("account data keys: {keys:?}");
                             me.executor().notify(keys);
                         }
                     }

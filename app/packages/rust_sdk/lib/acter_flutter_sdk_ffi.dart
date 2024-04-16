@@ -13545,6 +13545,218 @@ class Api {
     return tmp7;
   }
 
+  String? __backupManagerEnableFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _backupManagerEnableFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    if (tmp14 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
+    List<int> tmp13_buf = [];
+    final tmp13_precast = tmp13_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp14; i++) {
+      int char = tmp13_precast.elementAt(i).value;
+      tmp13_buf.add(char);
+    }
+    final tmp7 = utf8.decode(tmp13_buf, allowMalformed: true);
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
+    }
+    return tmp7;
+  }
+
+  String? __backupManagerResetFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _backupManagerResetFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    if (tmp14 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
+    List<int> tmp13_buf = [];
+    final tmp13_precast = tmp13_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp14; i++) {
+      int char = tmp13_precast.elementAt(i).value;
+      tmp13_buf.add(char);
+    }
+    final tmp7 = utf8.decode(tmp13_buf, allowMalformed: true);
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
+    }
+    return tmp7;
+  }
+
+  bool? __backupManagerDisableFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _backupManagerDisableFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  bool? __backupManagerRecoverFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _backupManagerRecoverFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   bool? __acterPinSubscribeStreamStreamPoll(
     int boxed,
     int postCobject,
@@ -14314,6 +14526,57 @@ class Api {
       return null;
     }
     final tmp9 = tmp11 > 0;
+    return tmp9;
+  }
+
+  String? __backupManagerStateStreamStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _backupManagerStateStreamStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    final tmp12 = tmp8.arg2;
+    final tmp13 = tmp8.arg3;
+    if (tmp10 == 0) {
+      return null;
+    }
+    if (tmp12 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp11_ptr = ffi.Pointer.fromAddress(tmp11);
+    List<int> tmp11_buf = [];
+    final tmp11_precast = tmp11_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp12; i++) {
+      int char = tmp11_precast.elementAt(i).value;
+      tmp11_buf.add(char);
+    }
+    final tmp9 = utf8.decode(tmp11_buf, allowMalformed: true);
+    if (tmp13 > 0) {
+      final ffi.Pointer<ffi.Void> tmp11_0;
+      tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+      this.__deallocate(tmp11_0, tmp13 * 1, 1);
+    }
     return tmp9;
   }
 
@@ -24265,6 +24528,16 @@ class Api {
         int,
         int,
       )>();
+  late final _clientBackupManagerPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Client_backup_manager");
+
+  late final _clientBackupManager = _clientBackupManagerPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _notificationSettingsChangesStreamPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -25013,6 +25286,73 @@ class Api {
 
   late final _deviceRecordIsMe = _deviceRecordIsMePtr.asFunction<
       int Function(
+        int,
+      )>();
+  late final _backupManagerEnablePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__BackupManager_enable");
+
+  late final _backupManagerEnable = _backupManagerEnablePtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _backupManagerResetPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__BackupManager_reset");
+
+  late final _backupManagerReset = _backupManagerResetPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _backupManagerDisablePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__BackupManager_disable");
+
+  late final _backupManagerDisable = _backupManagerDisablePtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _backupManagerStateStrPtr = _lookup<
+      ffi.NativeFunction<
+          _BackupManagerStateStrReturn Function(
+            ffi.Int64,
+          )>>("__BackupManager_state_str");
+
+  late final _backupManagerStateStr = _backupManagerStateStrPtr.asFunction<
+      _BackupManagerStateStrReturn Function(
+        int,
+      )>();
+  late final _backupManagerStateStreamPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__BackupManager_state_stream");
+
+  late final _backupManagerStateStream =
+      _backupManagerStateStreamPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _backupManagerRecoverPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__BackupManager_recover");
+
+  late final _backupManagerRecover = _backupManagerRecoverPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
         int,
       )>();
   late final _loginNewClientFuturePollPtr = _lookup<
@@ -28696,6 +29036,66 @@ class Api {
                 int,
                 int,
               )>();
+  late final _backupManagerEnableFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _BackupManagerEnableFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__BackupManager_enable_future_poll");
+
+  late final _backupManagerEnableFuturePoll =
+      _backupManagerEnableFuturePollPtr.asFunction<
+          _BackupManagerEnableFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _backupManagerResetFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _BackupManagerResetFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__BackupManager_reset_future_poll");
+
+  late final _backupManagerResetFuturePoll =
+      _backupManagerResetFuturePollPtr.asFunction<
+          _BackupManagerResetFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _backupManagerDisableFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _BackupManagerDisableFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__BackupManager_disable_future_poll");
+
+  late final _backupManagerDisableFuturePoll =
+      _backupManagerDisableFuturePollPtr.asFunction<
+          _BackupManagerDisableFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _backupManagerRecoverFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _BackupManagerRecoverFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__BackupManager_recover_future_poll");
+
+  late final _backupManagerRecoverFuturePoll =
+      _backupManagerRecoverFuturePollPtr.asFunction<
+          _BackupManagerRecoverFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _acterPinSubscribeStreamStreamPollPtr = _lookup<
       ffi.NativeFunction<
           _ActerPinSubscribeStreamStreamPollReturn Function(
@@ -29065,6 +29465,23 @@ class Api {
   late final _notificationSettingsChangesStreamStreamPoll =
       _notificationSettingsChangesStreamStreamPollPtr.asFunction<
           _NotificationSettingsChangesStreamStreamPollReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _backupManagerStateStreamStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _BackupManagerStateStreamStreamPollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__BackupManager_state_stream_stream_poll");
+
+  late final _backupManagerStateStreamStreamPoll =
+      _backupManagerStateStreamStreamPollPtr.asFunction<
+          _BackupManagerStateStreamStreamPollReturn Function(
             int,
             int,
             int,
@@ -49591,6 +50008,21 @@ class Client {
     return tmp10;
   }
 
+  /// get access to the backup manager
+  BackupManager backupManager() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientBackupManager(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_BackupManager");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = BackupManager._(_api, tmp3_1);
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -51123,6 +51555,143 @@ class DeviceRecord {
     final tmp3 = tmp1;
     final tmp2 = tmp3 > 0;
     return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+/// Manage Encryption Backups
+class BackupManager {
+  final Api _api;
+  final _Box _box;
+
+  BackupManager._(this._api, this._box);
+
+  /// Create a new backup version, encrypted with a new backup recovery key.
+  Future<String> enable() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._backupManagerEnable(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__BackupManager_enable_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__backupManagerEnableFuturePoll);
+    return tmp2;
+  }
+
+  /// Reset the existing backup version, encrypted with a new backup recovery key.
+  Future<String> reset() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._backupManagerReset(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__BackupManager_reset_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__backupManagerResetFuturePoll);
+    return tmp2;
+  }
+
+  /// Disable and delete the currently active backup.
+  Future<bool> disable() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._backupManagerDisable(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__BackupManager_disable_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__backupManagerDisableFuturePoll);
+    return tmp2;
+  }
+
+  /// Current state as a string
+  String stateStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._backupManagerStateStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// state as a string via a stream. Issues the current state immediately
+  Stream<String> stateStream() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._backupManagerStateStream(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__BackupManager_state_stream_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeStream(tmp3_1, _api.__backupManagerStateStreamStreamPoll);
+    return tmp2;
+  }
+
+  /// Open the existing secret store using the given key and import the keys
+  Future<bool> recover(
+    String secret,
+  ) {
+    final tmp1 = secret;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._backupManagerRecover(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__BackupManager_recover_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__backupManagerRecoverFuturePoll);
+    return tmp6;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -53772,6 +54341,15 @@ class _DeviceRecordLastSeenTsReturn extends ffi.Struct {
   external int arg0;
   @ffi.Uint64()
   external int arg1;
+}
+
+class _BackupManagerStateStrReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
 }
 
 class _LoginNewClientFuturePollReturn extends ffi.Struct {
@@ -57514,6 +58092,74 @@ class _DeviceNewEventRequestVerificationToDeviceWithMethodsFuturePollReturn
   external int arg7;
 }
 
+class _BackupManagerEnableFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+  @ffi.Uint64()
+  external int arg6;
+  @ffi.Uint64()
+  external int arg7;
+}
+
+class _BackupManagerResetFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+  @ffi.Uint64()
+  external int arg6;
+  @ffi.Uint64()
+  external int arg7;
+}
+
+class _BackupManagerDisableFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _BackupManagerRecoverFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
 class _ActerPinSubscribeStreamStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -57670,6 +58316,17 @@ class _NotificationSettingsChangesStreamStreamPollReturn extends ffi.Struct {
   external int arg0;
   @ffi.Uint8()
   external int arg1;
+}
+
+class _BackupManagerStateStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
 }
 
 class FfiListActerPin extends Iterable<ActerPin>
