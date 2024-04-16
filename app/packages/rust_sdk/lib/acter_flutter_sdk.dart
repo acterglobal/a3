@@ -308,7 +308,18 @@ class ActerSdk {
       await storage.read(key: _sessionKey);
     }
     _log.info('Secure Store: attempting to check if $_sessionKey exists');
-    final sessionsStr = await storage.read(key: _sessionKey);
+    String? sessionsStr;
+    try {
+      sessionsStr = await storage.read(key: _sessionKey);
+    } on PlatformException catch (error, stack) {
+      if (error.code == '-25300') {
+      _log.severe('Ignoring read failure for missing key $_sessionKey');
+      } else  {
+        _log.severe('Ignoring read failure of session key $_sessionKey', error, stack);
+      }
+    } catch (error, stack) {
+      _log.severe('Ignoring read failure of session key $_sessionKey', error, stack);
+    }
 
     if (sessionsStr == null) {
       _log.info('Secure Store: session key not found, checking for migration');
