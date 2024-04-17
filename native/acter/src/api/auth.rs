@@ -466,7 +466,7 @@ impl Client {
                             }
                         }
                         error!("unknown error: {:?}", e.to_string());
-                        return Ok(false);
+                        Ok(false)
                     }
                 }
             })
