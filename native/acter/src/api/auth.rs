@@ -3,11 +3,12 @@ use anyhow::{bail, Context, Result};
 use lazy_static::lazy_static;
 use matrix_sdk::{
     matrix_auth::{MatrixSession, MatrixSessionTokens},
-    Client as SdkClient, ClientBuilder, SessionMeta,
+    Client as SdkClient, ClientBuilder, HttpError, SessionMeta,
 };
 use ruma::assign;
 use ruma_client_api::{
     account::register,
+    error::ErrorKind,
     uiaa::{AuthData, Dummy, Password, RegistrationToken},
 };
 use ruma_common::{OwnedUserId, UserId};
@@ -442,6 +443,32 @@ impl Client {
                 account.deactivate(None, Some(auth_data)).await?;
                 // FIXME: remove local data, too!
                 Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn change_password(&self, old_val: String, new_val: String) -> Result<bool> {
+        let account = self.account()?;
+        RUNTIME
+            .spawn(async move {
+                let auth_data =
+                    AuthData::Password(Password::new(account.user_id().into(), old_val.clone()));
+                match account
+                    .change_password(new_val.as_str(), Some(auth_data))
+                    .await
+                {
+                    Ok(r) => Ok(true),
+                    Err(e) => {
+                        if let Some(err) = e.as_client_api_error() {
+                            if let Some(ErrorKind::WeakPassword) = err.error_kind() {
+                                error!("you tried too weak password");
+                                return Ok(false);
+                            }
+                        }
+                        error!("unknown error: {:?}", e.to_string());
+                        return Ok(false);
+                    }
+                }
             })
             .await?
     }
