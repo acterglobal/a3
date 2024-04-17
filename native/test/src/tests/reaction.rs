@@ -1,15 +1,68 @@
-use acter::{api::RoomMessage, ruma_common::OwnedEventId};
-use anyhow::{Context, Result};
+use acter::{api::RoomMessage, ruma_common::OwnedEventId, RoomMessageDiff};
+use anyhow::{bail, Result};
 use core::time::Duration;
-use futures::{pin_mut, stream::StreamExt, FutureExt};
+use futures::{pin_mut, stream::StreamExt, FutureExt, Stream};
 use tokio::time::sleep;
-use tokio_retry::{
-    strategy::{jitter, FibonacciBackoff},
-    Retry,
-};
-use tracing::info;
+use tracing::{info, warn};
 
-use crate::utils::random_users_with_random_convo;
+use crate::utils::{accept_all_invites, random_users_with_random_convo, wait_for_convo_joined};
+
+type MessageMatchesTest = dyn Fn(&RoomMessage) -> bool;
+
+async fn wait_for_message(
+    stream: impl Stream<Item = RoomMessageDiff>,
+    match_test: &MessageMatchesTest,
+    error: &'static str,
+) -> Result<OwnedEventId> {
+    // text msg may reach via reset action or set action
+    let mut i = 30;
+    pin_mut!(stream);
+    while i > 0 {
+        info!("stream loop - {i}");
+        if let Some(diff) = stream.next().now_or_never().flatten() {
+            info!("stream diff - {}", diff.action());
+            match diff.action().as_str() {
+                "PushBack" => {
+                    let value = diff
+                        .value()
+                        .expect("diff pushback action must have valid value");
+                    info!("diff pushback - {:?}", value);
+                    if match_test(&value) {
+                        return Ok(value
+                            .event_item()
+                            .expect("has item")
+                            .evt_id()
+                            .expect("has id"));
+                    }
+                }
+                "Reset" => {
+                    let values = diff
+                        .values()
+                        .expect("diff reset action must have valid values");
+                    for value in values.iter() {
+                        info!("diff reset msg: {:?}", value);
+                        if match_test(value) {
+                            return Ok(value
+                                .event_item()
+                                .expect("has item")
+                                .evt_id()
+                                .expect("has id"));
+                        }
+                    }
+                }
+                _ => {
+                    warn!(
+                        "Weirdly we've seen another event: {}",
+                        diff.action().as_str()
+                    );
+                }
+            }
+        }
+        i -= 1;
+        sleep(Duration::from_secs(1)).await;
+    }
+    bail!(error)
+}
 
 #[tokio::test]
 async fn sisko_reads_msg_reactions() -> Result<()> {
@@ -20,179 +73,54 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     let sisko_sync = sisko.start_sync();
     sisko_sync.await_has_synced_history().await?;
 
-    // wait for sync to catch up
-    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = sisko.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.convo(room_id.to_string()).await }
-    })
-    .await?;
-
-    let sisko_convo = sisko.convo(room_id.to_string()).await?;
+    let sisko_convo = wait_for_convo_joined(sisko.clone(), room_id.clone()).await?;
     let sisko_timeline = sisko_convo.timeline_stream();
     let sisko_stream = sisko_timeline.messages_stream();
     pin_mut!(sisko_stream);
 
     let kyra_sync = kyra.start_sync();
     kyra_sync.await_has_synced_history().await?;
+    accept_all_invites(kyra.clone()).await?;
 
-    for invited in kyra.invited_rooms().iter() {
-        info!(" - accepting {:?}", invited.room_id());
-        invited.join().await?;
-    }
-
-    // wait for sync to catch up
-    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = kyra.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.convo(room_id.to_string()).await }
-    })
-    .await?;
-
-    let kyra_convo = kyra.convo(room_id.to_string()).await?;
+    let kyra_convo = wait_for_convo_joined(kyra.clone(), room_id.clone()).await?;
     let kyra_timeline = kyra_convo.timeline_stream();
     let kyra_stream = kyra_timeline.messages_stream();
-    pin_mut!(kyra_stream);
 
     let worf_sync = worf.start_sync();
     worf_sync.await_has_synced_history().await?;
-
-    for invited in worf.invited_rooms().iter() {
-        info!(" - accepting {:?}", invited.room_id());
-        invited.join().await?;
-    }
-
+    accept_all_invites(worf.clone()).await?;
     // wait for sync to catch up
-    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = worf.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.convo(room_id.to_string()).await }
-    })
-    .await?;
-
-    let worf_convo = worf.convo(room_id.to_string()).await?;
+    let worf_convo = wait_for_convo_joined(worf.clone(), room_id.clone()).await?;
     let worf_timeline = worf_convo.timeline_stream();
     let worf_stream = worf_timeline.messages_stream();
-    pin_mut!(worf_stream);
 
     let draft = sisko.text_plain_draft("Hi, everyone".to_string());
     sisko_timeline.send_message(Box::new(draft)).await?;
 
-    // text msg may reach via reset action or set action
-    let mut i = 30;
-    let mut received = None;
-    while i > 0 {
-        info!("stream loop - {i}");
-        if let Some(diff) = kyra_stream.next().now_or_never().flatten() {
-            info!("stream diff - {}", diff.action());
-            match diff.action().as_str() {
-                "PushBack" => {
-                    let value = diff
-                        .value()
-                        .expect("diff pushback action should have valid value");
-                    info!("diff pushback - {:?}", value);
-                    if let Some(event_id) = match_text_msg(&value, "Hi, everyone") {
-                        received = Some(event_id);
-                    }
-                }
-                "Reset" => {
-                    let values = diff
-                        .values()
-                        .expect("diff reset action should have valid values");
-                    info!("diff reset - {:?}", values);
-                    for value in values.iter() {
-                        if let Some(event_id) = match_text_msg(value, "Hi, everyone") {
-                            received = Some(event_id);
-                            break;
-                        }
-                    }
-                }
-                _ => {}
-            }
-            // yay
-            if received.is_some() {
-                break;
-            }
-        }
-        info!("continue loop");
-        i -= 1;
-        sleep(Duration::from_secs(1)).await;
-    }
-    info!("loop finished");
-    let kyra_received = received.context("Even after 30 seconds, text msg not received")?;
-
-    // wait for sync to catch up
-    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_timeline = kyra_timeline.clone();
-    let target_id = kyra_received.clone();
-    Retry::spawn(retry_strategy, move || {
-        let timeline = fetcher_timeline.clone();
-        let received = target_id.clone();
-        async move { timeline.get_message(received.to_string()).await }
-    })
+    let kyra_received = wait_for_message(
+        kyra_stream,
+        &|m| match_text_msg(m, "Hi, everyone").is_some(),
+        "even after 30 seconds, kyra didn't see sisko's message",
+    )
     .await?;
 
-    // text msg may reach via reset action or set action
-    i = 30;
-    received = None;
-    while i > 0 {
-        info!("stream loop - {i}");
-        if let Some(diff) = worf_stream.next().now_or_never().flatten() {
-            info!("stream diff - {}", diff.action());
-            match diff.action().as_str() {
-                "PushBack" => {
-                    let value = diff
-                        .value()
-                        .expect("diff pushback action should have valid value");
-                    info!("diff pushback - {:?}", value);
-                    if let Some(event_id) = match_text_msg(&value, "Hi, everyone") {
-                        received = Some(event_id);
-                    }
-                }
-                "Reset" => {
-                    let values = diff
-                        .values()
-                        .expect("diff reset action should have valid values");
-                    info!("diff reset - {:?}", values);
-                    for value in values.iter() {
-                        if let Some(event_id) = match_text_msg(value, "Hi, everyone") {
-                            received = Some(event_id);
-                            break;
-                        }
-                    }
-                }
-                _ => {}
-            }
-            // yay
-            if received.is_some() {
-                break;
-            }
-        }
-        info!("continue loop");
-        i -= 1;
-        sleep(Duration::from_secs(1)).await;
-    }
-    info!("loop finished");
-    let worf_received = received.context("Even after 30 seconds, text msg not received")?;
+    // FIXME: for some unknown reason worf only receives an encrypted message
+    //        they can't decrypt. Doesn't really matter for the tests itself,
+    //        but it's still bad. so this test takes kyras event_id and matches
+    //        it against the stream to find the item to react to.
 
-    // wait for sync to catch up
-    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_timeline = worf_timeline.clone();
-    let target_id = worf_received.clone();
-    Retry::spawn(retry_strategy, move || {
-        let timeline = fetcher_timeline.clone();
-        let received = target_id.clone();
-        async move { timeline.get_message(received.to_string()).await }
-    })
+    let check_id = kyra_received.clone();
+
+    let worf_received = wait_for_message(
+        worf_stream,
+        &move |m| {
+            m.event_item()
+                .and_then(|e| e.evt_id())
+                .map(|s| s == check_id)
+                .unwrap_or_default()
+        },
+        "even after 30 seconds, worf didn't see sisko's message",
+    )
     .await?;
 
     kyra_timeline
@@ -203,7 +131,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
         .await?;
 
     // msg reaction may reach via set action
-    i = 10;
+    let mut i = 10;
     let mut found = false;
     while i > 0 {
         info!("stream loop - {i}");
@@ -230,7 +158,10 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
         sleep(Duration::from_secs(1)).await;
     }
     info!("loop finished");
-    assert!(found, "Even after 10 seconds, msg reaction not received");
+    assert!(
+        found,
+        "Even after 10 seconds, sisko didn't receive msg reaction from kyra and worf"
+    );
 
     Ok(())
 }

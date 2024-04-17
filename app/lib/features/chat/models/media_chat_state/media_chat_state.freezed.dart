@@ -18,6 +18,7 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$MediaChatLoadingState {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
+    required TResult Function() notYetStarted,
     required TResult Function() loading,
     required TResult Function() loaded,
     required TResult Function(String? error) error,
@@ -25,6 +26,7 @@ mixin _$MediaChatLoadingState {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? notYetStarted,
     TResult? Function()? loading,
     TResult? Function()? loaded,
     TResult? Function(String? error)? error,
@@ -32,6 +34,7 @@ mixin _$MediaChatLoadingState {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? notYetStarted,
     TResult Function()? loading,
     TResult Function()? loaded,
     TResult Function(String? error)? error,
@@ -40,6 +43,8 @@ mixin _$MediaChatLoadingState {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
+    required TResult Function(_MediaChatLoadingStateNotYetStarted value)
+        notYetStarted,
     required TResult Function(_MediaChatLoadingStateLoading value) loading,
     required TResult Function(_MediaChatLoadingStateLoaded value) loaded,
     required TResult Function(_MediaChatLoadingStateError value) error,
@@ -47,6 +52,7 @@ mixin _$MediaChatLoadingState {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_MediaChatLoadingStateNotYetStarted value)? notYetStarted,
     TResult? Function(_MediaChatLoadingStateLoading value)? loading,
     TResult? Function(_MediaChatLoadingStateLoaded value)? loaded,
     TResult? Function(_MediaChatLoadingStateError value)? error,
@@ -54,6 +60,7 @@ mixin _$MediaChatLoadingState {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
+    TResult Function(_MediaChatLoadingStateNotYetStarted value)? notYetStarted,
     TResult Function(_MediaChatLoadingStateLoading value)? loading,
     TResult Function(_MediaChatLoadingStateLoaded value)? loaded,
     TResult Function(_MediaChatLoadingStateError value)? error,
@@ -79,6 +86,128 @@ class _$MediaChatLoadingStateCopyWithImpl<$Res,
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
+}
+
+/// @nodoc
+abstract class _$$MediaChatLoadingStateNotYetStartedImplCopyWith<$Res> {
+  factory _$$MediaChatLoadingStateNotYetStartedImplCopyWith(
+          _$MediaChatLoadingStateNotYetStartedImpl value,
+          $Res Function(_$MediaChatLoadingStateNotYetStartedImpl) then) =
+      __$$MediaChatLoadingStateNotYetStartedImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$MediaChatLoadingStateNotYetStartedImplCopyWithImpl<$Res>
+    extends _$MediaChatLoadingStateCopyWithImpl<$Res,
+        _$MediaChatLoadingStateNotYetStartedImpl>
+    implements _$$MediaChatLoadingStateNotYetStartedImplCopyWith<$Res> {
+  __$$MediaChatLoadingStateNotYetStartedImplCopyWithImpl(
+      _$MediaChatLoadingStateNotYetStartedImpl _value,
+      $Res Function(_$MediaChatLoadingStateNotYetStartedImpl) _then)
+      : super(_value, _then);
+}
+
+/// @nodoc
+
+class _$MediaChatLoadingStateNotYetStartedImpl
+    implements _MediaChatLoadingStateNotYetStarted {
+  const _$MediaChatLoadingStateNotYetStartedImpl();
+
+  @override
+  String toString() {
+    return 'MediaChatLoadingState.notYetStarted()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$MediaChatLoadingStateNotYetStartedImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() notYetStarted,
+    required TResult Function() loading,
+    required TResult Function() loaded,
+    required TResult Function(String? error) error,
+  }) {
+    return notYetStarted();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? notYetStarted,
+    TResult? Function()? loading,
+    TResult? Function()? loaded,
+    TResult? Function(String? error)? error,
+  }) {
+    return notYetStarted?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? notYetStarted,
+    TResult Function()? loading,
+    TResult Function()? loaded,
+    TResult Function(String? error)? error,
+    required TResult orElse(),
+  }) {
+    if (notYetStarted != null) {
+      return notYetStarted();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_MediaChatLoadingStateNotYetStarted value)
+        notYetStarted,
+    required TResult Function(_MediaChatLoadingStateLoading value) loading,
+    required TResult Function(_MediaChatLoadingStateLoaded value) loaded,
+    required TResult Function(_MediaChatLoadingStateError value) error,
+  }) {
+    return notYetStarted(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_MediaChatLoadingStateNotYetStarted value)? notYetStarted,
+    TResult? Function(_MediaChatLoadingStateLoading value)? loading,
+    TResult? Function(_MediaChatLoadingStateLoaded value)? loaded,
+    TResult? Function(_MediaChatLoadingStateError value)? error,
+  }) {
+    return notYetStarted?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_MediaChatLoadingStateNotYetStarted value)? notYetStarted,
+    TResult Function(_MediaChatLoadingStateLoading value)? loading,
+    TResult Function(_MediaChatLoadingStateLoaded value)? loaded,
+    TResult Function(_MediaChatLoadingStateError value)? error,
+    required TResult orElse(),
+  }) {
+    if (notYetStarted != null) {
+      return notYetStarted(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _MediaChatLoadingStateNotYetStarted
+    implements MediaChatLoadingState {
+  const factory _MediaChatLoadingStateNotYetStarted() =
+      _$MediaChatLoadingStateNotYetStartedImpl;
 }
 
 /// @nodoc
@@ -124,6 +253,7 @@ class _$MediaChatLoadingStateLoadingImpl
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
+    required TResult Function() notYetStarted,
     required TResult Function() loading,
     required TResult Function() loaded,
     required TResult Function(String? error) error,
@@ -134,6 +264,7 @@ class _$MediaChatLoadingStateLoadingImpl
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? notYetStarted,
     TResult? Function()? loading,
     TResult? Function()? loaded,
     TResult? Function(String? error)? error,
@@ -144,6 +275,7 @@ class _$MediaChatLoadingStateLoadingImpl
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? notYetStarted,
     TResult Function()? loading,
     TResult Function()? loaded,
     TResult Function(String? error)? error,
@@ -158,6 +290,8 @@ class _$MediaChatLoadingStateLoadingImpl
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
+    required TResult Function(_MediaChatLoadingStateNotYetStarted value)
+        notYetStarted,
     required TResult Function(_MediaChatLoadingStateLoading value) loading,
     required TResult Function(_MediaChatLoadingStateLoaded value) loaded,
     required TResult Function(_MediaChatLoadingStateError value) error,
@@ -168,6 +302,7 @@ class _$MediaChatLoadingStateLoadingImpl
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_MediaChatLoadingStateNotYetStarted value)? notYetStarted,
     TResult? Function(_MediaChatLoadingStateLoading value)? loading,
     TResult? Function(_MediaChatLoadingStateLoaded value)? loaded,
     TResult? Function(_MediaChatLoadingStateError value)? error,
@@ -178,6 +313,7 @@ class _$MediaChatLoadingStateLoadingImpl
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
+    TResult Function(_MediaChatLoadingStateNotYetStarted value)? notYetStarted,
     TResult Function(_MediaChatLoadingStateLoading value)? loading,
     TResult Function(_MediaChatLoadingStateLoaded value)? loaded,
     TResult Function(_MediaChatLoadingStateError value)? error,
@@ -238,6 +374,7 @@ class _$MediaChatLoadingStateLoadedImpl
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
+    required TResult Function() notYetStarted,
     required TResult Function() loading,
     required TResult Function() loaded,
     required TResult Function(String? error) error,
@@ -248,6 +385,7 @@ class _$MediaChatLoadingStateLoadedImpl
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? notYetStarted,
     TResult? Function()? loading,
     TResult? Function()? loaded,
     TResult? Function(String? error)? error,
@@ -258,6 +396,7 @@ class _$MediaChatLoadingStateLoadedImpl
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? notYetStarted,
     TResult Function()? loading,
     TResult Function()? loaded,
     TResult Function(String? error)? error,
@@ -272,6 +411,8 @@ class _$MediaChatLoadingStateLoadedImpl
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
+    required TResult Function(_MediaChatLoadingStateNotYetStarted value)
+        notYetStarted,
     required TResult Function(_MediaChatLoadingStateLoading value) loading,
     required TResult Function(_MediaChatLoadingStateLoaded value) loaded,
     required TResult Function(_MediaChatLoadingStateError value) error,
@@ -282,6 +423,7 @@ class _$MediaChatLoadingStateLoadedImpl
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_MediaChatLoadingStateNotYetStarted value)? notYetStarted,
     TResult? Function(_MediaChatLoadingStateLoading value)? loading,
     TResult? Function(_MediaChatLoadingStateLoaded value)? loaded,
     TResult? Function(_MediaChatLoadingStateError value)? error,
@@ -292,6 +434,7 @@ class _$MediaChatLoadingStateLoadedImpl
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
+    TResult Function(_MediaChatLoadingStateNotYetStarted value)? notYetStarted,
     TResult Function(_MediaChatLoadingStateLoading value)? loading,
     TResult Function(_MediaChatLoadingStateLoaded value)? loaded,
     TResult Function(_MediaChatLoadingStateError value)? error,
@@ -377,6 +520,7 @@ class _$MediaChatLoadingStateErrorImpl implements _MediaChatLoadingStateError {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
+    required TResult Function() notYetStarted,
     required TResult Function() loading,
     required TResult Function() loaded,
     required TResult Function(String? error) error,
@@ -387,6 +531,7 @@ class _$MediaChatLoadingStateErrorImpl implements _MediaChatLoadingStateError {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? notYetStarted,
     TResult? Function()? loading,
     TResult? Function()? loaded,
     TResult? Function(String? error)? error,
@@ -397,6 +542,7 @@ class _$MediaChatLoadingStateErrorImpl implements _MediaChatLoadingStateError {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? notYetStarted,
     TResult Function()? loading,
     TResult Function()? loaded,
     TResult Function(String? error)? error,
@@ -411,6 +557,8 @@ class _$MediaChatLoadingStateErrorImpl implements _MediaChatLoadingStateError {
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
+    required TResult Function(_MediaChatLoadingStateNotYetStarted value)
+        notYetStarted,
     required TResult Function(_MediaChatLoadingStateLoading value) loading,
     required TResult Function(_MediaChatLoadingStateLoaded value) loaded,
     required TResult Function(_MediaChatLoadingStateError value) error,
@@ -421,6 +569,7 @@ class _$MediaChatLoadingStateErrorImpl implements _MediaChatLoadingStateError {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_MediaChatLoadingStateNotYetStarted value)? notYetStarted,
     TResult? Function(_MediaChatLoadingStateLoading value)? loading,
     TResult? Function(_MediaChatLoadingStateLoaded value)? loaded,
     TResult? Function(_MediaChatLoadingStateError value)? error,
@@ -431,6 +580,7 @@ class _$MediaChatLoadingStateErrorImpl implements _MediaChatLoadingStateError {
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
+    TResult Function(_MediaChatLoadingStateNotYetStarted value)? notYetStarted,
     TResult Function(_MediaChatLoadingStateLoading value)? loading,
     TResult Function(_MediaChatLoadingStateLoaded value)? loaded,
     TResult Function(_MediaChatLoadingStateError value)? error,

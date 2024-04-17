@@ -1,8 +1,7 @@
-import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/providers/network_provider.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
 import 'package:acter/features/onboarding/widgets/logo_widget.dart';
@@ -220,8 +219,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   Future<void> handleSubmit(BuildContext context) async {
     if (!formKey.currentState!.validate()) return;
-    final network = ref.read(networkAwareProvider);
-    if (!inCI && network == NetworkStatus.Off) {
+    if (!inCI && !ref.read(hasNetworkProvider)) {
       showNoInternetNotification(context);
       return;
     }

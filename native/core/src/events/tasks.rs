@@ -25,7 +25,9 @@ pub enum SpecialTaskListRole {
 #[repr(u8)]
 /// Implementing Priority according to
 /// <https://www.rfc-editor.org/rfc/rfc8984.html#section-4.4.1>
+#[derive(Default)]
 pub enum Priority {
+    #[default]
     Undefined = 0,
     Highest = 1,
     SecondHighest = 2,
@@ -41,12 +43,6 @@ pub enum Priority {
 impl Priority {
     fn is_undefinied(&self) -> bool {
         matches!(self, Priority::Undefined)
-    }
-}
-
-impl Default for Priority {
-    fn default() -> Self {
-        Priority::Undefined
     }
 }
 
@@ -169,15 +165,15 @@ impl TaskListUpdateEventContent {
     pub fn apply(&self, task_list: &mut TaskListEventContent) -> ActerResult<bool> {
         let mut updated = false;
         if let Some(name) = &self.name {
-            task_list.name = name.clone();
+            task_list.name.clone_from(name);
             updated = true;
         }
         if let Some(role) = &self.role {
-            task_list.role = role.clone();
+            task_list.role.clone_from(role);
             updated = true;
         }
         if let Some(description) = &self.description {
-            task_list.description = description.clone();
+            task_list.description.clone_from(description);
             updated = true;
         }
         if let Some(color) = &self.color {
@@ -193,11 +189,11 @@ impl TaskListUpdateEventContent {
             updated = true;
         }
         if let Some(keywords) = &self.keywords {
-            task_list.keywords = keywords.clone();
+            task_list.keywords.clone_from(keywords);
             updated = true;
         }
         if let Some(categories) = &self.categories {
-            task_list.categories = categories.clone();
+            task_list.categories.clone_from(categories);
             updated = true;
         }
 
@@ -407,11 +403,11 @@ impl TaskUpdateEventContent {
     pub fn apply(&self, task: &mut TaskEventContent) -> ActerResult<bool> {
         let mut updated = false;
         if let Some(title) = &self.title {
-            task.title = title.clone();
+            task.title.clone_from(title);
             updated = true;
         }
         if let Some(description) = &self.description {
-            task.description = description.clone();
+            task.description.clone_from(description);
             updated = true;
         }
         if let Some(due_date) = &self.due_date {
@@ -443,11 +439,11 @@ impl TaskUpdateEventContent {
             updated = true;
         }
         if let Some(keywords) = &self.keywords {
-            task.keywords = keywords.clone();
+            task.keywords.clone_from(keywords);
             updated = true;
         }
         if let Some(categories) = &self.categories {
-            task.categories = categories.clone();
+            task.categories.clone_from(categories);
             updated = true;
         }
 

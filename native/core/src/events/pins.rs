@@ -66,11 +66,11 @@ impl PinDisplayInfoUpdate {
             updated = true;
         }
         if let Some(icon) = &self.icon {
-            info.icon = icon.clone();
+            info.icon.clone_from(icon);
             updated = true;
         }
         if let Some(section) = &self.section {
-            info.section = section.clone();
+            info.section.clone_from(section);
             updated = true;
         }
 
@@ -164,15 +164,15 @@ impl PinUpdateEventContent {
     pub fn apply(&self, pin: &mut PinEventContent) -> Result<bool> {
         let mut updated = false;
         if let Some(title) = &self.title {
-            pin.title = title.clone();
+            pin.title.clone_from(title);
             updated = true;
         }
         if let Some(content) = &self.content {
-            pin.content = content.clone();
+            pin.content.clone_from(content);
             updated = true;
         }
         if let Some(url) = &self.url {
-            pin.url = url.clone();
+            pin.url.clone_from(url);
             updated = true;
         }
 
@@ -203,8 +203,6 @@ impl PinUpdateEventContent {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::Result;
-    use serde_json;
     #[test]
     fn ensure_minimal_pin_parses() -> Result<()> {
         let json_raw = r#"{"type":"global.acter.dev.pin",

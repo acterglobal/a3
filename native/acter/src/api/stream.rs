@@ -866,7 +866,7 @@ impl MsgContentDraft {
                     FileMessageEventContent::plain(body, response.content_uri)
                 };
                 file_content.info = Some(Box::new(info));
-                file_content.filename = filename.clone();
+                file_content.filename = filename;
                 let edited_content = RoomMessageEventContent::new(MessageType::File(file_content));
                 Ok(edited_content)
             }
@@ -1028,7 +1028,7 @@ impl MsgContentDraft {
                     FileMessageEventContent::plain(body, response.content_uri)
                 };
                 file_content.info = Some(Box::new(info));
-                file_content.filename = filename.clone();
+                file_content.filename = filename;
                 let replied_content =
                     RoomMessageEventContentWithoutRelation::new(MessageType::File(file_content));
                 Ok(replied_content)

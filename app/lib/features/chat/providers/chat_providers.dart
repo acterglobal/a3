@@ -1,6 +1,7 @@
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/providers/network_provider.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
@@ -10,9 +11,24 @@ import 'package:acter/features/chat/providers/notifiers/chat_input_notifier.dart
 import 'package:acter/features/chat/providers/notifiers/chat_room_notifier.dart';
 import 'package:acter/features/chat/providers/notifiers/media_chat_notifier.dart';
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
+import 'package:acter/features/settings/providers/app_settings_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod/riverpod.dart';
+
+final autoDownloadMediaProvider =
+    FutureProvider.family<bool, String>((ref, roomId) async {
+  // this should also check for local room settings...
+  final userSettings = await ref.read(userAppSettingsProvider.future);
+  final globalAutoDownload = (userSettings.autoDownloadChat() ?? 'always');
+  if (globalAutoDownload == 'wifiOnly') {
+    final con = await ref.watch(networkConnectivityProvider.future);
+    return con == ConnectivityResult.wifi;
+  }
+
+  return globalAutoDownload == 'always';
+});
 
 final chatInputProvider =
     StateNotifierProvider.family<ChatInputNotifier, ChatInputState, String>(

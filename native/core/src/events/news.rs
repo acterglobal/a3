@@ -265,7 +265,7 @@ impl NewsEntryUpdateEventContent {
     pub fn apply(&self, task: &mut NewsEntryEventContent) -> Result<bool> {
         let mut updated = false;
         if let Some(slides) = &self.slides {
-            task.slides = slides.clone();
+            task.slides.clone_from(slides);
             updated = true;
         }
         Ok(updated)
