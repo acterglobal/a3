@@ -94,10 +94,9 @@ async fn kyra_can_restore() -> Result<()> {
         .unwrap_or("http://localhost:8118")
         .to_string();
     let base_data = TempDir::new()?;
-    let base_path = base_data.path().to_string_lossy().to_string();
     let media_data = TempDir::new()?;
     let (config, user_id) = make_client_config(
-        base_path,
+        base_data.path().to_string_lossy().to_string(),
         "@kyra",
         media_data.path().to_string_lossy().to_string(),
         None,
@@ -140,12 +139,11 @@ async fn kyra_can_restore_with_db_passphrase() -> Result<()> {
     let homeserver_url = option_env!("DEFAULT_HOMESERVER_URL")
         .unwrap_or("http://localhost:8118")
         .to_string();
-    let tmp_dir = TempDir::new()?;
-    let base_path = tmp_dir.path().to_string_lossy().to_string();
+    let base_data = TempDir::new()?;
     let media_data_dir = TempDir::new()?;
     let db_passphrase = Uuid::new_v4().to_string();
     let (config, user_id) = make_client_config(
-        base_path,
+        base_data.path().to_string_lossy().to_string(),
         "@kyra",
         media_data_dir.path().to_string_lossy().to_string(),
         Some(db_passphrase.clone()),
@@ -200,6 +198,49 @@ async fn can_deactivate_user() -> Result<()> {
             .await
             .is_err(),
         "Was still able to login or register that username"
+    );
+    Ok(())
+}
+
+#[tokio::test]
+async fn user_changes_password() -> Result<()> {
+    let _ = env_logger::try_init();
+
+    let (mut client, _) = random_user_with_random_space("change_password").await?;
+    let user_id = client.user_id().expect("we just logged in");
+    let password = default_user_password(user_id.localpart());
+    let new_password = format!("new_{:?}", password.as_str());
+
+    let result = client
+        .clone()
+        .change_password(password.clone(), new_password.clone())
+        .await?;
+    assert!(result, "Couldn't change password successfully");
+
+    let result = client.logout().await?;
+    assert!(result, "Couldn't logout successfully");
+
+    let base_data = TempDir::new()?;
+    let media_data = TempDir::new()?;
+    let (config, uid) = make_client_config(
+        base_data.path().to_string_lossy().to_string(),
+        user_id.localpart(),
+        media_data.path().to_string_lossy().to_string(),
+        None,
+        option_env!("DEFAULT_HOMESERVER_NAME").unwrap_or("localhost"),
+        option_env!("DEFAULT_HOMESERVER_URL").unwrap_or("http://localhost:8118"),
+        true,
+    )
+    .await?;
+
+    let old_pswd_res =
+        login_new_client_under_config(config.clone(), uid.clone(), password, None, None).await;
+    assert!(old_pswd_res.is_err(), "Can't login with old password");
+
+    let new_pswd_res = login_new_client_under_config(config, uid, new_password, None, None).await;
+    assert!(
+        new_pswd_res.is_ok(),
+        "Should be able to login with new password"
     );
     Ok(())
 }
