@@ -657,7 +657,7 @@
   "@pinnedItemsFromAllSpaces": {},
   "pleaseFirstSelectASpace": "Bitte erst den Space auswählen",
   "@pleaseFirstSelectASpace": {},
-  "kickAndBanUserDescription": "Du bist dabei {userId} aus {roomid} zu kicken und dauerhaft zu verbannen",
+  "kickAndBanUserDescription": "Du bist dabei {userId} aus {roomId} zu kicken und dauerhaft zu verbannen",
   "@kickAndBanUserDescription": {},
   "linkExistingChat": "Verbinde bestehenden Chat",
   "@linkExistingChat": {},
@@ -1060,5 +1060,7 @@
   "create": "Erstellen",
   "@create": {},
   "createGroupChat": "Gruppenchat erstellen",
-  "@createGroupChat": {}
+  "@createGroupChat": {},
+  "changeAppLanguage": "App Sprache ändern",
+  "@changeAppLanguage": {}
 }
