@@ -1062,5 +1062,15 @@
   "createGroupChat": "Gruppenchat erstellen",
   "@createGroupChat": {},
   "changeAppLanguage": "App Sprache ändern",
-  "@changeAppLanguage": {}
+  "@changeAppLanguage": {},
+  "chatSettingsAutoDownload": "Medien automatisch herunterladen",
+  "@chatSettingsAutoDownload": {},
+  "chatSettingsAutoDownloadExplainer": "Wann Medien automatisch geladen werden",
+  "@chatSettingsAutoDownloadExplainer": {},
+  "chatSettingsAutoDownloadAlways": "Immer",
+  "@chatSettingsAutoDownloadAlways": {},
+  "chatSettingsAutoDownloadWifiOnly": "Nur über WLAN",
+  "@chatSettingsAutoDownloadWifiOnly": {},
+  "chatSettingsAutoDownloadNever": "Nie",
+  "@chatSettingsAutoDownloadNever": {}
 }
