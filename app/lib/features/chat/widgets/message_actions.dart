@@ -200,10 +200,5 @@ class MessageActions extends ConsumerWidget {
     Message message,
   ) {
     ref.read(chatInputProvider(roomId).notifier).setEditMessage(message);
-
-    final chatInputFocusState = ref.read(chatInputFocusProvider.notifier);
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      FocusScope.of(context).requestFocus(chatInputFocusState.state);
-    });
   }
 }

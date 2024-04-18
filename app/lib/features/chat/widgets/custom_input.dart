@@ -57,6 +57,8 @@ class CustomChatInput extends ConsumerWidget {
     final roomId = convo.getRoomIdStr();
     final membership = ref.watch(roomMembershipProvider(roomId));
     return membership.when(
+      skipLoadingOnReload:
+          true, // avoid widget refresh and thus text focus updates upon room changes
       data: (member) => buildData(context, ref, member),
       error: (error, stack) {
         _log.severe('Error loading membership', error, stack);
@@ -769,8 +771,9 @@ class _TextInputWidget extends ConsumerWidget {
   final Convo convo;
   final Function() onSendButtonPressed;
   final bool isEncrypted;
+  final FocusNode chatFocus = FocusNode();
 
-  const _TextInputWidget({
+  _TextInputWidget({
     required this.mentionKey,
     required this.convo,
     required this.onSendButtonPressed,
@@ -785,10 +788,16 @@ class _TextInputWidget extends ConsumerWidget {
     final width = MediaQuery.of(context).size.width;
     ref.listen(chatInputProvider(roomId), (prev, next) {
       if (next.selectedMessageState == SelectedMessageState.edit &&
-          next.selectedMessage != prev?.selectedMessage) {
-        // a new message has been selected to be edited, force refresh
-        // the inner text controller to reflect that
+          (prev?.selectedMessageState != next.selectedMessageState ||
+              next.selectedMessage != prev?.selectedMessage)) {
+        // a new message has been selected to be edited or switched from reply
+        // to edit, force refresh the inner text controller to reflect that
         mentionKey.currentState!.controller!.text = next.message;
+        chatFocus.requestFocus();
+      } else if (next.selectedMessageState == SelectedMessageState.replyTo &&
+          (next.selectedMessage != prev?.selectedMessage ||
+              prev?.selectedMessageState != next.selectedMessageState)) {
+        chatFocus.requestFocus();
       }
     });
     return CallbackShortcuts(
@@ -828,7 +837,7 @@ class _TextInputWidget extends ConsumerWidget {
           cursorColor: Theme.of(context).colorScheme.primary,
           maxLines: 6,
           minLines: 1,
-          focusNode: ref.watch(chatInputFocusProvider),
+          focusNode: chatFocus,
           onTap: () => onTextTap(chatInputState.emojiPickerVisible, ref),
           decoration: InputDecoration(
             isCollapsed: true,
