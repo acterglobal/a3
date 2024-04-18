@@ -12,8 +12,11 @@ import 'package:acter/features/onboarding/pages/forgot_password.dart';
 import 'package:acter/features/onboarding/pages/intro_page.dart';
 import 'package:acter/features/onboarding/pages/intro_profile.dart';
 import 'package:acter/features/onboarding/pages/login_page.dart';
+import 'package:acter/features/onboarding/pages/protect_privacy_page.dart';
 import 'package:acter/features/onboarding/pages/register_page.dart';
+import 'package:acter/features/onboarding/pages/save_username_page.dart';
 import 'package:acter/features/onboarding/pages/start_page.dart';
+import 'package:acter/features/onboarding/pages/user_avatar_page.dart';
 import 'package:acter/features/pins/pages/create_pin_page.dart';
 import 'package:acter/features/search/pages/quick_jump.dart';
 import 'package:acter/features/settings/super_invites/pages/create.dart';
@@ -70,6 +73,25 @@ List<RouteBase> makeGeneralRoutes() {
       name: Routes.authRegister.name,
       path: Routes.authRegister.route,
       builder: (context, state) => const RegisterPage(),
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.saveUsername.name,
+      path: Routes.saveUsername.route,
+      builder: (context, state) =>
+          SaveUsernamePage(username: state.uri.queryParameters['username']!),
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.linkEmail.name,
+      path: Routes.linkEmail.route,
+      builder: (context, state) => const LinkEmailPage(),
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.userAvatar.name,
+      path: Routes.userAvatar.route,
+      builder: (context, state) => const UserAvatarPage(),
     ),
     GoRoute(
       parentNavigatorKey: rootNavKey,

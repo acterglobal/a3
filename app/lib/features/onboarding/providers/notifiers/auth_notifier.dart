@@ -67,9 +67,6 @@ class AuthStateNotifier extends StateNotifier<bool> {
       final client = await sdk.register(username, password, displayName, token);
       ref.read(clientProvider.notifier).state = client;
       state = false;
-      if (context.mounted) {
-        context.goNamed(Routes.main.name);
-      }
       return null;
     } catch (e) {
       state = false;

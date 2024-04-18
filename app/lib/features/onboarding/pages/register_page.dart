@@ -68,10 +68,17 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     );
     if (errorMsg != null) {
       EasyLoading.showError(errorMsg, duration: const Duration(seconds: 3));
+      return;
     }
     if (token.text.isNotEmpty) {
       final superInvites = ref.read(superInvitesProvider);
       tryRedeem(superInvites, token.text);
+    }
+    if (context.mounted) {
+      context.goNamed(
+        Routes.saveUsername.name,
+        queryParameters: {'username': username.text},
+      );
     }
   }
 
