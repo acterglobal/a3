@@ -35,12 +35,6 @@ final chatInputProvider =
   (ref, roomId) => ChatInputNotifier(),
 );
 
-final textValuesProvider = StateProvider.family<String, String>(
-  (ref, roomId) => ref.watch(
-    chatInputProvider(roomId).select((value) => value.message),
-  ),
-);
-
 final chatStateProvider =
     StateNotifierProvider.family<ChatRoomNotifier, ChatRoomState, Convo>(
   (ref, convo) => ChatRoomNotifier(ref: ref, convo: convo),

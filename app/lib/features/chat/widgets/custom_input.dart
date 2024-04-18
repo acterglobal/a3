@@ -37,7 +37,7 @@ final _log = Logger('a3::chat::custom_input');
 
 final _sendButtonVisible = StateProvider.family<bool, String>(
   (ref, roomId) => ref.watch(
-    textValuesProvider(roomId).select((value) => value.isNotEmpty),
+    chatInputProvider(roomId).select((value) => value.message.isNotEmpty),
   ),
 );
 
@@ -810,7 +810,8 @@ class _TextInputWidget extends ConsumerWidget {
         child: FlutterMentions(
           key: mentionKey,
           // restore input if available, but only as a read on startup
-          defaultText: ref.read(textValuesProvider(roomId)),
+          defaultText: ref
+              .read(chatInputProvider(roomId).select((value) => value.message)),
           suggestionPosition: SuggestionPosition.Top,
           suggestionListWidth: width >= 770 ? width * 0.6 : width * 0.8,
           onMentionAdd: (roomMember) => onMentionAdd(roomMember, ref),
