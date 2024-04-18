@@ -64,6 +64,7 @@ class BubbleBuilder extends ConsumerWidget {
                       .requestFocus(chatInputFocusState.state);
                   chatInputNotifier.setReplyToMessage(message);
                 },
+                iconOnLeftSwipe: Icons.reply_rounded,
                 onRightSwipe: isAuthor
                     ? (DragUpdateDetails details) {
                         FocusScope.of(context)
@@ -71,7 +72,7 @@ class BubbleBuilder extends ConsumerWidget {
                         chatInputNotifier.setEditMessage(message);
                       }
                     : null,
-                iconOnRightSwipe: Atlas.pencil_thin,
+                iconOnRightSwipe: Atlas.pencil_edit_thin,
                 child: _ChatBubble(
                   convo: convo,
                   message: message,

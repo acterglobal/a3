@@ -475,6 +475,13 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     final inputNotifier = ref.watch(chatInputProvider(roomId).notifier);
     return Row(
       children: [
+        const SizedBox(width: 1),
+        const Icon(
+          Icons.reply_rounded,
+          size: 12,
+          color: Colors.grey,
+        ),
+        const SizedBox(width: 4),
         replyProfile.when(
           data: (data) => ActerAvatar(
             mode: DisplayMode.DM,
@@ -530,7 +537,13 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     final inputNotifier = ref.watch(chatInputProvider(roomId).notifier);
     return Row(
       children: [
-        const SizedBox(width: 5),
+        const SizedBox(width: 1),
+        const Icon(
+          Atlas.pencil_edit_thin,
+          size: 12,
+          color: Colors.grey,
+        ),
+        const SizedBox(width: 4),
         Text(
           L10n.of(context).editMessage,
           style: const TextStyle(color: Colors.grey, fontSize: 12),
