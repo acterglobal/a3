@@ -1,4 +1,4 @@
-import 'package:acter/features/chat/chat_utils/chat_utils.dart';
+import 'package:acter/features/chat/utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
