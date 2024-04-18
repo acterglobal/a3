@@ -48,17 +48,80 @@ final _allowEdit = StateProvider.family<bool, String>(
   ),
 );
 
-class CustomChatInput extends ConsumerStatefulWidget {
+class CustomChatInput extends ConsumerWidget {
   final Convo convo;
-
   const CustomChatInput({required this.convo, super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _CustomChatInputState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final roomId = convo.getRoomIdStr();
+    final membership = ref.watch(roomMembershipProvider(roomId));
+    return membership.when(
+      data: (member) => buildData(context, ref, member),
+      error: (error, stack) {
+        _log.severe('Error loading membership', error, stack);
+        return Expanded(
+          child: Text(L10n.of(context).loadingChatsFailed(error)),
+        );
+      },
+      loading: () {
+        return const Skeletonizer(
+          child: Row(
+            children: [
+              Icon(Atlas.paperclip_attachment_thin),
+              Expanded(child: Text('loading')),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget buildData(BuildContext context, WidgetRef ref, Member? membership) {
+    final canSend = membership?.canString('CanSendChatMessages') == true;
+    if (!canSend) {
+      return FrostEffect(
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 15),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.background,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Row(
+              children: [
+                const SizedBox(width: 1),
+                const Icon(
+                  Atlas.block_prohibited_thin,
+                  size: 14,
+                  color: Colors.grey,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  L10n.of(context).chatMissingPermissionsToSend,
+                  style: const TextStyle(color: Colors.grey, fontSize: 14),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    } else {
+      return _ChatInput(convo: convo);
+    }
+  }
 }
 
-class _CustomChatInputState extends ConsumerState<CustomChatInput> {
+class _ChatInput extends ConsumerStatefulWidget {
+  final Convo convo;
+
+  const _ChatInput({required this.convo});
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => __ChatInputState();
+}
+
+class __ChatInputState extends ConsumerState<_ChatInput> {
   GlobalKey<FlutterMentionsState> mentionKey =
       GlobalKey<FlutterMentionsState>();
 
