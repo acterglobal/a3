@@ -44,6 +44,15 @@ void bottomNavigationTutorials({required BuildContext context}) async {
         return true;
       },
       targets: [
+        targetFocus(
+          identify: 'dashboardKey',
+          keyTarget: dashboardKey,
+          contentAlign: isDesktop ? ContentAlign.right : ContentAlign.top,
+          contentImageUrl: 'assets/images/empty_home.svg',
+          contentTitle: L10n.of(context).homeTabTutorialTitle,
+          contentDescription: L10n.of(context).homeTabTutorialDescription,
+          isFirst: true,
+        ),
         if (!isDesktop)
           targetFocus(
             identify: 'updateKey',
@@ -53,14 +62,6 @@ void bottomNavigationTutorials({required BuildContext context}) async {
             contentTitle: L10n.of(context).updatesTabTutorialTitle,
             contentDescription: L10n.of(context).updatesTabTutorialDescription,
           ),
-        targetFocus(
-          identify: 'dashboardKey',
-          keyTarget: dashboardKey,
-          contentAlign: isDesktop ? ContentAlign.right : ContentAlign.top,
-          contentImageUrl: 'assets/images/empty_home.svg',
-          contentTitle: L10n.of(context).homeTabTutorialTitle,
-          contentDescription: L10n.of(context).homeTabTutorialDescription,
-        ),
         targetFocus(
           identify: 'chatsKey',
           keyTarget: chatsKey,
@@ -86,6 +87,7 @@ void bottomNavigationTutorials({required BuildContext context}) async {
           iconData: Icons.search,
           contentTitle: L10n.of(context).jumpToTabTutorialTitle,
           contentDescription: L10n.of(context).jumpToTabTutorialDescription,
+          isLast: true,
         ),
       ],
     );

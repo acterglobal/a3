@@ -38,6 +38,7 @@ Future<void> createOrJoinSpaceTutorials({required BuildContext context}) async {
           shape: ShapeLightFocus.RRect,
           contentTitle: L10n.of(context).createSpaceTutorialTitle,
           contentDescription: L10n.of(context).createSpaceTutorialDescription,
+          isFirst: true,
         ),
         targetFocus(
           identify: 'joinExistingSpaceKey',
@@ -46,6 +47,7 @@ Future<void> createOrJoinSpaceTutorials({required BuildContext context}) async {
           shape: ShapeLightFocus.RRect,
           contentTitle: L10n.of(context).joinSpaceTutorialTitle,
           contentDescription: L10n.of(context).joinSpaceTutorialDescription,
+          isLast: true,
         ),
       ],
     );
