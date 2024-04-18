@@ -63,6 +63,10 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
 
   void messageSent() {
     // reset the state;
-    state = state.copyWith(sendingState: SendingState.preparing);
+    state = state.copyWith(
+      sendingState: SendingState.preparing,
+      selectedMessage: null,
+      selectedMessageState: SelectedMessageState.none,
+    );
   }
 }
