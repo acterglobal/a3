@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:acter/common/models/keys.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/home/data/keys.dart';
-import 'package:acter/features/onboarding/pages/protect_privacy_page.dart';
+import 'package:acter/features/onboarding/pages/link_email_page.dart';
 import 'package:acter/features/onboarding/pages/register_page.dart';
 import 'package:acter/features/onboarding/pages/save_username_page.dart';
 import 'package:acter/features/onboarding/pages/user_avatar_page.dart';
