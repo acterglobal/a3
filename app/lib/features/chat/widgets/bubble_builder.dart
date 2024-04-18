@@ -12,6 +12,7 @@ import 'package:acter/features/chat/widgets/message_metadata_builder.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -64,12 +65,13 @@ class BubbleBuilder extends ConsumerWidget {
                   chatInputNotifier.setReplyToMessage(message);
                 },
                 onRightSwipe: isAuthor
-                    ? null
-                    : (DragUpdateDetails details) {
+                    ? (DragUpdateDetails details) {
                         FocusScope.of(context)
                             .requestFocus(chatInputFocusState.state);
                         chatInputNotifier.setEditMessage(message);
-                      },
+                      }
+                    : null,
+                iconOnRightSwipe: Atlas.pencil_thin,
                 child: _ChatBubble(
                   convo: convo,
                   message: message,
