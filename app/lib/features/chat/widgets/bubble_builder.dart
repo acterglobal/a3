@@ -12,6 +12,7 @@ import 'package:acter/features/chat/widgets/message_metadata_builder.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -46,7 +47,6 @@ class BubbleBuilder extends ConsumerWidget {
     final roomId = convo.getRoomIdStr();
 
     final chatInputNotifier = ref.watch(chatInputProvider(roomId).notifier);
-    final chatInputFocusState = ref.watch(chatInputFocusProvider.notifier);
 
     String eventType = message.metadata?['eventType'] ?? '';
     bool isMemberEvent = eventType == 'm.room.member';
@@ -59,17 +59,15 @@ class BubbleBuilder extends ConsumerWidget {
             ? child
             : SwipeTo(
                 onLeftSwipe: (DragUpdateDetails details) {
-                  FocusScope.of(context)
-                      .requestFocus(chatInputFocusState.state);
                   chatInputNotifier.setReplyToMessage(message);
                 },
+                iconOnLeftSwipe: Icons.reply_rounded,
                 onRightSwipe: isAuthor
-                    ? null
-                    : (DragUpdateDetails details) {
-                        FocusScope.of(context)
-                            .requestFocus(chatInputFocusState.state);
+                    ? (DragUpdateDetails details) {
                         chatInputNotifier.setEditMessage(message);
-                      },
+                      }
+                    : null,
+                iconOnRightSwipe: Atlas.pencil_edit_thin,
                 child: _ChatBubble(
                   convo: convo,
                   message: message,

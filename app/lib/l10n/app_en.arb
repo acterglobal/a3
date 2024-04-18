@@ -139,6 +139,7 @@
   "@changeYourDisplayName": {},
   "chat": "Chat",
   "@chat": {},
+  "chatMissingPermissionsToSend": "You don't have permissions to sent messages here",
   "chatSettingsExplainer": "Configure the behaviour of your Chat",
   "@chatSettingsExplainer": {},
   "chatSettingsAutoDownload": "Auto Download Media",

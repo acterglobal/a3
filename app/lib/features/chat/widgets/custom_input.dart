@@ -37,7 +37,7 @@ final _log = Logger('a3::chat::custom_input');
 
 final _sendButtonVisible = StateProvider.family<bool, String>(
   (ref, roomId) => ref.watch(
-    textValuesProvider(roomId).select((value) => value.isNotEmpty),
+    chatInputProvider(roomId).select((value) => value.message.isNotEmpty),
   ),
 );
 
@@ -48,17 +48,82 @@ final _allowEdit = StateProvider.family<bool, String>(
   ),
 );
 
-class CustomChatInput extends ConsumerStatefulWidget {
+class CustomChatInput extends ConsumerWidget {
   final Convo convo;
-
   const CustomChatInput({required this.convo, super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _CustomChatInputState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final roomId = convo.getRoomIdStr();
+    final membership = ref.watch(roomMembershipProvider(roomId));
+    return membership.when(
+      skipLoadingOnReload:
+          true, // avoid widget refresh and thus text focus updates upon room changes
+      data: (member) => buildData(context, ref, member),
+      error: (error, stack) {
+        _log.severe('Error loading membership', error, stack);
+        return Expanded(
+          child: Text(L10n.of(context).loadingChatsFailed(error)),
+        );
+      },
+      loading: () {
+        return const Skeletonizer(
+          child: Row(
+            children: [
+              Icon(Atlas.paperclip_attachment_thin),
+              Expanded(child: Text('loading')),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget buildData(BuildContext context, WidgetRef ref, Member? membership) {
+    final canSend = membership?.canString('CanSendChatMessages') == true;
+    if (!canSend) {
+      return FrostEffect(
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 15),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.background,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Row(
+              children: [
+                const SizedBox(width: 1),
+                const Icon(
+                  Atlas.block_prohibited_thin,
+                  size: 14,
+                  color: Colors.grey,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  L10n.of(context).chatMissingPermissionsToSend,
+                  style: const TextStyle(color: Colors.grey, fontSize: 14),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    } else {
+      return _ChatInput(convo: convo);
+    }
+  }
 }
 
-class _CustomChatInputState extends ConsumerState<CustomChatInput> {
+class _ChatInput extends ConsumerStatefulWidget {
+  final Convo convo;
+
+  const _ChatInput({required this.convo});
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => __ChatInputState();
+}
+
+class __ChatInputState extends ConsumerState<_ChatInput> {
   GlobalKey<FlutterMentionsState> mentionKey =
       GlobalKey<FlutterMentionsState>();
 
@@ -151,7 +216,8 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                       child: _TextInputWidget(
                         mentionKey: mentionKey,
                         convo: widget.convo,
-                        onSendButtonPressed: () => onSendButtonPressed(context),
+                        onSendButtonPressed: () =>
+                            onSendButtonPressed(context, ref),
                         isEncrypted: isEncrypted,
                       ),
                     ),
@@ -182,7 +248,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     if (allowEditing) {
       return IconButton.filled(
         iconSize: 20,
-        onPressed: () => onSendButtonPressed(context),
+        onPressed: () => onSendButtonPressed(context, ref),
         icon: const Icon(
           Icons.send,
         ),
@@ -475,6 +541,13 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     final inputNotifier = ref.watch(chatInputProvider(roomId).notifier);
     return Row(
       children: [
+        const SizedBox(width: 1),
+        const Icon(
+          Icons.reply_rounded,
+          size: 12,
+          color: Colors.grey,
+        ),
+        const SizedBox(width: 4),
         replyProfile.when(
           data: (data) => ActerAvatar(
             mode: DisplayMode.DM,
@@ -530,7 +603,13 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     final inputNotifier = ref.watch(chatInputProvider(roomId).notifier);
     return Row(
       children: [
-        const SizedBox(width: 5),
+        const SizedBox(width: 1),
+        const Icon(
+          Atlas.pencil_edit_thin,
+          size: 12,
+          color: Colors.grey,
+        ),
+        const SizedBox(width: 4),
         Text(
           L10n.of(context).editMessage,
           style: const TextStyle(color: Colors.grey, fontSize: 12),
@@ -551,7 +630,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     );
   }
 
-  Future<void> onSendButtonPressed(BuildContext context) async {
+  Future<void> onSendButtonPressed(BuildContext context, WidgetRef ref) async {
     if (mentionKey.currentState!.controller!.text.isEmpty) return;
     final lang = L10n.of(context);
     final roomId = widget.convo.getRoomIdStr();
@@ -692,8 +771,9 @@ class _TextInputWidget extends ConsumerWidget {
   final Convo convo;
   final Function() onSendButtonPressed;
   final bool isEncrypted;
+  final FocusNode chatFocus = FocusNode();
 
-  const _TextInputWidget({
+  _TextInputWidget({
     required this.mentionKey,
     required this.convo,
     required this.onSendButtonPressed,
@@ -706,6 +786,20 @@ class _TextInputWidget extends ConsumerWidget {
     final chatInputState = ref.watch(chatInputProvider(roomId));
     final chatMentions = ref.watch(chatMentionsProvider(roomId));
     final width = MediaQuery.of(context).size.width;
+    ref.listen(chatInputProvider(roomId), (prev, next) {
+      if (next.selectedMessageState == SelectedMessageState.edit &&
+          (prev?.selectedMessageState != next.selectedMessageState ||
+              next.selectedMessage != prev?.selectedMessage)) {
+        // a new message has been selected to be edited or switched from reply
+        // to edit, force refresh the inner text controller to reflect that
+        mentionKey.currentState!.controller!.text = next.message;
+        chatFocus.requestFocus();
+      } else if (next.selectedMessageState == SelectedMessageState.replyTo &&
+          (next.selectedMessage != prev?.selectedMessage ||
+              prev?.selectedMessageState != next.selectedMessageState)) {
+        chatFocus.requestFocus();
+      }
+    });
     return CallbackShortcuts(
       bindings: <ShortcutActivator, VoidCallback>{
         const SingleActivator(LogicalKeyboardKey.enter): () {
@@ -716,7 +810,8 @@ class _TextInputWidget extends ConsumerWidget {
         child: FlutterMentions(
           key: mentionKey,
           // restore input if available, but only as a read on startup
-          defaultText: ref.read(textValuesProvider(roomId)),
+          defaultText: ref
+              .read(chatInputProvider(roomId).select((value) => value.message)),
           suggestionPosition: SuggestionPosition.Top,
           suggestionListWidth: width >= 770 ? width * 0.6 : width * 0.8,
           onMentionAdd: (roomMember) => onMentionAdd(roomMember, ref),
@@ -725,9 +820,7 @@ class _TextInputWidget extends ConsumerWidget {
             borderRadius: BorderRadius.circular(6),
           ),
           onChanged: (String value) async {
-            ref
-                .read(textValuesProvider(roomId).notifier)
-                .update((state) => value);
+            ref.read(chatInputProvider(roomId).notifier).updateMessage(value);
             if (value.isNotEmpty) {
               Future.delayed(const Duration(milliseconds: 500), () async {
                 await typingNotice(true);
@@ -745,7 +838,7 @@ class _TextInputWidget extends ConsumerWidget {
           cursorColor: Theme.of(context).colorScheme.primary,
           maxLines: 6,
           minLines: 1,
-          focusNode: ref.watch(chatInputFocusProvider),
+          focusNode: chatFocus,
           onTap: () => onTextTap(chatInputState.emojiPickerVisible, ref),
           decoration: InputDecoration(
             isCollapsed: true,

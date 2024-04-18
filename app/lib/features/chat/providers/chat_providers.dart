@@ -14,7 +14,6 @@ import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
 import 'package:acter/features/settings/providers/app_settings_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter/material.dart';
 import 'package:riverpod/riverpod.dart';
 
 final autoDownloadMediaProvider =
@@ -30,16 +29,12 @@ final autoDownloadMediaProvider =
   return globalAutoDownload == 'always';
 });
 
+// keep track of text controller values across rooms.
 final chatInputProvider =
     StateNotifierProvider.family<ChatInputNotifier, ChatInputState, String>(
   (ref, roomId) => ChatInputNotifier(),
 );
 
-// keep track of text controller values across rooms.
-final textValuesProvider =
-    StateProvider.family<String, String>((ref, roomId) => '');
-
-final chatInputFocusProvider = StateProvider<FocusNode>((ref) => FocusNode());
 final chatStateProvider =
     StateNotifierProvider.family<ChatRoomNotifier, ChatRoomState, Convo>(
   (ref, convo) => ChatRoomNotifier(ref: ref, convo: convo),
