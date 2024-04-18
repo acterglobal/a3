@@ -448,9 +448,14 @@ impl Client {
     }
 
     pub async fn change_password(&self, old_val: String, new_val: String) -> Result<bool> {
+        let client = self.core.client().clone();
         let account = self.account()?;
         RUNTIME
             .spawn(async move {
+                let capabilities = client.get_capabilities().await?;
+                if !capabilities.change_password.enabled {
+                    bail!("This client doesn't support password change");
+                }
                 let auth_data =
                     AuthData::Password(Password::new(account.user_id().into(), old_val.clone()));
                 match account

@@ -2,7 +2,7 @@ use crate::{ActerUserAppSettings, Client};
 use acter_core::events::settings::{
     ActerUserAppSettingsContent, ActerUserAppSettingsContentBuilder, APP_USER_SETTINGS,
 };
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
 use futures::StreamExt;
 use matrix_sdk::{media::MediaRequest, Account as SdkAccount};
 use ruma_common::{OwnedMxcUri, OwnedUserId, UserId};
@@ -55,9 +55,14 @@ impl Account {
     }
 
     pub async fn set_display_name(&self, new_name: String) -> Result<bool> {
+        let client = self.client.core.client().clone();
         let account = self.account.clone();
         RUNTIME
             .spawn(async move {
+                let capabilities = client.get_capabilities().await?;
+                if !capabilities.set_displayname.enabled {
+                    bail!("This client doesn't support display name change");
+                }
                 let name = if new_name.is_empty() {
                     None
                 } else {
@@ -91,10 +96,15 @@ impl Account {
     }
 
     pub async fn upload_avatar(&self, uri: String) -> Result<OwnedMxcUri> {
+        let client = self.client.core.client().clone();
         let account = self.account.clone();
         let path = PathBuf::from(uri);
         RUNTIME
             .spawn(async move {
+                let capabilities = client.get_capabilities().await?;
+                if !capabilities.set_avatar_url.enabled {
+                    bail!("This client doesn't support avatar upload");
+                }
                 let guess = mime_guess::from_path(path.clone());
                 let content_type = guess.first().context("don't know mime type")?;
                 let data = std::fs::read(path)?;
