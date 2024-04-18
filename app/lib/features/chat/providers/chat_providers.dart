@@ -30,14 +30,17 @@ final autoDownloadMediaProvider =
   return globalAutoDownload == 'always';
 });
 
+// keep track of text controller values across rooms.
 final chatInputProvider =
     StateNotifierProvider.family<ChatInputNotifier, ChatInputState, String>(
   (ref, roomId) => ChatInputNotifier(),
 );
 
-// keep track of text controller values across rooms.
-final textValuesProvider =
-    StateProvider.family<String, String>((ref, roomId) => '');
+final textValuesProvider = StateProvider.family<String, String>(
+  (ref, roomId) => ref.watch(
+    chatInputProvider(roomId).select((value) => value.message),
+  ),
+);
 
 final chatInputFocusProvider = StateProvider<FocusNode>((ref) => FocusNode());
 final chatStateProvider =

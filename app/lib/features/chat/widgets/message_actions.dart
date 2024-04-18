@@ -1,7 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/report_content.dart';
-import 'package:acter/features/chat/chat_utils/chat_utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -11,7 +10,6 @@ import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:html/parser.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::chat::message_actions');
@@ -202,39 +200,6 @@ class MessageActions extends ConsumerWidget {
     Message message,
   ) {
     ref.read(chatInputProvider(roomId).notifier).setEditMessage(message);
-    if (message is TextMessage) {
-      // Parse String Data to HTML document
-      final document = parse(message.text);
-
-      if (document.body != null) {
-        // Get message data
-        String msg = message.text.trim();
-
-        // Get list of 'A Tags' values
-        final aTagElementList = document.getElementsByTagName('a');
-
-        for (final aTagElement in aTagElementList) {
-          final userMentionMessageData =
-              parseUserMentionMessage(msg, aTagElement);
-          msg = userMentionMessageData.parsedMessage;
-
-          // Adding mentions data
-          ref.read(chatInputProvider(roomId).notifier).addMention(
-                userMentionMessageData.displayName,
-                userMentionMessageData.userName,
-              );
-        }
-
-        // Parse data
-        final messageDocument = parse(msg);
-        final messageBodyText = messageDocument.body?.text ?? '';
-
-        // Update text value with msg value
-        ref
-            .read(textValuesProvider(roomId).notifier)
-            .update((state) => messageBodyText);
-      }
-    }
 
     final chatInputFocusState = ref.read(chatInputFocusProvider.notifier);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {

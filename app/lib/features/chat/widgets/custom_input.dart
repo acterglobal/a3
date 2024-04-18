@@ -214,7 +214,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
                       child: _TextInputWidget(
                         mentionKey: mentionKey,
                         convo: widget.convo,
-                        onSendButtonPressed: () => onSendButtonPressed(context),
+                        onSendButtonPressed: () =>
+                            onSendButtonPressed(context, ref),
                         isEncrypted: isEncrypted,
                       ),
                     ),
@@ -245,7 +246,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     if (allowEditing) {
       return IconButton.filled(
         iconSize: 20,
-        onPressed: () => onSendButtonPressed(context),
+        onPressed: () => onSendButtonPressed(context, ref),
         icon: const Icon(
           Icons.send,
         ),
@@ -627,7 +628,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     );
   }
 
-  Future<void> onSendButtonPressed(BuildContext context) async {
+  Future<void> onSendButtonPressed(BuildContext context, WidgetRef ref) async {
     if (mentionKey.currentState!.controller!.text.isEmpty) return;
     final lang = L10n.of(context);
     final roomId = widget.convo.getRoomIdStr();
@@ -782,6 +783,14 @@ class _TextInputWidget extends ConsumerWidget {
     final chatInputState = ref.watch(chatInputProvider(roomId));
     final chatMentions = ref.watch(chatMentionsProvider(roomId));
     final width = MediaQuery.of(context).size.width;
+    ref.listen(chatInputProvider(roomId), (prev, next) {
+      if (next.selectedMessageState == SelectedMessageState.edit &&
+          next.selectedMessage != prev?.selectedMessage) {
+        // a new message has been selected to be edited, force refresh
+        // the inner text controller to reflect that
+        mentionKey.currentState!.controller!.text = next.message;
+      }
+    });
     return CallbackShortcuts(
       bindings: <ShortcutActivator, VoidCallback>{
         const SingleActivator(LogicalKeyboardKey.enter): () {
@@ -801,9 +810,7 @@ class _TextInputWidget extends ConsumerWidget {
             borderRadius: BorderRadius.circular(6),
           ),
           onChanged: (String value) async {
-            ref
-                .read(textValuesProvider(roomId).notifier)
-                .update((state) => value);
+            ref.read(chatInputProvider(roomId).notifier).updateMessage(value);
             if (value.isNotEmpty) {
               Future.delayed(const Duration(milliseconds: 500), () async {
                 await typingNotice(true);
