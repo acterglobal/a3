@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/themes/chat_theme.dart';
+import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
@@ -18,7 +18,6 @@ import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
 import 'package:acter/features/chat/widgets/video_message_builder.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -215,10 +214,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
             ref.read(chatInputProvider(roomId).notifier).unsetActions();
           },
           //Custom Theme class, see lib/common/store/chatTheme.dart
-          theme: const ActerChatTheme(
-            sendButtonIcon: Icon(Atlas.paper_airplane),
-            documentIcon: Icon(Atlas.file_thin, size: 18),
-          ),
+          theme: Theme.of(context).chatTheme,
         ),
       ),
     );

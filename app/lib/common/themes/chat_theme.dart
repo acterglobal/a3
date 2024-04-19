@@ -1,3 +1,4 @@
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 
@@ -15,7 +16,7 @@ class ActerChatTheme extends ChatTheme {
       height: 1.333,
     ),
     super.deliveredIcon,
-    super.documentIcon,
+    super.documentIcon = const Icon(Atlas.file_thin, size: 18),
     super.emptyChatPlaceholderTextStyle = const TextStyle(
       color: neutral2,
       fontSize: 16,
@@ -85,7 +86,7 @@ class ActerChatTheme extends ChatTheme {
     ),
     super.secondaryColor = const Color.fromRGBO(51, 53, 64, 1),
     super.seenIcon,
-    super.sendButtonIcon,
+    super.sendButtonIcon = const Icon(Atlas.paper_airplane),
     super.sendButtonMargin,
     super.sendingIcon,
     super.sentEmojiMessageTextStyle = const TextStyle(

@@ -1,3 +1,4 @@
+import 'package:acter/common/themes/chat_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/themes/components/bottom_sheet_theme.dart';
 import 'package:acter/common/themes/components/button_theme.dart';
@@ -10,6 +11,10 @@ import 'package:acter/common/themes/components/navigationbar_theme.dart';
 import 'package:acter/common/themes/components/progress_indicator_theme.dart';
 import 'package:acter/common/themes/components/text_theme.dart';
 import 'package:flutter/material.dart';
+
+extension ActerChatThemeExtension on ThemeData {
+  ActerChatTheme get chatTheme => const ActerChatTheme();
+}
 
 class ActerTheme {
   static final ThemeData theme = ThemeData(
