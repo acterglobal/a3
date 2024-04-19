@@ -61,7 +61,7 @@ class __SearchFieldState extends ConsumerState<_SearchField> {
         padding: EdgeInsets.all(8.0),
         child: Icon(Atlas.magnifying_glass),
       ),
-      hintText: L10n.of(context).searchSpace,
+      hintText: L10n.of(context).searchTermFieldHint,
       trailing: hasSearchTerm
           ? [
               InkWell(
@@ -83,14 +83,12 @@ class __SearchFieldState extends ConsumerState<_SearchField> {
 }
 
 class PublicRoomSearch extends ConsumerStatefulWidget {
-  final Widget? title;
   final bool autofocus;
   final OnSelectedFn onSelected;
   final String? initialQuery;
 
   const PublicRoomSearch({
     super.key,
-    this.title,
     this.autofocus = false,
     this.initialQuery,
     required this.onSelected,
@@ -147,7 +145,7 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
                 padding: const EdgeInsets.fromLTRB(10, 20, 10, 10),
                 child: Row(
                   children: [
-                    _filterChipsButtons(context),
+                    _filterBy(context),
                     _serverSelectionBuilder(context),
                   ],
                 ),
@@ -159,7 +157,7 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
     );
   }
 
-  Widget _filterChipsButtons(BuildContext context) {
+  Widget _filterBy(BuildContext context) {
     final selected =
         ref.watch(searchFilterProvider.select((value) => value.filterBy));
     return DropdownMenu<FilterBy>(
@@ -171,6 +169,7 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
       requestFocusOnTap: true,
       enableSearch: false,
       label: const Text('Show only'),
+      textStyle: TextStyle(color: Theme.of(context).hintColor),
       menuStyle: const MenuStyle(visualDensity: VisualDensity.compact),
       onSelected: (FilterBy? newFilter) {
         ref
@@ -210,11 +209,19 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
     );
   }
 
+  String buildSearchTitle(BuildContext context) {
+    return switch (ref.watch(searchFilterProvider).filterBy) {
+      FilterBy.spaces => L10n.of(context).searchSpaces,
+      FilterBy.chats => L10n.of(context).searchChats,
+      FilterBy.both => L10n.of(context).searchPublicDirectory,
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: widget.title ?? Text(L10n.of(context).joinSpace),
+        title: Text(buildSearchTitle(context)),
       ),
       body: CustomScrollView(
         slivers: [

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class SpacesBuilder extends ConsumerWidget {
   final NavigateTo navigateTo;
@@ -19,26 +20,53 @@ class SpacesBuilder extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final foundSpaces = ref.watch(spacesFoundProvider);
     return foundSpaces.when(
-      loading: () => Text(L10n.of(context).loading),
-      error: (e, st) => Text(L10n.of(context).error(e)),
+      loading: () => renderLoading(context),
+      error: (e, st) => inBox(
+        context,
+        Text(L10n.of(context).error(e)),
+      ),
       data: (data) {
-        final Widget body;
         if (data.isEmpty) {
-          body = OutlinedButton.icon(
-            onPressed: () {
-              final query = ref.read(searchValueProvider);
-              context.pushNamed(
-                Routes.joinSpace.name,
-                queryParameters: {'query': query},
-              );
-            },
-            icon: const Icon(Icons.search),
-            label: Text(
-              L10n.of(context).noMatchingSpacesFound,
+          return renderEmpty(context, ref);
+        }
+        return renderItems(context, ref, data);
+      },
+    );
+  }
+
+  Widget renderLoading(BuildContext context) {
+    return inBox(
+      context,
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(
+          3,
+          (index) => Container(
+            padding: const EdgeInsets.all(10),
+            child: const Column(
+              children: [
+                Skeletonizer(child: Icon(Icons.abc)),
+                SizedBox(height: 3),
+                Skeletonizer(child: Text('space name')),
+              ],
             ),
-          );
-        } else {
-          final List<Widget> children = data
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget renderItems(
+    BuildContext context,
+    WidgetRef ref,
+    List<SpaceDetails> items,
+  ) {
+    return inBox(
+      context,
+      SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: items
               .map(
                 (e) => InkWell(
                   child: Container(
@@ -57,24 +85,47 @@ class SpacesBuilder extends ConsumerWidget {
                   ),
                 ),
               )
-              .toList();
-          body = SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(children: children),
-          );
-        }
-        return Padding(
-          padding: const EdgeInsets.only(top: 10),
-          child: Column(
-            children: [
-              Text(L10n.of(context).spaces),
-              const SizedBox(height: 15),
-              body,
-              const SizedBox(height: 10),
-            ],
+              .toList(),
+        ),
+      ),
+    );
+  }
+
+  Widget renderEmpty(BuildContext context, WidgetRef ref) {
+    return inBox(
+      context,
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            L10n.of(context).noSpacesFound,
           ),
-        );
-      },
+          TextButton(
+            onPressed: () {
+              final query = ref.read(searchValueProvider);
+              context.pushNamed(
+                Routes.joinSpace.name,
+                queryParameters: {'query': query},
+              );
+            },
+            child: Text(L10n.of(context).searchPublicDirectory),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget inBox(BuildContext context, Widget child) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: Column(
+        children: [
+          Text(L10n.of(context).spaces),
+          const SizedBox(height: 15),
+          child,
+          const SizedBox(height: 10),
+        ],
+      ),
     );
   }
 }

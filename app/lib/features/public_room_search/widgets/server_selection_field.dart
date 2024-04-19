@@ -34,6 +34,7 @@ class _ServerSelectionFieldState extends State<ServerSelectionField> {
     if (!editMode) {
       return TextFormField(
         initialValue: widget.currentSelection,
+        style: TextStyle(color: Theme.of(context).hintColor),
         onTap: () {
           setState(() {
             editMode = true;
@@ -42,7 +43,7 @@ class _ServerSelectionFieldState extends State<ServerSelectionField> {
         decoration: InputDecoration(
           border: const OutlineInputBorder(),
           labelText: L10n.of(context).server,
-          suffix: const Icon(Icons.edit),
+          suffix: Icon(Icons.edit, color: Theme.of(context).hintColor),
         ),
       );
     }
