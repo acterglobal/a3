@@ -1,4 +1,6 @@
 import 'package:acter/common/models/keys.dart';
+import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
+import 'package:acter/common/toolkit/buttons/default_action_button.dart';
 import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -40,47 +42,23 @@ void logoutConfirmationDialog(BuildContext context, WidgetRef ref) {
             ],
           ),
         ),
+        actionsAlignment: MainAxisAlignment.spaceEvenly,
         actions: <Widget>[
-          Row(
-            children: [
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey),
-                  ),
-                  child: TextButton(
-                    onPressed: () =>
-                        Navigator.of(context, rootNavigator: true).pop(),
-                    child: Text(
-                      L10n.of(context).no,
-                      key: LogoutDialogKeys.cancel,
-                      style: const TextStyle(color: Colors.white, fontSize: 17),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.red,
-                    border: Border.all(color: Colors.red),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: TextButton(
-                    onPressed: () async {
-                      await ref.read(authStateProvider.notifier).logout(ctx);
-                    },
-                    child: Text(
-                      L10n.of(context).yes,
-                      key: LogoutDialogKeys.confirm,
-                      style: const TextStyle(color: Colors.white, fontSize: 17),
-                    ),
-                  ),
-                ),
-              ),
-            ],
+          ActerDefaultActionButton(
+            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+            child: Text(
+              L10n.of(context).no,
+              key: LogoutDialogKeys.cancel,
+            ),
+          ),
+          ActerDangerActionButton(
+            onPressed: () async {
+              await ref.read(authStateProvider.notifier).logout(ctx);
+            },
+            child: Text(
+              L10n.of(context).yes,
+              key: LogoutDialogKeys.confirm,
+            ),
           ),
         ],
       );

@@ -14,6 +14,19 @@ ElevatedButtonThemeData elevatedButtonTheme(ColorScheme colors) =>
       ),
     );
 
+ElevatedButtonThemeData dangerButtonThemeMaker(ColorScheme colors) =>
+    ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        padding: const EdgeInsets.all(18),
+        elevation: 0,
+        backgroundColor: colors.error,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+    );
+
 final outlinedButtonTheme = OutlinedButtonThemeData(
   style: OutlinedButton.styleFrom(
     padding: const EdgeInsets.all(18),

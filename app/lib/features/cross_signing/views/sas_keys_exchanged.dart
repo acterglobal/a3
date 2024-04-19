@@ -1,4 +1,5 @@
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -126,9 +127,8 @@ class SasKeysExchangedView extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        ElevatedButton(
+        ActerDangerActionButton(
           onPressed: () => onMismatch(context),
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
           child: Text(L10n.of(context).verificationSasDoNotMatch),
         ),
         ActerPrimaryActionButton(
