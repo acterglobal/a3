@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/network_provider.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -97,7 +97,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           style: Theme.of(context)
               .textTheme
               .headlineMedium
-              ?.copyWith(color: greenColor),
+              ?.copyWith(color: Theme.of(context).colorScheme.textHighlight),
         ),
         const SizedBox(height: 10),
         Padding(

@@ -1,3 +1,4 @@
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/default_action_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
@@ -66,7 +67,7 @@ class IntroProfile extends StatelessWidget {
           style: Theme.of(context)
               .textTheme
               .headlineMedium
-              ?.copyWith(color: greenColor),
+              ?.copyWith(color: Theme.of(context).colorScheme.textHighlight),
         ),
       ],
     );

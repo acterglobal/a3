@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/network_provider.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -144,7 +143,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         Text(
           L10n.of(context).createProfile,
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: greenColor,
+                color: Theme.of(context).colorScheme.textHighlight,
               ),
         ),
         const SizedBox(height: 4),
@@ -169,7 +168,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             hintText: L10n.of(context).hintMessageDisplayName,
           ),
           style: Theme.of(context).textTheme.labelLarge,
-          cursorColor: Theme.of(context).colorScheme.tertiary2,
           validator: (val) {
             if (val == null || val.trim().isEmpty) {
               return L10n.of(context).missingName;
