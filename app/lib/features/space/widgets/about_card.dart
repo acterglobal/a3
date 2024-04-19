@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -36,15 +37,10 @@ class AboutCard extends ConsumerWidget {
                 ),
                 const Spacer(),
                 showInviteBtn && invited.length <= 100
-                    ? OutlinedButton(
+                    ? ActerInlineTextButton(
                         onPressed: () => context.pushNamed(
                           Routes.spaceInvite.name,
                           pathParameters: {'spaceId': spaceId},
-                        ),
-                        style: OutlinedButton.styleFrom(
-                          side: BorderSide(
-                            color: Theme.of(context).colorScheme.success,
-                          ),
                         ),
                         child: Text(L10n.of(context).invite),
                       )
