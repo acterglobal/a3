@@ -13,12 +13,10 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 class InvitationCard extends ConsumerWidget {
   final Invitation invitation;
-  final Color avatarColor;
 
   const InvitationCard({
     super.key,
     required this.invitation,
-    required this.avatarColor,
   });
 
   @override

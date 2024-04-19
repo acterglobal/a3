@@ -370,7 +370,6 @@ class NotificationsSettingsPage extends ConsumerWidget {
               onPressed: () => _onTargetDelete(context, ref, item),
               child: Text(
                 L10n.of(context).deleteTarget,
-                style: const TextStyle(color: Colors.white, fontSize: 17),
               ),
             ),
           ],

@@ -17,9 +17,9 @@ void logoutConfirmationDialog(BuildContext context, WidgetRef ref) {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(
+            Icon(
               Atlas.warning,
-              color: Colors.red,
+              color: Theme.of(context).colorScheme.error,
             ),
             const SizedBox(
               height: 10,
@@ -31,7 +31,7 @@ void logoutConfirmationDialog(BuildContext context, WidgetRef ref) {
           textAlign: TextAlign.left,
           text: TextSpan(
             text: L10n.of(context).logOutConformationDescription1,
-            style: const TextStyle(color: Colors.white, fontSize: 15),
+            style: Theme.of(context).textTheme.bodyLarge,
             children: <TextSpan>[
               TextSpan(
                 text: L10n.of(context).logOutConformationDescription2,

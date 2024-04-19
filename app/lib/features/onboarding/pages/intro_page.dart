@@ -1,3 +1,4 @@
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
@@ -46,7 +47,7 @@ class IntroPage extends StatelessWidget {
             text: L10n.of(context).welcomeTo,
             style: Theme.of(context).textTheme.displayMedium!.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Colors.green,
+                  color: Theme.of(context).colorScheme.textHighlight,
                 ),
             children: <TextSpan>[
               TextSpan(
@@ -89,7 +90,7 @@ class IntroPage extends StatelessWidget {
                   TextSpan(
                     text: L10n.of(context).introPageDescription2,
                     style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          color: Colors.green,
+                          color: Theme.of(context).colorScheme.textHighlight,
                         ),
                   ),
                 ],

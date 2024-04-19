@@ -171,7 +171,6 @@ class _BugReportState extends ConsumerState<BugReportPage> {
                 const SizedBox(height: 10),
                 TextFormField(
                   key: BugReportPage.titleField,
-                  style: const TextStyle(color: Colors.white),
                   controller: titleController,
                   validator: (newValue) => newValue == null || newValue.isEmpty
                       ? L10n.of(context).emptyDescription

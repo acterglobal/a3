@@ -93,7 +93,6 @@ class ActivitiesPage extends ConsumerWidget {
           (BuildContext ctx, int index) {
             return InvitationCard(
               invitation: invitations[index],
-              avatarColor: Colors.white,
             );
           },
           childCount: invitations.length,

@@ -149,16 +149,13 @@ class HomeShellState extends ConsumerState<HomeShell> {
                       textAlign: TextAlign.center,
                       text: TextSpan(
                         text: L10n.of(context).access,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 32,
-                        ),
+                        style: Theme.of(context).textTheme.headlineLarge,
                         children: <TextSpan>[
                           TextSpan(
                             text: ' ${L10n.of(context).denied}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: Colors.red,
+                              color: Theme.of(context).colorScheme.error,
                               fontSize: 32,
                             ),
                           ),

@@ -77,7 +77,7 @@ class IntroProfile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(5),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.white),
+        border: Border.all(color: Theme.of(context).colorScheme.textColor),
         borderRadius: const BorderRadius.all(Radius.circular(10)),
       ),
       child: Text(

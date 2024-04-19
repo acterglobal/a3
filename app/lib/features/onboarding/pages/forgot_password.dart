@@ -1,3 +1,4 @@
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
@@ -54,7 +55,7 @@ class ForgotPassword extends StatelessWidget {
           child: Text(
             L10n.of(context).passwordRecovery,
             style: Theme.of(context).textTheme.displaySmall!.copyWith(
-                  color: Colors.green,
+                  color: Theme.of(context).colorScheme.textHighlight,
                 ),
           ),
         ),

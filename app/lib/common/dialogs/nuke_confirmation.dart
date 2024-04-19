@@ -13,25 +13,25 @@ void nukeConfirmationDialog(BuildContext context, WidgetRef ref) {
     context: context,
     builder: (BuildContext ctx) {
       return AlertDialog(
-        title: const Column(
+        title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Icon(
               Atlas.bomb_bold,
-              color: Colors.red,
+              color: Theme.of(context).colorScheme.error,
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
-            Text('Nuke all local data'),
+            const Text('Nuke all local data'),
           ],
         ),
         content: RichText(
           textAlign: TextAlign.left,
-          text: const TextSpan(
+          text: TextSpan(
             text: 'Attention: ',
-            style: TextStyle(color: Colors.white, fontSize: 15),
-            children: <TextSpan>[
+            style: Theme.of(context).textTheme.bodyMedium,
+            children: const <TextSpan>[
               TextSpan(
                 text:
                     'Nuking removes all local data, including encryption keys. If this is your last signed-in device you might no be able to decrypt any previous content.',
@@ -46,7 +46,6 @@ void nukeConfirmationDialog(BuildContext context, WidgetRef ref) {
             onPressed: () => ctx.pop(),
             child: const Text(
               'No',
-              style: TextStyle(color: Colors.white, fontSize: 17),
             ),
           ),
           ActerDangerActionButton(
@@ -55,7 +54,6 @@ void nukeConfirmationDialog(BuildContext context, WidgetRef ref) {
             },
             child: const Text(
               'Yihaaaa',
-              style: TextStyle(color: Colors.white, fontSize: 17),
             ),
           ),
         ],

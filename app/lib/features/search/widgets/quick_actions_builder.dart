@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
@@ -117,10 +118,6 @@ class QuickActionsBuilder extends ConsumerWidget {
               : null,
           isActive(LabsFeature.discussions)
               ? OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    side: const BorderSide(width: 2, color: Colors.white),
-                  ),
                   onPressed: () {
                     _log.info('Discussion pressed');
                   },
@@ -137,8 +134,11 @@ class QuickActionsBuilder extends ConsumerWidget {
           OutlinedButton.icon(
             key: QuickJumpKeys.bugReport,
             style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.greenAccent,
-              side: const BorderSide(width: 1, color: Colors.greenAccent),
+              foregroundColor: Theme.of(context).colorScheme.textHighlight,
+              side: BorderSide(
+                width: 1,
+                color: Theme.of(context).colorScheme.textHighlight,
+              ),
             ),
             icon: const Icon(Atlas.bug_clipboard_thin, size: 18),
             label: Text(

@@ -84,7 +84,6 @@ class RequestReadyView extends StatelessWidget {
           child: IconButton(
             icon: const Icon(Icons.close),
             onPressed: () => onCancel(context),
-            color: Colors.white,
           ),
         ),
       ],

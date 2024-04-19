@@ -16,7 +16,7 @@ Future<void> showUnblockUserDialog(BuildContext context, Member member) async {
           textAlign: TextAlign.left,
           text: TextSpan(
             text: L10n.of(context).youAreAboutToUnblock(userId),
-            style: const TextStyle(color: Colors.white, fontSize: 24),
+            style: Theme.of(context).textTheme.headlineMedium,
             children: <TextSpan>[
               TextSpan(
                 text: L10n.of(context).thisWillAllowThemToContactYouAgain,
