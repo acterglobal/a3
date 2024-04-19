@@ -65,6 +65,57 @@ class ChatSettingsPage extends ConsumerWidget {
         );
   }
 
+  AbstractSettingsTile _typingNotice(
+    BuildContext context,
+    WidgetRef ref,
+  ) {
+    return ref.watch(userAppSettingsProvider).when(
+          data: (settings) => SettingsTile.switchTile(
+            title: Text(L10n.of(context).chatSettingsTyping),
+            description: Text(
+              L10n.of(context).chatSettingsTypingExplainer,
+            ),
+            enabled: true,
+            initialValue: settings.typingNotice() ?? true,
+            onToggle: (newVal) async {
+              EasyLoading.show(status: L10n.of(context).settingsSubmitting);
+              try {
+                final updater = settings.updateBuilder();
+                updater.typingNotice(newVal);
+                await updater.send();
+                EasyLoading.showToast(
+                  // ignore: use_build_context_synchronously
+                  L10n.of(context).settingsSubmittingSuccess,
+                  toastPosition: EasyLoadingToastPosition.bottom,
+                );
+              } catch (error, stackTrace) {
+                _log.severe('Failure submitting settings', error, stackTrace);
+                EasyLoading.showError(
+                  // ignore: use_build_context_synchronously
+                  L10n.of(context).settingsSubmittingFailed(error),
+                );
+              }
+            },
+          ),
+          error: (error, stack) => SettingsTile.navigation(
+            title: Text(
+              L10n.of(context).failed,
+            ),
+          ),
+          loading: () => SettingsTile.switchTile(
+            title: Skeletonizer(
+              child: Text(''),
+            ),
+            enabled: false,
+            description: Skeletonizer(
+              child: Text(''),
+            ),
+            initialValue: false,
+            onToggle: (newVal) {},
+          ),
+        );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return WithSidebar(
@@ -77,15 +128,7 @@ class ChatSettingsPage extends ConsumerWidget {
               title: Text(L10n.of(context).defaultModes),
               tiles: [
                 _autoDownload(context, ref),
-                SettingsTile.switchTile(
-                  title: Text(L10n.of(context).chatSettingsTyping),
-                  description: Text(
-                    L10n.of(context).chatSettingsTypingExplainer,
-                  ),
-                  enabled: false,
-                  initialValue: false,
-                  onToggle: (newVal) {},
-                ),
+                _typingNotice(context, ref),
                 SettingsTile.switchTile(
                   title: Text(L10n.of(context).chatSettingsReadReceipts),
                   description: Text(

@@ -2,6 +2,7 @@ use crate::RUNTIME;
 pub use acter_core::events::settings::{
     ActerUserAppSettingsContent, ActerUserAppSettingsContentBuilder, AppChatSettings, AutoDownload,
 };
+use anyhow::Ok;
 use core::ops::Deref;
 use matrix_sdk::Account;
 
@@ -36,6 +37,10 @@ impl ActerUserAppSettings {
             .map(|a| a.to_string())
     }
 
+    pub fn typing_notice(&self) -> Option<bool> {
+        self.inner.chat.typing_notice.as_ref().map(|a| *a)
+    }
+
     pub fn update_builder(&self) -> ActerUserAppSettingsBuilder {
         ActerUserAppSettingsBuilder {
             account: self.account.clone(),
@@ -47,6 +52,11 @@ impl ActerUserAppSettings {
 impl ActerUserAppSettingsBuilder {
     pub fn auto_download_chat(&mut self, new_value: String) -> anyhow::Result<&mut Self> {
         self.inner.auto_download_chat(new_value)?;
+        Ok(self)
+    }
+
+    pub fn typing_notice(&mut self, value: bool) -> anyhow::Result<&mut Self> {
+        self.inner.typing_notice(value)?;
         Ok(self)
     }
 

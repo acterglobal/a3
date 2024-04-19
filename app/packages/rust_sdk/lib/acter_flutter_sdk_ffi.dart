@@ -22319,6 +22319,17 @@ class Api {
           _ActerUserAppSettingsAutoDownloadChatReturn Function(
             int,
           )>();
+  late final _acterUserAppSettingsTypingNoticePtr = _lookup<
+      ffi.NativeFunction<
+          _ActerUserAppSettingsTypingNoticeReturn Function(
+            ffi.Int64,
+          )>>("__ActerUserAppSettings_typing_notice");
+
+  late final _acterUserAppSettingsTypingNotice =
+      _acterUserAppSettingsTypingNoticePtr.asFunction<
+          _ActerUserAppSettingsTypingNoticeReturn Function(
+            int,
+          )>();
   late final _acterUserAppSettingsUpdateBuilderPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -22344,6 +22355,19 @@ class Api {
           void Function(
             int,
             int,
+            int,
+            int,
+          )>();
+  late final _acterUserAppSettingsBuilderTypingNoticePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Uint8,
+          )>>("__ActerUserAppSettingsBuilder_typing_notice");
+
+  late final _acterUserAppSettingsBuilderTypingNotice =
+      _acterUserAppSettingsBuilderTypingNoticePtr.asFunction<
+          void Function(
             int,
             int,
           )>();
@@ -45346,6 +45370,23 @@ class ActerUserAppSettings {
     return tmp2;
   }
 
+  /// whether to allow sending typing notice of users
+  bool? typingNotice() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterUserAppSettingsTypingNotice(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4 > 0;
+    return tmp2;
+  }
+
+  /// update the builder with the current settings
   /// if you intend to change anything
   ActerUserAppSettingsBuilder updateBuilder() {
     var tmp0 = 0;
@@ -45396,6 +45437,22 @@ class ActerUserAppSettingsBuilder {
       tmp2,
       tmp3,
       tmp4,
+    );
+    return;
+  }
+
+  /// whether to allow sending typing notice of users
+  void typingNotice(
+    bool value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    _api._acterUserAppSettingsBuilderTypingNotice(
+      tmp0,
+      tmp2,
     );
     return;
   }
@@ -53841,6 +53898,13 @@ class _ActerUserAppSettingsAutoDownloadChatReturn extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
+}
+
+class _ActerUserAppSettingsTypingNoticeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
 }
 
 class _PublicSearchResultItemNameReturn extends ffi.Struct {
