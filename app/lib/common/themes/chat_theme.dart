@@ -148,7 +148,7 @@ class ActerChatTheme extends ChatTheme {
     super.typingIndicatorTheme = const TypingIndicatorTheme(
       animatedCirclesColor: Color(0xFFFFFFFF),
       animatedCircleSize: 8.0,
-      bubbleColor: Color(0xFF333540),
+      bubbleColor: Colors.transparent,
       countAvatarColor: Color(0xFFDA88A1),
       countTextColor: Color(0xFFFFFFFF),
       bubbleBorder: BorderRadius.all(Radius.circular(27.0)),

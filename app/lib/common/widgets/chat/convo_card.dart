@@ -5,10 +5,10 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/chat/convo_with_profile_card.dart';
 import 'package:acter/common/widgets/chat/loading_convo_card.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -162,6 +162,23 @@ class _SubtitleWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final myUserId = ref.watch(myUserIdStrProvider);
+    // start listening typing events
+    final TypingEvent? typingEvent = ref.watch(
+      chatTypingEventStateProvider.select(
+        (t) {
+          return t?.roomId().toString() == room.getRoomIdStr() ? t : null;
+        },
+      ),
+    );
+
+    if (typingEvent != null) {
+      var userIds = typingEvent.userIds().toList();
+      userIds.removeWhere((id) => id.toString() == myUserId);
+      if (userIds.isNotEmpty) {
+        return renderTypingState(context, userIds, ref);
+      }
+    }
     RoomEventItem? eventItem = latestMessage.eventItem();
     if (eventItem == null) {
       return const SizedBox.shrink();
@@ -443,15 +460,37 @@ class _SubtitleWidget extends ConsumerWidget {
     return const SizedBox.shrink();
   }
 
-  String getUserPlural(List<types.User> authors) {
-    if (authors.isEmpty) {
-      return '';
-    } else if (authors.length == 1) {
-      return '${authors[0].firstName} is typing...';
-    } else if (authors.length == 2) {
-      return '${authors[0].firstName} and ${authors[1].firstName} is typing...';
+  Widget renderTypingState(
+    BuildContext context,
+    List<UserId> userIds,
+    WidgetRef ref,
+  ) {
+    final textStyle = Theme.of(context).textTheme.bodySmall!;
+    if (userIds.length == 1) {
+      final userName = simplifyUserId(userIds[0].toString());
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Text('$userName is typing...', style: textStyle),
+      );
+    } else if (userIds.length == 2) {
+      final u1 = simplifyUserId(userIds[0].toString());
+      final u2 = simplifyUserId(userIds[1].toString());
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Text(
+          '$u1 and $u2 are typing...',
+          style: textStyle,
+        ),
+      );
     } else {
-      return '${authors[0].firstName} and ${authors.length - 1} others typing...';
+      final u1 = simplifyUserId(userIds[0].toString());
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Text(
+          '$u1 and ${userIds.length - 1} others are typing',
+          style: textStyle,
+        ),
+      );
     }
   }
 }

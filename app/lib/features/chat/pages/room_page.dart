@@ -100,6 +100,24 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
     final chatState = ref.watch(chatStateProvider(widget.convo));
     final userId = ref.watch(myUserIdStrProvider);
     final roomId = widget.convo.getRoomIdStr();
+    List<types.User> typingUsers = [];
+    final typingEvent = ref.watch(
+      chatTypingEventStateProvider.select((t) {
+        return t?.roomId().toString() == widget.convo.getRoomIdStr() ? t : null;
+      }),
+    );
+    if (typingEvent != null) {
+      for (var i in typingEvent.userIds().toList()) {
+        if (i.toString() != userId) {
+          final uid = types.User(
+            id: i.toString(),
+            firstName: i.toString(),
+          );
+          typingUsers.add(uid);
+        }
+      }
+    }
+
     final messages = chatState.messages
         .where(
           // filter only items we can show
@@ -214,6 +232,10 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
           onBackgroundTap: () {
             ref.read(chatInputProvider(roomId).notifier).unsetActions();
           },
+          typingIndicatorOptions: TypingIndicatorOptions(
+            typingMode: TypingIndicatorMode.name,
+            typingUsers: typingUsers,
+          ),
           //Custom Theme class, see lib/common/store/chatTheme.dart
           theme: const ActerChatTheme(
             sendButtonIcon: Icon(Atlas.paper_airplane),

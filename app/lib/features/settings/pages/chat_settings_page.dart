@@ -1,4 +1,5 @@
 import 'package:acter/common/widgets/with_sidebar.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/settings/providers/app_settings_provider.dart';
 import 'package:acter/features/settings/widgets/options_settings_tile.dart';
@@ -83,6 +84,8 @@ class ChatSettingsPage extends ConsumerWidget {
                 final updater = settings.updateBuilder();
                 updater.typingNotice(newVal);
                 await updater.send();
+                // refresh state
+                ref.invalidate(chatTypingEventStateProvider);
                 EasyLoading.showToast(
                   // ignore: use_build_context_synchronously
                   L10n.of(context).settingsSubmittingSuccess,
@@ -104,11 +107,11 @@ class ChatSettingsPage extends ConsumerWidget {
           ),
           loading: () => SettingsTile.switchTile(
             title: Skeletonizer(
-              child: Text(''),
+              child: Text(L10n.of(context).chatSettingsTyping),
             ),
             enabled: false,
             description: Skeletonizer(
-              child: Text(''),
+              child: Text(L10n.of(context).chatSettingsTypingExplainer),
             ),
             initialValue: false,
             onToggle: (newVal) {},
