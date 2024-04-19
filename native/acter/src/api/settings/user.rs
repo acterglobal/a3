@@ -2,7 +2,6 @@ use crate::RUNTIME;
 pub use acter_core::events::settings::{
     ActerUserAppSettingsContent, ActerUserAppSettingsContentBuilder, AppChatSettings, AutoDownload,
 };
-use anyhow::Ok;
 use core::ops::Deref;
 use matrix_sdk::Account;
 
