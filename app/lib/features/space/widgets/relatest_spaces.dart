@@ -95,7 +95,7 @@ class RelatedSpaces extends StatelessWidget {
   }
 
   Widget? renderParentsHeader(BuildContext context) {
-    if (!showParents || (spaces.parents.isEmpty && spaces.mainParent != null)) {
+    if (!showParents || (spaces.parents.isEmpty && spaces.mainParent == null)) {
       return null;
     }
     return Row(
@@ -125,9 +125,15 @@ class RelatedSpaces extends StatelessWidget {
     if (!showParents || spaces.parents.isEmpty) {
       return null;
     }
-    return ListView.builder(
+    return GridView.builder(
       itemCount: spaces.parents.length,
       shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: crossAxisCount,
+        childAspectRatio: 4.0,
+        mainAxisExtent: 100,
+      ),
       itemBuilder: (context, index) {
         final space = spaces.parents[index];
         return SpaceCard(
@@ -161,8 +167,14 @@ class RelatedSpaces extends StatelessWidget {
               canLinkSpace: canLinkSpace,
               withTools: true,
             ),
-      ListView.builder(
+      GridView.builder(
         itemCount: spaces.knownSubspaces.length,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: crossAxisCount,
+          childAspectRatio: 4.0,
+          mainAxisExtent: 100,
+        ),
         shrinkWrap: true,
         itemBuilder: (context, index) {
           final space = spaces.knownSubspaces[index];
@@ -207,6 +219,7 @@ class RelatedSpaces extends StatelessWidget {
         ),
         pagedBuilder: (controller, builder) => PagedListView(
           shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
           pagingController: controller,
           builderDelegate: builder,
         ),
@@ -259,8 +272,14 @@ class RelatedSpaces extends StatelessWidget {
           ],
         ),
       if (spaces.otherRelations.isNotEmpty)
-        ListView.builder(
+        GridView.builder(
           itemCount: spaces.otherRelations.length,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+            childAspectRatio: 4.0,
+            mainAxisExtent: 100,
+          ),
           shrinkWrap: true,
           itemBuilder: (context, index) {
             final space = spaces.otherRelations[index];
