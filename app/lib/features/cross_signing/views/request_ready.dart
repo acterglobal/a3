@@ -46,20 +46,6 @@ class RequestReadyView extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          // TextButton(
-          //   onPressed: () {},
-          //   child: Row(
-          //     mainAxisAlignment: MainAxisAlignment.center,
-          //     children: [
-          //       const Padding(
-          //         padding: EdgeInsets.all(8),
-          //         child: Icon(Atlas.camera),
-          //       ),
-          //       Text(L10n.of(context).verificationScanWithThisDevice),
-          //     ],
-          //   ),
-          // ),
-          // const Spacer(),
           Wrap(
             children: [
               ListTile(

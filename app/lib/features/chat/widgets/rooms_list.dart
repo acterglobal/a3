@@ -160,7 +160,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
                     _isSearchVisible = false;
                   });
                 },
-                child: Text(L10n.of(context).clear.toLowerCase()),
+                child: Text(L10n.of(context).clear),
               ),
             if (!hasFilters)
               TextButton(
@@ -169,7 +169,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
                     _isSearchVisible = false;
                   });
                 },
-                child: Text(L10n.of(context).close.toLowerCase()),
+                child: Text(L10n.of(context).close),
               ),
           ],
         ),
