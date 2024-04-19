@@ -260,6 +260,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
     if (titleInput.trim().isEmpty) return;
     // check permissions before updating space
     bool havePermission = await permissionCheck();
+    if (!mounted) return;
     if (!havePermission && context.mounted) {
       EasyLoading.showError(
         L10n.of(context).cannotEditSpaceWithNoPermissions,
@@ -267,13 +268,13 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
       );
       return;
     }
-    if (!context.mounted) return;
+    if (!mounted) return;
     EasyLoading.show(status: L10n.of(context).updatingSpace);
     try {
       final roomId = await _handleUpdateSpace(context);
       _log.info('Space Updated: $roomId');
       EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!mounted) return;
       Navigator.of(context, rootNavigator: true).pop();
       context.pushNamed(
         Routes.space.name,
@@ -281,7 +282,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
       );
     } catch (e, st) {
       _log.severe('Failed to edit space', e, st);
-      if (!context.mounted) {
+      if (!mounted) {
         EasyLoading.dismiss();
         return;
       }

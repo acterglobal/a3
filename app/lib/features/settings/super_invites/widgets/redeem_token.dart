@@ -55,7 +55,7 @@ class _RedeemTokenConsumerState extends ConsumerState<RedeemToken> {
     EasyLoading.show(status: L10n.of(context).redeeming(token));
     try {
       final rooms = (await superInvites.redeem(token)).toList();
-      if (!context.mounted) {
+      if (!mounted) {
         EasyLoading.dismiss();
         return;
       }
@@ -65,7 +65,7 @@ class _RedeemTokenConsumerState extends ConsumerState<RedeemToken> {
       _tokenController.clear();
       FocusManager.instance.primaryFocus?.unfocus();
     } catch (err) {
-      if (!context.mounted) {
+      if (!mounted) {
         EasyLoading.dismiss();
         return;
       }
