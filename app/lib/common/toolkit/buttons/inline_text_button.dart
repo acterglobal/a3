@@ -3,6 +3,12 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'dart:ui' show lerpDouble;
 
+/// InlineTextButton for text inlined actions
+///
+/// This is a TextButton that highlights the given text using the
+/// `theme.inlineTextTheme`. Thus this is super useful if you have some text
+/// and want a specific part of it to be highlighted to the user indicating
+/// it has an action. See [TextButton] for options.
 class ActerInlineTextButton extends TextButton {
   const ActerInlineTextButton({
     super.key,

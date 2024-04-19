@@ -3,6 +3,11 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'dart:ui' show lerpDouble;
 
+/// ActionButton for dangerous actions
+///
+/// This is an ElevatedButton using the error-colors from the contextual theme
+/// to create a button that indicates a dangerous action. All input is as for
+/// [ElevatedButton].
 class ActerDangerActionButton extends ElevatedButton {
   const ActerDangerActionButton({
     super.key,
