@@ -1,5 +1,5 @@
 import 'package:acter/common/dialogs/attachment_selection.dart';
-import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/features/attachments/providers/attachment_providers.dart';
@@ -203,7 +203,7 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
-                    ActerDefaultActionButton(
+                    OutlinedButton(
                       onPressed: () => Navigator.of(context).pop(),
                       child: Text(L10n.of(context).no),
                     ),

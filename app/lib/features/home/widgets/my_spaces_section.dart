@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/tutorial_dialogs/space_overview_tutorials/create_or_join_space_tutorials.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -64,7 +64,7 @@ class MySpacesSection extends ConsumerWidget {
                         : Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              ActerDefaultActionButton(
+                              OutlinedButton(
                                 onPressed: () =>
                                     context.pushNamed(Routes.createSpace.name),
                                 child: Text(L10n.of(context).createSpace),
@@ -141,7 +141,7 @@ class _NoSpacesWidgetState extends ConsumerState<_NoSpacesWidget> {
         ),
         SizedBox(height: MediaQuery.of(context).size.height * 0.15),
         Center(
-          child: ActerDefaultActionButton.icon(
+          child: OutlinedButton.icon(
             key: createNewSpaceKey,
             icon: const Icon(Icons.chevron_right_outlined),
             onPressed: () => context.pushNamed(Routes.createSpace.name),

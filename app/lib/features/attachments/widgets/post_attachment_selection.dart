@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:acter/common/models/types.dart';
-import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/attachments/widgets/attachment_draft_item.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -76,7 +76,7 @@ class _PostAttachmentSelectionState
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
-          ActerDefaultActionButton(
+          OutlinedButton(
             onPressed: () {
               Navigator.of(context).pop();
             },

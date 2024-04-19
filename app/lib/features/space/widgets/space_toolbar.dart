@@ -1,7 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
@@ -105,7 +105,7 @@ class SpaceToolbar extends ConsumerWidget {
           L10n.of(context).areYouSureYouWantToLeaveSpace,
         ),
         actions: <Widget>[
-          ActerDefaultActionButton(
+          OutlinedButton(
             onPressed: () => context.pop(),
             child: Text(L10n.of(context).noIStay),
           ),

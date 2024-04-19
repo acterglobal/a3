@@ -1,4 +1,3 @@
-import 'package:acter/common/toolkit/buttons/default_action_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor.dart';
@@ -233,7 +232,7 @@ class _ActionButtonsWidget extends ConsumerWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          ActerDefaultActionButton(
+          OutlinedButton(
             onPressed: onCancel,
             child: Text(L10n.of(context).cancel),
           ),

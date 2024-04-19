@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
-import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
@@ -243,7 +243,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
               },
               child: Text(L10n.of(context).reset),
             ),
-            ActerDefaultActionButton(
+            OutlinedButton(
               child: Text(L10n.of(context).cancel),
               onPressed: () {
                 Navigator.pop(context);

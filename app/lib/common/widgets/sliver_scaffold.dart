@@ -1,5 +1,5 @@
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:flutter/material.dart';
 
@@ -196,7 +196,7 @@ class _SliverFooter extends StatelessWidget {
             children: actions ??
                 [
                   if (cancelActionTitle != null)
-                    ActerDefaultActionButton(
+                    OutlinedButton(
                       onPressed: () {
                         if (cancelActionOnPressed == null) {
                           Navigator.pop(context);

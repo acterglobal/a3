@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/md_editor_with_preview.dart';
@@ -130,7 +130,7 @@ class _CreateTaskListSheetConsumerState
         ),
       ),
       actions: [
-        ActerDefaultActionButton(
+        OutlinedButton(
           onPressed: () => context.canPop()
               ? context.pop()
               : context.goNamed(Routes.main.name),

@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:math';
-import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -138,7 +138,7 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
       ),
       actionsAlignment: MainAxisAlignment.spaceEvenly,
       actions: <Widget>[
-        ActerDefaultActionButton(
+        OutlinedButton(
           onPressed: () => Navigator.pop(context, null),
           child: Text(L10n.of(context).cancel),
         ),

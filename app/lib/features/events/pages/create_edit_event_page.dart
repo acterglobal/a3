@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -395,7 +395,7 @@ class CreateEditEventPageConsumerState
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        ActerDefaultActionButton(
+        OutlinedButton(
           onPressed: context.pop,
           child: Text(L10n.of(context).cancel),
         ),

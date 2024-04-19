@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/activities/providers/invitations_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -39,7 +39,7 @@ class InvitationCard extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
                 // Reject Invitation Button
-                ActerDefaultActionButton(
+                OutlinedButton(
                   onPressed: () => _onTapDeclineInvite(context),
                   child: Text(L10n.of(context).decline),
                 ),

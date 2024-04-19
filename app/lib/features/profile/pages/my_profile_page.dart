@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/profile/widgets/skeletons/my_profile_skeletons_widget.dart';
@@ -54,7 +54,7 @@ class _ChangeDisplayNameState extends State<ChangeDisplayName> {
       ),
       actionsAlignment: MainAxisAlignment.spaceEvenly,
       actions: <Widget>[
-        ActerDefaultActionButton(
+        OutlinedButton(
           onPressed: () => Navigator.pop(context, null),
           child: Text(L10n.of(context).cancel),
         ),

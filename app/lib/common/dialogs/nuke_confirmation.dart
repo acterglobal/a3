@@ -1,5 +1,5 @@
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
-import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+
 import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -42,7 +42,7 @@ void nukeConfirmationDialog(BuildContext context, WidgetRef ref) {
         ),
         actionsAlignment: MainAxisAlignment.spaceEvenly,
         actions: <Widget>[
-          ActerDefaultActionButton(
+          OutlinedButton(
             onPressed: () => ctx.pop(),
             child: const Text(
               'No',

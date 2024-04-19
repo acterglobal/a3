@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
-import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -73,7 +73,7 @@ class Dashboard extends ConsumerWidget {
             onPressed: () => context.pushNamed(Routes.createSpace.name),
             child: Text(L10n.of(context).createNewSpace),
           ),
-          secondaryButton: ActerDefaultActionButton(
+          secondaryButton: OutlinedButton(
             onPressed: () => context.pushNamed(Routes.joinSpace.name),
             child: Text(L10n.of(context).joinExistingSpace),
           ),

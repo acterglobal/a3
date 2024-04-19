@@ -1,7 +1,7 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/base_body_widget.dart';
@@ -336,7 +336,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
           style: Theme.of(context).textTheme.bodySmall,
         ),
         actions: [
-          ActerDefaultActionButton(
+          OutlinedButton(
             onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
             child: Text(L10n.of(context).no),
           ),

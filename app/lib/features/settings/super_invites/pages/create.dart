@@ -1,5 +1,5 @@
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
-import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/chat_selector_drawer.dart';
 import 'package:acter/common/widgets/checkbox_form_field.dart';
@@ -228,7 +228,7 @@ class _CreateSuperInviteTokenPageConsumerState
           ),
           actionsAlignment: MainAxisAlignment.spaceEvenly,
           actions: <Widget>[
-            ActerDefaultActionButton(
+            OutlinedButton(
                 onPressed: () => ctx.pop(),
                 child: Text(
                   L10n.of(context).no,

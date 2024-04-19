@@ -1,6 +1,6 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
-import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -122,7 +122,7 @@ class IntroProfile extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
-            ActerDefaultActionButton(
+            OutlinedButton(
               key: Keys.loginBtn,
               onPressed: () => context.pushNamed(Routes.authLogin.name),
               child: Text(

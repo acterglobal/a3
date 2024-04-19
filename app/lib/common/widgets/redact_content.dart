@@ -1,7 +1,7 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
@@ -75,7 +75,7 @@ class RedactContentWidget extends ConsumerWidget {
         ),
       ),
       actions: <Widget>[
-        ActerDefaultActionButton(
+        OutlinedButton(
           key: cancelBtnKey,
           onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
           child: Text(L10n.of(context).close),

@@ -1,7 +1,7 @@
 import 'package:acter/common/notifications/notifications.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
-import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -60,7 +60,7 @@ class __AddEmailState extends State<_AddEmail> {
       ),
       actionsAlignment: MainAxisAlignment.spaceEvenly,
       actions: <Widget>[
-        ActerDefaultActionButton(
+        OutlinedButton(
           onPressed: () => Navigator.pop(context, null),
           child: Text(L10n.of(context).cancel),
         ),
@@ -362,7 +362,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
           ),
           actionsAlignment: MainAxisAlignment.spaceEvenly,
           actions: <Widget>[
-            ActerDefaultActionButton(
+            OutlinedButton(
               onPressed: () => Navigator.pop(context, null),
               child: Text(L10n.of(context).closeDialog),
             ),

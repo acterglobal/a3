@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/report_content.dart';
@@ -163,7 +163,7 @@ class MessageActions extends ConsumerWidget {
       builder: (context) => DefaultDialog(
         title: Text(L10n.of(context).areYouSureYouWantToDeleteThisMessage),
         actions: <Widget>[
-          ActerDefaultActionButton(
+          OutlinedButton(
             onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
             child: Text(L10n.of(context).no),
           ),

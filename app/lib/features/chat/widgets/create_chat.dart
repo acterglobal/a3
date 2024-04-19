@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:acter/common/toolkit/buttons/default_action_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:acter/common/dialogs/invite_to_room_dialog.dart';
@@ -644,7 +643,7 @@ class _CreateRoomFormWidgetConsumerState
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
-              ActerDefaultActionButton(
+              OutlinedButton(
                 onPressed: () => Navigator.of(context).pop(),
                 child: Text(L10n.of(context).cancel),
               ),

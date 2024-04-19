@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
-import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+
 import 'package:acter/common/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -80,7 +80,7 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
           ),
         ),
         actions: <Widget>[
-          ActerDefaultActionButton(
+          OutlinedButton(
             key: deactivateCancelBtn,
             onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
             child: Text(L10n.of(context).cancel),

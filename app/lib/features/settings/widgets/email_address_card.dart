@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -123,7 +123,7 @@ class EmailAddressCard extends ConsumerWidget {
       builder: (context) => DefaultDialog(
         title: Text(L10n.of(context).areYouSureYouWantToUnregisterEmailAddress),
         actions: <Widget>[
-          ActerDefaultActionButton(
+          OutlinedButton(
             onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
             child: Text(L10n.of(context).no),
           ),
@@ -273,7 +273,7 @@ class _PasswordConfirmState extends State<PasswordConfirm> {
         ),
       ),
       actions: <Widget>[
-        ActerDefaultActionButton(
+        OutlinedButton(
           onPressed: () => Navigator.pop(context, null),
           child: Text(L10n.of(context).cancel),
         ),
@@ -349,7 +349,7 @@ class _TokenConfirmState extends State<TokenConfirm> {
         ),
       ),
       actions: <Widget>[
-        ActerDefaultActionButton(
+        OutlinedButton(
           onPressed: () => Navigator.pop(context, null),
           child: Text(L10n.of(context).cancel),
         ),

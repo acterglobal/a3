@@ -1,4 +1,3 @@
-import 'package:acter/common/toolkit/buttons/default_action_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +23,7 @@ Future<void> showBlockUserDialog(BuildContext context, Member member) async {
           ),
         ),
         actions: <Widget>[
-          ActerDefaultActionButton(
+          OutlinedButton(
             onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
             child: Text(L10n.of(context).no),
           ),

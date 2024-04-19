@@ -1,3 +1,5 @@
+import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/backups/dialogs/show_recovery_key.dart';
 import 'package:acter/features/backups/providers/backup_manager_provider.dart';
 import 'package:flutter/material.dart';
@@ -27,20 +29,15 @@ class _ShowConfirmResetDialog extends ConsumerWidget {
           ],
         ),
       ),
+      actionsAlignment: MainAxisAlignment.spaceEvenly,
       actions: <Widget>[
-        Row(
-          children: [
-            OutlinedButton(
-              onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-              child: Text(L10n.of(context).encryptionBackupDisableActionKeepIt),
-            ),
-            const SizedBox(width: 10),
-            OutlinedButton(
-              onPressed: () => disable(context, ref),
-              child:
-                  Text(L10n.of(context).encryptionBackupDisableActionDestroyIt),
-            ),
-          ],
+        ActerPrimaryActionButton(
+          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+          child: Text(L10n.of(context).encryptionBackupDisableActionKeepIt),
+        ),
+        ActerDangerActionButton(
+          onPressed: () => disable(context, ref),
+          child: Text(L10n.of(context).encryptionBackupDisableActionDestroyIt),
         ),
       ],
     );

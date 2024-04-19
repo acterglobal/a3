@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
@@ -716,7 +716,7 @@ class _FileWidget extends ConsumerWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
-          ActerDefaultActionButton(
+          OutlinedButton(
             onPressed: () {
               Navigator.of(context).pop();
             },
