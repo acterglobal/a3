@@ -353,7 +353,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     try {
       final convo = await ref.read(chatProvider(widget.roomId).future);
       final res = await convo.leave();
-      if (!context.mounted) {
+      if (!mounted) {
         EasyLoading.dismiss();
         return;
       }
@@ -368,7 +368,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
       }
     } catch (e, st) {
       _log.severe("Couldn't leave room", e, st);
-      if (!context.mounted) {
+      if (!mounted) {
         EasyLoading.dismiss();
         return;
       }
@@ -398,7 +398,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     try {
       final convo = await ref.read(chatProvider(widget.roomId).future);
       final roomLink = await convo.permalink();
-      if (!context.mounted) {
+      if (!mounted) {
         EasyLoading.dismiss();
         return;
       }
@@ -409,7 +409,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
       EasyLoading.showToast(L10n.of(context).sharedSuccessfully);
     } catch (e, st) {
       _log.severe("Couldn't share this room", e, st);
-      if (!context.mounted) {
+      if (!mounted) {
         EasyLoading.dismiss();
         return;
       }

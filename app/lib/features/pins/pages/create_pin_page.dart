@@ -179,7 +179,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
 
       // reset controllers
       _linkController.text = '';
-      if (!context.mounted) {
+      if (!mounted) {
         EasyLoading.dismiss();
         return;
       }
@@ -190,7 +190,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
         pathParameters: {'pinId': pinId.toString()},
       );
     } catch (e) {
-      if (!context.mounted) {
+      if (!mounted) {
         EasyLoading.dismiss();
         return;
       }

@@ -50,6 +50,7 @@ class ActerChatTheme extends ChatTheme {
     super.messageBorderRadius = 20,
     super.messageInsetsHorizontal = 20,
     super.messageInsetsVertical = 16,
+    super.messageMaxWidth = 440,
     super.primaryColor = const Color(0xffFF8E00),
     super.receivedEmojiMessageTextStyle = const TextStyle(
       fontSize: 40,
