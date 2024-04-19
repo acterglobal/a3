@@ -157,14 +157,14 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
         ref.invalidate(spaceRelationsOverviewProvider(parentId));
       }
       final convo = await client.convoWithRetry(roomIdStr, 120);
-      if (!context.mounted) {
+      if (!mounted) {
         EasyLoading.dismiss();
         return null;
       }
       EasyLoading.showToast(L10n.of(context).chatRoomCreated);
       return convo;
     } catch (e) {
-      if (!context.mounted) {
+      if (!mounted) {
         EasyLoading.dismiss();
         return null;
       }
@@ -448,7 +448,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
             selectedUsers.map((u) => u.userId().toString()).toList();
         final convo = await widget.onCreateConvo(null, null, userIds);
         EasyLoading.dismiss();
-        if (!context.mounted) return;
+        if (!mounted) return;
         Navigator.of(context).pop();
         if (convo == null) return;
         context.pushNamed(
@@ -473,7 +473,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
 
       final convo = await widget.onCreateConvo(null, null, [othersUserId]);
       EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!mounted) return;
       Navigator.of(context).pop();
       if (convo == null) return;
       context.pushNamed(
@@ -482,7 +482,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
       );
     } catch (e, st) {
       _log.severe("Couldn't create chat", e, st);
-      if (!context.mounted) {
+      if (!mounted) {
         EasyLoading.dismiss();
         return;
       }
@@ -695,7 +695,7 @@ class _CreateRoomFormWidgetConsumerState
       final description = _descriptionController.text.trim();
       final convo = await widget.onCreateConvo(title, description, []);
       EasyLoading.dismiss();
-      if (context.mounted && convo != null) {
+      if (mounted && convo != null) {
         Navigator.pop(context);
         context.pushNamed(
           Routes.chatroom.name,
@@ -704,7 +704,7 @@ class _CreateRoomFormWidgetConsumerState
       }
     } catch (e, st) {
       _log.severe("Couldn't create chat", e, st);
-      if (!context.mounted) {
+      if (!mounted) {
         EasyLoading.dismiss();
         return;
       }

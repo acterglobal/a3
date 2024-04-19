@@ -34,7 +34,7 @@ jobs:
       - name: Install specific toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly-2024-01-23
+          toolchain: nightly
           override: true
           components: clippy
       - uses: Swatinem/rust-cache@v1
@@ -70,7 +70,7 @@ jobs:
       - name: Install specific toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly-2024-01-23
+          toolchain: nightly
           override: true
           components: clippy
           target: ${{ matrix.target }}
@@ -84,7 +84,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         name: Set up flutter
         with:
-          flutter-version: '3.16.9'
+          flutter-version: '3.19'
           channel: 'stable'
       - uses: actions-rs/cargo@v1
         name: Clippy
@@ -110,12 +110,12 @@ jobs:
       - uses: actions/checkout@v2
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.16.9'
+          flutter-version: '3.19'
           channel: 'stable'
       - name: Install supported rust toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly-2024-01-23
+          toolchain: nightly
           override: true
       - name: Install cargo-make
         uses: davidB/rust-cargo-make@v1

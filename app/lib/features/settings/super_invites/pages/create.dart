@@ -201,7 +201,7 @@ class _CreateSuperInviteTokenPageConsumerState
       await provider.createOrUpdateToken(tokenUpdater);
       ref.invalidate(superInvitesTokensProvider);
       EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!mounted) return;
       Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
     } catch (err) {
       if (!context.mounted) {

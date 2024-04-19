@@ -18,8 +18,8 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 0.0.1+1
 
 environment:
-  sdk: ">=3.1.0"
-  flutter: ^3.16.0
+  sdk: ">=3.3.0"
+  flutter: ^3.19.6
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -78,7 +78,7 @@ dependencies:
   flutter_riverpod: ^2.4.4
   riverpod: ^2.3.6
   # Routing
-  go_router: ^13.0.1
+  go_router: ^13.2.3
 
   # widgets
   settings_ui: '2.0.2'

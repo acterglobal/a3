@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:acter/common/notifications/notifications.dart';
+import 'package:acter/common/providers/app_state_provider.dart';
 import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/utils/language.dart';
 import 'package:acter/common/utils/logging.dart';
@@ -47,17 +48,29 @@ class Acter extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _ActerState();
 }
 
-class _ActerState extends ConsumerState<Acter> {
+class _ActerState extends ConsumerState<Acter> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
     initLanguage(ref);
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState newState) {
+    ref.read(appStateProvider.notifier).update((state) => newState);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final appRouter = ref.watch(goRouterProvider);
     final language = ref.watch(languageProvider);
+    final router = ref.watch(routerProvider);
 
     // all toast msgs will appear at bottom
     final builder = EasyLoading.init();
@@ -65,7 +78,7 @@ class _ActerState extends ConsumerState<Acter> {
 
     return Portal(
       child: MaterialApp.router(
-        routerConfig: appRouter,
+        routerConfig: router,
         theme: ActerTheme.theme,
         title: 'Acter',
         builder: builder,

@@ -1,13 +1,16 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/activities/providers/invitations_providers.dart';
 import 'package:acter/features/activities/widgets/invitation_card.dart';
+import 'package:acter/features/backups/widgets/backup_state_widget.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/providers/session_providers.dart';
+import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/settings/widgets/session_card.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -156,6 +159,10 @@ class ActivitiesPage extends ConsumerWidget {
     }
   }
 
+  Widget? renderBackupSection(BuildContext context, WidgetRef ref) {
+    return const SliverToBoxAdapter(child: BackupStateWidget());
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // update the inner provider...
@@ -168,6 +175,14 @@ class ActivitiesPage extends ConsumerWidget {
     if (syncState != null) {
       // if all we have is this item, we still want to render the empty State...
       children.add(syncState);
+    }
+
+    if (ref.watch(featuresProvider).isActive(LabsFeature.encryptionBackup)) {
+      final backups = renderBackupSection(context, ref);
+      if (backups != null) {
+        renderEmptyState = false;
+        children.add(backups);
+      }
     }
     final sessions = renderSessions(context, ref);
     if (sessions != null) {

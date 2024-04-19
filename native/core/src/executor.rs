@@ -172,9 +172,7 @@ mod tests {
     use crate::{
         events::{comments::CommentEventContent, BelongsTo},
         models::{Comment, TestModelBuilder},
-        Result,
     };
-    use env_logger;
     use matrix_sdk::Client;
     use matrix_sdk_base::store::{MemoryStore, StoreConfig};
     use ruma_common::{api::MatrixVersion, event_id, user_id};

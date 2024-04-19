@@ -252,14 +252,14 @@ class _TaskTitleState extends State<TaskTitle> {
       final updater = widget.task.updateBuilder();
       updater.title(newString);
       await updater.send();
-      if (!context.mounted) {
+      if (!mounted) {
         EasyLoading.dismiss();
         return;
       }
       EasyLoading.showToast(L10n.of(context).titleUpdated);
       setState(() => editMode = false);
     } catch (e) {
-      if (!context.mounted) {
+      if (!mounted) {
         EasyLoading.dismiss();
         return;
       }
@@ -404,14 +404,14 @@ class _TaskBodyState extends State<TaskBody> {
       final updater = widget.task.updateBuilder();
       updater.descriptionText(newBody);
       await updater.send();
-      if (!context.mounted) {
+      if (!mounted) {
         EasyLoading.dismiss();
         return;
       }
       EasyLoading.showToast(L10n.of(context).notesUpdates);
       setState(() => editMode = false);
     } catch (e) {
-      if (!context.mounted) {
+      if (!mounted) {
         EasyLoading.dismiss();
         return;
       }

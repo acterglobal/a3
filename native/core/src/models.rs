@@ -653,7 +653,6 @@ mod tests {
     use super::*;
     use crate::Result;
     use ruma_common::owned_event_id;
-    use serde_json;
     #[test]
     fn ensure_minimal_tasklist_parses() -> Result<()> {
         let json_raw = r#"{"type":"global.acter.dev.tasklist",

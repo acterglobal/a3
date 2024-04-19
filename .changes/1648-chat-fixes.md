@@ -1,0 +1,1 @@
+- Several smaller fixes around the Chat input: it's now properly resetting the edit/reply-to message, marks the right message for editing (your own), shows the editable content and has better icons for the different swipe-actions

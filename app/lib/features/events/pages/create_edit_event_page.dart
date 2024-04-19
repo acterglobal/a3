@@ -304,7 +304,7 @@ class CreateEditEventPageConsumerState
       firstDate: DateTime.now(),
       lastDate: DateTime.now().addYears(1),
     );
-    if (date == null || !context.mounted) return;
+    if (date == null || !mounted) return;
     if (isStartDate) {
       _selectedStartDate = date;
       _startDateController.text = eventDateFormat(date);
@@ -334,7 +334,7 @@ class CreateEditEventPageConsumerState
       context: context,
       initialTime: isStartTime ? _selectedStartTime : _selectedEndTime,
     );
-    if (time == null || !context.mounted) return;
+    if (time == null || !mounted) return;
     if (isStartTime) {
       _selectedStartTime = time;
       _startTimeController.text = _selectedStartTime.format(context);
@@ -482,7 +482,7 @@ class CreateEditEventPageConsumerState
       ref.invalidate(calendarEventProvider(eventId.toString())); // edit page
       ref.invalidate(spaceEventsProvider(spaceId)); // events page in space
 
-      if (context.mounted) {
+      if (mounted) {
         context.pop();
         context.pushNamed(
           Routes.calendarEvent.name,
@@ -491,7 +491,7 @@ class CreateEditEventPageConsumerState
       }
     } catch (e, st) {
       _log.severe('Failed to create calendar event', e, st);
-      if (!context.mounted) {
+      if (!mounted) {
         EasyLoading.dismiss();
         return;
       }
@@ -540,10 +540,10 @@ class CreateEditEventPageConsumerState
       final spaceId = calendarEvent.roomIdStr();
       ref.invalidate(spaceEventsProvider(spaceId)); // events page in space
 
-      if (context.mounted) context.pop();
+      if (mounted) context.pop();
     } catch (e, st) {
       _log.severe('Failed to update calendar event', e, st);
-      if (!context.mounted) {
+      if (!mounted) {
         EasyLoading.dismiss();
         return;
       }

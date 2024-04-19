@@ -215,12 +215,12 @@ impl CalendarEventUpdateEventContent {
     pub fn apply(&self, calendar_event: &mut CalendarEventEventContent) -> Result<bool> {
         let mut updated = false;
         if let Some(title) = &self.title {
-            calendar_event.title = title.clone();
+            calendar_event.title.clone_from(title);
             updated = true;
         }
 
         if let Some(description) = &self.description {
-            calendar_event.description = description.clone();
+            calendar_event.description.clone_from(description);
             updated = true;
         }
 
@@ -235,7 +235,7 @@ impl CalendarEventUpdateEventContent {
         }
 
         if let Some(locations) = &self.locations {
-            calendar_event.locations = locations.clone();
+            calendar_event.locations.clone_from(locations);
             updated = true;
         }
 
@@ -250,17 +250,17 @@ impl CalendarEventUpdateEventContent {
         }
 
         if let Some(icon) = &self.icon {
-            calendar_event.icon = icon.clone();
+            calendar_event.icon.clone_from(icon);
             updated = true;
         }
 
         if let Some(keywords) = &self.keywords {
-            calendar_event.keywords = keywords.clone();
+            calendar_event.keywords.clone_from(keywords);
             updated = true;
         }
 
         if let Some(categories) = &self.categories {
-            calendar_event.categories = categories.clone();
+            calendar_event.categories.clone_from(categories);
             updated = true;
         }
 

@@ -3,6 +3,8 @@ import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/toolkit/menu_item_widget.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/settings/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -17,6 +19,7 @@ class SettingsMenu extends ConsumerWidget {
   static Key deactivateAccount = const Key('settings-auth-deactivate-account');
   static Key logoutAccount = const Key('settings-auth-logout-account');
   static Key superInvitations = const Key('settings-super-invitations');
+  static Key chat = const Key('settings-chat');
   static Key labs = const Key('settings-labs');
 
   const SettingsMenu({super.key = defaultSettingsMenuKey});
@@ -47,16 +50,6 @@ class SettingsMenu extends ConsumerWidget {
           sectionTitle: L10n.of(context).account,
           children: [
             MenuItemWidget(
-              iconData: Atlas.key_monitor_thin,
-              iconColor: colorSelected(Routes.settingSessions),
-              title: L10n.of(context).sessions,
-              subTitle: L10n.of(context).yourActiveDevices,
-              titleStyles: titleStylesSelected(Routes.settingSessions),
-              onTap: () => shouldGoNotNamed
-                  ? context.goNamed(Routes.settingSessions.name)
-                  : context.pushNamed(Routes.settingSessions.name),
-            ),
-            MenuItemWidget(
               iconData: Atlas.bell_mobile_thin,
               iconColor: colorSelected(Routes.settingNotifications),
               title: L10n.of(context).notifications,
@@ -76,6 +69,35 @@ class SettingsMenu extends ConsumerWidget {
                   ? context.goNamed(Routes.emailAddresses.name)
                   : context.pushNamed(Routes.emailAddresses.name),
             ),
+          ],
+        ),
+        _settingMenuSection(
+          context: context,
+          sectionTitle: L10n.of(context).securityAndPrivacy,
+          children: [
+            MenuItemWidget(
+              iconData: Atlas.key_monitor_thin,
+              iconColor: colorSelected(Routes.settingSessions),
+              title: L10n.of(context).sessions,
+              subTitle: L10n.of(context).yourActiveDevices,
+              titleStyles: titleStylesSelected(Routes.settingSessions),
+              onTap: () => shouldGoNotNamed
+                  ? context.goNamed(Routes.settingSessions.name)
+                  : context.pushNamed(Routes.settingSessions.name),
+            ),
+            if (ref
+                .watch(featuresProvider)
+                .isActive(LabsFeature.encryptionBackup))
+              MenuItemWidget(
+                iconData: Atlas.key_website_thin,
+                iconColor: colorSelected(Routes.settingBackup),
+                title: L10n.of(context).settingsKeyBackUpTitle,
+                subTitle: L10n.of(context).settingsKeyBackUpDesc,
+                titleStyles: titleStylesSelected(Routes.settingBackup),
+                onTap: () => shouldGoNotNamed
+                    ? context.goNamed(Routes.settingBackup.name)
+                    : context.pushNamed(Routes.settingBackup.name),
+              ),
             MenuItemWidget(
               iconData: Atlas.users_thin,
               iconColor: colorSelected(Routes.blockedUsers),
@@ -113,10 +135,21 @@ class SettingsMenu extends ConsumerWidget {
           sectionTitle: L10n.of(context).acterApp,
           children: [
             MenuItemWidget(
+              key: SettingsMenu.chat,
+              iconData: Atlas.chat_conversation_thin,
+              iconColor: colorSelected(Routes.settingsChat),
+              title: L10n.of(context).chat,
+              subTitle: L10n.of(context).chatSettingsExplainer,
+              titleStyles: titleStylesSelected(Routes.settingsChat),
+              onTap: () => shouldGoNotNamed
+                  ? context.goNamed(Routes.settingsChat.name)
+                  : context.pushNamed(Routes.settingsChat.name),
+            ),
+            MenuItemWidget(
               iconData: Atlas.language_translation,
               iconColor: colorSelected(Routes.settingLanguage),
-              title: 'Language',
-              subTitle: 'Change app language',
+              title: L10n.of(context).language,
+              subTitle: L10n.of(context).changeAppLanguage,
               titleStyles: titleStylesSelected(Routes.settingLanguage),
               onTap: () => shouldGoNotNamed
                   ? context.goNamed(Routes.settingLanguage.name)

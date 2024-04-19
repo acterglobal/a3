@@ -1,14 +1,17 @@
 import 'package:acter/common/dialogs/logout_confirmation.dart';
+import 'package:acter/common/notifications/notifications.dart';
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/device.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/cross_signing/widgets/cross_signing.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/providers/navigation.dart';
 import 'package:acter/features/home/widgets/sidebar_widget.dart';
+import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +24,10 @@ import 'package:go_router/go_router.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:shake/shake.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::home::home_shell');
 
 const homeShellKey = Key('home-shell');
 ScreenshotController screenshotController = ScreenshotController();
@@ -67,6 +74,7 @@ class HomeShellState extends ConsumerState<HomeShell> {
   void initState() {
     super.initState();
     initShake();
+    initNotifications();
     Future.delayed(
       const Duration(seconds: 1),
       () => bottomNavigationTutorials(context: context),
@@ -85,11 +93,27 @@ class HomeShellState extends ConsumerState<HomeShell> {
     }
   }
 
+  Future<void> initNotifications() async {
+    ref.listenManual(clientProvider, (previous, next) {
+      if (next != null) {
+        if (!ref.read(
+          isActiveProvider(LabsFeature.mobilePushNotifications),
+        )) {
+          return;
+        }
+        _log.info('Attempting to ask for push notifications');
+        setupPushNotifications(next);
+        return;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // get platform of context.
-    final client = ref.watch(clientProvider);
-    if (client == null) {
+    if (ref.watch(clientProvider) == null) {
+      // at the very startup we might not yet have a client loaded
+      // show a loading spinner meanwhile.
       return const Scaffold(
         body: Center(
           child: CircularProgressIndicator(),

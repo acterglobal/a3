@@ -577,7 +577,7 @@ async fn news_like_reaction_test() -> Result<()> {
         sleep(Duration::from_secs(1)).await;
     }
     info!("loop finished");
-    assert!(found, "Even after 10 seconds, reaction update not received");
+    assert!(found, "Even after 10 seconds, send_like not received");
 
     let reaction_manager = reaction_manager.reload().await?;
     info!("stats: {:#?}", reaction_manager.stats());
@@ -604,7 +604,7 @@ async fn news_like_reaction_test() -> Result<()> {
         sleep(Duration::from_secs(1)).await;
     }
     info!("loop finished");
-    assert!(found, "Even after 10 seconds, reaction update not received");
+    assert!(found, "Even after 10 seconds, redact_like not received");
 
     let reaction_manager = reaction_manager.reload().await?;
 

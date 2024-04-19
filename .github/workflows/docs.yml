@@ -25,13 +25,13 @@ jobs:
       - name: Setup flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.16.9'
+          flutter-version: '3.19'
           channel: 'stable'
 
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly-2024-01-23
+          toolchain: nightly
           override: true
 
       #       ---- Install extra tools
