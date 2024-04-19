@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
-import 'package:acter/features/chat/utils.dart';
+import 'package:acter/router/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -63,7 +63,8 @@ class ChatsCard extends ConsumerWidget {
                               );
                             },
                             child: Text(
-                                L10n.of(context).seeAllMyChats(chats.length),),
+                              L10n.of(context).seeAllMyChats(chats.length),
+                            ),
                           ),
                         )
                       : const SizedBox.shrink(),

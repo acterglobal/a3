@@ -1,28 +1,92 @@
+import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
+import 'package:acter/router/providers/router_providers.dart';
+import 'package:acter/router/router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-enum ShellBranchIndex {
+enum ShellBranch {
   homeShell,
   updatesShell,
   chatsShell,
   activitiesShell,
-  quickJumpShell,
+  quickJumpShell;
+
+  GlobalKey<NavigatorState> get key => switch (this) {
+        ShellBranch.homeShell => homeTabNavKey,
+        ShellBranch.updatesShell => updateTabNavKey,
+        ShellBranch.chatsShell => chatTabNavKey,
+        ShellBranch.activitiesShell => activitiesTabNavKey,
+        ShellBranch.quickJumpShell => searchTabNavKey,
+      };
 }
 
 /// Make sure we are on the right navigation branch
 /// this needs to be run _before_ you `go` or `push` the route
 /// or we only switch in the UI and no really in the active shell
-bool ensureRightBranch(
+bool navigateOnRightBranch(
   BuildContext context,
-  int targetBranch, {
+  ShellBranch targetBranch,
+  void Function(BuildContext) navigationCallback, {
   bool initialLocation = false,
 }) {
   final navState = StatefulNavigationShell.of(context);
-  if (navState.currentIndex != targetBranch) {
+  if (navState.currentIndex != targetBranch.index) {
     // when routed to chat, we always want to jump to the chat
     // tab
-    navState.goBranch(targetBranch, initialLocation: initialLocation);
-    return true;
+    navState.goBranch(targetBranch.index, initialLocation: initialLocation);
+    final branchContext = targetBranch.key.currentContext;
+    if (branchContext != null) {
+      WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+        navigationCallback(branchContext);
+      });
+      return true;
+    }
   }
+  navigationCallback(context);
   return false;
+}
+
+final chatRoomUriMatcher = RegExp('/chat/.+');
+
+/// helper to figure out how to route to the specific chat room
+void goToChat(BuildContext localContext, String roomId) {
+  final context = rootNavKey.currentContext!;
+  final currentUri = context.read(currentRoutingLocation);
+  if (!currentUri.startsWith(chatRoomUriMatcher)) {
+    // we are not in a chat room. just a regular push routing
+    // will do
+    navigateOnRightBranch(
+      localContext,
+      ShellBranch.chatsShell,
+      (navContext) => navContext
+          .pushNamed(Routes.chatroom.name, pathParameters: {'roomId': roomId}),
+      initialLocation: true,
+    );
+    return;
+  }
+
+  // we are in a chat page
+  if (roomId == rootNavKey.currentContext!.read(selectedChatIdProvider)) {
+    // we are on the same page, nothing to be done
+    return;
+  }
+
+  // we are on a different chat page. Push replace the current screen
+  context.pushReplacementNamed(
+    Routes.chatroom.name,
+    pathParameters: {'roomId': roomId},
+  );
+}
+
+/// helper to figure out how to route to the specific chat room
+void goToSpace(BuildContext localContext, String spaceId) {
+  navigateOnRightBranch(
+    localContext,
+    ShellBranch.homeShell,
+    (navContext) => navContext
+        .pushNamed(Routes.space.name, pathParameters: {'spaceId': spaceId}),
+    initialLocation: true,
+  );
 }

@@ -5,6 +5,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/sliver_scaffold.dart';
+import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
@@ -275,10 +276,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
       EasyLoading.dismiss();
       if (!context.mounted) return;
       Navigator.of(context, rootNavigator: true).pop();
-      context.pushNamed(
-        Routes.space.name,
-        pathParameters: {'spaceId': roomId.toString()},
-      );
+      goToSpace(context, roomId.toString());
     } catch (e, st) {
       _log.severe('Failed to edit space', e, st);
       if (!context.mounted) {
