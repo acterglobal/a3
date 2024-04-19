@@ -10,13 +10,14 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-final userAvatarProvider = StateProvider<PlatformFile?>((ref) => null);
-
-class UserAvatarPage extends ConsumerWidget {
+class UploadAvatarPage extends ConsumerWidget {
   static const selectUserAvatar = Key('reg-select-user-avtar');
   static const uploadBtn = Key('reg-upload-btn');
+  static const skipBtn = Key('reg-skip-btn');
 
-  const UserAvatarPage({super.key});
+  UploadAvatarPage({super.key});
+
+  final ValueNotifier<PlatformFile?> selectedUserAvatar = ValueNotifier(null);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -34,14 +35,15 @@ class UserAvatarPage extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: 100),
+            const Spacer(),
             _buildHeadlineText(context),
             const SizedBox(height: 50),
             _buildAvatarUI(context, ref),
-            const SizedBox(height: 100),
+            const Spacer(),
             _buildUploadActionButton(context, ref),
             const SizedBox(height: 20),
             _buildSkipActionButton(context),
+            const Spacer(),
           ],
         ),
       ),
@@ -63,17 +65,18 @@ class UserAvatarPage extends ConsumerWidget {
       dialogTitle: L10n.of(context).uploadAvatar,
       type: FileType.image,
     );
-    if (result != null) {
-      ref
-          .read(userAvatarProvider.notifier)
-          .update((state) => result.files.first);
+    if (result != null && result.files.isNotEmpty) {
+      setUserAvatar(result.files.first);
     }
   }
 
+  void setUserAvatar(PlatformFile userAvatar) {
+    selectedUserAvatar.value = userAvatar;
+  }
+
   Widget _buildAvatarUI(BuildContext context, WidgetRef ref) {
-    final selectedAvtar = ref.watch(userAvatarProvider);
     return GestureDetector(
-      key: selectUserAvatar,
+      key: UploadAvatarPage.selectUserAvatar,
       onTap: () => pickAvtar(context, ref),
       child: Center(
         child: Container(
@@ -89,13 +92,18 @@ class UserAvatarPage extends ConsumerWidget {
           child: Stack(
             alignment: Alignment.center,
             children: [
-              if (selectedAvtar == null && selectedAvtar?.path == null)
-                const Icon(Atlas.account, size: 50)
-              else
-                CircleAvatar(
-                  radius: 100,
-                  backgroundImage: FileImage(File(selectedAvtar!.path!)),
-                ),
+              ValueListenableBuilder(
+                valueListenable: selectedUserAvatar,
+                builder: (context, userAvatar, child) {
+                  if (userAvatar == null && userAvatar?.path == null) {
+                    return const Icon(Atlas.account, size: 50);
+                  }
+                  return CircleAvatar(
+                    radius: 100,
+                    backgroundImage: FileImage(File(userAvatar!.path!)),
+                  );
+                },
+              ),
               Positioned.fill(
                 right: 5,
                 bottom: 5,
@@ -125,30 +133,34 @@ class UserAvatarPage extends ConsumerWidget {
   Future<void> uploadAvatar(BuildContext context, WidgetRef ref) async {
     try {
       final accountProfile = await ref.watch(accountProfileProvider.future);
-      final selectedAvtar = ref.read(userAvatarProvider);
-      if (selectedAvtar != null && context.mounted) {
-        EasyLoading.show(status: L10n.of(context).uploadingProfileAvatar);
-        await accountProfile.account.uploadAvatar(selectedAvtar.path!);
-      } else {
-        if (!context.mounted) return;
-        EasyLoading.showToast(L10n.of(context).emptyAvatar);
+      if (selectedUserAvatar.value == null ||
+          selectedUserAvatar.value?.path == null) {
+        if (context.mounted) {
+          EasyLoading.showToast(L10n.of(context).emptyAvatar);
+        }
+        return;
       }
+      if (context.mounted) {
+        EasyLoading.show(status: L10n.of(context).uploadingProfileAvatar);
+      }
+      await accountProfile.account
+          .uploadAvatar(selectedUserAvatar.value!.path!);
+      ref.invalidate(accountProfileProvider);
+      if (context.mounted) context.goNamed(Routes.main.name);
+      // close loading
+      EasyLoading.dismiss();
     } catch (e) {
       if (!context.mounted) return;
       EasyLoading.showError(
         L10n.of(context).failedToUpload,
         duration: const Duration(seconds: 3),
       );
-    } finally {
-      // close loading
-      EasyLoading.dismiss();
-      if (context.mounted) context.goNamed(Routes.main.name);
     }
   }
 
   Widget _buildUploadActionButton(BuildContext context, WidgetRef ref) {
     return ElevatedButton(
-      key: UserAvatarPage.uploadBtn,
+      key: UploadAvatarPage.uploadBtn,
       onPressed: () => uploadAvatar(context, ref),
       child: Text(
         L10n.of(context).uploadAvatar,
@@ -159,6 +171,7 @@ class UserAvatarPage extends ConsumerWidget {
 
   Widget _buildSkipActionButton(BuildContext context) {
     return OutlinedButton(
+      key: UploadAvatarPage.skipBtn,
       onPressed: () => context.goNamed(Routes.main.name),
       child: Text(
         L10n.of(context).skip,

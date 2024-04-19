@@ -1,21 +1,16 @@
-import 'dart:typed_data';
-
 import 'package:acter/common/models/keys.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/onboarding/pages/link_email_page.dart';
 import 'package:acter/features/onboarding/pages/register_page.dart';
 import 'package:acter/features/onboarding/pages/save_username_page.dart';
-import 'package:acter/features/onboarding/pages/user_avatar_page.dart';
+import 'package:acter/features/onboarding/pages/upload_avatar_page.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:uuid/uuid.dart';
 import './appstart.dart';
-import 'util.dart';
 
 const defaultRegistrationToken = String.fromEnvironment(
   'REGISTRATION_TOKEN',
@@ -107,24 +102,9 @@ extension ActerLogin on ConvenientTest {
     await tester.ensureVisible(linkEmailBtn);
     await linkEmailBtn.tap();
 
-    // Select User Avatar
-    final selectUserAvatarKey = find.byKey(UserAvatarPage.selectUserAvatar);
-    final context = tester.element(selectUserAvatarKey);
-    final ref = ProviderScope.containerOf(context);
-    final imageFile = await convertAssetImageToXFile(
-      'assets/images/update_onboard.png',
-    );
-    Uint8List bytes = await imageFile.readAsBytes();
-    final selectedAvatar = PlatformFile(
-      path: imageFile.path,
-      name: imageFile.name,
-      size: bytes.length,
-    );
-    ref.read(userAvatarProvider.notifier).update((state) => selectedAvatar);
-
-    Finder uploadBtn = find.byKey(UserAvatarPage.uploadBtn);
-    await tester.ensureVisible(uploadBtn);
-    await uploadBtn.tap();
+    Finder skipBtn = find.byKey(UploadAvatarPage.skipBtn);
+    await tester.ensureVisible(skipBtn);
+    await skipBtn.tap();
 
     // we should see a main navigation, either at the side (desktop) or the bottom (mobile/tablet)
     await find.byKey(Keys.mainNav).should(findsOneWidget);

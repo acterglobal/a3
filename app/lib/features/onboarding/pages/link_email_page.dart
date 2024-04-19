@@ -9,31 +9,25 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class LinkEmailPage extends ConsumerStatefulWidget {
+class LinkEmailPage extends ConsumerWidget {
   static const emailField = Key('reg-email-txt');
   static const linkEmailBtn = Key('reg-link-email-btn');
-  const LinkEmailPage({super.key});
 
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _LinkEmailPageState();
-}
+  LinkEmailPage({super.key});
 
-class _LinkEmailPageState extends ConsumerState<LinkEmailPage> {
   final formKey = GlobalKey<FormState>();
   final ValueNotifier<bool> isLinked = ValueNotifier(false);
   final TextEditingController emailController = TextEditingController();
-  final _statesController = MaterialStatesController();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-      body: _buildBody(context),
+      body: _buildBody(context, ref),
     );
   }
 
-  Widget _buildBody(BuildContext context) {
+  Widget _buildBody(BuildContext context, WidgetRef ref) {
     return SingleChildScrollView(
       child: Center(
         child: Container(
@@ -47,7 +41,7 @@ class _LinkEmailPageState extends ConsumerState<LinkEmailPage> {
               const SizedBox(height: 30),
               _buildEmailInputField(context),
               const SizedBox(height: 30),
-              _buildLinkEmailActionButton(context),
+              _buildLinkEmailActionButton(context, ref),
               const SizedBox(height: 20),
               _buildSkipActionButton(context),
             ],
@@ -104,7 +98,7 @@ class _LinkEmailPageState extends ConsumerState<LinkEmailPage> {
     );
   }
 
-  Future<void> linkEmail() async {
+  Future<void> linkEmail(BuildContext context, WidgetRef ref) async {
     if (!formKey.currentState!.validate()) return;
     final client = ref.read(alwaysClientProvider);
     final manager = client.threePidManager();
@@ -112,7 +106,7 @@ class _LinkEmailPageState extends ConsumerState<LinkEmailPage> {
     try {
       await manager.requestTokenViaEmail(emailController.text.trim());
       if (!context.mounted) return;
-      EasyLoading.showToast(L10n.of(context).pleaseCheckYourInbox);
+      EasyLoading.showSuccess(L10n.of(context).pleaseCheckYourInbox);
       isLinked.value = true;
     } catch (e) {
       EasyLoading.showToast(
@@ -121,31 +115,31 @@ class _LinkEmailPageState extends ConsumerState<LinkEmailPage> {
       );
     } finally {
       EasyLoading.dismiss();
-      context.goNamed(Routes.userAvatar.name);
+      context.goNamed(Routes.uploadAvatar.name);
     }
   }
 
-  Widget _buildLinkEmailActionButton(BuildContext context) {
+  Widget _buildLinkEmailActionButton(BuildContext context, WidgetRef ref) {
     return ValueListenableBuilder<TextEditingValue>(
       valueListenable: emailController,
       builder: (context, emailValue, child) {
-        _statesController.update(
-          emailValue.text.isNotEmpty
-              ? MaterialState.pressed
-              : MaterialState.disabled,
-          emailValue.text.isNotEmpty,
-        );
+        final isValidEmail = validateEmail(context, emailValue.text) == null;
         return OutlinedButton(
           key: LinkEmailPage.linkEmailBtn,
-          onPressed: emailValue.text.isNotEmpty ? linkEmail : null,
-          statesController: _statesController,
+          onPressed: isValidEmail ? () => linkEmail(context, ref) : null,
+          style: OutlinedButton.styleFrom(
+            side: BorderSide(
+              color:
+                  isValidEmail ? whiteColor : Theme.of(context).disabledColor,
+            ),
+          ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 L10n.of(context).linkEmailToProfile,
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      color: emailValue.text.isNotEmpty
+                      color: isValidEmail
                           ? whiteColor
                           : Theme.of(context).disabledColor,
                     ),
@@ -169,7 +163,7 @@ class _LinkEmailPageState extends ConsumerState<LinkEmailPage> {
 
   Widget _buildSkipActionButton(BuildContext context) {
     return ElevatedButton(
-      onPressed: () => context.goNamed(Routes.userAvatar.name),
+      onPressed: () => context.goNamed(Routes.uploadAvatar.name),
       child: Text(
         L10n.of(context).skip,
         style: Theme.of(context).textTheme.bodyMedium,

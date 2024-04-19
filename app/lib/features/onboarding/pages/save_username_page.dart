@@ -24,22 +24,24 @@ class SaveUsernamePage extends StatelessWidget {
   }
 
   Widget _buildBody(BuildContext context) {
-    return Center(
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 500),
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const SizedBox(height: kToolbarHeight),
-            _buildHeadlineText(context),
-            const SizedBox(height: 30),
-            _buildDisplayUsername(context),
-            const SizedBox(height: 30),
-            _buildCopyActionButton(context),
-            const SizedBox(height: 20),
-            _buildContinueActionButton(context),
-          ],
+    return SingleChildScrollView(
+      child: Center(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 500),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: kToolbarHeight),
+              _buildHeadlineText(context),
+              const SizedBox(height: 30),
+              _buildDisplayUsername(context),
+              const SizedBox(height: 30),
+              _buildCopyActionButton(context),
+              const SizedBox(height: 20),
+              _buildContinueActionButton(context),
+            ],
+          ),
         ),
       ),
     );
@@ -130,13 +132,27 @@ class SaveUsernamePage extends StatelessWidget {
   }
 
   Widget _buildContinueActionButton(BuildContext context) {
-    return OutlinedButton(
-      key: continueBtn,
-      onPressed: () => context.goNamed(Routes.linkEmail.name),
-      child: Text(
-        L10n.of(context).continueAsText,
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
+    return ValueListenableBuilder(
+      valueListenable: isCopied,
+      builder: (context, isCopiedValue, child) {
+        return OutlinedButton(
+          key: continueBtn,
+          onPressed: isCopiedValue
+              ? () => context.goNamed(Routes.linkEmail.name)
+              : null,
+          style: OutlinedButton.styleFrom(
+            side: isCopiedValue
+                ? null
+                : BorderSide(color: Theme.of(context).disabledColor),
+          ),
+          child: Text(
+            L10n.of(context).continueAsText,
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: isCopiedValue ? null : Theme.of(context).disabledColor,
+                ),
+          ),
+        );
+      },
     );
   }
 }

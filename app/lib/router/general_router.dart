@@ -16,7 +16,7 @@ import 'package:acter/features/onboarding/pages/link_email_page.dart';
 import 'package:acter/features/onboarding/pages/register_page.dart';
 import 'package:acter/features/onboarding/pages/save_username_page.dart';
 import 'package:acter/features/onboarding/pages/start_page.dart';
-import 'package:acter/features/onboarding/pages/user_avatar_page.dart';
+import 'package:acter/features/onboarding/pages/upload_avatar_page.dart';
 import 'package:acter/features/pins/pages/create_pin_page.dart';
 import 'package:acter/features/search/pages/quick_jump.dart';
 import 'package:acter/features/settings/super_invites/pages/create.dart';
@@ -85,13 +85,13 @@ List<RouteBase> makeGeneralRoutes() {
       parentNavigatorKey: rootNavKey,
       name: Routes.linkEmail.name,
       path: Routes.linkEmail.route,
-      builder: (context, state) => const LinkEmailPage(),
+      builder: (context, state) => LinkEmailPage(),
     ),
     GoRoute(
       parentNavigatorKey: rootNavKey,
-      name: Routes.userAvatar.name,
-      path: Routes.userAvatar.route,
-      builder: (context, state) => const UserAvatarPage(),
+      name: Routes.uploadAvatar.name,
+      path: Routes.uploadAvatar.route,
+      builder: (context, state) => UploadAvatarPage(),
     ),
     GoRoute(
       parentNavigatorKey: rootNavKey,
