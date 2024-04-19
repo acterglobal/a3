@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/network_provider.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -191,7 +192,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Widget _buildForgotPassword(BuildContext context) {
     return Align(
       alignment: Alignment.centerRight,
-      child: TextButton(
+      child: ActerInlineTextButton(
         key: LoginPageKeys.forgotPassBtn,
         onPressed: () => context.pushNamed(Routes.forgotPassword.name),
         child: Text(
@@ -207,7 +208,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       children: [
         Text(L10n.of(context).noProfile),
         const SizedBox(width: 2),
-        TextButton(
+        ActerInlineTextButton(
           key: LoginPageKeys.signUpBtn,
           onPressed: () => context.goNamed(Routes.authRegister.name),
           child: Text(

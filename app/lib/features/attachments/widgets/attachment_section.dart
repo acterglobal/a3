@@ -1,4 +1,5 @@
 import 'package:acter/common/dialogs/attachment_selection.dart';
+import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
@@ -166,7 +167,6 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
   ) async {
     final titleTextStyle = Theme.of(context).textTheme.titleMedium;
     final descriptionTextStyle = Theme.of(context).textTheme.bodyMedium;
-    final confirmBtnColor = Theme.of(context).colorScheme.errorContainer;
     final TextEditingController reasonController = TextEditingController();
     await showAdaptiveDialog(
       context: context,
@@ -208,7 +208,7 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
                       child: Text(L10n.of(context).no),
                     ),
                     const SizedBox(width: 10),
-                    ActerPrimaryActionButton(
+                    ActerDangerActionButton(
                       key: AttachmentSectionWidget.confirmRedactKey,
                       onPressed: () {
                         Navigator.of(context).pop();

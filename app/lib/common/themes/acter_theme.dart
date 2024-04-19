@@ -17,6 +17,9 @@ extension ActerChatThemeExtension on ThemeData {
 
   ElevatedButtonThemeData get dangerButtonTheme =>
       dangerButtonThemeMaker(colorScheme);
+
+  TextButtonThemeData get inlineTextButtonTheme =>
+      inlineTextButtonThemeMaker(colorScheme);
 }
 
 class ActerTheme {

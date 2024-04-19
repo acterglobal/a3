@@ -53,7 +53,7 @@ extension CustomColorScheme on ColorScheme {
 
   // brand
   Color get textHighlight => secondary;
-  Color get textButtonColor => yellowColor;
+  Color get textButtonColor => Colors.white;
 
   // states
   Color get success => secondary;

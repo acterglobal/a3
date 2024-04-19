@@ -27,6 +27,17 @@ ElevatedButtonThemeData dangerButtonThemeMaker(ColorScheme colors) =>
       ),
     );
 
+TextButtonThemeData inlineTextButtonThemeMaker(ColorScheme colors) =>
+    TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: Colors.white,
+        textStyle: const TextStyle(
+          color: Colors.white,
+          decoration: TextDecoration.underline,
+        ),
+      ),
+    );
+
 final outlinedButtonTheme = OutlinedButtonThemeData(
   style: OutlinedButton.styleFrom(
     padding: const EdgeInsets.all(18),
@@ -39,7 +50,7 @@ final outlinedButtonTheme = OutlinedButtonThemeData(
 );
 
 TextButtonThemeData textButtonTheme(ColorScheme colors) => TextButtonThemeData(
-      style: ElevatedButton.styleFrom(
+      style: TextButton.styleFrom(
         elevation: 0,
         foregroundColor: colors.textButtonColor,
       ),

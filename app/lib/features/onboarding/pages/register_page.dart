@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/network_provider.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
@@ -376,7 +377,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           L10n.of(context).haveProfile,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
-        TextButton(
+        ActerInlineTextButton(
           key: Keys.loginBtn,
           onPressed: () => context.goNamed(Routes.authLogin.name),
           child: Text(
