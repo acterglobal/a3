@@ -104,7 +104,7 @@ class SpacesBuilder extends ConsumerWidget {
             onPressed: () {
               final query = ref.read(searchValueProvider);
               context.pushNamed(
-                Routes.joinSpace.name,
+                Routes.searchPublicDirectory.name,
                 queryParameters: {'query': query},
               );
             },

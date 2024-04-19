@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/rooms.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/public_room_search/widgets/public_room_search.dart';
@@ -10,25 +9,20 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class JoinSpacePage extends ConsumerWidget {
+class SearchPublicDirectory extends ConsumerWidget {
   final String? query;
-  const JoinSpacePage({super.key, this.query});
+  const SearchPublicDirectory({super.key, this.query});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(gradient: primaryGradient),
-        child: PublicRoomSearch(
-          initialQuery: query,
-          autofocus: true,
-          onSelected: (searchResult, searchServerName) => onSelectedKnown(
-            context,
-            ref,
-            searchResult,
-            searchServerName,
-          ),
-        ),
+    return PublicRoomSearch(
+      initialQuery: query,
+      autofocus: true,
+      onSelected: (searchResult, searchServerName) => onSelectedKnown(
+        context,
+        ref,
+        searchResult,
+        searchServerName,
       ),
     );
   }

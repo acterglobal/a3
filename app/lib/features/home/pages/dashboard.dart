@@ -72,7 +72,8 @@ class Dashboard extends ConsumerWidget {
             child: Text(L10n.of(context).createNewSpace),
           ),
           secondaryButton: OutlinedButton(
-            onPressed: () => context.pushNamed(Routes.joinSpace.name),
+            onPressed: () =>
+                context.pushNamed(Routes.searchPublicDirectory.name),
             child: Text(L10n.of(context).joinExistingSpace),
           ),
         ),
