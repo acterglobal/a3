@@ -13,5 +13,6 @@ void showTutorials({
     onFinish: onFinish,
     onClickTarget: onClickTarget,
     onSkip: onSkip,
+    alignSkip: Alignment.topRight,
   ).show(context: context);
 }

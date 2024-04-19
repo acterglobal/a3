@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 TargetFocus targetFocus({
   required String identify,
@@ -13,7 +14,9 @@ TargetFocus targetFocus({
   ShapeLightFocus? shape,
   double? paddingFocus,
   ContentAlign contentAlign = ContentAlign.bottom,
-  AlignmentGeometry? alignSkip,
+  AlignmentGeometry? alignSkip = Alignment.topRight,
+  bool isFirst = false,
+  bool isLast = false,
 }) {
   return TargetFocus(
     identify: identify,
@@ -50,6 +53,25 @@ TargetFocus targetFocus({
               Text(
                 contentDescription,
                 style: Theme.of(context).textTheme.labelLarge,
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (!isFirst)
+                    TextButton(
+                      onPressed: () => controller.previous(),
+                      child: Text(L10n.of(context).previous),
+                    )
+                  else
+                    const Spacer(),
+                  TextButton(
+                    onPressed: () => controller.next(),
+                    child: Text(
+                      isLast ? L10n.of(context).finish : L10n.of(context).next,
+                    ),
+                  ),
+                ],
               ),
             ],
           );

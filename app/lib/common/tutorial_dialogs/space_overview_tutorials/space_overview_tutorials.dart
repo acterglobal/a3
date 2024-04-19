@@ -38,6 +38,8 @@ void spaceOverviewTutorials({required BuildContext context}) async {
           paddingFocus: 10,
           contentTitle: L10n.of(context).spaceOverviewTutorialTitle,
           contentDescription: L10n.of(context).spaceOverviewTutorialDescription,
+          isFirst: true,
+          isLast: true,
         ),
       ],
     );

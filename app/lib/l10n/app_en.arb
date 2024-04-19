@@ -1948,5 +1948,7 @@
   "commentEmptyStateTitle": "No comments found",
   "@commentEmptyStateTitle": {},
   "commentEmptyStateSubtitle": "Be the first to comment!",
-  "@commentEmptyStateSubtitle": {}
+  "@commentEmptyStateSubtitle": {},
+  "previous": "Previous",
+  "finish": "Finish"
 }
