@@ -14,7 +14,7 @@ TargetFocus targetFocus({
   ShapeLightFocus? shape,
   double? paddingFocus,
   ContentAlign contentAlign = ContentAlign.bottom,
-  AlignmentGeometry? alignSkip,
+  AlignmentGeometry? alignSkip = Alignment.topRight,
   bool isFirst = false,
   bool isLast = false,
 }) {
@@ -59,13 +59,13 @@ TargetFocus targetFocus({
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   if (!isFirst)
-                    OutlinedButton(
+                    TextButton(
                       onPressed: () => controller.previous(),
                       child: Text(L10n.of(context).previous),
                     )
                   else
                     const Spacer(),
-                  OutlinedButton(
+                  TextButton(
                     onPressed: () => controller.next(),
                     child: Text(
                       isLast ? L10n.of(context).finish : L10n.of(context).next,

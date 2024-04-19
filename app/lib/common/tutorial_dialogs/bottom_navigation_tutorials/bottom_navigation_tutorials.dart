@@ -73,7 +73,6 @@ void bottomNavigationTutorials({required BuildContext context}) async {
         targetFocus(
           identify: 'activityKey',
           keyTarget: activityKey,
-          alignSkip: Alignment.bottomLeft,
           contentAlign: isDesktop ? ContentAlign.right : ContentAlign.top,
           contentImageUrl: 'assets/images/empty_activity.svg',
           contentTitle: L10n.of(context).activityTabTutorialTitle,
@@ -83,7 +82,6 @@ void bottomNavigationTutorials({required BuildContext context}) async {
           identify: 'jumpToKey',
           keyTarget: jumpToKey,
           contentAlign: isDesktop ? ContentAlign.right : ContentAlign.top,
-          alignSkip: Alignment.bottomLeft,
           iconData: Icons.search,
           contentTitle: L10n.of(context).jumpToTabTutorialTitle,
           contentDescription: L10n.of(context).jumpToTabTutorialDescription,
