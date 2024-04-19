@@ -81,6 +81,7 @@ class PublicRoomItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profileInfo = ref.watch(searchItemProfileData(item));
+    final topic = item.topic();
 
     return Card(
       shape: RoundedRectangleBorder(
@@ -135,17 +136,19 @@ class PublicRoomItem extends ConsumerWidget {
               ),
             ),
           ),
-          Flexible(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Text(
-                '${item.topic()}',
-                style: Theme.of(context).textTheme.labelMedium,
-                maxLines: 5,
-                overflow: TextOverflow.ellipsis,
+          if (topic != null)
+            Flexible(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: Text(
+                  topic,
+                  style: Theme.of(context).textTheme.labelMedium,
+                  maxLines: 5,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ),
-          ),
         ],
       ),
     );
