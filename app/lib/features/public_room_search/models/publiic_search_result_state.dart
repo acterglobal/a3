@@ -7,6 +7,7 @@ class PublicSearchResultState
     extends PagedState<Next?, PublicSearchResultItem> {
   // We can extends [PagedState] to add custom parameters to our state
   final PublicSearchFilters filter;
+  final bool loading;
 
   const PublicSearchResultState({
     super.records,
@@ -14,6 +15,7 @@ class PublicSearchResultState
     super.nextPageKey = const Next(isStart: true),
     List<Next?>? previousPageKeys,
     required this.filter,
+    this.loading = false,
   });
 
   @override
@@ -23,6 +25,7 @@ class PublicSearchResultState
     dynamic nextPageKey,
     PublicSearchFilters? filter,
     List<Next?>? previousPageKeys,
+    bool? loading,
   }) {
     final sup = super.copyWith(
       records: records,
@@ -36,6 +39,7 @@ class PublicSearchResultState
       nextPageKey: sup.nextPageKey,
       previousPageKeys: sup.previousPageKeys,
       filter: filter ?? this.filter,
+      loading: loading ?? this.loading,
     );
   }
 }

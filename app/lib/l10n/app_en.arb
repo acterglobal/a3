@@ -1028,6 +1028,7 @@
   "searchSpaces": "Search Spaces",
   "@searchSpaces": {},
   "searchPublicDirectory": "Search Public Directory",
+  "searchPublicDirectoryNothingFound": "No entry found in the public directory",
   "secureWithE2EEncryption": "Secure with E2E Encryption.",
   "@secureWithE2EEncryption": {},
   "seeOpenTasks": "see open tasks",

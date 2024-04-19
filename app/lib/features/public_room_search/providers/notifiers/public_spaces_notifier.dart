@@ -24,6 +24,10 @@ class PublicSearchNotifier extends StateNotifier<PublicSearchResultState>
     });
   }
 
+  bool isLoading() {
+    return state.loading;
+  }
+
   void readData() async {
     try {
       await ref.debounce(const Duration(milliseconds: 300));
@@ -40,6 +44,7 @@ class PublicSearchNotifier extends StateNotifier<PublicSearchResultState>
       records: [],
       nextPageKey: nextPageKey,
       filter: currentFilters,
+      loading: false,
     );
     load(nextPageKey, 30);
   }
@@ -56,6 +61,9 @@ class PublicSearchNotifier extends StateNotifier<PublicSearchResultState>
     final server = state.filter.server;
     final roomFilter = state.filter.filterBy.name;
     try {
+      state = state.copyWith(
+        loading: true,
+      );
       final res = await client.searchPublicRoom(
         searchValue,
         server,
@@ -74,9 +82,10 @@ class PublicSearchNotifier extends StateNotifier<PublicSearchResultState>
             ? [...entries]
             : [...(state.records ?? []), ...entries],
         nextPageKey: finalPageKey,
+        loading: false,
       );
     } catch (e) {
-      state = state.copyWith(error: e.toString());
+      state = state.copyWith(error: e.toString(), loading: false);
     }
 
     return null;

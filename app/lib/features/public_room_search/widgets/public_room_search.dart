@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class _SearchField extends ConsumerStatefulWidget {
   final String? initialQuery;
@@ -197,14 +198,74 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
     return RiverPagedBuilder<Next?, PublicSearchResultItem>.autoDispose(
       firstPageKey: const Next(isStart: true),
       provider: publicSearchProvider,
+      // pullToRefresh: true,
+      firstPageProgressIndicatorBuilder: (context, controller) =>
+          loadingPage(context),
       itemBuilder: (context, item, index) => PublicRoomItem(
         item: item,
         onSelected: (item) =>
             widget.onSelected(item, ref.read(searchFilterProvider).server),
       ),
+      noItemsFoundIndicatorBuilder: (context, controller) {
+        if (ref.read(publicSearchProvider.notifier).isLoading()) {
+          return loadingPage(context);
+        }
+        return nothingFound(context);
+      },
       pagedBuilder: (controller, builder) => PagedSliverList(
         pagingController: controller,
         builderDelegate: builder,
+      ),
+    );
+  }
+
+  Widget nothingFound(BuildContext context) {
+    return Center(
+      child: Text(L10n.of(context).searchPublicDirectoryNothingFound),
+    );
+  }
+
+  Widget loadingPage(BuildContext context) {
+    return Column(
+      children: List.generate(
+        5,
+        (index) => Card(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 5),
+                  child: ListTile(
+                    leading: const Bone.square(size: 30),
+                    title: Skeletonizer(
+                      child: Text(
+                        'nothing',
+                        style: Theme.of(context).textTheme.labelLarge,
+                        softWrap: false,
+                      ),
+                    ),
+                    subtitle: Skeletonizer(
+                      child: Text(
+                        'some larger subtitle',
+                        style: Theme.of(context).textTheme.labelSmall,
+                        softWrap: false,
+                      ),
+                    ),
+                    trailing: Skeletonizer(
+                      child: OutlinedButton(
+                        onPressed: () {},
+                        child: const Text('join'),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
