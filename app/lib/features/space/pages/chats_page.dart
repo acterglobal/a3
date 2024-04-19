@@ -7,6 +7,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
+import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/space/providers/notifiers/space_hierarchy_notifier.dart';
 import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
@@ -135,10 +136,7 @@ class SpaceChatsPage extends ConsumerWidget {
             child: ConvoCard(
               room: rooms[index],
               showParent: false,
-              onTap: () => context.goNamed(
-                Routes.chatroom.name,
-                pathParameters: {'roomId': rooms[index].getRoomIdStr()},
-              ),
+              onTap: () => goToChat(context, rooms[index].getRoomIdStr()),
             ),
           ),
         );

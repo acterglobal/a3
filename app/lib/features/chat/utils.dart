@@ -5,6 +5,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter/router/router.dart';
+import 'package:acter/router/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -66,13 +67,24 @@ UserMentionMessageData parseUserMentionMessage(
 }
 
 /// helper to figure out how to route to the specific chat
-void goToChat(String roomId) {
+void goToChat(BuildContext localContext, String roomId) {
   final context = rootNavKey.currentContext!;
   final currentUri = context.read(currentRoutingLocation);
   if (!currentUri.startsWith(chatRoomUriMatcher)) {
     // we are not in a chat room. just a regular push routing
     // will do
-    context.pushNamed(Routes.chatroom.name, pathParameters: {'roomId': roomId});
+    if (ensureRightBranch(localContext, ShellBranchIndex.chatsShell.index,
+        initialLocation: true,)) {
+      WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+        chatTabNavKey.currentContext!.pushNamed(
+          Routes.chatroom.name,
+          pathParameters: {'roomId': roomId},
+        );
+      });
+    } else {
+      context
+          .pushNamed(Routes.chatroom.name, pathParameters: {'roomId': roomId});
+    }
     return;
   }
 

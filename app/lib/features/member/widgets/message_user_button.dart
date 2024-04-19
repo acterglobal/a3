@@ -22,7 +22,7 @@ class MessageUserButton extends ConsumerWidget {
           icon: const Icon(Atlas.chats_thin),
           onPressed: () async {
             context.pop();
-            goToChat(dmId);
+            goToChat(context, dmId);
           },
           label: const Text('Message'),
         ),

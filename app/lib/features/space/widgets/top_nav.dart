@@ -87,7 +87,7 @@ class _TopNavBarState extends ConsumerState<TopNavBar>
                 labelColor: Colors.white,
                 onTap: (index) {
                   final target = tabs[index].target;
-                  context.goNamed(
+                  context.pushReplacementNamed(
                     target,
                     pathParameters: {'spaceId': widget.spaceId},
                   );
