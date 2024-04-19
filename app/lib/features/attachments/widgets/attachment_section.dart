@@ -1,7 +1,5 @@
 import 'package:acter/common/dialogs/attachment_selection.dart';
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
-
-import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/features/attachments/providers/attachment_providers.dart';
 import 'package:acter/features/attachments/widgets/attachment_item.dart';
@@ -85,14 +83,12 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
             children: <Widget>[
               Row(
                 children: [
+                  const Icon(Atlas.paperclip_attachment_thin, size: 14),
+                  const SizedBox(width: 5),
                   Text(
                     L10n.of(context).attachments,
                     style: attachmentTitleTextStyle,
                   ),
-                  const SizedBox(width: 5),
-                  const Icon(Atlas.paperclip_attachment_thin, size: 14),
-                  const SizedBox(width: 5),
-                  Text('${list.length}'),
                 ],
               ),
               const SizedBox(height: 10),
