@@ -1,4 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -161,11 +163,11 @@ class MessageActions extends ConsumerWidget {
       builder: (context) => DefaultDialog(
         title: Text(L10n.of(context).areYouSureYouWantToDeleteThisMessage),
         actions: <Widget>[
-          OutlinedButton(
+          ActerDefaultActionButton(
             onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
             child: Text(L10n.of(context).no),
           ),
-          ElevatedButton(
+          ActerPrimaryActionButton(
             onPressed: () async {
               try {
                 await convo.redactMessage(

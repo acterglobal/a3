@@ -1,4 +1,6 @@
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/onboarding/widgets/logo_widget.dart';
@@ -104,7 +106,7 @@ class IntroProfile extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            ElevatedButton(
+            ActerPrimaryActionButton(
               key: LoginPageKeys.signUpBtn,
               onPressed: () => context.pushNamed(Routes.authRegister.name),
               child: Text(
@@ -119,7 +121,7 @@ class IntroProfile extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
-            OutlinedButton(
+            ActerDefaultActionButton(
               key: Keys.loginBtn,
               onPressed: () => context.pushNamed(Routes.authLogin.name),
               child: Text(

@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/network_provider.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/no_internet.dart';
@@ -177,7 +178,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final authState = ref.watch(authStateProvider);
     return authState
         ? const Center(child: CircularProgressIndicator())
-        : ElevatedButton(
+        : ActerPrimaryActionButton(
             key: LoginPageKeys.submitBtn,
             onPressed: () => handleSubmit(context),
             child: Text(

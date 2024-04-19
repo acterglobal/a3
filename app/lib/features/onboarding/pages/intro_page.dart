@@ -1,4 +1,5 @@
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:flutter/material.dart';
@@ -109,23 +110,16 @@ class IntroPage extends StatelessWidget {
     return Center(
       child: Container(
         constraints: const BoxConstraints(maxWidth: 500),
-        child: ElevatedButton(
+        child: ActerPrimaryActionButton.icon(
           key: Keys.exploreBtn,
           onPressed: () => context.goNamed(Routes.start.name),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                L10n.of(context).letsExplore,
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
-              const SizedBox(width: 10),
-              const Icon(
-                Icons.arrow_forward_ios,
-                size: 18,
-              ),
-            ],
+          icon: const Icon(
+            Icons.arrow_forward_ios,
+            size: 18,
+          ),
+          label: Text(
+            L10n.of(context).letsExplore,
+            style: Theme.of(context).textTheme.titleSmall,
           ),
         ),
       ),

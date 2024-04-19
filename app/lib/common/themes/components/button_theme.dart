@@ -1,7 +1,7 @@
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:flutter/material.dart';
 
-var elevatedButtonTheme = ElevatedButtonThemeData(
+final elevatedButtonTheme = ElevatedButtonThemeData(
   style: ElevatedButton.styleFrom(
     padding: const EdgeInsets.all(18),
     elevation: 0,
@@ -13,7 +13,7 @@ var elevatedButtonTheme = ElevatedButtonThemeData(
   ),
 );
 
-var outlinedButtonTheme = OutlinedButtonThemeData(
+final outlinedButtonTheme = OutlinedButtonThemeData(
   style: OutlinedButton.styleFrom(
     padding: const EdgeInsets.all(18),
     shape: RoundedRectangleBorder(
@@ -24,12 +24,12 @@ var outlinedButtonTheme = OutlinedButtonThemeData(
   ),
 );
 
-var textButtonTheme = TextButtonThemeData(
+final textButtonTheme = TextButtonThemeData(
   style: ElevatedButton.styleFrom(
     elevation: 0,
     foregroundColor: yellowColor,
   ),
 );
-var iconButtonTheme = IconButtonThemeData(
+final iconButtonTheme = IconButtonThemeData(
   style: ButtonStyle(foregroundColor: MaterialStateProperty.all(Colors.white)),
 );

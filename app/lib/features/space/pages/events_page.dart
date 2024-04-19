@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
@@ -70,7 +71,7 @@ class SpaceEventsPage extends ConsumerWidget {
                           L10n.of(context).createEventAndBringYourCommunity,
                       image: 'assets/images/empty_event.svg',
                       primaryButton: canCreateEvent
-                          ? ElevatedButton(
+                          ? ActerPrimaryActionButton(
                               onPressed: () => context.pushNamed(
                                 Routes.createEvent.name,
                                 queryParameters: {'spaceId': spaceIdOrAlias},

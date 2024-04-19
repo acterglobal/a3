@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
@@ -714,13 +716,13 @@ class _FileWidget extends ConsumerWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
-          OutlinedButton(
+          ActerDefaultActionButton(
             onPressed: () {
               Navigator.of(context).pop();
             },
             child: Text(L10n.of(context).cancel),
           ),
-          ElevatedButton(
+          ActerPrimaryActionButton(
             onPressed: () async {
               Navigator.of(context).pop();
               handleFileUpload(selectedFiles, type);

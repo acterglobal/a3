@@ -1,3 +1,5 @@
+import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
@@ -231,12 +233,12 @@ class _ActionButtonsWidget extends ConsumerWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          OutlinedButton(
+          ActerDefaultActionButton(
             onPressed: onCancel,
             child: Text(L10n.of(context).cancel),
           ),
           const SizedBox(width: 5),
-          ElevatedButton(
+          ActerPrimaryActionButton(
             key: PinItem.saveBtnKey,
             onPressed: onSave,
             child: Text(L10n.of(context).save),

@@ -1,5 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/activities/providers/invitations_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Invitation;
@@ -37,13 +39,13 @@ class InvitationCard extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
                 // Reject Invitation Button
-                OutlinedButton(
+                ActerDefaultActionButton(
                   onPressed: () => _onTapDeclineInvite(context),
                   child: Text(L10n.of(context).decline),
                 ),
                 const SizedBox(width: 15),
                 // Accept Invitation Button
-                ElevatedButton(
+                ActerPrimaryActionButton(
                   onPressed: () => _onTapAcceptInvite(context),
                   child: Text(L10n.of(context).accept),
                 ),

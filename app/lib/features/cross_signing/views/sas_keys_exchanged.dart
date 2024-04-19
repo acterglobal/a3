@@ -1,4 +1,5 @@
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -123,23 +124,16 @@ class SasKeysExchangedView extends StatelessWidget {
 
   Widget buildActionButtons(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        SizedBox(
-          width: 150, // use the same width
-          child: ElevatedButton(
-            onPressed: () => onMismatch(context),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: Text(L10n.of(context).verificationSasDoNotMatch),
-          ),
+        ElevatedButton(
+          onPressed: () => onMismatch(context),
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+          child: Text(L10n.of(context).verificationSasDoNotMatch),
         ),
-        const SizedBox(width: 15),
-        SizedBox(
-          width: 150, // use the same width
-          child: ElevatedButton(
-            child: Text(L10n.of(context).verificationSasMatch),
-            onPressed: () => onMatch(context),
-          ),
+        ActerPrimaryActionButton(
+          child: Text(L10n.of(context).verificationSasMatch),
+          onPressed: () => onMatch(context),
         ),
       ],
     );

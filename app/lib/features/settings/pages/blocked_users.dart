@@ -1,5 +1,7 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
@@ -46,11 +48,11 @@ class _AddUserToBlockState extends State<AddUserToBlock> {
         ),
       ),
       actions: <Widget>[
-        OutlinedButton(
+        ActerDefaultActionButton(
           onPressed: () => Navigator.pop(context, null),
           child: Text(L10n.of(context).cancel),
         ),
-        ElevatedButton(
+        ActerPrimaryActionButton(
           onPressed: () {
             if (!_formKey.currentState!.validate()) return;
             Navigator.pop(context, userName.text);

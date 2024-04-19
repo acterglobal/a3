@@ -1,3 +1,4 @@
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/settings/super_invites/providers/super_invites_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -37,7 +38,7 @@ class _RedeemTokenConsumerState extends ConsumerState<RedeemToken> {
             ),
             controller: _tokenController,
           ),
-          trailing: ElevatedButton(
+          trailing: ActerPrimaryActionButton(
             key: RedeemToken.redeemTokenSubmit,
             onPressed: _submit,
             child: Text(L10n.of(context).redeem),

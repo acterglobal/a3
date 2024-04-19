@@ -1,4 +1,6 @@
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/cross_signing/providers/verification_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -109,7 +111,7 @@ class SessionCard extends ConsumerWidget {
             ],
           ),
           actions: [
-            OutlinedButton(
+            ActerDefaultActionButton(
               child: Text(L10n.of(context).cancel),
               onPressed: () {
                 if (ctx.mounted) {
@@ -117,7 +119,7 @@ class SessionCard extends ConsumerWidget {
                 }
               },
             ),
-            ElevatedButton(
+            ActerPrimaryActionButton(
               child: Text(L10n.of(context).ok),
               onPressed: () {
                 if (passwordController.text.isEmpty) {

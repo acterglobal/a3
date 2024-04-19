@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -67,11 +69,11 @@ class Dashboard extends ConsumerWidget {
           title: L10n.of(context).youAreNotAMemberOfAnySpaceYet,
           subtitle: L10n.of(context).createOrJoinSpaceDescription,
           image: 'assets/images/empty_home.svg',
-          primaryButton: ElevatedButton(
+          primaryButton: ActerPrimaryActionButton(
             onPressed: () => context.pushNamed(Routes.createSpace.name),
             child: Text(L10n.of(context).createNewSpace),
           ),
-          secondaryButton: OutlinedButton(
+          secondaryButton: ActerDefaultActionButton(
             onPressed: () => context.pushNamed(Routes.joinSpace.name),
             child: Text(L10n.of(context).joinExistingSpace),
           ),

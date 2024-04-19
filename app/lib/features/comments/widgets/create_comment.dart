@@ -1,3 +1,4 @@
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
@@ -79,7 +80,7 @@ class _CreateCommentWidgetState extends ConsumerState<CreateCommentWidget> {
                 child: Text(L10n.of(context).cancel),
               ),
               const SizedBox(width: 22),
-              ElevatedButton(
+              ActerPrimaryActionButton(
                 onPressed: onSubmit,
                 child: Text(L10n.of(context).submit),
               ),

@@ -1,4 +1,6 @@
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/base_body_widget.dart';
@@ -393,12 +395,12 @@ class CreateEditEventPageConsumerState
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        OutlinedButton(
+        ActerDefaultActionButton(
           onPressed: context.pop,
           child: Text(L10n.of(context).cancel),
         ),
         const SizedBox(width: 10),
-        ElevatedButton(
+        ActerPrimaryActionButton(
           key: EventsKeys.eventCreateEditBtn,
           onPressed: widget.calendarId != null
               ? _handleUpdateEvent

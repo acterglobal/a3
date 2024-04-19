@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:acter/common/models/types.dart';
+import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/attachments/widgets/attachment_draft_item.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
@@ -74,13 +76,13 @@ class _PostAttachmentSelectionState
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
-          OutlinedButton(
+          ActerDefaultActionButton(
             onPressed: () {
               Navigator.of(context).pop();
             },
             child: const Text('Cancel'),
           ),
-          ElevatedButton(
+          ActerPrimaryActionButton(
             onPressed: () async {
               Navigator.of(context).pop();
               handleAttachmentSend();
