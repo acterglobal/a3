@@ -1,5 +1,8 @@
 import 'package:acter/common/notifications/notifications.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
+import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
@@ -55,12 +58,13 @@ class __AddEmailState extends State<_AddEmail> {
           return DropdownMenuEntry<String>(value: value, label: value);
         }).toList(),
       ),
+      actionsAlignment: MainAxisAlignment.spaceEvenly,
       actions: <Widget>[
-        TextButton(
+        ActerDefaultActionButton(
           onPressed: () => Navigator.pop(context, null),
           child: Text(L10n.of(context).cancel),
         ),
-        TextButton(
+        ActerPrimaryActionButton(
           onPressed: () {
             Navigator.pop(context, emailAddr);
           },
@@ -356,24 +360,18 @@ class NotificationsSettingsPage extends ConsumerWidget {
             ),
             // alert dialog with details;
           ),
+          actionsAlignment: MainAxisAlignment.spaceEvenly,
           actions: <Widget>[
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.red,
-                border: Border.all(color: Colors.red),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: TextButton(
-                onPressed: () => _onTargetDelete(context, ref, item),
-                child: Text(
-                  L10n.of(context).deleteTarget,
-                  style: const TextStyle(color: Colors.white, fontSize: 17),
-                ),
-              ),
-            ),
-            TextButton(
+            ActerDefaultActionButton(
               onPressed: () => Navigator.pop(context, null),
               child: Text(L10n.of(context).closeDialog),
+            ),
+            ActerDangerActionButton(
+              onPressed: () => _onTargetDelete(context, ref, item),
+              child: Text(
+                L10n.of(context).deleteTarget,
+                style: const TextStyle(color: Colors.white, fontSize: 17),
+              ),
             ),
           ],
         ),

@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/network_provider.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/toolkit/buttons/default_action_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -278,7 +279,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                       title: Text(L10n.of(context).inviteCode),
                       content: Text(L10n.of(context).inviteCodeInfo),
                       actions: <Widget>[
-                        TextButton(
+                        ActerDefaultActionButton(
                           child: Text(L10n.of(context).ok),
                           onPressed: () {
                             Navigator.of(context).pop();

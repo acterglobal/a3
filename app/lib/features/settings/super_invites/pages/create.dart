@@ -1,3 +1,5 @@
+import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
+import 'package:acter/common/toolkit/buttons/default_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/chat_selector_drawer.dart';
 import 'package:acter/common/widgets/checkbox_form_field.dart';
@@ -224,47 +226,21 @@ class _CreateSuperInviteTokenPageConsumerState
           content: Text(
             L10n.of(context).doYouWantToDeleteInviteCode,
           ),
+          actionsAlignment: MainAxisAlignment.spaceEvenly,
           actions: <Widget>[
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.grey),
-                    ),
-                    child: TextButton(
-                      onPressed: () => ctx.pop(),
-                      child: Text(
-                        L10n.of(context).no,
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 17),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      border: Border.all(color: Colors.red),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: TextButton(
-                      key: CreateSuperInviteTokenPage.deleteConfirm,
-                      onPressed: () async {
-                        ctx.pop(true);
-                      },
-                      child: Text(
-                        L10n.of(context).delete,
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 17),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+            ActerDefaultActionButton(
+                onPressed: () => ctx.pop(),
+                child: Text(
+                  L10n.of(context).no,
+                )),
+            ActerDangerActionButton(
+              key: CreateSuperInviteTokenPage.deleteConfirm,
+              onPressed: () async {
+                ctx.pop(true);
+              },
+              child: Text(
+                L10n.of(context).delete,
+              ),
             ),
           ],
         );

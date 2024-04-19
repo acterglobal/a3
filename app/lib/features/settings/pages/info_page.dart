@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/common/toolkit/buttons/default_action_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -233,11 +234,9 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
               ),
             ],
           ),
+          actionsAlignment: MainAxisAlignment.spaceEvenly,
           actions: <Widget>[
-            TextButton(
-              style: ButtonStyle(
-                foregroundColor: MaterialStateProperty.all(Colors.red),
-              ),
+            ActerDangerActionButton(
               onPressed: () async {
                 await setSetting(logKey, null);
                 if (context.mounted) Navigator.pop(context);

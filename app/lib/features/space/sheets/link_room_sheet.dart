@@ -3,6 +3,8 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/search.dart';
 import 'package:acter/common/widgets/sliver_scaffold.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
@@ -380,15 +382,16 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
                 ),
               ],
             ),
+            actionsAlignment: MainAxisAlignment.spaceEvenly,
             actions: <Widget>[
-              TextButton(
+              ActerDefaultActionButton(
                 key: LinkRoomPage.denyJoinRuleUpdateKey,
                 child: Text(L10n.of(context).noThanks),
                 onPressed: () {
                   Navigator.pop(context, false);
                 },
               ),
-              TextButton(
+              ActerPrimaryActionButton(
                 key: LinkRoomPage.confirmJoinRuleUpdateKey,
                 child: Text(L10n.of(context).yesPleaseUpdate),
                 onPressed: () {

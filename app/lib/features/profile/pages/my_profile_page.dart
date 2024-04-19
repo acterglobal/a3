@@ -1,4 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/toolkit/buttons/default_action_button.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/profile/widgets/skeletons/my_profile_skeletons_widget.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
@@ -50,12 +52,13 @@ class _ChangeDisplayNameState extends State<ChangeDisplayName> {
           ],
         ),
       ),
+      actionsAlignment: MainAxisAlignment.spaceEvenly,
       actions: <Widget>[
-        TextButton(
+        ActerDefaultActionButton(
           onPressed: () => Navigator.pop(context, null),
           child: Text(L10n.of(context).cancel),
         ),
-        TextButton(
+        ActerPrimaryActionButton(
           onPressed: () {
             if (!_formKey.currentState!.validate()) return;
             final currentUserName = account.profile.displayName;
