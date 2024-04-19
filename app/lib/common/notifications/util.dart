@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:acter/common/notifications/notifications.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/chat/utils.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter/router/router.dart';
 
@@ -34,8 +35,6 @@ bool isCurrentRoute(String uri) {
   final currentUri = rootNavKey.currentContext!.read(currentRoutingLocation);
   return currentUri == uri;
 }
-
-final chatRoomUriMatcher = RegExp('/chat/.+');
 
 bool shouldReplaceCurrentRoute(String uri) {
   if (!uri.startsWith(chatRoomUriMatcher)) {

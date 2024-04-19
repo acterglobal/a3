@@ -11,6 +11,7 @@ Future<void> showMemberInfoDrawer({
   await showModalBottomSheet(
     showDragHandle: true,
     enableDrag: true,
+    useSafeArea: true,
     context: context,
     isScrollControlled: true,
     isDismissible: true,
