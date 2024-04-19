@@ -40,8 +40,7 @@ class __SearchFieldState extends ConsumerState<_SearchField> {
 
   void _checkInitialQuery() {
     if (widget.initialQuery != null) {
-      searchTextController.text =
-          ref.read(searchFilterProvider).searchTerm ?? '';
+      searchTextController.text = widget.initialQuery!;
     }
   }
 
