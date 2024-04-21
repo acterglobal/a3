@@ -52,7 +52,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
   final usernamePattern = RegExp(r'^[a-z0-9._=\-/]+$');
 
-  Future<void> handleSubmit() async {
+  Future<void> handleSubmit(BuildContext context) async {
     if (!formKey.currentState!.validate()) return;
     if (!inCI && !ref.read(hasNetworkProvider)) {
       showNoInternetNotification(context);
@@ -66,7 +66,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       token.text,
       context,
     );
-    if (errorMsg != null) {
+    if (context.mounted && errorMsg != null) {
       EasyLoading.showError(errorMsg, duration: const Duration(seconds: 3));
       return;
     }
@@ -367,7 +367,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         ? const Center(child: CircularProgressIndicator())
         : ElevatedButton(
             key: RegisterPage.submitBtn,
-            onPressed: handleSubmit,
+            onPressed: () => handleSubmit(context),
             child: Text(
               L10n.of(context).createProfile,
               style: Theme.of(context).textTheme.bodyMedium,
