@@ -8,7 +8,9 @@ use super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventM
 use crate::{store::Store, Result};
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize, Builder)]
+#[builder(build_fn(name = "derive_builder_build"))]
 pub struct TestModel {
+    room_id: OwnedRoomId,
     event_id: OwnedEventId,
 
     #[builder(default)]
@@ -37,6 +39,14 @@ impl TestModelBuilder {
             room_id: OwnedRoomId::try_from(format!("!{room_id}:example.org")).unwrap(),
             redacted: None,
         }
+    }
+
+    pub fn build(&mut self) -> std::result::Result<TestModel, TestModelBuilderError> {
+        if self.room_id.is_none() {
+            let room_id = Uuid::new_v4().hyphenated().to_string();
+            self.room_id = OwnedRoomId::try_from(format!("!{room_id}:example.org")).ok();
+        }
+        self.derive_builder_build()
     }
 }
 

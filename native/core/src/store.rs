@@ -1,4 +1,5 @@
 use matrix_sdk::Client;
+use ruma::OwnedRoomId;
 use ruma_common::{OwnedUserId, UserId};
 use scc::hash_map::{Entry, HashMap};
 use std::collections::HashSet as StdHashSet;
@@ -269,6 +270,10 @@ impl Store {
         Ok(keys)
     }
 
+    pub async fn clear_room(&self, _room_id: &OwnedRoomId) -> Result<Vec<String>> {
+        Ok(vec![])
+    }
+
     async fn sync(&self) -> Result<()> {
         trace!("sync start");
         let (models_to_write, all_models) = {
@@ -339,7 +344,7 @@ mod tests {
     use crate::models::{TestModel, TestModelBuilder};
     use anyhow::bail;
     use matrix_sdk_base::store::{MemoryStore, StoreConfig};
-    use ruma::{event_id, OwnedEventId};
+    use ruma::{event_id, OwnedEventId, OwnedRoomId};
     use ruma_common::{api::MatrixVersion, user_id};
 
     async fn fresh_store_and_client() -> Result<(Store, Client)> {
@@ -667,6 +672,116 @@ mod tests {
         store.set_raw(key, &model).await?;
         let other: Vec<String> = store.get_raw(key).await?;
         assert_eq!(model, other);
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn remove_room() -> anyhow::Result<()> {
+        let _ = env_logger::try_init();
+        let store = fresh_store().await?;
+        let first_room_id = OwnedRoomId::try_from("!firstRoom:example.org").unwrap();
+        let second_room_id = OwnedRoomId::try_from("!secondRoom:example.org").unwrap();
+        let index_a = "index_a".to_owned();
+        let index_b = "index_b".to_owned();
+        let index_c = "index_c".to_owned();
+
+        let first_room_models = (0..5)
+            .map(|idx| {
+                TestModelBuilder::default()
+                    .simple()
+                    .event_id(OwnedEventId::try_from(format!("$ASDF{idx}")).unwrap())
+                    .indizes(vec![index_a.clone(), index_c.clone()])
+                    .room_id(first_room_id.clone())
+                    .build()
+                    .unwrap()
+            })
+            .collect::<Vec<_>>();
+
+        let second_room_models = (0..5)
+            .map(|idx| {
+                TestModelBuilder::default()
+                    .simple()
+                    .event_id(OwnedEventId::try_from(format!("$IDX{idx}")).unwrap())
+                    .indizes(vec![index_a.clone(), index_b.clone()])
+                    .room_id(second_room_id.clone())
+                    .build()
+                    .unwrap()
+            })
+            .collect::<Vec<_>>();
+
+        let first_model_keys = first_room_models
+            .iter()
+            .map(|m| m.event_id().to_string())
+            .collect::<Vec<String>>();
+        let second_model_keys = second_room_models
+            .iter()
+            .map(|m| m.event_id().to_string())
+            .collect::<Vec<String>>();
+
+        let all_model_keys = first_model_keys
+            .iter()
+            .chain(second_model_keys.iter())
+            .map(Clone::clone)
+            .collect::<Vec<String>>();
+
+        // submit all
+        let res_keys = store
+            .save_many(
+                first_room_models
+                    .iter()
+                    .chain(second_room_models.iter())
+                    .map(|m| AnyActerModel::TestModel(m.clone()))
+                    .collect(),
+            )
+            .await?;
+
+        // confirm all is in order:
+        assert_eq!(all_model_keys, res_keys);
+
+        let loaded_models_first = store
+            .get_many(first_model_keys.clone())
+            .await
+            .into_iter()
+            .filter_map(|m| match m {
+                Some(AnyActerModel::TestModel(inner)) => Some(inner),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(first_room_models, loaded_models_first);
+
+        let loaded_models_second = store
+            .get_many(second_model_keys.clone())
+            .await
+            .into_iter()
+            .filter_map(|m| match m {
+                Some(AnyActerModel::TestModel(inner)) => Some(inner),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(second_room_models, loaded_models_second);
+
+        //  --- now let's remove the first room ---
+        let notifiers = store.clear_room(&first_room_id).await?;
+        assert_eq!(notifiers.len(), 7); // 5 models & 2 indizes = 7 changes
+
+        // first room models are all gone:
+        for new in store.get_many(first_model_keys.clone()).await {
+            assert!(new.is_none(), "first model still found {new:?}");
+        }
+
+        // but second are all there
+
+        let loaded_models_second = store
+            .get_many(second_model_keys.clone())
+            .await
+            .into_iter()
+            .filter_map(|m| match m {
+                Some(AnyActerModel::TestModel(inner)) => Some(inner),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(second_room_models, loaded_models_second);
+
         Ok(())
     }
 }
