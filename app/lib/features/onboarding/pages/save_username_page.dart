@@ -146,7 +146,7 @@ class SaveUsernamePage extends StatelessWidget {
                 : BorderSide(color: Theme.of(context).disabledColor),
           ),
           child: Text(
-            L10n.of(context).continueAsText,
+            L10n.of(context).wizzardContinue,
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                   color: isCopiedValue ? null : Theme.of(context).disabledColor,
                 ),

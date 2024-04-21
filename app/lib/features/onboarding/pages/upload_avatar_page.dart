@@ -52,7 +52,7 @@ class UploadAvatarPage extends ConsumerWidget {
 
   Widget _buildHeadlineText(BuildContext context) {
     return Text(
-      L10n.of(context).userAvatarTitle,
+      L10n.of(context).avatarAddTitle,
       style: Theme.of(context).textTheme.headlineMedium?.copyWith(
             color: greenColor,
           ),
@@ -136,12 +136,12 @@ class UploadAvatarPage extends ConsumerWidget {
       if (selectedUserAvatar.value == null ||
           selectedUserAvatar.value?.path == null) {
         if (context.mounted) {
-          EasyLoading.showToast(L10n.of(context).emptyAvatar);
+          EasyLoading.showToast(L10n.of(context).avatarEmpty);
         }
         return;
       }
       if (context.mounted) {
-        EasyLoading.show(status: L10n.of(context).uploadingProfileAvatar);
+        EasyLoading.show(status: L10n.of(context).avatarUploading);
       }
       await accountProfile.account
           .uploadAvatar(selectedUserAvatar.value!.path!);
@@ -149,10 +149,10 @@ class UploadAvatarPage extends ConsumerWidget {
       if (context.mounted) context.goNamed(Routes.main.name);
       // close loading
       EasyLoading.dismiss();
-    } catch (e) {
+    } catch (error) {
       if (!context.mounted) return;
       EasyLoading.showError(
-        L10n.of(context).failedToUpload,
+        L10n.of(context).avatarUploadFailed(error),
         duration: const Duration(seconds: 3),
       );
     }
