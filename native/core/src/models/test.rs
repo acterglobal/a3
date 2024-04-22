@@ -1,5 +1,5 @@
 use derive_builder::Builder;
-use ruma::OwnedRoomId;
+use ruma::{OwnedRoomId, RoomId};
 use ruma_common::{user_id, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, UserId};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -53,6 +53,9 @@ impl TestModelBuilder {
 impl ActerModel for TestModel {
     fn event_id(&self) -> &EventId {
         &self.event_id
+    }
+    fn room_id(&self) -> &RoomId {
+        &self.room_id
     }
 
     fn capabilities(&self) -> &[Capability] {

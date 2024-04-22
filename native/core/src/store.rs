@@ -204,6 +204,7 @@ impl Store {
     fn model_inner_under_lock(&self, mdl: AnyActerModel) -> Result<ModelKeysAndIndizes> {
         let key = mdl.event_id().to_string();
         let user_id = self.user_id();
+        let room_id_idx = format!("{}::models", mdl.room_id());
         let mut keys_changed = vec![key.clone()];
         trace!(user = ?user_id, key, "saving");
         let mut indizes = mdl.indizes(user_id);
@@ -233,7 +234,7 @@ impl Store {
             }
         }
 
-        for idx in indizes.iter() {
+        for idx in indizes.iter().chain([&room_id_idx]) {
             trace!(user = ?self.user_id, idx, key, exists=self.indizes.contains(idx), "adding to index");
             match self.indizes.entry(idx.clone()) {
                 Entry::Vacant(v) => {
@@ -281,7 +282,9 @@ impl Store {
         Ok(keys)
     }
 
-    pub async fn clear_room(&self, _room_id: &OwnedRoomId) -> Result<Vec<String>> {
+    pub async fn clear_room(&self, room_id: &OwnedRoomId) -> Result<Vec<String>> {
+        let idx = format!("{room_id}::models");
+
         Ok(vec![])
     }
 
