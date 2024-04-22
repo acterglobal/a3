@@ -1,1 +1,24 @@
-{}
+{
+  "about": "Om",
+  "@about": {},
+  "accept": "Accepter",
+  "@accept": {},
+  "acceptRequest": "Accepter anmodning",
+  "@acceptRequest": {},
+  "access": "Adgang",
+  "@access": {},
+  "accessAndVisibility": "Adgang & Synlighed",
+  "@accessAndVisibility": {},
+  "account": "Profil",
+  "@account": {},
+  "actionName": "Titel",
+  "@actionName": {},
+  "actions": "Handlinger",
+  "@actions": {},
+  "add": "Tilføj",
+  "@add": {},
+  "addChat": "Tilføj Chat",
+  "@addChat": {},
+  "addedToPusherList": "{email} tilføjet",
+  "@addedToPusherList": {}
+}
