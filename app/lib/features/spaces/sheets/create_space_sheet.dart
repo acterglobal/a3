@@ -9,6 +9,7 @@ import 'package:acter/common/widgets/sliver_scaffold.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/spaces/model/keys.dart';
+import 'package:acter/router/utils.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -214,10 +215,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       EasyLoading.dismiss();
       if (!context.mounted) return;
       Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
-      context.goNamed(
-        Routes.space.name,
-        pathParameters: {'spaceId': roomId.toString()},
-      );
+      goToSpace(context, roomId.toString());
     } catch (err) {
       if (!context.mounted) {
         EasyLoading.dismiss();

@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/events/widgets/skeletons/event_item_skeleton_widget.dart';
@@ -8,12 +7,12 @@ import 'package:acter/features/news/widgets/news_item_slide/video_slide.dart';
 import 'package:acter/features/news/widgets/news_side_bar.dart';
 import 'package:acter/features/news/widgets/news_item_slide/image_slide.dart';
 import 'package:acter/features/news/widgets/news_item_slide/text_slide.dart';
+import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:carousel_indicator/carousel_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
@@ -107,12 +106,7 @@ class _NewsItemState extends ConsumerState<NewsItem> {
               child: newsActionButtons(newsSlide: slides[currentSlideIndex]),
             ),
             InkWell(
-              onTap: () {
-                context.pushNamed(
-                  Routes.space.name,
-                  pathParameters: {'spaceId': roomId},
-                );
-              },
+              onTap: () => goToSpace(context, roomId),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: space.when(

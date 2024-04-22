@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:acter/common/notifications/notifications.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/chat/utils.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter/router/router.dart';
+import 'package:acter/router/utils.dart';
 
 final isOnSupportedPlatform =
     Platform.isAndroid || Platform.isIOS; // || Platform.isMacOS;

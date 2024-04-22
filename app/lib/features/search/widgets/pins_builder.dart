@@ -1,16 +1,13 @@
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/search/model/util.dart';
 import 'package:acter/features/search/providers/pins.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:go_router/go_router.dart';
 
 class PinsBuilder extends ConsumerWidget {
-  final NavigateTo navigateTo;
-
   const PinsBuilder({
     super.key,
-    required this.navigateTo,
   });
 
   @override
@@ -37,10 +34,9 @@ class PinsBuilder extends ConsumerWidget {
                       ],
                     ),
                   ),
-                  onTap: () async => await navigateTo(
-                    Routes.pin,
+                  onTap: () async => context.pushNamed(
+                    Routes.pin.name,
                     pathParameters: {'pinId': e.navigationTargetId},
-                    push: true,
                   ),
                 ),
               )

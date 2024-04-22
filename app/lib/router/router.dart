@@ -1,5 +1,4 @@
 import 'package:acter/common/pages/not_found.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
@@ -139,13 +138,12 @@ List<RouteBase> makeRoutes(Ref ref) {
       ) {
         return HomeShell(navigationShell: navigationShell);
       },
-      branches:
-          isDesktop ? desktopShellBranches(ref) : mobileShellBranches(ref),
+      branches: shellBranches(ref),
     ),
   ];
 }
 
-List<StatefulShellBranch> mobileShellBranches(Ref ref) {
+List<StatefulShellBranch> shellBranches(Ref ref) {
   return [
     StatefulShellBranch(
       navigatorKey: homeTabNavKey,
@@ -166,27 +164,6 @@ List<StatefulShellBranch> mobileShellBranches(Ref ref) {
     StatefulShellBranch(
       navigatorKey: searchTabNavKey,
       routes: makeSearchShellRoutes(ref),
-    ),
-  ];
-}
-
-List<StatefulShellBranch> desktopShellBranches(Ref ref) {
-  return [
-    StatefulShellBranch(
-      navigatorKey: searchTabNavKey,
-      routes: makeSearchShellRoutes(ref),
-    ),
-    StatefulShellBranch(
-      navigatorKey: homeTabNavKey,
-      routes: makeHomeShellRoutes(ref),
-    ),
-    StatefulShellBranch(
-      navigatorKey: chatTabNavKey,
-      routes: makeChatShellRoutes(ref),
-    ),
-    StatefulShellBranch(
-      navigatorKey: activitiesTabNavKey,
-      routes: makeActivitiesShellRoutes(ref),
     ),
   ];
 }

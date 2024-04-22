@@ -1,14 +1,13 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/rooms.dart';
-import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/spaces/widgets/public_spaces_selector.dart';
+import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class JoinSpacePage extends ConsumerWidget {
   const JoinSpacePage({super.key});
@@ -55,10 +54,7 @@ class JoinSpacePage extends ConsumerWidget {
       L10n.of(context).tryingToJoin('${alias ?? roomId}'),
       (alias ?? roomId)!,
       serverNames.first,
-      (roomId) => context.pushNamed(
-        Routes.space.name,
-        pathParameters: {'spaceId': roomId},
-      ),
+      (roomId) => goToSpace(context, roomId),
     );
   }
 
@@ -71,10 +67,8 @@ class JoinSpacePage extends ConsumerWidget {
   ) async {
     if (spaceInfo != null) {
       // we know the space, user just wants to enter it
-      context.pushNamed(
-        Routes.space.name,
-        pathParameters: {'spaceId': spaceInfo.roomId},
-      );
+
+      goToSpace(context, spaceInfo.roomId);
       return;
     }
 
@@ -90,10 +84,7 @@ class JoinSpacePage extends ConsumerWidget {
       L10n.of(context).tryingToJoin(spaceSearchResult.name().toString()),
       spaceSearchResult.roomIdStr(),
       searchServer,
-      (roomId) => context.pushNamed(
-        Routes.space.name,
-        pathParameters: {'spaceId': roomId},
-      ),
+      (roomId) => goToSpace(context, roomId),
     );
   }
 }
