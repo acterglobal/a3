@@ -4,7 +4,7 @@ use ruma_common::{OwnedUserId, UserId};
 use scc::hash_map::{Entry, HashMap};
 use std::collections::HashSet as StdHashSet;
 use std::sync::{Arc, Mutex as StdMutex};
-use tracing::{debug, error, instrument, trace, warn};
+use tracing::{debug, error, info, instrument, trace, warn};
 
 use crate::{
     models::{ActerModel, AnyActerModel},
@@ -166,6 +166,10 @@ impl Store {
 
     #[instrument(skip(self))]
     pub async fn get_list(&self, key: &str) -> Result<impl Iterator<Item = AnyActerModel>> {
+        self.get_list_inner(key)
+    }
+
+    pub fn get_list_inner(&self, key: &str) -> Result<impl Iterator<Item = AnyActerModel>> {
         let listing = if let Some(r) = self.indizes.get(key) {
             r.get().clone()
         } else {
@@ -284,37 +288,61 @@ impl Store {
 
     pub async fn clear_room(&self, room_id: &OwnedRoomId) -> Result<Vec<String>> {
         let idx = format!("{room_id}::models");
+        let mut total_changed = {
+            let mut dirty = self.dirty.lock()?; // hold the lock
+            let mut total_changed = Vec::new();
+            for model in self.get_list_inner(&idx)? {
+                let model_id = model.event_id().to_string();
+                let indizes = model.indizes(&self.user_id);
+                // remove it from all indizes
+                for index in indizes {
+                    let _ = self
+                        .indizes
+                        .entry(index.clone())
+                        .and_modify(|l| l.retain(|o| *o != model_id));
+                    total_changed.push(index);
+                }
+                // remove the model itself
+                self.models.remove(&model_id);
+                dirty.insert(model_id.clone());
+                total_changed.push(model_id);
+            }
 
-        Ok(vec![])
+            // remove the room-id based index
+            self.indizes.remove(&idx);
+            total_changed
+        };
+        self.sync().await?;
+
+        total_changed.sort();
+        total_changed.dedup();
+
+        Ok(total_changed)
     }
 
     async fn sync(&self) -> Result<()> {
         trace!("sync start");
-        let (models_to_write, all_models) = {
+        let (models_to_write, to_remove, all_models) = {
             trace!("preparing models");
             // preparing for sync
             let mut dirty = self.dirty.lock()?;
-            let models_to_write: Vec<(String, Vec<u8>)> = dirty
-                .iter()
-                .filter_map(|key| {
-                    if let Some(r) = self.models.get(key) {
-                        let raw = match serde_json::to_vec(r.get()) {
-                            Ok(r) => r,
-                            Err(error) => {
-                                error!(?key, ?error, "failed to serialize. skipping");
-                                return None;
-                            }
-                        };
-                        Some((format!("acter:{key}"), raw))
-                    } else {
-                        warn!(
-                            ?key,
-                            "Inconsistency error: key is missing from models. skipping"
-                        );
-                        None
+            let mut to_remove = Vec::new();
+            let mut models_to_write = Vec::new();
+            for key in dirty.iter() {
+                let Some(r) = self.models.get(key) else {
+                    info!(?key, "Model missing, removing custom value");
+                    to_remove.push(format!("acter:{key}"));
+                    continue;
+                };
+                let raw = match serde_json::to_vec(r.get()) {
+                    Ok(r) => r,
+                    Err(error) => {
+                        error!(?key, ?error, "failed to serialize. remove");
+                        continue;
                     }
-                })
-                .collect();
+                };
+                models_to_write.push((format!("acter:{key}"), raw))
+            }
 
             let model_keys: Vec<String> = {
                 let mut model_keys: StdHashSet<String> = StdHashSet::new();
@@ -327,7 +355,7 @@ impl Store {
 
             dirty.clear(); // we clear the current set
             trace!("preparation done");
-            (models_to_write, serde_json::to_vec(&model_keys)?)
+            (models_to_write, to_remove, serde_json::to_vec(&model_keys)?)
         };
         trace!("store sync");
         let client_store = self.client.store();
@@ -345,6 +373,13 @@ impl Store {
         client_store
             .set_custom_value_no_read(ALL_MODELS_KEY.as_bytes(), all_models)
             .await?;
+
+        trace!("removing old models");
+        for key in to_remove.into_iter() {
+            if let Err(error) = client_store.remove_custom_value(key.as_bytes()).await {
+                warn!(key, ?error, "Error removing model");
+            }
+        }
 
         trace!("sync done");
 
