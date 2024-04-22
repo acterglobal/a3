@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/common_providers.dart';
@@ -14,7 +12,6 @@ import 'package:acter/features/chat/providers/notifiers/chat_room_notifier.dart'
 import 'package:acter/features/chat/providers/notifiers/chat_typing_notifier.dart';
 import 'package:acter/features/chat/providers/notifiers/media_chat_notifier.dart';
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/providers/app_settings_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -109,21 +106,6 @@ final chatMentionsProvider =
     mentionRecords.add(record);
   }
   return mentionRecords;
-});
-
-// notifier stream of typing notice events
-final chatTypingEventProvider = StreamProvider<TypingEvent?>((ref) async* {
-  final controller = StreamController<TypingEvent?>();
-  final client = ref.watch(alwaysClientProvider);
-  controller.addStream(client.typingEventRx()!);
-  ref.onDispose(() {
-    controller.close();
-  });
-  TypingEvent? t;
-  await for (var e in controller.stream) {
-    t = e;
-    yield t;
-  }
 });
 
 // state of typing notice setting

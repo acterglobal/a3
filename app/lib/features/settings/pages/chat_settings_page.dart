@@ -81,11 +81,13 @@ class ChatSettingsPage extends ConsumerWidget {
             onToggle: (newVal) async {
               EasyLoading.show(status: L10n.of(context).settingsSubmitting);
               try {
+                final notifier =
+                    ref.read(chatTypingEventStateProvider.notifier);
                 final updater = settings.updateBuilder();
                 updater.typingNotice(newVal);
                 await updater.send();
                 // refresh state
-                ref.invalidate(chatTypingEventStateProvider);
+                notifier.configure(newVal);
                 EasyLoading.showToast(
                   // ignore: use_build_context_synchronously
                   L10n.of(context).settingsSubmittingSuccess,
