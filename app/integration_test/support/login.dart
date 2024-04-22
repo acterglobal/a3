@@ -1,7 +1,10 @@
 import 'package:acter/common/models/keys.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/home/data/keys.dart';
+import 'package:acter/features/onboarding/pages/link_email_page.dart';
 import 'package:acter/features/onboarding/pages/register_page.dart';
+import 'package:acter/features/onboarding/pages/save_username_page.dart';
+import 'package:acter/features/onboarding/pages/upload_avatar_page.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
@@ -82,6 +85,27 @@ extension ActerLogin on ConvenientTest {
     Finder submitBtn = find.byKey(RegisterPage.submitBtn);
     await tester.ensureVisible(submitBtn);
     await submitBtn.tap();
+
+    Finder copyUsernameBtn = find.byKey(SaveUsernamePage.copyUsernameBtn);
+    await tester.ensureVisible(copyUsernameBtn);
+    await copyUsernameBtn.tap();
+
+    Finder continueBtn = find.byKey(SaveUsernamePage.continueBtn);
+    await tester.ensureVisible(continueBtn);
+    await continueBtn.tap();
+
+    Finder email = find.byKey(LinkEmailPage.emailField);
+    await email.should(findsOneWidget);
+    await email.enterTextWithoutReplace('acter@gmail.com');
+
+    Finder linkEmailBtn = find.byKey(LinkEmailPage.linkEmailBtn);
+    await tester.ensureVisible(linkEmailBtn);
+    await linkEmailBtn.tap();
+
+    Finder skipBtn = find.byKey(UploadAvatarPage.skipBtn);
+    await tester.ensureVisible(skipBtn);
+    await skipBtn.tap();
+
     // we should see a main navigation, either at the side (desktop) or the bottom (mobile/tablet)
     await find.byKey(Keys.mainNav).should(findsOneWidget);
   }

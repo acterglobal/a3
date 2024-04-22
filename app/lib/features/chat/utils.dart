@@ -1,18 +1,11 @@
-import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/rooms.dart';
-import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
-import 'package:acter/router/providers/router_providers.dart';
-import 'package:acter/router/router.dart';
+import 'package:acter/router/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:html/dom.dart' as html;
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-
-final chatRoomUriMatcher = RegExp('/chat/.+');
 
 class UserMentionMessageData {
   String parsedMessage;
@@ -66,30 +59,6 @@ UserMentionMessageData parseUserMentionMessage(
   );
 }
 
-/// helper to figure out how to route to the specific chat
-void goToChat(String roomId) {
-  final context = rootNavKey.currentContext!;
-  final currentUri = context.read(currentRoutingLocation);
-  if (!currentUri.startsWith(chatRoomUriMatcher)) {
-    // we are not in a chat room. just a regular push routing
-    // will do
-    context.pushNamed(Routes.chatroom.name, pathParameters: {'roomId': roomId});
-    return;
-  }
-
-  // we are in a chat page
-  if (roomId == rootNavKey.currentContext!.read(selectedChatIdProvider)) {
-    // we are on the same page, nothing to be done
-    return;
-  }
-
-  // we are on a different chat page. Push replace the current screen
-  context.pushReplacementNamed(
-    Routes.chatroom.name,
-    pathParameters: {'roomId': roomId},
-  );
-}
-
 String? getRoomIdFromLink(Uri uri) {
   final link = Uri.decodeFull(uri.toString());
 
@@ -132,17 +101,11 @@ Future<void> navigateToRoomOrAskToJoin(
   if (room != null && room.isJoined()) {
     //Navigate to Space
     if (room.isSpace()) {
-      context.pushNamed(
-        Routes.space.name,
-        pathParameters: {'spaceId': room.roomIdStr()},
-      );
+      goToSpace(context, roomId);
     }
     //Navigate to Chat
     else {
-      context.goNamed(
-        Routes.chatroom.name,
-        pathParameters: {'roomId': room.roomIdStr()},
-      );
+      goToChat(context, roomId);
     }
   }
 

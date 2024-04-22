@@ -1,13 +1,13 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_bottom_sheet.dart';
 import 'package:acter/common/widgets/like_button.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
+import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:atlas_icons/atlas_icons.dart';
@@ -97,12 +97,7 @@ class NewsSideBar extends ConsumerWidget {
               avatar: space.spaceProfileData.getAvatarImage(),
             ),
             size: 42,
-            onAvatarTap: () {
-              context.pushNamed(
-                Routes.space.name,
-                pathParameters: {'spaceId': roomId},
-              );
-            },
+            onAvatarTap: () => goToSpace(context, roomId),
           ),
           error: (e, st) {
             _log.severe('Error loading space', e, st);

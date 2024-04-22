@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-typedef MakeIconFn = Widget Function(BuildContext);
+typedef MakeIconFn = Widget Function(BuildContext, Color color);
 
 class TabEntry {
   static const chatsKey = Key('chat');
@@ -18,7 +18,7 @@ class TabEntry {
 
   final Key key;
   final String label;
-  final String target;
+  final Routes target;
   final MakeIconFn makeIcon;
 
   const TabEntry({
@@ -39,8 +39,11 @@ final tabsProvider =
     TabEntry(
       key: TabEntry.overview,
       label: 'Overview',
-      makeIcon: (ctx) => const Icon(Atlas.layout_half_thin),
-      target: Routes.space.name,
+      makeIcon: (ctx, color) => Icon(
+        Atlas.layout_half_thin,
+        color: color,
+      ),
+      target: Routes.space,
     ),
   ];
 
@@ -51,8 +54,11 @@ final tabsProvider =
         TabEntry(
           key: TabEntry.pins,
           label: 'Pins',
-          makeIcon: (ctx) => const Icon(Atlas.pin_thin),
-          target: Routes.spacePins.name,
+          makeIcon: (ctx, color) => Icon(
+            Atlas.pin_thin,
+            color: color,
+          ),
+          target: Routes.spacePins,
         ),
       );
     }
@@ -62,17 +68,17 @@ final tabsProvider =
         TabEntry(
           key: TabEntry.tasks,
           label: 'Tasks',
-          makeIcon: (context) => SvgPicture.asset(
+          makeIcon: (context, color) => SvgPicture.asset(
             'assets/images/tasks.svg',
             semanticsLabel: 'tasks',
             width: 24,
             height: 24,
             colorFilter: ColorFilter.mode(
-              Theme.of(context).colorScheme.onSurface,
+              color,
               BlendMode.srcIn,
             ),
           ),
-          target: Routes.spaceTasks.name,
+          target: Routes.spaceTasks,
         ),
       );
     }
@@ -82,8 +88,11 @@ final tabsProvider =
         TabEntry(
           key: TabEntry.events,
           label: 'Events',
-          makeIcon: (ctx) => const Icon(Atlas.calendar_schedule_thin),
-          target: Routes.spaceEvents.name,
+          makeIcon: (ctx, color) => Icon(
+            Atlas.calendar_schedule_thin,
+            color: color,
+          ),
+          target: Routes.spaceEvents,
         ),
       );
     }
@@ -93,8 +102,11 @@ final tabsProvider =
     TabEntry(
       key: TabEntry.chatsKey,
       label: 'Chats',
-      makeIcon: (ctx) => const Icon(Atlas.chats_thin),
-      target: Routes.spaceChats.name,
+      makeIcon: (ctx, color) => Icon(
+        Atlas.chats_thin,
+        color: color,
+      ),
+      target: Routes.spaceChats,
     ),
   );
 
@@ -102,8 +114,11 @@ final tabsProvider =
     TabEntry(
       key: const Key('spaces'),
       label: 'Spaces',
-      makeIcon: (ctx) => const Icon(Atlas.connection_thin),
-      target: Routes.spaceRelatedSpaces.name,
+      makeIcon: (ctx, color) => Icon(
+        Atlas.connection_thin,
+        color: color,
+      ),
+      target: Routes.spaceRelatedSpaces,
     ),
   );
 
@@ -111,8 +126,11 @@ final tabsProvider =
     TabEntry(
       key: const Key('members'),
       label: 'Members',
-      makeIcon: (ctx) => const Icon(Atlas.group_team_collective_thin),
-      target: Routes.spaceMembers.name,
+      makeIcon: (ctx, color) => Icon(
+        Atlas.group_team_collective_thin,
+        color: color,
+      ),
+      target: Routes.spaceMembers,
     ),
   );
   return tabs;

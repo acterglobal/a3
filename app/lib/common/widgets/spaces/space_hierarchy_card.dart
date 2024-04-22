@@ -1,13 +1,12 @@
 import 'package:acter/common/providers/space_providers.dart';
 
 import 'package:acter/common/utils/rooms.dart';
-import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_with_profile_card.dart';
+import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
@@ -42,13 +41,7 @@ class RoomHierarchyJoinButtons extends ConsumerWidget {
                 L10n.of(context).tryingToJoin('${space.name()}'),
                 space.roomIdStr(),
                 space.viaServerName(),
-                forward ??
-                    (roomId) => context.pushNamed(
-                          Routes.space.name,
-                          pathParameters: {
-                            'spaceId': roomId,
-                          },
-                        ),
+                forward ?? (roomId) => goToSpace(context, roomId),
               );
             },
             child: Text(L10n.of(context).join),
@@ -65,13 +58,7 @@ class RoomHierarchyJoinButtons extends ConsumerWidget {
                 L10n.of(context).tryingToJoin('${space.name()}'),
                 space.roomIdStr(),
                 space.viaServerName(),
-                forward ??
-                    (roomId) => context.pushNamed(
-                          Routes.space.name,
-                          pathParameters: {
-                            'spaceId': roomId,
-                          },
-                        ),
+                forward ?? (roomId) => goToSpace(context, roomId),
               );
             },
             child: Text(L10n.of(context).join),
