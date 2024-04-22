@@ -250,18 +250,29 @@ impl Store {
     }
 
     pub async fn save_many(&self, models: Vec<AnyActerModel>) -> Result<Vec<String>> {
-        let mut total_list = Vec::new();
+        let mut total_keys = Vec::new();
+        let mut total_indizes = Vec::new();
         {
             let mut dirty = self.dirty.lock()?; // hold the lock
             for mdl in models.into_iter() {
                 let (keys, indizes) = self.model_inner_under_lock(mdl)?;
                 dirty.extend(keys.clone());
-                total_list.extend(keys);
-                total_list.extend(indizes);
+                total_keys.extend(keys);
+                total_indizes.extend(indizes);
             }
         }
         self.sync().await?; // FIXME: should we really run this every time?
-        Ok(total_list)
+
+        // clean out the duplicates
+        total_keys.sort();
+        total_keys.dedup();
+        total_indizes.sort();
+        total_indizes.dedup();
+
+        Ok(total_keys
+            .into_iter()
+            .chain(total_indizes.into_iter())
+            .collect())
     }
 
     pub async fn save(&self, mdl: AnyActerModel) -> Result<Vec<String>> {
@@ -736,7 +747,18 @@ mod tests {
             .await?;
 
         // confirm all is in order:
-        assert_eq!(all_model_keys, res_keys);
+        assert_eq!(
+            all_model_keys
+                .into_iter()
+                .chain(
+                    // add the indizes that are also updated
+                    ["index_a", "index_b", "index_c"]
+                        .into_iter()
+                        .map(ToString::to_string)
+                )
+                .collect::<Vec<String>>(),
+            res_keys
+        );
 
         let loaded_models_first = store
             .get_many(first_model_keys.clone())
