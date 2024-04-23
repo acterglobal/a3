@@ -13,7 +13,7 @@ use anyhow::{bail, Context, Result};
 use matrix_sdk::{deserialized_responses::SyncOrStrippedState, ruma::Int};
 use ruma_events::{
     room::power_levels::{RoomPowerLevels as RumaRoomPowerLevels, RoomPowerLevelsEventContent},
-    StaticEventContent, SyncStateEvent, TimelineEventType,
+    StateEventType, StaticEventContent, SyncStateEvent, TimelineEventType,
 };
 use std::{collections::btree_map, ops::Deref};
 
@@ -182,9 +182,20 @@ impl Room {
 
         let client = self.room.client().clone();
         let room = self.room.clone();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
 
         RUNTIME
             .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::RoomPowerLevels)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change power levels in this room");
+                }
                 let response = room
                     .send_state_event(RoomPowerLevelsEventContent::from(current_power_levels))
                     .await?;
@@ -211,6 +222,7 @@ impl Room {
             })
             .await?
     }
+
     pub async fn update_app_settings(
         &self,
         new_settings: Box<ActerAppSettingsBuilder>,
@@ -225,7 +237,6 @@ impl Room {
             bail!("No permissions to change the app settings");
         }
 
-        let client = self.room.client().clone();
         if !self.is_joined() {
             bail!("Unable to update a space you aren't part of");
         }

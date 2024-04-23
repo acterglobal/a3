@@ -14,7 +14,7 @@ use icalendar::Calendar as iCalendar;
 use matrix_sdk::{room::Room, RoomState};
 use ruma::serde::PartialEqAsRefStr;
 use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};
-use ruma_events::room::message::TextMessageEventContent;
+use ruma_events::{room::message::TextMessageEventContent, MessageLikeEventType};
 use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
@@ -352,11 +352,23 @@ impl CalendarEventDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
         let inner = self.inner.build()?;
+
         RUNTIME
             .spawn(async move {
-                let resp = room.send(inner).await?;
-                Ok(resp.event_id)
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(inner).await?;
+                Ok(response.event_id)
             })
             .await?
     }
@@ -451,11 +463,23 @@ impl CalendarEventUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
         let inner = self.inner.build()?;
+
         RUNTIME
             .spawn(async move {
-                let resp = room.send(inner).await?;
-                Ok(resp.event_id)
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(inner).await?;
+                Ok(response.event_id)
             })
             .await?
     }

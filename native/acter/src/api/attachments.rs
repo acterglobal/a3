@@ -459,6 +459,11 @@ impl AttachmentsManager {
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
         let room = self.room.clone();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
         let stats = self.inner.stats();
         let has_entry = self
             .stats()
@@ -475,9 +480,11 @@ impl AttachmentsManager {
 
         RUNTIME
             .spawn(async move {
-                trace!("before redacting attachment");
+                let permitted = room.can_user_redact_own(&my_id).await?;
+                if !permitted {
+                    bail!("No permissions to redact your message in this room");
+                }
                 let response = room.redact(&event_id, reason.as_deref(), txn_id).await?;
-                trace!("after redacting attachment");
                 Ok(response.event_id)
             })
             .await?

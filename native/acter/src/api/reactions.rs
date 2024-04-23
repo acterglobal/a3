@@ -162,6 +162,11 @@ impl ReactionManager {
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
         let room = self.room.clone();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
         let stats = self.inner.stats();
         let Some(event_id) = stats.user_likes.last().cloned() else {
             bail!("User hasn't liked")
@@ -170,6 +175,10 @@ impl ReactionManager {
 
         RUNTIME
             .spawn(async move {
+                let permitted = room.can_user_redact_own(&my_id).await?;
+                if !permitted {
+                    bail!("No permission to redact your message in this room");
+                }
                 let response = room.redact(&event_id, reason.as_deref(), txn_id).await?;
                 Ok(response.event_id)
             })

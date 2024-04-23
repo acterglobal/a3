@@ -6,7 +6,7 @@ use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
 use ruma_common::{OwnedEventId, OwnedUserId};
-use ruma_events::room::message::TextMessageEventContent;
+use ruma_events::{room::message::TextMessageEventContent, MessageLikeEventType};
 use std::ops::Deref;
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
@@ -116,11 +116,23 @@ impl CommentDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
         let inner = self.inner.build()?;
+
         RUNTIME
             .spawn(async move {
-                let resp = room.send(inner).await?;
-                Ok(resp.event_id)
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(inner).await?;
+                Ok(response.event_id)
             })
             .await?
     }

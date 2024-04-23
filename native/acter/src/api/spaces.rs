@@ -38,7 +38,7 @@ use ruma_events::{
     reaction::SyncReactionEvent,
     room::redaction::{RoomRedactionEvent, SyncRoomRedactionEvent},
     space::child::SpaceChildEventContent,
-    AnyStateEventContent, MessageLikeEvent, StateEventType,
+    AnyStateEventContent, MessageLikeEvent, MessageLikeEventType, StateEventType,
 };
 use serde::{Deserialize, Serialize};
 use std::{ops::Deref, sync::Arc};
@@ -606,10 +606,21 @@ impl Space {
             bail!("No permissions to add child to space");
         }
         let room = self.inner.room.clone();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
         let client = self.client.clone();
 
         RUNTIME
             .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::SpaceChild)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change children of this room");
+                }
                 let Some(Ok(homeserver)) = client.homeserver().host_str().map(ServerName::parse)
                 else {
                     return Err(Error::HomeserverMissesHostname)?;
@@ -638,6 +649,11 @@ impl Space {
             bail!("No permissions to remove child from space");
         }
         let room = self.inner.room.clone();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("You must be logged in to do that")?
+            .to_owned();
 
         RUNTIME
             .spawn(async move {
@@ -654,6 +670,12 @@ impl Space {
                     }
                     SyncOrStrippedState::Sync(ev) => ev.event_id().to_owned(),
                 };
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
                 room.redact(&event_id, reason.as_deref(), None).await?;
                 Ok(true)
             })

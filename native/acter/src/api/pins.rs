@@ -10,7 +10,7 @@ use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
 use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};
-use ruma_events::room::message::TextMessageEventContent;
+use ruma_events::{room::message::TextMessageEventContent, MessageLikeEventType};
 use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
@@ -370,11 +370,23 @@ impl PinDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
         let content = self.content.build()?;
+
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content).await?;
-                Ok(resp.event_id)
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(content).await?;
+                Ok(response.event_id)
             })
             .await?
     }
@@ -444,11 +456,23 @@ impl PinUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
         let content = self.content.build()?;
+
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content).await?;
-                Ok(resp.event_id)
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(content).await?;
+                Ok(response.event_id)
             })
             .await?
     }

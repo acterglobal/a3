@@ -11,7 +11,7 @@ use chrono::DateTime;
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
 use ruma_common::{EventId, OwnedEventId, OwnedRoomId, OwnedUserId};
-use ruma_events::room::message::TextMessageEventContent;
+use ruma_events::{room::message::TextMessageEventContent, MessageLikeEventType};
 use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
@@ -273,11 +273,23 @@ impl TaskListDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("You must be logged in to do that")?
+            .to_owned();
         let content = self.content.build()?;
+
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content).await?;
-                Ok(resp.event_id)
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(content).await?;
+                Ok(response.event_id)
             })
             .await?
     }
@@ -638,11 +650,23 @@ impl Task {
             bail!("Can only update tasks in joined rooms");
         }
         let room = self.room.clone();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("You must be logged in to do that")?
+            .to_owned();
         let content = self.content.self_assign_event_content();
+
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content).await?;
-                Ok(resp.event_id)
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(content).await?;
+                Ok(response.event_id)
             })
             .await?
     }
@@ -652,11 +676,23 @@ impl Task {
             bail!("Can only update tasks in joined rooms");
         }
         let room = self.room.clone();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("You must be logged in to do that")?
+            .to_owned();
         let content = self.content.self_unassign_event_content();
+
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content).await?;
-                Ok(resp.event_id)
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(content).await?;
+                Ok(response.event_id)
             })
             .await?
     }
@@ -816,11 +852,23 @@ impl TaskDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("You must be logged in to do that")?
+            .to_owned();
         let content = self.content.build()?;
+
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content).await?;
-                Ok(resp.event_id)
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(content).await?;
+                Ok(response.event_id)
             })
             .await?
     }
@@ -1005,11 +1053,23 @@ impl TaskUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("You must be logged in to do that")?
+            .to_owned();
         let content = self.content.build()?;
+
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content).await?;
-                Ok(resp.event_id)
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(content).await?;
+                Ok(response.event_id)
             })
             .await?
     }
@@ -1104,11 +1164,23 @@ impl TaskListUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("You must be logged in to do that")?
+            .to_owned();
         let content = self.content.build()?;
+
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content).await?;
-                Ok(resp.event_id)
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(content).await?;
+                Ok(response.event_id)
             })
             .await?
     }

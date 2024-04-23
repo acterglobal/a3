@@ -297,11 +297,20 @@ impl Member {
     }
 
     pub async fn kick(&self, msg: Option<String>) -> Result<bool> {
-        let member_id = self.member.user_id().to_owned();
         let room = self.room.clone();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+        let member_id = self.member.user_id().to_owned();
 
         RUNTIME
             .spawn(async move {
+                let permitted = room.can_user_kick(&my_id).await?;
+                if !permitted {
+                    bail!("No permissions to kick other in this room");
+                }
                 room.kick_user(&member_id, msg.as_deref()).await?;
                 Ok(true)
             })
@@ -309,11 +318,20 @@ impl Member {
     }
 
     pub async fn ban(&self, msg: Option<String>) -> Result<bool> {
-        let member_id = self.member.user_id().to_owned();
         let room = self.room.clone();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+        let member_id = self.member.user_id().to_owned();
 
         RUNTIME
             .spawn(async move {
+                let permitted = room.can_user_ban(&my_id).await?;
+                if !permitted {
+                    bail!("No permissions to ban/unban other in this room");
+                }
                 room.ban_user(&member_id, msg.as_deref()).await?;
                 Ok(true)
             })
@@ -321,11 +339,20 @@ impl Member {
     }
 
     pub async fn unban(&self, msg: Option<String>) -> Result<bool> {
-        let member_id = self.member.user_id().to_owned();
         let room = self.room.clone();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+        let member_id = self.member.user_id().to_owned();
 
         RUNTIME
             .spawn(async move {
+                let permitted = room.can_user_ban(&my_id).await?;
+                if !permitted {
+                    bail!("No permissions to ban/unban other in this room");
+                }
                 room.unban_user(&member_id, msg.as_deref()).await?;
                 Ok(true)
             })
@@ -483,6 +510,7 @@ impl JoinRuleBuilder {
             restricted_rooms: Vec::new(),
         }
     }
+
     pub fn join_rule(&mut self, input: String) {
         self.rule = input;
     }
@@ -591,8 +619,13 @@ impl Room {
         {
             bail!("No permissions to add parent to room");
         }
-        let room = self.room.clone();
         let client = self.core.client().clone();
+        let room = self.room.clone();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
 
         RUNTIME
             .spawn(async move {
@@ -603,6 +636,12 @@ impl Room {
                 let content = assign!(SpaceParentEventContent::new(vec![homeserver]), {
                     canonical
                 });
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::SpaceParent)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change space parent of this room");
+                }
                 let response = room.send_state_event_for_key(&room_id, content).await?;
                 Ok(response.event_id.to_string())
             })
@@ -626,6 +665,11 @@ impl Room {
             bail!("No permissions to remove parent from room");
         }
         let room = self.room.clone();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("You must be logged in to do that")?
+            .to_owned();
 
         RUNTIME
             .spawn(async move {
@@ -644,6 +688,10 @@ impl Room {
                     }
                     SyncOrStrippedState::Sync(ev) => ev.event_id().to_owned(),
                 };
+                let permitted = room.can_user_redact_own(&my_id).await?;
+                if !permitted {
+                    bail!("No permissions to redact your message in this room");
+                }
                 room.redact(&event_id, reason.as_deref(), None).await?;
                 Ok(true)
             })
@@ -989,9 +1037,20 @@ impl Room {
 
     pub async fn set_notification_mode(&self, new_mode: Option<String>) -> Result<bool> {
         let room = self.room.clone();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("You must be logged in to do that")?
+            .to_owned();
         let mode = new_mode.and_then(|s| notification_mode_from_input(&s));
+
         RUNTIME
             .spawn(async move {
+                let permitted = room.can_user_trigger_room_notification(&my_id).await?;
+                if !permitted {
+                    bail!("No permissions to change notification mode in this room");
+                }
+
                 let notification_settings = room.client().notification_settings().await;
                 let room_id = room.room_id();
                 if let Some(mode) = mode {
@@ -1551,11 +1610,22 @@ impl Room {
     /// set the join_rul to `join_rule`. if that is `restricted` or `knock_restricted`
     /// use the given `restricted_rooms` as subset of rooms to use.
     pub async fn set_join_rule(&self, join_rule_builder: Box<JoinRuleBuilder>) -> Result<bool> {
+        let room = self.room.clone();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
         let join_rule = join_rule_builder.build()?;
 
-        let room = self.room.clone();
         RUNTIME
             .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::RoomJoinRules)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change join rule in this room");
+                }
                 let evt = room.send_state_event(join_rule).await?;
                 Ok(true)
             })
@@ -1671,11 +1741,20 @@ impl Room {
         if !self.is_joined() {
             bail!("Unable to redact content in a room we are not in");
         }
-        let event_id = EventId::parse(event_id)?;
         let room = self.room.clone();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+        let event_id = EventId::parse(event_id)?;
 
         RUNTIME
             .spawn(async move {
+                let permitted = room.can_user_redact_own(&my_id).await?;
+                if !permitted {
+                    bail!("No permissions to redact own message in this room");
+                }
                 let response = room.redact(&event_id, reason.as_deref(), None).await?;
                 Ok(response.event_id)
             })

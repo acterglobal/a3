@@ -1,4 +1,3 @@
-use crate::{ActerUserAppSettings, Client};
 use acter_core::events::settings::{
     ActerUserAppSettingsContent, ActerUserAppSettingsContentBuilder, APP_USER_SETTINGS,
 };
@@ -9,13 +8,13 @@ use ruma_common::{OwnedMxcUri, OwnedUserId, UserId};
 use ruma_events::{ignored_user_list::IgnoredUserListEventContent, room::MediaSource};
 use std::{ops::Deref, path::PathBuf};
 use tokio::sync::broadcast::Receiver;
-use tokio_stream::wrappers::BroadcastStream;
-use tokio_stream::Stream;
+use tokio_stream::{wrappers::BroadcastStream, Stream};
 
 use super::{
     common::{OptionBuffer, OptionString, ThumbnailSize},
     RUNTIME,
 };
+use crate::{ActerUserAppSettings, Client};
 
 #[derive(Clone, Debug)]
 pub struct Account {

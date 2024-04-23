@@ -10,9 +10,12 @@ use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
 use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};
-use ruma_events::room::message::{
-    AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
-    LocationMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
+use ruma_events::{
+    room::message::{
+        AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
+        LocationMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
+    },
+    MessageLikeEventType,
 };
 use std::{
     collections::{hash_map::Entry, HashMap},
@@ -152,6 +155,7 @@ impl NewsSlide {
     pub fn type_str(&self) -> String {
         self.inner.content().type_str()
     }
+
     pub fn unique_id(&self) -> String {
         self.unique_id.clone()
     }
@@ -174,12 +178,10 @@ impl NewsSlide {
             | NewsContent::Fallback(FallbackNewsContent::Location(content)) => {
                 MsgContent::from(content)
             }
-
             NewsContent::Audio(content)
             | NewsContent::Fallback(FallbackNewsContent::Audio(content)) => {
                 MsgContent::from(content)
             }
-
             NewsContent::Video(content)
             | NewsContent::Fallback(FallbackNewsContent::Video(content)) => {
                 MsgContent::from(content)
@@ -298,6 +300,7 @@ impl NewsSlideDraft {
             colorize_builder: ColorizeBuilder::default(),
         }
     }
+
     #[allow(clippy::boxed_local)]
     pub fn color(&mut self, colors: Box<ColorizeBuilder>) {
         self.colorize_builder = *colors;
@@ -634,8 +637,14 @@ impl NewsEntryDraft {
         trace!("starting send");
         let client = self.client.clone();
         let room = self.room.clone();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
         let slides_drafts = self.slides.clone();
         let mut builder = self.content.clone();
+
         RUNTIME
             .spawn(async move {
                 let mut slides = vec![];
@@ -648,8 +657,14 @@ impl NewsEntryDraft {
                 trace!("send buildin");
                 let content = builder.build()?;
                 trace!("off we go");
-                let resp = room.send(content).await?;
-                Ok(resp.event_id)
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(content).await?;
+                Ok(response.event_id)
             })
             .await?
     }
@@ -705,12 +720,23 @@ impl NewsEntryUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
         let content = self.content.build()?;
+
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content).await?;
-                Ok(resp.event_id)
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(content).await?;
+                Ok(response.event_id)
             })
             .await?
     }

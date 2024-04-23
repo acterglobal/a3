@@ -281,6 +281,9 @@ impl TimelineStream {
                     .item_by_event_id(&event_id)
                     .await
                     .context("Not found which item would be edited")?;
+                if !edit_item.can_be_edited() {
+                    bail!("This event item cannot be edited");
+                }
                 let new_content = draft.into_edited_content(client, room, event_id).await?;
                 timeline.edit(new_content, &edit_item).await?;
                 Ok(true)
@@ -318,6 +321,9 @@ impl TimelineStream {
                     .item_by_event_id(&event_id)
                     .await
                     .context("Not found which item would be replied to")?;
+                if !reply_item.can_be_replied_to() {
+                    bail!("This event item cannot be replied to");
+                }
                 let content = draft.into_replied_content(client, room).await?;
                 timeline
                     .send_reply(content, &reply_item, ForwardThread::Yes)
