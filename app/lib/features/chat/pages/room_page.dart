@@ -17,6 +17,7 @@ import 'package:acter/features/chat/widgets/image_message_builder.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
 import 'package:acter/features/chat/widgets/video_message_builder.dart';
+import 'package:acter/features/settings/providers/app_settings_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -97,23 +98,30 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
   }
 
   SliverFillRemaining chatBody(BuildContext context) {
+    final userAppSettings = ref.watch(userAppSettingsProvider);
     final chatState = ref.watch(chatStateProvider(widget.convo));
     final userId = ref.watch(myUserIdStrProvider);
     final roomId = widget.convo.getRoomIdStr();
     List<types.User> typingUsers = [];
-    final typingEvent = ref.watch(
-      chatTypingEventStateProvider.select((t) {
-        return t?.roomId().toString() == widget.convo.getRoomIdStr() ? t : null;
-      }),
-    );
-    if (typingEvent != null) {
-      for (var i in typingEvent.userIds().toList()) {
-        if (i.toString() != userId) {
-          final uid = types.User(
-            id: i.toString(),
-            firstName: i.toString(),
-          );
-          typingUsers.add(uid);
+    if (userAppSettings.valueOrNull != null) {
+      final settings = userAppSettings.requireValue;
+      if (settings.typingNotice() != false) {
+        final typingEvent = ref.watch(chatTypingEventProvider);
+        if (typingEvent.valueOrNull != null) {
+          final t = typingEvent.requireValue;
+          if (t != null) {
+            if (t.roomId().toString() == roomId) {
+              for (var i in t.userIds().toList()) {
+                if (i.toString() != userId) {
+                  final uid = types.User(
+                    id: i.toString(),
+                    firstName: i.toString(),
+                  );
+                  typingUsers.add(uid);
+                }
+              }
+            }
+          }
         }
       }
     }

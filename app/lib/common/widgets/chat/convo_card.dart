@@ -6,6 +6,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/chat/convo_with_profile_card.dart';
 import 'package:acter/common/widgets/chat/loading_convo_card.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/settings/providers/app_settings_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -162,23 +163,28 @@ class _SubtitleWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final userAppSettings = ref.watch(userAppSettingsProvider);
     final myUserId = ref.watch(myUserIdStrProvider);
-    // start listening typing events
-    final TypingEvent? typingEvent = ref.watch(
-      chatTypingEventStateProvider.select(
-        (t) {
-          return t?.roomId().toString() == room.getRoomIdStr() ? t : null;
-        },
-      ),
-    );
-
-    if (typingEvent != null) {
-      var userIds = typingEvent.userIds().toList();
-      userIds.removeWhere((id) => id.toString() == myUserId);
-      if (userIds.isNotEmpty) {
-        return renderTypingState(context, userIds, ref);
+    if (userAppSettings.valueOrNull != null) {
+      final settings = userAppSettings.requireValue;
+      if (settings.typingNotice() != false) {
+        // start listening typing events
+        final typingEvent = ref.watch(chatTypingEventProvider);
+        if (typingEvent.valueOrNull != null) {
+          final t = typingEvent.requireValue;
+          if (t != null) {
+            if (t.roomId().toString() == room.getRoomIdStr()) {
+              var userIds = t.userIds().toList();
+              userIds.removeWhere((id) => id.toString() == myUserId);
+              if (userIds.isNotEmpty) {
+                return renderTypingState(context, userIds, ref);
+              }
+            }
+          }
+        }
       }
     }
+
     RoomEventItem? eventItem = latestMessage.eventItem();
     if (eventItem == null) {
       return const SizedBox.shrink();

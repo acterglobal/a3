@@ -1,5 +1,4 @@
 import 'package:acter/common/widgets/with_sidebar.dart';
-import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/settings/providers/app_settings_provider.dart';
 import 'package:acter/features/settings/widgets/options_settings_tile.dart';
@@ -81,13 +80,9 @@ class ChatSettingsPage extends ConsumerWidget {
             onToggle: (newVal) async {
               EasyLoading.show(status: L10n.of(context).settingsSubmitting);
               try {
-                final notifier =
-                    ref.read(chatTypingEventStateProvider.notifier);
                 final updater = settings.updateBuilder();
                 updater.typingNotice(newVal);
                 await updater.send();
-                // refresh state
-                notifier.configure(newVal);
                 EasyLoading.showToast(
                   // ignore: use_build_context_synchronously
                   L10n.of(context).settingsSubmittingSuccess,
