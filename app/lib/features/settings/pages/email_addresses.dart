@@ -1,4 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
+
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
@@ -48,7 +50,7 @@ class _AddEmailAddrState extends State<AddEmailAddr> {
           onPressed: () => Navigator.pop(context, null),
           child: Text(L10n.of(context).cancel),
         ),
-        ElevatedButton(
+        ActerPrimaryActionButton(
           onPressed: () => onSubmit(context),
           child: Text(L10n.of(context).submit),
         ),

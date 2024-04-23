@@ -1,3 +1,5 @@
+import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -53,7 +55,7 @@ class ForgotPassword extends StatelessWidget {
           child: Text(
             L10n.of(context).passwordRecovery,
             style: Theme.of(context).textTheme.displaySmall!.copyWith(
-                  color: Colors.green,
+                  color: Theme.of(context).colorScheme.textHighlight,
                 ),
           ),
         ),
@@ -79,7 +81,7 @@ class ForgotPassword extends StatelessWidget {
   }
 
   Widget _buildButton(BuildContext context) {
-    return ElevatedButton(
+    return ActerPrimaryActionButton(
       onPressed: () async => await mailTo(toAddress: 'support@acter.global'),
       child: Text(
         L10n.of(context).contactActerSupport,

@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/default_bottom_sheet.dart';
 import 'package:acter/common/widgets/like_button.dart';
 import 'package:acter/common/widgets/redact_content.dart';
@@ -46,7 +47,7 @@ class NewsSideBar extends ConsumerWidget {
           isLiked: isLikedByMe.valueOrNull ?? false,
           likeCount: likesCount.valueOrNull ?? 0,
           style: style,
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.textColor,
           index: index,
           onTap: () async {
             final manager = await ref.read(newsReactionsProvider(news).future);

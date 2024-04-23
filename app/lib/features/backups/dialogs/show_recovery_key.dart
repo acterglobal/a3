@@ -50,14 +50,11 @@ class _ShowRecoveryDialog extends StatelessWidget {
           ],
         ),
       ),
+      actionsAlignment: MainAxisAlignment.end,
       actions: <Widget>[
-        Row(
-          children: [
-            OutlinedButton(
-              onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-              child: Text(L10n.of(context).okay),
-            ),
-          ],
+        OutlinedButton(
+          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+          child: Text(L10n.of(context).okay),
         ),
       ],
     );

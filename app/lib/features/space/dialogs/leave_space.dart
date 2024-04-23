@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:flutter/material.dart';
@@ -34,15 +35,11 @@ void showLeaveSpaceDialog(
         L10n.of(context).areYouSureYouWantToLeaveSpace,
       ),
       actions: <Widget>[
-        ElevatedButton(
-          onPressed: () => Navigator.of(context).pop(),
+        OutlinedButton(
+          onPressed: () => context.pop(),
           child: Text(L10n.of(context).noIStay),
         ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.error,
-            foregroundColor: Theme.of(context).colorScheme.onError,
-          ),
+        ActerDangerActionButton(
           onPressed: () async {
             final lang = L10n.of(context);
             try {

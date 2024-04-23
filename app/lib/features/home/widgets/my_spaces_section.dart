@@ -1,5 +1,7 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/tutorial_dialogs/space_overview_tutorials/create_or_join_space_tutorials.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
@@ -68,9 +70,9 @@ class MySpacesSection extends ConsumerWidget {
                                 child: Text(L10n.of(context).createSpace),
                               ),
                               const SizedBox(height: 10),
-                              ElevatedButton(
+                              ActerPrimaryActionButton(
                                 onPressed: () => context.pushNamed(
-                                    Routes.searchPublicDirectory.name,),
+                                    Routes.searchPublicDirectory.name),
                                 child: Text(L10n.of(context).joinSpace),
                               ),
                             ],
@@ -139,48 +141,20 @@ class _NoSpacesWidgetState extends ConsumerState<_NoSpacesWidget> {
         ),
         SizedBox(height: MediaQuery.of(context).size.height * 0.15),
         Center(
-          child: ElevatedButton(
+          child: OutlinedButton.icon(
             key: createNewSpaceKey,
+            icon: const Icon(Icons.chevron_right_outlined),
             onPressed: () => context.pushNamed(Routes.createSpace.name),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.neutral6,
-              foregroundColor: Theme.of(context).colorScheme.neutral,
-              textStyle: Theme.of(context).textTheme.bodyLarge,
-              fixedSize: const Size(311, 61),
-              shape: RoundedRectangleBorder(
-                side: BorderSide.none,
-                borderRadius: BorderRadius.circular(6),
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(L10n.of(context).createNewSpace),
-                const SizedBox(width: 10),
-                const Icon(Icons.chevron_right_outlined),
-              ],
-            ),
+            label: Text(L10n.of(context).createNewSpace),
           ),
         ),
         const SizedBox(height: 36),
         Center(
-          child: ElevatedButton(
+          child: ActerPrimaryActionButton(
             key: joinExistingSpaceKey,
             onPressed: () {
               context.pushNamed(Routes.searchPublicDirectory.name);
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.transparent,
-              foregroundColor: Theme.of(context).colorScheme.neutral6,
-              textStyle: Theme.of(context).textTheme.bodyLarge,
-              fixedSize: const Size(311, 61),
-              shape: RoundedRectangleBorder(
-                side: BorderSide(
-                  color: Theme.of(context).colorScheme.neutral6,
-                ),
-                borderRadius: BorderRadius.circular(6),
-              ),
-            ),
             child: Text(L10n.of(context).joinExistingSpace),
           ),
         ),

@@ -1,3 +1,4 @@
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
@@ -8,9 +9,14 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class CreateCommentWidget extends ConsumerStatefulWidget {
   final CommentsManager manager;
+  final void Function() onClose;
   static const commentField = Key('create-comment-input-field');
 
-  const CreateCommentWidget({super.key, required this.manager});
+  const CreateCommentWidget({
+    super.key,
+    required this.manager,
+    required this.onClose,
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -19,23 +25,12 @@ class CreateCommentWidget extends ConsumerStatefulWidget {
 
 class _CreateCommentWidgetState extends ConsumerState<CreateCommentWidget> {
   EditorState textEditorState = EditorState.blank();
-  bool opened = false;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 12),
-      child: opened ? commentInputUI() : createCommentButtonUI(),
-    );
-  }
-
-  Widget createCommentButtonUI() {
-    return Center(
-      child: OutlinedButton.icon(
-        onPressed: () => setState(() => opened = true),
-        icon: const Icon(Icons.add_comment_outlined),
-        label: Text(L10n.of(context).comment),
-      ),
+      child: commentInputUI(),
     );
   }
 
@@ -75,11 +70,11 @@ class _CreateCommentWidgetState extends ConsumerState<CreateCommentWidget> {
             children: [
               const Spacer(),
               OutlinedButton(
-                onPressed: () => setState(() => opened = false),
+                onPressed: widget.onClose,
                 child: Text(L10n.of(context).cancel),
               ),
               const SizedBox(width: 22),
-              ElevatedButton(
+              ActerPrimaryActionButton(
                 onPressed: onSubmit,
                 child: Text(L10n.of(context).submit),
               ),

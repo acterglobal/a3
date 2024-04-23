@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/rooms.dart';
 import 'package:acter/router/utils.dart';
 import 'package:flutter/material.dart';
@@ -140,7 +141,7 @@ void askToJoinRoom(
             L10n.of(context).youAreNotPartOfThisGroup,
           ),
           const SizedBox(height: 20),
-          ElevatedButton(
+          ActerPrimaryActionButton(
             onPressed: () async {
               Navigator.of(context).pop();
               final server = roomId.split(':').last;

@@ -1,3 +1,4 @@
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -29,10 +30,10 @@ class _StartPageState extends State<StartPage> {
         title: Text(
           L10n.of(context).onBoardingSpaceTitle,
           textAlign: TextAlign.center,
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge!
-              .copyWith(fontWeight: FontWeight.bold, color: Colors.green),
+          style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.textHighlight,
+              ),
         ),
         description: RichText(
           text: TextSpan(
@@ -44,7 +45,7 @@ class _StartPageState extends State<StartPage> {
               TextSpan(
                 text: L10n.of(context).onBoardingSpaceDescription2,
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      color: Colors.green,
+                      color: Theme.of(context).colorScheme.textHighlight,
                     ),
               ),
               TextSpan(
@@ -59,29 +60,26 @@ class _StartPageState extends State<StartPage> {
         title: Text(
           L10n.of(context).onBoardingCommunicationTitle,
           textAlign: TextAlign.center,
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge!
-              .copyWith(fontWeight: FontWeight.bold, color: Colors.green),
+          style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.textHighlight,
+              ),
         ),
         description: RichText(
           text: TextSpan(
             style: Theme.of(context).textTheme.bodyMedium,
             children: [
               TextSpan(
-                text: L10n.of(context)
-                    .onBoardingCommunicationDescription1,
+                text: L10n.of(context).onBoardingCommunicationDescription1,
               ),
               TextSpan(
-                text: L10n.of(context)
-                    .onBoardingCommunicationDescription2,
+                text: L10n.of(context).onBoardingCommunicationDescription2,
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      color: Colors.green,
+                      color: Theme.of(context).colorScheme.textHighlight,
                     ),
               ),
               TextSpan(
-                text: L10n.of(context)
-                    .onBoardingCommunicationDescription3,
+                text: L10n.of(context).onBoardingCommunicationDescription3,
               ),
             ],
           ),
@@ -92,10 +90,10 @@ class _StartPageState extends State<StartPage> {
         title: Text(
           L10n.of(context).onBoardingUpdateTitle,
           textAlign: TextAlign.center,
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge!
-              .copyWith(fontWeight: FontWeight.bold, color: Colors.green),
+          style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.textHighlight,
+              ),
         ),
         description: RichText(
           text: TextSpan(
@@ -104,7 +102,7 @@ class _StartPageState extends State<StartPage> {
               TextSpan(
                 text: L10n.of(context).onBoardingUpdateDescription1,
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      color: Colors.green,
+                      color: Theme.of(context).colorScheme.textHighlight,
                     ),
               ),
               TextSpan(
@@ -119,25 +117,23 @@ class _StartPageState extends State<StartPage> {
         title: Text(
           L10n.of(context).onBoardingSimpleToUseTitle,
           textAlign: TextAlign.center,
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge!
-              .copyWith(fontWeight: FontWeight.bold, color: Colors.green),
+          style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.textHighlight,
+              ),
         ),
         description: RichText(
           text: TextSpan(
             style: Theme.of(context).textTheme.bodyMedium,
             children: [
               TextSpan(
-                text:
-                    L10n.of(context).onBoardingSimpleToUseDescription1,
+                text: L10n.of(context).onBoardingSimpleToUseDescription1,
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      color: Colors.green,
+                      color: Theme.of(context).colorScheme.textHighlight,
                     ),
               ),
               TextSpan(
-                text:
-                    L10n.of(context).onBoardingSimpleToUseDescription2,
+                text: L10n.of(context).onBoardingSimpleToUseDescription2,
               ),
             ],
           ),
@@ -293,8 +289,12 @@ class DotIndicator extends StatelessWidget {
       height: 9,
       width: 9,
       decoration: BoxDecoration(
-        color: isActive ? Colors.white : Colors.transparent,
-        border: isActive ? null : Border.all(color: Colors.white),
+        color: isActive
+            ? Theme.of(context).colorScheme.textColor
+            : Colors.transparent,
+        border: isActive
+            ? null
+            : Border.all(color: Theme.of(context).colorScheme.textColor),
         borderRadius: const BorderRadius.all(
           Radius.circular(12),
         ),

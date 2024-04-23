@@ -56,20 +56,14 @@ class SpaceItem extends ConsumerWidget {
                         children: [
                           TextSpan(
                             text: '${members.length}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 15,
-                            ),
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                           const WidgetSpan(
                             child: SizedBox(width: 4),
                           ),
                           TextSpan(
                             text: L10n.of(context).members,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 15,
-                            ),
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         ],
                       ),

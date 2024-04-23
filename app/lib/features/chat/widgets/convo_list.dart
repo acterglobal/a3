@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
@@ -55,7 +56,7 @@ class _ConvosListConsumerState extends ConsumerState<ConvosList> {
           title: L10n.of(context).youHaveNoDMsAtTheMoment,
           subtitle: L10n.of(context).getInTouchWithOtherChangeMakers,
           image: 'assets/images/empty_chat.svg',
-          primaryButton: ElevatedButton(
+          primaryButton: ActerPrimaryActionButton(
             onPressed: () async => context.pushNamed(
               Routes.createChat.name,
             ),

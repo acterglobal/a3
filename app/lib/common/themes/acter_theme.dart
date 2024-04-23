@@ -1,3 +1,4 @@
+import 'package:acter/common/themes/chat_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/themes/components/bottom_sheet_theme.dart';
 import 'package:acter/common/themes/components/button_theme.dart';
@@ -10,6 +11,16 @@ import 'package:acter/common/themes/components/navigationbar_theme.dart';
 import 'package:acter/common/themes/components/progress_indicator_theme.dart';
 import 'package:acter/common/themes/components/text_theme.dart';
 import 'package:flutter/material.dart';
+
+extension ActerChatThemeExtension on ThemeData {
+  ActerChatTheme get chatTheme => const ActerChatTheme();
+
+  ElevatedButtonThemeData get dangerButtonTheme =>
+      dangerButtonThemeMaker(colorScheme);
+
+  TextButtonThemeData get inlineTextButtonTheme =>
+      inlineTextButtonThemeMaker(colorScheme);
+}
 
 class ActerTheme {
   static final ThemeData theme = ThemeData(
@@ -40,9 +51,9 @@ class ActerTheme {
     dividerTheme: dividerTheme,
     dialogTheme: dialogTheme,
     bottomSheetTheme: bottomSheetTheme,
-    elevatedButtonTheme: elevatedButtonTheme,
+    elevatedButtonTheme: elevatedButtonTheme(colorScheme),
     outlinedButtonTheme: outlinedButtonTheme,
-    textButtonTheme: textButtonTheme,
+    textButtonTheme: textButtonTheme(colorScheme),
     iconButtonTheme: iconButtonTheme,
     inputDecorationTheme: inputDecorationTheme,
     bottomNavigationBarTheme: bottomNavigationBarTheme,

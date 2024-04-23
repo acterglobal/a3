@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/room/room_avatar_builder.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
@@ -76,11 +77,15 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.background,
                           borderRadius: BorderRadius.circular(5),
-                          border:
-                              ref.watch(newsStateProvider).currentNewsSlide ==
-                                      slidePost
-                                  ? Border.all(color: Colors.white)
-                                  : null,
+                          border: ref
+                                      .watch(newsStateProvider)
+                                      .currentNewsSlide ==
+                                  slidePost
+                              ? Border.all(
+                                  color:
+                                      Theme.of(context).colorScheme.textColor,
+                                )
+                              : null,
                         ),
                         child: getIconAsPerSlideType(
                           slidePost.type,

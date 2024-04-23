@@ -1,4 +1,5 @@
 import 'package:acter/common/dialogs/attachment_selection.dart';
+import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/features/attachments/providers/attachment_providers.dart';
 import 'package:acter/features/attachments/widgets/attachment_item.dart';
@@ -82,14 +83,12 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
             children: <Widget>[
               Row(
                 children: [
+                  const Icon(Atlas.paperclip_attachment_thin, size: 14),
+                  const SizedBox(width: 5),
                   Text(
                     L10n.of(context).attachments,
                     style: attachmentTitleTextStyle,
                   ),
-                  const SizedBox(width: 5),
-                  const Icon(Atlas.paperclip_attachment_thin, size: 14),
-                  const SizedBox(width: 5),
-                  Text('${list.length}'),
                 ],
               ),
               const SizedBox(height: 10),
@@ -164,7 +163,6 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
   ) async {
     final titleTextStyle = Theme.of(context).textTheme.titleMedium;
     final descriptionTextStyle = Theme.of(context).textTheme.bodyMedium;
-    final confirmBtnColor = Theme.of(context).colorScheme.errorContainer;
     final TextEditingController reasonController = TextEditingController();
     await showAdaptiveDialog(
       context: context,
@@ -206,7 +204,7 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
                       child: Text(L10n.of(context).no),
                     ),
                     const SizedBox(width: 10),
-                    ElevatedButton(
+                    ActerDangerActionButton(
                       key: AttachmentSectionWidget.confirmRedactKey,
                       onPressed: () {
                         Navigator.of(context).pop();
@@ -216,9 +214,6 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
                           context,
                         );
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: confirmBtnColor,
-                      ),
                       child: Text(L10n.of(context).yes),
                     ),
                   ],

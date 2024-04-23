@@ -1,3 +1,4 @@
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -14,7 +15,7 @@ Future<void> showBlockUserDialog(BuildContext context, Member member) async {
           textAlign: TextAlign.left,
           text: TextSpan(
             text: L10n.of(context).youAreAboutToBlock(userId),
-            style: const TextStyle(color: Colors.white, fontSize: 24),
+            style: Theme.of(context).textTheme.headlineMedium,
             children: <TextSpan>[
               TextSpan(text: L10n.of(context).blockInfoText),
               TextSpan(text: L10n.of(context).continueQuestion),
@@ -22,11 +23,11 @@ Future<void> showBlockUserDialog(BuildContext context, Member member) async {
           ),
         ),
         actions: <Widget>[
-          TextButton(
+          OutlinedButton(
             onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
             child: Text(L10n.of(context).no),
           ),
-          TextButton(
+          ActerPrimaryActionButton(
             onPressed: () async {
               EasyLoading.show(status: L10n.of(context).blockingUserProgress);
               try {

@@ -1,4 +1,6 @@
 import 'package:acter/common/themes/app_theme.dart';
+
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:flutter/material.dart';
 
 class SliverScaffold extends StatelessWidget {
@@ -206,7 +208,7 @@ class _SliverFooter extends StatelessWidget {
                     ),
                   const SizedBox(width: 12),
                   if (confirmActionTitle != null)
-                    ElevatedButton(
+                    ActerPrimaryActionButton(
                       key: confirmActionKey,
                       onPressed: confirmActionOnPressed,
                       child: Text(confirmActionTitle!),

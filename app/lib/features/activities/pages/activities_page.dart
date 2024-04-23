@@ -1,5 +1,6 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
+
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
@@ -92,7 +93,6 @@ class ActivitiesPage extends ConsumerWidget {
           (BuildContext ctx, int index) {
             return InvitationCard(
               invitation: invitations[index],
-              avatarColor: Colors.white,
             );
           },
           childCount: invitations.length,
@@ -136,21 +136,10 @@ class ActivitiesPage extends ConsumerWidget {
               L10n.of(context).unverifiedSessionsTitle(sessions.length),
               style: Theme.of(context).textTheme.headlineSmall,
             ),
-            trailing: ElevatedButton(
+            trailing: OutlinedButton(
               onPressed: () {
                 context.pushNamed(Routes.settingSessions.name);
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.neutral,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                side: BorderSide(
-                  color: Theme.of(context).colorScheme.success,
-                ),
-                foregroundColor: Theme.of(context).colorScheme.neutral6,
-                textStyle: Theme.of(context).textTheme.bodySmall,
-              ),
               child: Text(L10n.of(context).review),
             ),
           ),

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -170,7 +171,6 @@ class _BugReportState extends ConsumerState<BugReportPage> {
                 const SizedBox(height: 10),
                 TextFormField(
                   key: BugReportPage.titleField,
-                  style: const TextStyle(color: Colors.white),
                   controller: titleController,
                   validator: (newValue) => newValue == null || newValue.isEmpty
                       ? L10n.of(context).emptyDescription
@@ -234,7 +234,7 @@ class _BugReportState extends ConsumerState<BugReportPage> {
                 const SizedBox(height: 10),
                 isLoading
                     ? const Center(child: CircularProgressIndicator())
-                    : ElevatedButton(
+                    : ActerPrimaryActionButton(
                         key: BugReportPage.submitBtn,
                         onPressed: () async {
                           if (!formKey.currentState!.validate()) return;

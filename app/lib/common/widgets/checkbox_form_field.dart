@@ -7,8 +7,7 @@ class CheckboxFormField extends FormField<bool> {
     super.onSaved,
     super.validator,
     FormFieldSetter<bool>? onChanged,
-    bool super.initialValue = false,
-    bool autovalidate = false,
+    super.initialValue = false,
     super.key,
   }) : super(
           builder: (FormFieldState<bool> state) {
@@ -27,7 +26,8 @@ class CheckboxFormField extends FormField<bool> {
                       builder: (BuildContext context) => Text(
                         state.errorText ?? '',
                         style: TextStyle(
-                            color: Theme.of(context).colorScheme.error,),
+                          color: Theme.of(context).colorScheme.error,
+                        ),
                       ),
                     )
                   : null,
