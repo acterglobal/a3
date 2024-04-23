@@ -11,6 +11,7 @@ import 'package:acter/features/chat/providers/notifiers/chat_input_notifier.dart
 import 'package:acter/features/chat/providers/notifiers/chat_room_notifier.dart';
 import 'package:acter/features/chat/providers/notifiers/media_chat_notifier.dart';
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/providers/app_settings_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -100,4 +101,11 @@ final chatMentionsProvider =
     mentionRecords.add(record);
   }
   return mentionRecords;
+});
+
+final chatTypingEventProvider = StreamProvider<TypingEvent?>((ref) async* {
+  final client = ref.watch(alwaysClientProvider);
+  await for (final event in client.typingEventRx()!) {
+    yield event;
+  }
 });
