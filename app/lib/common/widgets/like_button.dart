@@ -1,5 +1,4 @@
 import 'package:acter/common/animations/like_animation.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';

@@ -232,7 +232,7 @@ class _CreateSuperInviteTokenPageConsumerState
                 onPressed: () => ctx.pop(),
                 child: Text(
                   L10n.of(context).no,
-                )),
+                ),),
             ActerDangerActionButton(
               key: CreateSuperInviteTokenPage.deleteConfirm,
               onPressed: () async {

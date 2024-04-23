@@ -1,7 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 
-import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/space/dialogs/leave_space.dart';
 import 'package:flutter/material.dart';

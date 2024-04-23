@@ -413,7 +413,7 @@ class PublicSpaceSelector extends ConsumerWidget {
                         title: Text(targetId),
                         subtitle: servers.isNotEmpty
                             ? Text(
-                                '${L10n.of(context).via} ${servers.join(', ')}')
+                                '${L10n.of(context).via} ${servers.join(', ')}',)
                             : null,
                         trailing: OutlinedButton.icon(
                           onPressed: () => onSelectedMatch!(
