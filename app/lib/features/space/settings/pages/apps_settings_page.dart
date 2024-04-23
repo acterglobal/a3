@@ -1,5 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
+
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
@@ -832,16 +834,17 @@ class _ChangePowerLevelState extends State<ChangePowerLevel> {
           // ],
         ),
       ),
+      actionsAlignment: MainAxisAlignment.spaceEvenly,
       actions: <Widget>[
-        TextButton(
+        OutlinedButton(
           onPressed: onCancel,
           child: const Text('Cancel'),
         ),
-        TextButton(
+        OutlinedButton(
           onPressed: onUnset,
           child: const Text('Unset'),
         ),
-        TextButton(
+        ActerPrimaryActionButton(
           onPressed: onSubmit,
           child: const Text('Submit'),
         ),

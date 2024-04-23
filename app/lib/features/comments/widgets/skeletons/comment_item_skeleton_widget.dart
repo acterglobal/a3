@@ -26,7 +26,6 @@ class CommentItemSkeleton extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(L10n.of(context).commentEmptyStateTitle),
-                Text(L10n.of(context).commentEmptyStateSubtitle),
               ],
             ),
           ),

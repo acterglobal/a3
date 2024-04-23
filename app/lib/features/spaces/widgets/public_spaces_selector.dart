@@ -349,7 +349,6 @@ class PublicSpaceSelector extends ConsumerWidget {
                     decoration: InputDecoration(
                       prefixIcon: const Icon(
                         Atlas.magnifying_glass_thin,
-                        color: Colors.white,
                       ),
                       labelText: L10n.of(context).searchSpace,
                     ),
@@ -413,7 +412,8 @@ class PublicSpaceSelector extends ConsumerWidget {
                         ),
                         title: Text(targetId),
                         subtitle: servers.isNotEmpty
-                            ? Text('${L10n.of(context).via} ${servers.join(', ')}')
+                            ? Text(
+                                '${L10n.of(context).via} ${servers.join(', ')}',)
                             : null,
                         trailing: OutlinedButton.icon(
                           onPressed: () => onSelectedMatch!(

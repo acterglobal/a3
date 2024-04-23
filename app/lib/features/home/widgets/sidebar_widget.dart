@@ -62,9 +62,6 @@ class SidebarWidget extends ConsumerWidget {
 
           // configuration
           labelType: labelType,
-          selectedIconTheme: const IconThemeData(size: 18, color: Colors.white),
-          unselectedIconTheme:
-              const IconThemeData(size: 18, color: Colors.white),
           padding: const EdgeInsets.all(0),
           leading: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -99,7 +96,7 @@ class SidebarWidget extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: Column(
                       children: [
-                        const Icon(Atlas.bug_file_thin, color: Colors.white),
+                        const Icon(Atlas.bug_file_thin),
                         Text(
                           L10n.of(context).report,
                           style: Theme.of(context).textTheme.labelSmall,

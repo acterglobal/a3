@@ -1,6 +1,8 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/base_body_widget.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
@@ -338,7 +340,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
             onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
             child: Text(L10n.of(context).no),
           ),
-          ElevatedButton(
+          ActerPrimaryActionButton(
             onPressed: _handleLeaveRoom,
             child: Text(L10n.of(context).yes),
           ),

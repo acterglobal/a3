@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/sdk_provider.dart';
-import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
+
 import 'package:acter/common/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -15,6 +16,7 @@ const deactivatePasswordField = Key('deactivate-password-field');
 // Ref can be used to read any provider which are declared.
 void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
   TextEditingController passwordController = TextEditingController();
+  final theme = Theme.of(context).colorScheme;
   showDialog(
     context: context,
     builder: (BuildContext ctx) {
@@ -22,7 +24,7 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
         title: Text(
           L10n.of(context).deactivateAccount,
           style: TextStyle(
-            color: AppTheme.brandColorScheme.error,
+            color: theme.error,
             fontSize: 26,
           ),
         ),
@@ -43,7 +45,7 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
                         Text(
                           L10n.of(context).deactivateAccountTitle,
                           style: TextStyle(
-                            color: AppTheme.brandColorScheme.error,
+                            color: theme.error,
                             fontSize: 20,
                           ),
                         ),
@@ -58,7 +60,7 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
                 child: Text(
                   L10n.of(context).deactivateAccountPasswordTitle,
                   style: TextStyle(
-                    color: AppTheme.brandColorScheme.error,
+                    color: theme.error,
                     fontSize: 20,
                   ),
                 ),
@@ -78,12 +80,12 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
           ),
         ),
         actions: <Widget>[
-          TextButton(
+          OutlinedButton(
             key: deactivateCancelBtn,
             onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
             child: Text(L10n.of(context).cancel),
           ),
-          TextButton(
+          ActerDangerActionButton(
             key: deactivateConfirmBtn,
             onPressed: () async => _onConfirm(
               context,

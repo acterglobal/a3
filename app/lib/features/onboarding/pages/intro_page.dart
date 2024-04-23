@@ -1,4 +1,6 @@
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +47,7 @@ class IntroPage extends StatelessWidget {
             text: L10n.of(context).welcomeTo,
             style: Theme.of(context).textTheme.displayMedium!.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Colors.green,
+                  color: Theme.of(context).colorScheme.textHighlight,
                 ),
             children: <TextSpan>[
               TextSpan(
@@ -88,7 +90,7 @@ class IntroPage extends StatelessWidget {
                   TextSpan(
                     text: L10n.of(context).introPageDescription2,
                     style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          color: Colors.green,
+                          color: Theme.of(context).colorScheme.textHighlight,
                         ),
                   ),
                 ],
@@ -109,23 +111,16 @@ class IntroPage extends StatelessWidget {
     return Center(
       child: Container(
         constraints: const BoxConstraints(maxWidth: 500),
-        child: ElevatedButton(
+        child: ActerPrimaryActionButton.icon(
           key: Keys.exploreBtn,
           onPressed: () => context.goNamed(Routes.start.name),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                L10n.of(context).letsExplore,
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
-              const SizedBox(width: 10),
-              const Icon(
-                Icons.arrow_forward_ios,
-                size: 18,
-              ),
-            ],
+          icon: const Icon(
+            Icons.arrow_forward_ios,
+            size: 18,
+          ),
+          label: Text(
+            L10n.of(context).letsExplore,
+            style: Theme.of(context).textTheme.titleSmall,
           ),
         ),
       ),

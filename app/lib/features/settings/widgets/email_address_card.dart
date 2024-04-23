@@ -1,5 +1,7 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -125,7 +127,7 @@ class EmailAddressCard extends ConsumerWidget {
             onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
             child: Text(L10n.of(context).no),
           ),
-          ElevatedButton(
+          ActerPrimaryActionButton(
             onPressed: () async {
               final client = ref.read(alwaysClientProvider);
               final manager = client.threePidManager();
@@ -275,7 +277,7 @@ class _PasswordConfirmState extends State<PasswordConfirm> {
           onPressed: () => Navigator.pop(context, null),
           child: Text(L10n.of(context).cancel),
         ),
-        ElevatedButton(
+        ActerPrimaryActionButton(
           onPressed: () => onSubmit(context),
           child: Text(L10n.of(context).submit),
         ),
@@ -351,7 +353,7 @@ class _TokenConfirmState extends State<TokenConfirm> {
           onPressed: () => Navigator.pop(context, null),
           child: Text(L10n.of(context).cancel),
         ),
-        ElevatedButton(
+        ActerPrimaryActionButton(
           onPressed: () => onSubmit(context),
           child: Text(L10n.of(context).submit),
         ),

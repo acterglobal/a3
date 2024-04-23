@@ -1,5 +1,5 @@
+import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/themes/chat_theme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -66,11 +66,13 @@ class _TextMessageBuilderConsumerState
     if (matches.isEmpty) {
       return LinkPreview(
         metadataTitleStyle: userId == authorId
-            ? const ActerChatTheme().sentMessageLinkTitleTextStyle
-            : const ActerChatTheme().receivedMessageLinkTitleTextStyle,
+            ? Theme.of(context).chatTheme.sentMessageLinkTitleTextStyle
+            : Theme.of(context).chatTheme.receivedMessageLinkTitleTextStyle,
         metadataTextStyle: userId == authorId
-            ? const ActerChatTheme().sentMessageLinkDescriptionTextStyle
-            : const ActerChatTheme().receivedMessageLinkDescriptionTextStyle,
+            ? Theme.of(context).chatTheme.sentMessageLinkDescriptionTextStyle
+            : Theme.of(context)
+                .chatTheme
+                .receivedMessageLinkDescriptionTextStyle,
         enableAnimation: true,
         imageBuilder: (image) {
           return Padding(
@@ -139,8 +141,8 @@ class _TextWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final client = ref.watch(alwaysClientProvider);
     final emojiTextStyle = client.userId().toString() == message.author.id
-        ? const ActerChatTheme().sentEmojiMessageTextStyle
-        : const ActerChatTheme().receivedEmojiMessageTextStyle;
+        ? Theme.of(context).chatTheme.sentEmojiMessageTextStyle
+        : Theme.of(context).chatTheme.receivedEmojiMessageTextStyle;
     return Column(
       children: [
         ConstrainedBox(
@@ -176,7 +178,8 @@ class _TextWidget extends ConsumerWidget {
           visible: wasEdited,
           child: Text(
             L10n.of(context).edited,
-            style: const ActerChatTheme()
+            style: Theme.of(context)
+                .chatTheme
                 .emptyChatPlaceholderTextStyle
                 .copyWith(fontSize: 12),
           ),

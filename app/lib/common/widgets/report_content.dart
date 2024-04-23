@@ -1,6 +1,8 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:flutter/material.dart';
@@ -96,7 +98,7 @@ class ReportContentWidget extends ConsumerWidget {
           onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
           child: Text(L10n.of(context).close),
         ),
-        ElevatedButton(
+        ActerPrimaryActionButton(
           onPressed: () => reportContent(context, ref, textController.text),
           child: Text(L10n.of(context).report),
         ),

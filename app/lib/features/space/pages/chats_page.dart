@@ -3,6 +3,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
@@ -111,7 +112,7 @@ class SpaceChatsPage extends ConsumerWidget {
         subtitle: L10n.of(context).getConversationGoingToStart,
         image: 'assets/images/empty_chat.svg',
         primaryButton: canCreateSpace
-            ? ElevatedButton(
+            ? ActerPrimaryActionButton(
                 onPressed: () => context.pushNamed(
                   Routes.createChat.name,
                   queryParameters: {'spaceId': spaceIdOrAlias},

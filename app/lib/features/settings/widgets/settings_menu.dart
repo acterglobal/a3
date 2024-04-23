@@ -1,6 +1,5 @@
 import 'package:acter/common/dialogs/deactivation_confirmation.dart';
 import 'package:acter/common/dialogs/logout_confirmation.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/toolkit/menu_item_widget.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -24,18 +23,22 @@ class SettingsMenu extends ConsumerWidget {
 
   const SettingsMenu({super.key = defaultSettingsMenuKey});
 
+  Color? routedColor(
+    BuildContext context,
+    WidgetRef ref,
+    Routes route,
+  ) {
+    final currentRoute = ref.watch(currentRoutingLocation);
+    if (currentRoute == route.route) {
+      return Theme.of(context).colorScheme.secondary;
+    } else {
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentRoute = ref.watch(currentRoutingLocation);
     final size = MediaQuery.of(context).size;
-
-    Color? colorSelected(Routes route) => currentRoute == route.route
-        ? AppTheme.brandColorScheme.secondary
-        : null;
-
-    TextStyle titleStylesSelected(Routes route) {
-      return TextStyle(color: colorSelected(route));
-    }
 
     final shouldGoNotNamed = size.width > 770;
 
@@ -51,20 +54,32 @@ class SettingsMenu extends ConsumerWidget {
           children: [
             MenuItemWidget(
               iconData: Atlas.bell_mobile_thin,
-              iconColor: colorSelected(Routes.settingNotifications),
+              iconColor: routedColor(context, ref, Routes.settingNotifications),
               title: L10n.of(context).notifications,
               subTitle: L10n.of(context).notificationsSettingsAndTargets,
-              titleStyles: titleStylesSelected(Routes.settingNotifications),
+              titleStyles: TextStyle(
+                color: routedColor(
+                  context,
+                  ref,
+                  Routes.settingNotifications,
+                ),
+              ),
               onTap: () => shouldGoNotNamed
                   ? context.goNamed(Routes.settingNotifications.name)
                   : context.pushNamed(Routes.settingNotifications.name),
             ),
             MenuItemWidget(
               iconData: Atlas.envelope_paper_email_thin,
-              iconColor: colorSelected(Routes.emailAddresses),
+              iconColor: routedColor(context, ref, Routes.emailAddresses),
               title: L10n.of(context).emailAddresses,
               subTitle: L10n.of(context).connectedToYourAccount,
-              titleStyles: titleStylesSelected(Routes.emailAddresses),
+              titleStyles: TextStyle(
+                color: routedColor(
+                  context,
+                  ref,
+                  Routes.emailAddresses,
+                ),
+              ),
               onTap: () => shouldGoNotNamed
                   ? context.goNamed(Routes.emailAddresses.name)
                   : context.pushNamed(Routes.emailAddresses.name),
@@ -77,10 +92,16 @@ class SettingsMenu extends ConsumerWidget {
           children: [
             MenuItemWidget(
               iconData: Atlas.key_monitor_thin,
-              iconColor: colorSelected(Routes.settingSessions),
+              iconColor: routedColor(context, ref, Routes.settingSessions),
               title: L10n.of(context).sessions,
               subTitle: L10n.of(context).yourActiveDevices,
-              titleStyles: titleStylesSelected(Routes.settingSessions),
+              titleStyles: TextStyle(
+                color: routedColor(
+                  context,
+                  ref,
+                  Routes.settingSessions,
+                ),
+              ),
               onTap: () => shouldGoNotNamed
                   ? context.goNamed(Routes.settingSessions.name)
                   : context.pushNamed(Routes.settingSessions.name),
@@ -90,20 +111,32 @@ class SettingsMenu extends ConsumerWidget {
                 .isActive(LabsFeature.encryptionBackup))
               MenuItemWidget(
                 iconData: Atlas.key_website_thin,
-                iconColor: colorSelected(Routes.settingBackup),
+                iconColor: routedColor(context, ref, Routes.settingBackup),
                 title: L10n.of(context).settingsKeyBackUpTitle,
                 subTitle: L10n.of(context).settingsKeyBackUpDesc,
-                titleStyles: titleStylesSelected(Routes.settingBackup),
+                titleStyles: TextStyle(
+                  color: routedColor(
+                    context,
+                    ref,
+                    Routes.settingBackup,
+                  ),
+                ),
                 onTap: () => shouldGoNotNamed
                     ? context.goNamed(Routes.settingBackup.name)
                     : context.pushNamed(Routes.settingBackup.name),
               ),
             MenuItemWidget(
               iconData: Atlas.users_thin,
-              iconColor: colorSelected(Routes.blockedUsers),
+              iconColor: routedColor(context, ref, Routes.blockedUsers),
               title: L10n.of(context).blockedUsers,
               subTitle: L10n.of(context).usersYouBlocked,
-              titleStyles: titleStylesSelected(Routes.blockedUsers),
+              titleStyles: TextStyle(
+                color: routedColor(
+                  context,
+                  ref,
+                  Routes.blockedUsers,
+                ),
+              ),
               onTap: () => shouldGoNotNamed
                   ? context.goNamed(Routes.blockedUsers.name)
                   : context.pushNamed(Routes.blockedUsers.name),
@@ -118,10 +151,16 @@ class SettingsMenu extends ConsumerWidget {
               key: SettingsMenu.superInvitations,
               iconData: Atlas.plus_envelope_thin,
               enabled: isSuperInviteEnable,
-              iconColor: colorSelected(Routes.settingsSuperInvites),
+              iconColor: routedColor(context, ref, Routes.settingsSuperInvites),
               title: L10n.of(context).superInvitations,
               subTitle: L10n.of(context).manageYourInvitationCodes,
-              titleStyles: titleStylesSelected(Routes.settingsSuperInvites),
+              titleStyles: TextStyle(
+                color: routedColor(
+                  context,
+                  ref,
+                  Routes.settingsSuperInvites,
+                ),
+              ),
               onTap: isSuperInviteEnable
                   ? () => shouldGoNotNamed
                       ? context.goNamed(Routes.settingsSuperInvites.name)
@@ -137,20 +176,32 @@ class SettingsMenu extends ConsumerWidget {
             MenuItemWidget(
               key: SettingsMenu.chat,
               iconData: Atlas.chat_conversation_thin,
-              iconColor: colorSelected(Routes.settingsChat),
+              iconColor: routedColor(context, ref, Routes.settingsChat),
               title: L10n.of(context).chat,
               subTitle: L10n.of(context).chatSettingsExplainer,
-              titleStyles: titleStylesSelected(Routes.settingsChat),
+              titleStyles: TextStyle(
+                color: routedColor(
+                  context,
+                  ref,
+                  Routes.settingsChat,
+                ),
+              ),
               onTap: () => shouldGoNotNamed
                   ? context.goNamed(Routes.settingsChat.name)
                   : context.pushNamed(Routes.settingsChat.name),
             ),
             MenuItemWidget(
               iconData: Atlas.language_translation,
-              iconColor: colorSelected(Routes.settingLanguage),
+              iconColor: routedColor(context, ref, Routes.settingLanguage),
               title: L10n.of(context).language,
               subTitle: L10n.of(context).changeAppLanguage,
-              titleStyles: titleStylesSelected(Routes.settingLanguage),
+              titleStyles: TextStyle(
+                color: routedColor(
+                  context,
+                  ref,
+                  Routes.settingLanguage,
+                ),
+              ),
               onTap: () => shouldGoNotNamed
                   ? context.goNamed(Routes.settingLanguage.name)
                   : context.pushNamed(Routes.settingLanguage.name),
@@ -158,19 +209,31 @@ class SettingsMenu extends ConsumerWidget {
             MenuItemWidget(
               key: SettingsMenu.labs,
               iconData: Atlas.lab_appliance_thin,
-              iconColor: colorSelected(Routes.settingsLabs),
+              iconColor: routedColor(context, ref, Routes.settingsLabs),
               title: L10n.of(context).labs,
               subTitle: L10n.of(context).experimentalActerFeatures,
-              titleStyles: titleStylesSelected(Routes.settingsLabs),
+              titleStyles: TextStyle(
+                color: routedColor(
+                  context,
+                  ref,
+                  Routes.settingsLabs,
+                ),
+              ),
               onTap: () => shouldGoNotNamed
                   ? context.goNamed(Routes.settingsLabs.name)
                   : context.pushNamed(Routes.settingsLabs.name),
             ),
             MenuItemWidget(
               iconData: Atlas.info_circle_thin,
-              iconColor: colorSelected(Routes.info),
+              iconColor: routedColor(context, ref, Routes.info),
               title: L10n.of(context).info,
-              titleStyles: titleStylesSelected(Routes.info),
+              titleStyles: TextStyle(
+                color: routedColor(
+                  context,
+                  ref,
+                  Routes.info,
+                ),
+              ),
               onTap: () => shouldGoNotNamed
                   ? context.goNamed(Routes.info.name)
                   : context.pushNamed(Routes.info.name),

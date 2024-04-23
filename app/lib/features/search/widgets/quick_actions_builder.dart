@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
@@ -113,10 +114,6 @@ class QuickActionsBuilder extends ConsumerWidget {
               : null,
           isActive(LabsFeature.discussions)
               ? OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    side: const BorderSide(width: 2, color: Colors.white),
-                  ),
                   onPressed: () {
                     _log.info('Discussion pressed');
                   },
@@ -131,22 +128,26 @@ class QuickActionsBuilder extends ConsumerWidget {
                 )
               : null,
           OutlinedButton.icon(
-              key: QuickJumpKeys.bugReport,
-              style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.greenAccent,
-                side: const BorderSide(width: 1, color: Colors.greenAccent),
+            key: QuickJumpKeys.bugReport,
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.textHighlight,
+              side: BorderSide(
+                width: 1,
+                color: Theme.of(context).colorScheme.textHighlight,
               ),
-              icon: const Icon(Atlas.bug_clipboard_thin, size: 18),
-              label: Text(
-                L10n.of(context).reportBug,
-                style: Theme.of(context).textTheme.labelMedium,
-              ),
-              onPressed: () async {
-                if (context.canPop()) {
-                  context.pop();
-                }
-                await openBugReport(context);
-              },),
+            ),
+            icon: const Icon(Atlas.bug_clipboard_thin, size: 18),
+            label: Text(
+              L10n.of(context).reportBug,
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
+            onPressed: () async {
+              if (context.canPop()) {
+                context.pop();
+              }
+              await openBugReport(context);
+            },
+          ),
         ].where((element) => element != null),
       ),
     );

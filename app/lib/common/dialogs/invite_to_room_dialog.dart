@@ -308,7 +308,6 @@ class _InviteToRoomDialogState extends ConsumerState<InviteToRoomDialog>
                       decoration: const InputDecoration(
                         prefixIcon: Icon(
                           Atlas.magnifying_glass_thin,
-                          color: Colors.white,
                         ),
                         hintText: 'search user',
                       ),

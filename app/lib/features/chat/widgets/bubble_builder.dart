@@ -362,7 +362,7 @@ class __EmojiContainerState extends ConsumerState<_EmojiContainer>
                     horizontal: 2,
                   ),
                   backgroundColor: sentByMe
-                      ? AppTheme.theme.colorScheme.inversePrimary
+                      ? Theme.of(context).colorScheme.inversePrimary
                       : Colors.transparent,
                   labelPadding: const EdgeInsets.only(left: 2, right: 1),
                   avatar: Text(key, style: EmojiConfig.emojiTextStyle),
