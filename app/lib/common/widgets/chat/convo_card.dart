@@ -470,7 +470,7 @@ class _SubtitleWidget extends ConsumerWidget {
       final userName = simplifyUserId(userIds[0].toString());
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Text('$userName is typing...', style: textStyle),
+        child: Text(L10n.of(context).typingUser1(userName!), style: textStyle),
       );
     } else if (userIds.length == 2) {
       final u1 = simplifyUserId(userIds[0].toString());
@@ -478,7 +478,7 @@ class _SubtitleWidget extends ConsumerWidget {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: Text(
-          '$u1 and $u2 are typing...',
+          L10n.of(context).typingUser2(u1!, u2!),
           style: textStyle,
         ),
       );
@@ -487,7 +487,7 @@ class _SubtitleWidget extends ConsumerWidget {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: Text(
-          '$u1 and ${userIds.length - 1} others are typing',
+          L10n.of(context).typingUser3(u1!, {userIds.length - 1}),
           style: textStyle,
         ),
       );
