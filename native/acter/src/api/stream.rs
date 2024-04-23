@@ -132,11 +132,10 @@ impl TimelineStream {
 
         RUNTIME
             .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Unable to find me in room")?;
-                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
                     bail!("No permissions to send message in this room");
                 }
                 match *draft {
@@ -255,11 +254,10 @@ impl TimelineStream {
 
         RUNTIME
             .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Unable to find me in room")?;
-                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
                     bail!("No permissions to send message in this room");
                 }
 
@@ -310,14 +308,12 @@ impl TimelineStream {
 
         RUNTIME
             .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Unable to find me in room")?;
-                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
                     bail!("No permissions to send message in this room");
                 }
-
                 let reply_item = timeline
                     .item_by_event_id(&event_id)
                     .await
@@ -427,11 +423,10 @@ impl TimelineStream {
 
         RUNTIME
             .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Unable to find me in room")?;
-                if !member.can_send_message(MessageLikeEventType::Reaction) {
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::Reaction)
+                    .await?;
+                if !permitted {
                     bail!("No permissions to send reaction in this room");
                 }
                 let annotation = Annotation::new(event_id, key);
@@ -454,14 +449,12 @@ impl TimelineStream {
 
         RUNTIME
             .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Unable to find me in room")?;
-                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
                     bail!("No permissions to send message in this room");
                 }
-
                 timeline.retry_send(&txn_id).await?;
                 Ok(true)
             })
@@ -481,14 +474,12 @@ impl TimelineStream {
 
         RUNTIME
             .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Unable to find me in room")?;
-                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
                     bail!("No permissions to send message in this room");
                 }
-
                 timeline.cancel_send(&txn_id).await;
                 Ok(true)
             })

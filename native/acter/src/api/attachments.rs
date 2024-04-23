@@ -398,11 +398,10 @@ impl AttachmentDraft {
         let inner = self.inner.build()?;
         RUNTIME
             .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Unable to find me in room")?;
-                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
                     bail!("No permissions to send message in this room");
                 }
                 let response = room.send(inner).await?;

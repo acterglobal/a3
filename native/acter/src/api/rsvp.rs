@@ -13,7 +13,7 @@ use ruma_events::MessageLikeEventType;
 use std::{ops::Deref, str::FromStr};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
-use tracing::{error, trace, warn};
+use tracing::{error, warn};
 
 use super::{calendar_events::CalendarEvent, client::Client, common::OptionRsvpStatus, RUNTIME};
 
@@ -211,29 +211,23 @@ impl RsvpDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let inner = self.inner.build()?;
-        trace!("rsvp draft spawn");
-
-        let client = room.client();
-        let my_id = client
+        let my_id = room
+            .client()
             .user_id()
             .context("You must be logged in to do that")?
             .to_owned();
+        let inner = self.inner.build()?;
 
         RUNTIME
             .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Unable to find me in room")?;
-                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
                     bail!("No permissions to send message in this room");
                 }
-
-                trace!("before sending rsvp");
-                let resp = room.send(inner).await?;
-                trace!("after sending rsvp");
-                Ok(resp.event_id)
+                let response = room.send(inner).await?;
+                Ok(response.event_id)
             })
             .await?
     }

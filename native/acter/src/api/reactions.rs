@@ -7,7 +7,6 @@ use ruma_events::MessageLikeEventType;
 use std::ops::Deref;
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
-use tracing::trace;
 
 use super::{client::Client, RUNTIME};
 
@@ -113,24 +112,22 @@ impl ReactionManager {
 
     pub async fn send_like(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let client = room.client();
-        let my_id = client.user_id().context("User not found")?.to_owned();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
         let event = self.inner.construct_like_event();
 
         RUNTIME
             .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Couldn't find me among room members")?;
-                if !member.can_send_message(MessageLikeEventType::Reaction) {
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::Reaction)
+                    .await?;
+                if !permitted {
                     bail!("No permission to send reaction in this room");
                 }
-
-                trace!("before sending like");
                 let response = room.send(event).await?;
-
-                trace!("after sending like");
                 Ok(response.event_id)
             })
             .await?
@@ -138,24 +135,22 @@ impl ReactionManager {
 
     pub async fn send_reaction(&self, key: String) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let client = room.client();
-        let my_id = client.user_id().context("User not found")?.to_owned();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
         let event = self.inner.construct_reaction_event(key);
 
         RUNTIME
             .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Couldn't find me among room members")?;
-                if !member.can_send_message(MessageLikeEventType::Reaction) {
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::Reaction)
+                    .await?;
+                if !permitted {
                     bail!("No permission to send message in this room");
                 }
-
-                trace!("before sending reaction");
                 let response = room.send(event).await?;
-
-                trace!("after sending reaction");
                 Ok(response.event_id)
             })
             .await?
@@ -175,9 +170,7 @@ impl ReactionManager {
 
         RUNTIME
             .spawn(async move {
-                trace!("before redacting like");
                 let response = room.redact(&event_id, reason.as_deref(), txn_id).await?;
-                trace!("after redacting like");
                 Ok(response.event_id)
             })
             .await?

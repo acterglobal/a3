@@ -693,21 +693,20 @@ impl Room {
             bail!("Unable to upload avatar to a room we are not in");
         }
         let room = self.room.clone();
-
-        let client = room.client();
-        let my_id = client
+        let my_id = room
+            .client()
             .user_id()
             .context("You must be logged in to do that")?
             .to_owned();
         let path = PathBuf::from(uri);
+        let client = self.core.client().clone();
 
         RUNTIME
             .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Unable to find me in room")?;
-                if !member.can_send_state(StateEventType::RoomAvatar) {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::RoomAvatar)
+                    .await?;
+                if !permitted {
                     bail!("No permissions to change avatar of this room");
                 }
 
@@ -732,7 +731,6 @@ impl Room {
             bail!("Unable to remove avatar to a room we are not in");
         }
         let room = self.room.clone();
-
         let my_id = room
             .client()
             .user_id()
@@ -741,11 +739,10 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Unable to find me in room")?;
-                if !member.can_send_state(StateEventType::RoomAvatar) {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::RoomAvatar)
+                    .await?;
+                if !permitted {
                     bail!("No permissions to change avatar of this room");
                 }
                 let response = room.remove_avatar().await?;
@@ -759,7 +756,6 @@ impl Room {
             bail!("Unable to set topic to a room we are not in");
         }
         let room = self.room.clone();
-
         let my_id = room
             .client()
             .user_id()
@@ -768,11 +764,10 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Unable to find me in room")?;
-                if !member.can_send_state(StateEventType::RoomTopic) {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::RoomTopic)
+                    .await?;
+                if !permitted {
                     bail!("No permissions to change topic of this room");
                 }
                 let response = room.set_room_topic(&topic).await?;
@@ -786,7 +781,6 @@ impl Room {
             bail!("Unable to set name to a room we are not in");
         }
         let room = self.room.clone();
-
         let my_id = room
             .client()
             .user_id()
@@ -795,11 +789,10 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Unable to find me in room")?;
-                if !member.can_send_state(StateEventType::RoomName) {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::RoomName)
+                    .await?;
+                if !permitted {
                     bail!("No permissions to change name of this room");
                 }
                 let response = room.set_name(name).await?;
@@ -1020,7 +1013,6 @@ impl Room {
             bail!("Unable to send typing notice to a room we are not in");
         }
         let room = self.room.clone();
-
         let my_id = room
             .client()
             .user_id()
@@ -1029,11 +1021,10 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Unable to find me in room")?;
-                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
                     bail!("No permissions to send message in this room");
                 }
                 room.typing_notice(typing).await?;
@@ -1174,11 +1165,8 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Unable to find me in room")?;
-                if !member.can_invite() {
+                let permitted = room.can_user_invite(&my_id).await?;
+                if !permitted {
                     bail!("No permissions to invite someone in this room");
                 }
                 room.invite_user_by_id(&user_id).await?;
@@ -1597,17 +1585,13 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Unable to find me in room")?;
                 if sender_id == my_id {
-                    let permitted = member.can_redact_own();
+                    let permitted = room.can_user_redact_own(&my_id).await?;
                     if !permitted {
                         bail!("No permissions to redact own message in this room");
                     }
                 } else {
-                    let permitted = member.can_redact_other();
+                    let permitted = room.can_user_redact_other(&my_id).await?;
                     if !permitted {
                         bail!("No permissions to redact other's message in this room");
                     }
@@ -1629,22 +1613,19 @@ impl Room {
             bail!("Unable to update power level in a room we are not in");
         }
         let room = self.room.clone();
-
         let my_id = room
             .client()
             .user_id()
             .context("You must be logged in to do that")?
             .to_owned();
-
         let user_id = UserId::parse(user_id)?;
 
         RUNTIME
             .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Unable to find me in room")?;
-                if !member.can_send_state(StateEventType::RoomPowerLevels) {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::RoomPowerLevels)
+                    .await?;
+                if !permitted {
                     bail!("No permissions to change power levels in this room");
                 }
                 let response = room
