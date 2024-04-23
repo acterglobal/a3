@@ -1,3 +1,4 @@
+import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/search/providers/search.dart';
 import 'package:acter/features/search/providers/spaces.dart';
@@ -94,7 +95,7 @@ class SpacesBuilder extends ConsumerWidget {
           Text(
             L10n.of(context).noSpacesFound,
           ),
-          TextButton(
+          ActerInlineTextButton(
             onPressed: () {
               final query = ref.read(searchValueProvider);
               context.pushNamed(

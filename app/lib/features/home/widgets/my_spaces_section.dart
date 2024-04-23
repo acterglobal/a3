@@ -72,7 +72,7 @@ class MySpacesSection extends ConsumerWidget {
                               const SizedBox(height: 10),
                               ActerPrimaryActionButton(
                                 onPressed: () => context.pushNamed(
-                                    Routes.searchPublicDirectory.name),
+                                    Routes.searchPublicDirectory.name,),
                                 child: Text(L10n.of(context).joinSpace),
                               ),
                             ],
