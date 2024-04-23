@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
+import 'package:acter/router/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -47,12 +48,8 @@ class ChatsCard extends ConsumerWidget {
                     itemBuilder: (context, index) => ConvoCard(
                       room: chats[index],
                       showParent: false,
-                      onTap: () => context.goNamed(
-                        Routes.chatroom.name,
-                        pathParameters: {
-                          'roomId': chats[index].getRoomIdStr(),
-                        },
-                      ),
+                      onTap: () =>
+                          goToChat(context, chats[index].getRoomIdStr()),
                     ),
                   ),
                   chats.length > 3
@@ -65,7 +62,9 @@ class ChatsCard extends ConsumerWidget {
                                 pathParameters: {'spaceId': spaceId},
                               );
                             },
-                            child: Text(L10n.of(context).seeAllMyChats(chats.length)),
+                            child: Text(
+                              L10n.of(context).seeAllMyChats(chats.length),
+                            ),
                           ),
                         )
                       : const SizedBox.shrink(),

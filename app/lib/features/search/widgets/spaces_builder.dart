@@ -1,7 +1,7 @@
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/search/model/util.dart';
 import 'package:acter/features/search/providers/search.dart';
 import 'package:acter/features/search/providers/spaces.dart';
+import 'package:acter/router/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -9,11 +9,8 @@ import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class SpacesBuilder extends ConsumerWidget {
-  final NavigateTo navigateTo;
-
   const SpacesBuilder({
     super.key,
-    required this.navigateTo,
   });
 
   @override
@@ -79,10 +76,7 @@ class SpacesBuilder extends ConsumerWidget {
                       ],
                     ),
                   ),
-                  onTap: () async => await navigateTo(
-                    Routes.space,
-                    pathParameters: {'spaceId': e.navigationTargetId},
-                  ),
+                  onTap: () => goToSpace(context, e.navigationTargetId),
                 ),
               )
               .toList(),

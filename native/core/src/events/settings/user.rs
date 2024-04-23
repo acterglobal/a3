@@ -16,6 +16,8 @@ pub enum AutoDownload {
 pub struct AppChatSettings {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_download: Option<AutoDownload>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub typing_notice: Option<bool>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder, Default)]
@@ -41,8 +43,22 @@ impl ActerUserAppSettingsContentBuilder {
         } else {
             self.chat = Some(AppChatSettings {
                 auto_download: Some(auto_d),
+                typing_notice: Default::default(),
             });
         }
+        Ok(self)
+    }
+
+    pub fn typing_notice(&mut self, value: bool) -> Result<&mut Self, ParseError> {
+        if let Some(chat) = &mut self.chat {
+            chat.typing_notice = Some(value);
+        } else {
+            self.chat = Some(AppChatSettings {
+                auto_download: Default::default(),
+                typing_notice: Some(value),
+            });
+        }
+
         Ok(self)
     }
 }

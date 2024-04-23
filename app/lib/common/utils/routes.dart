@@ -13,6 +13,9 @@ enum Routes {
   authLogin('/login'),
   forgotPassword('/forgotPassword'),
   authRegister('/register'),
+  saveUsername('/saveUsername'),
+  linkEmail('/linkEmail'),
+  uploadAvatar('/uploadAvatar'),
 
   // --- profile
   myProfile('/profile'),

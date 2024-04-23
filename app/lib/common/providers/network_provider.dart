@@ -12,8 +12,8 @@ final networkConnectivityProvider =
 
 // Network/Connectivity Providers
 final hasNetworkProvider = StateProvider<bool>(
-  (ref) => switch (ref.watch(networkConnectivityProvider).valueOrNull) {
-    null || ConnectivityResult.none || ConnectivityResult.other => false,
+  (ref) => switch (ref.watch(networkConnectivityProvider).value) {
+    ConnectivityResult.none || ConnectivityResult.other => false,
     _ => true,
   },
 );

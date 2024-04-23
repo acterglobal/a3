@@ -1,0 +1,1 @@
+- [feat.] Chat now shows typing notifications to inform you who's been typing. This setting is enabled by default but can be turned off in App Settings -> Chat Settings.

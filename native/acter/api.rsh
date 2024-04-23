@@ -2087,6 +2087,11 @@ object Member {
 object ActerUserAppSettings {
     /// either of 'always', 'never' or 'wifiOnly'
     fn auto_download_chat() -> Option<string>;
+    
+    /// whether to allow sending typing notice of users
+    fn typing_notice() -> Option<bool>;
+
+    /// update the builder with the current settings
 
     /// if you intend to change anything
     fn update_builder() -> ActerUserAppSettingsBuilder;
@@ -2095,6 +2100,9 @@ object ActerUserAppSettings {
 object ActerUserAppSettingsBuilder {
     /// either of 'always', 'never' or 'wifiOnly'
     fn auto_download_chat(value: string);
+
+    /// whether to allow sending typing notice of users
+    fn typing_notice(value: bool);
 
     /// submit this updated version
     fn send() -> Future<Result<bool>>;

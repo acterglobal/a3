@@ -3,7 +3,6 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/icons/tasks_icon.dart';
 import 'package:acter/features/public_room_search/widgets/maybe_direct_room_action_widget.dart';
 import 'package:acter/features/search/model/keys.dart';
-import 'package:acter/features/search/model/util.dart';
 import 'package:acter/features/search/providers/search.dart';
 import 'package:acter/features/search/widgets/pins_builder.dart';
 import 'package:acter/features/search/widgets/quick_actions_builder.dart';
@@ -13,15 +12,14 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:go_router/go_router.dart';
 
 class QuickJump extends ConsumerStatefulWidget {
-  final NavigateTo navigateTo;
   final bool expand;
 
   const QuickJump({
     super.key,
     this.expand = false,
-    required this.navigateTo,
   });
 
   @override
@@ -57,7 +55,7 @@ class _QuickJumpState extends ConsumerState<QuickJump> {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
                 ),
               ),
-              onPressed: () => widget.navigateTo(Routes.myProfile),
+              onPressed: () => context.pushNamed(Routes.myProfile.name),
             ),
             IconButton(
               key: QuickJumpKeys.settings,
@@ -74,7 +72,7 @@ class _QuickJumpState extends ConsumerState<QuickJump> {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
                 ),
               ),
-              onPressed: () => widget.navigateTo(Routes.settings),
+              onPressed: () => context.pushNamed(Routes.settings.name),
             ),
             IconButton(
               key: QuickJumpKeys.pins,
@@ -84,7 +82,7 @@ class _QuickJumpState extends ConsumerState<QuickJump> {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
                 ),
               ),
-              onPressed: () => widget.navigateTo(Routes.pins),
+              onPressed: () => context.pushNamed(Routes.pins.name),
               icon: const Padding(
                 padding: EdgeInsets.all(5),
                 child: Icon(Atlas.pin_thin, size: 24),
@@ -97,7 +95,7 @@ class _QuickJumpState extends ConsumerState<QuickJump> {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
                 ),
               ),
-              onPressed: () => widget.navigateTo(Routes.calendarEvents),
+              onPressed: () => context.pushNamed(Routes.calendarEvents.name),
               icon: const Padding(
                 padding: EdgeInsets.all(5),
                 child: Icon(Atlas.calendar_dots_thin, size: 24),
@@ -114,7 +112,7 @@ class _QuickJumpState extends ConsumerState<QuickJump> {
                             .withOpacity(0.12),
                       ),
                     ),
-                    onPressed: () => widget.navigateTo(Routes.tasks),
+                    onPressed: () => context.pushNamed(Routes.tasks.name),
 
                     // this is slightly differently sized and padded to look the same as the others
                     icon: const TasksIcon(),
@@ -127,7 +125,7 @@ class _QuickJumpState extends ConsumerState<QuickJump> {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
                 ),
               ),
-              onPressed: () => widget.navigateTo(Routes.chat),
+              onPressed: () => context.pushNamed(Routes.chat.name),
               icon: const Padding(
                 padding: EdgeInsets.all(5),
                 child: Icon(
@@ -143,7 +141,7 @@ class _QuickJumpState extends ConsumerState<QuickJump> {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
                 ),
               ),
-              onPressed: () => widget.navigateTo(Routes.activities),
+              onPressed: () => context.pushNamed(Routes.activities.name),
               icon: const Padding(
                 padding: EdgeInsets.all(5),
                 child: Icon(Atlas.audio_wave_thin, size: 24),
@@ -164,8 +162,8 @@ class _QuickJumpState extends ConsumerState<QuickJump> {
 
     List<Widget> body = [
       MaybeDirectRoomActionWidget(searchVal: searchValue),
-      SpacesBuilder(navigateTo: widget.navigateTo),
-      PinsBuilder(navigateTo: widget.navigateTo),
+      const SpacesBuilder(),
+      const PinsBuilder(),
     ];
     if (!hasSearchTerm) {
       body.add(
@@ -179,7 +177,7 @@ class _QuickJumpState extends ConsumerState<QuickJump> {
           const Divider(indent: 24, endIndent: 24),
         );
       }
-      body.add(QuickActionsBuilder(navigateTo: widget.navigateTo));
+      body.add(const QuickActionsBuilder());
     }
 
     return Scaffold(
