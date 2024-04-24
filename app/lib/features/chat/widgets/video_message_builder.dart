@@ -119,8 +119,11 @@ class VideoMessageBuilder extends ConsumerWidget {
     return ClipRRect(
       borderRadius:
           isReplyContent ? BorderRadius.circular(6) : BorderRadius.circular(15),
-      child: SizedBox(
-        height: 150,
+      child: Container(
+        constraints: const BoxConstraints(
+          maxWidth: 300,
+          maxHeight: 300,
+        ),
         child: ActerVideoPlayer(
           videoFile: mediaState.mediaFile!,
           onTapFullScreen: () {

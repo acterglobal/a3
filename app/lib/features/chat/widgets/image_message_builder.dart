@@ -113,7 +113,6 @@ class ImageMessageBuilder extends ConsumerWidget {
   }
 
   Widget imageUI(BuildContext context, MediaChatState mediaState) {
-    final size = MediaQuery.of(context).size;
     return InkWell(
       onTap: () {
         showAdaptiveDialog(
@@ -131,9 +130,9 @@ class ImageMessageBuilder extends ConsumerWidget {
             ? BorderRadius.circular(6)
             : BorderRadius.circular(15),
         child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: isReplyContent ? size.height * 0.2 : size.height * 0.3,
-            maxWidth: isReplyContent ? size.width * 0.2 : size.width * 0.3,
+          constraints: const BoxConstraints(
+            maxWidth: 300,
+            maxHeight: 300,
           ),
           child: Image.file(
             mediaState.mediaFile!,
