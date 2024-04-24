@@ -1,5 +1,4 @@
 import 'package:acter/common/models/types.dart';
-import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/common/widgets/video_dialog.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -8,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class VideoMessageBuilder extends ConsumerWidget {
   final types.VideoMessage message;
@@ -116,27 +116,72 @@ class VideoMessageBuilder extends ConsumerWidget {
     BuildContext context,
     MediaChatState mediaState,
   ) {
-    return ClipRRect(
-      borderRadius:
-          isReplyContent ? BorderRadius.circular(6) : BorderRadius.circular(15),
-      child: Container(
-        constraints: const BoxConstraints(
-          maxWidth: 300,
-          maxHeight: 300,
-        ),
-        child: ActerVideoPlayer(
-          videoFile: mediaState.mediaFile!,
-          onTapFullScreen: () {
-            showAdaptiveDialog(
-              context: context,
-              barrierDismissible: false,
-              useRootNavigator: false,
-              builder: (ctx) => VideoDialog(
-                title: message.name,
-                videoFile: mediaState.mediaFile!,
+    return InkWell(
+      onTap: () {
+        showAdaptiveDialog(
+          context: context,
+          barrierDismissible: false,
+          useRootNavigator: false,
+          builder: (ctx) => VideoDialog(
+            title: message.name,
+            videoFile: mediaState.mediaFile!,
+          ),
+        );
+      },
+      child: ClipRRect(
+        borderRadius: isReplyContent
+            ? BorderRadius.circular(6)
+            : BorderRadius.circular(15),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: 300,
+            maxHeight: 300,
+          ),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Image.file(
+                mediaState.videoThumbnailFile!,
+                frameBuilder: (
+                  BuildContext context,
+                  Widget child,
+                  int? frame,
+                  bool wasSynchronouslyLoaded,
+                ) {
+                  if (wasSynchronouslyLoaded) {
+                    return child;
+                  }
+                  return AnimatedOpacity(
+                    opacity: frame == null ? 0 : 1,
+                    duration: const Duration(seconds: 1),
+                    curve: Curves.easeOut,
+                    child: child,
+                  );
+                },
+                errorBuilder: (
+                  BuildContext context,
+                  Object url,
+                  StackTrace? error,
+                ) {
+                  return Text(
+                    L10n.of(context).couldNotLoadImage(error.toString()),
+                  );
+                },
+                fit: BoxFit.cover,
               ),
-            );
-          },
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.black26,
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
+                child: Icon(
+                  Icons.play_arrow,
+                  size: 50.0,
+                  semanticLabel: L10n.of(context).play,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
