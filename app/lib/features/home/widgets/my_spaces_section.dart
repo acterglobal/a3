@@ -71,8 +71,8 @@ class MySpacesSection extends ConsumerWidget {
                               ),
                               const SizedBox(height: 10),
                               ActerPrimaryActionButton(
-                                onPressed: () =>
-                                    context.pushNamed(Routes.joinSpace.name),
+                                onPressed: () => context.pushNamed(
+                                    Routes.searchPublicDirectory.name,),
                                 child: Text(L10n.of(context).joinSpace),
                               ),
                             ],
@@ -153,7 +153,7 @@ class _NoSpacesWidgetState extends ConsumerState<_NoSpacesWidget> {
           child: ActerPrimaryActionButton(
             key: joinExistingSpaceKey,
             onPressed: () {
-              context.pushNamed(Routes.joinSpace.name);
+              context.pushNamed(Routes.searchPublicDirectory.name);
             },
             child: Text(L10n.of(context).joinExistingSpace),
           ),

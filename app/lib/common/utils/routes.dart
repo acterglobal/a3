@@ -30,6 +30,9 @@ enum Routes {
   updates('/updates'),
   actionAddUpdate('/actions/addUpdate'),
 
+  // --- search
+  searchPublicDirectory('/search/public'),
+
   // --- chat
   chat('/chat'),
   // show as dialog
@@ -45,7 +48,6 @@ enum Routes {
 
   // -- spaces
   spaces('/spaces'),
-  joinSpace('/spaces/join'),
   createSpace('/spaces/create'),
   linkSubspace('/:spaceId([!#][^/]+)/linkSubspace'),
   linkChat('/:spaceId([!#][^/]+)/linkChat'),

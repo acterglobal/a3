@@ -1,7 +1,7 @@
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/icons/tasks_icon.dart';
+import 'package:acter/features/public_room_search/widgets/maybe_direct_room_action_widget.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/search/providers/search.dart';
 import 'package:acter/features/search/widgets/pins_builder.dart';
@@ -14,13 +14,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
 
-class QuickJump extends ConsumerWidget {
+class QuickJump extends ConsumerStatefulWidget {
   final bool expand;
 
   const QuickJump({
     super.key,
     this.expand = false,
   });
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _QuickJumpState();
+}
+
+class _QuickJumpState extends ConsumerState<QuickJump> {
+  final searchTextController = TextEditingController();
 
   List<Widget> primaryButtons(BuildContext context, WidgetRef ref) {
     final provider = ref.watch(featuresProvider);
@@ -147,20 +154,23 @@ class QuickJump extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final searchValue = ref.watch(searchValueProvider);
     final h = MediaQuery.of(context).size.height;
 
+    final hasSearchTerm = searchValue.isNotEmpty;
+
     List<Widget> body = [
+      MaybeDirectRoomActionWidget(searchVal: searchValue),
       const SpacesBuilder(),
       const PinsBuilder(),
     ];
-    if (searchValue.isEmpty) {
+    if (!hasSearchTerm) {
       body.add(
         const Divider(indent: 24, endIndent: 24),
       );
       body.addAll(primaryButtons(context, ref));
-      if (expand) {
+      if (widget.expand) {
         body.add(const Spacer());
       } else {
         body.add(
@@ -184,17 +194,26 @@ class QuickJump extends ConsumerWidget {
                     horizontal: 10,
                     vertical: 15,
                   ),
-                  child: TextField(
-                    autofocus: true,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(
-                        Atlas.magnifying_glass_thin,
-                        color: Theme.of(context).colorScheme.neutral6,
-                        size: 18,
-                      ),
-                      hintText: L10n.of(context).jumpTo,
+                  child: SearchBar(
+                    controller: searchTextController,
+                    leading: const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Icon(Atlas.magnifying_glass),
                     ),
-                    onChanged: (String value) async {
+                    hintText: L10n.of(context).jumpTo,
+                    trailing: hasSearchTerm
+                        ? [
+                            InkWell(
+                              onTap: () {
+                                searchTextController.clear();
+                                ref.read(searchValueProvider.notifier).state =
+                                    '';
+                              },
+                              child: const Icon(Icons.clear),
+                            ),
+                          ]
+                        : null,
+                    onChanged: (value) {
                       ref.read(searchValueProvider.notifier).state = value;
                     },
                   ),

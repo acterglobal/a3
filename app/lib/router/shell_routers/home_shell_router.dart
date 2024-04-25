@@ -29,7 +29,7 @@ import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
 import 'package:acter/features/space/settings/pages/index_page.dart';
 import 'package:acter/features/space/settings/pages/notification_configuration_page.dart';
-import 'package:acter/features/spaces/pages/join_space.dart';
+import 'package:acter/features/public_room_search/pages/search_public_directory.dart';
 import 'package:acter/features/spaces/pages/spaces_page.dart';
 import 'package:acter/features/tasks/pages/task_list_page.dart';
 import 'package:acter/features/tasks/pages/task_page.dart';
@@ -298,13 +298,15 @@ List<RouteBase> makeHomeShellRoutes(ref) {
       },
     ),
     GoRoute(
-      name: Routes.joinSpace.name,
-      path: Routes.joinSpace.route,
+      name: Routes.searchPublicDirectory.name,
+      path: Routes.searchPublicDirectory.route,
       redirect: authGuardRedirect,
       pageBuilder: (context, state) {
         return NoTransitionPage(
           key: state.pageKey,
-          child: const JoinSpacePage(),
+          child: SearchPublicDirectory(
+            query: state.uri.queryParameters['query'],
+          ),
         );
       },
     ),
