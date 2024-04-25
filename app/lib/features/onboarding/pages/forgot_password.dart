@@ -1,12 +1,15 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/utils/validation_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class ForgotPassword extends StatelessWidget {
-  const ForgotPassword({super.key});
+  ForgotPassword({super.key});
+
+  final formKey = GlobalKey<FormState>();
+  final TextEditingController emailController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -24,23 +27,27 @@ class ForgotPassword extends StatelessWidget {
   }
 
   Widget _buildBody(BuildContext context) {
-    return Center(
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 500),
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Spacer(),
-            _buildTitleText(context),
-            const Spacer(),
-            _buildImage(context),
-            const Spacer(),
-            _buildDescriptionText(context),
-            const Spacer(),
-            _buildButton(context),
-            const Spacer(),
-          ],
+    return SingleChildScrollView(
+      child: Center(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 500),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 10),
+              _buildTitleText(context),
+              const SizedBox(height: 30),
+              _buildImage(context),
+              const SizedBox(height: 30),
+              _buildDescriptionText(context),
+              const SizedBox(height: 30),
+              _buildEmailInputField(context),
+              const SizedBox(height: 20),
+              _buildButton(context),
+              const SizedBox(height: 30),
+            ],
+          ),
         ),
       ),
     );
@@ -68,7 +75,7 @@ class ForgotPassword extends StatelessWidget {
 
   Widget _buildImage(BuildContext context) {
     var screenHeight = MediaQuery.of(context).size.height;
-    var imageSize = screenHeight / 3;
+    var imageSize = screenHeight / 4;
     return SvgPicture.asset(
       'assets/icon/forgot_password.svg',
       height: imageSize,
@@ -80,11 +87,36 @@ class ForgotPassword extends StatelessWidget {
     return Text(L10n.of(context).forgotPasswordDescription);
   }
 
+  Widget _buildEmailInputField(BuildContext context) {
+    return Form(
+      key: formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(L10n.of(context).emailAddress),
+          const SizedBox(height: 10),
+          TextFormField(
+            controller: emailController,
+            decoration: InputDecoration(
+              hintText: L10n.of(context).hintEmail,
+            ),
+            style: Theme.of(context).textTheme.labelLarge,
+            validator: (val) => validateEmail(context, val),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _forgotPassword() {
+    if (!formKey.currentState!.validate()) return;
+  }
+
   Widget _buildButton(BuildContext context) {
     return ActerPrimaryActionButton(
-      onPressed: () async => await mailTo(toAddress: 'support@acter.global'),
+      onPressed: _forgotPassword,
       child: Text(
-        L10n.of(context).contactActerSupport,
+        L10n.of(context).sendEmail,
         style: Theme.of(context).textTheme.bodyMedium,
       ),
     );

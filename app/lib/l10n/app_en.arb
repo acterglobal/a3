@@ -216,8 +216,6 @@
   "@congrats": {},
   "connectedToYourAccount": "Connected to your account",
   "@connectedToYourAccount": {},
-  "contactActerSupport": "Contact Acter Support",
-  "@contactActerSupport": {},
   "contentSuccessfullyRemoved": "Content successfully removed",
   "@contentSuccessfullyRemoved": {},
   "continueAsGuest": "Continue as guest",
@@ -478,7 +476,7 @@
   "@file": {},
   "forgotPassword": "Forgot Password?",
   "@forgotPassword": {},
-  "forgotPasswordDescription": "To recover your password, simply send us your username via email, and our team will swiftly assist you in regaining access to your profile.",
+  "forgotPasswordDescription": "To recover your password, simply we will send you a verification link to let you reset your password.",
   "@forgotPasswordDescription": {},
   "formatMustBe": "Format must be @user:server.tld",
   "@formatMustBe": {},
@@ -808,7 +806,7 @@
   "@notVisible": {},
   "notYetSupported": "Not yet supported",
   "@notYetSupported": {},
-  "noWorriesWeHaveGotYouCovered": "No worries! We’ve got you covered.",
+  "noWorriesWeHaveGotYouCovered": "No worries! Enter your email to reset password.",
   "@noWorriesWeHaveGotYouCovered": {},
   "ok": "Ok",
   "@ok": {},
@@ -1982,5 +1980,6 @@
   "avatarAddTitle": "Add User Avatar",
   "avatarEmpty": "Please select your avatar",
   "avatarUploading": "Uploading profile avatar",
-  "avatarUploadFailed": "Failed to upload user avatar: {error}"
+  "avatarUploadFailed": "Failed to upload user avatar: {error}",
+  "sendEmail": "Send email"
 }
