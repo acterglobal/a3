@@ -17,6 +17,21 @@ import 'package:url_launcher/url_launcher.dart';
 
 final _log = Logger('a3::common::util');
 
+final aliasedHttpRegexp =
+    RegExp(r'https://matrix.to/#/(?<alias>#.+):(?<server>.+)');
+
+final idAliasRegexp = RegExp(
+  r'matrix:r/(?<id>[^?]+)(\?via=(?<server_name>[^&]+))?(&via=(?<server_name2>[^&]+))?(&via=(?<server_name3>[^&]+))?',
+);
+
+final idHttpRegexp = RegExp(
+  r'https://matrix.to/#/!(?<id>[^?]+)(\?via=(?<server_name>[^&]+))?(&via=(?<server_name2>[^&]+))?(&via=(?<server_name3>[^&]+))?',
+);
+
+final idMatrixRegexp = RegExp(
+  r'matrix:roomid/(?<id>[^?]+)(\?via=(?<server_name>[^&]+))?(&via=(?<server_name2>[^&]+))?(&via=(?<server_name3>[^&]+))?',
+);
+
 /// Get provider right from the context no matter where we are
 extension Context on BuildContext {
   // Custom call a provider for reading method only

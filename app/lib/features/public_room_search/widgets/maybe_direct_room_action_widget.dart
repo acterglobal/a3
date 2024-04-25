@@ -3,6 +3,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/rooms.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -12,21 +13,6 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-
-final aliasedHttpRegexp =
-    RegExp(r'https://matrix.to/#/(?<alias>#.+):(?<server>.+)');
-
-final idAliasRegexp = RegExp(
-  r'matrix:r/(?<id>[^?]+)(\?via=(?<server_name>[^&]+))?(&via=(?<server_name2>[^&]+))?(&via=(?<server_name3>[^&]+))?',
-);
-
-final idHttpRegexp = RegExp(
-  r'https://matrix.to/#/!(?<id>[^?]+)(\?via=(?<server_name>[^&]+))?(&via=(?<server_name2>[^&]+))?(&via=(?<server_name3>[^&]+))?',
-);
-
-final idMatrixRegexp = RegExp(
-  r'matrix:roomid/(?<id>[^?]+)(\?via=(?<server_name>[^&]+))?(&via=(?<server_name2>[^&]+))?(&via=(?<server_name3>[^&]+))?',
-);
 
 class MaybeDirectRoomActionWidget extends ConsumerWidget {
   final bool canMatchAlias;
@@ -236,7 +222,7 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
       );
     }
 
-    return const SizedBox(height: 0);
+    return const SizedBox.shrink();
   }
 
   void onSelectedMatch(
