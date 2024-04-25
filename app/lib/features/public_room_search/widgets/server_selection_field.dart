@@ -7,7 +7,7 @@ class ServerSelectionField extends StatefulWidget {
   final List<ServerEntry> options;
   final void Function(String) onSelect;
   final String currentSelection;
-  final autofocus;
+  final bool autofocus;
   const ServerSelectionField({
     super.key,
     required this.options,
@@ -17,6 +17,7 @@ class ServerSelectionField extends StatefulWidget {
   });
 
   @override
+  // ignore: library_private_types_in_public_api
   _ServerSelectionFieldState createState() => _ServerSelectionFieldState();
 }
 

@@ -59,8 +59,8 @@ class SearchPublicDirectory extends ConsumerWidget {
       EasyLoading.showToast(L10n.of(context).joinRuleNotSupportedYet(joinRule));
       return;
     }
-    // ignore: use_build_context_synchronously
     await joinRoom(
+      // ignore: use_build_context_synchronously
       context,
       ref,
       // ignore: use_build_context_synchronously
