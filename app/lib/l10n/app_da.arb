@@ -11,7 +11,7 @@
   "@accessAndVisibility": {},
   "account": "Profil",
   "@account": {},
-  "actionName": "Titel",
+  "actionName": "Aktion navn",
   "@actionName": {},
   "actions": "Handlinger",
   "@actions": {},
@@ -642,5 +642,9 @@
   "manageBudgetsCooperatively": "Administrer budgetter i fællesskab",
   "@manageBudgetsCooperatively": {},
   "manageTasksListsAndToDosTogether": "Administrer opgavelister og To'Dos sammen",
-  "@manageTasksListsAndToDosTogether": {}
+  "@manageTasksListsAndToDosTogether": {},
+  "addActionWidget": "Tilføj en handlingswidget",
+  "@addActionWidget": {},
+  "appId": "AppId",
+  "@appId": {}
 }
