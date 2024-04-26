@@ -56,6 +56,11 @@ class SidebarWidget extends ConsumerWidget {
                 context.go(item.location!);
               } else if (item.pushToNavigate) {
                 context.push(item.location!);
+              } else {
+                navigationShell.goBranch(
+                  tabIndex,
+                  initialLocation: tabIndex == navigationShell.currentIndex,
+                );
               }
             }
           },
