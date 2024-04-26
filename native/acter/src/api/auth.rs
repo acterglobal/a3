@@ -5,13 +5,16 @@ use matrix_sdk::{
     matrix_auth::{MatrixSession, MatrixSessionTokens},
     Client as SdkClient, ClientBuilder, HttpError, SessionMeta,
 };
-use ruma::assign;
+use ruma::{assign, uint};
 use ruma_client_api::{
-    account::register,
+    account::{register, request_password_change_token_via_email},
     error::ErrorKind,
-    uiaa::{AuthData, AuthType, Dummy, Password, RegistrationToken},
+    uiaa::{
+        AuthData, AuthType, Dummy, EmailIdentity, Password, RegistrationToken,
+        ThirdpartyIdCredentials,
+    },
 };
-use ruma_common::{OwnedUserId, UserId};
+use ruma_common::{ClientSecret, OwnedUserId, SessionId, UserId};
 use std::{ops::Deref, sync::RwLock};
 use tracing::{error, info};
 use uuid::Uuid;
@@ -20,7 +23,7 @@ use super::{
     client::{Client, ClientStateBuilder},
     RUNTIME,
 };
-use crate::platform;
+use crate::{platform, OptionString};
 
 lazy_static! {
     static ref PROXY_URL: RwLock<Option<String>> = RwLock::new(None);
@@ -440,6 +443,51 @@ pub async fn register_with_token_under_config(
         .await?
 }
 
+#[allow(clippy::too_many_arguments)]
+pub async fn change_password_without_login(
+    base_path: String,
+    media_cache_base_path: String,
+    username: String,
+    password: String,
+    default_homeserver_name: String,
+    default_homeserver_url: String,
+    email: String,
+    new_password: String,
+) -> Result<OptionString> {
+    let db_passphrase = Uuid::new_v4().to_string();
+    let (config, user_id) = make_client_config(
+        base_path,
+        &username,
+        media_cache_base_path,
+        Some(db_passphrase.clone()),
+        &default_homeserver_name,
+        &default_homeserver_url,
+        true,
+    )
+    .await?;
+    RUNTIME
+        .spawn(async move {
+            let client = config.build().await?;
+            let login_builder = client.matrix_auth().login_username(&user_id, &password);
+            login_builder.send().await?;
+
+            let capabilities = client.get_capabilities().await?;
+            if !capabilities.change_password.enabled {
+                bail!("This client doesn't support password change");
+            }
+            // request password change via email
+            let client_secret = ClientSecret::new();
+            let request = request_password_change_token_via_email::v3::Request::new(
+                client_secret.clone(),
+                email,
+                uint!(3),
+            );
+            let response = client.send(request, None).await?;
+            Ok(OptionString::new(response.submit_url))
+        })
+        .await?
+}
+
 impl Client {
     pub async fn deactivate(&self, password: String) -> Result<bool> {
         // ToDo: make this a proper User-Interactive Flow rather than hardcoded for
@@ -487,6 +535,78 @@ impl Client {
                             account.user_id().into(),
                             old_val.clone(),
                         ));
+                        if let Err(e) = account
+                            .deref()
+                            .change_password(new_val.as_str(), Some(auth_data))
+                            .await
+                        {
+                            if let Some(err) = e.as_client_api_error() {
+                                if let Some(ErrorKind::WeakPassword) = err.error_kind() {
+                                    error!("you tried too weak password");
+                                    return Ok(false);
+                                }
+                            }
+                            error!("unknown error: {:?}", e.to_string());
+                            return Ok(false);
+                        }
+                    }
+                }
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn change_password_via_email(
+        &self,
+        old_val: String,
+        new_val: String,
+        email: String,
+    ) -> Result<bool> {
+        let client = self.core.client().clone();
+        let account = self.account()?;
+        RUNTIME
+            .spawn(async move {
+                let capabilities = client.get_capabilities().await?;
+                if !capabilities.change_password.enabled {
+                    bail!("This client doesn't support password change");
+                }
+                // call twice with empty & filled auth data about email-based password reset
+                if let Err(e) = account
+                    .deref()
+                    .change_password(new_val.as_str(), None)
+                    .await
+                {
+                    let Some(inf) = e.as_uiaa_response() else {
+                        bail!("Couldn't get UIAA response")
+                    };
+                    if let Some(err) = &inf.auth_error {
+                        bail!("Found auth error: {:?}", err.message);
+                    }
+                    let has_flow = inf
+                        .flows
+                        .iter()
+                        .any(|f| f.stages.contains(&AuthType::Password));
+                    let was_completed = inf.completed.contains(&AuthType::Password);
+                    if has_flow && !was_completed {
+                        let client_secret = ClientSecret::new();
+                        let request = request_password_change_token_via_email::v3::Request::new(
+                            client_secret.clone(),
+                            email,
+                            uint!(3),
+                        );
+                        let response = client.send(request, None).await?;
+                        let sid = SessionId::parse(response.sid)?;
+                        let Some(id_access_token) = client.access_token() else {
+                            bail!("Access token is needed to change password via email")
+                        };
+                        let thirdparty_id_creds = ThirdpartyIdCredentials::new(
+                            sid,
+                            client_secret,
+                            client.homeserver().to_string(),
+                            id_access_token,
+                        );
+                        let auth_data =
+                            AuthData::EmailIdentity(EmailIdentity::new(thirdparty_id_creds));
                         if let Err(e) = account
                             .deref()
                             .change_password(new_val.as_str(), Some(auth_data))

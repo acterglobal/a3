@@ -1260,6 +1260,150 @@ class Api {
     return tmp33;
   }
 
+  /// Email-based password reset without login
+  /// Return submit url
+  Future<OptionString> changePasswordWithoutLogin(
+    String basePath,
+    String mediaCacheBasePath,
+    String username,
+    String password,
+    String defaultHomeserverName,
+    String defaultHomeserverUrl,
+    String email,
+    String newPassword,
+  ) {
+    final tmp0 = basePath;
+    final tmp4 = mediaCacheBasePath;
+    final tmp8 = username;
+    final tmp12 = password;
+    final tmp16 = defaultHomeserverName;
+    final tmp20 = defaultHomeserverUrl;
+    final tmp24 = email;
+    final tmp28 = newPassword;
+    var tmp1 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp9 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp13 = 0;
+    var tmp14 = 0;
+    var tmp15 = 0;
+    var tmp17 = 0;
+    var tmp18 = 0;
+    var tmp19 = 0;
+    var tmp21 = 0;
+    var tmp22 = 0;
+    var tmp23 = 0;
+    var tmp25 = 0;
+    var tmp26 = 0;
+    var tmp27 = 0;
+    var tmp29 = 0;
+    var tmp30 = 0;
+    var tmp31 = 0;
+    final tmp0_0 = utf8.encode(tmp0);
+    tmp2 = tmp0_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
+    final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
+    tmp1_1.setAll(0, tmp0_0);
+    tmp1 = tmp1_0.address;
+    tmp3 = tmp2;
+    final tmp4_0 = utf8.encode(tmp4);
+    tmp6 = tmp4_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp5_0 = this.__allocate(tmp6 * 1, 1);
+    final Uint8List tmp5_1 = tmp5_0.asTypedList(tmp6);
+    tmp5_1.setAll(0, tmp4_0);
+    tmp5 = tmp5_0.address;
+    tmp7 = tmp6;
+    final tmp8_0 = utf8.encode(tmp8);
+    tmp10 = tmp8_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp9_0 = this.__allocate(tmp10 * 1, 1);
+    final Uint8List tmp9_1 = tmp9_0.asTypedList(tmp10);
+    tmp9_1.setAll(0, tmp8_0);
+    tmp9 = tmp9_0.address;
+    tmp11 = tmp10;
+    final tmp12_0 = utf8.encode(tmp12);
+    tmp14 = tmp12_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp13_0 = this.__allocate(tmp14 * 1, 1);
+    final Uint8List tmp13_1 = tmp13_0.asTypedList(tmp14);
+    tmp13_1.setAll(0, tmp12_0);
+    tmp13 = tmp13_0.address;
+    tmp15 = tmp14;
+    final tmp16_0 = utf8.encode(tmp16);
+    tmp18 = tmp16_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp17_0 = this.__allocate(tmp18 * 1, 1);
+    final Uint8List tmp17_1 = tmp17_0.asTypedList(tmp18);
+    tmp17_1.setAll(0, tmp16_0);
+    tmp17 = tmp17_0.address;
+    tmp19 = tmp18;
+    final tmp20_0 = utf8.encode(tmp20);
+    tmp22 = tmp20_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp21_0 = this.__allocate(tmp22 * 1, 1);
+    final Uint8List tmp21_1 = tmp21_0.asTypedList(tmp22);
+    tmp21_1.setAll(0, tmp20_0);
+    tmp21 = tmp21_0.address;
+    tmp23 = tmp22;
+    final tmp24_0 = utf8.encode(tmp24);
+    tmp26 = tmp24_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp25_0 = this.__allocate(tmp26 * 1, 1);
+    final Uint8List tmp25_1 = tmp25_0.asTypedList(tmp26);
+    tmp25_1.setAll(0, tmp24_0);
+    tmp25 = tmp25_0.address;
+    tmp27 = tmp26;
+    final tmp28_0 = utf8.encode(tmp28);
+    tmp30 = tmp28_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp29_0 = this.__allocate(tmp30 * 1, 1);
+    final Uint8List tmp29_1 = tmp29_0.asTypedList(tmp30);
+    tmp29_1.setAll(0, tmp28_0);
+    tmp29 = tmp29_0.address;
+    tmp31 = tmp30;
+    final tmp32 = _changePasswordWithoutLogin(
+      tmp1,
+      tmp2,
+      tmp3,
+      tmp5,
+      tmp6,
+      tmp7,
+      tmp9,
+      tmp10,
+      tmp11,
+      tmp13,
+      tmp14,
+      tmp15,
+      tmp17,
+      tmp18,
+      tmp19,
+      tmp21,
+      tmp22,
+      tmp23,
+      tmp25,
+      tmp26,
+      tmp27,
+      tmp29,
+      tmp30,
+      tmp31,
+    );
+    final tmp34 = tmp32;
+    final ffi.Pointer<ffi.Void> tmp34_0 = ffi.Pointer.fromAddress(tmp34);
+    final tmp34_1 =
+        _Box(this, tmp34_0, "__change_password_without_login_future_drop");
+    tmp34_1._finalizer = this._registerFinalizer(tmp34_1);
+    final tmp33 =
+        _nativeFuture(tmp34_1, this.__changePasswordWithoutLoginFuturePoll);
+    return tmp33;
+  }
+
   /// destroy the local data of a session
   Future<bool> destroyLocalData(
     String basePath,
@@ -2178,6 +2322,53 @@ class Api {
     final tmp13_1 = _Box(this, tmp13_0, "drop_box_Client");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp7 = Client._(this, tmp13_1);
+    return tmp7;
+  }
+
+  OptionString? __changePasswordWithoutLoginFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _changePasswordWithoutLoginFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionString");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = OptionString._(this, tmp13_1);
     return tmp7;
   }
 
@@ -10121,6 +10312,50 @@ class Api {
     return tmp7;
   }
 
+  bool? __clientChangePasswordViaEmailFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientChangePasswordViaEmailFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   String? __clientRestoreTokenFuturePoll(
     int boxed,
     int postCobject,
@@ -14906,6 +15141,63 @@ class Api {
         int,
         int,
       )>();
+  late final _changePasswordWithoutLoginPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__change_password_without_login");
+
+  late final _changePasswordWithoutLogin =
+      _changePasswordWithoutLoginPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
   late final _destroyLocalDataPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -23411,6 +23703,35 @@ class Api {
         int,
         int,
       )>();
+  late final _clientChangePasswordViaEmailPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__Client_change_password_via_email");
+
+  late final _clientChangePasswordViaEmail =
+      _clientChangePasswordViaEmailPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
   late final _clientStartSyncPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -25476,6 +25797,21 @@ class Api {
   late final _registerWithTokenFuturePoll =
       _registerWithTokenFuturePollPtr.asFunction<
           _RegisterWithTokenFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _changePasswordWithoutLoginFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ChangePasswordWithoutLoginFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__change_password_without_login_future_poll");
+
+  late final _changePasswordWithoutLoginFuturePoll =
+      _changePasswordWithoutLoginFuturePollPtr.asFunction<
+          _ChangePasswordWithoutLoginFuturePollReturn Function(
             int,
             int,
             int,
@@ -28001,6 +28337,21 @@ class Api {
   late final _clientChangePasswordFuturePoll =
       _clientChangePasswordFuturePollPtr.asFunction<
           _ClientChangePasswordFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _clientChangePasswordViaEmailFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientChangePasswordViaEmailFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Client_change_password_via_email_future_poll");
+
+  late final _clientChangePasswordViaEmailFuturePoll =
+      _clientChangePasswordViaEmailFuturePollPtr.asFunction<
+          _ClientChangePasswordViaEmailFuturePollReturn Function(
             int,
             int,
             int,
@@ -47686,6 +48037,72 @@ class Client {
     return tmp10;
   }
 
+  /// change password via email
+  Future<bool> changePasswordViaEmail(
+    String oldVal,
+    String newVal,
+    String email,
+  ) {
+    final tmp1 = oldVal;
+    final tmp5 = newVal;
+    final tmp9 = email;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    final tmp13 = _api._clientChangePasswordViaEmail(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+    );
+    final tmp15 = tmp13;
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 =
+        _Box(_api, tmp15_0, "__Client_change_password_via_email_future_drop");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp14 =
+        _nativeFuture(tmp15_1, _api.__clientChangePasswordViaEmailFuturePoll);
+    return tmp14;
+  }
+
   /// start the sync
   SyncState startSync() {
     var tmp0 = 0;
@@ -54541,6 +54958,21 @@ class _RegisterWithTokenFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ChangePasswordWithoutLoginFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _DestroyLocalDataFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -57091,6 +57523,21 @@ class _ClientDeactivateFuturePollReturn extends ffi.Struct {
 }
 
 class _ClientChangePasswordFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _ClientChangePasswordViaEmailFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
