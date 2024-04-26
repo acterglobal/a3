@@ -26,6 +26,26 @@ name = "{{ main.display_name }}'s first test space"
 [objects.third_space]
 type = "space"
 name = "{{ main.display_name }}'s second test space"
+
+[objects.main_space_pin]
+type = "pin"
+in = "main_space"
+title = "Acter Website"
+url = "https://acter.global"
+
+
+[objects.second_space_pin]
+type = "pin"
+in = "second_space"
+title = "Acter Website"
+url = "https://acter.global"
+
+[objects.third_space_pin]
+type = "pin"
+in = "third_space"
+title = "Acter Website"
+url = "https://acter.global"
+
 "#;
 
 #[tokio::test]
@@ -52,6 +72,20 @@ async fn spaces_deleted() -> Result<()> {
 
     assert_eq!(spaces.len(), 3);
 
+    // make sure all pins are synced
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = user.clone();
+    Retry::spawn(retry_strategy.clone(), move || {
+        let client = fetcher_client.clone();
+        async move {
+            if client.pins().await?.len() != 3 {
+                bail!("not all news found");
+            }
+            Ok(())
+        }
+    })
+    .await?;
+
     let first = spaces.pop().unwrap();
     let second = spaces.pop().unwrap();
     let last = spaces.pop().unwrap();
@@ -73,15 +107,6 @@ async fn spaces_deleted() -> Result<()> {
     })
     .await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy.clone(), || async {
-        if user.spaces().await?.is_empty() {
-            bail!("still no spaces found");
-        }
-        Ok(())
-    })
-    .await?;
-
     println!("all triggered");
     Retry::spawn(retry_strategy.clone(), || async {
         if first_listener.is_empty() {
@@ -90,6 +115,9 @@ async fn spaces_deleted() -> Result<()> {
         }
         Ok(())
     });
+
+    // the pins have been reduced
+    assert_eq!(user.pins().await?.len(), 2);
 
     assert!(first_listener.try_recv().is_ok());
     assert_eq!(second_listener.try_recv(), Err(TryRecvError::Empty));
@@ -116,6 +144,9 @@ async fn spaces_deleted() -> Result<()> {
         Ok(())
     })
     .await?;
+
+    // the pins have been reduced
+    assert_eq!(user.pins().await?.len(), 1);
 
     assert_eq!(first_listener.try_recv(), Err(TryRecvError::Empty));
     assert!(second_listener.try_recv().is_ok());
