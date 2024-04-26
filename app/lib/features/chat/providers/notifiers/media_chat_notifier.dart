@@ -100,6 +100,9 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
     }
   }
 
+  //FIXME : This is temporarily solution for media thumb management which lead to security issue.
+  // Reference https://github.com/acterglobal/a3/issues/1586
+  // Reference https://github.com/acterglobal/a3/issues/1250
   static Future<File?> getThumbnailData(String mediaPath) async {
     try {
       final tempDir = await getTemporaryDirectory();

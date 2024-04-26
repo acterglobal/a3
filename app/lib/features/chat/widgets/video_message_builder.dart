@@ -140,35 +140,7 @@ class VideoMessageBuilder extends ConsumerWidget {
           child: Stack(
             alignment: Alignment.center,
             children: [
-              Image.file(
-                mediaState.videoThumbnailFile!,
-                frameBuilder: (
-                  BuildContext context,
-                  Widget child,
-                  int? frame,
-                  bool wasSynchronouslyLoaded,
-                ) {
-                  if (wasSynchronouslyLoaded) {
-                    return child;
-                  }
-                  return AnimatedOpacity(
-                    opacity: frame == null ? 0 : 1,
-                    duration: const Duration(seconds: 1),
-                    curve: Curves.easeOut,
-                    child: child,
-                  );
-                },
-                errorBuilder: (
-                  BuildContext context,
-                  Object url,
-                  StackTrace? error,
-                ) {
-                  return Text(
-                    L10n.of(context).couldNotLoadImage(error.toString()),
-                  );
-                },
-                fit: BoxFit.cover,
-              ),
+              videoThumbFileView(context, mediaState),
               Container(
                 decoration: BoxDecoration(
                   color: Colors.black26,
@@ -184,6 +156,38 @@ class VideoMessageBuilder extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget videoThumbFileView(BuildContext context, MediaChatState mediaState) {
+    return Image.file(
+      mediaState.videoThumbnailFile!,
+      frameBuilder: (
+        BuildContext context,
+        Widget child,
+        int? frame,
+        bool wasSynchronouslyLoaded,
+      ) {
+        if (wasSynchronouslyLoaded) {
+          return child;
+        }
+        return AnimatedOpacity(
+          opacity: frame == null ? 0 : 1,
+          duration: const Duration(seconds: 1),
+          curve: Curves.easeOut,
+          child: child,
+        );
+      },
+      errorBuilder: (
+        BuildContext context,
+        Object url,
+        StackTrace? error,
+      ) {
+        return Text(
+          L10n.of(context).couldNotLoadImage(error.toString()),
+        );
+      },
+      fit: BoxFit.cover,
     );
   }
 }

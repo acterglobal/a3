@@ -113,6 +113,7 @@ class ImageMessageBuilder extends ConsumerWidget {
   }
 
   Widget imageUI(BuildContext context, MediaChatState mediaState) {
+    final size = MediaQuery.of(context).size;
     return InkWell(
       onTap: () {
         showAdaptiveDialog(
@@ -130,39 +131,43 @@ class ImageMessageBuilder extends ConsumerWidget {
             ? BorderRadius.circular(6)
             : BorderRadius.circular(15),
         child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxWidth: 300,
-            maxHeight: 300,
+          constraints: BoxConstraints(
+            maxWidth: isReplyContent ? size.height * 0.2 : 300,
+            maxHeight: isReplyContent ? size.width * 0.2 : 300,
           ),
-          child: Image.file(
-            mediaState.mediaFile!,
-            frameBuilder: (
-              BuildContext context,
-              Widget child,
-              int? frame,
-              bool wasSynchronouslyLoaded,
-            ) {
-              if (wasSynchronouslyLoaded) {
-                return child;
-              }
-              return AnimatedOpacity(
-                opacity: frame == null ? 0 : 1,
-                duration: const Duration(seconds: 1),
-                curve: Curves.easeOut,
-                child: child,
-              );
-            },
-            errorBuilder: (
-              BuildContext context,
-              Object url,
-              StackTrace? error,
-            ) {
-              return Text(L10n.of(context).couldNotLoadImage(error.toString()));
-            },
-            fit: BoxFit.cover,
-          ),
+          child: imageFileView(context, mediaState),
         ),
       ),
+    );
+  }
+
+  Widget imageFileView(BuildContext context, MediaChatState mediaState) {
+    return Image.file(
+      mediaState.mediaFile!,
+      frameBuilder: (
+        BuildContext context,
+        Widget child,
+        int? frame,
+        bool wasSynchronouslyLoaded,
+      ) {
+        if (wasSynchronouslyLoaded) {
+          return child;
+        }
+        return AnimatedOpacity(
+          opacity: frame == null ? 0 : 1,
+          duration: const Duration(seconds: 1),
+          curve: Curves.easeOut,
+          child: child,
+        );
+      },
+      errorBuilder: (
+        BuildContext context,
+        Object url,
+        StackTrace? error,
+      ) {
+        return Text(L10n.of(context).couldNotLoadImage(error.toString()));
+      },
+      fit: BoxFit.cover,
     );
   }
 }
