@@ -55,7 +55,7 @@ class _QuickJumpState extends ConsumerState<QuickJump> {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
                 ),
               ),
-              onPressed: () => routeTo(Routes.myProfile.name),
+              onPressed: () => routeTo(Routes.myProfile),
             ),
             IconButton(
               key: QuickJumpKeys.settings,
@@ -72,7 +72,7 @@ class _QuickJumpState extends ConsumerState<QuickJump> {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
                 ),
               ),
-              onPressed: () => routeTo(Routes.settings.name),
+              onPressed: () => routeTo(Routes.settings),
             ),
             IconButton(
               key: QuickJumpKeys.pins,
@@ -82,7 +82,7 @@ class _QuickJumpState extends ConsumerState<QuickJump> {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
                 ),
               ),
-              onPressed: () => routeTo(Routes.pins.name),
+              onPressed: () => routeTo(Routes.pins),
               icon: const Padding(
                 padding: EdgeInsets.all(5),
                 child: Icon(Atlas.pin_thin, size: 24),
@@ -95,7 +95,7 @@ class _QuickJumpState extends ConsumerState<QuickJump> {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
                 ),
               ),
-              onPressed: () => routeTo(Routes.calendarEvents.name),
+              onPressed: () => routeTo(Routes.calendarEvents),
               icon: const Padding(
                 padding: EdgeInsets.all(5),
                 child: Icon(Atlas.calendar_dots_thin, size: 24),
@@ -112,7 +112,7 @@ class _QuickJumpState extends ConsumerState<QuickJump> {
                             .withOpacity(0.12),
                       ),
                     ),
-                    onPressed: () => routeTo(Routes.tasks.name),
+                    onPressed: () => routeTo(Routes.tasks),
 
                     // this is slightly differently sized and padded to look the same as the others
                     icon: const TasksIcon(),
@@ -125,7 +125,7 @@ class _QuickJumpState extends ConsumerState<QuickJump> {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
                 ),
               ),
-              onPressed: () => routeTo(Routes.chat.name),
+              onPressed: () => routeTo(Routes.chat),
               icon: const Padding(
                 padding: EdgeInsets.all(5),
                 child: Icon(
@@ -141,7 +141,7 @@ class _QuickJumpState extends ConsumerState<QuickJump> {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
                 ),
               ),
-              onPressed: () => routeTo(Routes.activities.name),
+              onPressed: () => routeTo(Routes.activities),
               icon: const Padding(
                 padding: EdgeInsets.all(5),
                 child: Icon(Atlas.audio_wave_thin, size: 24),
@@ -153,9 +153,9 @@ class _QuickJumpState extends ConsumerState<QuickJump> {
     ];
   }
 
-  void routeTo(String name) {
+  void routeTo(Routes route) {
     if (context.canPop()) context.pop();
-    context.pushNamed(name);
+    context.pushNamed(route.name);
   }
 
   @override
