@@ -6,5 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 Future<void> startFreshTestApp(String key) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   await ActerSdk.resetSessionsAndClients(key);
-  await app.startAppInner(ConvenientTestWrapperWidget(child: app.makeApp()));
+  await app.startAppForTesting(
+    ConvenientTestWrapperWidget(child: app.makeApp()),
+  );
 }

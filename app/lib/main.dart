@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:acter/common/notifications/notifications.dart';
 import 'package:acter/common/providers/app_state_provider.dart';
 import 'package:acter/common/themes/acter_theme.dart';
+import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';
+import 'package:acter/common/tutorial_dialogs/space_overview_tutorials/create_or_join_space_tutorials.dart';
+import 'package:acter/common/tutorial_dialogs/space_overview_tutorials/space_overview_tutorials.dart';
 import 'package:acter/common/utils/language.dart';
 import 'package:acter/common/utils/logging.dart';
 import 'package:acter/features/cli/main.dart';
@@ -19,7 +22,7 @@ void main(List<String> args) async {
   if (args.isNotEmpty) {
     await cliMain(args);
   } else {
-    await startAppInner(makeApp());
+    await _startAppInner(makeApp());
   }
 }
 
@@ -27,7 +30,15 @@ Widget makeApp() {
   return const ProviderScope(child: Acter());
 }
 
-Future<void> startAppInner(Widget app) async {
+Future<void> startAppForTesting(Widget app) async {
+  // make sure our test isn't distracted by the onboarding wizzards
+  setCreateOrJoinSpaceTutorialAsViewed();
+  setBottomNavigationTutorialsAsViewed();
+  setSpaceOverviewTutorialsAsViewed();
+  return await _startAppInner(app);
+}
+
+Future<void> _startAppInner(Widget app) async {
   WidgetsFlutterBinding.ensureInitialized();
   VideoPlayerMediaKit.ensureInitialized(
     android: true,
