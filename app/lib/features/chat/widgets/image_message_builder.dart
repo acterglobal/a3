@@ -132,38 +132,42 @@ class ImageMessageBuilder extends ConsumerWidget {
             : BorderRadius.circular(15),
         child: ConstrainedBox(
           constraints: BoxConstraints(
-            maxHeight: isReplyContent ? size.height * 0.2 : size.height * 0.3,
-            maxWidth: isReplyContent ? size.width * 0.2 : size.width * 0.3,
+            maxWidth: isReplyContent ? size.height * 0.2 : 300,
+            maxHeight: isReplyContent ? size.width * 0.2 : 300,
           ),
-          child: Image.file(
-            mediaState.mediaFile!,
-            frameBuilder: (
-              BuildContext context,
-              Widget child,
-              int? frame,
-              bool wasSynchronouslyLoaded,
-            ) {
-              if (wasSynchronouslyLoaded) {
-                return child;
-              }
-              return AnimatedOpacity(
-                opacity: frame == null ? 0 : 1,
-                duration: const Duration(seconds: 1),
-                curve: Curves.easeOut,
-                child: child,
-              );
-            },
-            errorBuilder: (
-              BuildContext context,
-              Object url,
-              StackTrace? error,
-            ) {
-              return Text(L10n.of(context).couldNotLoadImage(error.toString()));
-            },
-            fit: BoxFit.cover,
-          ),
+          child: imageFileView(context, mediaState),
         ),
       ),
+    );
+  }
+
+  Widget imageFileView(BuildContext context, MediaChatState mediaState) {
+    return Image.file(
+      mediaState.mediaFile!,
+      frameBuilder: (
+        BuildContext context,
+        Widget child,
+        int? frame,
+        bool wasSynchronouslyLoaded,
+      ) {
+        if (wasSynchronouslyLoaded) {
+          return child;
+        }
+        return AnimatedOpacity(
+          opacity: frame == null ? 0 : 1,
+          duration: const Duration(seconds: 1),
+          curve: Curves.easeOut,
+          child: child,
+        );
+      },
+      errorBuilder: (
+        BuildContext context,
+        Object url,
+        StackTrace? error,
+      ) {
+        return Text(L10n.of(context).couldNotLoadImage(error.toString()));
+      },
+      fit: BoxFit.cover,
     );
   }
 }

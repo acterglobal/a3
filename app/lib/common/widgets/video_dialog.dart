@@ -30,6 +30,8 @@ class VideoDialog extends StatelessWidget {
                   child: Text(
                     title,
                     style: Theme.of(context).textTheme.titleSmall,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 IconButton(
@@ -45,9 +47,7 @@ class VideoDialog extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 15),
-            Expanded(
-              child: Center(child: ActerVideoPlayer(videoFile: videoFile)),
-            ),
+            Expanded(child: ActerVideoPlayer(videoFile: videoFile)),
           ],
         ),
       ),
