@@ -9,10 +9,10 @@ use ruma::assign;
 use ruma_client_api::{
     account::register,
     error::ErrorKind,
-    uiaa::{AuthData, Dummy, Password, RegistrationToken},
+    uiaa::{AuthData, AuthType, Dummy, Password, RegistrationToken},
 };
 use ruma_common::{OwnedUserId, UserId};
-use std::sync::RwLock;
+use std::{ops::Deref, sync::RwLock};
 use tracing::{error, info};
 use uuid::Uuid;
 
@@ -112,22 +112,25 @@ pub async fn guest_client(
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
+            // call once with filled request about guest registration
             let request = assign!(register::v3::Request::new(), {
                 kind: register::RegistrationKind::Guest,
                 initial_device_display_name: device_name,
             });
             let response = client.matrix_auth().register(request).await?;
-            let device_id = response
-                .device_id
-                .clone()
-                .context("device id not given by server")?;
+            let Some(device_id) = response.device_id else {
+                bail!("device id not given by server")
+            };
+            let Some(access_token) = response.access_token else {
+                bail!("no access token given")
+            };
             let auth_session = MatrixSession {
                 meta: SessionMeta {
                     user_id: response.user_id.clone(),
                     device_id,
                 },
                 tokens: MatrixSessionTokens {
-                    access_token: response.access_token.context("no access token given")?,
+                    access_token,
                     refresh_token: response.refresh_token.clone(),
                 },
             };
@@ -270,6 +273,7 @@ pub async fn login_new_client(
     .await?;
     login_new_client_under_config(config, user_id, password, Some(db_passphrase), device_name).await
 }
+
 #[allow(clippy::too_many_arguments)]
 pub async fn register(
     base_path: String,
@@ -305,23 +309,29 @@ pub async fn register_under_config(
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
-            if let Err(resp) = client
-                .matrix_auth()
-                .register(register::v3::Request::new())
-                .await
-            {
-                // FIXME: do actually check the registration types...
-                if resp.as_uiaa_response().is_some() {
-                    let request = assign!(register::v3::Request::new(), {
-                        username: Some(user_id.localpart().to_owned()),
-                        password: Some(password.clone()),
-                        initial_device_display_name: Some(user_agent.clone()),
-                        auth: Some(AuthData::Dummy(Dummy::new())),
-                    });
-                    client.matrix_auth().register(request).await?;
-                } else {
-                    error!(?resp, "Not a UIAA response");
-                    bail!("No a uiaa response");
+            // call twice with empty & filled requests about user registration
+            let request = register::v3::Request::new();
+            if let Err(e) = client.matrix_auth().register(request).await {
+                let Some(inf) = e.as_uiaa_response() else {
+                    bail!("No a uiaa response")
+                };
+                if let Some(err) = &inf.auth_error {
+                    bail!("Found auth error: {:?}", err.message);
+                }
+                if inf
+                    .flows
+                    .iter()
+                    .any(|f| f.stages.contains(&AuthType::Dummy))
+                {
+                    if !inf.completed.contains(&AuthType::Dummy) {
+                        let request = assign!(register::v3::Request::new(), {
+                            username: Some(user_id.localpart().to_owned()),
+                            password: Some(password.clone()),
+                            initial_device_display_name: Some(user_agent.clone()),
+                            auth: Some(AuthData::Dummy(Dummy::new())),
+                        });
+                        client.matrix_auth().register(request).await?;
+                    }
                 }
             }
 
@@ -388,29 +398,30 @@ pub async fn register_with_token_under_config(
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
-            let request = assign!(register::v3::Request::new(), {
-                username: Some(user_id.localpart().to_owned()),
-                password: Some(password.clone()),
-                initial_device_display_name: Some(user_agent.clone()),
-                auth: Some(AuthData::Dummy(Dummy::new())),
-            });
-
-            if let Err(err) = client.matrix_auth().register(request).await {
-                let response = err
-                    .as_uiaa_response()
-                    .context("Server did not indicate how to allow registration.")?;
-
-                info!("Acceptable auth flows: {response:?}");
-
-                // FIXME: do actually check the registration types...
-                let token_request = assign!(register::v3::Request::new(), {
-                    auth: Some(AuthData::RegistrationToken(
-                        assign!(RegistrationToken::new(registration_token), {
-                            session: response.session.clone(),
-                        }),
-                    )),
-                });
-                client.matrix_auth().register(token_request).await?;
+            // call twice with empty & filled requests about user registration
+            let request = register::v3::Request::new();
+            if let Err(e) = client.matrix_auth().register(request).await {
+                let Some(inf) = e.as_uiaa_response() else {
+                    bail!("Server did not indicate how to allow registration.")
+                };
+                if let Some(err) = &inf.auth_error {
+                    bail!("Found auth error: {:?}", err.message);
+                }
+                if inf
+                    .flows
+                    .iter()
+                    .any(|f| f.stages.contains(&AuthType::Dummy))
+                {
+                    if !inf.completed.contains(&AuthType::Dummy) {
+                        let reg_token = assign!(RegistrationToken::new(registration_token), {
+                            session: inf.session.clone(),
+                        });
+                        let request = assign!(register::v3::Request::new(), {
+                            auth: Some(AuthData::RegistrationToken(reg_token)),
+                        });
+                        client.matrix_auth().register(request).await?;
+                    }
+                }
             } // else all went well.
 
             info!(
@@ -456,24 +467,46 @@ impl Client {
                 if !capabilities.change_password.enabled {
                     bail!("This client doesn't support password change");
                 }
-                let auth_data =
-                    AuthData::Password(Password::new(account.user_id().into(), old_val.clone()));
-                match account
-                    .change_password(new_val.as_str(), Some(auth_data))
+                // call twice with empty & filled auth data about direct password reset
+                if let Err(e) = account
+                    .deref()
+                    .change_password(new_val.as_str(), None)
                     .await
                 {
-                    Ok(r) => Ok(true),
-                    Err(e) => {
-                        if let Some(err) = e.as_client_api_error() {
-                            if let Some(ErrorKind::WeakPassword) = err.error_kind() {
-                                error!("you tried too weak password");
+                    let Some(inf) = e.as_uiaa_response() else {
+                        bail!("Couldn't get UIAA response")
+                    };
+                    if let Some(err) = &inf.auth_error {
+                        bail!("Found auth error: {:?}", err.message);
+                    }
+                    if inf
+                        .flows
+                        .iter()
+                        .any(|f| f.stages.contains(&AuthType::Password))
+                    {
+                        if !inf.completed.contains(&AuthType::Password) {
+                            let auth_data = AuthData::Password(Password::new(
+                                account.user_id().into(),
+                                old_val.clone(),
+                            ));
+                            if let Err(e) = account
+                                .deref()
+                                .change_password(new_val.as_str(), Some(auth_data))
+                                .await
+                            {
+                                if let Some(err) = e.as_client_api_error() {
+                                    if let Some(ErrorKind::WeakPassword) = err.error_kind() {
+                                        error!("you tried too weak password");
+                                        return Ok(false);
+                                    }
+                                }
+                                error!("unknown error: {:?}", e.to_string());
                                 return Ok(false);
                             }
                         }
-                        error!("unknown error: {:?}", e.to_string());
-                        Ok(false)
                     }
                 }
+                Ok(true)
             })
             .await?
     }
