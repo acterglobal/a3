@@ -11,6 +11,8 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::spaces::leave_space');
 
+const leaveSpaceYesBtn = Key('leave-space-yes-btn');
+
 void showLeaveSpaceDialog(
   BuildContext context,
   WidgetRef ref,
@@ -40,6 +42,7 @@ void showLeaveSpaceDialog(
           child: Text(L10n.of(context).noIStay),
         ),
         ActerDangerActionButton(
+          key: leaveSpaceYesBtn,
           onPressed: () async {
             final lang = L10n.of(context);
             try {
