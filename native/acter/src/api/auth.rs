@@ -318,20 +318,19 @@ pub async fn register_under_config(
                 if let Some(err) = &inf.auth_error {
                     bail!("Found auth error: {:?}", err.message);
                 }
-                if inf
+                let has_flow = inf
                     .flows
                     .iter()
-                    .any(|f| f.stages.contains(&AuthType::Dummy))
-                {
-                    if !inf.completed.contains(&AuthType::Dummy) {
-                        let request = assign!(register::v3::Request::new(), {
-                            username: Some(user_id.localpart().to_owned()),
-                            password: Some(password.clone()),
-                            initial_device_display_name: Some(user_agent.clone()),
-                            auth: Some(AuthData::Dummy(Dummy::new())),
-                        });
-                        client.matrix_auth().register(request).await?;
-                    }
+                    .any(|f| f.stages.contains(&AuthType::Dummy));
+                let was_completed = inf.completed.contains(&AuthType::Dummy);
+                if has_flow && !was_completed {
+                    let request = assign!(register::v3::Request::new(), {
+                        username: Some(user_id.localpart().to_owned()),
+                        password: Some(password.clone()),
+                        initial_device_display_name: Some(user_agent.clone()),
+                        auth: Some(AuthData::Dummy(Dummy::new())),
+                    });
+                    client.matrix_auth().register(request).await?;
                 }
             }
 
@@ -407,20 +406,19 @@ pub async fn register_with_token_under_config(
                 if let Some(err) = &inf.auth_error {
                     bail!("Found auth error: {:?}", err.message);
                 }
-                if inf
+                let has_flow = inf
                     .flows
                     .iter()
-                    .any(|f| f.stages.contains(&AuthType::Dummy))
-                {
-                    if !inf.completed.contains(&AuthType::Dummy) {
-                        let reg_token = assign!(RegistrationToken::new(registration_token), {
-                            session: inf.session.clone(),
-                        });
-                        let request = assign!(register::v3::Request::new(), {
-                            auth: Some(AuthData::RegistrationToken(reg_token)),
-                        });
-                        client.matrix_auth().register(request).await?;
-                    }
+                    .any(|f| f.stages.contains(&AuthType::Dummy));
+                let was_completed = inf.completed.contains(&AuthType::Dummy);
+                if has_flow && !was_completed {
+                    let reg_token = assign!(RegistrationToken::new(registration_token), {
+                        session: inf.session.clone(),
+                    });
+                    let request = assign!(register::v3::Request::new(), {
+                        auth: Some(AuthData::RegistrationToken(reg_token)),
+                    });
+                    client.matrix_auth().register(request).await?;
                 }
             } // else all went well.
 
@@ -479,30 +477,29 @@ impl Client {
                     if let Some(err) = &inf.auth_error {
                         bail!("Found auth error: {:?}", err.message);
                     }
-                    if inf
+                    let has_flow = inf
                         .flows
                         .iter()
-                        .any(|f| f.stages.contains(&AuthType::Password))
-                    {
-                        if !inf.completed.contains(&AuthType::Password) {
-                            let auth_data = AuthData::Password(Password::new(
-                                account.user_id().into(),
-                                old_val.clone(),
-                            ));
-                            if let Err(e) = account
-                                .deref()
-                                .change_password(new_val.as_str(), Some(auth_data))
-                                .await
-                            {
-                                if let Some(err) = e.as_client_api_error() {
-                                    if let Some(ErrorKind::WeakPassword) = err.error_kind() {
-                                        error!("you tried too weak password");
-                                        return Ok(false);
-                                    }
+                        .any(|f| f.stages.contains(&AuthType::Password));
+                    let was_completed = inf.completed.contains(&AuthType::Password);
+                    if has_flow && !was_completed {
+                        let auth_data = AuthData::Password(Password::new(
+                            account.user_id().into(),
+                            old_val.clone(),
+                        ));
+                        if let Err(e) = account
+                            .deref()
+                            .change_password(new_val.as_str(), Some(auth_data))
+                            .await
+                        {
+                            if let Some(err) = e.as_client_api_error() {
+                                if let Some(ErrorKind::WeakPassword) = err.error_kind() {
+                                    error!("you tried too weak password");
+                                    return Ok(false);
                                 }
-                                error!("unknown error: {:?}", e.to_string());
-                                return Ok(false);
                             }
+                            error!("unknown error: {:?}", e.to_string());
+                            return Ok(false);
                         }
                     }
                 }
