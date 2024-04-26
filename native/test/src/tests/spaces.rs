@@ -49,10 +49,10 @@ url = "https://acter.global"
 "#;
 
 #[tokio::test]
-async fn spaces_deleted() -> Result<()> {
+async fn leaving_spaces() -> Result<()> {
     let _ = env_logger::try_init();
     let (user, _sync_state, _engine) =
-        random_user_with_template("spaces_deleted", THREE_SPACES_TMPL).await?;
+        random_user_with_template("leaving_spaces", THREE_SPACES_TMPL).await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);

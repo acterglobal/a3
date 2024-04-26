@@ -287,6 +287,7 @@ impl Store {
     }
 
     pub async fn clear_room(&self, room_id: &OwnedRoomId) -> Result<Vec<String>> {
+        info!(?room_id, "clearing room");
         let idx = format!("{room_id}::models");
         let mut total_changed = {
             let mut dirty = self.dirty.lock()?; // hold the lock

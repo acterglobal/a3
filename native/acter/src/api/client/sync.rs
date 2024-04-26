@@ -319,15 +319,23 @@ impl Client {
 
             for r_id in changed_rooms {
                 let Some(room) = self.core.client().get_room(r_id) else {
+                    trace!(?r_id, "room not known");
                     remove_from(&mut spaces, r_id);
                     remove_from_chat(&mut chats, r_id);
+                    if let Err(error) = self.store().clear_room(r_id).await {
+                        error!(?error, "Error removing space {r_id}");
+                    }
                     continue;
                 };
 
                 if !matches!(room.state(), RoomState::Joined) {
+                    trace!(?r_id, "room gone");
                     // remove rooms we aren't in (anymore)
                     remove_from(&mut spaces, r_id);
                     remove_from_chat(&mut chats, r_id);
+                    if let Err(error) = self.store().clear_room(r_id).await {
+                        error!(?error, "Error removing space {r_id}");
+                    }
                     updated.push(r_id.to_string());
                     continue;
                 }
@@ -529,6 +537,7 @@ impl Client {
                         .collect::<Vec<_>>();
 
                     if (!changed_rooms.is_empty()) {
+                        trace!(?changed_rooms, "changed rooms");
                         me.refresh_rooms(changed_rooms).await;
                     }
 
