@@ -646,5 +646,11 @@
   "addActionWidget": "Tilføj en handlingswidget",
   "@addActionWidget": {},
   "appId": "AppId",
-  "@appId": {}
+  "@appId": {},
+  "coBudget": "CoBudget",
+  "@coBudget": {},
+  "community": "Fælleskab",
+  "@community": {},
+  "info": "Engelsk",
+  "@info": {}
 }
