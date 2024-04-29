@@ -2467,6 +2467,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.2"
+  zoom_hover_pinch_image:
+    dependency: "direct main"
+    description:
+      name: zoom_hover_pinch_image
+      sha256: "8cb66299c038be925c8cb29c0c11735f60602ee15c3b04d50258fa1a7be79547"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.3"
 sdks:
   dart: ">=3.3.0 <4.0.0"
   flutter: ">=3.19.6"
