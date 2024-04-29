@@ -5,6 +5,7 @@ import 'package:acter/common/widgets/user_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -200,7 +201,7 @@ class _InviteToRoomDialogState extends ConsumerState<InviteToRoomDialog>
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 5),
             child: Text(
-              'Suggested Users',
+              L10n.of(context).suggestedUsers,
               style: Theme.of(context).textTheme.headlineSmall,
             ),
           ),
@@ -245,7 +246,7 @@ class _InviteToRoomDialogState extends ConsumerState<InviteToRoomDialog>
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 5),
             child: Text(
-              'Users found in public directory',
+              L10n.of(context).usersfoundDirectory,
               style: Theme.of(context).textTheme.headlineSmall,
             ),
           ),
@@ -273,17 +274,18 @@ class _InviteToRoomDialogState extends ConsumerState<InviteToRoomDialog>
       child: Scaffold(
         appBar: room.when(
           data: (room) => AppBar(
-            title: Text('Invite to ${room.roomProfileData.displayName}'),
+            title: Text(L10n.of(context).invite),
             bottom: TabBar(
               controller: _tabController,
               dividerColor: Colors.transparent,
               tabs: <Widget>[
-                const Tab(
-                  text: 'Invite',
-                  icon: Icon(Atlas.paper_airplane_thin),
+                Tab(
+                  text: L10n.of(context).invite,
+                  icon: const Icon(Atlas.paper_airplane_thin),
                 ),
                 Tab(
-                  text: 'Pending Invites (${invited.length})',
+                  text:
+                      L10n.of(context).pendingInvitesWithCount(invited.length),
                   icon: const Icon(Atlas.mailbox_thin),
                 ),
               ],
@@ -307,11 +309,11 @@ class _InviteToRoomDialogState extends ConsumerState<InviteToRoomDialog>
                     ),
                     child: TextField(
                       controller: searchTextCtrl,
-                      decoration: const InputDecoration(
-                        prefixIcon: Icon(
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(
                           Atlas.magnifying_glass_thin,
                         ),
-                        hintText: 'search user',
+                        hintText: L10n.of(context).searchUser,
                       ),
                       onChanged: (String value) {
                         searchValueNotifier.state = value;
@@ -361,7 +363,7 @@ class _DirectInvite extends ConsumerWidget {
     return Card(
       child: ListTile(
         title: !isInvited(userId, invited) && !isJoined(userId, joined)
-            ? Text('directly invite $userId')
+            ? Text(L10n.of(context).directInviteUser(userId))
             : Text(userId),
         trailing: room.when(
           data: (data) => UserStateButton(

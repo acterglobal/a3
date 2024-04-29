@@ -7,6 +7,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:logging/logging.dart';
 
@@ -114,12 +115,16 @@ class UserStateButton extends StatefulWidget {
 
 class _UserStateButtonState extends State<UserStateButton> {
   void _handleInvite() async {
-    EasyLoading.show(status: 'Inviting ${widget.userId}', dismissOnTap: false);
+    EasyLoading.show(
+      status: L10n.of(context).invitingLoading(widget.userId),
+      dismissOnTap: false,
+    );
     try {
       await widget.room.inviteUser(widget.userId);
       EasyLoading.dismiss();
     } catch (e) {
-      EasyLoading.showToast('User ${widget.userId} not found or existing $e');
+      // ignore: use_build_context_synchronously
+      EasyLoading.showToast(L10n.of(context).invitingError(e, widget.userId));
     }
   }
 
@@ -127,13 +132,13 @@ class _UserStateButtonState extends State<UserStateButton> {
   Widget build(BuildContext context) {
     if (widget.invited) {
       return Chip(
-        label: const Text('invited'),
+        label: Text(L10n.of(context).invited),
         backgroundColor: Theme.of(context).colorScheme.success,
       );
     }
     if (widget.joined) {
       return Chip(
-        label: const Text('joined'),
+        label: Text(L10n.of(context).joined),
         backgroundColor: Theme.of(context).colorScheme.success,
       );
     }
@@ -144,7 +149,7 @@ class _UserStateButtonState extends State<UserStateButton> {
           Atlas.paper_airplane_thin,
           color: Theme.of(context).colorScheme.neutral6,
         ),
-        label: const Text('invite'),
+        label: Text(L10n.of(context).invite),
       ),
     );
   }
