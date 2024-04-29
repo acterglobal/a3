@@ -1,9 +1,11 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/themes/app_theme.dart';
 
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:logging/logging.dart';
@@ -34,6 +36,15 @@ bool isInvited(String userId, List<Member> invited) {
   return false;
 }
 
+bool isJoined(String userId, List<String> joined) {
+  for (final i in joined) {
+    if (i == userId) {
+      return true;
+    }
+  }
+  return false;
+}
+
 class UserBuilder extends ConsumerWidget {
   final UserProfile profile;
   final String roomId;
@@ -49,6 +60,7 @@ class UserBuilder extends ConsumerWidget {
     final room = ref.watch(briefRoomItemWithMembershipProvider(roomId));
     final invited =
         ref.watch(roomInvitedMembersProvider(roomId)).valueOrNull ?? [];
+    final joined = ref.watch(membersIdsProvider(roomId)).valueOrNull ?? [];
     final avatarProv = ref.watch(userAvatarProvider(profile));
     final displayName = profile.getDisplayName();
     final userId = profile.userId().toString();
@@ -63,12 +75,14 @@ class UserBuilder extends ConsumerWidget {
             displayName: displayName,
             avatar: avatarProv.valueOrNull,
           ),
+          size: 18,
         ),
         trailing: room.when(
-          data: (data) => InviteButton(
+          data: (data) => UserStateButton(
             userId: userId,
             room: data.room!,
             invited: isInvited(userId, invited),
+            joined: isJoined(userId, joined),
           ),
           error: (err, stackTrace) => Text('Error: $err'),
           loading: () => const Skeletonizer(
@@ -80,48 +94,58 @@ class UserBuilder extends ConsumerWidget {
   }
 }
 
-class InviteButton extends StatefulWidget {
+class UserStateButton extends StatefulWidget {
   final String userId;
   final bool invited;
+  final bool joined;
   final Room room;
 
-  const InviteButton({
+  const UserStateButton({
     super.key,
     required this.room,
     this.invited = false,
+    this.joined = false,
     required this.userId,
   });
 
   @override
-  State<StatefulWidget> createState() => _InviteButtonState();
+  State<StatefulWidget> createState() => _UserStateButtonState();
 }
 
-class _InviteButtonState extends State<InviteButton> {
-  bool _loading = false;
-  bool _success = false;
+class _UserStateButtonState extends State<UserStateButton> {
+  void _handleInvite() async {
+    EasyLoading.show(status: 'Inviting ${widget.userId}', dismissOnTap: false);
+    try {
+      await widget.room.inviteUser(widget.userId);
+      EasyLoading.dismiss();
+    } catch (e) {
+      EasyLoading.showToast('User ${widget.userId} not found or existing $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.invited || _success) {
-      return const Chip(label: Text('invited'));
+    if (widget.invited) {
+      return Chip(
+        label: const Text('invited'),
+        backgroundColor: Theme.of(context).colorScheme.success,
+      );
     }
-
-    if (_loading) {
-      return const CircularProgressIndicator();
+    if (widget.joined) {
+      return Chip(
+        label: const Text('joined'),
+        backgroundColor: Theme.of(context).colorScheme.success,
+      );
     }
-
-    return OutlinedButton.icon(
-      onPressed: () async {
-        if (mounted) {
-          setState(() => _loading = true);
-        }
-        await widget.room.inviteUser(widget.userId);
-        if (mounted) {
-          setState(() => _success = true);
-        }
-      },
-      icon: const Icon(Atlas.paper_airplane_thin),
-      label: const Text('invite'),
+    return InkWell(
+      onTap: _handleInvite,
+      child: Chip(
+        avatar: Icon(
+          Atlas.paper_airplane_thin,
+          color: Theme.of(context).colorScheme.neutral6,
+        ),
+        label: const Text('invite'),
+      ),
     );
   }
 }

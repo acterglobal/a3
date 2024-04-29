@@ -158,6 +158,7 @@ class _InviteToRoomDialogState extends ConsumerState<InviteToRoomDialog>
     final room = ref.watch(briefRoomItemWithMembershipProvider(roomId));
     final invited =
         ref.watch(roomInvitedMembersProvider(roomId)).valueOrNull ?? [];
+    final joined = ref.watch(membersIdsProvider(roomId)).valueOrNull ?? [];
     final searchTextCtrl = ref.watch(searchController);
     final suggestedUsers =
         ref.watch(filteredSuggestedUsersProvider(roomId)).valueOrNull;
@@ -223,10 +224,11 @@ class _InviteToRoomDialogState extends ConsumerState<InviteToRoomDialog>
                       avatar: e.profile.getAvatarImage(),
                     ),
                   ),
-                  trailing: InviteButton(
+                  trailing: UserStateButton(
                     userId: e.userId,
                     room: room.valueOrNull!.room!,
                     invited: isInvited(e.userId, invited),
+                    joined: isJoined(e.userId, joined),
                   ),
                 ),
               );
@@ -353,17 +355,20 @@ class _DirectInvite extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final invited =
         ref.watch(roomInvitedMembersProvider(roomId)).valueOrNull ?? [];
+    final joined = ref.watch(membersIdsProvider(roomId)).valueOrNull ?? [];
     final room = ref.watch(briefRoomItemWithMembershipProvider(roomId));
+
     return Card(
       child: ListTile(
-        title: Text(userId),
-        subtitle: Text('directly invite $userId'),
-        leading: const Icon(Atlas.paper_airplane_thin),
+        title: !isInvited(userId, invited) && !isJoined(userId, joined)
+            ? Text('directly invite $userId')
+            : Text(userId),
         trailing: room.when(
-          data: (data) => InviteButton(
+          data: (data) => UserStateButton(
             userId: userId,
             room: data.room!,
             invited: isInvited(userId, invited),
+            joined: isJoined(userId, joined),
           ),
           error: (err, stackTrace) => Text('Error: $err'),
           loading: () => const Skeletonizer(child: Text('Loading room')),
