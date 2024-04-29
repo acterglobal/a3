@@ -1,0 +1,1 @@
+- [new] : Now user can update chat profile details (Name, Topic & Avatar) if they have required access.
