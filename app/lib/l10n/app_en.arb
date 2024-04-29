@@ -344,7 +344,7 @@
   "@displayName": {},
   "displayNameUpdateSubmitted": "Display name update submitted",
   "@displayNameUpdateSubmitted": {},
-  "directInviteUser": "Directly invite {userId}", 
+  "directInviteUser": "Directly invite {userId}",
   "dms": "DMs",
   "@dms": {},
   "doYouWantToDeleteInviteCode": "Do you really want to irreversibly delete the super invite code? It can’t be used again after.",
@@ -2000,5 +2000,7 @@
   "avatarEmpty": "Please select your avatar",
   "avatarUploading": "Uploading profile avatar",
   "avatarUploadFailed": "Failed to upload user avatar: {error}",
+  "chatName": "Chat Name",
+  "updatingChat": "Updating Chat",
   "inviteCopiedToClipboard": "Invite code copied to clipboard"
 }

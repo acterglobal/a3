@@ -56,6 +56,8 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
   }
 
   AppBar _buildAppBar(BuildContext context) {
+    final membership =
+        ref.watch(roomMembershipProvider(widget.roomId)).valueOrNull;
     return AppBar(
       // custom x-circle when we are in widescreen mode;
       leading: widget.inSidebar
@@ -66,6 +68,27 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
           : null,
       backgroundColor: Colors.transparent,
       elevation: 0.0,
+      actions: [
+        if (membership?.canString('CanSetName') == true ||
+            membership?.canString('CanSetTopic') == true)
+          PopupMenuButton(
+            icon: Icon(
+              Icons.more_vert,
+              color: Theme.of(context).colorScheme.neutral5,
+            ),
+            iconSize: 28,
+            color: Theme.of(context).colorScheme.surface,
+            itemBuilder: (BuildContext context) => [
+              PopupMenuItem(
+                onTap: () => context.pushNamed(
+                  Routes.editChatProfile.name,
+                  pathParameters: {'roomId': widget.roomId},
+                ),
+                child: Text(L10n.of(context).editDetails),
+              ),
+            ],
+          ),
+      ],
     );
   }
 
