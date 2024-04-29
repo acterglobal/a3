@@ -195,7 +195,7 @@ class _EditProfilePageState extends ConsumerState<EditChatPage> {
     if (!mounted) return;
     EasyLoading.show(status: L10n.of(context).updatingChat);
     try {
-      // await convo.setName(chatNameController.text.trim());
+      await convo.setName(chatNameController.text.trim());
       await convo.setTopic(chatDescriptionController.text.trim());
       if (selectedUserAvatar.value != null) {
         await convo.uploadAvatar(selectedUserAvatar.value!.path);
