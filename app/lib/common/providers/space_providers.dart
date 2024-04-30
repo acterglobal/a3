@@ -162,12 +162,9 @@ final _spaceIdAndNames =
 
 typedef _SpaceIdAndName = (String, String?);
 
-final spaceSearchValueProvider =
-    StateProvider.autoDispose<String?>((ref) => null);
-
 final searchedSpacesProvider =
     FutureProvider.autoDispose<List<String>>((ref) async {
-  final searchValue = ref.watch(spaceSearchValueProvider);
+  final searchValue = ref.watch(roomSearchValueProvider);
   final allSpaces = await ref.watch(_spaceIdAndNames.future);
 
   if (searchValue == null || searchValue.isEmpty) {

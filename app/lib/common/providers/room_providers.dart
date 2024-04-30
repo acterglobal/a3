@@ -89,6 +89,9 @@ final briefRoomItemWithMembershipProvider =
   );
 });
 
+final roomSearchValueProvider =
+    StateProvider.autoDispose<String?>((ref) => null);
+
 typedef _RoomIdAndName = (String, String?);
 
 final _briefGroupChatsWithName =
@@ -114,7 +117,7 @@ final roomSearchedChatsProvider =
     FutureProvider.autoDispose<List<String>>((ref) async {
   final allRoomList = await ref.watch(_briefGroupChatsWithName.future);
   final foundRooms = List<String>.empty(growable: true);
-  final searchValue = ref.watch(chatSearchValueProvider);
+  final searchValue = ref.watch(roomSearchValueProvider);
 
   if (searchValue == null || searchValue.isEmpty) {
     return allRoomList.map((i) {

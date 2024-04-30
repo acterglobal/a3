@@ -111,11 +111,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
   Widget searchUI() {
     return Search(
       onChanged: (value) {
-        if (widget.childRoomType == ChildRoomType.chat) {
-          ref.read(chatSearchValueProvider.notifier).update((state) => value);
-        } else if (widget.childRoomType == ChildRoomType.space) {
-          ref.read(spaceSearchValueProvider.notifier).update((state) => value);
-        }
+        ref.read(roomSearchValueProvider.notifier).update((state) => value);
       },
       searchController: searchTextEditingController,
     );
@@ -156,7 +152,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
 
 //List of chats excluding DMs that can be linked according to the selected parent space
   Widget chatsList() {
-    final searchValue = ref.watch(chatSearchValueProvider);
+    final searchValue = ref.watch(roomSearchValueProvider);
     if (searchValue?.isNotEmpty == true) {
       return searchedChatsList();
     }
@@ -210,7 +206,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
 
 //List of spaces that can be linked according to the selected parent space
   Widget spacesList() {
-    final searchValue = ref.watch(spaceSearchValueProvider);
+    final searchValue = ref.watch(roomSearchValueProvider);
     if (searchValue?.isNotEmpty == true) {
       return searchedSpaceList();
     }
