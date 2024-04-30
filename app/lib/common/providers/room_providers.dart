@@ -47,9 +47,14 @@ final roomProfileDataProvider =
 
   final profile = room.getProfile();
   OptionString displayName = await profile.getDisplayName();
-  final avatar = (await profile.getAvatar(null)).data();
-  _log.info('$roomId : hasAvatar: ${avatar != null}');
-  return ProfileData(displayName.text(), avatar);
+  try {
+    final avatar = (await profile.getAvatar(null)).data();
+    _log.info('$roomId : hasAvatar: ${avatar != null}');
+    return ProfileData(displayName.text(), avatar);
+  } catch (error) {
+    _log.severe('Loading avatar for $roomId failed', error);
+    return ProfileData(displayName.text(), null);
+  }
 });
 
 /// Get the members invited of a given roomId the user knows about. Errors
