@@ -5,6 +5,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/widgets/room/brief_room_list_entry.dart';
 import 'package:acter/common/widgets/search.dart';
 import 'package:acter/common/widgets/sliver_scaffold.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
@@ -160,14 +161,15 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       return searchedChatsList();
     }
 
-    final chatList = ref.watch(briefRoomItemsWithMembershipProvider);
-    return chatList.when(
-      data: (chats) => chats.isEmpty
-          ? Text(L10n.of(context).noChatsFound)
-          : chatListUI(chats),
-      error: (e, s) => errorUI(L10n.of(context).errorLoadingChats(e)),
-      loading: () => loadingUI(),
+    final chatList = ref.watch(
+      chatsProvider.select(
+        (rooms) => rooms
+            .where((room) => (!room.isDm()))
+            .map((r) => r.getRoomIdStr())
+            .toList(),
+      ),
     );
+    return chatListUI(chatList);
   }
 
 //Show chat list based on the search term
@@ -182,22 +184,25 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     );
   }
 
+  bool isLinked(String roomId) {
+    return childRoomsIds.contains(roomId);
+  }
+
 //Chat List
-  Widget chatListUI(List<RoomItem> chatList) {
+  Widget chatListUI(List<String> chatList) {
     return ListView.builder(
       padding: const EdgeInsets.all(8),
       itemCount: chatList.length,
       itemBuilder: (context, index) {
-        final room = chatList[index];
-        return roomListItemUI(
-          roomId: room.roomId,
-          displayName: room.roomProfileData.displayName,
-          roomAvatar: room.roomProfileData.getAvatarImage(),
-          displayMode: DisplayMode.Space,
-          canLink: room.membership == null
-              ? false
-              : room.membership!.canString('CanLinkSpaces'),
-          isLinked: childRoomsIds.contains(room.roomId),
+        final roomId = chatList[index];
+        return BriefRoomEntry(
+          roomId: roomId,
+          canCheck: 'CanLinkSpaces',
+          onSelect: null,
+          keyPrefix: 'room-list-link-',
+          avatarDisplayMode: DisplayMode.GroupChat,
+          trailingBuilder: (canLink) =>
+              roomTrailing(roomId, isLinked(roomId), canLink),
         );
       },
     );
@@ -210,14 +215,9 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       return searchedSpaceList();
     }
 
-    final spacesList = ref.watch(briefSpaceItemsProviderWithMembership);
-    return spacesList.when(
-      data: (spaces) => spaces.isEmpty
-          ? Text(L10n.of(context).noSpacesFound)
-          : spaceListUI(spaces),
-      error: (e, s) => errorUI(L10n.of(context).errorLoadingSpaces(e)),
-      loading: () => loadingUI(),
-    );
+    final spaces =
+        ref.watch(spacesProvider).map((space) => space.getRoomIdStr()).toList();
+    return spaceListUI(spaces);
   }
 
 //Show space list based on the search term
@@ -239,32 +239,36 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
   }
 
 //Space List
-  Widget spaceListUI(List<SpaceItem> spacesList) {
+  Widget spaceListUI(List<String> spacesList) {
     return ListView.builder(
       shrinkWrap: true,
       padding: const EdgeInsets.all(8),
       itemCount: spacesList.length,
       itemBuilder: (context, index) {
-        final item = spacesList[index];
-        final membership = item.membership;
-        final isSubspace = childRoomsIds.contains(item.roomId);
+        final roomId = spacesList[index];
+        final isSubspace = childRoomsIds.contains(roomId);
         final isLinked = widget.childRoomType == ChildRoomType.space
-            ? childRoomsIds.contains(item.roomId)
-            : recommendedChildSpaceIds.contains(item.roomId);
-        final canLink =
-            membership == null ? false : membership.canString('CanLinkSpaces');
+            ? childRoomsIds.contains(roomId)
+            : recommendedChildSpaceIds.contains(roomId);
 
-        return roomListItemUI(
-          roomId: item.roomId,
-          displayName: item.spaceProfileData.displayName,
-          roomAvatar: item.spaceProfileData.getAvatarImage(),
-          displayMode: DisplayMode.Space,
-          canLink: widget.childRoomType == ChildRoomType.recommendedSpace
-              ? !isSubspace
-              : canLink,
-          isLinked: isLinked,
-          isSubspace: isSubspace,
-          isRecommendedSpace: recommendedChildSpaceIds.contains(item.roomId),
+        final subtitle = isSubspace
+            ? Text(L10n.of(context).subspace)
+            : recommendedChildSpaceIds.contains(roomId)
+                ? Text(L10n.of(context).recommendedSpace)
+                : null;
+
+        return BriefRoomEntry(
+          avatarDisplayMode: DisplayMode.Space,
+          roomId: roomId,
+          canCheck: 'CanLinkSpaces',
+          subtitle: subtitle,
+          trailingBuilder: (canLink) => roomTrailing(
+            roomId,
+            isLinked,
+            widget.childRoomType == ChildRoomType.recommendedSpace
+                ? !isSubspace
+                : canLink,
+          ),
         );
       },
     );
@@ -285,59 +289,28 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     );
   }
 
-//Room list item UI
-  Widget roomListItemUI({
-    required String roomId,
-    required String? displayName,
-    required MemoryImage? roomAvatar,
-    required DisplayMode displayMode,
-    required bool canLink,
-    required bool isLinked,
-    bool isSubspace = false,
-    bool isRecommendedSpace = false,
-  }) {
-    return widget.parentSpaceId == roomId
-        ? const SizedBox.shrink()
-        : ListTile(
-            key: Key('room-list-item-$roomId'),
-            enabled: canLink,
-            leading: ActerAvatar(
-              mode: displayMode,
-              avatarInfo: AvatarInfo(
-                uniqueId: roomId,
-                displayName: displayName,
-                avatar: roomAvatar,
-              ),
-              size: 24,
-            ),
-            title: Text(displayName ?? roomId),
-            subtitle: isSubspace
-                ? Text(L10n.of(context).subspace)
-                : isRecommendedSpace
-                    ? Text(L10n.of(context).recommendedSpace)
-                    : null,
-            trailing: SizedBox(
-              width: 100,
-              child: isLinked
-                  ? OutlinedButton(
-                      onPressed: () => onTapUnlinkChildRoom(roomId),
-                      key: Key('room-list-unlink-$roomId'),
-                      child: Text(L10n.of(context).unlink),
-                    )
-                  : canLink
-                      ? OutlinedButton(
-                          onPressed: () => onTapLinkChildRoom(context, roomId),
-                          key: Key('room-list-link-$roomId'),
-                          style: OutlinedButton.styleFrom(
-                            side: BorderSide(
-                              color: Theme.of(context).colorScheme.success,
-                            ),
-                          ),
-                          child: Text(L10n.of(context).link),
-                        )
-                      : null,
-            ),
-          );
+  Widget roomTrailing(String roomId, bool isLinked, bool canLink) {
+    return SizedBox(
+      width: 100,
+      child: isLinked
+          ? OutlinedButton(
+              onPressed: () => onTapUnlinkChildRoom(roomId),
+              key: Key('room-list-unlink-$roomId'),
+              child: Text(L10n.of(context).unlink),
+            )
+          : canLink
+              ? OutlinedButton(
+                  onPressed: () => onTapLinkChildRoom(context, roomId),
+                  key: Key('room-list-link-$roomId'),
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(
+                      color: Theme.of(context).colorScheme.success,
+                    ),
+                  ),
+                  child: Text(L10n.of(context).link),
+                )
+              : null,
+    );
   }
 
   Future<void> checkJoinRule(

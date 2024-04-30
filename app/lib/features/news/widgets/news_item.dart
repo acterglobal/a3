@@ -111,7 +111,7 @@ class _NewsItemState extends ConsumerState<NewsItem> {
                 padding: const EdgeInsets.all(16),
                 child: space.when(
                   data: (space) =>
-                      Text(space!.spaceProfileData.displayName ?? roomId),
+                      Text(space.spaceProfileData.displayName ?? roomId),
                   error: (e, st) => Text(L10n.of(context).errorLoadingSpace(e)),
                   loading: () => Skeletonizer(
                     child: Text(roomId),
