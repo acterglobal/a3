@@ -1838,7 +1838,7 @@
   "invite": "Invite",
   "invitingLoading" : "Inviting {userId}",
   "invitingError" : "User {userId} not found or existing: {error}",
-  "@inviteToRoom": "Invite to {roomName}",
+  "inviteToRoom": "Invite to {roomName}",
   "pendingInvitesWithCount": "Pending Invites ({inviteCount})",
   "errorUnverifiedSessions": "Couldn’t load unverified sessions: {error}",
   "@errorUnverifiedSessions": {},

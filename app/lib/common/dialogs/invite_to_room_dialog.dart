@@ -274,7 +274,9 @@ class _InviteToRoomDialogState extends ConsumerState<InviteToRoomDialog>
       child: Scaffold(
         appBar: room.when(
           data: (room) => AppBar(
-            title: Text(L10n.of(context).invite),
+            title: Text(
+              L10n.of(context).inviteToRoom(room.roomProfileData.displayName!),
+            ),
             bottom: TabBar(
               controller: _tabController,
               dividerColor: Colors.transparent,
