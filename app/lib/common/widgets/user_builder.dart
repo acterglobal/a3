@@ -59,9 +59,6 @@ class UserBuilder extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final room = ref.watch(briefRoomItemWithMembershipProvider(roomId));
-    final invited =
-        ref.watch(roomInvitedMembersProvider(roomId)).valueOrNull ?? [];
-    final joined = ref.watch(membersIdsProvider(roomId)).valueOrNull ?? [];
     final avatarProv = ref.watch(userAvatarProvider(profile));
     final displayName = profile.getDisplayName();
     final userId = profile.userId().toString();
@@ -82,8 +79,6 @@ class UserBuilder extends ConsumerWidget {
           data: (data) => UserStateButton(
             userId: userId,
             room: data.room!,
-            invited: isInvited(userId, invited),
-            joined: isJoined(userId, joined),
           ),
           error: (err, stackTrace) => Text('Error: $err'),
           loading: () => const Skeletonizer(
@@ -95,55 +90,51 @@ class UserBuilder extends ConsumerWidget {
   }
 }
 
-class UserStateButton extends StatefulWidget {
+class UserStateButton extends ConsumerWidget {
   final String userId;
-  final bool invited;
-  final bool joined;
   final Room room;
 
   const UserStateButton({
     super.key,
     required this.room,
-    this.invited = false,
-    this.joined = false,
     required this.userId,
   });
 
-  @override
-  State<StatefulWidget> createState() => _UserStateButtonState();
-}
-
-class _UserStateButtonState extends State<UserStateButton> {
-  void _handleInvite() async {
+  void _handleInvite(BuildContext context) async {
     EasyLoading.show(
-      status: L10n.of(context).invitingLoading(widget.userId),
+      status: L10n.of(context).invitingLoading(userId),
       dismissOnTap: false,
     );
     try {
-      await widget.room.inviteUser(widget.userId);
+      await room.inviteUser(userId);
       EasyLoading.dismiss();
     } catch (e) {
       // ignore: use_build_context_synchronously
-      EasyLoading.showToast(L10n.of(context).invitingError(e, widget.userId));
+      EasyLoading.showToast(L10n.of(context).invitingError(e, userId));
     }
   }
 
   @override
-  Widget build(BuildContext context) {
-    if (widget.invited) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final invited =
+        ref.watch(roomInvitedMembersProvider(room.roomIdStr())).valueOrNull ??
+            [];
+    final joined =
+        ref.watch(membersIdsProvider(room.roomIdStr())).valueOrNull ?? [];
+    if (isInvited(userId, invited)) {
       return Chip(
         label: Text(L10n.of(context).invited),
         backgroundColor: Theme.of(context).colorScheme.success,
       );
     }
-    if (widget.joined) {
+    if (isJoined(userId, joined)) {
       return Chip(
         label: Text(L10n.of(context).joined),
         backgroundColor: Theme.of(context).colorScheme.success,
       );
     }
     return InkWell(
-      onTap: _handleInvite,
+      onTap: () => _handleInvite(context),
       child: Chip(
         avatar: Icon(
           Atlas.paper_airplane_thin,

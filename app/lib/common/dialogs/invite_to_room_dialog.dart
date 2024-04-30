@@ -159,7 +159,6 @@ class _InviteToRoomDialogState extends ConsumerState<InviteToRoomDialog>
     final room = ref.watch(briefRoomItemWithMembershipProvider(roomId));
     final invited =
         ref.watch(roomInvitedMembersProvider(roomId)).valueOrNull ?? [];
-    final joined = ref.watch(membersIdsProvider(roomId)).valueOrNull ?? [];
     final searchTextCtrl = ref.watch(searchController);
     final suggestedUsers =
         ref.watch(filteredSuggestedUsersProvider(roomId)).valueOrNull;
@@ -228,8 +227,6 @@ class _InviteToRoomDialogState extends ConsumerState<InviteToRoomDialog>
                   trailing: UserStateButton(
                     userId: e.userId,
                     room: room.valueOrNull!.room!,
-                    invited: isInvited(e.userId, invited),
-                    joined: isJoined(e.userId, joined),
                   ),
                 ),
               );
@@ -371,8 +368,6 @@ class _DirectInvite extends ConsumerWidget {
           data: (data) => UserStateButton(
             userId: userId,
             room: data.room!,
-            invited: isInvited(userId, invited),
-            joined: isJoined(userId, joined),
           ),
           error: (err, stackTrace) => Text('Error: $err'),
           loading: () => const Skeletonizer(child: Text('Loading room')),
