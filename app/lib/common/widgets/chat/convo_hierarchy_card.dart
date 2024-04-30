@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/chat/convo_with_profile_card.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_join_button.dart';
@@ -10,7 +11,13 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class ConvoHierarchyCard extends ConsumerWidget {
+  /// The room info to display
   final SpaceHierarchyRoomInfo roomInfo;
+
+  /// The parent roomId this is rendered for
+  final String parentId;
+
+  /// the Size of the Avatar to render
   final double avatarSize;
 
   /// Called when the user taps this list tile.
@@ -74,6 +81,7 @@ class ConvoHierarchyCard extends ConsumerWidget {
   const ConvoHierarchyCard({
     super.key,
     required this.roomInfo,
+    required this.parentId,
     this.onTap,
     this.onLongPress,
     this.onFocusChange,
@@ -113,7 +121,11 @@ class ConvoHierarchyCard extends ConsumerWidget {
           roomId: roomId,
           roomName: roomInfo.name() ?? roomInfo.roomIdStr(),
           viaServerName: roomInfo.viaServerName(),
-          forward: (roomId) => goToChat(context, roomId),
+          forward: (roomId) {
+            goToChat(context, roomId);
+            // make sure the UI refreshes when the user comes back here
+            ref.invalidate(spaceRelationsOverviewProvider(parentId));
+          },
         ),
         onTap: onTap,
         onFocusChange: onFocusChange,

@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_join_button.dart';
 
@@ -11,7 +12,13 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SpaceHierarchyCard extends ConsumerWidget {
-  final SpaceHierarchyRoomInfo space;
+  /// The room info to display
+  final SpaceHierarchyRoomInfo roomInfo;
+
+  /// The parent roomId this is rendered for
+  final String parentId;
+
+  /// the Size of the Avatar to render
   final double avatarSize;
 
   /// Called when the user taps this list tile.
@@ -74,7 +81,8 @@ class SpaceHierarchyCard extends ConsumerWidget {
 
   const SpaceHierarchyCard({
     super.key,
-    required this.space,
+    required this.roomInfo,
+    required this.parentId,
     this.onTap,
     this.onLongPress,
     this.onFocusChange,
@@ -89,9 +97,9 @@ class SpaceHierarchyCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final roomId = space.roomIdStr();
-    final profile = ref.watch(spaceHierarchyProfileProvider(space));
-    final topic = space.topic();
+    final roomId = roomInfo.roomIdStr();
+    final profile = ref.watch(spaceHierarchyProfileProvider(roomInfo));
+    final topic = roomInfo.topic();
     final Widget? subtitle = topic?.isNotEmpty == true
         ? ExpandableText(
             topic!,
@@ -115,11 +123,14 @@ class SpaceHierarchyCard extends ConsumerWidget {
         shape: shape,
         withBorder: withBorder,
         trailing: RoomHierarchyJoinButton(
-          joinRule: space.joinRuleStr().toLowerCase(),
-          roomId: space.roomIdStr(),
-          roomName: space.name() ?? space.roomIdStr(),
-          viaServerName: space.viaServerName(),
-          forward: (spaceId) => goToSpace(context, spaceId),
+          joinRule: roomInfo.joinRuleStr().toLowerCase(),
+          roomId: roomInfo.roomIdStr(),
+          roomName: roomInfo.name() ?? roomInfo.roomIdStr(),
+          viaServerName: roomInfo.viaServerName(),
+          forward: (spaceId) {
+            goToSpace(context, spaceId);
+            ref.invalidate(relatedSpacesProvider(parentId));
+          },
         ),
       ),
       error: (error, stack) => ListTile(

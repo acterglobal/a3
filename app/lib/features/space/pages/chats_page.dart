@@ -175,6 +175,7 @@ class SpaceChatsPage extends ConsumerWidget {
         firstPageKey: const Next(isStart: true),
         provider: provider,
         itemBuilder: (context, item, index) => ConvoHierarchyCard(
+          parentId: spaceIdOrAlias,
           roomInfo: item,
         ),
         noItemsFoundIndicatorBuilder: (context, controller) =>

@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/rooms.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,6 +22,14 @@ class RoomHierarchyJoinButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final maybeRoom = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
+    if (maybeRoom != null) {
+      // we know that room already \o/
+      return OutlinedButton(
+        onPressed: () => forward(roomId),
+        child: Text(L10n.of(context).joined),
+      );
+    }
     switch (joinRule) {
       case 'private':
       case 'invite':
