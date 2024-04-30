@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:acter/common/models/types.dart';
+import 'package:acter/common/providers/network_provider.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 
@@ -636,6 +637,13 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     if (mentionKey.currentState!.controller!.text.isEmpty) return;
     final lang = L10n.of(context);
     final roomId = widget.convo.getRoomIdStr();
+    // check internet connectivity
+    final isConnected = ref.read(hasNetworkProvider);
+    if (!isConnected) {
+      EasyLoading.showError(L10n.of(context).limitedInternConnection);
+      ref.read(chatInputProvider(roomId).notifier).sendingFailed();
+      return;
+    }
     ref.read(chatInputProvider(roomId).notifier).startSending();
     try {
       // end the typing notification
