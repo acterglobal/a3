@@ -56,7 +56,7 @@ class RoomHierarchyJoinButton extends ConsumerWidget {
         );
       case 'public':
         return Tooltip(
-          message: L10n.of(context).youNeedBeInvitedToJoinThisRoom,
+          message: L10n.of(context).youAreAbleToJoinThisRoom,
           child: OutlinedButton(
             onPressed: () async {
               await joinRoom(
