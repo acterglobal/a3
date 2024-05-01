@@ -47,9 +47,14 @@ final roomProfileDataProvider =
 
   final profile = room.getProfile();
   OptionString displayName = await profile.getDisplayName();
-  final avatar = (await profile.getAvatar(null)).data();
-  _log.info('$roomId : hasAvatar: ${avatar != null}');
-  return ProfileData(displayName.text(), avatar);
+  try {
+    final avatar = (await profile.getAvatar(null)).data();
+    _log.info('$roomId : hasAvatar: ${avatar != null}');
+    return ProfileData(displayName.text(), avatar);
+  } catch (error) {
+    _log.severe('Loading avatar for $roomId failed', error);
+    return ProfileData(displayName.text(), null);
+  }
 });
 
 /// Get the members invited of a given roomId the user knows about. Errors
@@ -84,47 +89,48 @@ final briefRoomItemWithMembershipProvider =
   );
 });
 
-final briefRoomItemsWithMembershipProvider =
-    FutureProvider.autoDispose<List<RoomItem>>((ref) async {
+final roomSearchValueProvider =
+    StateProvider.autoDispose<String?>((ref) => null);
+
+typedef _RoomIdAndName = (String, String?);
+
+final _briefGroupChatsWithName =
+    FutureProvider.autoDispose<List<_RoomIdAndName>>((ref) async {
   final chatList =
       ref.watch(chatsProvider).where((element) => (!element.isDm())).toList();
 
-  List<RoomItem> items = [];
+  List<_RoomIdAndName> items = [];
   for (final convo in chatList) {
     final roomId = convo.getRoomIdStr();
     final room = await ref.watch(maybeRoomProvider(roomId).future);
-    if (room != null) {
-      final profileData =
-          await ref.watch(roomProfileDataProvider(roomId).future);
 
-      final item = RoomItem(
-        roomId: roomId,
-        room: room,
-        membership: room.isJoined() ? await room.getMyMembership() : null,
-        activeMembers: [],
-        roomProfileData: profileData,
-      );
-      items.add(item);
+    if (room != null) {
+      final profile = room.getProfile();
+      OptionString displayName = await profile.getDisplayName();
+      items.add((roomId, displayName.text()));
     }
   }
   return items;
 });
 
 final roomSearchedChatsProvider =
-    FutureProvider.autoDispose<List<RoomItem>>((ref) async {
-  final allRoomList =
-      await ref.watch(briefRoomItemsWithMembershipProvider.future);
-  final foundRooms = List<RoomItem>.empty(growable: true);
-  final searchValue = ref.watch(chatSearchValueProvider);
+    FutureProvider.autoDispose<List<String>>((ref) async {
+  final allRoomList = await ref.watch(_briefGroupChatsWithName.future);
+  final foundRooms = List<String>.empty(growable: true);
+  final searchValue = ref.watch(roomSearchValueProvider);
 
   if (searchValue == null || searchValue.isEmpty) {
-    return allRoomList;
+    return allRoomList.map((i) {
+      return i.$1;
+    }).toList();
   }
 
-  for (final roomItem in allRoomList) {
-    final name = roomItem.roomProfileData.displayName ?? roomItem.roomId;
-    if (name.toLowerCase().contains(searchValue.toLowerCase())) {
-      foundRooms.add(roomItem);
+  final loweredSearchValue = searchValue.toLowerCase();
+
+  for (final item in allRoomList) {
+    if (item.$1.toLowerCase().contains(loweredSearchValue) ||
+        (item.$2 ?? '').toLowerCase().contains(loweredSearchValue)) {
+      foundRooms.add(item.$1);
     }
   }
 

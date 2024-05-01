@@ -9,16 +9,20 @@ class BriefRoomEntry extends ConsumerWidget {
   final String? selectedValue;
   final String canCheck;
   final String keyPrefix;
-  final Function(String) onSelect;
+  final Function(String)? onSelect;
   final DisplayMode avatarDisplayMode;
+  final Widget Function(bool)? trailingBuilder;
+  final Widget? subtitle;
   const BriefRoomEntry({
     super.key,
     required this.roomId,
     required this.canCheck,
-    required this.onSelect,
+    this.onSelect,
     required this.avatarDisplayMode,
     this.keyPrefix = 'brief-room',
     this.selectedValue,
+    this.trailingBuilder,
+    this.subtitle,
   });
 
   @override
@@ -28,6 +32,12 @@ class BriefRoomEntry extends ConsumerWidget {
       data: (roomData) => roomData.membership!.canString(canCheck),
       orElse: () => false,
     );
+    Widget? trailing;
+    if (trailingBuilder != null) {
+      trailing = trailingBuilder!(canLink);
+    } else if (selectedValue == roomId) {
+      trailing = const Icon(Icons.check_circle_outline);
+    }
     return ListTile(
       key: Key('$keyPrefix-$roomId'),
       enabled: canLink,
@@ -37,10 +47,9 @@ class BriefRoomEntry extends ConsumerWidget {
             Text(roomData.roomProfileData.displayName ?? roomId),
         orElse: () => Text(roomId),
       ),
-      trailing: selectedValue == roomId
-          ? const Icon(Icons.check_circle_outline)
-          : null,
-      onTap: canLink ? () => onSelect(roomId) : null,
+      subtitle: subtitle,
+      trailing: trailing,
+      onTap: canLink && onSelect != null ? () => onSelect!(roomId) : null,
     );
   }
 }
