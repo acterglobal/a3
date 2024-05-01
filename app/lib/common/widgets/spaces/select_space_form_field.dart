@@ -93,8 +93,12 @@ class SelectSpaceFormField extends ConsumerWidget {
     final spaceDetails = ref.watch(selectedSpaceDetailsProvider);
     final currentSelectedSpace = ref.watch(selectedSpaceIdProvider);
     return spaceDetails.when(
-      data: (space) =>
-          space != null ? SpaceChip(space: space) : Text(currentSelectedSpace!),
+      data: (space) => space != null
+          ? SpaceChip(
+              space: space,
+              onTapOpenSpaceDetail: false,
+            )
+          : Text(currentSelectedSpace!),
       error: (e, s) => Text(L10n.of(context).errorLoading(e)),
       loading: () => Skeletonizer(
         child: Chip(
