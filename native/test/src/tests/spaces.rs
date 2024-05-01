@@ -1,4 +1,5 @@
 use acter::new_space_settings_builder;
+use acter_core::statics::KEYS;
 use anyhow::{bail, Result};
 use tokio::sync::broadcast::error::TryRecvError;
 use tokio_retry::{
@@ -33,6 +34,10 @@ in = "main_space"
 title = "Acter Website"
 url = "https://acter.global"
 
+[objects.main_space_news]
+type = "news-entry"
+in = "main_space"
+slides = []
 
 [objects.second_space_pin]
 type = "pin"
@@ -40,11 +45,22 @@ in = "second_space"
 title = "Acter Website"
 url = "https://acter.global"
 
+[objects.second_space_news]
+type = "news-entry"
+in = "second_space"
+slides = []
+
 [objects.third_space_pin]
 type = "pin"
 in = "third_space"
 title = "Acter Website"
 url = "https://acter.global"
+
+
+[objects.third_space_news]
+type = "news-entry"
+in = "third_space"
+slides = []
 
 "#;
 
@@ -79,6 +95,9 @@ async fn leaving_spaces() -> Result<()> {
         let client = fetcher_client.clone();
         async move {
             if client.pins().await?.len() != 3 {
+                bail!("not all pins found");
+            }
+            if client.latest_news_entries(10).await?.len() != 3 {
                 bail!("not all news found");
             }
             Ok(())
@@ -91,8 +110,11 @@ async fn leaving_spaces() -> Result<()> {
     let last = spaces.pop().unwrap();
 
     let mut first_listener = user.subscribe(first.room_id().to_string());
+    let mut news_listener = user.subscribe(KEYS::NEWS.to_string());
     let mut second_listener = user.subscribe(second.room_id().to_string());
     let mut last_listener = user.subscribe(last.room_id().to_string());
+
+    assert!(news_listener.is_empty(), "News already has items");
 
     first.leave().await?;
     let fetcher_client = user.clone();
@@ -114,12 +136,23 @@ async fn leaving_spaces() -> Result<()> {
             bail!("First still empty");
         }
         Ok(())
-    });
+    })
+    .await?;
+    Retry::spawn(retry_strategy.clone(), || async {
+        if news_listener.is_empty() {
+            // not yet.
+            bail!("News listener didn't react");
+        }
+        Ok(())
+    })
+    .await?;
 
-    // the pins have been reduced
+    // the objects have been reduced
     assert_eq!(user.pins().await?.len(), 2);
+    assert_eq!(user.latest_news_entries(10).await?.len(), 2);
 
     assert!(first_listener.try_recv().is_ok());
+    assert!(news_listener.try_recv().is_ok());
     assert_eq!(second_listener.try_recv(), Err(TryRecvError::Empty));
     assert_eq!(last_listener.try_recv(), Err(TryRecvError::Empty));
 
@@ -144,10 +177,20 @@ async fn leaving_spaces() -> Result<()> {
         Ok(())
     })
     .await?;
+    Retry::spawn(retry_strategy.clone(), || async {
+        if news_listener.is_empty() {
+            // not yet.
+            bail!("News listener didn't react");
+        }
+        Ok(())
+    })
+    .await?;
 
-    // the pins have been reduced
+    // the objects have been reduced again
     assert_eq!(user.pins().await?.len(), 1);
+    assert_eq!(user.latest_news_entries(10).await?.len(), 1);
 
+    assert!(news_listener.try_recv().is_ok());
     assert_eq!(first_listener.try_recv(), Err(TryRecvError::Empty));
     assert!(second_listener.try_recv().is_ok());
     assert_eq!(last_listener.try_recv(), Err(TryRecvError::Empty));

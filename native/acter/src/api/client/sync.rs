@@ -322,7 +322,7 @@ impl Client {
                     trace!(?r_id, "room not known");
                     remove_from(&mut spaces, r_id);
                     remove_from_chat(&mut chats, r_id);
-                    if let Err(error) = self.store().clear_room(r_id).await {
+                    if let Err(error) = self.executor().clear_room(r_id).await {
                         error!(?error, "Error removing space {r_id}");
                     }
                     continue;
@@ -333,7 +333,7 @@ impl Client {
                     // remove rooms we aren't in (anymore)
                     remove_from(&mut spaces, r_id);
                     remove_from_chat(&mut chats, r_id);
-                    if let Err(error) = self.store().clear_room(r_id).await {
+                    if let Err(error) = self.executor().clear_room(r_id).await {
                         error!(?error, "Error removing space {r_id}");
                     }
                     updated.push(r_id.to_string());
