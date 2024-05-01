@@ -1,5 +1,4 @@
 import 'package:acter/common/widgets/room/select_room_drawer.dart';
-import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
@@ -21,7 +20,6 @@ Future<String?> selectChatDrawer({
       key: key,
       canCheck: canCheck,
       title: title ?? Text(L10n.of(context).selectChat),
-      avatarDisplayMode: DisplayMode.GroupChat,
       keyPrefix: 'select-chat',
       roomType: RoomType.groupChat,
     ),

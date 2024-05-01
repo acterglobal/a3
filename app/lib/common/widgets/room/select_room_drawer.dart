@@ -21,7 +21,6 @@ class SelectRoomDrawer extends ConsumerStatefulWidget {
   final String? currentSpaceId;
   final Widget title;
   final String keyPrefix;
-  final DisplayMode avatarDisplayMode;
   final RoomType roomType;
 
   const SelectRoomDrawer({
@@ -31,12 +30,16 @@ class SelectRoomDrawer extends ConsumerStatefulWidget {
     required this.title,
     required this.roomType,
     required this.keyPrefix,
-    required this.avatarDisplayMode,
   });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
       _SelectRoomDrawerState();
+
+  DisplayMode get avatarDisplayMode => switch (roomType) {
+        RoomType.space => DisplayMode.Space,
+        RoomType.groupChat => DisplayMode.GroupChat
+      };
 }
 
 class _SelectRoomDrawerState extends ConsumerState<SelectRoomDrawer> {
