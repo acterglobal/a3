@@ -212,6 +212,7 @@ class RelatedSpaces extends StatelessWidget {
         firstPageKey: const Next(isStart: true),
         provider: remoteSpaceHierarchyProvider(spaces),
         itemBuilder: (context, item, index) => SpaceHierarchyCard(
+          key: Key('subspace-list-item-${item.roomIdStr()}'),
           roomInfo: item,
           parentId: spaceIdOrAlias,
         ),
@@ -282,6 +283,7 @@ class RelatedSpaces extends StatelessWidget {
           itemBuilder: (context, index) {
             final space = spaces.otherRelations[index];
             return SpaceCard(
+              key: Key('other-related-list-item-${space.getRoomIdStr()}'),
               space: space,
             );
           },
