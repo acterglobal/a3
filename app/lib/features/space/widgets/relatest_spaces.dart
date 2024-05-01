@@ -137,7 +137,6 @@ class RelatedSpaces extends StatelessWidget {
       itemBuilder: (context, index) {
         final space = spaces.parents[index];
         return SpaceCard(
-          key: Key('parent-list-item-${space.getRoomIdStr()}'),
           space: space,
           showParent: false,
         );
@@ -179,7 +178,6 @@ class RelatedSpaces extends StatelessWidget {
         itemBuilder: (context, index) {
           final space = spaces.knownSubspaces[index];
           return SpaceCard(
-            key: Key('subspace-list-item-${space.getRoomIdStr()}'),
             space: space,
             showParent: false,
           );
@@ -215,7 +213,8 @@ class RelatedSpaces extends StatelessWidget {
         provider: remoteSpaceHierarchyProvider(spaces),
         itemBuilder: (context, item, index) => SpaceHierarchyCard(
           key: Key('subspace-list-item-${item.roomIdStr()}'),
-          space: item,
+          roomInfo: item,
+          parentId: spaceIdOrAlias,
         ),
         pagedBuilder: (controller, builder) => PagedListView(
           shrinkWrap: true,
@@ -284,7 +283,7 @@ class RelatedSpaces extends StatelessWidget {
           itemBuilder: (context, index) {
             final space = spaces.otherRelations[index];
             return SpaceCard(
-              key: Key('subspace-list-item-${space.getRoomIdStr()}'),
+              key: Key('other-related-list-item-${space.getRoomIdStr()}'),
               space: space,
             );
           },
