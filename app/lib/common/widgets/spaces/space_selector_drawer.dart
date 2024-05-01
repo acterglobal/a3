@@ -1,11 +1,5 @@
-import 'package:acter/common/providers/space_providers.dart';
-
-import 'package:acter/common/widgets/room/brief_room_list_entry.dart';
-import 'package:acter_avatar/acter_avatar.dart';
-import 'package:atlas_icons/atlas_icons.dart';
+import 'package:acter/common/widgets/room/select_room_drawer.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path/path.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 const Key selectSpaceDrawerKey = Key('space-widgets-select-space-drawer');
@@ -22,56 +16,13 @@ Future<String?> selectSpaceDrawer({
     enableDrag: true,
     context: context,
     isDismissible: true,
-    builder: (context) => Consumer(
-      builder: (context, ref, child) {
-        final spaces = ref.watch(spacesProvider);
-        return Padding(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            key: key,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Row(
-                children: [
-                  Expanded(
-                    child: title ?? Text(L10n.of(context).selectSpace),
-                  ),
-                  OutlinedButton.icon(
-                    icon: const Icon(Atlas.minus_circle_thin),
-                    onPressed: () {
-                      Navigator.pop(context, '');
-                    },
-                    label: Text(L10n.of(context).clear),
-                  ),
-                ],
-              ),
-              Flexible(
-                child: spaces.isEmpty
-                    ? Text(L10n.of(context).noSpacesFound)
-                    : ListView.builder(
-                        padding: const EdgeInsets.all(8),
-                        itemCount: spaces.length,
-                        itemBuilder: (context, index) {
-                          final space = spaces[index];
-                          return BriefRoomEntry(
-                            roomId: space.getRoomIdStr(),
-                            avatarDisplayMode: DisplayMode.Space,
-                            keyPrefix: 'select-space',
-                            selectedValue: current,
-                            canCheck: canCheck,
-                            onSelect: (roomId) {
-                              Navigator.pop(context, roomId);
-                            },
-                          );
-                        },
-                      ),
-              ),
-            ],
-          ),
-        );
-      },
+    builder: (context) => SelectRoomDrawer(
+      key: key,
+      canCheck: canCheck,
+      currentSpaceId: currentSpaceId,
+      title: title ?? Text(L10n.of(context).selectSpace),
+      keyPrefix: 'select-space',
+      roomType: RoomType.space,
     ),
   );
   if (selected == null) {
