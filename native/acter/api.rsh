@@ -1151,6 +1151,9 @@ object Convo {
     /// what is the description / topic
     fn topic() -> Option<string>;
 
+    /// set the name of the chat
+    fn set_name(name: string) -> Future<Result<EventId>>;
+
     /// set description / topic of the room
     fn set_topic(topic: string) -> Future<Result<EventId>>;
 

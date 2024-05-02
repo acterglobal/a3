@@ -1,0 +1,1 @@
+- [new]: You can now update chat profile details (Name, Topic & Avatar) for chats you are admin of
