@@ -131,7 +131,10 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(L10n.of(context).parentSpace),
-                    SpaceChip(space: space),
+                    SpaceChip(
+                      space: space,
+                      onTapOpenSpaceDetail: false,
+                    ),
                   ],
                 );
         },
