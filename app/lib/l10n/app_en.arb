@@ -2002,5 +2002,11 @@
   "avatarUploadFailed": "Failed to upload user avatar: {error}",
   "chatName": "Chat Name",
   "updatingChat": "Updating Chat",
-  "inviteCopiedToClipboard": "Invite code copied to clipboard"
+  "inviteCopiedToClipboard": "Invite code copied to clipboard",
+  "changeAvatar": "Change Avatar",
+  "updateName": "Updating name",
+  "updateDescription": "Updating description",
+  "editName": "Edit Name",
+  "editDescription": "Edit Description",
+  "addDescription": "Add Description"
 }

@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/chat/pages/edit_chat_page.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
 import 'package:acter/features/chat/pages/room_profile_page.dart';
 import 'package:acter/features/chat/widgets/chat_layout_builder.dart';
@@ -57,27 +56,6 @@ List<RouteBase> makeChatShellRoutes(ref) {
             expandedBuilder: (inSidebar) => RoomProfilePage(
               roomId: roomId,
               inSidebar: inSidebar,
-            ),
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.editChatProfile.name,
-      path: Routes.editChatProfile.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        final roomId = state.pathParameters['roomId']!;
-        selectedChatNotifier.select(roomId);
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: ChatLayoutBuilder(
-            centerBuilder: (inSidebar) => RoomPage(
-              roomId: roomId,
-              inSidebar: inSidebar,
-            ),
-            expandedBuilder: (inSidebar) => EditChatPage(
-              roomId: roomId,
             ),
           ),
         );

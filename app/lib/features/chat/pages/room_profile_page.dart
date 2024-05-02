@@ -1,10 +1,13 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/base_body_widget.dart';
+import 'package:acter/common/widgets/chat/edit_room_description_sheet.dart';
+import 'package:acter/common/widgets/chat/edit_room_name_sheet.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/chat/widgets/member_list.dart';
@@ -14,6 +17,7 @@ import 'package:acter/features/chat/widgets/skeletons/members_list_skeleton_widg
 import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -56,8 +60,6 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
   }
 
   AppBar _buildAppBar(BuildContext context) {
-    final membership =
-        ref.watch(roomMembershipProvider(widget.roomId)).valueOrNull;
     return AppBar(
       // custom x-circle when we are in widescreen mode;
       leading: widget.inSidebar
@@ -68,39 +70,20 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
           : null,
       backgroundColor: Colors.transparent,
       elevation: 0.0,
-      actions: [
-        if (membership?.canString('CanSetName') == true ||
-            membership?.canString('CanSetTopic') == true)
-          PopupMenuButton(
-            icon: Icon(
-              Icons.more_vert,
-              color: Theme.of(context).colorScheme.neutral5,
-            ),
-            iconSize: 28,
-            color: Theme.of(context).colorScheme.surface,
-            itemBuilder: (BuildContext context) => [
-              PopupMenuItem(
-                onTap: () => context.pushNamed(
-                  Routes.editChatProfile.name,
-                  pathParameters: {'roomId': widget.roomId},
-                ),
-                child: Text(L10n.of(context).editDetails),
-              ),
-            ],
-          ),
-      ],
     );
   }
 
   Widget _buildBody(BuildContext context) {
+    final membership =
+        ref.watch(roomMembershipProvider(widget.roomId)).valueOrNull;
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10.0),
         child: Column(
           children: [
-            _header(context),
+            _header(context, membership),
             const SizedBox(height: 16),
-            _description(context),
+            _description(context, membership),
             const SizedBox(height: 16),
             _actions(context),
             const SizedBox(height: 20),
@@ -111,7 +94,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     );
   }
 
-  Widget _header(BuildContext context) {
+  Widget _header(BuildContext context, Member? membership) {
     final convoProfile = ref.watch(chatProfileDataProviderById(widget.roomId));
 
     return Column(
@@ -123,12 +106,34 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
           showParent: true,
         ),
         const SizedBox(height: 10),
+        if (membership?.canString('CanUpdateAvatar') == true)
+          ActerInlineTextButton(
+            onPressed: () => _updateAvatar(),
+            child: Text(L10n.of(context).changeAvatar),
+          ),
         convoProfile.when(
-          data: (profile) => Text(
-            profile.displayName ?? widget.roomId,
-            softWrap: true,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.titleMedium,
+          data: (profile) => Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                profile.displayName ?? widget.roomId,
+                softWrap: true,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              if (membership?.canString('CanSetName') == true)
+                IconButton(
+                  onPressed: () => showEditRoomNameBottomSheet(
+                    context: context,
+                    name: profile.displayName ?? '',
+                    roomId: widget.roomId,
+                  ),
+                  icon: Icon(
+                    Icons.edit,
+                    color: Theme.of(context).colorScheme.neutral5,
+                  ),
+                ),
+            ],
           ),
           error: (err, stackTrace) {
             _log.severe('Error loading convo profile', err, stackTrace);
@@ -144,19 +149,73 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     );
   }
 
-  Widget _description(BuildContext context) {
+  Future<void> _updateAvatar() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      dialogTitle: L10n.of(context).uploadAvatar,
+      type: FileType.image,
+    );
+    if (result == null || result.files.isEmpty) return;
+    try {
+      if (!mounted) return;
+      EasyLoading.show(status: L10n.of(context).uploadAvatar);
+      final convo = await ref.read(chatProvider(widget.roomId).future);
+      final file = result.files.first;
+      if (file.path != null) await convo.uploadAvatar(file.path!);
+      // close loading
+      EasyLoading.dismiss();
+    } catch (e, st) {
+      _log.severe('Failed to edit chat', e, st);
+      EasyLoading.dismiss();
+    }
+  }
+
+  Widget _description(BuildContext context, Member? membership) {
     final convo = ref.watch(chatProvider(widget.roomId));
 
     return convo.when(
-      data: (data) => RenderHtml(
-        text: data.topic() ?? '',
-        defaultTextStyle: Theme.of(context).textTheme.bodySmall,
+      data: (data) => Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: RenderHtml(
+              text: data.topic() ?? '',
+              defaultTextStyle: Theme.of(context).textTheme.bodySmall,
+            ),
+          ),
+          if (membership?.canString('CanSetTopic') == true)
+            addDescriptionButton(data),
+        ],
       ),
       loading: () => Skeletonizer(
         child: Text(L10n.of(context).loading),
       ),
-      error: (e, s) => Text('${L10n.of(context).error}: $e'),
+      error: (e, s) => Text(L10n.of(context).error(e)),
     );
+  }
+
+  Widget addDescriptionButton(data) {
+    return (data.topic() == null || data.topic().toString().isEmpty)
+        ? ActerInlineTextButton(
+            onPressed: () => showEditRoomDescriptionBottomSheet(
+              context: context,
+              description: data.topic() ?? '',
+              roomId: widget.roomId,
+            ),
+            child: Text(L10n.of(context).addDescription),
+          )
+        : IconButton(
+            onPressed: () => showEditRoomDescriptionBottomSheet(
+              context: context,
+              description: data.topic() ?? '',
+              roomId: widget.roomId,
+            ),
+            icon: Icon(
+              Icons.edit,
+              color: Theme.of(context).colorScheme.neutral5,
+            ),
+          );
   }
 
   Widget _actions(BuildContext context) {
