@@ -1,1 +1,0 @@
-- [fix]: Space and Chats invitation now properly shows invite/join state of user relative to room upon searching via public directory/direct invite.
