@@ -26,21 +26,32 @@ void showEditRoomNameBottomSheet({
   );
 }
 
-class EditRoomNameSheet extends ConsumerWidget {
+class EditRoomNameSheet extends ConsumerStatefulWidget {
   final String name;
   final String roomId;
 
-  EditRoomNameSheet({
+  const EditRoomNameSheet({
     super.key,
     required this.name,
     required this.roomId,
   });
 
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _EditRoomNameSheetState();
+}
+
+class _EditRoomNameSheetState extends ConsumerState<EditRoomNameSheet> {
   final _nameController = TextEditingController();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    _nameController.text = name;
+  void initState() {
+    super.initState();
+    _nameController.text = widget.name;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Column(
@@ -79,15 +90,26 @@ class EditRoomNameSheet extends ConsumerWidget {
   }
 
   Future<void> _editName(BuildContext context, WidgetRef ref) async {
+    final newName = _nameController.text.trim();
+    if (newName == widget.name.trim()) {
+      context.pop();
+      return; // no changes to submit
+    }
+
     try {
       EasyLoading.show(status: L10n.of(context).updateName);
-      context.pop();
-      final convo = await ref.read(chatProvider(roomId).future);
+      final convo = await ref.read(chatProvider(widget.roomId).future);
       await convo.setName(_nameController.text.trim());
       EasyLoading.dismiss();
+      if (!context.mounted) return;
+      context.pop();
     } catch (e, st) {
       _log.severe('Failed to edit chat name', e, st);
-      EasyLoading.dismiss();
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(L10n.of(context).updateNameFailed(e));
     }
   }
 }

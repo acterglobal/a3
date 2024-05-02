@@ -2008,5 +2008,9 @@
   "updateDescription": "Updating description",
   "editName": "Edit Name",
   "editDescription": "Edit Description",
-  "addDescription": "Add Description"
+  "addDescription": "Add Description",
+  "updateNameFailed": "Updating name failed: {error}",
+  "@updateNameFailed": {},
+  "updateDescriptionFailed": "Updating description failed: {error}",
+  "@updateDescriptionFailed": {}
 }

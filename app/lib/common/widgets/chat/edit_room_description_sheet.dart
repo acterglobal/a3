@@ -26,21 +26,33 @@ void showEditRoomDescriptionBottomSheet({
   );
 }
 
-class EditRoomDescriptionSheet extends ConsumerWidget {
+class EditRoomDescriptionSheet extends ConsumerStatefulWidget {
   final String description;
   final String roomId;
 
-  EditRoomDescriptionSheet({
+  const EditRoomDescriptionSheet({
     super.key,
     required this.description,
     required this.roomId,
   });
 
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _EditRoomDescriptionSheetState();
+}
+
+class _EditRoomDescriptionSheetState
+    extends ConsumerState<EditRoomDescriptionSheet> {
   final _descriptionController = TextEditingController();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    _descriptionController.text = description;
+  void initState() {
+    super.initState();
+    _descriptionController.text = widget.description;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -81,15 +93,26 @@ class EditRoomDescriptionSheet extends ConsumerWidget {
   }
 
   Future<void> _editDescription(BuildContext context, WidgetRef ref) async {
+    final newDesc = _descriptionController.text.trim();
+    if (newDesc == widget.description.trim()) {
+      context.pop();
+      return; // no changes to submit
+    }
+
     try {
       EasyLoading.show(status: L10n.of(context).updateDescription);
-      context.pop();
-      final convo = await ref.read(chatProvider(roomId).future);
+      final convo = await ref.read(chatProvider(widget.roomId).future);
       await convo.setTopic(_descriptionController.text.trim());
       EasyLoading.dismiss();
+      if (!context.mounted) return;
+      context.pop();
     } catch (e, st) {
       _log.severe('Failed to edit chat description', e, st);
-      EasyLoading.dismiss();
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(L10n.of(context).updateDescriptionFailed(e));
     }
   }
 }
