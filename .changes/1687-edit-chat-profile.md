@@ -1,1 +1,1 @@
-- [new] : Now user can update chat profile details (Name, Topic & Avatar) if they have required access.
+- [new]: You can now update chat profile details (Name, Topic & Avatar) for chats you are admin of
