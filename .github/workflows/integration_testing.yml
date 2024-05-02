@@ -98,6 +98,7 @@ jobs:
           DEFAULT_HOMESERVER_NAME: "localhost"
           CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER: "clang"
           CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAG: -C link-arg=-fuse-ld=/usr/local/bin/mold
+          RUST_LOG: "info"
         run: cargo nextest run --config-file .github/nextest-config.toml -p acter-test
 
       # file an error if this failed on `main` post-merge
