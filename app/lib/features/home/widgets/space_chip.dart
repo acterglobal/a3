@@ -1,9 +1,8 @@
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
@@ -28,8 +27,7 @@ class SpaceChip extends ConsumerWidget {
       final brief = ref.watch(briefSpaceItemProvider(spaceId!));
       return brief.when(
         data: (space) {
-          if (space == null) return const SizedBox.shrink();
-          return renderSpace(space, context);
+          return renderSpace(context, space);
         },
         error: (error, st) => Chip(
           label: Text(L10n.of(context).loadingFailed(error)),
@@ -37,7 +35,7 @@ class SpaceChip extends ConsumerWidget {
         loading: () => renderLoading(spaceId!),
       );
     }
-    return renderSpace(space!, context);
+    return renderSpace(context, space);
   }
 
   Widget renderLoading(String spaceId) {
@@ -55,16 +53,10 @@ class SpaceChip extends ConsumerWidget {
     );
   }
 
-  Widget renderSpace(SpaceItem space, BuildContext context) {
+  Widget renderSpace(BuildContext context, space) {
     return InkWell(
-      onTap: onTapOpenSpaceDetail
-          ? () {
-              context.pushNamed(
-                Routes.space.name,
-                pathParameters: {'spaceId': space.roomId},
-              );
-            }
-          : null,
+      onTap:
+          onTapOpenSpaceDetail ? () => goToSpace(context, space.roomId) : null,
       child: Chip(
         avatar: ActerAvatar(
           mode: DisplayMode.Space,
