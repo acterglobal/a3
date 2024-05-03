@@ -528,7 +528,7 @@ impl Client {
             .any(|s| *s.room_id() == room_id)
     }
 
-    pub async fn convo_typed(&self, room_id: &OwnedRoomId) -> Option<Convo> {
+    pub async fn convo_typed(&self, room_id: &RoomId) -> Option<Convo> {
         self.convos
             .read()
             .await

@@ -113,15 +113,15 @@ impl HistoryLoadState {
         }
     }
 
-    pub fn unknow_room(&mut self, room_id: &OwnedRoomId) -> bool {
+    pub fn unknow_room(&mut self, room_id: &RoomId) -> bool {
         self.known_spaces.remove(room_id).unwrap_or_default()
     }
 
-    pub fn knows_room(&self, room_id: &OwnedRoomId) -> bool {
+    pub fn knows_room(&self, room_id: &RoomId) -> bool {
         self.known_spaces.contains_key(room_id)
     }
 
-    pub fn is_loading(&mut self, room_id: &OwnedRoomId) -> bool {
+    pub fn is_loading(&mut self, room_id: &RoomId) -> bool {
         self.known_spaces.get(room_id).cloned().unwrap_or(false)
     }
 
@@ -433,13 +433,13 @@ impl Client {
 }
 
 // helper methods for managing spaces and chats
-fn remove_from(target: &mut RwLockWriteGuard<ObservableVector<Space>>, r_id: &OwnedRoomId) {
+fn remove_from(target: &mut RwLockWriteGuard<ObservableVector<Space>>, r_id: &RoomId) {
     if let Some(idx) = target.iter().position(|s| s.room_id() == r_id) {
         target.remove(idx);
     }
 }
 
-fn remove_from_chat(target: &mut RwLockWriteGuard<ObservableVector<Convo>>, r_id: &OwnedRoomId) {
+fn remove_from_chat(target: &mut RwLockWriteGuard<ObservableVector<Convo>>, r_id: &RoomId) {
     if let Some(idx) = target.iter().position(|s| s.room_id() == r_id) {
         target.remove(idx);
     }
@@ -860,14 +860,14 @@ impl Client {
         self.room_by_alias_typed(&room_alias).await
     }
 
-    pub fn room_by_id_typed(&self, room_id: &OwnedRoomId) -> Option<Room> {
+    pub fn room_by_id_typed(&self, room_id: &RoomId) -> Option<Room> {
         self.core
             .client()
             .get_room(room_id)
             .map(|room| Room::new(self.core.clone(), room))
     }
 
-    pub async fn room_by_alias_typed(&self, room_alias: &OwnedRoomAliasId) -> Result<Room> {
+    pub async fn room_by_alias_typed(&self, room_alias: &RoomAliasId) -> Result<Room> {
         for r in self.core.client().rooms() {
             // looping locally first
             if let Some(con_alias) = r.canonical_alias() {

@@ -108,7 +108,7 @@ pub struct NotificationRoom {
     client: Client,
 }
 impl NotificationRoom {
-    fn from(client: Client, notif: &SdkNotificationItem, room_id: &OwnedRoomId) -> Self {
+    fn from(client: Client, notif: &SdkNotificationItem, room_id: &RoomId) -> Self {
         NotificationRoom {
             room_id: room_id.to_string(),
             display_name: notif.room_display_name.clone(),

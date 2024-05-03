@@ -772,7 +772,7 @@ impl Client {
         }
     }
 
-    pub async fn space_typed(&self, room_id: &OwnedRoomId) -> Option<Space> {
+    pub async fn space_typed(&self, room_id: &RoomId) -> Option<Space> {
         self.spaces
             .read()
             .await

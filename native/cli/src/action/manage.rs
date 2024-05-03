@@ -33,7 +33,7 @@ impl Manage {
         }
     }
 
-    async fn run_marking_space(&self, room_id: &OwnedRoomId) -> Result<()> {
+    async fn run_marking_space(&self, room_id: &RoomId) -> Result<()> {
         let mut client = self.login.client().await?;
         info!(" - Syncing -");
         let sync_state = client.start_sync();

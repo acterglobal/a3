@@ -165,7 +165,7 @@ impl CommentsManager {
     pub async fn reload(&self) -> Result<CommentsManager> {
         let client = self.client.clone();
         let room = self.room.clone();
-        let event_id = self.inner.event_id().clone();
+        let event_id = self.inner.event_id().to_owned();
         CommentsManager::new(client, room, event_id).await
     }
 

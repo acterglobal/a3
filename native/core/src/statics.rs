@@ -1,4 +1,4 @@
-use ruma_common::{serde::Raw, OwnedRoomAliasId};
+use ruma_common::{serde::Raw, OwnedRoomAliasId, RoomAliasId};
 use ruma_events::AnyInitialStateEvent;
 use serde_json::{json, value::to_raw_value};
 
@@ -64,7 +64,7 @@ pub fn default_acter_convo_states() -> Vec<Raw<AnyInitialStateEvent>> {
 }
 
 pub fn initial_state_for_alias(
-    main_alias: &OwnedRoomAliasId,
+    main_alias: &RoomAliasId,
     alt_aliases: &Vec<OwnedRoomAliasId>,
 ) -> Raw<AnyInitialStateEvent> {
     let r = to_raw_value(&json!({
