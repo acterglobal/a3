@@ -112,11 +112,7 @@ impl ReactionManager {
 
     pub async fn send_like(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
+        let my_id = self.client.user_id()?;
         let event = self.inner.construct_like_event();
 
         RUNTIME
@@ -135,11 +131,7 @@ impl ReactionManager {
 
     pub async fn send_reaction(&self, key: String) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
+        let my_id = self.client.user_id()?;
         let event = self.inner.construct_reaction_event(key);
 
         RUNTIME
@@ -162,11 +154,7 @@ impl ReactionManager {
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
+        let my_id = self.client.user_id()?;
         let stats = self.inner.stats();
         let Some(event_id) = stats.user_likes.last().cloned() else {
             bail!("User hasn't liked")

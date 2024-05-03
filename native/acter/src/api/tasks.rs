@@ -273,11 +273,7 @@ impl TaskListDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("You must be logged in to do that")?
-            .to_owned();
+        let my_id = self.client.user_id()?;
         let content = self.content.build()?;
 
         RUNTIME
@@ -650,11 +646,7 @@ impl Task {
             bail!("Can only update tasks in joined rooms");
         }
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("You must be logged in to do that")?
-            .to_owned();
+        let my_id = self.client.user_id()?;
         let content = self.content.self_assign_event_content();
 
         RUNTIME
@@ -676,11 +668,7 @@ impl Task {
             bail!("Can only update tasks in joined rooms");
         }
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("You must be logged in to do that")?
-            .to_owned();
+        let my_id = self.client.user_id()?;
         let content = self.content.self_unassign_event_content();
 
         RUNTIME
@@ -852,11 +840,7 @@ impl TaskDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("You must be logged in to do that")?
-            .to_owned();
+        let my_id = self.client.user_id()?;
         let content = self.content.build()?;
 
         RUNTIME
@@ -1053,11 +1037,7 @@ impl TaskUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("You must be logged in to do that")?
-            .to_owned();
+        let my_id = self.client.user_id()?;
         let content = self.content.build()?;
 
         RUNTIME
@@ -1164,11 +1144,7 @@ impl TaskListUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("You must be logged in to do that")?
-            .to_owned();
+        let my_id = self.client.user_id()?;
         let content = self.content.build()?;
 
         RUNTIME

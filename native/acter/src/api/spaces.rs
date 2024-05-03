@@ -549,10 +549,10 @@ impl Space {
             bail!("Unable to convert a space you didn't join");
         }
         let room = self.inner.room.clone();
+        let my_id = self.client.user_id()?;
+        let client = self.client.deref().clone();
         RUNTIME
             .spawn(async move {
-                let client = room.client();
-                let my_id = client.user_id().context("You must be logged in to do that")?.to_owned();
                 let room_id = room.room_id().to_owned();
                 let member = room
                     .get_member(&my_id)
@@ -606,11 +606,7 @@ impl Space {
             bail!("No permissions to add child to space");
         }
         let room = self.inner.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
+        let my_id = self.client.user_id()?;
         let client = self.client.clone();
 
         RUNTIME
@@ -649,11 +645,7 @@ impl Space {
             bail!("No permissions to remove child from space");
         }
         let room = self.inner.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("You must be logged in to do that")?
-            .to_owned();
+        let my_id = self.client.user_id()?;
 
         RUNTIME
             .spawn(async move {

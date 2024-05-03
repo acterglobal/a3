@@ -637,11 +637,7 @@ impl NewsEntryDraft {
         trace!("starting send");
         let client = self.client.clone();
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
+        let my_id = self.client.user_id()?;
         let slides_drafts = self.slides.clone();
         let mut builder = self.content.clone();
 
@@ -720,11 +716,7 @@ impl NewsEntryUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
+        let my_id = self.client.user_id()?;
         let content = self.content.build()?;
 
         RUNTIME

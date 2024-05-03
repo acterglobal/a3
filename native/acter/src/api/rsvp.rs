@@ -211,11 +211,7 @@ impl RsvpDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("You must be logged in to do that")?
-            .to_owned();
+        let my_id = self.client.user_id()?;
         let inner = self.inner.build()?;
 
         RUNTIME

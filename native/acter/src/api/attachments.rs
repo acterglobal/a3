@@ -394,7 +394,7 @@ impl AttachmentDraft {
             bail!("Can only attachment in joined rooms");
         }
         let room = self.room.clone();
-        let my_id = self.client.user_id().context("User not found")?;
+        let my_id = self.client.user_id()?;
         let inner = self.inner.build()?;
         RUNTIME
             .spawn(async move {
@@ -459,11 +459,7 @@ impl AttachmentsManager {
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
+        let my_id = self.client.user_id()?;
         let stats = self.inner.stats();
         let has_entry = self
             .stats()

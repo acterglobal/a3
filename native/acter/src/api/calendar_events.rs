@@ -230,6 +230,7 @@ impl CalendarEvent {
         let event_id = self.inner.event_id().to_owned();
         crate::CommentsManager::new(client, room, event_id).await
     }
+
     pub async fn attachments(&self) -> Result<crate::AttachmentsManager> {
         let client = self.client.clone();
         let room = self.room.clone();
@@ -352,11 +353,7 @@ impl CalendarEventDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
+        let my_id = self.client.user_id()?;
         let inner = self.inner.build()?;
 
         RUNTIME
@@ -463,11 +460,7 @@ impl CalendarEventUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
+        let my_id = self.client.user_id()?;
         let inner = self.inner.build()?;
 
         RUNTIME
