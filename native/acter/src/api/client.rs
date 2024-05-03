@@ -280,7 +280,7 @@ impl Client {
                 };
                 if !is_acter_space {
                     trace!(room_id=?space.room_id(), "not an acter space");
-                    history.lock_mut().unknow_room(&space.room_id().to_owned());
+                    history.lock_mut().unknow_room(space.room_id());
                     return;
                 }
 
@@ -871,12 +871,12 @@ impl Client {
         for r in self.core.client().rooms() {
             // looping locally first
             if let Some(con_alias) = r.canonical_alias() {
-                if &con_alias == room_alias {
+                if con_alias == room_alias {
                     return Ok(Room::new(self.core.clone(), r));
                 }
             }
             for alt_alias in r.alt_aliases() {
-                if &alt_alias == room_alias {
+                if alt_alias == room_alias {
                     return Ok(Room::new(self.core.clone(), r));
                 }
             }
