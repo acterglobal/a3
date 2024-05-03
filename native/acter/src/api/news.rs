@@ -44,11 +44,7 @@ impl Client {
                 else {
                     bail!("{key} is not a news");
                 };
-                let room = me
-                    .core
-                    .client()
-                    .get_room(content.room_id())
-                    .context("Room not found")?;
+                let room = me.room_by_id(content.room_id())?;
                 NewsEntry::new(me.clone(), room, content).await
             })
             .await?

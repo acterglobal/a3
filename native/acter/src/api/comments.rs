@@ -24,11 +24,7 @@ impl Client {
                 else {
                     bail!("{key} is not a comment");
                 };
-                let room = me
-                    .core
-                    .client()
-                    .get_room(&comment.meta.room_id)
-                    .context("Room not found")?;
+                let room = me.room_by_id(&comment.meta.room_id)?;
                 Ok(Comment {
                     client: me.clone(),
                     room,

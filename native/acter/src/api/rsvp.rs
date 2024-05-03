@@ -25,11 +25,7 @@ impl Client {
                 let AnyActerModel::Rsvp(rsvp) = client.wait_for(key.clone(), timeout).await? else {
                     bail!("{key} is not a rsvp");
                 };
-                let room = client
-                    .core
-                    .client()
-                    .get_room(&rsvp.meta.room_id)
-                    .context("Room not found")?;
+                let room = client.room_by_id(&rsvp.meta.room_id)?;
                 Ok(Rsvp {
                     client: client.clone(),
                     room,
@@ -61,7 +57,7 @@ impl Client {
                                 continue;
                             }
                         }
-                        let room = client.get_room(inner.room_id()).context("Room not found")?;
+                        let room = client.room_by_id(inner.room_id())?;
                         let cal_event = CalendarEvent::new(client.clone(), room, inner);
                         cal_events.push(cal_event);
                     } else {
@@ -99,7 +95,7 @@ impl Client {
                                 continue;
                             }
                         }
-                        let room = client.get_room(inner.room_id()).context("Room not found")?;
+                        let room = client.room_by_id(inner.room_id())?;
                         let cal_event = CalendarEvent::new(client.clone(), room, inner);
                         // fliter only events that i sent rsvp
                         let rsvp_manager = cal_event.rsvps().await?;
@@ -141,7 +137,7 @@ impl Client {
                                 continue;
                             }
                         }
-                        let room = client.get_room(inner.room_id()).context("Room not found")?;
+                        let room = client.room_by_id(inner.room_id())?;
                         let cal_event = CalendarEvent::new(client.clone(), room, inner);
                         // fliter only events that i sent rsvp
                         let rsvp_manager = cal_event.rsvps().await?;

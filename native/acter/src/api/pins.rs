@@ -32,11 +32,7 @@ impl Client {
                 else {
                     bail!("{key} is not a pin");
                 };
-                let room = client
-                    .core
-                    .client()
-                    .get_room(content.room_id())
-                    .context("Room not found")?;
+                let room = client.room_by_id(content.room_id())?;
                 Ok(Pin {
                     client: client.clone(),
                     room,
@@ -88,7 +84,7 @@ impl Client {
                 let AnyActerModel::Pin(t) = client.store().get(&pin_id).await? else {
                     bail!("Ping not found");
                 };
-                let room = client.get_room(t.room_id()).context("Room not found")?;
+                let room = client.room_by_id(t.room_id())?;
                 Ok(Pin {
                     client,
                     room,

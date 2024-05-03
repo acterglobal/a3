@@ -41,11 +41,7 @@ impl Client {
                 else {
                     bail!("{key} is not a attachment");
                 };
-                let room = me
-                    .core
-                    .client()
-                    .get_room(&attachment.meta.room_id)
-                    .context("Room not found")?;
+                let room = me.room_by_id(&attachment.meta.room_id)?;
                 Ok(Attachment {
                     client: me.clone(),
                     room,

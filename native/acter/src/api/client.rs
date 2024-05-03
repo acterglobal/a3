@@ -867,6 +867,13 @@ impl Client {
             .map(|room| Room::new(self.core.clone(), room))
     }
 
+    pub fn room_by_id(&self, room_id: &RoomId) -> Result<SdkRoom> {
+        self.core
+            .client()
+            .get_room(room_id)
+            .context("Room not found")
+    }
+
     pub async fn room_by_alias_typed(&self, room_alias: &RoomAliasId) -> Result<Room> {
         for r in self.core.client().rooms() {
             // looping locally first

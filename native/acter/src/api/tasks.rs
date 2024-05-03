@@ -33,11 +33,7 @@ impl Client {
                 else {
                     bail!("{key} is not a task");
                 };
-                let room = me
-                    .core
-                    .client()
-                    .get_room(content.room_id())
-                    .context("Room not found")?;
+                let room = me.room_by_id(content.room_id())?;
                 Ok(TaskList {
                     client: me.clone(),
                     room,
@@ -54,11 +50,7 @@ impl Client {
                 let AnyActerModel::Task(content) = me.wait_for(key.clone(), timeout).await? else {
                     bail!("{key} is not a task");
                 };
-                let room = me
-                    .core
-                    .client()
-                    .get_room(content.room_id())
-                    .context("Room not found")?;
+                let room = me.room_by_id(content.room_id())?;
                 Ok(Task {
                     client: me.clone(),
                     room,

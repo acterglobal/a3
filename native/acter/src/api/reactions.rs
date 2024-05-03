@@ -20,11 +20,7 @@ impl Client {
                 else {
                     bail!("{key} is not a reaction");
                 };
-                let room = client
-                    .core
-                    .client()
-                    .get_room(&reaction.meta.room_id)
-                    .context("Room not found")?;
+                let room = client.room_by_id(&reaction.meta.room_id)?;
                 Ok(Reaction {
                     client: client.clone(),
                     room,
