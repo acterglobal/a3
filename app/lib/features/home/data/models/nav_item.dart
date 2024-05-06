@@ -1,3 +1,4 @@
+import 'package:acter/router/utils.dart';
 import 'package:flutter/material.dart';
 
 class BottomBarNavigationItem extends BottomNavigationBarItem {
@@ -18,12 +19,14 @@ class SidebarNavigationItem extends NavigationRailDestination {
   final bool pushToNavigate;
   final bool isSpaceTab;
   final GlobalKey? tutorialGlobalKey;
+  final ShellBranch? branch;
 
   const SidebarNavigationItem({
     this.location,
     this.pushToNavigate = false,
     this.isSpaceTab = false,
     this.tutorialGlobalKey,
+    this.branch,
     required super.icon,
     required super.label,
   });
