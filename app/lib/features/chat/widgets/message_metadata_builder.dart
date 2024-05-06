@@ -7,6 +7,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:quds_popup_menu/quds_popup_menu.dart';
@@ -42,11 +43,10 @@ class MessageMetadataBuilder extends ConsumerWidget {
               child: CircularProgressIndicator(),
             );
           case 'SendingFailed':
-            final err = sendState.error();
             return Row(
               children: <Widget>[
                 GestureDetector(
-                  onTap: () => _handleCancelRetrySend(ref),
+                  onTap: () => _handleCancelRetrySend(context, ref),
                   child: Text(
                     L10n.of(context).cancelSend,
                     style: Theme.of(context).textTheme.labelSmall!.copyWith(
@@ -57,26 +57,13 @@ class MessageMetadataBuilder extends ConsumerWidget {
                 ),
                 const SizedBox(width: 10),
                 GestureDetector(
-                  onTap: () => _handleRetry(ref),
-                  child: RichText(
-                    text: TextSpan(
-                      text: L10n.of(context).failedToSend(err.toString()),
-                      style: Theme.of(context).textTheme.labelSmall!.copyWith(
-                            color: Theme.of(context).colorScheme.neutral5,
-                          ),
-                      children: <TextSpan>[
-                        TextSpan(
-                          text: L10n.of(context).retry,
-                          style: Theme.of(context)
-                              .textTheme
-                              .labelSmall!
-                              .copyWith(
-                                color: Theme.of(context).colorScheme.neutral5,
-                                decoration: TextDecoration.underline,
-                              ),
+                  onTap: () => _handleRetry(context, ref),
+                  child: Text(
+                    L10n.of(context).retry,
+                    style: Theme.of(context).textTheme.labelSmall!.copyWith(
+                          color: Theme.of(context).colorScheme.neutral5,
+                          decoration: TextDecoration.underline,
                         ),
-                      ],
-                    ),
                   ),
                 ),
                 const SizedBox(width: 5),
@@ -95,16 +82,29 @@ class MessageMetadataBuilder extends ConsumerWidget {
     }
   }
 
-  Future<void> _handleRetry(WidgetRef ref) async {
-    final stream = ref.read(timelineStreamProvider(convo));
-    // attempts to retry sending local echo to server
-    await stream.retrySend(message.id);
+  Future<void> _handleRetry(BuildContext context, WidgetRef ref) async {
+    try {
+      final stream = ref.read(timelineStreamProvider(convo));
+      // attempts to retry sending local echo to server
+      await stream.retrySend(message.id);
+    } catch (e) {
+      // ignore: use_build_context_synchronously
+      EasyLoading.showError(L10n.of(context).failedToSend(e));
+    }
   }
 
-  Future<void> _handleCancelRetrySend(WidgetRef ref) async {
-    final stream = ref.read(timelineStreamProvider(convo));
-    // cancels the retry sending of local echos
-    await stream.cancelSend(message.id);
+  Future<void> _handleCancelRetrySend(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    try {
+      final stream = ref.read(timelineStreamProvider(convo));
+      // cancels the retry sending of local echos
+      await stream.cancelSend(message.id);
+    } catch (e) {
+      // ignore: use_build_context_synchronously
+      EasyLoading.showError(L10n.of(context).failedToSend(e));
+    }
   }
 }
 
