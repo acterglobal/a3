@@ -5,6 +5,8 @@ import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/pages/add_news_page.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
 import 'package:acter/features/search/model/keys.dart';
+import 'package:acter/features/space/dialogs/leave_space.dart';
+import 'package:acter/features/space/widgets/space_toolbar.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter/material.dart';
@@ -173,6 +175,28 @@ void updateTests() {
     // we expect to be thrown to the news screen and see our latest item first:
     final imageUpdateContent = find.byKey(NewsUpdateKeys.imageUpdateContent);
     await imageUpdateContent.should(findsOneWidget);
+  });
+
+  acterTestWidget('Leaving space removes Image News Update', (t) async {
+    final spaceId = await t.freshAccountWithSpace();
+
+    await t.openCreateNews();
+    await t.addImageSlide();
+    await t.toggleBackgroundColor();
+    await t.submitNews(spaceId);
+
+    // we expect to be thrown to the news screen and see our latest item first:
+    final imageUpdateContent = find.byKey(NewsUpdateKeys.imageUpdateContent);
+    await imageUpdateContent.should(findsOneWidget);
+    await t.gotoSpace(spaceId);
+    await t.navigateTo([
+      SpaceToolbar.optionsMenu,
+      SpaceToolbar.leaveMenu,
+      leaveSpaceYesBtn, // leaving the space
+    ]);
+    await t.navigateTo([MainNavKeys.updates]);
+    // news are gone
+    await imageUpdateContent.should(findsNothing);
   });
 
   acterTestWidget('Single Video News Update', (t) async {

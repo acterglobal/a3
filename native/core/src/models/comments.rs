@@ -1,4 +1,5 @@
 use derive_getters::Getters;
+use ruma::RoomId;
 use ruma_common::{EventId, OwnedEventId, UserId};
 use ruma_events::OriginalMessageLikeEvent;
 use serde::{Deserialize, Serialize};
@@ -171,6 +172,9 @@ impl ActerModel for Comment {
     fn event_id(&self) -> &EventId {
         &self.meta.event_id
     }
+    fn room_id(&self) -> &RoomId {
+        &self.meta.room_id
+    }
 
     fn capabilities(&self) -> &[Capability] {
         &[Capability::Commentable, Capability::Reactable]
@@ -253,6 +257,9 @@ impl ActerModel for CommentUpdate {
 
     fn event_id(&self) -> &EventId {
         &self.meta.event_id
+    }
+    fn room_id(&self) -> &RoomId {
+        &self.meta.room_id
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {

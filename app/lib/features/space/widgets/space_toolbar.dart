@@ -11,6 +11,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 class SpaceToolbar extends ConsumerWidget {
   static const optionsMenu = Key('space-options-menu');
   static const settingsMenu = Key('space-options-settings');
+  static const leaveMenu = Key('space-options-leave');
   final String spaceId;
 
   const SpaceToolbar({super.key, required this.spaceId});
@@ -43,6 +44,7 @@ class SpaceToolbar extends ConsumerWidget {
       ),
       const PopupMenuDivider(),
       PopupMenuItem(
+        key: leaveMenu,
         onTap: () => showLeaveSpaceDialog(context, ref, spaceId),
         child: Text(
           L10n.of(context).leaveSpace,
