@@ -110,6 +110,8 @@ final GlobalKey<NavigatorState> rootNavKey = GlobalKey<NavigatorState>(
   debugLabel: 'root',
 );
 
+final homeShellKey = GlobalKey(debugLabel: 'home-shell');
+
 final GlobalKey<NavigatorState> homeTabNavKey = GlobalKey<NavigatorState>(
   debugLabel: 'homeTabNavKey',
 );
@@ -136,7 +138,7 @@ List<RouteBase> makeRoutes(Ref ref) {
         GoRouterState state,
         StatefulNavigationShell navigationShell,
       ) {
-        return HomeShell(navigationShell: navigationShell);
+        return HomeShell(key: homeShellKey, navigationShell: navigationShell);
       },
       branches: shellBranches(ref),
     ),
