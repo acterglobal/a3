@@ -25,7 +25,7 @@ use tracing::{trace, warn};
 use super::{
     api::FfiBuffer, client::Client, common::ThumbnailSize, stream::MsgContentDraft, RUNTIME,
 };
-use crate::{MsgContent, OptionString};
+use crate::{MsgContent, MsgDraft, OptionString};
 
 impl Client {
     pub async fn wait_for_attachment(
@@ -506,7 +506,7 @@ impl AttachmentsManager {
             .await?
     }
 
-    pub async fn content_draft(&self, base_draft: Box<MsgContentDraft>) -> Result<AttachmentDraft> {
+    pub async fn content_draft(&self, base_draft: Box<MsgDraft>) -> Result<AttachmentDraft> {
         let room = self.room.clone();
         let client = self.room.client();
 
@@ -537,13 +537,13 @@ impl AttachmentsManager {
     }
 }
 
-impl MsgContentDraft {
+impl MsgDraft {
     async fn into_attachment_content(
         self, // into_* fn takes self by value not reference
         client: SdkClient,
         room: Room,
     ) -> Result<Option<AttachmentContent>> {
-        match self {
+        match self.inner {
             MsgContentDraft::TextPlain { .. }
             | MsgContentDraft::TextMarkdown { .. }
             | MsgContentDraft::TextHtml { .. } => Ok(None),

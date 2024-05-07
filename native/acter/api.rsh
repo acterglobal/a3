@@ -1056,30 +1056,11 @@ object SpaceDiff {
     fn value() -> Option<Space>;
 }
 
-object MsgContentDraft {
-    /// available for only image/audio/video/file
-    fn size(value: u64) -> MsgContentDraft;
-
-    /// available for only image/video
-    fn width(value: u64) -> MsgContentDraft;
-
-    /// available for only image/video
-    fn height(value: u64) -> MsgContentDraft;
-
-    /// available for only audio/video
-    fn duration(value: u64) -> MsgContentDraft;
-
-    /// available for only image/video
-    fn blurhash(value: string) -> MsgContentDraft;
-
-    /// available for only file
-    fn filename(value: string) -> MsgContentDraft;
-
-    /// available for only location
-    fn geo_uri(value: string) -> MsgContentDraft;
-
-    // convert this into a NewsSlideDraft;
-    fn into_news_slide_draft() -> NewsSlideDraft;
+object MsgDraft {
+    /// add a user mention
+    fn add_mention(user_id: string) -> Result<bool>;
+    /// whether to mention the entire room
+    fn add_room_mention(mention: bool) -> Result<bool>;
 }
 
 /// Timeline with Room Events
@@ -1094,13 +1075,13 @@ object TimelineStream {
     fn paginate_backwards(count: u16) -> Future<Result<bool>>;
 
     /// send message using draft
-    fn send_message(draft: MsgContentDraft) -> Future<Result<bool>>;
+    fn send_message(draft: MsgDraft) -> Future<Result<bool>>;
 
     /// modify message using draft
-    fn edit_message(event_id: string, draft: MsgContentDraft) -> Future<Result<bool>>;
+    fn edit_message(event_id: string, draft: MsgDraft) -> Future<Result<bool>>;
 
     /// send reply to event
-    fn reply_message(event_id: string, draft: MsgContentDraft) -> Future<Result<bool>>;
+    fn reply_message(event_id: string, draft: MsgDraft) -> Future<Result<bool>>;
 
     /// send single receipt
     /// receipt_type: FullyRead | Read | ReadPrivate
@@ -1384,7 +1365,7 @@ object AttachmentsManager {
     fn attachments_count() -> u32;
 
     /// create news slide for image msg
-    fn content_draft(base_draft: MsgContentDraft) -> Future<Result<AttachmentDraft>>;
+    fn content_draft(base_draft: MsgDraft) -> Future<Result<AttachmentDraft>>;
 
     // inform about the changes to this manager
     fn reload() -> Future<Result<AttachmentsManager>>;
@@ -2596,28 +2577,28 @@ object Client {
     fn device_records(verified: bool) -> Future<Result<Vec<DeviceRecord>>>;
 
     /// make draft to send text plain msg
-    fn text_plain_draft(body: string) -> MsgContentDraft;
+    fn text_plain_draft(body: string) -> MsgDraft;
 
     /// make draft to send text markdown msg
-    fn text_markdown_draft(body: string) -> MsgContentDraft;
+    fn text_markdown_draft(body: string) -> MsgDraft;
 
     /// make draft to send html marked up msg
-    fn text_html_draft(html: string, plain: string) -> MsgContentDraft;
+    fn text_html_draft(html: string, plain: string) -> MsgDraft;
 
     /// make draft to send image msg
-    fn image_draft(source: string, mimetype: string) -> MsgContentDraft;
+    fn image_draft(source: string, mimetype: string) -> MsgDraft;
 
     /// make draft to send audio msg
-    fn audio_draft(source: string, mimetype: string) -> MsgContentDraft;
+    fn audio_draft(source: string, mimetype: string) -> MsgDraft;
 
     /// make draft to send video msg
-    fn video_draft(source: string, mimetype: string) -> MsgContentDraft;
+    fn video_draft(source: string, mimetype: string) -> MsgDraft;
 
     /// make draft to send file msg
-    fn file_draft(source: string, mimetype: string) -> MsgContentDraft;
+    fn file_draft(source: string, mimetype: string) -> MsgDraft;
 
     /// make draft to send location msg
-    fn location_draft(body: string, source: string) -> MsgContentDraft;
+    fn location_draft(body: string, source: string) -> MsgDraft;
 
     /// get access to the backup manager
     fn backup_manager() -> BackupManager;

@@ -23,6 +23,8 @@ use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::{trace, warn};
 
+use crate::MsgDraft;
+
 use super::{
     api::FfiBuffer,
     client::Client,
@@ -730,10 +732,8 @@ impl Space {
     }
 }
 
-impl MsgContentDraft {
-    pub fn into_news_slide_draft(
-        &self, // into_* fn takes self by value not reference
-    ) -> NewsSlideDraft {
-        NewsSlideDraft::new(self.clone())
+impl From<MsgDraft> for NewsSlideDraft {
+    fn from(value: MsgDraft) -> Self {
+        NewsSlideDraft::new(value.inner)
     }
 }
