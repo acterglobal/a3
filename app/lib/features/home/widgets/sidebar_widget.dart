@@ -10,6 +10,9 @@ import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::home::sidebar');
 
 class SidebarWidget extends ConsumerWidget {
   final NavigationRailLabelType labelType;
@@ -47,24 +50,36 @@ class SidebarWidget extends ConsumerWidget {
         AdaptiveScaffold.standardNavigationRail(
           // main logic
           destinations: sidebarNavItems,
-          selectedIndex: navigationShell.currentIndex,
+          selectedIndex: sidebarNavItems.indexed
+              .firstWhere(
+                (v) => v.$2.branch?.index == navigationShell.currentIndex,
+                orElse: () => (1, sidebarNavItems[0]),
+              )
+              .$1,
           onDestinationSelected: (tabIndex) {
-            if (sidebarNavItems[tabIndex].location != null) {
-              final item = sidebarNavItems[tabIndex];
+            final item = sidebarNavItems[tabIndex];
+            if (item.location != null) {
               // go to the initial location of the selected tab (by index)
               if (item.isSpaceTab) {
                 context.go(item.location!);
               } else if (item.pushToNavigate) {
                 context.push(item.location!);
               }
+            } else if (item.branch != null) {
+              navigationShell.goBranch(
+                item.branch!.index,
+                initialLocation:
+                    item.branch!.index == navigationShell.currentIndex,
+              );
+            } else {
+              _log.severe(
+                "Sidebar navigation item doesn't have any proper target: $item",
+              );
             }
           },
 
           // configuration
           labelType: labelType,
-          selectedIconTheme: const IconThemeData(size: 18, color: Colors.white),
-          unselectedIconTheme:
-              const IconThemeData(size: 18, color: Colors.white),
           padding: const EdgeInsets.all(0),
           leading: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -99,7 +114,7 @@ class SidebarWidget extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: Column(
                       children: [
-                        const Icon(Atlas.bug_file_thin, color: Colors.white),
+                        const Icon(Atlas.bug_file_thin),
                         Text(
                           L10n.of(context).report,
                           style: Theme.of(context).textTheme.labelSmall,

@@ -34,7 +34,7 @@ dependencies:
   # UI
   flutter_adaptive_scaffold: ^0.1.0
   atlas_icons: ^0.0.12
-  skeletonizer: ^0.8.0
+  skeletonizer: ^1.1.1
   flutter_chat_ui: ^1.6.9
   flutter_chat_types: ^3.3.2
   flutter_staggered_grid_view: ^0.7.0
@@ -125,6 +125,8 @@ dependencies:
   carousel_indicator: ^1.0.6
   stack_trace: ^1.11.1
   tutorial_coach_mark: ^1.2.11
+  flutter_typeahead: ^5.2.0
+  zoom_hover_pinch_image: ^1.0.3
 
 # FIXME keep until a new version has been published
 dependency_overrides:

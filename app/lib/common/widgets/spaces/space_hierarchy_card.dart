@@ -1,5 +1,7 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/utils/rooms.dart';
+import 'package:acter/common/widgets/room/room_hierarchy_join_button.dart';
+
 import 'package:acter/common/widgets/spaces/space_with_profile_card.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -9,71 +11,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
-class RoomHierarchyJoinButtons extends ConsumerWidget {
-  final Function(String)? forward;
-  final SpaceHierarchyRoomInfo space;
-
-  const RoomHierarchyJoinButtons({
-    super.key,
-    required this.space,
-    this.forward,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final joinRule = space.joinRuleStr().toLowerCase();
-    switch (joinRule) {
-      case 'private':
-      case 'invite':
-        return Tooltip(
-          message: L10n.of(context).youNeedBeInvitedToJoinThisRoom,
-          child: Chip(label: Text(L10n.of(context).private)),
-        );
-      case 'restricted':
-        return Tooltip(
-          message: L10n.of(context).youAreAbleToJoinThisRoom,
-          child: OutlinedButton(
-            onPressed: () async {
-              await joinRoom(
-                context,
-                ref,
-                L10n.of(context).tryingToJoin('${space.name()}'),
-                space.roomIdStr(),
-                space.viaServerName(),
-                forward ?? (roomId) => goToSpace(context, roomId),
-              );
-            },
-            child: Text(L10n.of(context).join),
-          ),
-        );
-      case 'public':
-        return Tooltip(
-          message: L10n.of(context).youNeedBeInvitedToJoinThisRoom,
-          child: OutlinedButton(
-            onPressed: () async {
-              await joinRoom(
-                context,
-                ref,
-                L10n.of(context).tryingToJoin('${space.name()}'),
-                space.roomIdStr(),
-                space.viaServerName(),
-                forward ?? (roomId) => goToSpace(context, roomId),
-              );
-            },
-            child: Text(L10n.of(context).join),
-          ),
-        );
-      default:
-        return Tooltip(
-          message: L10n.of(context).unclearJoinRule(joinRule),
-          child: Chip(label: Text(L10n.of(context).unknown)),
-        );
-    }
-  }
-}
-
 class SpaceHierarchyCard extends ConsumerWidget {
-  final SpaceHierarchyRoomInfo space;
+  /// The room info to display
+  final SpaceHierarchyRoomInfo roomInfo;
+
+  /// The parent roomId this is rendered for
+  final String parentId;
+
+  /// the Size of the Avatar to render
   final double avatarSize;
 
   /// Called when the user taps this list tile.
@@ -136,7 +81,8 @@ class SpaceHierarchyCard extends ConsumerWidget {
 
   const SpaceHierarchyCard({
     super.key,
-    required this.space,
+    required this.roomInfo,
+    required this.parentId,
     this.onTap,
     this.onLongPress,
     this.onFocusChange,
@@ -151,9 +97,9 @@ class SpaceHierarchyCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final roomId = space.roomIdStr();
-    final profile = ref.watch(spaceHierarchyProfileProvider(space));
-    final topic = space.topic();
+    final roomId = roomInfo.roomIdStr();
+    final profile = ref.watch(spaceHierarchyProfileProvider(roomInfo));
+    final topic = roomInfo.topic();
     final Widget? subtitle = topic?.isNotEmpty == true
         ? ExpandableText(
             topic!,
@@ -176,7 +122,16 @@ class SpaceHierarchyCard extends ConsumerWidget {
         contentPadding: contentPadding,
         shape: shape,
         withBorder: withBorder,
-        trailing: RoomHierarchyJoinButtons(space: space),
+        trailing: RoomHierarchyJoinButton(
+          joinRule: roomInfo.joinRuleStr().toLowerCase(),
+          roomId: roomInfo.roomIdStr(),
+          roomName: roomInfo.name() ?? roomInfo.roomIdStr(),
+          viaServerName: roomInfo.viaServerName(),
+          forward: (spaceId) {
+            goToSpace(context, spaceId);
+            ref.invalidate(relatedSpacesProvider(parentId));
+          },
+        ),
       ),
       error: (error, stack) => ListTile(
         title: Text(L10n.of(context).errorLoading(roomId)),

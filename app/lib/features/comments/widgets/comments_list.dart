@@ -1,4 +1,4 @@
-import 'package:acter/common/widgets/empty_state_widget.dart';
+import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/features/comments/providers/comments.dart';
 import 'package:acter/features/comments/widgets/comment.dart';
 import 'package:acter/features/comments/widgets/create_comment.dart';
@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
-class CommentsList extends ConsumerWidget {
+class CommentsList extends ConsumerStatefulWidget {
   final CommentsManager manager;
 
   const CommentsList({
@@ -16,8 +16,15 @@ class CommentsList extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(commentsListProvider(manager)).when(
+  ConsumerState<ConsumerStatefulWidget> createState() => _CommentsListState();
+}
+
+class _CommentsListState extends ConsumerState<CommentsList> {
+  bool editorOpened = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return ref.watch(commentsListProvider(widget.manager)).when(
           data: (manager) {
             if (manager.isEmpty) {
               return commentEmptyState(context);
@@ -30,6 +37,16 @@ class CommentsList extends ConsumerWidget {
         );
   }
 
+  Widget createComment() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: CreateCommentWidget(
+        manager: widget.manager,
+        onClose: () => setState(() => editorOpened = false),
+      ),
+    );
+  }
+
   Widget commentListUI(BuildContext context, List<Comment> comments) {
     return Column(
       children: [
@@ -38,32 +55,46 @@ class CommentsList extends ConsumerWidget {
               .map(
                 (c) => CommentWidget(
                   comment: c,
-                  manager: manager,
+                  manager: widget.manager,
                 ),
               )
               .toList(),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: CreateCommentWidget(manager: manager),
-        ),
+        if (editorOpened)
+          createComment()
+        else
+          Container(
+            alignment: Alignment.centerRight,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: TextButton(
+                child: Text(L10n.of(context).createComment),
+                onPressed: () => setState(() => editorOpened = true),
+              ),
+            ),
+          ),
       ],
     );
   }
 
   Widget commentEmptyState(BuildContext context) {
-    return EmptyState(
-      subtitle: L10n.of(context).commentEmptyStateSubtitle,
-      image: 'assets/icon/comment.svg',
-      imageSize: 50,
-      primaryButton: CreateCommentWidget(manager: manager),
+    if (editorOpened) return createComment();
+    return Row(
+      children: [
+        Text(L10n.of(context).commentEmptyStateTitle),
+        if (!editorOpened)
+          ActerInlineTextButton(
+            onPressed: () => setState(() => editorOpened = true),
+            child: Text(L10n.of(context).commentEmptyStateAction),
+          ),
+      ],
     );
   }
 
   Widget onError(BuildContext context, Object error) {
     return Column(
       children: [
-        Text('${L10n.of(context).commentsListError}: $error'),
+        Text(L10n.of(context).commentsListError(error)),
       ],
     );
   }

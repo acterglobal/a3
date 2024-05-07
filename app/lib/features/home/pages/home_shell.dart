@@ -2,6 +2,7 @@ import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/notifications/notifications.dart';
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/themes/app_theme.dart';
+
 import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/device.dart';
@@ -29,7 +30,6 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::home::home_shell');
 
-const homeShellKey = Key('home-shell');
 ScreenshotController screenshotController = ScreenshotController();
 bool bugReportOpen = false;
 
@@ -60,7 +60,7 @@ Future<void> openBugReport(BuildContext context) async {
 class HomeShell extends ConsumerStatefulWidget {
   final StatefulNavigationShell navigationShell;
 
-  const HomeShell({super.key = homeShellKey, required this.navigationShell});
+  const HomeShell({super.key, required this.navigationShell});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => HomeShellState();
@@ -148,16 +148,13 @@ class HomeShellState extends ConsumerState<HomeShell> {
                       textAlign: TextAlign.center,
                       text: TextSpan(
                         text: L10n.of(context).access,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 32,
-                        ),
+                        style: Theme.of(context).textTheme.headlineLarge,
                         children: <TextSpan>[
                           TextSpan(
                             text: ' ${L10n.of(context).denied}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: Colors.red,
+                              color: Theme.of(context).colorScheme.error,
                               fontSize: 32,
                             ),
                           ),

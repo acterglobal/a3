@@ -739,16 +739,6 @@ impl Client {
         })
     }
 
-    pub async fn public_spaces(
-        &self,
-        search_term: Option<String>,
-        server: Option<String>,
-        since: Option<String>,
-    ) -> Result<PublicSearchResult> {
-        self.search_public(search_term, server, since, Some(RoomTypeFilter::Space))
-            .await
-    }
-
     pub async fn spaces(&self) -> Result<Vec<Space>> {
         Ok(self.spaces.read().await.clone().into_iter().collect())
     }

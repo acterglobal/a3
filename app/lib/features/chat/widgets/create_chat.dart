@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:acter/common/dialogs/invite_to_room_dialog.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
@@ -647,7 +648,7 @@ class _CreateRoomFormWidgetConsumerState
                 child: Text(L10n.of(context).cancel),
               ),
               const SizedBox(width: 10),
-              ElevatedButton(
+              ActerPrimaryActionButton(
                 key: CreateChatPage.submiteKey,
                 onPressed: () => _handleSubmit(titleInput, currentParentSpace),
                 child: Text(L10n.of(context).create),

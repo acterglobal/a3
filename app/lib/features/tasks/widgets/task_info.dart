@@ -80,7 +80,7 @@ class TaskInfo extends ConsumerWidget {
                         style: Theme.of(context).textTheme.bodySmall!.copyWith(
                               fontWeight: FontWeight.w100,
                               fontStyle: FontStyle.italic,
-                              color: AppTheme.brandColorScheme.neutral5,
+                              color: Theme.of(context).colorScheme.neutral5,
                             ),
                       ),
                     ),
@@ -232,7 +232,7 @@ class _TaskTitleState extends State<TaskTitle> {
               style: task.isDone()
                   ? Theme.of(context).textTheme.headlineMedium!.copyWith(
                         fontWeight: FontWeight.w100,
-                        color: AppTheme.brandColorScheme.neutral5,
+                        color: Theme.of(context).colorScheme.neutral5,
                       )
                   : Theme.of(context).textTheme.headlineSmall!,
             ),

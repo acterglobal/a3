@@ -12,7 +12,7 @@ part of 'media_chat_state.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$MediaChatLoadingState {
@@ -608,6 +608,7 @@ mixin _$MediaChatState {
   MediaChatLoadingState get mediaChatLoadingState =>
       throw _privateConstructorUsedError;
   File? get mediaFile => throw _privateConstructorUsedError;
+  File? get videoThumbnailFile => throw _privateConstructorUsedError;
   bool get isDownloading => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -624,6 +625,7 @@ abstract class $MediaChatStateCopyWith<$Res> {
   $Res call(
       {MediaChatLoadingState mediaChatLoadingState,
       File? mediaFile,
+      File? videoThumbnailFile,
       bool isDownloading});
 
   $MediaChatLoadingStateCopyWith<$Res> get mediaChatLoadingState;
@@ -644,6 +646,7 @@ class _$MediaChatStateCopyWithImpl<$Res, $Val extends MediaChatState>
   $Res call({
     Object? mediaChatLoadingState = null,
     Object? mediaFile = freezed,
+    Object? videoThumbnailFile = freezed,
     Object? isDownloading = null,
   }) {
     return _then(_value.copyWith(
@@ -654,6 +657,10 @@ class _$MediaChatStateCopyWithImpl<$Res, $Val extends MediaChatState>
       mediaFile: freezed == mediaFile
           ? _value.mediaFile
           : mediaFile // ignore: cast_nullable_to_non_nullable
+              as File?,
+      videoThumbnailFile: freezed == videoThumbnailFile
+          ? _value.videoThumbnailFile
+          : videoThumbnailFile // ignore: cast_nullable_to_non_nullable
               as File?,
       isDownloading: null == isDownloading
           ? _value.isDownloading
@@ -683,6 +690,7 @@ abstract class _$$MediaChatStateImplCopyWith<$Res>
   $Res call(
       {MediaChatLoadingState mediaChatLoadingState,
       File? mediaFile,
+      File? videoThumbnailFile,
       bool isDownloading});
 
   @override
@@ -702,6 +710,7 @@ class __$$MediaChatStateImplCopyWithImpl<$Res>
   $Res call({
     Object? mediaChatLoadingState = null,
     Object? mediaFile = freezed,
+    Object? videoThumbnailFile = freezed,
     Object? isDownloading = null,
   }) {
     return _then(_$MediaChatStateImpl(
@@ -712,6 +721,10 @@ class __$$MediaChatStateImplCopyWithImpl<$Res>
       mediaFile: freezed == mediaFile
           ? _value.mediaFile
           : mediaFile // ignore: cast_nullable_to_non_nullable
+              as File?,
+      videoThumbnailFile: freezed == videoThumbnailFile
+          ? _value.videoThumbnailFile
+          : videoThumbnailFile // ignore: cast_nullable_to_non_nullable
               as File?,
       isDownloading: null == isDownloading
           ? _value.isDownloading
@@ -727,6 +740,7 @@ class _$MediaChatStateImpl implements _MediaChatState {
   const _$MediaChatStateImpl(
       {this.mediaChatLoadingState = const MediaChatLoadingState.loading(),
       this.mediaFile,
+      this.videoThumbnailFile,
       this.isDownloading = false});
 
   @override
@@ -735,12 +749,14 @@ class _$MediaChatStateImpl implements _MediaChatState {
   @override
   final File? mediaFile;
   @override
+  final File? videoThumbnailFile;
+  @override
   @JsonKey()
   final bool isDownloading;
 
   @override
   String toString() {
-    return 'MediaChatState(mediaChatLoadingState: $mediaChatLoadingState, mediaFile: $mediaFile, isDownloading: $isDownloading)';
+    return 'MediaChatState(mediaChatLoadingState: $mediaChatLoadingState, mediaFile: $mediaFile, videoThumbnailFile: $videoThumbnailFile, isDownloading: $isDownloading)';
   }
 
   @override
@@ -752,13 +768,15 @@ class _$MediaChatStateImpl implements _MediaChatState {
                 other.mediaChatLoadingState == mediaChatLoadingState) &&
             (identical(other.mediaFile, mediaFile) ||
                 other.mediaFile == mediaFile) &&
+            (identical(other.videoThumbnailFile, videoThumbnailFile) ||
+                other.videoThumbnailFile == videoThumbnailFile) &&
             (identical(other.isDownloading, isDownloading) ||
                 other.isDownloading == isDownloading));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, mediaChatLoadingState, mediaFile, isDownloading);
+  int get hashCode => Object.hash(runtimeType, mediaChatLoadingState, mediaFile,
+      videoThumbnailFile, isDownloading);
 
   @JsonKey(ignore: true)
   @override
@@ -772,12 +790,15 @@ abstract class _MediaChatState implements MediaChatState {
   const factory _MediaChatState(
       {final MediaChatLoadingState mediaChatLoadingState,
       final File? mediaFile,
+      final File? videoThumbnailFile,
       final bool isDownloading}) = _$MediaChatStateImpl;
 
   @override
   MediaChatLoadingState get mediaChatLoadingState;
   @override
   File? get mediaFile;
+  @override
+  File? get videoThumbnailFile;
   @override
   bool get isDownloading;
   @override

@@ -1151,6 +1151,9 @@ object Convo {
     /// what is the description / topic
     fn topic() -> Option<string>;
 
+    /// set the name of the chat
+    fn set_name(name: string) -> Future<Result<EventId>>;
+
     /// set description / topic of the room
     fn set_topic(topic: string) -> Future<Result<EventId>>;
 
@@ -2214,6 +2217,14 @@ object PublicSearchResultItem {
     fn join_rule_str() -> string;
     // fn room_type() -> Option<RoomType>;
     fn room_type_str() -> string;
+
+    /// whether to have avatar
+    fn has_avatar() -> bool;
+
+    /// get the binary data of avatar
+    /// if thumb size is given, avatar thumbnail is returned
+    /// if thumb size is not given, avatar file is returned
+    fn get_avatar(thumb_size: Option<ThumbnailSize>) -> Future<Result<OptionBuffer>>;
 }
 
 object PublicSearchResult {
@@ -2439,9 +2450,6 @@ object Client {
     /// attempt to join a room
     fn join_convo(room_id_or_alias: string, server_name: Option<string>) -> Future<Result<Convo>>;
 
-    /// search the public directory for spaces
-    fn public_spaces(search_term: Option<string>, server: Option<string>, since: Option<string>) -> Future<Result<PublicSearchResult>>;
-
     /// Get the space that user belongs to
     fn space(room_id_or_alias: string) -> Future<Result<Space>>;
 
@@ -2456,6 +2464,9 @@ object Client {
 
     /// search the user directory
     fn search_users(search_term: string) -> Future<Result<Vec<UserProfile>>>;
+
+    /// search the public directory for rooms
+    fn search_public_room(search_term: Option<string>, server: Option<string>, room_filter: Option<string>, since: Option<string>) -> Future<Result<PublicSearchResult>>;
 
     /// Whether the user already verified the device
     fn verified_device(dev_id: string) -> Future<Result<bool>>;

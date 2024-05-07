@@ -1,6 +1,8 @@
 import 'package:acter/common/providers/network_provider.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
+
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/no_internet.dart';
@@ -150,7 +152,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         Text(
           L10n.of(context).createProfile,
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: greenColor,
+                color: Theme.of(context).colorScheme.textHighlight,
               ),
         ),
         const SizedBox(height: 4),
@@ -175,7 +177,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             hintText: L10n.of(context).hintMessageDisplayName,
           ),
           style: Theme.of(context).textTheme.labelLarge,
-          cursorColor: Theme.of(context).colorScheme.tertiary2,
           validator: (val) {
             if (val == null || val.trim().isEmpty) {
               return L10n.of(context).missingName;
@@ -278,25 +279,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
               ),
             ),
             IconButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text(L10n.of(context).inviteCode),
-                      content: Text(L10n.of(context).inviteCodeInfo),
-                      actions: <Widget>[
-                        TextButton(
-                          child: Text(L10n.of(context).ok),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
+              onPressed: showInviteCodeDialog,
               icon: const Icon(Atlas.question_chat, size: 20),
             ),
           ],
@@ -322,6 +305,64 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           },
         ),
       ],
+    );
+  }
+
+  void showInviteCodeDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(L10n.of(context).inviteCode),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(L10n.of(context).inviteCodeInfo),
+              const SizedBox(height: 10),
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.neutral,
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20.0,
+                  vertical: 10.0,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'tryacter',
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
+                    IconButton(
+                      onPressed: () async {
+                        context.pop(); // close the drawer
+                        EasyLoading.showToast(
+                          L10n.of(context).inviteCopiedToClipboard,
+                          toastPosition: EasyLoadingToastPosition.bottom,
+                        );
+                        await Clipboard.setData(
+                          const ClipboardData(text: 'tryacter'),
+                        );
+                      },
+                      icon: const Icon(Icons.copy, size: 20),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            OutlinedButton(
+              child: Text(L10n.of(context).ok),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -365,7 +406,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     final authState = ref.watch(authStateProvider);
     return authState
         ? const Center(child: CircularProgressIndicator())
-        : ElevatedButton(
+        : ActerPrimaryActionButton(
             key: RegisterPage.submitBtn,
             onPressed: () => handleSubmit(context),
             child: Text(
@@ -383,7 +424,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           L10n.of(context).haveProfile,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
-        TextButton(
+        ActerInlineTextButton(
           key: Keys.loginBtn,
           onPressed: () => context.goNamed(Routes.authLogin.name),
           child: Text(

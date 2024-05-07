@@ -1,4 +1,7 @@
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
+
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/onboarding/widgets/logo_widget.dart';
@@ -64,7 +67,7 @@ class IntroProfile extends StatelessWidget {
           style: Theme.of(context)
               .textTheme
               .headlineMedium
-              ?.copyWith(color: greenColor),
+              ?.copyWith(color: Theme.of(context).colorScheme.textHighlight),
         ),
       ],
     );
@@ -74,7 +77,7 @@ class IntroProfile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(5),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.white),
+        border: Border.all(color: Theme.of(context).colorScheme.textColor),
         borderRadius: const BorderRadius.all(Radius.circular(10)),
       ),
       child: Text(
@@ -104,7 +107,7 @@ class IntroProfile extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            ElevatedButton(
+            ActerPrimaryActionButton(
               key: LoginPageKeys.signUpBtn,
               onPressed: () => context.pushNamed(Routes.authRegister.name),
               child: Text(

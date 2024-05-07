@@ -1,5 +1,7 @@
 import 'package:acter/common/providers/network_provider.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/no_internet.dart';
@@ -96,7 +98,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           style: Theme.of(context)
               .textTheme
               .headlineMedium
-              ?.copyWith(color: greenColor),
+              ?.copyWith(color: Theme.of(context).colorScheme.textHighlight),
         ),
         const SizedBox(height: 10),
         Padding(
@@ -177,7 +179,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final authState = ref.watch(authStateProvider);
     return authState
         ? const Center(child: CircularProgressIndicator())
-        : ElevatedButton(
+        : ActerPrimaryActionButton(
             key: LoginPageKeys.submitBtn,
             onPressed: () => handleSubmit(context),
             child: Text(
@@ -190,7 +192,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Widget _buildForgotPassword(BuildContext context) {
     return Align(
       alignment: Alignment.centerRight,
-      child: TextButton(
+      child: ActerInlineTextButton(
         key: LoginPageKeys.forgotPassBtn,
         onPressed: () => context.pushNamed(Routes.forgotPassword.name),
         child: Text(
@@ -206,7 +208,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       children: [
         Text(L10n.of(context).noProfile),
         const SizedBox(width: 2),
-        TextButton(
+        ActerInlineTextButton(
           key: LoginPageKeys.signUpBtn,
           onPressed: () => context.goNamed(Routes.authRegister.name),
           child: Text(

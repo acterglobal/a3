@@ -29,11 +29,11 @@
 	<key>MinimumOSVersion</key>
 	<string>12.0</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Take pictures to share in Acter.</string>
+	<string>Take pictures and use Acter to share them via Chat or in Spaces with others.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Record messages with Acter</string>
+	<string>Record messages with Acter to share via Chat or in Spaces with others.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Upload Fotos into Acter</string>
+	<string>Allows you to select photos from your photo library to be uploaded into Acter and shared via Chat or in Spaces with others.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>

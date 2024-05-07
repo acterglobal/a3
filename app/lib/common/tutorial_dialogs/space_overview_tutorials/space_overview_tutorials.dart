@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
-final spaceOverviewKey = GlobalKey();
-
 const spaceOverviewPrefKey = 'spaceOverviewPrefKey';
 
 Future<void> setSpaceOverviewTutorialsAsViewed() async {
@@ -16,7 +14,10 @@ Future<void> setSpaceOverviewTutorialsAsViewed() async {
   }
 }
 
-void spaceOverviewTutorials({required BuildContext context}) async {
+void spaceOverviewTutorials({
+  required BuildContext context,
+  required GlobalKey spaceOverviewKey,
+}) async {
   final prefs = await sharedPrefs();
   final isShow = prefs.getBool(spaceOverviewPrefKey) ?? true;
 

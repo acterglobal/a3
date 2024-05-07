@@ -1,5 +1,7 @@
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/default_bottom_sheet.dart';
 import 'package:acter/common/widgets/like_button.dart';
 import 'package:acter/common/widgets/redact_content.dart';
@@ -35,7 +37,7 @@ class NewsSideBar extends ConsumerWidget {
     final userId = ref.watch(myUserIdStrProvider);
     final isLikedByMe = ref.watch(likedByMeProvider(news));
     final likesCount = ref.watch(totalLikesForNewsProvider(news));
-    final space = ref.watch(briefSpaceItemWithMembershipProvider(roomId));
+    final space = ref.watch(briefSpaceItemProvider(roomId));
     final style = Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 13);
 
     return Column(
@@ -46,7 +48,7 @@ class NewsSideBar extends ConsumerWidget {
           isLiked: isLikedByMe.valueOrNull ?? false,
           likeCount: likesCount.valueOrNull ?? 0,
           style: style,
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.textColor,
           index: index,
           onTap: () async {
             final manager = await ref.read(newsReactionsProvider(news).future);
@@ -70,7 +72,6 @@ class NewsSideBar extends ConsumerWidget {
                   news: news,
                   userId: userId,
                   roomId: roomId,
-                  membership: space.membership!,
                 ),
               ),
             ),
@@ -150,19 +151,18 @@ class ActionBox extends ConsumerWidget {
   final String userId;
   final ffi.NewsEntry news;
   final String roomId;
-  final ffi.Member membership;
 
   const ActionBox({
     super.key,
     required this.news,
     required this.userId,
     required this.roomId,
-    required this.membership,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final senderId = news.sender().toString();
+    final membership = ref.watch(roomMembershipProvider(roomId)).valueOrNull;
     final isAuthor = senderId == userId;
     List<Widget> actions = [
       Text(L10n.of(context).actions),
@@ -190,7 +190,9 @@ class ActionBox extends ConsumerWidget {
       );
     }
 
-    if (isAuthor && membership.canString('CanRedactOwn')) {
+    if (isAuthor &&
+        membership != null &&
+        membership.canString('CanRedactOwn')) {
       actions.add(
         TextButton.icon(
           key: NewsUpdateKeys.newsSidebarActionRemoveBtn,

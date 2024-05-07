@@ -13,7 +13,12 @@ class AsyncMaybeRoomNotifier extends FamilyAsyncNotifier<Room?, String> {
 
   Future<Room?> _getRoom() async {
     final client = ref.read(alwaysClientProvider);
-    return await client.room(arg);
+    try {
+      return await client.room(arg);
+    } catch (e, stack) {
+      _log.severe('room not found', e, stack);
+      return null;
+    }
   }
 
   @override

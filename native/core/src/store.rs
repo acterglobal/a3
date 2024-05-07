@@ -1,9 +1,10 @@
 use matrix_sdk::Client;
+use ruma::OwnedRoomId;
 use ruma_common::{OwnedUserId, UserId};
 use scc::hash_map::{Entry, HashMap};
 use std::collections::HashSet as StdHashSet;
 use std::sync::{Arc, Mutex as StdMutex};
-use tracing::{debug, error, instrument, trace, warn};
+use tracing::{debug, error, info, instrument, trace, warn};
 
 use crate::{
     models::{ActerModel, AnyActerModel},
@@ -165,6 +166,10 @@ impl Store {
 
     #[instrument(skip(self))]
     pub async fn get_list(&self, key: &str) -> Result<impl Iterator<Item = AnyActerModel>> {
+        self.get_list_inner(key)
+    }
+
+    pub fn get_list_inner(&self, key: &str) -> Result<impl Iterator<Item = AnyActerModel>> {
         let listing = if let Some(r) = self.indizes.get(key) {
             r.get().clone()
         } else {
@@ -203,6 +208,7 @@ impl Store {
     fn model_inner_under_lock(&self, mdl: AnyActerModel) -> Result<ModelKeysAndIndizes> {
         let key = mdl.event_id().to_string();
         let user_id = self.user_id();
+        let room_id_idx = format!("{}::models", mdl.room_id());
         let mut keys_changed = vec![key.clone()];
         trace!(user = ?user_id, key, "saving");
         let mut indizes = mdl.indizes(user_id);
@@ -232,7 +238,7 @@ impl Store {
             }
         }
 
-        for idx in indizes.iter() {
+        for idx in indizes.iter().chain([&room_id_idx]) {
             trace!(user = ?self.user_id, idx, key, exists=self.indizes.contains(idx), "adding to index");
             match self.indizes.entry(idx.clone()) {
                 Entry::Vacant(v) => {
@@ -249,18 +255,29 @@ impl Store {
     }
 
     pub async fn save_many(&self, models: Vec<AnyActerModel>) -> Result<Vec<String>> {
-        let mut total_list = Vec::new();
+        let mut total_keys = Vec::new();
+        let mut total_indizes = Vec::new();
         {
             let mut dirty = self.dirty.lock()?; // hold the lock
             for mdl in models.into_iter() {
                 let (keys, indizes) = self.model_inner_under_lock(mdl)?;
                 dirty.extend(keys.clone());
-                total_list.extend(keys);
-                total_list.extend(indizes);
+                total_keys.extend(keys);
+                total_indizes.extend(indizes);
             }
         }
         self.sync().await?; // FIXME: should we really run this every time?
-        Ok(total_list)
+
+        // clean out the duplicates
+        total_keys.sort();
+        total_keys.dedup();
+        total_indizes.sort();
+        total_indizes.dedup();
+
+        Ok(total_keys
+            .into_iter()
+            .chain(total_indizes.into_iter())
+            .collect())
     }
 
     pub async fn save(&self, mdl: AnyActerModel) -> Result<Vec<String>> {
@@ -269,33 +286,64 @@ impl Store {
         Ok(keys)
     }
 
+    pub async fn clear_room(&self, room_id: &OwnedRoomId) -> Result<Vec<String>> {
+        info!(?room_id, "clearing room");
+        let idx = format!("{room_id}::models");
+        let mut total_changed = {
+            let mut dirty = self.dirty.lock()?; // hold the lock
+            let mut total_changed = Vec::new();
+            for model in self.get_list_inner(&idx)? {
+                let model_id = model.event_id().to_string();
+                let indizes = model.indizes(&self.user_id);
+                // remove it from all indizes
+                for index in indizes {
+                    let _ = self
+                        .indizes
+                        .entry(index.clone())
+                        .and_modify(|l| l.retain(|o| *o != model_id));
+                    total_changed.push(index);
+                }
+                // remove the model itself
+                self.models.remove(&model_id);
+                dirty.insert(model_id.clone());
+                total_changed.push(model_id);
+            }
+
+            // remove the room-id based index
+            self.indizes.remove(&idx);
+            total_changed
+        };
+        self.sync().await?;
+
+        total_changed.sort();
+        total_changed.dedup();
+
+        Ok(total_changed)
+    }
+
     async fn sync(&self) -> Result<()> {
         trace!("sync start");
-        let (models_to_write, all_models) = {
+        let (models_to_write, to_remove, all_models) = {
             trace!("preparing models");
             // preparing for sync
             let mut dirty = self.dirty.lock()?;
-            let models_to_write: Vec<(String, Vec<u8>)> = dirty
-                .iter()
-                .filter_map(|key| {
-                    if let Some(r) = self.models.get(key) {
-                        let raw = match serde_json::to_vec(r.get()) {
-                            Ok(r) => r,
-                            Err(error) => {
-                                error!(?key, ?error, "failed to serialize. skipping");
-                                return None;
-                            }
-                        };
-                        Some((format!("acter:{key}"), raw))
-                    } else {
-                        warn!(
-                            ?key,
-                            "Inconsistency error: key is missing from models. skipping"
-                        );
-                        None
+            let mut to_remove = Vec::new();
+            let mut models_to_write = Vec::new();
+            for key in dirty.iter() {
+                let Some(r) = self.models.get(key) else {
+                    info!(?key, "Model missing, removing custom value");
+                    to_remove.push(format!("acter:{key}"));
+                    continue;
+                };
+                let raw = match serde_json::to_vec(r.get()) {
+                    Ok(r) => r,
+                    Err(error) => {
+                        error!(?key, ?error, "failed to serialize. remove");
+                        continue;
                     }
-                })
-                .collect();
+                };
+                models_to_write.push((format!("acter:{key}"), raw))
+            }
 
             let model_keys: Vec<String> = {
                 let mut model_keys: StdHashSet<String> = StdHashSet::new();
@@ -308,7 +356,7 @@ impl Store {
 
             dirty.clear(); // we clear the current set
             trace!("preparation done");
-            (models_to_write, serde_json::to_vec(&model_keys)?)
+            (models_to_write, to_remove, serde_json::to_vec(&model_keys)?)
         };
         trace!("store sync");
         let client_store = self.client.store();
@@ -327,6 +375,13 @@ impl Store {
             .set_custom_value_no_read(ALL_MODELS_KEY.as_bytes(), all_models)
             .await?;
 
+        trace!("removing old models");
+        for key in to_remove.into_iter() {
+            if let Err(error) = client_store.remove_custom_value(key.as_bytes()).await {
+                warn!(key, ?error, "Error removing model");
+            }
+        }
+
         trace!("sync done");
 
         Ok(())
@@ -339,7 +394,7 @@ mod tests {
     use crate::models::{TestModel, TestModelBuilder};
     use anyhow::bail;
     use matrix_sdk_base::store::{MemoryStore, StoreConfig};
-    use ruma::{event_id, OwnedEventId};
+    use ruma::{event_id, OwnedEventId, OwnedRoomId};
     use ruma_common::{api::MatrixVersion, user_id};
 
     async fn fresh_store_and_client() -> Result<(Store, Client)> {
@@ -667,6 +722,127 @@ mod tests {
         store.set_raw(key, &model).await?;
         let other: Vec<String> = store.get_raw(key).await?;
         assert_eq!(model, other);
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn remove_room() -> anyhow::Result<()> {
+        let _ = env_logger::try_init();
+        let store = fresh_store().await?;
+        let first_room_id = OwnedRoomId::try_from("!firstRoom:example.org").unwrap();
+        let second_room_id = OwnedRoomId::try_from("!secondRoom:example.org").unwrap();
+        let index_a = "index_a".to_owned();
+        let index_b = "index_b".to_owned();
+        let index_c = "index_c".to_owned();
+
+        let first_room_models = (0..5)
+            .map(|idx| {
+                TestModelBuilder::default()
+                    .simple()
+                    .event_id(OwnedEventId::try_from(format!("$ASDF{idx}")).unwrap())
+                    .indizes(vec![index_a.clone(), index_c.clone()])
+                    .room_id(first_room_id.clone())
+                    .build()
+                    .unwrap()
+            })
+            .collect::<Vec<_>>();
+
+        let second_room_models = (0..5)
+            .map(|idx| {
+                TestModelBuilder::default()
+                    .simple()
+                    .event_id(OwnedEventId::try_from(format!("$IDX{idx}")).unwrap())
+                    .indizes(vec![index_a.clone(), index_b.clone()])
+                    .room_id(second_room_id.clone())
+                    .build()
+                    .unwrap()
+            })
+            .collect::<Vec<_>>();
+
+        let first_model_keys = first_room_models
+            .iter()
+            .map(|m| m.event_id().to_string())
+            .collect::<Vec<String>>();
+        let second_model_keys = second_room_models
+            .iter()
+            .map(|m| m.event_id().to_string())
+            .collect::<Vec<String>>();
+
+        let all_model_keys = first_model_keys
+            .iter()
+            .chain(second_model_keys.iter())
+            .map(Clone::clone)
+            .collect::<Vec<String>>();
+
+        // submit all
+        let res_keys = store
+            .save_many(
+                first_room_models
+                    .iter()
+                    .chain(second_room_models.iter())
+                    .map(|m| AnyActerModel::TestModel(m.clone()))
+                    .collect(),
+            )
+            .await?;
+
+        // confirm all is in order:
+        assert_eq!(
+            all_model_keys
+                .into_iter()
+                .chain(
+                    // add the indizes that are also updated
+                    ["index_a", "index_b", "index_c"]
+                        .into_iter()
+                        .map(ToString::to_string)
+                )
+                .collect::<Vec<String>>(),
+            res_keys
+        );
+
+        let loaded_models_first = store
+            .get_many(first_model_keys.clone())
+            .await
+            .into_iter()
+            .filter_map(|m| match m {
+                Some(AnyActerModel::TestModel(inner)) => Some(inner),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(first_room_models, loaded_models_first);
+
+        let loaded_models_second = store
+            .get_many(second_model_keys.clone())
+            .await
+            .into_iter()
+            .filter_map(|m| match m {
+                Some(AnyActerModel::TestModel(inner)) => Some(inner),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(second_room_models, loaded_models_second);
+
+        //  --- now let's remove the first room ---
+        let notifiers = store.clear_room(&first_room_id).await?;
+        assert_eq!(notifiers.len(), 7); // 5 models & 2 indizes = 7 changes
+
+        // first room models are all gone:
+        for new in store.get_many(first_model_keys.clone()).await {
+            assert!(new.is_none(), "first model still found {new:?}");
+        }
+
+        // but second are all there
+
+        let loaded_models_second = store
+            .get_many(second_model_keys.clone())
+            .await
+            .into_iter()
+            .filter_map(|m| match m {
+                Some(AnyActerModel::TestModel(inner)) => Some(inner),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(second_room_models, loaded_models_second);
+
         Ok(())
     }
 }

@@ -1,3 +1,4 @@
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -15,7 +16,7 @@ Future<void> showUnblockUserDialog(BuildContext context, Member member) async {
           textAlign: TextAlign.left,
           text: TextSpan(
             text: L10n.of(context).youAreAboutToUnblock(userId),
-            style: const TextStyle(color: Colors.white, fontSize: 24),
+            style: Theme.of(context).textTheme.headlineMedium,
             children: <TextSpan>[
               TextSpan(
                 text: L10n.of(context).thisWillAllowThemToContactYouAgain,
@@ -24,12 +25,13 @@ Future<void> showUnblockUserDialog(BuildContext context, Member member) async {
             ],
           ),
         ),
+        actionsAlignment: MainAxisAlignment.spaceEvenly,
         actions: <Widget>[
-          TextButton(
+          OutlinedButton(
             onPressed: () => context.pop(),
             child: Text(L10n.of(context).no),
           ),
-          TextButton(
+          ActerPrimaryActionButton(
             onPressed: () async {
               EasyLoading.show(status: L10n.of(context).unblockingUserProgress);
               try {

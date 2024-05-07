@@ -61,7 +61,8 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
                       ),
                     ),
                     PopupMenuItem(
-                      onTap: () => context.pushNamed(Routes.joinSpace.name),
+                      onTap: () =>
+                          context.pushNamed(Routes.searchPublicDirectory.name),
                       child: Row(
                         children: <Widget>[
                           Text(L10n.of(context).joinSpace),

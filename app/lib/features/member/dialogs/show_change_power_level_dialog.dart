@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:math';
+
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -134,12 +136,13 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
           // ],
         ),
       ),
+      actionsAlignment: MainAxisAlignment.spaceEvenly,
       actions: <Widget>[
-        TextButton(
+        OutlinedButton(
           onPressed: () => Navigator.pop(context, null),
           child: Text(L10n.of(context).cancel),
         ),
-        TextButton(
+        ActerPrimaryActionButton(
           onPressed: () {
             if (!_formKey.currentState!.validate()) return;
             final freshMemberStatus = widget.member.membershipStatusStr();

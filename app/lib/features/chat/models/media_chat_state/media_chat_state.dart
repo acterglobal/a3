@@ -32,6 +32,7 @@ class MediaChatState with _$MediaChatState {
     @Default(MediaChatLoadingState.loading())
     MediaChatLoadingState mediaChatLoadingState,
     File? mediaFile,
+    File? videoThumbnailFile,
     @Default(false) bool isDownloading,
   }) = _MediaChatState;
 }

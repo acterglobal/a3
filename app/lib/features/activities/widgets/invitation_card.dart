@@ -1,5 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/activities/providers/invitations_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Invitation;
@@ -8,15 +10,16 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::activities::invitation_card');
 
 class InvitationCard extends ConsumerWidget {
   final Invitation invitation;
-  final Color avatarColor;
 
   const InvitationCard({
     super.key,
     required this.invitation,
-    required this.avatarColor,
   });
 
   @override
@@ -43,7 +46,7 @@ class InvitationCard extends ConsumerWidget {
                 ),
                 const SizedBox(width: 15),
                 // Accept Invitation Button
-                ElevatedButton(
+                ActerPrimaryActionButton(
                   onPressed: () => _onTapAcceptInvite(context),
                   child: Text(L10n.of(context).accept),
                 ),
@@ -196,16 +199,24 @@ class InvitationCard extends ConsumerWidget {
   // method for post-process invitation accept
   void _onTapAcceptInvite(BuildContext context) async {
     EasyLoading.show(status: L10n.of(context).joining);
-    bool res = await invitation.accept();
-    if (!context.mounted) {
-      EasyLoading.dismiss();
-      return;
-    }
-    if (res) {
-      EasyLoading.showToast(L10n.of(context).joined);
-    } else {
+    try {
+      bool res = await invitation.accept();
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      if (res) {
+        EasyLoading.showToast(L10n.of(context).joined);
+      } else {
+        EasyLoading.showError(
+          L10n.of(context).failedToJoin,
+          duration: const Duration(seconds: 3),
+        );
+      }
+    } catch (error) {
+      _log.severe('Failure accepting invite', error);
       EasyLoading.showError(
-        L10n.of(context).failedToJoin,
+        L10n.of(context).failedToAcceptInvite(error),
         duration: const Duration(seconds: 3),
       );
     }
@@ -213,16 +224,24 @@ class InvitationCard extends ConsumerWidget {
 
   void _onTapDeclineInvite(BuildContext context) async {
     EasyLoading.show(status: L10n.of(context).rejecting);
-    bool res = await invitation.reject();
-    if (!context.mounted) {
-      EasyLoading.dismiss();
-      return;
-    }
-    if (res) {
-      EasyLoading.showToast(L10n.of(context).rejected);
-    } else {
+    try {
+      bool res = await invitation.reject();
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      if (res) {
+        EasyLoading.showToast(L10n.of(context).rejected);
+      } else {
+        EasyLoading.showError(
+          L10n.of(context).failedToReject,
+          duration: const Duration(seconds: 3),
+        );
+      }
+    } catch (error) {
+      _log.severe('Failure reject invite', error);
       EasyLoading.showError(
-        L10n.of(context).failedToReject,
+        L10n.of(context).failedToRejectInvite(error),
         duration: const Duration(seconds: 3),
       );
     }

@@ -61,24 +61,14 @@ class _ActerVideoPlayerState extends State<ActerVideoPlayer> {
       return Container();
     }
 
-    final Size screenSize = MediaQuery.of(context).size;
-    final double aspectRatio = _controller.value.aspectRatio;
-
     return AspectRatio(
-      aspectRatio: aspectRatio,
-      child: FittedBox(
-        fit: BoxFit.cover,
-        child: SizedBox(
-          width: screenSize.width,
-          height: screenSize.height,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              VideoPlayer(_controller),
-              controlsOverlay(),
-            ],
-          ),
-        ),
+      aspectRatio: _controller.value.aspectRatio,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          VideoPlayer(_controller),
+          controlsOverlay(),
+        ],
       ),
     );
   }

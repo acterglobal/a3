@@ -1,4 +1,6 @@
 import 'package:acter/common/dialogs/nuke_confirmation.dart';
+import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
+
 import 'package:acter/common/utils/routes.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -77,15 +79,12 @@ class _FatalFailPageState extends ConsumerState<FatalFailPage> {
             ButtonBar(
               alignment: MainAxisAlignment.center,
               children: [
-                OutlinedButton.icon(
-                  icon: Icon(
+                ActerDangerActionButton.icon(
+                  icon: const Icon(
                     Atlas.bomb_thin,
-                    color: Theme.of(context).colorScheme.error,
                   ),
                   label: Text(
                     L10n.of(context).nukeLocalData,
-                    style:
-                        TextStyle(color: Theme.of(context).colorScheme.error),
                   ),
                   onPressed: onNukePressed,
                   onLongPress: () => nukeConfirmationDialog(context, ref),

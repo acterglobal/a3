@@ -21,12 +21,16 @@ class TopNavBar extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _TopNavBarState();
 }
 
-class _TopNavBarState extends ConsumerState<TopNavBar>
-    with TickerProviderStateMixin {
+class _TopNavBarState extends ConsumerState<TopNavBar> {
+  final spaceOverviewKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
-    spaceOverviewTutorials(context: context);
+    spaceOverviewTutorials(
+      context: context,
+      spaceOverviewKey: spaceOverviewKey,
+    );
   }
 
   @override

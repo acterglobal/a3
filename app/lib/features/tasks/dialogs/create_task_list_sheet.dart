@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
+
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/md_editor_with_preview.dart';
 import 'package:acter/common/widgets/sliver_scaffold.dart';
@@ -129,32 +130,18 @@ class _CreateTaskListSheetConsumerState
         ),
       ),
       actions: [
-        ElevatedButton(
+        OutlinedButton(
           onPressed: () => context.canPop()
               ? context.pop()
               : context.goNamed(Routes.main.name),
-          style: ElevatedButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(6),
-            ),
-            foregroundColor: Theme.of(context).colorScheme.neutral6,
-            textStyle: Theme.of(context).textTheme.bodySmall,
-          ),
           child: Text(L10n.of(context).cancel),
         ),
         const SizedBox(width: 10),
-        ElevatedButton(
+        ActerPrimaryActionButton(
           key: CreateTaskListSheet.submitKey,
           onPressed: () async {
             await submitForm(context);
           },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.success,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(6),
-            ),
-            textStyle: Theme.of(context).textTheme.bodySmall,
-          ),
           child: Text(L10n.of(context).createTaskList),
         ),
       ],

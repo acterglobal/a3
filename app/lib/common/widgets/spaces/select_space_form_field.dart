@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/space_providers.dart';
+
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -92,8 +93,12 @@ class SelectSpaceFormField extends ConsumerWidget {
     final spaceDetails = ref.watch(selectedSpaceDetailsProvider);
     final currentSelectedSpace = ref.watch(selectedSpaceIdProvider);
     return spaceDetails.when(
-      data: (space) =>
-          space != null ? SpaceChip(space: space) : Text(currentSelectedSpace!),
+      data: (space) => space != null
+          ? SpaceChip(
+              space: space,
+              onTapOpenSpaceDetail: false,
+            )
+          : Text(currentSelectedSpace!),
       error: (e, s) => Text(L10n.of(context).errorLoading(e)),
       loading: () => Skeletonizer(
         child: Chip(
