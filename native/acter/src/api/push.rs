@@ -467,13 +467,13 @@ impl Client {
         lang: Option<String>,
     ) -> Result<bool> {
         let client = self.core.client().clone();
-        let device_id = client.device_id().context("DeviceId not found")?;
+        let device_id = self.device_id()?;
         let push_data = if with_ios_defaults {
             assign!(HttpPusherData::new(server_url), {
                 default_payload: serde_json::json!({
-                        "aps": {
-                            "mutable-content": 1,
-                            "content-available": 1
+                    "aps": {
+                        "mutable-content": 1,
+                        "content-available": 1
                     },
                     "device_id": device_id,
                 })

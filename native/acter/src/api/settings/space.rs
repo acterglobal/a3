@@ -182,11 +182,7 @@ impl Room {
 
         let client = self.room.client().clone();
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
+        let my_id = self.user_id()?;
 
         RUNTIME
             .spawn(async move {

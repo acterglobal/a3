@@ -392,6 +392,7 @@ impl AttachmentDraft {
         let room = self.room.clone();
         let my_id = self.client.user_id()?;
         let inner = self.inner.build()?;
+
         RUNTIME
             .spawn(async move {
                 let permitted = room

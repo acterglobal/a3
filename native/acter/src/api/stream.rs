@@ -5,7 +5,7 @@ use matrix_sdk::{
     attachment::{
         AttachmentConfig, AttachmentInfo, BaseAudioInfo, BaseFileInfo, BaseImageInfo, BaseVideoInfo,
     },
-    room::{Receipts, Room},
+    room::{Receipts, Room as SdkRoom},
     Client as SdkClient, RoomState,
 };
 use matrix_sdk_ui::timeline::{BackPaginationStatus, PaginationOptions, Timeline};
@@ -26,10 +26,10 @@ use ruma_events::{
     },
     MessageLikeEventType,
 };
-use std::{path::PathBuf, sync::Arc};
+use std::{ops::Deref, path::PathBuf, sync::Arc};
 use tracing::info;
 
-use crate::{Client, RoomMessage, RUNTIME};
+use crate::{Client, Room, RoomMessage, RUNTIME};
 
 use super::utils::{remap_for_diff, ApiVectorDiff};
 
@@ -50,6 +50,7 @@ impl TimelineStream {
         let timeline = self.timeline.clone();
         let user_id = self
             .room
+            .deref()
             .client()
             .user_id()
             .expect("User must be logged in")
@@ -97,12 +98,7 @@ impl TimelineStream {
         let event_id = OwnedEventId::try_from(event_id)?;
 
         let timeline = self.timeline.clone();
-        let user_id = self
-            .room
-            .client()
-            .user_id()
-            .expect("User is logged in")
-            .to_owned();
+        let user_id = self.room.user_id()?;
 
         RUNTIME
             .spawn(async move {
@@ -123,11 +119,7 @@ impl TimelineStream {
             bail!("Unable to send message in a room we are not in");
         }
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("You must be logged in to do that")?
-            .to_owned();
+        let my_id = self.room.user_id()?;
         let timeline = self.timeline.clone();
 
         RUNTIME
@@ -242,12 +234,8 @@ impl TimelineStream {
         if !self.is_joined() {
             bail!("Unable to edit message in a room we are not in");
         }
-        let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("You must be logged in to do that")?
-            .to_owned();
+        let room = self.room.deref().clone();
+        let my_id = self.room.user_id()?;
         let timeline = self.timeline.clone();
         let event_id = EventId::parse(event_id)?;
         let client = self.room.client();
@@ -267,13 +255,7 @@ impl TimelineStream {
                     .event
                     .deserialize_as::<RoomMessageEvent>()?;
 
-                let mut sent_by_me = false;
-                if let Some(user_id) = client.user_id() {
-                    if user_id == event_content.sender() {
-                        sent_by_me = true;
-                    }
-                }
-                if !sent_by_me {
+                if event_content.sender() != &my_id {
                     bail!("Unable to edit an event not sent by own user");
                 }
 
@@ -299,12 +281,8 @@ impl TimelineStream {
         if !self.is_joined() {
             bail!("Unable to send reply in a room we are not in");
         }
-        let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("You must be logged in to do that")?
-            .to_owned();
+        let room = self.room.deref().clone();
+        let my_id = self.room.user_id()?;
         let timeline = self.timeline.clone();
         let event_id = EventId::parse(event_id)?;
         let client = self.room.client();
@@ -419,11 +397,7 @@ impl TimelineStream {
             bail!("Unable to send reaction in a room we are not in");
         }
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("You must be logged in to do that")?
-            .to_owned();
+        let my_id = self.room.user_id()?;
         let timeline = self.timeline.clone();
         let event_id = EventId::parse(event_id)?;
 
@@ -447,11 +421,7 @@ impl TimelineStream {
         let txn_id = OwnedTransactionId::from(txn_id);
 
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("You must be logged in to do that")?
-            .to_owned();
+        let my_id = self.room.user_id()?;
 
         RUNTIME
             .spawn(async move {
@@ -472,11 +442,7 @@ impl TimelineStream {
         let txn_id = OwnedTransactionId::from(txn_id);
 
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("You must be logged in to do that")?
-            .to_owned();
+        let my_id = self.room.user_id()?;
 
         RUNTIME
             .spawn(async move {
@@ -728,7 +694,7 @@ impl MsgContentDraft {
     async fn into_edited_content(
         self, // into_* fn takes self by value not reference
         client: SdkClient,
-        room: Room,
+        room: SdkRoom,
         event_id: OwnedEventId,
     ) -> Result<RoomMessageEventContent> {
         match self {
@@ -886,7 +852,7 @@ impl MsgContentDraft {
     async fn into_replied_content(
         self, // into_* fn takes self by value not reference
         client: SdkClient,
-        room: Room,
+        room: SdkRoom,
     ) -> Result<RoomMessageEventContentWithoutRelation> {
         match self {
             MsgContentDraft::TextPlain { body } => {

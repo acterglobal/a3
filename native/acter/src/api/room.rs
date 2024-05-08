@@ -298,11 +298,7 @@ impl Member {
 
     pub async fn kick(&self, msg: Option<String>) -> Result<bool> {
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
+        let my_id = room.user_id()?;
         let member_id = self.member.user_id().to_owned();
 
         RUNTIME
@@ -319,11 +315,7 @@ impl Member {
 
     pub async fn ban(&self, msg: Option<String>) -> Result<bool> {
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
+        let my_id = room.user_id()?;
         let member_id = self.member.user_id().to_owned();
 
         RUNTIME
@@ -340,11 +332,7 @@ impl Member {
 
     pub async fn unban(&self, msg: Option<String>) -> Result<bool> {
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
+        let my_id = room.user_id()?;
         let member_id = self.member.user_id().to_owned();
 
         RUNTIME
@@ -596,6 +584,14 @@ impl Room {
         Ok(result)
     }
 
+    pub(crate) fn user_id(&self) -> Result<OwnedUserId> {
+        self.core
+            .client()
+            .user_id()
+            .context("You must be logged in to do that")
+            .map(|x| x.to_owned())
+    }
+
     pub async fn space_relations(&self) -> Result<SpaceRelations> {
         let c = self.core.clone();
         let me = self.clone();
@@ -621,11 +617,7 @@ impl Room {
         }
         let client = self.core.client().clone();
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
+        let my_id = self.user_id()?;
 
         RUNTIME
             .spawn(async move {
@@ -665,11 +657,7 @@ impl Room {
             bail!("No permissions to remove parent from room");
         }
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("You must be logged in to do that")?
-            .to_owned();
+        let my_id = self.user_id()?;
 
         RUNTIME
             .spawn(async move {
@@ -704,11 +692,7 @@ impl Room {
         }
         let me = self.clone();
 
-        let client = me.room.client();
-        let my_id = client
-            .user_id()
-            .context("You must be logged in to do that")?
-            .to_owned();
+        let my_id = self.user_id()?;
         let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
             Some(self.app_settings_content().await?)
@@ -741,11 +725,7 @@ impl Room {
             bail!("Unable to upload avatar to a room we are not in");
         }
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("You must be logged in to do that")?
-            .to_owned();
+        let my_id = self.user_id()?;
         let path = PathBuf::from(uri);
         let client = self.core.client().clone();
 
@@ -779,11 +759,7 @@ impl Room {
             bail!("Unable to remove avatar to a room we are not in");
         }
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("You must be logged in to do that")?
-            .to_owned();
+        let my_id = self.user_id()?;
 
         RUNTIME
             .spawn(async move {
@@ -804,11 +780,7 @@ impl Room {
             bail!("Unable to set topic to a room we are not in");
         }
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("You must be logged in to do that")?
-            .to_owned();
+        let my_id = self.user_id()?;
 
         RUNTIME
             .spawn(async move {
@@ -829,11 +801,7 @@ impl Room {
             bail!("Unable to set name to a room we are not in");
         }
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("You must be logged in to do that")?
-            .to_owned();
+        let my_id = self.user_id()?;
 
         RUNTIME
             .spawn(async move {
@@ -1040,11 +1008,7 @@ impl Room {
 
     pub async fn set_notification_mode(&self, new_mode: Option<String>) -> Result<bool> {
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("You must be logged in to do that")?
-            .to_owned();
+        let my_id = self.user_id()?;
         let mode = new_mode.and_then(|s| notification_mode_from_input(&s));
 
         RUNTIME
@@ -1075,11 +1039,7 @@ impl Room {
             bail!("Unable to send typing notice to a room we are not in");
         }
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("You must be logged in to do that")?
-            .to_owned();
+        let my_id = self.user_id()?;
 
         RUNTIME
             .spawn(async move {
@@ -1216,13 +1176,7 @@ impl Room {
             bail!("Unable to send message to a room we are not in");
         }
         let room = self.room.clone();
-
-        let my_id = room
-            .client()
-            .user_id()
-            .context("You must be logged in to do that")?
-            .to_owned();
-
+        let my_id = self.user_id()?;
         let user_id = UserId::parse(&user_id)?;
 
         RUNTIME
@@ -1613,11 +1567,7 @@ impl Room {
     /// use the given `restricted_rooms` as subset of rooms to use.
     pub async fn set_join_rule(&self, join_rule_builder: Box<JoinRuleBuilder>) -> Result<bool> {
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
+        let my_id = self.user_id()?;
         let join_rule = join_rule_builder.build()?;
 
         RUNTIME
@@ -1645,13 +1595,7 @@ impl Room {
             bail!("Unable to redact any message from a room we are not in");
         }
         let room = self.room.clone();
-
-        let my_id = room
-            .client()
-            .user_id()
-            .context("You must be logged in to do that")?
-            .to_owned();
-
+        let my_id = self.user_id()?;
         let event_id = EventId::parse(event_id)?;
         let sender_id = UserId::parse(sender_id)?;
 
@@ -1685,11 +1629,7 @@ impl Room {
             bail!("Unable to update power level in a room we are not in");
         }
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("You must be logged in to do that")?
-            .to_owned();
+        let my_id = self.user_id()?;
         let user_id = UserId::parse(user_id)?;
 
         RUNTIME
@@ -1744,11 +1684,7 @@ impl Room {
             bail!("Unable to redact content in a room we are not in");
         }
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
+        let my_id = self.user_id()?;
         let event_id = EventId::parse(event_id)?;
 
         RUNTIME

@@ -2,7 +2,7 @@ use acter_core::events::three_pid::{ThreePidContent, ThreePidRecord};
 use anyhow::{bail, Context, Result};
 use matrix_sdk::{
     reqwest::{ClientBuilder, StatusCode},
-    Account, Client as SdkClient,
+    Account,
 };
 use ruma::{thirdparty::Medium, uint, ClientSecret, SessionId};
 use ruma_client_api::{
@@ -17,7 +17,7 @@ use super::{client::Client, RUNTIME};
 #[derive(Clone)]
 pub struct ThreePidManager {
     account: Account,
-    client: SdkClient,
+    client: Client,
 }
 
 impl ThreePidManager {
@@ -105,6 +105,8 @@ impl ThreePidManager {
     ) -> Result<bool> {
         let client = self.client.clone();
         let account = self.account.clone();
+        let user_id = self.client.user_id()?;
+
         RUNTIME
             .spawn(async move {
                 let capabilities = client.get_capabilities().await?;
@@ -120,10 +122,6 @@ impl ThreePidManager {
                     .via_email
                     .get(&email_address)
                     .context("That email address was not registered")?;
-                let user_id = client
-                    .user_id()
-                    .context("You must be logged in to do that")?
-                    .to_string();
                 let session_id = record.session_id();
                 let passphrase = record.passphrase();
                 let sid = SessionId::parse(session_id.clone())?;
@@ -131,7 +129,7 @@ impl ThreePidManager {
                 // try again with password
                 // FIXME: this shouldn't be hardcoded but use an Actual IUAA-flow
                 let auth_data = AuthData::Password(Password::new(
-                    UserIdentifier::UserIdOrLocalpart(user_id),
+                    UserIdentifier::UserIdOrLocalpart(user_id.to_string()),
                     password,
                 ));
 
@@ -160,13 +158,14 @@ impl ThreePidManager {
     ) -> Result<bool> {
         let client = self.client.clone();
         let account = self.account.clone();
+        let user_id = self.client.user_id()?;
+
         RUNTIME
             .spawn(async move {
                 let capabilities = client.get_capabilities().await?;
                 if !capabilities.thirdparty_id_changes.enabled {
                     bail!("This client cannot change third party identity");
                 }
-                let server_url = client.homeserver().to_string();
                 let content = account
                     .account_data::<ThreePidContent>()
                     .await?
@@ -204,14 +203,10 @@ impl ThreePidManager {
                 if !success {
                     return Ok(false);
                 }
-                let user_id = client
-                    .user_id()
-                    .context("You must be logged in to do that")?
-                    .to_string();
                 // try again with password
                 // FIXME: this shouldn't be hardcoded but use an Actual IUAA-flow
                 let auth_data = AuthData::Password(Password::new(
-                    UserIdentifier::UserIdOrLocalpart(user_id),
+                    UserIdentifier::UserIdOrLocalpart(user_id.to_string()),
                     password,
                 ));
 
@@ -281,7 +276,7 @@ impl Client {
         let account = self.account()?;
         Ok(ThreePidManager {
             account: account.deref().clone(),
-            client: self.core.client().clone(),
+            client: self.clone(),
         })
     }
 }

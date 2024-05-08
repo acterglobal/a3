@@ -126,7 +126,11 @@ impl Convo {
         let has_latest_msg = latest_message_content.is_some();
         let latest_message = Arc::new(RwLock::new(latest_message_content));
 
-        let user_id = client.user_id().expect("User must be logged in").to_owned();
+        let user_id = client
+            .deref()
+            .user_id()
+            .expect("User must be logged in")
+            .to_owned();
         let latest_msg_room = inner.clone();
         let latest_msg_client = client.clone();
         let last_msg_tl = timeline.clone();
@@ -199,7 +203,7 @@ impl Convo {
     }
 
     pub fn timeline_stream(&self) -> TimelineStream {
-        TimelineStream::new(self.inner.room.clone(), self.timeline.clone())
+        TimelineStream::new(self.inner.clone(), self.timeline.clone())
     }
 
     pub fn latest_message_ts(&self) -> u64 {
