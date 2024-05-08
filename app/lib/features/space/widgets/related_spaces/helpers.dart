@@ -8,8 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 
-List<Widget>? _renderKnownSubspaces(BuildContext context, bool canLinkSpace,
-    String spaceIdOrAlias, SpaceRelationsOverview spaces,) {
+List<Widget>? _renderKnownSubspaces(
+  BuildContext context,
+  bool canLinkSpace,
+  String spaceIdOrAlias,
+  SpaceRelationsOverview spaces,
+) {
   if (spaces.knownSubspaces.isEmpty) {
     return null;
   }
@@ -27,6 +31,7 @@ List<Widget>? _renderKnownSubspaces(BuildContext context, bool canLinkSpace,
       itemBuilder: (context, index) {
         final space = spaces.knownSubspaces[index];
         return SpaceCard(
+          key: Key('subspace-list-item-${space.getRoomIdStr()}'),
           space: space,
           showParent: false,
         );

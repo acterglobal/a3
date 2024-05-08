@@ -22,12 +22,7 @@ void subSpaceTests() {
 
     // redeeming with the registration token should automatically trigger the invite process
     // check that we have been added.
-    await t.gotoSpace(spaceId);
-
-    // brings us to the related spaces view
-    final spacesNav = find.byKey(const Key('spaces'));
-    await t.tester.ensureVisible(spacesNav);
-    await spacesNav.tap();
+    await t.gotoSpace(spaceId, appTab: const Key('spaces'));
 
     // we can see the sub space
     final subSpaceSelector = find.byKey(Key('subspace-list-item-$subSpace'));
@@ -64,10 +59,10 @@ void subSpaceTests() {
 
     // redeeming with the registration token should automatically trigger the invite process
     // check that we have been added.
-    await t.gotoSpace(spaceId);
-    await t.navigateTo([
-      const Key('spaces'),
-    ]);
+    await t.gotoSpace(
+      spaceId,
+      appTab: const Key('spaces'),
+    );
 
     // brings us to the related spaces view
 
