@@ -12,8 +12,7 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
 
   void addMention(String displayName, String authorId) {
     final mentionReplacements = Map.of(state.mentionReplacements);
-    mentionReplacements['@$displayName'] =
-        '[$displayName](https://matrix.to/#/$authorId)';
+    mentionReplacements[displayName] = authorId;
     state = state.copyWith(mentionReplacements: mentionReplacements);
   }
 

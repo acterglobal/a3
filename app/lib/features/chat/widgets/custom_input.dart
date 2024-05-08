@@ -910,21 +910,35 @@ class _TextInputWidget extends ConsumerWidget {
                     roomId: roomId,
                     authorId: authorId,
                   ),
-                  title: Wrap(
-                    children: [
-                      Text(
-                        title ?? '',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                      const SizedBox(width: 15),
-                      Text(
-                        authorId,
-                        style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                              color: Theme.of(context).colorScheme.neutral5,
+                  title: title != null
+                      ? Wrap(
+                          children: [
+                            Text(
+                              title,
+                              style: Theme.of(context).textTheme.bodySmall,
                             ),
-                      ),
-                    ],
-                  ),
+                            const SizedBox(width: 15),
+                            Text(
+                              authorId,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall!
+                                  .copyWith(
+                                    color:
+                                        Theme.of(context).colorScheme.neutral5,
+                                  ),
+                            ),
+                          ],
+                        )
+                      : Text(
+                          authorId,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodySmall!
+                              .copyWith(
+                                color: Theme.of(context).colorScheme.neutral5,
+                              ),
+                        ),
                 );
               },
             ),
@@ -941,8 +955,8 @@ class _TextInputWidget extends ConsumerWidget {
 
   void onMentionAdd(Map<String, dynamic> roomMember, WidgetRef ref) {
     final roomId = convo.getRoomIdStr();
-    String authorId = roomMember['link'];
-    String displayName = roomMember['display'] ?? authorId;
+    String authorId = roomMember['id'];
+    String displayName = roomMember['display'];
     ref
         .read(chatInputProvider(roomId).notifier)
         .addMention(displayName, authorId);
