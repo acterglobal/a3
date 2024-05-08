@@ -255,7 +255,7 @@ impl TimelineStream {
                     .event
                     .deserialize_as::<RoomMessageEvent>()?;
 
-                if event_content.sender() != &my_id {
+                if event_content.sender() != my_id {
                     bail!("Unable to edit an event not sent by own user");
                 }
 
