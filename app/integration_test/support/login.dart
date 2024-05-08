@@ -11,6 +11,7 @@ import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:uuid/uuid.dart';
 import './appstart.dart';
+import 'util.dart';
 
 const defaultRegistrationToken = String.fromEnvironment(
   'REGISTRATION_TOKEN',
@@ -113,21 +114,12 @@ extension ActerLogin on ConvenientTest {
   Future<void> logout() async {
     // ensure we do actually have access to the main nav.
     await find.byKey(Keys.mainNav).should(findsOneWidget);
-    final quickJumpKey = find.byKey(MainNavKeys.quickJump);
-    await quickJumpKey.should(findsOneWidget);
-    await quickJumpKey.tap();
-
-    final settingsKey = find.byKey(QuickJumpKeys.settings);
-    await settingsKey.should(findsOneWidget);
-    await settingsKey.tap();
-
-    final logoutKey = find.byKey(SettingsMenu.logoutAccount);
-    await logoutKey.should(findsOneWidget);
-    await logoutKey.tap();
-
-    final confirmKey = find.byKey(LogoutDialogKeys.confirm);
-    await confirmKey.should(findsOneWidget);
-    await confirmKey.tap();
+    await navigateTo([
+      MainNavKeys.quickJump,
+      QuickJumpKeys.settings,
+      SettingsMenu.logoutAccount,
+      LogoutDialogKeys.confirm,
+    ]);
 
     // we should see a main navigation, either at the side (desktop) or the bottom (mobile/tablet)
     await find.byKey(Keys.mainNav).should(findsNothing);
