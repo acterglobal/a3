@@ -30,7 +30,7 @@ use super::{
     client::Client,
     common::{MsgContent, ThumbnailSize},
     spaces::Space,
-    stream::MsgContentDraft,
+    stream::msg_draft::MsgContentDraft,
     RUNTIME,
 };
 
@@ -735,5 +735,10 @@ impl Space {
 impl From<MsgDraft> for NewsSlideDraft {
     fn from(value: MsgDraft) -> Self {
         NewsSlideDraft::new(value.inner)
+    }
+}
+impl MsgDraft {
+    pub fn into_news_slide_draft(&self) -> NewsSlideDraft {
+        self.clone().into()
     }
 }

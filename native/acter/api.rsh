@@ -1057,10 +1057,36 @@ object SpaceDiff {
 }
 
 object MsgDraft {
+
     /// add a user mention
     fn add_mention(user_id: string) -> Result<bool>;
+
     /// whether to mention the entire room
     fn add_room_mention(mention: bool) -> Result<bool>;
+    
+    /// available for only image/audio/video/file
+    fn size(value: u64) -> MsgDraft;
+
+    /// available for only image/video
+    fn width(value: u64) -> MsgDraft;
+
+    /// available for only image/video
+    fn height(value: u64) -> MsgDraft;
+
+    /// available for only audio/video
+    fn duration(value: u64) -> MsgDraft;
+
+    /// available for only image/video
+    fn blurhash(value: string) -> MsgDraft;
+
+    /// available for only file
+    fn filename(value: string) -> MsgDraft;
+
+    /// available for only location
+    fn geo_uri(value: string) -> MsgDraft;
+
+    // convert this into a NewsSlideDraft;
+    fn into_news_slide_draft() -> NewsSlideDraft;
 }
 
 /// Timeline with Room Events

@@ -18414,6 +18414,113 @@ class Api {
         int,
         int,
       )>();
+  late final _msgDraftSizePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint64,
+          )>>("__MsgDraft_size");
+
+  late final _msgDraftSize = _msgDraftSizePtr.asFunction<
+      int Function(
+        int,
+        int,
+      )>();
+  late final _msgDraftWidthPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint64,
+          )>>("__MsgDraft_width");
+
+  late final _msgDraftWidth = _msgDraftWidthPtr.asFunction<
+      int Function(
+        int,
+        int,
+      )>();
+  late final _msgDraftHeightPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint64,
+          )>>("__MsgDraft_height");
+
+  late final _msgDraftHeight = _msgDraftHeightPtr.asFunction<
+      int Function(
+        int,
+        int,
+      )>();
+  late final _msgDraftDurationPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint64,
+          )>>("__MsgDraft_duration");
+
+  late final _msgDraftDuration = _msgDraftDurationPtr.asFunction<
+      int Function(
+        int,
+        int,
+      )>();
+  late final _msgDraftBlurhashPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__MsgDraft_blurhash");
+
+  late final _msgDraftBlurhash = _msgDraftBlurhashPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _msgDraftFilenamePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__MsgDraft_filename");
+
+  late final _msgDraftFilename = _msgDraftFilenamePtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _msgDraftGeoUriPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__MsgDraft_geo_uri");
+
+  late final _msgDraftGeoUri = _msgDraftGeoUriPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _msgDraftIntoNewsSlideDraftPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__MsgDraft_into_news_slide_draft");
+
+  late final _msgDraftIntoNewsSlideDraft =
+      _msgDraftIntoNewsSlideDraftPtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _timelineStreamMessagesStreamPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -37998,6 +38105,200 @@ class MsgDraft {
     }
     final tmp4 = tmp9 > 0;
     return tmp4;
+  }
+
+  /// available for only image/audio/video/file
+  MsgDraft size(
+    int value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    final tmp3 = _api._msgDraftSize(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_MsgDraft");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = MsgDraft._(_api, tmp5_1);
+    return tmp4;
+  }
+
+  /// available for only image/video
+  MsgDraft width(
+    int value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    final tmp3 = _api._msgDraftWidth(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_MsgDraft");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = MsgDraft._(_api, tmp5_1);
+    return tmp4;
+  }
+
+  /// available for only image/video
+  MsgDraft height(
+    int value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    final tmp3 = _api._msgDraftHeight(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_MsgDraft");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = MsgDraft._(_api, tmp5_1);
+    return tmp4;
+  }
+
+  /// available for only audio/video
+  MsgDraft duration(
+    int value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    final tmp3 = _api._msgDraftDuration(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_MsgDraft");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = MsgDraft._(_api, tmp5_1);
+    return tmp4;
+  }
+
+  /// available for only image/video
+  MsgDraft blurhash(
+    String value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._msgDraftBlurhash(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = MsgDraft._(_api, tmp7_1);
+    return tmp6;
+  }
+
+  /// available for only file
+  MsgDraft filename(
+    String value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._msgDraftFilename(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = MsgDraft._(_api, tmp7_1);
+    return tmp6;
+  }
+
+  /// available for only location
+  MsgDraft geoUri(
+    String value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._msgDraftGeoUri(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = MsgDraft._(_api, tmp7_1);
+    return tmp6;
+  }
+
+  NewsSlideDraft intoNewsSlideDraft() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._msgDraftIntoNewsSlideDraft(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_NewsSlideDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = NewsSlideDraft._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
