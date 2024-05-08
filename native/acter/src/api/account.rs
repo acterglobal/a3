@@ -54,7 +54,7 @@ impl Account {
     }
 
     pub async fn set_display_name(&self, new_name: String) -> Result<bool> {
-        let client = self.client.core.client().clone();
+        let client = self.client.deref().clone();
         let account = self.account.clone();
         RUNTIME
             .spawn(async move {
@@ -75,7 +75,7 @@ impl Account {
 
     pub async fn avatar(&self, thumb_size: Option<Box<ThumbnailSize>>) -> Result<OptionBuffer> {
         let account = self.account.clone();
-        let client = self.client.core.client().clone();
+        let client = self.client.deref().clone();
         RUNTIME
             .spawn(async move {
                 let source = match account.get_cached_avatar_url().await? {
@@ -95,7 +95,7 @@ impl Account {
     }
 
     pub async fn upload_avatar(&self, uri: String) -> Result<OwnedMxcUri> {
-        let client = self.client.core.client().clone();
+        let client = self.client.deref().clone();
         let account = self.account.clone();
         let path = PathBuf::from(uri);
         RUNTIME

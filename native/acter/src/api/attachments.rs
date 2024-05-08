@@ -97,7 +97,7 @@ impl Attachment {
         dir_path: String,
     ) -> Result<OptionString> {
         let room = self.room.clone();
-        let client = self.room.client();
+        let client = self.client.deref().clone();
         let evt_id = self.inner.meta.event_id.clone();
         let evt_content = self.inner.content().clone();
 
@@ -296,7 +296,7 @@ impl Attachment {
 
     pub async fn media_path(&self, is_thumb: bool) -> Result<OptionString> {
         let room = self.room.clone();
-        let client = self.room.client();
+        let client = self.client.deref().clone();
 
         let evt_id = self.inner.meta.event_id.clone();
         let evt_content = self.inner.content().clone();
@@ -457,7 +457,6 @@ impl AttachmentsManager {
     ) -> Result<OwnedEventId> {
         let room = self.room.clone();
         let my_id = self.client.user_id()?;
-        let stats = self.inner.stats();
         let has_entry = self
             .stats()
             .user_attachments
@@ -507,7 +506,7 @@ impl AttachmentsManager {
 
     pub async fn content_draft(&self, base_draft: Box<MsgContentDraft>) -> Result<AttachmentDraft> {
         let room = self.room.clone();
-        let client = self.room.client();
+        let client = self.client.deref().clone();
 
         let content = RUNTIME
             .spawn(async move {

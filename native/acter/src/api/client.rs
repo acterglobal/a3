@@ -349,7 +349,8 @@ impl Client {
     }
 
     pub async fn room_by_alias_typed(&self, room_alias: &RoomAliasId) -> Result<Room> {
-        for r in self.core.client().rooms() {
+        let client = self.core.client();
+        for r in client.rooms() {
             // looping locally first
             if let Some(con_alias) = r.canonical_alias() {
                 if con_alias == room_alias {
@@ -363,7 +364,7 @@ impl Client {
             }
         }
         // nothing found, try remote:
-        let response = self.core.client().resolve_room_alias(room_alias).await?;
+        let response = client.resolve_room_alias(room_alias).await?;
         self.room_by_id_typed(&response.room_id)
             .context("Room not found")
     }

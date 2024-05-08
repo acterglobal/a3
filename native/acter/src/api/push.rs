@@ -28,7 +28,7 @@ use ruma_events::{
     room::{message::MessageType, MediaSource},
     AnySyncMessageLikeEvent, AnySyncTimelineEvent, MessageLikeEvent, SyncMessageLikeEvent,
 };
-use std::sync::Arc;
+use std::{ops::Deref, sync::Arc};
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use urlencoding::encode;
 
@@ -381,7 +381,7 @@ impl Pusher {
     }
 
     pub async fn delete(&self) -> Result<bool> {
-        let client = self.client.core.client().clone();
+        let client = self.client.deref().clone();
         let app_id = self.app_id();
         let pushkey = self.pushkey();
         RUNTIME
@@ -424,9 +424,12 @@ impl Client {
 
     pub async fn notification_settings(&self) -> Result<NotificationSettings> {
         let client = self.core.client().clone();
-        Ok(RUNTIME
-            .spawn(async move { NotificationSettings::new(client.notification_settings().await) })
-            .await?)
+        RUNTIME
+            .spawn(async move {
+                let inner = client.notification_settings().await;
+                Ok(NotificationSettings::new(inner))
+            })
+            .await?
     }
 
     pub async fn add_email_pusher(

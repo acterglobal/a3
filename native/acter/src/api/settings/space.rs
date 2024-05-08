@@ -180,7 +180,6 @@ impl Room {
             bail!("No permissions to change the power levels");
         }
 
-        let client = self.room.client().clone();
         let room = self.room.clone();
         let my_id = self.user_id()?;
 

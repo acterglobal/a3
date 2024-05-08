@@ -77,9 +77,12 @@ impl Invitation {
     }
 
     pub async fn accept(&self) -> Result<bool> {
-        let client = self.core.client();
         let room_id = self.room.room_id().to_owned();
-        let room = client.get_room(&room_id).context("Room not found")?;
+        let room = self
+            .core
+            .client()
+            .get_room(&room_id)
+            .context("Room not found")?;
         if !matches!(room.state(), RoomState::Invited) {
             bail!("Unable to get a room we are not invited");
         }
@@ -113,9 +116,12 @@ impl Invitation {
     }
 
     pub async fn reject(&self) -> Result<bool> {
-        let client = self.core.client();
         let room_id = self.room.room_id().to_owned();
-        let room = client.get_room(&room_id).context("Room not found")?;
+        let room = self
+            .core
+            .client()
+            .get_room(&room_id)
+            .context("Room not found")?;
         if !matches!(room.state(), RoomState::Invited) {
             bail!("Unable to get a room we are not invited");
         }
@@ -323,13 +329,14 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 let resp = client.search_users(&search_term, 30).await?;
-                Ok(resp
+                let user_profiles = resp
                     .results
                     .into_iter()
                     .map(|inner| {
                         UserProfile::from_search(PublicProfile::new(inner, client.clone()))
                     })
-                    .collect())
+                    .collect();
+                Ok(user_profiles)
             })
             .await?
     }

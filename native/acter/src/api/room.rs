@@ -350,7 +350,7 @@ impl Member {
 
 pub struct SpaceHierarchyRoomInfo {
     chunk: SpaceHierarchyRoomsChunk,
-    client: CoreClient,
+    core: CoreClient,
 }
 
 impl SpaceHierarchyRoomInfo {
@@ -438,7 +438,7 @@ impl SpaceHierarchyRoomInfo {
     }
 
     pub async fn get_avatar(&self, thumb_size: Option<Box<ThumbnailSize>>) -> Result<OptionBuffer> {
-        let client = self.client.client().clone();
+        let client = self.core.client().clone();
         if let Some(url) = self.chunk.avatar_url.clone() {
             let format = ThumbnailSize::parse_into_media_format(thumb_size);
             return RUNTIME
@@ -457,14 +457,14 @@ impl SpaceHierarchyRoomInfo {
 }
 
 impl SpaceHierarchyRoomInfo {
-    pub(crate) async fn new(chunk: SpaceHierarchyRoomsChunk, client: CoreClient) -> Self {
-        SpaceHierarchyRoomInfo { chunk, client }
+    pub(crate) async fn new(chunk: SpaceHierarchyRoomsChunk, core: CoreClient) -> Self {
+        SpaceHierarchyRoomInfo { chunk, core }
     }
 }
 
 pub struct SpaceHierarchyListResult {
     resp: get_hierarchy::v1::Response,
-    client: CoreClient,
+    core: CoreClient,
 }
 
 impl SpaceHierarchyListResult {
@@ -473,13 +473,13 @@ impl SpaceHierarchyListResult {
     }
 
     pub async fn rooms(&self) -> Result<Vec<SpaceHierarchyRoomInfo>> {
-        let client = self.client.clone();
+        let core = self.core.clone();
         let chunks = self.resp.rooms.clone();
         RUNTIME
             .spawn(async move {
                 let iter = chunks
                     .into_iter()
-                    .map(|chunk| SpaceHierarchyRoomInfo::new(chunk, client.clone()));
+                    .map(|chunk| SpaceHierarchyRoomInfo::new(chunk, core.clone()));
                 Ok(futures::future::join_all(iter).await)
             })
             .await?
@@ -560,7 +560,7 @@ impl SpaceRelations {
             .spawn(async move {
                 let request = assign!(get_hierarchy::v1::Request::new(room_id), { from, max_depth: Some(1u32.into()) });
                 let resp = c.client().send(request, None).await?;
-                Ok(SpaceHierarchyListResult { resp, client: c.clone() })
+                Ok(SpaceHierarchyListResult { resp, core: c.clone() })
             })
             .await?
     }
@@ -961,10 +961,12 @@ impl Room {
     }
 
     pub async fn default_notification_mode(&self) -> String {
+        let client = self.core.client().clone();
         let room = self.room.clone();
+
         RUNTIME
             .spawn(async move {
-                let notification_settings = room.client().notification_settings().await;
+                let notification_settings = client.notification_settings().await;
                 let is_encrypted = room.is_encrypted().await.unwrap_or_default();
                 // Otherwise, if encrypted status is available, get the default mode for this
                 // type of room.
@@ -984,10 +986,12 @@ impl Room {
     }
 
     pub async fn unmute(&self) -> Result<bool> {
+        let client = self.core.client().clone();
         let room = self.room.clone();
+
         RUNTIME
             .spawn(async move {
-                let notification_settings = room.client().notification_settings().await;
+                let notification_settings = client.notification_settings().await;
                 let is_encrypted = room.is_encrypted().await.unwrap_or_default();
                 // Otherwise, if encrypted status is available, get the default mode for this
                 // type of room.
@@ -1009,6 +1013,7 @@ impl Room {
     pub async fn set_notification_mode(&self, new_mode: Option<String>) -> Result<bool> {
         let room = self.room.clone();
         let my_id = self.user_id()?;
+        let client = self.core.client().clone();
         let mode = new_mode.and_then(|s| notification_mode_from_input(&s));
 
         RUNTIME
@@ -1017,8 +1022,7 @@ impl Room {
                 if !permitted {
                     bail!("No permissions to change notification mode in this room");
                 }
-
-                let notification_settings = room.client().notification_settings().await;
+                let notification_settings = client.notification_settings().await;
                 let room_id = room.room_id();
                 if let Some(mode) = mode {
                     notification_settings
@@ -1064,7 +1068,7 @@ impl Room {
             bail!("Unable to read media message from a room we are not in");
         }
         let room = self.room.clone();
-        let client = self.room.client();
+        let client = self.core.client().clone();
         let event_id = EventId::parse(event_id)?;
 
         RUNTIME
@@ -1220,7 +1224,7 @@ impl Room {
     }
 
     pub async fn get_invitees(&self) -> Result<Vec<Member>> {
-        let my_client = self.room.client();
+        let client = self.core.client().clone();
         if !self.is_invited() {
             bail!("Unable to get a room we are not invited");
         }
@@ -1234,7 +1238,7 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let invited = my_client
+                let invited = client
                     .store()
                     .get_user_ids(me.room.room_id(), RoomMemberships::INVITE)
                     .await?;
@@ -1263,7 +1267,7 @@ impl Room {
             bail!("Unable to read message from a room we are not in");
         }
         let room = self.room.clone();
-        let client = self.room.client();
+        let client = self.core.client().clone();
         let evt_id = EventId::parse(event_id.clone())?;
 
         RUNTIME
@@ -1469,8 +1473,7 @@ impl Room {
             bail!("Unable to read message from a room we are not in");
         }
         let room = self.room.clone();
-        let client = self.room.client();
-
+        let client = self.core.client().clone();
         let evt_id = EventId::parse(event_id.clone())?;
 
         RUNTIME
@@ -1657,19 +1660,16 @@ impl Room {
         if !self.is_joined() {
             bail!("Unable to block content in a room we are not in");
         }
-        let room = self.room.clone();
+        let client = self.core.client().clone();
+        let room_id = self.room.room_id().to_owned();
         let event_id = EventId::parse(event_id)?;
         let int_score = score.map(|value| value.into());
 
         RUNTIME
             .spawn(async move {
-                let request = report_content::v3::Request::new(
-                    room.room_id().to_owned(),
-                    event_id,
-                    int_score,
-                    reason,
-                );
-                room.client().send(request, None).await?;
+                let request =
+                    report_content::v3::Request::new(room_id, event_id, int_score, reason);
+                client.send(request, None).await?;
                 Ok(true)
             })
             .await?
