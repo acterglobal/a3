@@ -674,12 +674,18 @@ impl Room {
                     SyncOrStrippedState::Stripped(ev) => {
                         bail!("Unable to get event id about stripped event")
                     }
-                    SyncOrStrippedState::Sync(ev) => ev.event_id().to_owned(),
+                    SyncOrStrippedState::Sync(ev) => {
+                        let permitted = if ev.sender() == my_id {
+                            room.can_user_redact_own(&my_id).await?
+                        } else {
+                            room.can_user_redact_other(&my_id).await?
+                        };
+                        if !permitted {
+                            bail!("No permissions to redact this message");
+                        }
+                        ev.event_id().to_owned()
+                    }
                 };
-                let permitted = room.can_user_redact_own(&my_id).await?;
-                if !permitted {
-                    bail!("No permissions to redact your message in this room");
-                }
                 room.redact(&event_id, reason.as_deref(), None).await?;
                 Ok(true)
             })
@@ -1604,16 +1610,13 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                if sender_id == my_id {
-                    let permitted = room.can_user_redact_own(&my_id).await?;
-                    if !permitted {
-                        bail!("No permissions to redact own message in this room");
-                    }
+                let permitted = if sender_id == my_id {
+                    room.can_user_redact_own(&my_id).await?
                 } else {
-                    let permitted = room.can_user_redact_other(&my_id).await?;
-                    if !permitted {
-                        bail!("No permissions to redact other's message in this room");
-                    }
+                    room.can_user_redact_other(&my_id).await?
+                };
+                if !permitted {
+                    bail!("No permissions to redact this message");
                 }
                 let response = room
                     .redact(
@@ -1689,9 +1692,15 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let permitted = room.can_user_redact_own(&my_id).await?;
+                let evt = room.event(&event_id).await?;
+                let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
+                let permitted = if event_content.sender() == my_id {
+                    room.can_user_redact_own(&my_id).await?
+                } else {
+                    room.can_user_redact_other(&my_id).await?
+                };
                 if !permitted {
-                    bail!("No permissions to redact own message in this room");
+                    bail!("No permissions to redact this message");
                 }
                 let response = room.redact(&event_id, reason.as_deref(), None).await?;
                 Ok(response.event_id)

@@ -13,7 +13,7 @@ use ruma_common::{EventId, OwnedEventId, OwnedTransactionId};
 use ruma_events::{
     room::message::{
         AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
-        LocationMessageEventContent, VideoMessageEventContent,
+        LocationMessageEventContent, RoomMessageEvent, VideoMessageEventContent,
     },
     MessageLikeEventType,
 };
@@ -472,9 +472,15 @@ impl AttachmentsManager {
 
         RUNTIME
             .spawn(async move {
-                let permitted = room.can_user_redact_own(&my_id).await?;
+                let evt = room.event(&event_id).await?;
+                let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
+                let permitted = if event_content.sender() == my_id {
+                    room.can_user_redact_own(&my_id).await?
+                } else {
+                    room.can_user_redact_other(&my_id).await?
+                };
                 if !permitted {
-                    bail!("No permissions to redact your message in this room");
+                    bail!("No permissions to redact this message");
                 }
                 let response = room.redact(&event_id, reason.as_deref(), txn_id).await?;
                 Ok(response.event_id)
