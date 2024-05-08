@@ -45,15 +45,15 @@ impl Client {
     }
 
     pub async fn calendar_event(&self, calendar_id: String) -> Result<CalendarEvent> {
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::CalendarEvent(inner) = client.store().get(&calendar_id).await?
+                let AnyActerModel::CalendarEvent(inner) = me.store().get(&calendar_id).await?
                 else {
                     bail!("Calendar event not found");
                 };
-                let room = client.room_by_id(inner.room_id())?;
-                Ok(CalendarEvent::new(client, room, inner))
+                let room = me.room_by_id(inner.room_id())?;
+                Ok(CalendarEvent::new(me, room, inner))
             })
             .await?
     }
@@ -61,10 +61,11 @@ impl Client {
     pub async fn calendar_events(&self) -> Result<Vec<CalendarEvent>> {
         let mut calendar_events = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                for mdl in client.store().get_list(KEYS::CALENDAR).await? {
+                let client = me.core.client();
+                for mdl in me.store().get_list(KEYS::CALENDAR).await? {
                     if let AnyActerModel::CalendarEvent(t) = mdl {
                         let room_id = t.room_id().to_owned();
                         let room = match rooms_map.entry(room_id) {
@@ -79,7 +80,7 @@ impl Client {
                                 }
                             }
                         };
-                        calendar_events.push(CalendarEvent::new(client.clone(), room, t));
+                        calendar_events.push(CalendarEvent::new(me.clone(), room, t));
                     } else {
                         warn!(
                             "Non calendar_event model found in `calendar_events` index: {:?}",
@@ -249,23 +250,23 @@ impl CalendarEvent {
     }
 
     pub async fn participants(&self) -> Result<Vec<String>> {
-        let calendar_event = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let manager = calendar_event.rsvps().await?;
-                Ok(manager
+                let manager = me.rsvps().await?;
+                let users = manager
                     .users_at_status_typed(RsvpStatus::Yes)
                     .await?
                     .into_iter()
                     .map(|u| u.to_string())
-                    .collect())
+                    .collect();
+                Ok(users)
             })
             .await?
     }
 
     pub async fn responded_by_me(&self) -> Result<OptionRsvpStatus> {
         let me = self.clone();
-
         RUNTIME
             .spawn(async move {
                 let manager = me.rsvps().await?;

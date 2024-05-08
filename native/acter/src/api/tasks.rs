@@ -63,10 +63,11 @@ impl Client {
     pub async fn task_lists(&self) -> Result<Vec<TaskList>> {
         let mut task_lists = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                for mdl in client.store().get_list(KEYS::TASKS::TASKS).await? {
+                let client = me.core.client();
+                for mdl in me.store().get_list(KEYS::TASKS::TASKS).await? {
                     #[allow(irrefutable_let_patterns)]
                     if let AnyActerModel::TaskList(content) = mdl {
                         let room_id = content.room_id().to_owned();
@@ -83,7 +84,7 @@ impl Client {
                             }
                         };
                         task_lists.push(TaskList {
-                            client: client.clone(),
+                            client: me.clone(),
                             room,
                             content,
                         })
@@ -99,10 +100,11 @@ impl Client {
     pub async fn my_open_tasks(&self) -> Result<Vec<Task>> {
         let mut tasks = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                for mdl in client.store().get_list(KEYS::TASKS::MY_OPEN_TASKS).await? {
+                let client = me.core.client();
+                for mdl in me.store().get_list(KEYS::TASKS::MY_OPEN_TASKS).await? {
                     #[allow(irrefutable_let_patterns)]
                     if let AnyActerModel::Task(content) = mdl {
                         let room_id = content.room_id().to_owned();
@@ -119,7 +121,7 @@ impl Client {
                             }
                         };
                         tasks.push(Task {
-                            client: client.clone(),
+                            client: me.clone(),
                             room,
                             content,
                         })

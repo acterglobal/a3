@@ -12,17 +12,16 @@ use super::{client::Client, RUNTIME};
 
 impl Client {
     pub async fn wait_for_reaction(&self, key: String, timeout: Option<u8>) -> Result<Reaction> {
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::Reaction(reaction) =
-                    client.wait_for(key.clone(), timeout).await?
+                let AnyActerModel::Reaction(reaction) = me.wait_for(key.clone(), timeout).await?
                 else {
                     bail!("{key} is not a reaction");
                 };
-                let room = client.room_by_id(&reaction.meta.room_id)?;
+                let room = me.room_by_id(&reaction.meta.room_id)?;
                 Ok(Reaction {
-                    client: client.clone(),
+                    client: me.clone(),
                     room,
                     inner: reaction,
                 })

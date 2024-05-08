@@ -162,7 +162,8 @@ impl SuperInvites {
 
 impl Client {
     pub fn super_invites(&self) -> SuperInvites {
-        let c = self.clone();
-        SuperInvites { client: c }
+        SuperInvites {
+            client: self.clone(),
+        }
     }
 }

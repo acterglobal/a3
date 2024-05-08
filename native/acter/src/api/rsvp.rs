@@ -19,15 +19,15 @@ use super::{calendar_events::CalendarEvent, client::Client, common::OptionRsvpSt
 
 impl Client {
     pub async fn wait_for_rsvp(&self, key: String, timeout: Option<u8>) -> Result<Rsvp> {
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::Rsvp(rsvp) = client.wait_for(key.clone(), timeout).await? else {
+                let AnyActerModel::Rsvp(rsvp) = me.wait_for(key.clone(), timeout).await? else {
                     bail!("{key} is not a rsvp");
                 };
-                let room = client.room_by_id(&rsvp.meta.room_id)?;
+                let room = me.room_by_id(&rsvp.meta.room_id)?;
                 Ok(Rsvp {
-                    client: client.clone(),
+                    client: me.clone(),
                     room,
                     inner: rsvp,
                 })
@@ -39,11 +39,11 @@ impl Client {
         &self,
         secs_from_now: Option<u32>,
     ) -> Result<Vec<CalendarEvent>> {
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
                 let mut cal_events = vec![];
-                for mdl in client.store().get_list(KEYS::CALENDAR).await? {
+                for mdl in me.store().get_list(KEYS::CALENDAR).await? {
                     if let AnyActerModel::CalendarEvent(inner) = mdl {
                         let now = chrono::Utc::now();
                         let start_time = inner.utc_start();
@@ -57,8 +57,8 @@ impl Client {
                                 continue;
                             }
                         }
-                        let room = client.room_by_id(inner.room_id())?;
-                        let cal_event = CalendarEvent::new(client.clone(), room, inner);
+                        let room = me.room_by_id(inner.room_id())?;
+                        let cal_event = CalendarEvent::new(me.clone(), room, inner);
                         cal_events.push(cal_event);
                     } else {
                         warn!(
@@ -77,11 +77,11 @@ impl Client {
         &self,
         secs_from_now: Option<u32>,
     ) -> Result<Vec<CalendarEvent>> {
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
                 let mut cal_events = vec![];
-                for mdl in client.store().get_list(KEYS::CALENDAR).await? {
+                for mdl in me.store().get_list(KEYS::CALENDAR).await? {
                     if let AnyActerModel::CalendarEvent(inner) = mdl {
                         let now = chrono::Utc::now();
                         let start_time = inner.utc_start();
@@ -95,8 +95,8 @@ impl Client {
                                 continue;
                             }
                         }
-                        let room = client.room_by_id(inner.room_id())?;
-                        let cal_event = CalendarEvent::new(client.clone(), room, inner);
+                        let room = me.room_by_id(inner.room_id())?;
+                        let cal_event = CalendarEvent::new(me.clone(), room, inner);
                         // fliter only events that i sent rsvp
                         let rsvp_manager = cal_event.rsvps().await?;
                         let status = rsvp_manager.responded_by_me().await?;
@@ -119,11 +119,11 @@ impl Client {
     }
 
     pub async fn my_past_events(&self, secs_from_now: Option<u32>) -> Result<Vec<CalendarEvent>> {
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
                 let mut cal_events = vec![];
-                for mdl in client.store().get_list(KEYS::CALENDAR).await? {
+                for mdl in me.store().get_list(KEYS::CALENDAR).await? {
                     if let AnyActerModel::CalendarEvent(inner) = mdl {
                         let now = chrono::Utc::now();
                         let start_time = inner.utc_start();
@@ -137,8 +137,8 @@ impl Client {
                                 continue;
                             }
                         }
-                        let room = client.room_by_id(inner.room_id())?;
-                        let cal_event = CalendarEvent::new(client.clone(), room, inner);
+                        let room = me.room_by_id(inner.room_id())?;
+                        let cal_event = CalendarEvent::new(me.clone(), room, inner);
                         // fliter only events that i sent rsvp
                         let rsvp_manager = cal_event.rsvps().await?;
                         let status = rsvp_manager.responded_by_me().await?;

@@ -401,13 +401,13 @@ impl Client {
         room_id: String,
         event_id: String,
     ) -> Result<NotificationItem> {
-        let client = self.clone();
+        let me = self.clone();
         let room_id = RoomId::parse(room_id)?;
         let event_id = EventId::parse(event_id)?;
         RUNTIME
             .spawn(async move {
                 let notif_client = NotificationClient::builder(
-                    client.core.client().clone(),
+                    me.core.client().clone(),
                     NotificationProcessSetup::MultipleProcesses,
                 )
                 .await?
@@ -417,10 +417,11 @@ impl Client {
                     .get_notification(&room_id, &event_id)
                     .await?
                     .context("(hidden notification)")?;
-                NotificationItem::from(client, notif, room_id)
+                NotificationItem::from(me, notif, room_id)
             })
             .await?
     }
+
     pub async fn notification_settings(&self) -> Result<NotificationSettings> {
         let client = self.core.client().clone();
         Ok(RUNTIME
@@ -503,31 +504,30 @@ impl Client {
     }
 
     pub async fn pushers(&self) -> Result<Vec<Pusher>> {
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let resp = client
+                let resp = me
                     .core
                     .client()
                     .send(get_pushers::v3::Request::new(), None)
                     .await?;
-                Ok(resp
+                let items = resp
                     .pushers
                     .into_iter()
-                    .map(|inner| Pusher::new(inner, client.clone()))
-                    .collect())
+                    .map(|inner| Pusher::new(inner, me.clone()))
+                    .collect();
+                Ok(items)
             })
             .await?
     }
 
     pub async fn install_default_acter_push_rules(&self) -> Result<bool> {
-        let client = self.clone();
+        let client = self.core.client().clone();
         RUNTIME
             .spawn(async move {
                 for rule in default_rules() {
                     let resp = client
-                        .core
-                        .client()
                         .send(
                             set_pushrule::v3::Request::new(RuleScope::Global, rule),
                             None,
@@ -540,12 +540,10 @@ impl Client {
     }
 
     pub async fn push_rules(&self) -> Result<ruma::push::Ruleset> {
-        let client = self.clone();
+        let client = self.core.client().clone();
         RUNTIME
             .spawn(async move {
                 let resp = client
-                    .core
-                    .client()
                     .send(get_pushrules_all::v3::Request::new(), None)
                     .await?;
                 Ok(resp.global)

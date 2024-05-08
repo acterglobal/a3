@@ -850,7 +850,7 @@ impl Room {
     }
 
     pub async fn active_members(&self) -> Result<Vec<Member>> {
-        let room = self.clone();
+        let me = self.clone();
 
         let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
@@ -861,13 +861,14 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let members = room
+                let members = me
+                    .room
                     .members(RoomMemberships::ACTIVE)
                     .await?
                     .into_iter()
                     .map(|member| Member {
                         member,
-                        room: room.clone(),
+                        room: me.clone(),
                         acter_app_settings: acter_app_settings.clone(),
                     })
                     .collect();
@@ -900,7 +901,7 @@ impl Room {
     }
 
     pub async fn invited_members(&self) -> Result<Vec<Member>> {
-        let room = self.clone();
+        let me = self.clone();
         let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
             Some(self.app_settings_content().await?)
@@ -910,13 +911,14 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let members = room
+                let members = me
+                    .room
                     .members(RoomMemberships::INVITE)
                     .await?
                     .into_iter()
                     .map(|member| Member {
                         member,
-                        room: room.clone(),
+                        room: me.clone(),
                         acter_app_settings: acter_app_settings.clone(),
                     })
                     .collect();
@@ -926,7 +928,7 @@ impl Room {
     }
 
     pub async fn active_members_no_sync(&self) -> Result<Vec<Member>> {
-        let room = self.clone();
+        let me = self.clone();
         let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
             Some(self.app_settings_content().await?)
@@ -936,13 +938,14 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let members = room
+                let members = me
+                    .room
                     .members_no_sync(RoomMemberships::ACTIVE)
                     .await?
                     .into_iter()
                     .map(|member| Member {
                         member,
-                        room: room.clone(),
+                        room: me.clone(),
                         acter_app_settings: acter_app_settings.clone(),
                     })
                     .collect();
@@ -952,8 +955,7 @@ impl Room {
     }
 
     pub async fn get_member(&self, user_id: String) -> Result<Member> {
-        let room = self.room.clone();
-        let api_room = self.clone();
+        let me = self.clone();
         let uid = UserId::parse(user_id)?;
         let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
@@ -964,13 +966,14 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let member = room
+                let member = me
+                    .room
                     .get_member(&uid)
                     .await?
                     .context("Unable to find user in room")?;
                 Ok(Member {
                     member,
-                    room: api_room.clone(),
+                    room: me.clone(),
                     acter_app_settings: acter_app_settings.clone(),
                 })
             })
@@ -1267,8 +1270,7 @@ impl Room {
         if !self.is_invited() {
             bail!("Unable to get a room we are not invited");
         }
-        let room = self.room.clone();
-        let api_room = self.clone();
+        let me = self.clone();
         let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
             Some(self.app_settings_content().await?)
@@ -1280,14 +1282,14 @@ impl Room {
             .spawn(async move {
                 let invited = my_client
                     .store()
-                    .get_user_ids(room.room_id(), RoomMemberships::INVITE)
+                    .get_user_ids(me.room.room_id(), RoomMemberships::INVITE)
                     .await?;
                 let mut members = vec![];
                 for user_id in invited.iter() {
-                    if let Some(member) = room.get_member(user_id).await? {
+                    if let Some(member) = me.room.get_member(user_id).await? {
                         members.push(Member {
                             member,
-                            room: api_room.clone(),
+                            room: me.clone(),
                             acter_app_settings: acter_app_settings.clone(),
                         });
                     }

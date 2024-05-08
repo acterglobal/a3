@@ -168,7 +168,7 @@ impl Client {
         since: Option<String>,
         filter_only: Option<RoomTypeFilter>,
     ) -> Result<PublicSearchResult> {
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
                 let mut filter = Filter::new();
@@ -190,8 +190,8 @@ impl Client {
                     server,
                     room_network,
                 });
-                let resp = client.public_rooms_filtered(request).await?;
-                Ok(PublicSearchResult { resp, client })
+                let resp = me.core.client().public_rooms_filtered(request).await?;
+                Ok(PublicSearchResult { resp, client: me })
             })
             .await?
     }

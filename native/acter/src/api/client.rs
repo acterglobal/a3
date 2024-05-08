@@ -105,7 +105,7 @@ impl Client {
         thumb_size: Option<Box<ThumbnailSize>>,
     ) -> Result<FfiBuffer<u8>> {
         // any variable in self can't be called directly in spawn
-        let client = self.clone();
+        let client = self.core.client().clone();
         let format = ThumbnailSize::parse_into_media_format(thumb_size);
         let request = MediaRequest { source, format };
         trace!(?request, "tasked to get source binary");
@@ -125,7 +125,7 @@ impl Client {
         file_suffix: &str,
     ) -> Result<String> {
         // any variable in self can't be called directly in spawn
-        let client = self.clone();
+        let client = self.core.client().clone();
         let format = ThumbnailSize::parse_into_media_format(thumb_size);
         let request = MediaRequest { source, format };
         let path = PathBuf::from(tmp_path).join(format!(
@@ -166,13 +166,14 @@ impl Client {
             .into_iter()
             .map(OwnedServerName::try_from)
             .collect::<Result<Vec<OwnedServerName>, IdParseError>>()?;
-        let c = self.clone();
+        let core = self.core.clone();
         RUNTIME
             .spawn(async move {
-                let joined = c
+                let joined = core
+                    .client()
                     .join_room_by_id_or_alias(alias.as_ref(), server_names.as_slice())
                     .await?;
-                Ok(Room::new(c.core.clone(), joined))
+                Ok(Room::new(core.clone(), joined))
             })
             .await?
     }

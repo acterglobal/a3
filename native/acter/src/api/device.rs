@@ -129,11 +129,12 @@ impl Client {
     }
 
     pub async fn device_records(&self, verified: bool) -> Result<Vec<DeviceRecord>> {
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let user_id = client.user_id()?;
-                let this_device_id = client.device_id()?;
+                let user_id = me.user_id()?;
+                let this_device_id = me.device_id()?;
+                let client = me.core.client();
                 let response = client.devices().await?;
                 let crypto_devices = client.encryption().get_user_devices(&user_id).await?;
                 let mut sessions = vec![];

@@ -25,16 +25,15 @@ use super::{client::Client, spaces::Space, RUNTIME};
 
 impl Client {
     pub async fn wait_for_pin(&self, key: String, timeout: Option<u8>) -> Result<Pin> {
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::Pin(content) = client.wait_for(key.clone(), timeout).await?
-                else {
+                let AnyActerModel::Pin(content) = me.wait_for(key.clone(), timeout).await? else {
                     bail!("{key} is not a pin");
                 };
-                let room = client.room_by_id(content.room_id())?;
+                let room = me.room_by_id(content.room_id())?;
                 Ok(Pin {
-                    client: client.clone(),
+                    client: me.clone(),
                     room,
                     content,
                 })
@@ -45,10 +44,11 @@ impl Client {
     pub async fn pins(&self) -> Result<Vec<Pin>> {
         let mut pins = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                for mdl in client.store().get_list(KEYS::PINS).await? {
+                let client = me.core.client();
+                for mdl in me.store().get_list(KEYS::PINS).await? {
                     if let AnyActerModel::Pin(t) = mdl {
                         let room_id = t.room_id().to_owned();
                         let room = match rooms_map.entry(room_id) {
@@ -64,7 +64,7 @@ impl Client {
                             }
                         };
                         pins.push(Pin {
-                            client: client.clone(),
+                            client: me.clone(),
                             room,
                             content: t,
                         })
@@ -78,15 +78,15 @@ impl Client {
     }
 
     pub async fn pin(&self, pin_id: String) -> Result<Pin> {
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::Pin(t) = client.store().get(&pin_id).await? else {
+                let AnyActerModel::Pin(t) = me.store().get(&pin_id).await? else {
                     bail!("Ping not found");
                 };
-                let room = client.room_by_id(t.room_id())?;
+                let room = me.room_by_id(t.room_id())?;
                 Ok(Pin {
-                    client,
+                    client: me,
                     room,
                     content: t,
                 })
@@ -97,10 +97,11 @@ impl Client {
     pub async fn pinned_links(&self) -> Result<Vec<Pin>> {
         let mut pins = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                for mdl in client.store().get_list(KEYS::PINS).await? {
+                let client = me.core.client();
+                for mdl in me.store().get_list(KEYS::PINS).await? {
                     if let AnyActerModel::Pin(pin) = mdl {
                         if !pin.is_link() {
                             continue;
@@ -119,7 +120,7 @@ impl Client {
                             }
                         };
                         pins.push(Pin {
-                            client: client.clone(),
+                            client: me.clone(),
                             room,
                             content: pin,
                         })

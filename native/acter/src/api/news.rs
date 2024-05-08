@@ -53,10 +53,10 @@ impl Client {
     pub async fn latest_news_entries(&self, mut count: u32) -> Result<Vec<NewsEntry>> {
         let mut news = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let mut all_news = client
+                let mut all_news = me
                     .store()
                     .get_list(KEYS::NEWS)
                     .await?
@@ -70,6 +70,7 @@ impl Client {
                     .collect::<Vec<models::NewsEntry>>();
                 all_news.sort_by(|a, b| b.meta.origin_server_ts.cmp(&a.meta.origin_server_ts));
 
+                let client = me.core.client();
                 for content in all_news {
                     if count == 0 {
                         break; // we filled what we wanted
@@ -87,7 +88,8 @@ impl Client {
                             }
                         }
                     };
-                    news.push(NewsEntry::new(client.clone(), room, content).await?);
+                    let news_entry = NewsEntry::new(me.clone(), room, content).await?;
+                    news.push(news_entry);
                     count -= 1;
                 }
                 Ok(news)
