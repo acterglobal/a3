@@ -25,11 +25,13 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
   final Member member;
   final ProfileData profile;
   final String memberId;
+  final bool isShowActions;
 
   const _MemberInfoDrawerInner({
     required this.memberId,
     required this.member,
     required this.profile,
+    required this.isShowActions,
   });
 
   Future<void> changePowerLevel(BuildContext context, WidgetRef ref) async {
@@ -96,7 +98,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
       return [
         Center(child: Text(L10n.of(context).itsYou)),
         const SizedBox(height: 30),
-        ..._roomMenu(context, ref),
+        if (isShowActions) ..._roomMenu(context, ref),
       ];
     }
 
@@ -110,9 +112,6 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
               withMenu: false,
               onTap: () async {
                 await showUnblockUserDialog(context, member);
-                if (context.mounted) {
-                  context.pop();
-                }
               },
             )
           : MenuItemWidget(
@@ -121,12 +120,9 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
               withMenu: false,
               onTap: () async {
                 await showBlockUserDialog(context, member);
-                if (context.mounted) {
-                  context.pop();
-                }
               },
             ),
-      ..._roomMenu(context, ref),
+      if (isShowActions) ..._roomMenu(context, ref),
     ];
   }
 
@@ -306,10 +302,13 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
 class MemberInfoDrawer extends ConsumerWidget {
   final String roomId;
   final String memberId;
+  final bool isShowActions;
+
   const MemberInfoDrawer({
     super.key,
     required this.memberId,
     required this.roomId,
+    required this.isShowActions,
   });
 
   @override
@@ -321,6 +320,7 @@ class MemberInfoDrawer extends ConsumerWidget {
             member: data.member,
             profile: data.profile,
             memberId: memberId,
+            isShowActions: isShowActions,
           ),
           error: (e, s) => Padding(
             padding: const EdgeInsets.all(20.0),
