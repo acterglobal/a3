@@ -84,11 +84,15 @@ rc_login:
     burst_count: 1000
 ```
 
-and an `admin` account with the username `admin` and passwort `admin` (which you can create with `register_new_matrix_user -u admin -p admin -a -c $HOMESERVER_CONFIG_PATH $HOMESERVER_URL`). To avoid the change of server URL under VMWare, you can use NAT mode not Bridged mode as network.
+and an `admin` account with the username `admin` and passwort `admin` (which you can create with `register_new_matrix_user -u admin -p admin -a -c $HOMESERVER_CONFIG_PATH $HOMESERVER_URL`).
 
 Please change `bind_addresses` of `listeners` from `['::1', '127.0.0.1']` to `['0.0.0.0']` (in the `homeserver.yaml`), that means any address and allows remote connection (non-localhost).
 
 To avoid the change of server URL under VMWare, you can use NAT mode not Bridged mode as network.
+
+`matrix-synapse` may not work with the latest packages of linux. `ubuntu 20.04` is preferred than `ubuntu 22.04`.
+
+And you can run `sudo apt update` (that fetches the latest version of package list). But don't run `sudo apt upgrade` (that downloads and installs the latest packages).
 
 </details>
 
