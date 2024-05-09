@@ -1,6 +1,6 @@
 use acter_core::{
     events::{
-        calendar::{self as calendar_events, CalendarEventBuilder},
+        calendar::{self as calendar_events, CalendarEventBuilder, EventLocation},
         rsvp::RsvpStatus,
         UtcDateTime,
     },
@@ -12,6 +12,7 @@ use chrono::DateTime;
 use futures::stream::StreamExt;
 use icalendar::Calendar as iCalendar;
 use matrix_sdk::{room::Room, RoomState};
+use pulldown_cmark::Event;
 use ruma::serde::PartialEqAsRefStr;
 use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};
 use ruma_events::room::message::TextMessageEventContent;
@@ -212,6 +213,7 @@ impl CalendarEvent {
             client: self.client.clone(),
             room: self.room.clone(),
             inner: self.inner.updater(),
+            location_drafts: vec![],
         })
     }
 
@@ -266,6 +268,54 @@ impl CalendarEvent {
             .await?
     }
 
+    pub async fn physical_locations(&self) -> Result<Vec<EventLocation>> {
+        let calendar_event = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let locations = calendar_event.locations.await?;
+                Ok(locations
+                    .into_iter()
+                    .filter_map(|loc| {
+                        if let EventLocation::Physical { .. } = loc {
+                            Some(loc)
+                        } else {
+                            None
+                        }
+                    })
+                    .collect())
+            })
+            .await?;
+    }
+
+    pub async fn virtual_locations(&self) -> Result<Vec<EventLocation>> {
+        let calendar_event = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let locations = calendar_event.locations.await?;
+                Ok(locations
+                    .into_iter()
+                    .filter_map(|loc| {
+                        if let EventLocation::Virtual { .. } = loc {
+                            Some(loc)
+                        } else {
+                            None
+                        }
+                    })
+                    .collect())
+            })
+            .await?;
+    }
+
+    pub async fn locations(&self) -> Result<Vec<EventLocation>> {
+        let calendar_event = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let locations = calendar_event.inner.locations().await?;
+                Ok(locations)
+            })
+            .await?
+    }
+
     pub async fn responded_by_me(&self) -> Result<OptionRsvpStatus> {
         let me = self.clone();
 
@@ -289,6 +339,7 @@ pub struct CalendarEventDraft {
     client: Client,
     room: Room,
     inner: CalendarEventBuilder,
+    location_drafts: Vec<EventLocation>,
 }
 
 impl CalendarEventDraft {
@@ -350,9 +401,58 @@ impl CalendarEventDraft {
         Ok(())
     }
 
+    pub fn physical_location(
+        &mut self,
+        name: String,
+        description: String,
+        description_html: Option<String>,
+        cooridnates: String,
+        uri: String,
+    ) -> Result<()> {
+        let desc_plain = TextMessageEventContent::plain(description);
+        let desc_html = description_html
+            .map(|html| TextMessageEventContent::html(description, Some(description_html)));
+        let event_location = EventLocation::Physical {
+            name: Some(name),
+            description: desc_html.or(Some(desc_plain)),
+            // TODO : add icon support
+            icon: None,
+            coordinates: Some(cooridnates),
+            uri: Some(uri),
+        };
+        self.location_drafts.push(event_location);
+        self.inner.locations(self.location_drafts.clone());
+        Ok(())
+    }
+
+    pub fn virtual_location(
+        &mut self,
+        name: String,
+        description: String,
+        description_html: Option<String>,
+        uri: String,
+    ) -> Result<()> {
+        let calendar_event = self.inner.clone();
+        let desc_plain = TextMessageEventContent::plain(description);
+        let desc_html = description_html
+            .map(|html| TextMessageEventContent::html(description, Some(description_html)));
+        let event_location = EventLocation::Virtual {
+            name: Some(name),
+            description: desc_html.or(Some(desc_plain)),
+            // TODO : add icon support
+            icon: None,
+            uri: Some(uri),
+        };
+        self.location_drafts.push(event_location);
+        self.inner.locations(self.location_drafts.clone());
+        Ok(())
+    }
+
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
         let inner = self.inner.build()?;
+        // we clear the tracking location vector
+        self.location_drafts.clear();
         RUNTIME
             .spawn(async move {
                 let resp = room.send(inner).await?;
@@ -367,6 +467,7 @@ pub struct CalendarEventUpdateBuilder {
     client: Client,
     room: Room,
     inner: calendar_events::CalendarEventUpdateBuilder,
+    location_drafts: Vec<EventLocation>,
 }
 
 impl CalendarEventUpdateBuilder {
@@ -449,6 +550,64 @@ impl CalendarEventUpdateBuilder {
         self
     }
 
+    pub fn physical_location(
+        &mut self,
+        name: String,
+        description: String,
+        description_html: Option<String>,
+        cooridnates: String,
+        uri: String,
+    ) -> Result<()> {
+        let desc_plain = TextMessageEventContent::plain(description);
+        let desc_html = description_html
+            .map(|html| TextMessageEventContent::html(description, Some(description_html)));
+        let event_location = EventLocation::Physical {
+            name: Some(name),
+            description: desc_html.or(Some(desc_plain)),
+            // TODO : add icon support
+            icon: None,
+            coordinates: Some(cooridnates),
+            uri: Some(uri),
+        };
+        self.location_drafts.push(event_location);
+        self.inner.locations(Some(self.location_drafts));
+        Ok(())
+    }
+
+    pub fn virtual_location(
+        &mut self,
+        name: String,
+        description: String,
+        description_html: Option<String>,
+        uri: String,
+    ) -> Result<()> {
+        let calendar_event = self.inner.clone();
+        let desc_plain = TextMessageEventContent::plain(description);
+        let desc_html = description_html
+            .map(|html| TextMessageEventContent::html(description, Some(description_html)));
+        let event_location = EventLocation::Virtual {
+            name: Some(name),
+            description: desc_html.or(Some(desc_plain)),
+            // TODO : add icon support
+            icon: None,
+            uri: Some(uri),
+        };
+        self.location_drafts.push(event_location);
+        self.inner.locations(Some(self.location_drafts));
+        Ok(())
+    }
+
+    pub fn unset_locations(&self) -> &mut Self {
+        self.location_drafts.clear();
+        self.inner.locations(Some(None));
+    }
+
+    pub fn unset_locations_update(&mut self) -> &mut Self {
+        self.location_drafts.clear();
+        self.inner.locations(None);
+        self
+    }
+
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
         let inner = self.inner.build()?;
@@ -470,6 +629,7 @@ impl Space {
             client: self.client.clone(),
             room: self.inner.room.clone(),
             inner: Default::default(),
+            location_drafts: vec![],
         })
     }
 
@@ -484,6 +644,7 @@ impl Space {
             client: self.client.clone(),
             room: self.inner.room.clone(),
             inner,
+            location_drafts: vec![],
         })
     }
 }
