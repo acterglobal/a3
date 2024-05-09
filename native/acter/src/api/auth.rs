@@ -444,7 +444,7 @@ pub async fn register_with_token_under_config(
 }
 
 #[allow(clippy::too_many_arguments)]
-pub async fn change_password_without_login(
+pub async fn reset_password_without_login(
     base_path: String,
     media_cache_base_path: String,
     username: String,
@@ -556,7 +556,7 @@ impl Client {
             .await?
     }
 
-    pub async fn change_password_via_email(
+    pub async fn reset_password_via_email(
         &self,
         old_val: String,
         new_val: String,

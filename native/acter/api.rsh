@@ -37,7 +37,7 @@ fn register_with_token(base_path: string, media_cache_base_path: string, usernam
 
 /// Email-based password reset without login
 /// Return submit url
-fn change_password_without_login(base_path: string, media_cache_base_path: string, username: string, password: string, default_homeserver_name: string, default_homeserver_url: string, email: string, new_password: string) -> Future<Result<OptionString>>;
+fn reset_password_without_login(base_path: string, media_cache_base_path: string, username: string, password: string, default_homeserver_name: string, default_homeserver_url: string, email: string, new_password: string) -> Future<Result<OptionString>>;
 
 /// destroy the local data of a session
 fn destroy_local_data(base_path: string, media_cache_base_path: Option<string>, username: string, default_homeserver_name: string) -> Future<Result<bool>>;
@@ -2373,8 +2373,8 @@ object Client {
     /// change password
     fn change_password(old_val: string, new_val: string) -> Future<Result<bool>>;
 
-    /// change password via email
-    fn change_password_via_email(old_val: string, new_val: string, email: string) -> Future<Result<bool>>;
+    /// reset password via email
+    fn reset_password_via_email(old_val: string, new_val: string, email: string) -> Future<Result<bool>>;
 
     // Special
 

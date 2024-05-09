@@ -1262,7 +1262,7 @@ class Api {
 
   /// Email-based password reset without login
   /// Return submit url
-  Future<OptionString> changePasswordWithoutLogin(
+  Future<OptionString> resetPasswordWithoutLogin(
     String basePath,
     String mediaCacheBasePath,
     String username,
@@ -1368,7 +1368,7 @@ class Api {
     tmp29_1.setAll(0, tmp28_0);
     tmp29 = tmp29_0.address;
     tmp31 = tmp30;
-    final tmp32 = _changePasswordWithoutLogin(
+    final tmp32 = _resetPasswordWithoutLogin(
       tmp1,
       tmp2,
       tmp3,
@@ -1397,10 +1397,10 @@ class Api {
     final tmp34 = tmp32;
     final ffi.Pointer<ffi.Void> tmp34_0 = ffi.Pointer.fromAddress(tmp34);
     final tmp34_1 =
-        _Box(this, tmp34_0, "__change_password_without_login_future_drop");
+        _Box(this, tmp34_0, "__reset_password_without_login_future_drop");
     tmp34_1._finalizer = this._registerFinalizer(tmp34_1);
     final tmp33 =
-        _nativeFuture(tmp34_1, this.__changePasswordWithoutLoginFuturePoll);
+        _nativeFuture(tmp34_1, this.__resetPasswordWithoutLoginFuturePoll);
     return tmp33;
   }
 
@@ -2325,7 +2325,7 @@ class Api {
     return tmp7;
   }
 
-  OptionString? __changePasswordWithoutLoginFuturePoll(
+  OptionString? __resetPasswordWithoutLoginFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2339,7 +2339,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _changePasswordWithoutLoginFuturePoll(
+    final tmp6 = _resetPasswordWithoutLoginFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -10312,7 +10312,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __clientChangePasswordViaEmailFuturePoll(
+  bool? __clientResetPasswordViaEmailFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -10326,7 +10326,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _clientChangePasswordViaEmailFuturePoll(
+    final tmp6 = _clientResetPasswordViaEmailFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -15141,7 +15141,7 @@ class Api {
         int,
         int,
       )>();
-  late final _changePasswordWithoutLoginPtr = _lookup<
+  late final _resetPasswordWithoutLoginPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
@@ -15168,10 +15168,10 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-          )>>("__change_password_without_login");
+          )>>("__reset_password_without_login");
 
-  late final _changePasswordWithoutLogin =
-      _changePasswordWithoutLoginPtr.asFunction<
+  late final _resetPasswordWithoutLogin =
+      _resetPasswordWithoutLoginPtr.asFunction<
           int Function(
             int,
             int,
@@ -23703,7 +23703,7 @@ class Api {
         int,
         int,
       )>();
-  late final _clientChangePasswordViaEmailPtr = _lookup<
+  late final _clientResetPasswordViaEmailPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
@@ -23716,10 +23716,10 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-          )>>("__Client_change_password_via_email");
+          )>>("__Client_reset_password_via_email");
 
-  late final _clientChangePasswordViaEmail =
-      _clientChangePasswordViaEmailPtr.asFunction<
+  late final _clientResetPasswordViaEmail =
+      _clientResetPasswordViaEmailPtr.asFunction<
           int Function(
             int,
             int,
@@ -25801,17 +25801,17 @@ class Api {
             int,
             int,
           )>();
-  late final _changePasswordWithoutLoginFuturePollPtr = _lookup<
+  late final _resetPasswordWithoutLoginFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ChangePasswordWithoutLoginFuturePollReturn Function(
+          _ResetPasswordWithoutLoginFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__change_password_without_login_future_poll");
+          )>>("__reset_password_without_login_future_poll");
 
-  late final _changePasswordWithoutLoginFuturePoll =
-      _changePasswordWithoutLoginFuturePollPtr.asFunction<
-          _ChangePasswordWithoutLoginFuturePollReturn Function(
+  late final _resetPasswordWithoutLoginFuturePoll =
+      _resetPasswordWithoutLoginFuturePollPtr.asFunction<
+          _ResetPasswordWithoutLoginFuturePollReturn Function(
             int,
             int,
             int,
@@ -28341,17 +28341,17 @@ class Api {
             int,
             int,
           )>();
-  late final _clientChangePasswordViaEmailFuturePollPtr = _lookup<
+  late final _clientResetPasswordViaEmailFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientChangePasswordViaEmailFuturePollReturn Function(
+          _ClientResetPasswordViaEmailFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__Client_change_password_via_email_future_poll");
+          )>>("__Client_reset_password_via_email_future_poll");
 
-  late final _clientChangePasswordViaEmailFuturePoll =
-      _clientChangePasswordViaEmailFuturePollPtr.asFunction<
-          _ClientChangePasswordViaEmailFuturePollReturn Function(
+  late final _clientResetPasswordViaEmailFuturePoll =
+      _clientResetPasswordViaEmailFuturePollPtr.asFunction<
+          _ClientResetPasswordViaEmailFuturePollReturn Function(
             int,
             int,
             int,
@@ -48037,8 +48037,8 @@ class Client {
     return tmp10;
   }
 
-  /// change password via email
-  Future<bool> changePasswordViaEmail(
+  /// reset password via email
+  Future<bool> resetPasswordViaEmail(
     String oldVal,
     String newVal,
     String email,
@@ -48081,7 +48081,7 @@ class Client {
     tmp10_1.setAll(0, tmp9_0);
     tmp10 = tmp10_0.address;
     tmp12 = tmp11;
-    final tmp13 = _api._clientChangePasswordViaEmail(
+    final tmp13 = _api._clientResetPasswordViaEmail(
       tmp0,
       tmp2,
       tmp3,
@@ -48096,10 +48096,10 @@ class Client {
     final tmp15 = tmp13;
     final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
     final tmp15_1 =
-        _Box(_api, tmp15_0, "__Client_change_password_via_email_future_drop");
+        _Box(_api, tmp15_0, "__Client_reset_password_via_email_future_drop");
     tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
     final tmp14 =
-        _nativeFuture(tmp15_1, _api.__clientChangePasswordViaEmailFuturePoll);
+        _nativeFuture(tmp15_1, _api.__clientResetPasswordViaEmailFuturePoll);
     return tmp14;
   }
 
@@ -54958,7 +54958,7 @@ class _RegisterWithTokenFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ChangePasswordWithoutLoginFuturePollReturn extends ffi.Struct {
+class _ResetPasswordWithoutLoginFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -57537,7 +57537,7 @@ class _ClientChangePasswordFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ClientChangePasswordViaEmailFuturePollReturn extends ffi.Struct {
+class _ClientResetPasswordViaEmailFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
