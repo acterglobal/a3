@@ -68,7 +68,7 @@ class AsyncUpcomingEventsNotifier
     final client = ref.read(alwaysClientProvider);
     final events =
         await client.allUpcomingEvents(null); // this might throw internally
-    return events.toList();
+    return _sortEventListAscTime(events.toList());
   }
 
   @override
@@ -95,7 +95,7 @@ class AsyncMyUpcomingEventsNotifier
     final client = ref.read(alwaysClientProvider);
     final events =
         await client.myUpcomingEvents(null); // this might throw internally
-    return events.toList();
+    return _sortEventListAscTime(events.toList());
   }
 
   @override
@@ -122,7 +122,7 @@ class AsyncMyPastEventsNotifier
     final client = ref.read(alwaysClientProvider);
     final events =
         await client.myPastEvents(null); // this might throw internally
-    return events.toList();
+    return _sortEventListDscTime(events.toList());
   }
 
   @override
@@ -135,6 +135,25 @@ class AsyncMyPastEventsNotifier
     });
     return await _getMyPast();
   }
+}
+
+
+Future<List<ffi.CalendarEvent>> _sortEventListAscTime(
+    List<ffi.CalendarEvent> eventsList,
+    ) async {
+  eventsList.sort(
+        (a, b) => a.utcStart().timestamp().compareTo(b.utcStart().timestamp()),
+  );
+  return eventsList;
+}
+
+Future<List<ffi.CalendarEvent>> _sortEventListDscTime(
+    List<ffi.CalendarEvent> eventsList,
+    ) async {
+  eventsList.sort(
+        (a, b) => b.utcStart().timestamp().compareTo(a.utcStart().timestamp()),
+  );
+  return eventsList;
 }
 
 final myRsvpStatusProvider = FutureProvider.family

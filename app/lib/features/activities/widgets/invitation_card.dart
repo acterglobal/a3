@@ -3,6 +3,7 @@ import 'package:acter/common/themes/app_theme.dart';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/activities/providers/invitations_providers.dart';
+import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Invitation;
 import 'package:flutter/material.dart';
@@ -140,7 +141,7 @@ class InvitationCard extends ConsumerWidget {
         loading: () => Skeletonizer(child: Text(roomId)),
         error: (e, s) => Text(L10n.of(context).errorLoadingRoom(e, roomId)),
       ),
-      subtitle: Row(
+      subtitle: Wrap(
         children: [
           Text(L10n.of(context).invitationToChat),
           inviter(
@@ -207,6 +208,11 @@ class InvitationCard extends ConsumerWidget {
       }
       if (res) {
         EasyLoading.showToast(L10n.of(context).joined);
+        if (invitation.room().isSpace()) {
+          goToSpace(context, invitation.room().roomIdStr());
+        } else {
+          goToChat(context, invitation.room().roomIdStr());
+        }
       } else {
         EasyLoading.showError(
           L10n.of(context).failedToJoin,
@@ -215,6 +221,7 @@ class InvitationCard extends ConsumerWidget {
       }
     } catch (error) {
       _log.severe('Failure accepting invite', error);
+      if (!context.mounted) return;
       EasyLoading.showError(
         L10n.of(context).failedToAcceptInvite(error),
         duration: const Duration(seconds: 3),

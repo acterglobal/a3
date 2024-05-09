@@ -5,7 +5,8 @@ import 'package:acter/features/space/widgets/chats_card.dart';
 import 'package:acter/features/space/widgets/events_card.dart';
 import 'package:acter/features/space/widgets/links_card.dart';
 import 'package:acter/features/space/widgets/non_acter_space_card.dart';
-import 'package:acter/features/space/widgets/related_spaces_card.dart';
+import 'package:acter/features/space/widgets/related_spaces/recommended_spaces.dart';
+import 'package:acter/features/space/widgets/related_spaces/sub_spaces_card.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -69,7 +70,8 @@ class SpaceOverview extends ConsumerWidget {
               child: LinksCard(spaceId: spaceIdOrAlias),
             ),
             ChatsCard(spaceId: spaceIdOrAlias),
-            RelatedSpacesCard(spaceId: spaceIdOrAlias),
+            SubSpacesCard(spaceId: spaceIdOrAlias),
+            RecommendedSpaceCard(spaceId: spaceIdOrAlias),
           ],
         ),
       ),
