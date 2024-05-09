@@ -2,7 +2,7 @@ use acter_core::models::{self, ActerModel, AnyActerModel};
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::room::Room;
-use ruma_common::{OwnedEventId, OwnedTransactionId, OwnedUserId};
+use ruma_common::{OwnedEventId, OwnedTransactionId, OwnedUserId, UserId};
 use ruma_events::{reaction::ReactionEvent, MessageLikeEventType};
 use std::ops::Deref;
 use tokio::sync::broadcast::Receiver;
@@ -135,7 +135,7 @@ impl ReactionManager {
                     .can_user_send_message(&my_id, MessageLikeEventType::Reaction)
                     .await?;
                 if !permitted {
-                    bail!("No permission to send message in this room");
+                    bail!("No permission to send reaction in this room");
                 }
                 let response = room.send(event).await?;
                 Ok(response.event_id)
@@ -166,10 +166,46 @@ impl ReactionManager {
                     room.can_user_redact_other(&my_id).await?
                 };
                 if !permitted {
-                    bail!("No permission to redact this message");
+                    bail!("No permission to redact this reaction");
                 }
                 let response = room.redact(&event_id, reason.as_deref(), txn_id).await?;
                 Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn redact_reaction(
+        &self,
+        sender_id: String,
+        key: String,
+        reason: Option<String>,
+        txn_id: Option<String>,
+    ) -> Result<OwnedEventId> {
+        let room = self.room.clone();
+        let my_id = self.client.user_id()?;
+        let sender_id = UserId::parse(sender_id)?;
+        let inner = self.inner.clone();
+        let txn_id = txn_id.map(OwnedTransactionId::from);
+
+        RUNTIME
+            .spawn(async move {
+                let permitted = if sender_id == my_id {
+                    room.can_user_redact_own(&my_id).await?
+                } else {
+                    room.can_user_redact_other(&my_id).await?
+                };
+                if !permitted {
+                    bail!("No permission to redact this reaction");
+                }
+                for (user_id, reaction) in inner.reaction_entries().await? {
+                    if user_id == sender_id && reaction.relates_to.key == key {
+                        let response = room
+                            .redact(reaction.event_id(), reason.as_deref(), txn_id)
+                            .await?;
+                        return Ok(response.event_id);
+                    }
+                }
+                bail!("User hasn't reacted")
             })
             .await?
     }

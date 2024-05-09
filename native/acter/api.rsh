@@ -758,6 +758,9 @@ object ReactionManager {
     /// remove the like
     fn redact_like(reason: Option<string>, txn_id: Option<string>) -> Future<Result<EventId>>;
 
+    /// remove the reaction using symbol key
+    fn redact_reaction(sender_id: string, key: string, reason: Option<string>, txn_id: Option<string>) -> Future<Result<EventId>>;
+
     /// get informed about changes to this manager
     fn subscribe_stream() -> Stream<bool>;
 
