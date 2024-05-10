@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/home/pages/home_shell.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter/router/router.dart';
 import 'package:flutter/material.dart';
@@ -31,20 +32,19 @@ bool navigateOnRightBranch(
   void Function(BuildContext) navigationCallback, {
   bool initialLocation = true,
 }) {
-  final navState = StatefulNavigationShell.maybeOf(context);
-  if (navState != null) {
-    if (navState.currentIndex != targetBranch.index) {
-      // when routed to chat, we always want to jump to the chat
-      // tab
-      navState.goBranch(targetBranch.index, initialLocation: initialLocation);
-      WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-        // We need the UI branch to actually switch first
-        // and on first switching to it, it might even need to create the
-        // BuildContext, thus we can't optimized based on that either :(
-        navigationCallback(targetBranch.key.currentContext ?? context);
-      });
-      return true;
-    }
+  final navState =
+      (homeShellKey.currentContext?.widget as HomeShell).navigationShell;
+  if (navState.currentIndex != targetBranch.index) {
+    // when routed to chat, we always want to jump to the chat
+    // tab
+    navState.goBranch(targetBranch.index, initialLocation: initialLocation);
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+      // We need the UI branch to actually switch first
+      // and on first switching to it, it might even need to create the
+      // BuildContext, thus we can't optimized based on that either :(
+      navigationCallback(targetBranch.key.currentContext ?? context);
+    });
+    return true;
   }
   navigationCallback(context);
   return false;

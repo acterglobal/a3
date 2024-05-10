@@ -30,7 +30,6 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::home::home_shell');
 
-const homeShellKey = Key('home-shell');
 ScreenshotController screenshotController = ScreenshotController();
 bool bugReportOpen = false;
 
@@ -61,7 +60,7 @@ Future<void> openBugReport(BuildContext context) async {
 class HomeShell extends ConsumerStatefulWidget {
   final StatefulNavigationShell navigationShell;
 
-  const HomeShell({super.key = homeShellKey, required this.navigationShell});
+  const HomeShell({super.key, required this.navigationShell});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => HomeShellState();

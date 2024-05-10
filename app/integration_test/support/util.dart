@@ -22,7 +22,7 @@ extension ActerUtil on ConvenientTest {
     for (final key in keys) {
       final nextKey = find.byKey(key);
       await tester.ensureVisible(nextKey);
-      await nextKey.should(findsOneWidget);
+      await nextKey.should(findsOneWidget, reason: '$nextKey not found');
       await nextKey.tap();
     }
   }
@@ -72,9 +72,9 @@ extension ActerUtil on ConvenientTest {
       await profileKey.should(findsOneWidget);
       await profileKey.tap();
 
-      final logoutKey = find.byKey(SettingsMenu.labs);
-      await logoutKey.should(findsOneWidget);
-      await logoutKey.tap();
+      final labsKey = find.byKey(SettingsMenu.labs);
+      await labsKey.should(findsOneWidget);
+      await labsKey.tap();
 
       final confirmKey = find.byKey(Key('labs-${feat.name}'));
       await confirmKey.should(findsOneWidget);

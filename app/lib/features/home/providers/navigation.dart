@@ -8,6 +8,7 @@ import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/home/data/models/nav_item.dart';
 import 'package:acter/features/home/widgets/custom_selected_icon.dart';
 import 'package:acter/router/providers/router_providers.dart';
+import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -141,7 +142,7 @@ final sidebarItemsProvider = Provider.autoDispose
         style: Theme.of(context).textTheme.labelSmall,
         softWrap: false,
       ),
-      location: Routes.dashboard.route,
+      branch: ShellBranch.homeShell,
       tutorialGlobalKey: dashboardKey,
     ),
     SidebarNavigationItem(
@@ -155,7 +156,7 @@ final sidebarItemsProvider = Provider.autoDispose
         style: Theme.of(context).textTheme.labelSmall,
         softWrap: false,
       ),
-      location: Routes.chat.route,
+      branch: ShellBranch.chatsShell,
       tutorialGlobalKey: chatsKey,
     ),
     SidebarNavigationItem(
@@ -171,7 +172,7 @@ final sidebarItemsProvider = Provider.autoDispose
           const Divider(indent: 10, endIndent: 10),
         ],
       ),
-      location: Routes.activities.route,
+      branch: ShellBranch.activitiesShell,
       tutorialGlobalKey: activityKey,
     ),
   ];

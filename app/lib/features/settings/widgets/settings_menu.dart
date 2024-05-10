@@ -148,7 +148,7 @@ class SettingsMenu extends ConsumerWidget {
           sectionTitle: L10n.of(context).community,
           children: [
             MenuItemWidget(
-              key: SettingsMenu.superInvitations,
+              innerKey: SettingsMenu.superInvitations,
               iconData: Atlas.plus_envelope_thin,
               enabled: isSuperInviteEnable,
               iconColor: routedColor(context, ref, Routes.settingsSuperInvites),
