@@ -7,6 +7,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/dom.dart' as html;
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
+//Check for mentioned user link
+final mentionedUserLinkRegex = RegExp(
+  r'https://matrix.to/#/(?<alias>@.+):(?<server>.+)',
+);
+
 class UserMentionMessageData {
   String parsedMessage;
   String userName;
@@ -19,6 +24,18 @@ class UserMentionMessageData {
   });
 }
 
+String? extractUserIdFromUri(String link) {
+  final mentionedUserLink = mentionedUserLinkRegex.firstMatch(link);
+
+  if (mentionedUserLink != null) {
+    //Get Username from mentioned user link
+    final alias = mentionedUserLink.namedGroup('alias') ?? '';
+    final server = mentionedUserLink.namedGroup('server') ?? '';
+    return '$alias:$server';
+  }
+  return null;
+}
+
 UserMentionMessageData parseUserMentionMessage(
   String message,
   html.Element aTagElement,
@@ -29,11 +46,6 @@ UserMentionMessageData parseUserMentionMessage(
 
   // Get 'A Tag' href link
   final hrefLink = aTagElement.attributes['href'] ?? '';
-
-  //Check for mentioned user link
-  final mentionedUserLinkRegex = RegExp(
-    r'https://matrix.to/#/(?<alias>.+):(?<server>.+)',
-  );
 
   final mentionedUserLink = mentionedUserLinkRegex.firstMatch(hrefLink);
 

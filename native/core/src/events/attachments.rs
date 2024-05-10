@@ -2,7 +2,7 @@ use derive_builder::Builder;
 use derive_getters::Getters;
 use ruma_events::room::message::{
     AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
-    LocationMessageEventContent, VideoMessageEventContent,
+    LocationMessageEventContent, MessageType, VideoMessageEventContent,
 };
 use ruma_macros::EventContent;
 use serde::{Deserialize, Serialize};
@@ -90,6 +90,21 @@ pub enum AttachmentContent {
     /// only for reading existing events.
     #[serde(untagged)]
     Fallback(FallbackAttachmentContent),
+}
+
+impl TryFrom<MessageType> for AttachmentContent {
+    type Error = ();
+
+    fn try_from(value: MessageType) -> std::prelude::v1::Result<Self, Self::Error> {
+        Ok(match value {
+            MessageType::Image(content) => AttachmentContent::Image(content),
+            MessageType::Video(content) => AttachmentContent::Video(content),
+            MessageType::Audio(content) => AttachmentContent::Audio(content),
+            MessageType::File(content) => AttachmentContent::File(content),
+            MessageType::Location(content) => AttachmentContent::Location(content),
+            _ => return Err(()),
+        })
+    }
 }
 
 impl AttachmentContent {

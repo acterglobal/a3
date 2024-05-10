@@ -95,9 +95,13 @@ final chatMentionsProvider =
     Map<String, String> record = {};
     final displayName = data.profile.displayName;
     record['id'] = mId;
-    record['displayName'] = '$displayName';
-    // all of our search terms:
-    record['display'] = '$displayName $mId';
+    if (displayName != null) {
+      record['displayName'] = displayName;
+      // all of our search terms:
+      record['display'] = displayName;
+    } else {
+      record['display'] = mId;
+    }
     mentionRecords.add(record);
   }
   return mentionRecords;
