@@ -11,9 +11,9 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
       state = state.copyWith(emojiPickerVisible: value);
 
   void addMention(String displayName, String authorId) {
-    final mentionReplacements = Map.of(state.mentionReplacements);
-    mentionReplacements[displayName] = authorId;
-    state = state.copyWith(mentionReplacements: mentionReplacements);
+    final mentions = Map.of(state.mentions);
+    mentions[displayName] = authorId;
+    state = state.copyWith(mentions: mentions);
   }
 
   void setReplyToMessage(Message message) {
@@ -48,8 +48,8 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
           msg = userMentionMessageData.parsedMessage;
 
           // Update mentions data
-          mentions['@${userMentionMessageData.displayName}'] =
-              '[${userMentionMessageData.displayName}](https://matrix.to/#/${userMentionMessageData.userName})';
+          mentions[userMentionMessageData.displayName] =
+              userMentionMessageData.userName;
         }
 
         // Parse data
@@ -60,7 +60,7 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
     state = state.copyWith(
       selectedMessage: message,
       selectedMessageState: SelectedMessageState.edit,
-      mentionReplacements: mentions,
+      mentions: mentions,
       message: messageBodyText,
     );
   }
@@ -103,6 +103,7 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
       sendingState: SendingState.preparing,
       selectedMessage: null,
       selectedMessageState: SelectedMessageState.none,
+      mentions: {},
     );
   }
 }

@@ -98,7 +98,7 @@ final chatMentionsProvider =
     if (displayName != null) {
       record['displayName'] = displayName;
       // all of our search terms:
-      record['display'] = '@$displayName';
+      record['display'] = displayName;
     } else {
       record['display'] = mId;
     }

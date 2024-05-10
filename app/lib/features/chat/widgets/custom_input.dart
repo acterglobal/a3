@@ -641,17 +641,25 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       // end the typing notification
       await widget.convo.typingNotice(false);
 
-      final mentionReplacements =
-          ref.read(chatInputProvider(roomId)).mentionReplacements;
+      final mentions = ref.read(chatInputProvider(roomId)).mentions;
       final mentionState = mentionKey.currentState!;
       String markdownText = mentionState.controller!.text;
-      mentionReplacements.forEach((key, value) {
-        markdownText = markdownText.replaceAll(key, value);
+      final userMentions = [];
+      mentions.forEach((key, value) {
+        userMentions.add(value);
+        markdownText = markdownText.replaceAll(
+          '@$key',
+          '[@$key](https://matrix.to/#/$value)',
+        );
       });
 
       // make the actual draft
       final client = ref.read(alwaysClientProvider);
       final draft = client.textMarkdownDraft(markdownText);
+
+      for (final userId in userMentions) {
+        draft.addMention(userId);
+      }
 
       // actually send it out
       final stream = ref.read(timelineStreamProvider(widget.convo));
