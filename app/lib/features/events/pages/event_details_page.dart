@@ -12,6 +12,7 @@ import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/skeletons/event_details_skeleton_widget.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
+import 'package:acter/features/member/dialogs/show_member_info_drawer.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -499,6 +500,16 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
                   displayName: profileData.displayName ?? roomId,
                   avatar: profileData.getAvatarImage(),
                 ),
+                onAvatarTap: () async {
+                  if (context.mounted) {
+                    await showMemberInfoDrawer(
+                      context: context,
+                      roomId: roomId,
+                      memberId: participantId,
+                      isShowActions: false,
+                    );
+                  }
+                },
                 size: 18,
               );
             },

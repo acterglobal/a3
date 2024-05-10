@@ -23,7 +23,7 @@ import 'package:acter/features/space/pages/events_page.dart';
 import 'package:acter/features/space/pages/members_page.dart';
 import 'package:acter/features/space/pages/overview_page.dart';
 import 'package:acter/features/space/pages/pins_page.dart';
-import 'package:acter/features/space/pages/related_spaces_page.dart';
+import 'package:acter/features/space/pages/sub_spaces_page.dart';
 import 'package:acter/features/space/pages/tasks_page.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
@@ -207,7 +207,7 @@ List<RouteBase> makeHomeShellRoutes(ref) {
         tabKeyNotifier.switchTo(const Key('spaces'));
         return NoTransitionPage(
           key: state.pageKey,
-          child: RelatedSpacesPage(
+          child: SubSpacesPage(
             spaceIdOrAlias: state.pathParameters['spaceId']!,
           ),
         );

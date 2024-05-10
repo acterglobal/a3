@@ -47,6 +47,7 @@ Future<void> showBlockUserDialog(BuildContext context, Member member) async {
                   duration: const Duration(seconds: 3),
                 );
               }
+              Navigator.of(context, rootNavigator: true).pop();
             },
             child: Text(L10n.of(context).yes),
           ),
