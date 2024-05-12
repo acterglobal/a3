@@ -3,6 +3,7 @@ import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class RecommendedSpaceCard extends ConsumerWidget {
   final String spaceId;
@@ -62,7 +63,7 @@ class RecommendedSpaceCard extends ConsumerWidget {
       ),
       error: (error, stack) =>
           Text(L10n.of(context).loadingSpacesFailed(error)),
-      loading: () => Text(L10n.of(context).loading),
+      loading: () => Skeletonizer(child: Text(L10n.of(context).loading)),
     );
   }
 }

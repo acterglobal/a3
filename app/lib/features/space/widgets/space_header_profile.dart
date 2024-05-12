@@ -79,7 +79,7 @@ class SpaceHeaderProfile extends ConsumerWidget {
       error: (error, stack) => Text(
         L10n.of(context).loadingFailed(error),
       ),
-      loading: () => Text(L10n.of(context).loading),
+      loading: () => Skeletonizer(child: Text(L10n.of(context).loading)),
     );
   }
 

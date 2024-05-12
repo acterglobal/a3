@@ -12,6 +12,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class ActerSpaceChecker extends ConsumerWidget {
   final Widget child;
@@ -33,7 +34,7 @@ class ActerSpaceChecker extends ConsumerWidget {
       data: (data) => expCheck(data) ? child : const SizedBox.shrink(),
       error: (error, stackTrace) =>
           Text(L10n.of(context).failedToLoadSpace(error)),
-      loading: () => const SizedBox.shrink(),
+      loading: () => Skeletonizer.zone(child: child),
     );
   }
 }
