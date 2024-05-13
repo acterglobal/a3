@@ -465,7 +465,7 @@ impl Client {
     }
 
     // ***_typed fn accepts rust-typed input, not string-based one
-    pub async fn convo_by_alias_typed(&self, room_alias: OwnedRoomAliasId) -> Result<Convo> {
+    async fn convo_by_alias_typed(&self, room_alias: OwnedRoomAliasId) -> Result<Convo> {
         let convo = self
             .convos
             .read()
@@ -535,7 +535,7 @@ impl Client {
     }
 
     // ***_typed fn accepts rust-typed input, not string-based one
-    pub async fn convo_typed(&self, room_id: &RoomId) -> Option<Convo> {
+    pub(crate) async fn convo_typed(&self, room_id: &RoomId) -> Option<Convo> {
         self.convos
             .read()
             .await

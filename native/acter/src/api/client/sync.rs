@@ -162,7 +162,7 @@ impl SyncState {
     }
 
     // ***_typed fn exposes rust-typed output, not string-based one
-    pub fn sync_error_rx_typed(&self) -> BroadcastStream<SyncError> {
+    fn sync_error_rx_typed(&self) -> BroadcastStream<SyncError> {
         BroadcastStream::new(self.sync_error.resubscribe())
     }
 
