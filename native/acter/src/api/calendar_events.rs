@@ -15,7 +15,7 @@ use matrix_sdk::{room::Room, RoomState};
 use pulldown_cmark::Event;
 use ruma::serde::PartialEqAsRefStr;
 use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};
-use ruma_events::room::message::TextMessageEventContent;
+use ruma_events::{room::message::TextMessageEventContent, MessageLikeEventType};
 use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
@@ -39,26 +39,22 @@ impl Client {
                 else {
                     bail!("{key} is not a calendar_event");
                 };
-                let room = me
-                    .core
-                    .client()
-                    .get_room(inner.room_id())
-                    .context("Room not found")?;
+                let room = me.room_by_id_typed(inner.room_id())?;
                 Ok(CalendarEvent::new(me.clone(), room, inner))
             })
             .await?
     }
 
     pub async fn calendar_event(&self, calendar_id: String) -> Result<CalendarEvent> {
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::CalendarEvent(inner) = client.store().get(&calendar_id).await?
+                let AnyActerModel::CalendarEvent(inner) = me.store().get(&calendar_id).await?
                 else {
                     bail!("Calendar event not found");
                 };
-                let room = client.get_room(inner.room_id()).context("Room not found")?;
-                Ok(CalendarEvent::new(client, room, inner))
+                let room = me.room_by_id_typed(inner.room_id())?;
+                Ok(CalendarEvent::new(me, room, inner))
             })
             .await?
     }
@@ -66,10 +62,11 @@ impl Client {
     pub async fn calendar_events(&self) -> Result<Vec<CalendarEvent>> {
         let mut calendar_events = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                for mdl in client.store().get_list(KEYS::CALENDAR).await? {
+                let client = me.core.client();
+                for mdl in me.store().get_list(KEYS::CALENDAR).await? {
                     if let AnyActerModel::CalendarEvent(t) = mdl {
                         let room_id = t.room_id().to_owned();
                         let room = match rooms_map.entry(room_id) {
@@ -84,7 +81,7 @@ impl Client {
                                 }
                             }
                         };
-                        calendar_events.push(CalendarEvent::new(client.clone(), room, t));
+                        calendar_events.push(CalendarEvent::new(me.clone(), room, t));
                     } else {
                         warn!(
                             "Non calendar_event model found in `calendar_events` index: {:?}",
@@ -232,6 +229,7 @@ impl CalendarEvent {
         let event_id = self.inner.event_id().to_owned();
         crate::CommentsManager::new(client, room, event_id).await
     }
+
     pub async fn attachments(&self) -> Result<crate::AttachmentsManager> {
         let client = self.client.clone();
         let room = self.room.clone();
@@ -254,16 +252,17 @@ impl CalendarEvent {
     }
 
     pub async fn participants(&self) -> Result<Vec<String>> {
-        let calendar_event = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let manager = calendar_event.rsvps().await?;
-                Ok(manager
+                let manager = me.rsvps().await?;
+                let users = manager
                     .users_at_status_typed(RsvpStatus::Yes)
                     .await?
                     .into_iter()
                     .map(|u| u.to_string())
-                    .collect())
+                    .collect();
+                Ok(users)
             })
             .await?
     }
@@ -318,7 +317,6 @@ impl CalendarEvent {
 
     pub async fn responded_by_me(&self) -> Result<OptionRsvpStatus> {
         let me = self.clone();
-
         RUNTIME
             .spawn(async move {
                 let manager = me.rsvps().await?;
@@ -450,13 +448,22 @@ impl CalendarEventDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
+        let my_id = self.client.user_id()?;
         let inner = self.inner.build()?;
+      
         // we clear the tracking location vector
         self.location_drafts.clear();
+      
         RUNTIME
             .spawn(async move {
-                let resp = room.send(inner).await?;
-                Ok(resp.event_id)
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(inner).await?;
+                Ok(response.event_id)
             })
             .await?
     }
@@ -610,11 +617,19 @@ impl CalendarEventUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
+        let my_id = self.client.user_id()?;
         let inner = self.inner.build()?;
+
         RUNTIME
             .spawn(async move {
-                let resp = room.send(inner).await?;
-                Ok(resp.event_id)
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(inner).await?;
+                Ok(response.event_id)
             })
             .await?
     }

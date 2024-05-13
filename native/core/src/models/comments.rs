@@ -100,7 +100,7 @@ impl CommentsManager {
         Ok(update_key)
     }
 
-    pub fn event_id(&self) -> &OwnedEventId {
+    pub fn event_id(&self) -> &EventId {
         &self.event_id
     }
 }

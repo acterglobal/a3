@@ -10,9 +10,12 @@ use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
 use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};
-use ruma_events::room::message::{
-    AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
-    LocationMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
+use ruma_events::{
+    room::message::{
+        AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
+        LocationMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
+    },
+    MessageLikeEventType,
 };
 use std::{
     collections::{hash_map::Entry, HashMap},
@@ -23,12 +26,14 @@ use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::{trace, warn};
 
+use crate::MsgDraft;
+
 use super::{
     api::FfiBuffer,
     client::Client,
     common::{MsgContent, ThumbnailSize},
     spaces::Space,
-    stream::MsgContentDraft,
+    stream::msg_draft::MsgContentDraft,
     RUNTIME,
 };
 
@@ -41,11 +46,7 @@ impl Client {
                 else {
                     bail!("{key} is not a news");
                 };
-                let room = me
-                    .core
-                    .client()
-                    .get_room(content.room_id())
-                    .context("Room not found")?;
+                let room = me.room_by_id_typed(content.room_id())?;
                 NewsEntry::new(me.clone(), room, content).await
             })
             .await?
@@ -54,10 +55,10 @@ impl Client {
     pub async fn latest_news_entries(&self, mut count: u32) -> Result<Vec<NewsEntry>> {
         let mut news = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let mut all_news = client
+                let mut all_news = me
                     .store()
                     .get_list(KEYS::NEWS)
                     .await?
@@ -71,6 +72,7 @@ impl Client {
                     .collect::<Vec<models::NewsEntry>>();
                 all_news.sort_by(|a, b| b.meta.origin_server_ts.cmp(&a.meta.origin_server_ts));
 
+                let client = me.core.client();
                 for content in all_news {
                     if count == 0 {
                         break; // we filled what we wanted
@@ -88,7 +90,8 @@ impl Client {
                             }
                         }
                     };
-                    news.push(NewsEntry::new(client.clone(), room, content).await?);
+                    let news_entry = NewsEntry::new(me.clone(), room, content).await?;
+                    news.push(news_entry);
                     count -= 1;
                 }
                 Ok(news)
@@ -152,6 +155,7 @@ impl NewsSlide {
     pub fn type_str(&self) -> String {
         self.inner.content().type_str()
     }
+
     pub fn unique_id(&self) -> String {
         self.unique_id.clone()
     }
@@ -174,12 +178,10 @@ impl NewsSlide {
             | NewsContent::Fallback(FallbackNewsContent::Location(content)) => {
                 MsgContent::from(content)
             }
-
             NewsContent::Audio(content)
             | NewsContent::Fallback(FallbackNewsContent::Audio(content)) => {
                 MsgContent::from(content)
             }
-
             NewsContent::Video(content)
             | NewsContent::Fallback(FallbackNewsContent::Video(content)) => {
                 MsgContent::from(content)
@@ -298,6 +300,7 @@ impl NewsSlideDraft {
             colorize_builder: ColorizeBuilder::default(),
         }
     }
+
     #[allow(clippy::boxed_local)]
     pub fn color(&mut self, colors: Box<ColorizeBuilder>) {
         self.colorize_builder = *colors;
@@ -634,8 +637,10 @@ impl NewsEntryDraft {
         trace!("starting send");
         let client = self.client.clone();
         let room = self.room.clone();
+        let my_id = self.client.user_id()?;
         let slides_drafts = self.slides.clone();
         let mut builder = self.content.clone();
+
         RUNTIME
             .spawn(async move {
                 let mut slides = vec![];
@@ -648,8 +653,14 @@ impl NewsEntryDraft {
                 trace!("send buildin");
                 let content = builder.build()?;
                 trace!("off we go");
-                let resp = room.send(content).await?;
-                Ok(resp.event_id)
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(content).await?;
+                Ok(response.event_id)
             })
             .await?
     }
@@ -705,12 +716,19 @@ impl NewsEntryUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-
+        let my_id = self.client.user_id()?;
         let content = self.content.build()?;
+
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content).await?;
-                Ok(resp.event_id)
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(content).await?;
+                Ok(response.event_id)
             })
             .await?
     }
@@ -730,10 +748,13 @@ impl Space {
     }
 }
 
-impl MsgContentDraft {
-    pub fn into_news_slide_draft(
-        &self, // into_* fn takes self by value not reference
-    ) -> NewsSlideDraft {
-        NewsSlideDraft::new(self.clone())
+impl From<MsgDraft> for NewsSlideDraft {
+    fn from(value: MsgDraft) -> Self {
+        NewsSlideDraft::new(value.inner)
+    }
+}
+impl MsgDraft {
+    pub fn into_news_slide_draft(&self) -> NewsSlideDraft {
+        self.clone().into()
     }
 }

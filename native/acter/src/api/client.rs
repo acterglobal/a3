@@ -105,7 +105,7 @@ impl Client {
         thumb_size: Option<Box<ThumbnailSize>>,
     ) -> Result<FfiBuffer<u8>> {
         // any variable in self can't be called directly in spawn
-        let client = self.clone();
+        let client = self.core.client().clone();
         let format = ThumbnailSize::parse_into_media_format(thumb_size);
         let request = MediaRequest { source, format };
         trace!(?request, "tasked to get source binary");
@@ -125,7 +125,7 @@ impl Client {
         file_suffix: &str,
     ) -> Result<String> {
         // any variable in self can't be called directly in spawn
-        let client = self.clone();
+        let client = self.core.client().clone();
         let format = ThumbnailSize::parse_into_media_format(thumb_size);
         let request = MediaRequest { source, format };
         let path = PathBuf::from(tmp_path).join(format!(
@@ -166,13 +166,14 @@ impl Client {
             .into_iter()
             .map(OwnedServerName::try_from)
             .collect::<Result<Vec<OwnedServerName>, IdParseError>>()?;
-        let c = self.clone();
+        let core = self.core.clone();
         RUNTIME
             .spawn(async move {
-                let joined = c
+                let joined = core
+                    .client()
                     .join_room_by_id_or_alias(alias.as_ref(), server_names.as_slice())
                     .await?;
-                Ok(Room::new(c.core.clone(), joined))
+                Ok(Room::new(core.clone(), joined))
             })
             .await?
     }
@@ -323,41 +324,46 @@ impl Client {
         self.room_typed(&id_or_alias).await
     }
 
-    pub async fn room_typed(&self, room_id_or_alias: &RoomOrAliasId) -> Result<Room> {
+    // ***_typed fn accepts rust-typed input, not string-based one
+    async fn room_typed(&self, room_id_or_alias: &RoomOrAliasId) -> Result<Room> {
         if room_id_or_alias.is_room_id() {
             let room_id = RoomId::parse(room_id_or_alias.as_str())?;
-            return self.room_by_id_typed(&room_id).context("Room not found");
+            let room = self.room_by_id_typed(&room_id)?;
+            return Ok(Room::new(self.core.clone(), room));
         }
 
         let room_alias = RoomAliasId::parse(room_id_or_alias.as_str())?;
         self.room_by_alias_typed(&room_alias).await
     }
 
-    pub fn room_by_id_typed(&self, room_id: &OwnedRoomId) -> Option<Room> {
+    // ***_typed fn accepts rust-typed input, not string-based one
+    pub fn room_by_id_typed(&self, room_id: &RoomId) -> Result<SdkRoom> {
         self.core
             .client()
             .get_room(room_id)
-            .map(|room| Room::new(self.core.clone(), room))
+            .context("Room not found")
     }
 
-    pub async fn room_by_alias_typed(&self, room_alias: &OwnedRoomAliasId) -> Result<Room> {
-        for r in self.core.client().rooms() {
+    // ***_typed fn accepts rust-typed input, not string-based one
+    async fn room_by_alias_typed(&self, room_alias: &RoomAliasId) -> Result<Room> {
+        let client = self.core.client();
+        for r in client.rooms() {
             // looping locally first
             if let Some(con_alias) = r.canonical_alias() {
-                if &con_alias == room_alias {
+                if con_alias == room_alias {
                     return Ok(Room::new(self.core.clone(), r));
                 }
             }
             for alt_alias in r.alt_aliases() {
-                if &alt_alias == room_alias {
+                if alt_alias == room_alias {
                     return Ok(Room::new(self.core.clone(), r));
                 }
             }
         }
         // nothing found, try remote:
-        let response = self.core.client().resolve_room_alias(room_alias).await?;
-        self.room_by_id_typed(&response.room_id)
-            .context("Room not found")
+        let response = client.resolve_room_alias(room_alias).await?;
+        let room = self.room_by_id_typed(&response.room_id)?;
+        Ok(Room::new(self.core.clone(), room))
     }
 
     pub fn dm_with_user(&self, user_id: String) -> Result<OptionString> {
