@@ -2,7 +2,6 @@ import 'package:acter/common/models/types.dart';
 import 'package:acter/common/widgets/image_dialog.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -13,11 +12,11 @@ class ImageMessageBuilder extends ConsumerWidget {
   final types.ImageMessage message;
   final int messageWidth;
   final bool isReplyContent;
-  final Convo convo;
+  final String roomId;
 
   const ImageMessageBuilder({
     super.key,
-    required this.convo,
+    required this.roomId,
     required this.message,
     required this.messageWidth,
     this.isReplyContent = false,
@@ -25,7 +24,6 @@ class ImageMessageBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final roomId = convo.getRoomIdStr();
     final ChatMessageInfo messageInfo = (messageId: message.id, roomId: roomId);
     final mediaState = ref.watch(mediaChatStateProvider(messageInfo));
     if (mediaState.mediaChatLoadingState.isLoading ||

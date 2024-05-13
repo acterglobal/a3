@@ -51,12 +51,12 @@ final _allowEdit = StateProvider.family<bool, String>(
 );
 
 class CustomChatInput extends ConsumerWidget {
-  final Convo convo;
-  const CustomChatInput({required this.convo, super.key});
+  final String roomId;
+  final void Function(bool)? onTyping;
+  const CustomChatInput({required this.roomId, this.onTyping, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final roomId = convo.getRoomIdStr();
     final membership = ref.watch(roomMembershipProvider(roomId));
     return membership.when(
       skipLoadingOnReload:
@@ -111,15 +111,16 @@ class CustomChatInput extends ConsumerWidget {
         ),
       );
     } else {
-      return _ChatInput(convo: convo);
+      return _ChatInput(roomId: roomId, onTyping: onTyping);
     }
   }
 }
 
 class _ChatInput extends ConsumerStatefulWidget {
-  final Convo convo;
+  final String roomId;
+  final void Function(bool)? onTyping;
 
-  const _ChatInput({required this.convo});
+  const _ChatInput({required this.roomId, this.onTyping});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => __ChatInputState();
@@ -160,18 +161,24 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
 
   @override
   Widget build(BuildContext context) {
-    final roomId = widget.convo.getRoomIdStr();
-    final chatInputState = ref.watch(chatInputProvider(roomId));
+    final roomId = widget.roomId;
+    final selectedMessage = ref.watch(
+      chatInputProvider(roomId).select(
+        (value) => value.selectedMessage,
+      ),
+    );
 
-    if (chatInputState.selectedMessage == null) {
+    if (selectedMessage == null) {
       return renderMain(context);
     }
 
-    return switch (chatInputState.selectedMessageState) {
-      SelectedMessageState.replyTo =>
-        renderReplyView(context, chatInputState.selectedMessage!),
-      SelectedMessageState.edit =>
-        renderEditView(context, chatInputState.selectedMessage!),
+    return switch (ref.watch(
+      chatInputProvider(roomId).select(
+        (value) => value.selectedMessageState,
+      ),
+    )) {
+      SelectedMessageState.replyTo => renderReplyView(context, selectedMessage),
+      SelectedMessageState.edit => renderEditView(context, selectedMessage),
       SelectedMessageState.none ||
       SelectedMessageState.actions =>
         renderMain(context)
@@ -183,7 +190,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
   }
 
   Widget renderChatInputArea(BuildContext context, Widget? child) {
-    final roomId = widget.convo.getRoomIdStr();
+    final roomId = widget.roomId;
     final isEncrypted =
         ref.watch(isRoomEncryptedProvider(roomId)).valueOrNull ?? false;
 
@@ -217,10 +224,11 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: _TextInputWidget(
                         mentionKey: mentionKey,
-                        convo: widget.convo,
+                        roomId: widget.roomId,
                         onSendButtonPressed: () =>
                             onSendButtonPressed(context, ref),
                         isEncrypted: isEncrypted,
+                        onTyping: widget.onTyping,
                       ),
                     ),
                   ),
@@ -231,7 +239,9 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
             ),
           ),
         ),
-        if (ref.watch(chatInputProvider(roomId)).emojiPickerVisible)
+        if (ref.watch(
+          chatInputProvider(roomId).select((value) => value.emojiPickerVisible),
+        ))
           EmojiPickerWidget(
             size: Size(
               MediaQuery.of(context).size.width,
@@ -269,7 +279,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
 
   Widget renderReplyView(BuildContext context, Message repliedToMessage) {
     final size = MediaQuery.of(context).size;
-    final roomId = widget.convo.getRoomIdStr();
+    final roomId = widget.roomId;
 
     return renderChatInputArea(
       context,
@@ -295,7 +305,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
                       replyBuilder(roomId, repliedToMessage),
                 ),
                 _ReplyContentWidget(
-                  convo: widget.convo,
+                  roomId: widget.roomId,
                   msg: repliedToMessage,
                 ),
               ],
@@ -329,7 +339,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
               children: [
                 Consumer(builder: editMessageBuilder),
                 _EditMessageContentWidget(
-                  convo: widget.convo,
+                  roomId: widget.roomId,
                   msg: editMessage,
                 ),
               ],
@@ -462,11 +472,13 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     List<File> files,
     AttachmentType attachmentType,
   ) async {
-    final roomId = widget.convo.getRoomIdStr();
+    final roomId = widget.roomId;
     final client = ref.read(alwaysClientProvider);
     final inputState = ref.read(chatInputProvider(roomId));
-    final stream = ref.read(timelineStreamProvider(widget.convo));
     final lang = L10n.of(context);
+    final stream = await ref.read(
+      timelineStreamProviderForId(widget.roomId).future,
+    );
 
     try {
       for (File file in files) {
@@ -601,7 +613,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     WidgetRef ref,
     Widget? child,
   ) {
-    final roomId = widget.convo.getRoomIdStr();
+    final roomId = widget.roomId;
     final inputNotifier = ref.watch(chatInputProvider(roomId).notifier);
     return Row(
       children: [
@@ -635,11 +647,13 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
   Future<void> onSendButtonPressed(BuildContext context, WidgetRef ref) async {
     if (mentionKey.currentState!.controller!.text.isEmpty) return;
     final lang = L10n.of(context);
-    final roomId = widget.convo.getRoomIdStr();
+    final roomId = widget.roomId;
     ref.read(chatInputProvider(roomId).notifier).startSending();
     try {
       // end the typing notification
-      await widget.convo.typingNotice(false);
+      if (widget.onTyping != null) {
+        widget.onTyping!(false);
+      }
 
       final mentions = ref.read(chatInputProvider(roomId)).mentions;
       final mentionState = mentionKey.currentState!;
@@ -662,8 +676,10 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       }
 
       // actually send it out
-      final stream = ref.read(timelineStreamProvider(widget.convo));
       final inputState = ref.read(chatInputProvider(roomId));
+      final stream = await ref.read(
+        timelineStreamProviderForId(widget.roomId).future,
+      );
 
       if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
         await stream.replyMessage(inputState.selectedMessage!.id, draft);
@@ -778,22 +794,22 @@ class _FileWidget extends ConsumerWidget {
 
 class _TextInputWidget extends ConsumerWidget {
   final GlobalKey<FlutterMentionsState> mentionKey;
-  final Convo convo;
+  final String roomId;
   final Function() onSendButtonPressed;
   final bool isEncrypted;
   final FocusNode chatFocus = FocusNode();
+  final void Function(bool)? onTyping;
 
   _TextInputWidget({
     required this.mentionKey,
-    required this.convo,
+    required this.roomId,
     required this.onSendButtonPressed,
+    this.onTyping,
     this.isEncrypted = false,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final roomId = convo.getRoomIdStr();
-    final chatInputState = ref.watch(chatInputProvider(roomId));
     final chatMentions = ref.watch(chatMentionsProvider(roomId));
     final width = MediaQuery.of(context).size.width;
     ref.listen(chatInputProvider(roomId), (prev, next) {
@@ -831,14 +847,8 @@ class _TextInputWidget extends ConsumerWidget {
           ),
           onChanged: (String value) async {
             ref.read(chatInputProvider(roomId).notifier).updateMessage(value);
-            if (value.isNotEmpty) {
-              Future.delayed(const Duration(milliseconds: 500), () async {
-                await typingNotice(true);
-              });
-            } else {
-              Future.delayed(const Duration(milliseconds: 500), () async {
-                await typingNotice(false);
-              });
+            if (onTyping != null) {
+              onTyping!(value.isNotEmpty);
             }
           },
           textInputAction: TextInputAction.newline,
@@ -849,7 +859,10 @@ class _TextInputWidget extends ConsumerWidget {
           maxLines: 6,
           minLines: 1,
           focusNode: chatFocus,
-          onTap: () => onTextTap(chatInputState.emojiPickerVisible, ref),
+          onTap: () => onTextTap(
+            ref.read(chatInputProvider(roomId)).emojiPickerVisible,
+            ref,
+          ),
           decoration: InputDecoration(
             isCollapsed: true,
             prefixIcon: isEncrypted
@@ -861,8 +874,11 @@ class _TextInputWidget extends ConsumerWidget {
                   )
                 : null,
             suffixIcon: InkWell(
-              onTap: () =>
-                  onSuffixTap(chatInputState.emojiPickerVisible, context, ref),
+              onTap: () => onSuffixTap(
+                ref.read(chatInputProvider(roomId)).emojiPickerVisible,
+                context,
+                ref,
+              ),
               child: const Icon(Icons.emoji_emotions),
             ),
             border: OutlineInputBorder(
@@ -956,13 +972,7 @@ class _TextInputWidget extends ConsumerWidget {
     );
   }
 
-  // send typing event from client
-  Future<bool> typingNotice(bool typing) async {
-    return await convo.typingNotice(typing);
-  }
-
   void onMentionAdd(Map<String, dynamic> roomMember, WidgetRef ref) {
-    final roomId = convo.getRoomIdStr();
     String authorId = roomMember['id'];
     String displayName = roomMember['display'];
     ref
@@ -971,7 +981,6 @@ class _TextInputWidget extends ConsumerWidget {
   }
 
   void onTextTap(bool emojiPickerVisible, WidgetRef ref) {
-    final roomId = convo.getRoomIdStr();
     final chatInputNotifier = ref.read(chatInputProvider(roomId).notifier);
 
     ///Hide emoji picker before input field get focus if
@@ -986,7 +995,6 @@ class _TextInputWidget extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) {
-    final roomId = convo.getRoomIdStr();
     final chatInputNotifier = ref.read(chatInputProvider(roomId).notifier);
     if (!emojiPickerVisible) {
       //Hide soft keyboard and then show Emoji Picker
@@ -1000,11 +1008,11 @@ class _TextInputWidget extends ConsumerWidget {
 }
 
 class _ReplyContentWidget extends StatelessWidget {
-  final Convo convo;
+  final String roomId;
   final Message msg;
 
   const _ReplyContentWidget({
-    required this.convo,
+    required this.roomId,
     required this.msg,
   });
 
@@ -1015,7 +1023,7 @@ class _ReplyContentWidget extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: ImageMessageBuilder(
-          convo: convo,
+          roomId: roomId,
           message: imageMsg,
           messageWidth: imageMsg.size.toInt(),
           isReplyContent: true,
@@ -1065,11 +1073,11 @@ class _ReplyContentWidget extends StatelessWidget {
 }
 
 class _EditMessageContentWidget extends StatelessWidget {
-  final Convo convo;
+  final String roomId;
   final Message msg;
 
   const _EditMessageContentWidget({
-    required this.convo,
+    required this.roomId,
     required this.msg,
   });
 
@@ -1080,7 +1088,7 @@ class _EditMessageContentWidget extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: ImageMessageBuilder(
-          convo: convo,
+          roomId: roomId,
           message: imageMsg,
           messageWidth: imageMsg.size.toInt(),
           isReplyContent: true,

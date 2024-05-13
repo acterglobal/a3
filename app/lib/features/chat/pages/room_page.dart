@@ -143,8 +143,13 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
           keyboardDismissBehavior: Platform.isIOS
               ? ScrollViewKeyboardDismissBehavior.onDrag
               : ScrollViewKeyboardDismissBehavior.manual,
-          customBottomWidget:
-              CustomChatInput(key: Key(roomId), convo: widget.convo),
+          customBottomWidget: CustomChatInput(
+            key: Key('chat-input-$roomId'),
+            roomId: widget.convo.getRoomIdStr(),
+            onTyping: (typing) async {
+              widget.convo.typingNotice(typing);
+            },
+          ),
           textMessageBuilder: (
             types.TextMessage m, {
             required int messageWidth,
@@ -194,7 +199,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
             required int messageWidth,
           }) =>
               ImageMessageBuilder(
-            convo: widget.convo,
+            roomId: widget.convo.getRoomIdStr(),
             message: message,
             messageWidth: messageWidth,
           ),
