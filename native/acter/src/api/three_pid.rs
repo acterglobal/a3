@@ -11,6 +11,7 @@ use ruma_client_api::{
 };
 use serde::Deserialize;
 use std::{collections::BTreeMap, ops::Deref};
+use tracing::info;
 
 use super::{client::Client, RUNTIME};
 
@@ -62,13 +63,16 @@ impl ThreePidManager {
         let secret = ClientSecret::new(); // make random string that will be exposed to confirmation email
         RUNTIME
             .spawn(async move {
+                info!("+++++++++++++++++++++++++++++++++++++++++++");
                 let response = account
-                    .request_3pid_email_token(&secret, &email_address, uint!(0))
+                    .request_3pid_email_token(&secret, &email_address, uint!(3))
                     .await?;
 
+                info!("+++++++++++++++++++++++++++++++++++++++++++");
                 // add this record to custom data
                 let record = ThreePidRecord::new(response.sid.to_string(), secret);
                 let maybe_content = account.account_data::<ThreePidContent>().await?;
+                info!("+++++++++++++++++++++++++++++++++++++++++++");
                 let content = if let Some(raw_content) = maybe_content {
                     let mut content = raw_content.deserialize()?;
                     content
@@ -86,6 +90,7 @@ impl ThreePidManager {
                         via_phone,
                     }
                 };
+                info!("+++++++++++++++++++++++++++++++++++++++++++");
                 account.set_account_data(content).await?;
 
                 Ok(true)

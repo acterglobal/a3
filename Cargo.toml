@@ -61,6 +61,10 @@ rev = "6772c2869f673107adc7be5be3a07dec8d98cc2b"
 git = "https://github.com/acterglobal/ruma"
 rev = "6772c2869f673107adc7be5be3a07dec8d98cc2b"
 
+[workspace.dependencies.url]
+version = "2.5.0"
+features = ["serde"]
+
 [workspace.dependencies]
 strum = { version = "0.26.1", features = ["derive"] }
 base64ct = "1.6.0"

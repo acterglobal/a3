@@ -7,7 +7,7 @@ use matrix_sdk::{
 };
 use ruma::{assign, uint};
 use ruma_client_api::{
-    account::{register, request_password_change_token_via_email},
+    account::{register, request_3pid_management_token_via_email, request_password_change_token_via_email},
     error::ErrorKind,
     uiaa::{
         AuthData, AuthType, Dummy, EmailIdentity, Password, RegistrationToken,
@@ -17,6 +17,7 @@ use ruma_client_api::{
 use ruma_common::{ClientSecret, OwnedUserId, SessionId, UserId};
 use std::{ops::Deref, sync::RwLock};
 use tracing::{error, info};
+use url::Url;
 use uuid::Uuid;
 
 use super::{
@@ -443,6 +444,41 @@ pub async fn register_with_token_under_config(
         .await?
 }
 
+pub async fn request_token_via_email(
+    base_path: String,
+    media_cache_base_path: String,
+    username: String,
+    default_homeserver_name: &str,
+    default_homeserver_url: &str,
+    email: String,
+) -> Result<RequestedTokenViaEmailResponse> {
+    let homeserver_url = Url::parse(default_homeserver_url)?;
+    let db_passphrase = Uuid::new_v4().to_string();
+    let (config, user_id) = make_client_config(
+        base_path,
+        &username,
+        media_cache_base_path,
+        Some(db_passphrase.clone()),
+        default_homeserver_name,
+        default_homeserver_url,
+        true,
+    )
+    .await?;
+    info!("request user id: {:?}", user_id);
+    RUNTIME
+        .spawn(async move {
+            let client = SdkClient::new(homeserver_url).await?;
+            info!("new client constructed");
+            let account = client.account();
+            let secret = ClientSecret::new();
+            let inner = account
+                .request_3pid_email_token(&secret, &email, uint!(0))
+                .await?;
+            Ok(RequestedTokenViaEmailResponse { inner })
+        })
+        .await?
+}
+
 #[allow(clippy::too_many_arguments)]
 pub async fn reset_password_without_login(
     base_path: String,
@@ -486,6 +522,21 @@ pub async fn reset_password_without_login(
             Ok(OptionString::new(response.submit_url))
         })
         .await?
+}
+
+#[derive(Clone)]
+pub struct RequestedTokenViaEmailResponse {
+    inner: request_3pid_management_token_via_email::v3::Response,
+}
+
+impl RequestedTokenViaEmailResponse {
+    pub fn sid(&self) -> String {
+        self.inner.sid.to_string()
+    }
+
+    pub fn submit_url(&self) -> OptionString {
+        OptionString::new(self.inner.submit_url.clone())
+    }
 }
 
 impl Client {

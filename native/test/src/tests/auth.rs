@@ -1,10 +1,10 @@
 use acter::api::{
     guest_client, login_new_client, login_new_client_under_config, login_with_token_under_config,
-    make_client_config,
+    make_client_config, request_token_via_email,
 };
 use anyhow::Result;
 use tempfile::TempDir;
-use tracing::warn;
+use tracing::{info, warn};
 use uuid::Uuid;
 
 use crate::utils::{default_user_password, login_test_user, random_user_with_random_space};
@@ -242,5 +242,50 @@ async fn user_changes_password() -> Result<()> {
         new_pswd_res.is_ok(),
         "Should be able to login with new password"
     );
+    Ok(())
+}
+
+#[tokio::test]
+async fn user_resets_password() -> Result<()> {
+    let _ = env_logger::try_init();
+
+    info!("************************************");
+
+    let base_data = TempDir::new()?;
+    let media_data = TempDir::new()?;
+    let prefix = "reset_password".to_owned();
+    let uuid = Uuid::new_v4().to_string();
+    let email = "admin@localhost".to_owned();
+    let response = request_token_via_email(
+        base_data.path().to_string_lossy().to_string(),
+        media_data.path().to_string_lossy().to_string(),
+        format!("it-{prefix}-{uuid}"),
+        option_env!("DEFAULT_HOMESERVER_NAME").unwrap_or("localhost"),
+        option_env!("DEFAULT_HOMESERVER_URL").unwrap_or("http://localhost:8118"),
+        email.clone(),
+    )
+    .await?;
+
+    info!("token requested sid: {}", response.sid());
+    info!("token requested submit url: {:?}", response.submit_url().text());
+
+    let (mut client, _) = random_user_with_random_space("reset_password").await?;
+    let user_id = client.user_id().expect("we just logged in");
+    let password = default_user_password(user_id.localpart());
+    let new_password = format!("new_{:?}", password.as_str());
+
+    info!("************************************");
+
+    let three_pid = client.three_pid_manager()?;
+    let result = three_pid.request_token_via_email(email.clone()).await?;
+    assert!(result, "Email address should be registered as 3pid");
+
+    info!("************************************");
+
+    let result = client
+        .reset_password_via_email(password, new_password, email)
+        .await?;
+    assert!(result, "Couldn't reset password via email successfully");
+
     Ok(())
 }
