@@ -161,7 +161,8 @@ impl SyncState {
         BroadcastStream::new(self.first_synced_rx.resubscribe()).map(|o| o.unwrap_or_default())
     }
 
-    pub fn sync_error_rx_typed(&self) -> BroadcastStream<SyncError> {
+    // ***_typed fn exposes rust-typed output, not string-based one
+    fn sync_error_rx_typed(&self) -> BroadcastStream<SyncError> {
         BroadcastStream::new(self.sync_error.resubscribe())
     }
 
@@ -312,13 +313,14 @@ impl Client {
 
     async fn refresh_rooms(&self, changed_rooms: Vec<&OwnedRoomId>) {
         let update_keys = {
+            let client = self.core.client();
             let mut updated: Vec<String> = vec![];
 
             let mut chats = self.convos.write().await;
             let mut spaces = self.spaces.write().await;
 
             for r_id in changed_rooms {
-                let Some(room) = self.core.client().get_room(r_id) else {
+                let Some(room) = client.get_room(r_id) else {
                     trace!(?r_id, "room not known");
                     remove_from(&mut spaces, r_id);
                     remove_from_chat(&mut chats, r_id);
