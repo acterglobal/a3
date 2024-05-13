@@ -22,6 +22,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -825,123 +826,135 @@ class _TextInputWidget extends ConsumerWidget {
         chatFocus.requestFocus();
       }
     });
-    // return CallbackShortcuts(
-    //   bindings: <ShortcutActivator, VoidCallback>{
-    //     const SingleActivator(LogicalKeyboardKey.enter): () {
-    //       onSendButtonPressed();
-    //     },
-    //   },
-    //   child: Focus(
-    //     child:
-    return FlutterMentions(
-      key: mentionKey,
-      // restore input if available, but only as a read on startup
-      defaultText:
-          ref.read(chatInputProvider(roomId).select((value) => value.message)),
-      suggestionPosition: SuggestionPosition.Top,
-      suggestionListWidth: width >= 770 ? width * 0.6 : width * 0.8,
-      onMentionAdd: (roomMember) => onMentionAdd(roomMember, ref),
-      suggestionListDecoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.background,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      onChanged: (String value) async {
-        ref.read(chatInputProvider(roomId).notifier).updateMessage(value);
-        if (onTyping != null) {
-          onTyping!(value.isNotEmpty);
-        }
+    return CallbackShortcuts(
+      bindings: <ShortcutActivator, VoidCallback>{
+        const SingleActivator(LogicalKeyboardKey.enter): () {
+          onSendButtonPressed();
+        },
       },
-      textInputAction: TextInputAction.newline,
-      enabled: ref.watch(_allowEdit(roomId)),
-      onSubmitted: (value) => onSendButtonPressed(),
-      style: Theme.of(context).textTheme.bodyMedium,
-      cursorColor: Theme.of(context).colorScheme.primary,
-      maxLines: 6,
-      minLines: 1,
-      focusNode: chatFocus,
-      onTap: () => onTextTap(
-        ref.read(chatInputProvider(roomId)).emojiPickerVisible,
-        ref,
-      ),
-      decoration: InputDecoration(
-        isCollapsed: true,
-        prefixIcon: isEncrypted
-            ? Icon(
-                Icons.shield,
-                size: 18,
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
-              )
-            : null,
-        suffixIcon: InkWell(
-          onTap: () => onSuffixTap(
+      child: Focus(
+        child: FlutterMentions(
+          key: mentionKey,
+          // restore input if available, but only as a read on startup
+          defaultText: ref
+              .read(chatInputProvider(roomId).select((value) => value.message)),
+          suggestionPosition: SuggestionPosition.Top,
+          suggestionListWidth: width >= 770 ? width * 0.6 : width * 0.8,
+          onMentionAdd: (roomMember) => onMentionAdd(roomMember, ref),
+          suggestionListDecoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.background,
+            borderRadius: BorderRadius.circular(6),
+          ),
+          onChanged: (String value) async {
+            ref.read(chatInputProvider(roomId).notifier).updateMessage(value);
+            if (onTyping != null) {
+              onTyping!(value.isNotEmpty);
+            }
+          },
+          textInputAction: TextInputAction.newline,
+          enabled: ref.watch(_allowEdit(roomId)),
+          onSubmitted: (value) => onSendButtonPressed(),
+          style: Theme.of(context).textTheme.bodyMedium,
+          cursorColor: Theme.of(context).colorScheme.primary,
+          maxLines: 6,
+          minLines: 1,
+          focusNode: chatFocus,
+          onTap: () => onTextTap(
             ref.read(chatInputProvider(roomId)).emojiPickerVisible,
-            context,
             ref,
           ),
-          child: const Icon(Icons.emoji_emotions),
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide: BorderSide(
-            width: 0.5,
-            style: BorderStyle.solid,
-            color: Theme.of(context).colorScheme.surface,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide: BorderSide(
-            width: 0.5,
-            style: BorderStyle.solid,
-            color: Theme.of(context).colorScheme.onSecondaryContainer,
-          ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide: BorderSide(
-            width: 0.5,
-            style: BorderStyle.solid,
-            color: Theme.of(context).colorScheme.onBackground,
-          ),
-        ),
-        hintText: isEncrypted
-            ? L10n.of(context).newEncryptedMessage
-            : L10n.of(context).newMessage,
-        hintStyle: Theme.of(context).textTheme.labelLarge!.copyWith(
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
-        contentPadding: const EdgeInsets.all(15),
-        hintMaxLines: 1,
-      ),
-      mentions: [
-        Mention(
-          trigger: '@',
-          style: TextStyle(
-            height: 0.5,
-            background: Paint()
-              ..color = Theme.of(context).colorScheme.neutral2
-              ..strokeWidth = 13
-              ..strokeJoin = StrokeJoin.round
-              ..style = PaintingStyle.stroke,
-          ),
-          data: chatMentions.valueOrNull ?? [],
-          suggestionBuilder: (Map<String, dynamic> mentionRecord) {
-            final authorId = mentionRecord['id'];
-            final title = mentionRecord['displayName'];
-            return ListTile(
-              leading: MentionProfileBuilder(
-                roomId: roomId,
-                authorId: authorId,
+          decoration: InputDecoration(
+            isCollapsed: true,
+            prefixIcon: isEncrypted
+                ? Icon(
+                    Icons.shield,
+                    size: 18,
+                    color:
+                        Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                  )
+                : null,
+            suffixIcon: InkWell(
+              onTap: () => onSuffixTap(
+                ref.read(chatInputProvider(roomId)).emojiPickerVisible,
+                context,
+                ref,
               ),
-              title: title != null
-                  ? Wrap(
-                      children: [
-                        Text(
-                          title,
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                        const SizedBox(width: 15),
-                        Text(
+              child: const Icon(Icons.emoji_emotions),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(30),
+              borderSide: BorderSide(
+                width: 0.5,
+                style: BorderStyle.solid,
+                color: Theme.of(context).colorScheme.surface,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(30),
+              borderSide: BorderSide(
+                width: 0.5,
+                style: BorderStyle.solid,
+                color: Theme.of(context).colorScheme.onSecondaryContainer,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(30),
+              borderSide: BorderSide(
+                width: 0.5,
+                style: BorderStyle.solid,
+                color: Theme.of(context).colorScheme.onBackground,
+              ),
+            ),
+            hintText: isEncrypted
+                ? L10n.of(context).newEncryptedMessage
+                : L10n.of(context).newMessage,
+            hintStyle: Theme.of(context).textTheme.labelLarge!.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+            contentPadding: const EdgeInsets.all(15),
+            hintMaxLines: 1,
+          ),
+          mentions: [
+            Mention(
+              trigger: '@',
+              style: TextStyle(
+                height: 0.5,
+                background: Paint()
+                  ..color = Theme.of(context).colorScheme.neutral2
+                  ..strokeWidth = 13
+                  ..strokeJoin = StrokeJoin.round
+                  ..style = PaintingStyle.stroke,
+              ),
+              data: chatMentions.valueOrNull ?? [],
+              suggestionBuilder: (Map<String, dynamic> mentionRecord) {
+                final authorId = mentionRecord['id'];
+                final title = mentionRecord['displayName'];
+                return ListTile(
+                  leading: MentionProfileBuilder(
+                    roomId: roomId,
+                    authorId: authorId,
+                  ),
+                  title: title != null
+                      ? Wrap(
+                          children: [
+                            Text(
+                              title,
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            const SizedBox(width: 15),
+                            Text(
+                              authorId,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall!
+                                  .copyWith(
+                                    color:
+                                        Theme.of(context).colorScheme.neutral5,
+                                  ),
+                            ),
+                          ],
+                        )
+                      : Text(
                           authorId,
                           style: Theme.of(context)
                               .textTheme
@@ -950,20 +963,12 @@ class _TextInputWidget extends ConsumerWidget {
                                 color: Theme.of(context).colorScheme.neutral5,
                               ),
                         ),
-                      ],
-                    )
-                  : Text(
-                      authorId,
-                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                            color: Theme.of(context).colorScheme.neutral5,
-                          ),
-                    ),
-            );
-          },
+                );
+              },
+            ),
+          ],
         ),
-      ],
-      //   ),
-      // ),
+      ),
     );
   }
 
