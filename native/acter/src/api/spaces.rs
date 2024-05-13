@@ -764,6 +764,7 @@ impl Client {
         }
     }
 
+    // ***_typed fn accepts rust-typed input, not string-based one
     pub async fn space_typed(&self, room_id: &RoomId) -> Option<Space> {
         self.spaces
             .read()
@@ -773,6 +774,7 @@ impl Client {
             .cloned()
     }
 
+    // ***_typed fn accepts rust-typed input, not string-based one
     pub async fn space_by_alias_typed(&self, room_alias: OwnedRoomAliasId) -> Result<Space> {
         let space = self
             .spaces

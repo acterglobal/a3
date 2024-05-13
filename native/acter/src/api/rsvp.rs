@@ -325,6 +325,7 @@ impl RsvpManager {
             .await
     }
 
+    // ***_typed fn accepts rust-typed input, not string-based one
     pub async fn users_at_status_typed(&self, status: RsvpStatus) -> Result<Vec<OwnedUserId>> {
         let manager = self.inner.clone();
         RUNTIME

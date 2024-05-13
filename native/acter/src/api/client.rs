@@ -324,6 +324,7 @@ impl Client {
         self.room_typed(&id_or_alias).await
     }
 
+    // ***_typed fn accepts rust-typed input, not string-based one
     pub async fn room_typed(&self, room_id_or_alias: &RoomOrAliasId) -> Result<Room> {
         if room_id_or_alias.is_room_id() {
             let room_id = RoomId::parse(room_id_or_alias.as_str())?;
@@ -335,6 +336,7 @@ impl Client {
         self.room_by_alias_typed(&room_alias).await
     }
 
+    // ***_typed fn accepts rust-typed input, not string-based one
     pub fn room_by_id_typed(&self, room_id: &RoomId) -> Result<SdkRoom> {
         self.core
             .client()
@@ -342,6 +344,7 @@ impl Client {
             .context("Room not found")
     }
 
+    // ***_typed fn accepts rust-typed input, not string-based one
     pub async fn room_by_alias_typed(&self, room_alias: &RoomAliasId) -> Result<Room> {
         let client = self.core.client();
         for r in client.rooms() {

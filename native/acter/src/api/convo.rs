@@ -463,6 +463,8 @@ impl Client {
             .await?;
         Ok(Convo::new(self.clone(), room).await)
     }
+
+    // ***_typed fn accepts rust-typed input, not string-based one
     pub async fn convo_by_alias_typed(&self, room_alias: OwnedRoomAliasId) -> Result<Convo> {
         let convo = self
             .convos
@@ -532,6 +534,7 @@ impl Client {
             .any(|s| *s.room_id() == room_id)
     }
 
+    // ***_typed fn accepts rust-typed input, not string-based one
     pub async fn convo_typed(&self, room_id: &RoomId) -> Option<Convo> {
         self.convos
             .read()
