@@ -1,5 +1,5 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/features/settings/super_invites/providers/super_invites_providers.dart';
+import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
