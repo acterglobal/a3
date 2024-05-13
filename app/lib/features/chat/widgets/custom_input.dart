@@ -641,17 +641,25 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       // end the typing notification
       await widget.convo.typingNotice(false);
 
-      final mentionReplacements =
-          ref.read(chatInputProvider(roomId)).mentionReplacements;
+      final mentions = ref.read(chatInputProvider(roomId)).mentions;
       final mentionState = mentionKey.currentState!;
       String markdownText = mentionState.controller!.text;
-      mentionReplacements.forEach((key, value) {
-        markdownText = markdownText.replaceAll(key, value);
+      final userMentions = [];
+      mentions.forEach((key, value) {
+        userMentions.add(value);
+        markdownText = markdownText.replaceAll(
+          '@$key',
+          '[@$key](https://matrix.to/#/$value)',
+        );
       });
 
       // make the actual draft
       final client = ref.read(alwaysClientProvider);
       final draft = client.textMarkdownDraft(markdownText);
+
+      for (final userId in userMentions) {
+        draft.addMention(userId);
+      }
 
       // actually send it out
       final stream = ref.read(timelineStreamProvider(widget.convo));
@@ -910,21 +918,35 @@ class _TextInputWidget extends ConsumerWidget {
                     roomId: roomId,
                     authorId: authorId,
                   ),
-                  title: Wrap(
-                    children: [
-                      Text(
-                        title ?? '',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                      const SizedBox(width: 15),
-                      Text(
-                        authorId,
-                        style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                              color: Theme.of(context).colorScheme.neutral5,
+                  title: title != null
+                      ? Wrap(
+                          children: [
+                            Text(
+                              title,
+                              style: Theme.of(context).textTheme.bodySmall,
                             ),
-                      ),
-                    ],
-                  ),
+                            const SizedBox(width: 15),
+                            Text(
+                              authorId,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall!
+                                  .copyWith(
+                                    color:
+                                        Theme.of(context).colorScheme.neutral5,
+                                  ),
+                            ),
+                          ],
+                        )
+                      : Text(
+                          authorId,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodySmall!
+                              .copyWith(
+                                color: Theme.of(context).colorScheme.neutral5,
+                              ),
+                        ),
                 );
               },
             ),
@@ -941,8 +963,8 @@ class _TextInputWidget extends ConsumerWidget {
 
   void onMentionAdd(Map<String, dynamic> roomMember, WidgetRef ref) {
     final roomId = convo.getRoomIdStr();
-    String authorId = roomMember['link'];
-    String displayName = roomMember['display'] ?? authorId;
+    String authorId = roomMember['id'];
+    String displayName = roomMember['display'];
     ref
         .read(chatInputProvider(roomId).notifier)
         .addMention(displayName, authorId);
