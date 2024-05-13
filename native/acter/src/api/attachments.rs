@@ -13,7 +13,7 @@ use ruma_common::{EventId, OwnedEventId, OwnedTransactionId};
 use ruma_events::{
     room::message::{
         AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
-        LocationMessageEventContent, MessageType, VideoMessageEventContent,
+        LocationMessageEventContent, RoomMessageEvent, VideoMessageEventContent,
     },
     MessageLikeEventType,
 };
@@ -39,11 +39,7 @@ impl Client {
                 else {
                     bail!("{key} is not a attachment");
                 };
-                let room = me
-                    .core
-                    .client()
-                    .get_room(&attachment.meta.room_id)
-                    .context("Room not found")?;
+                let room = me.room_by_id_typed(&attachment.meta.room_id)?;
                 Ok(Attachment {
                     client: me.clone(),
                     room,
@@ -99,7 +95,7 @@ impl Attachment {
         dir_path: String,
     ) -> Result<OptionString> {
         let room = self.room.clone();
-        let client = self.room.client();
+        let client = self.client.deref().clone();
         let evt_id = self.inner.meta.event_id.clone();
         let evt_content = self.inner.content().clone();
 
@@ -298,7 +294,7 @@ impl Attachment {
 
     pub async fn media_path(&self, is_thumb: bool) -> Result<OptionString> {
         let room = self.room.clone();
-        let client = self.room.client();
+        let client = self.client.deref().clone();
 
         let evt_id = self.inner.meta.event_id.clone();
         let evt_content = self.inner.content().clone();
@@ -392,15 +388,15 @@ impl AttachmentDraft {
             bail!("Can only attachment in joined rooms");
         }
         let room = self.room.clone();
-        let my_id = self.client.user_id().context("User not found")?;
+        let my_id = self.client.user_id()?;
         let inner = self.inner.build()?;
+
         RUNTIME
             .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Unable to find me in room")?;
-                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
                     bail!("No permissions to send message in this room");
                 }
                 let response = room.send(inner).await?;
@@ -458,7 +454,7 @@ impl AttachmentsManager {
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let stats = self.inner.stats();
+        let my_id = self.client.user_id()?;
         let has_entry = self
             .stats()
             .user_attachments
@@ -474,9 +470,17 @@ impl AttachmentsManager {
 
         RUNTIME
             .spawn(async move {
-                trace!("before redacting attachment");
+                let evt = room.event(&event_id).await?;
+                let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
+                let permitted = if event_content.sender() == my_id {
+                    room.can_user_redact_own(&my_id).await?
+                } else {
+                    room.can_user_redact_other(&my_id).await?
+                };
+                if !permitted {
+                    bail!("No permissions to redact this message");
+                }
                 let response = room.redact(&event_id, reason.as_deref(), txn_id).await?;
-                trace!("after redacting attachment");
                 Ok(response.event_id)
             })
             .await?
@@ -506,7 +510,7 @@ impl AttachmentsManager {
 
     pub async fn content_draft(&self, base_draft: Box<MsgDraft>) -> Result<AttachmentDraft> {
         let room = self.room.clone();
-        let client = self.room.client();
+        let client = self.client.deref().clone();
 
         let content = RUNTIME
             .spawn(async move {

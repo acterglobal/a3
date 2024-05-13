@@ -13,25 +13,21 @@ use ruma_events::MessageLikeEventType;
 use std::{ops::Deref, str::FromStr};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
-use tracing::{error, trace, warn};
+use tracing::{error, warn};
 
 use super::{calendar_events::CalendarEvent, client::Client, common::OptionRsvpStatus, RUNTIME};
 
 impl Client {
     pub async fn wait_for_rsvp(&self, key: String, timeout: Option<u8>) -> Result<Rsvp> {
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::Rsvp(rsvp) = client.wait_for(key.clone(), timeout).await? else {
+                let AnyActerModel::Rsvp(rsvp) = me.wait_for(key.clone(), timeout).await? else {
                     bail!("{key} is not a rsvp");
                 };
-                let room = client
-                    .core
-                    .client()
-                    .get_room(&rsvp.meta.room_id)
-                    .context("Room not found")?;
+                let room = me.room_by_id_typed(&rsvp.meta.room_id)?;
                 Ok(Rsvp {
-                    client: client.clone(),
+                    client: me.clone(),
                     room,
                     inner: rsvp,
                 })
@@ -43,11 +39,11 @@ impl Client {
         &self,
         secs_from_now: Option<u32>,
     ) -> Result<Vec<CalendarEvent>> {
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
                 let mut cal_events = vec![];
-                for mdl in client.store().get_list(KEYS::CALENDAR).await? {
+                for mdl in me.store().get_list(KEYS::CALENDAR).await? {
                     if let AnyActerModel::CalendarEvent(inner) = mdl {
                         let now = chrono::Utc::now();
                         let start_time = inner.utc_start();
@@ -61,8 +57,8 @@ impl Client {
                                 continue;
                             }
                         }
-                        let room = client.get_room(inner.room_id()).context("Room not found")?;
-                        let cal_event = CalendarEvent::new(client.clone(), room, inner);
+                        let room = me.room_by_id_typed(inner.room_id())?;
+                        let cal_event = CalendarEvent::new(me.clone(), room, inner);
                         cal_events.push(cal_event);
                     } else {
                         warn!(
@@ -81,11 +77,11 @@ impl Client {
         &self,
         secs_from_now: Option<u32>,
     ) -> Result<Vec<CalendarEvent>> {
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
                 let mut cal_events = vec![];
-                for mdl in client.store().get_list(KEYS::CALENDAR).await? {
+                for mdl in me.store().get_list(KEYS::CALENDAR).await? {
                     if let AnyActerModel::CalendarEvent(inner) = mdl {
                         let now = chrono::Utc::now();
                         let start_time = inner.utc_start();
@@ -99,8 +95,8 @@ impl Client {
                                 continue;
                             }
                         }
-                        let room = client.get_room(inner.room_id()).context("Room not found")?;
-                        let cal_event = CalendarEvent::new(client.clone(), room, inner);
+                        let room = me.room_by_id_typed(inner.room_id())?;
+                        let cal_event = CalendarEvent::new(me.clone(), room, inner);
                         // fliter only events that i sent rsvp
                         let rsvp_manager = cal_event.rsvps().await?;
                         let status = rsvp_manager.responded_by_me().await?;
@@ -123,11 +119,11 @@ impl Client {
     }
 
     pub async fn my_past_events(&self, secs_from_now: Option<u32>) -> Result<Vec<CalendarEvent>> {
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
                 let mut cal_events = vec![];
-                for mdl in client.store().get_list(KEYS::CALENDAR).await? {
+                for mdl in me.store().get_list(KEYS::CALENDAR).await? {
                     if let AnyActerModel::CalendarEvent(inner) = mdl {
                         let now = chrono::Utc::now();
                         let start_time = inner.utc_start();
@@ -141,8 +137,8 @@ impl Client {
                                 continue;
                             }
                         }
-                        let room = client.get_room(inner.room_id()).context("Room not found")?;
-                        let cal_event = CalendarEvent::new(client.clone(), room, inner);
+                        let room = me.room_by_id_typed(inner.room_id())?;
+                        let cal_event = CalendarEvent::new(me.clone(), room, inner);
                         // fliter only events that i sent rsvp
                         let rsvp_manager = cal_event.rsvps().await?;
                         let status = rsvp_manager.responded_by_me().await?;
@@ -211,29 +207,19 @@ impl RsvpDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
+        let my_id = self.client.user_id()?;
         let inner = self.inner.build()?;
-        trace!("rsvp draft spawn");
-
-        let client = room.client();
-        let my_id = client
-            .user_id()
-            .context("You must be logged in to do that")?
-            .to_owned();
 
         RUNTIME
             .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Unable to find me in room")?;
-                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
                     bail!("No permissions to send message in this room");
                 }
-
-                trace!("before sending rsvp");
-                let resp = room.send(inner).await?;
-                trace!("after sending rsvp");
-                Ok(resp.event_id)
+                let response = room.send(inner).await?;
+                Ok(response.event_id)
             })
             .await?
     }
@@ -339,7 +325,11 @@ impl RsvpManager {
             .await
     }
 
-    pub async fn users_at_status_typed(&self, status: RsvpStatus) -> Result<Vec<OwnedUserId>> {
+    // ***_typed fn accepts rust-typed input, not string-based one
+    pub(crate) async fn users_at_status_typed(
+        &self,
+        status: RsvpStatus,
+    ) -> Result<Vec<OwnedUserId>> {
         let manager = self.inner.clone();
         RUNTIME
             .spawn(async move {
