@@ -719,10 +719,10 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "45f76488f37400b96392f9e555461e65c1eae742"
-      url: "https://github.com/gtalha07/flutter_mentions.git"
+      resolved-ref: "312397587e6ea1ff5b594efcb5fddfdccae52e29"
+      url: "https://github.com/acterglobal/flutter_mentions.git"
     source: git
-    version: "2.0.2"
+    version: "3.0.1"
   flutter_parsed_text:
     dependency: transitive
     description:
@@ -743,10 +743,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_portal
-      sha256: "0e3f9428dbe9f5253b0e65cdc5ce4fa65a1d8cd6ec2a3f3770b46785aa3c57fd"
+      sha256: "4601b3dc24f385b3761721bd852a3f6c09cddd4e943dd184ed58ee1f43006257"
       url: "https://pub.dev"
     source: hosted
-    version: "0.4.0"
+    version: "1.1.4"
   flutter_riverpod:
     dependency: "direct main"
     description:

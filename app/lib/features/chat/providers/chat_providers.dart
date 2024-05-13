@@ -57,6 +57,12 @@ final timelineStreamProvider = StateProvider.family<TimelineStream, Convo>(
   (ref, convo) => convo.timelineStream(),
 );
 
+final timelineStreamProviderForId =
+    FutureProvider.family<TimelineStream, String>((ref, roomId) async {
+  final chat = await ref.watch(chatProvider(roomId).future);
+  return ref.watch(timelineStreamProvider(chat));
+});
+
 final filteredChatsProvider =
     FutureProvider.autoDispose<List<Convo>>((ref) async {
   final allRooms = ref.watch(chatsProvider);
