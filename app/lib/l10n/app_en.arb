@@ -1863,6 +1863,7 @@
   "joining": "Joining",
   "@joining": {},
   "joined": "Joined",
+  "joinedDelayed": "Invitation has been accepted but it seems to take a bit longer to be fulfilled.",
   "@joined": {},
   "failedToJoin": "Failed to join",
   "@failedToJoin": {},
