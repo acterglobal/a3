@@ -1024,10 +1024,6 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let permitted = room.can_user_trigger_room_notification(&my_id).await?;
-                if !permitted {
-                    bail!("No permissions to change notification mode in this room");
-                }
                 let notification_settings = client.notification_settings().await;
                 let room_id = room.room_id();
                 if let Some(mode) = mode {
