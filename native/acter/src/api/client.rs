@@ -337,7 +337,7 @@ impl Client {
     }
 
     // ***_typed fn accepts rust-typed input, not string-based one
-    pub(crate) fn room_by_id_typed(&self, room_id: &RoomId) -> Result<SdkRoom> {
+    pub fn room_by_id_typed(&self, room_id: &RoomId) -> Result<SdkRoom> {
         self.core
             .client()
             .get_room(room_id)
