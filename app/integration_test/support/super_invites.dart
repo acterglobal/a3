@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/search/model/keys.dart';
+import 'package:acter/features/super_invites/dialogs/redeem_dialog.dart';
 import 'package:acter/features/super_invites/pages/create.dart';
 import 'package:acter/features/super_invites/pages/super_invites.dart';
 import 'package:acter/features/super_invites/widgets/redeem_token.dart';
@@ -65,7 +68,10 @@ extension SuperInvites on ConvenientTest {
     return newToken;
   }
 
-  Future<void> redeemSuperInvite(String token) async {
+  Future<void> redeemSuperInvite(
+    String token, {
+    FutureOr<void> Function()? dialogTest,
+  }) async {
     await find.byKey(Keys.mainNav).should(findsOneWidget);
     final quickJumpKey = find.byKey(MainNavKeys.quickJump);
     await quickJumpKey.should(findsOneWidget);
@@ -86,5 +92,14 @@ extension SuperInvites on ConvenientTest {
     final submitBtn = find.byKey(RedeemToken.redeemTokenSubmit);
     await submitBtn.should(findsOneWidget);
     await submitBtn.tap();
+
+    // opens the dialog we need to confirm now
+    if (dialogTest != null) {
+      await dialogTest();
+    }
+
+    final confirmBtn = find.byKey(redeemConfirmKey);
+    await confirmBtn.should(findsOneWidget);
+    await confirmBtn.tap();
   }
 }

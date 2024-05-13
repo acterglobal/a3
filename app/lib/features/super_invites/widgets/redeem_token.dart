@@ -1,9 +1,8 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
+import 'package:acter/features/super_invites/dialogs/redeem_dialog.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -51,29 +50,9 @@ class _RedeemTokenConsumerState extends ConsumerState<RedeemToken> {
   Future<void> _submit() async {
     final token = _tokenController.text;
     if (token.isEmpty) return;
-    final superInvites = ref.read(superInvitesProvider);
-
-    EasyLoading.show(status: L10n.of(context).redeeming(token));
-    try {
-      final rooms = (await superInvites.redeem(token)).toList();
-      if (!mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-      EasyLoading.showToast(
-        L10n.of(context).addedToSpacesAndChats(rooms.length),
-      );
+    final redeemed = await showReedemTokenDialog(context, ref, token);
+    if (redeemed) {
       _tokenController.clear();
-      FocusManager.instance.primaryFocus?.unfocus();
-    } catch (err) {
-      if (!mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-      EasyLoading.showError(
-        L10n.of(context).redeemingFailed(err),
-        duration: const Duration(seconds: 3),
-      );
     }
   }
 }
