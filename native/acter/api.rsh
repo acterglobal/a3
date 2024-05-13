@@ -2521,6 +2521,9 @@ object Client {
     /// listen to updates to any model key
     fn subscribe_stream(key: string) -> Stream<bool>;
 
+    /// Find the room or wait until it becomes available
+    fn wait_for_room(key: string, timeout: Option<u8>) -> Future<Result<bool>>;
+
     /// Fetch the Comment or use its event_id to wait for it to come down the wire
     fn wait_for_comment(key: string, timeout: Option<u8>) -> Future<Result<Comment>>;
 
