@@ -777,9 +777,9 @@ packages:
     dependency: "direct overridden"
     description:
       path: flutter_secure_storage_macos
-      ref: develop
-      resolved-ref: d5520767774046f5fc7885bf761ce854a96d0685
-      url: "https://github.com/mogol/flutter_secure_storage"
+      ref: ben-fix-macos-reading-non-shared
+      resolved-ref: "1c917c9d932aea78adfde360daa511e733aa486b"
+      url: "https://github.com/gnunicorn/flutter_secure_storage"
     source: git
     version: "3.1.0"
   flutter_secure_storage_platform_interface:
