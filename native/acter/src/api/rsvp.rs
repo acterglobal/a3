@@ -25,7 +25,7 @@ impl Client {
                 let AnyActerModel::Rsvp(rsvp) = me.wait_for(key.clone(), timeout).await? else {
                     bail!("{key} is not a rsvp");
                 };
-                let room = me.room_by_id(&rsvp.meta.room_id)?;
+                let room = me.room_by_id_typed(&rsvp.meta.room_id)?;
                 Ok(Rsvp {
                     client: me.clone(),
                     room,
@@ -57,7 +57,7 @@ impl Client {
                                 continue;
                             }
                         }
-                        let room = me.room_by_id(inner.room_id())?;
+                        let room = me.room_by_id_typed(inner.room_id())?;
                         let cal_event = CalendarEvent::new(me.clone(), room, inner);
                         cal_events.push(cal_event);
                     } else {
@@ -95,7 +95,7 @@ impl Client {
                                 continue;
                             }
                         }
-                        let room = me.room_by_id(inner.room_id())?;
+                        let room = me.room_by_id_typed(inner.room_id())?;
                         let cal_event = CalendarEvent::new(me.clone(), room, inner);
                         // fliter only events that i sent rsvp
                         let rsvp_manager = cal_event.rsvps().await?;
@@ -137,7 +137,7 @@ impl Client {
                                 continue;
                             }
                         }
-                        let room = me.room_by_id(inner.room_id())?;
+                        let room = me.room_by_id_typed(inner.room_id())?;
                         let cal_event = CalendarEvent::new(me.clone(), room, inner);
                         // fliter only events that i sent rsvp
                         let rsvp_manager = cal_event.rsvps().await?;

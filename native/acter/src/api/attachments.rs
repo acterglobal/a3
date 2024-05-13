@@ -39,7 +39,7 @@ impl Client {
                 else {
                     bail!("{key} is not a attachment");
                 };
-                let room = me.room_by_id(&attachment.meta.room_id)?;
+                let room = me.room_by_id_typed(&attachment.meta.room_id)?;
                 Ok(Attachment {
                     client: me.clone(),
                     room,

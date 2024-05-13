@@ -28,7 +28,7 @@ impl HistoryOpts {
         while is_synced.next().await != Some(true) {} // let's wait for it to have synced
         info!(" - First Sync finished - ");
 
-        let room = client.room_by_id(&self.room)?;
+        let room = client.room_by_id_typed(&self.room)?;
 
         let mut msg_options = MessagesOptions::forward().from(None);
         msg_options.limit = 100u32.into();

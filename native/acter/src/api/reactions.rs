@@ -19,7 +19,7 @@ impl Client {
                 else {
                     bail!("{key} is not a reaction");
                 };
-                let room = me.room_by_id(&reaction.meta.room_id)?;
+                let room = me.room_by_id_typed(&reaction.meta.room_id)?;
                 Ok(Reaction {
                     client: me.clone(),
                     room,

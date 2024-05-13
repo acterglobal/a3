@@ -38,7 +38,7 @@ impl Client {
                 else {
                     bail!("{key} is not a calendar_event");
                 };
-                let room = me.room_by_id(inner.room_id())?;
+                let room = me.room_by_id_typed(inner.room_id())?;
                 Ok(CalendarEvent::new(me.clone(), room, inner))
             })
             .await?
@@ -52,7 +52,7 @@ impl Client {
                 else {
                     bail!("Calendar event not found");
                 };
-                let room = me.room_by_id(inner.room_id())?;
+                let room = me.room_by_id_typed(inner.room_id())?;
                 Ok(CalendarEvent::new(me, room, inner))
             })
             .await?

@@ -46,7 +46,7 @@ impl Client {
                 else {
                     bail!("{key} is not a news");
                 };
-                let room = me.room_by_id(content.room_id())?;
+                let room = me.room_by_id_typed(content.room_id())?;
                 NewsEntry::new(me.clone(), room, content).await
             })
             .await?

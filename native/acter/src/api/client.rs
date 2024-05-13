@@ -327,21 +327,15 @@ impl Client {
     pub async fn room_typed(&self, room_id_or_alias: &RoomOrAliasId) -> Result<Room> {
         if room_id_or_alias.is_room_id() {
             let room_id = RoomId::parse(room_id_or_alias.as_str())?;
-            return self.room_by_id_typed(&room_id).context("Room not found");
+            let room = self.room_by_id_typed(&room_id)?;
+            return Ok(Room::new(self.core.clone(), room));
         }
 
         let room_alias = RoomAliasId::parse(room_id_or_alias.as_str())?;
         self.room_by_alias_typed(&room_alias).await
     }
 
-    pub fn room_by_id_typed(&self, room_id: &RoomId) -> Option<Room> {
-        self.core
-            .client()
-            .get_room(room_id)
-            .map(|room| Room::new(self.core.clone(), room))
-    }
-
-    pub fn room_by_id(&self, room_id: &RoomId) -> Result<SdkRoom> {
+    pub fn room_by_id_typed(&self, room_id: &RoomId) -> Result<SdkRoom> {
         self.core
             .client()
             .get_room(room_id)
@@ -365,8 +359,8 @@ impl Client {
         }
         // nothing found, try remote:
         let response = client.resolve_room_alias(room_alias).await?;
-        self.room_by_id_typed(&response.room_id)
-            .context("Room not found")
+        let room = self.room_by_id_typed(&response.room_id)?;
+        Ok(Room::new(self.core.clone(), room))
     }
 
     pub fn dm_with_user(&self, user_id: String) -> Result<OptionString> {

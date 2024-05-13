@@ -24,7 +24,7 @@ impl Client {
                 else {
                     bail!("{key} is not a comment");
                 };
-                let room = me.room_by_id(&comment.meta.room_id)?;
+                let room = me.room_by_id_typed(&comment.meta.room_id)?;
                 Ok(Comment {
                     client: me.clone(),
                     room,

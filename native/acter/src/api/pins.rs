@@ -31,7 +31,7 @@ impl Client {
                 let AnyActerModel::Pin(content) = me.wait_for(key.clone(), timeout).await? else {
                     bail!("{key} is not a pin");
                 };
-                let room = me.room_by_id(content.room_id())?;
+                let room = me.room_by_id_typed(content.room_id())?;
                 Ok(Pin {
                     client: me.clone(),
                     room,
@@ -84,7 +84,7 @@ impl Client {
                 let AnyActerModel::Pin(t) = me.store().get(&pin_id).await? else {
                     bail!("Ping not found");
                 };
-                let room = me.room_by_id(t.room_id())?;
+                let room = me.room_by_id_typed(t.room_id())?;
                 Ok(Pin {
                     client: me,
                     room,
