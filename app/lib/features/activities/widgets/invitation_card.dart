@@ -206,7 +206,7 @@ class InvitationCard extends ConsumerWidget {
     final isSpace = invitation.room().isSpace();
     final lang = L10n.of(context);
     try {
-      bool res = await invitation.accept();
+      await invitation.accept();
     } catch (error) {
       _log.severe('Failure accepting invite', error);
       if (!context.mounted) return;
