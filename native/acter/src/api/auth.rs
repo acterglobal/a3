@@ -414,6 +414,9 @@ pub async fn register_with_token_under_config(
                         session: inf.session.clone(),
                     });
                     let request = assign!(register::v3::Request::new(), {
+                        username: Some(user_id.localpart().to_owned()),
+                        password: Some(password.clone()),
+                        initial_device_display_name: Some(user_agent.clone()),
                         auth: Some(AuthData::RegistrationToken(reg_token)),
                     });
                     client.matrix_auth().register(request).await?;
