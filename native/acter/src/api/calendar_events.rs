@@ -294,10 +294,7 @@ impl CalendarEvent {
     pub fn locations(&self) -> Vec<EventLocationInfo> {
         let calendar_event = self.clone();
         let locations = calendar_event.inner.locations();
-        locations
-            .iter()
-            .map(|location| EventLocationInfo::new(location))
-            .collect()
+        locations.iter().map(EventLocationInfo::new).collect()
     }
 
     pub async fn responded_by_me(&self) -> Result<OptionRsvpStatus> {
