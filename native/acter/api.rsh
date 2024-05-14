@@ -632,7 +632,7 @@ object CalendarEventUpdateBuilder {
     fn utc_end_from_rfc2822(utc_end: string) -> Result<()>;
     /// set utc end in custom format
     fn utc_end_from_format(utc_end: string, format: string) -> Result<()>;
-    fn unset_locations() -> Result<()>;
+    fn unset_locations();
 
     /// send builder update
     fn send() -> Future<Result<EventId>>;

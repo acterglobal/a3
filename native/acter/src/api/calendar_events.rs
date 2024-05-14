@@ -14,7 +14,6 @@ use chrono::DateTime;
 use futures::stream::StreamExt;
 use icalendar::Calendar as iCalendar;
 use matrix_sdk::{room::Room, RoomState};
-use pulldown_cmark::Event;
 use ruma::serde::PartialEqAsRefStr;
 use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};
 use ruma_events::{room::message::TextMessageEventContent, MessageLikeEventType};
@@ -274,7 +273,7 @@ impl CalendarEvent {
         let mut result = Vec::new();
         for loc in locations {
             if let EventLocation::Virtual { .. } = loc {
-                result.push(EventLocationInfo::new(&loc));
+                result.push(EventLocationInfo::new(loc));
             }
         }
         result
@@ -286,7 +285,7 @@ impl CalendarEvent {
         let mut result = Vec::new();
         for loc in locations {
             if let EventLocation::Virtual { .. } = loc {
-                result.push(EventLocationInfo::new(&loc));
+                result.push(EventLocationInfo::new(loc));
             }
         }
         result
@@ -296,8 +295,8 @@ impl CalendarEvent {
         let calendar_event = self.clone();
         let locations = calendar_event.inner.locations();
         locations
-            .into_iter()
-            .map(|location| EventLocationInfo::new(&location))
+            .iter()
+            .map(|location| EventLocationInfo::new(location))
             .collect()
     }
 

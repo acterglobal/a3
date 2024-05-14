@@ -56,7 +56,7 @@ pub enum EventLocation {
     },
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct EventLocationInfo {
     pub location_type: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
