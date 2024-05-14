@@ -1,6 +1,9 @@
 use acter::{
     new_join_rule_builder, new_space_settings_builder,
-    ruma_events::room::join_rules::{AllowRule, JoinRule, Restricted},
+    ruma_events::{
+        room::join_rules::{AllowRule, JoinRule, Restricted},
+        StateEventType,
+    },
 };
 use acter_core::statics::KEYS;
 use anyhow::{bail, Result};
@@ -410,6 +413,25 @@ async fn update_name() -> Result<()> {
     let space = spaces.pop().unwrap();
     let listener = space.subscribe();
     let space_id = space.room_id().to_string();
+
+    // wait for sync to receive permission
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let space_clone = space.clone();
+    let user_id = user.user_id()?;
+    Retry::spawn(retry_strategy.clone(), move || {
+        let space = space_clone.clone();
+        let uid = user_id.clone();
+        async move {
+            let permitted = space
+                .can_user_send_state(&uid, StateEventType::RoomName)
+                .await?;
+            if !permitted {
+                bail!("space name change was not permitted");
+            }
+            Ok(())
+        }
+    })
+    .await?;
 
     // set name
 

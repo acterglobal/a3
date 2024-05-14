@@ -2012,5 +2012,7 @@
   "updateNameFailed": "Updating name failed: {error}",
   "@updateNameFailed": {},
   "updateDescriptionFailed": "Updating description failed: {error}",
-  "@updateDescriptionFailed": {}
+  "@updateDescriptionFailed": {},
+  "eventParticipants": "Event Participants",
+  "upcomingEvents": "Upcoming Events"
 }

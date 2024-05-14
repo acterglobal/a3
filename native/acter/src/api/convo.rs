@@ -126,7 +126,11 @@ impl Convo {
         let has_latest_msg = latest_message_content.is_some();
         let latest_message = Arc::new(RwLock::new(latest_message_content));
 
-        let user_id = client.user_id().expect("User must be logged in").to_owned();
+        let user_id = client
+            .deref()
+            .user_id()
+            .expect("User must be logged in")
+            .to_owned();
         let latest_msg_room = inner.clone();
         let latest_msg_client = client.clone();
         let last_msg_tl = timeline.clone();
@@ -199,7 +203,7 @@ impl Convo {
     }
 
     pub fn timeline_stream(&self) -> TimelineStream {
-        TimelineStream::new(self.inner.room.clone(), self.timeline.clone())
+        TimelineStream::new(self.inner.clone(), self.timeline.clone())
     }
 
     pub fn latest_message_ts(&self) -> u64 {
@@ -459,7 +463,9 @@ impl Client {
             .await?;
         Ok(Convo::new(self.clone(), room).await)
     }
-    pub async fn convo_by_alias_typed(&self, room_alias: OwnedRoomAliasId) -> Result<Convo> {
+
+    // ***_typed fn accepts rust-typed input, not string-based one
+    async fn convo_by_alias_typed(&self, room_alias: OwnedRoomAliasId) -> Result<Convo> {
         let convo = self
             .convos
             .read()
@@ -528,7 +534,8 @@ impl Client {
             .any(|s| *s.room_id() == room_id)
     }
 
-    pub async fn convo_typed(&self, room_id: &OwnedRoomId) -> Option<Convo> {
+    // ***_typed fn accepts rust-typed input, not string-based one
+    pub(crate) async fn convo_typed(&self, room_id: &RoomId) -> Option<Convo> {
         self.convos
             .read()
             .await
