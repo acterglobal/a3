@@ -7,7 +7,7 @@ use matrix_sdk_base::store::StoreConfig;
 use tokio::time::sleep;
 use tracing::info;
 
-use crate::{api::register_with_token_under_config, register_under_config, sanitize_user, Client};
+use crate::{register_under_config, register_with_token_under_config, sanitize_user, Client};
 
 /// testing helper to give a task time to finish
 ///

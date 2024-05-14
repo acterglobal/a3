@@ -269,6 +269,7 @@ pub async fn login_new_client(
     .await?;
     login_new_client_under_config(config, user_id, password, Some(db_passphrase), device_name).await
 }
+
 #[allow(clippy::too_many_arguments)]
 pub async fn register(
     base_path: String,
