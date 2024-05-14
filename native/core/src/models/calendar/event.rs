@@ -14,7 +14,6 @@ use crate::{
     events::{
         calendar::{
             CalendarEventEventContent, CalendarEventUpdateBuilder, CalendarEventUpdateEventContent,
-            EventLocation, EventLocationStats,
         },
         UtcDateTime,
     },
@@ -85,10 +84,6 @@ impl CalendarEvent {
             }
         }
         cal_e_builder.done()
-    }
-
-    pub fn locations(&self) -> Vec<EventLocation> {
-        self.inner.locations
     }
 }
 

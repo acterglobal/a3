@@ -5,7 +5,7 @@ use ruma_macros::EventContent;
 use serde::{Deserialize, Serialize};
 use tracing::trace;
 
-use crate::{util::deserialize_some, Result};
+use crate::{models::TextMessageContent, util::deserialize_some, Result};
 
 /// Calendar Events
 /// modeled after [JMAP Calendar Events](https://jmap.io/spec-calendars.html#calendar-events), extensions to
@@ -54,6 +54,100 @@ pub enum EventLocation {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         icon: Option<Icon>,
     },
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct EventLocationInfo {
+    pub location_type: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub description: Option<TextMessageEventContent>,
+    pub icon: Option<Icon>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub coordinates: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub uri: Option<String>,
+}
+
+impl EventLocationInfo {
+    pub fn new(location: &EventLocation) -> Self {
+        match location {
+            EventLocation::Physical {
+                name,
+                description,
+                icon,
+                coordinates,
+                uri,
+            } => EventLocationInfo {
+                location_type: "Physical".to_string(),
+                name: name.clone(),
+                description: description.clone(),
+                icon: icon.clone(),
+                coordinates: coordinates.clone(),
+                uri: uri.clone(),
+            },
+            EventLocation::Virtual {
+                uri,
+                name,
+                description,
+                icon,
+            } => EventLocationInfo {
+                location_type: "Virtual".to_string(),
+                name: name.clone(),
+                description: description.clone(),
+                icon: icon.clone(),
+                coordinates: None,
+                uri: Some(uri.clone()),
+            },
+        }
+    }
+
+    pub fn location_type(&self) -> String {
+        self.location_type.clone()
+    }
+
+    pub fn name(&self) -> Option<String> {
+        self.name.clone()
+    }
+
+    pub fn description(&self) -> Option<TextMessageContent> {
+        self.description.clone().map(TextMessageContent::from)
+    }
+
+    pub fn icon(&self) -> Option<Icon> {
+        self.icon.clone()
+    }
+
+    pub fn coordinates(&self) -> Option<String> {
+        self.coordinates.clone()
+    }
+
+    /// always available for virtual location
+    pub fn uri(&self) -> Option<String> {
+        self.uri.clone()
+    }
+}
+
+impl From<&EventLocationInfo> for EventLocation {
+    fn from(location_info: &EventLocationInfo) -> Self {
+        match location_info.location_type.as_str() {
+            "Physical" => EventLocation::Physical {
+                name: location_info.name.clone(),
+                description: location_info.description.clone(),
+                icon: location_info.icon.clone(),
+                coordinates: location_info.coordinates.clone(),
+                uri: location_info.uri.clone(),
+            },
+            "Virtual" => EventLocation::Virtual {
+                uri: location_info.uri.clone().expect("always contains uri"),
+                name: location_info.name.clone(),
+                description: location_info.description.clone(),
+                icon: location_info.icon.clone(),
+            },
+            _ => panic!("Invalid location type: {}", location_info.location_type),
+        }
+    }
 }
 
 /// The Calendar Event
@@ -109,6 +203,17 @@ pub struct CalendarEventEventContent {
     #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub categories: Vec<String>,
+}
+
+impl CalendarEventBuilder {
+    pub fn into_event_loc(&mut self, loc_info: &EventLocationInfo) -> Self {
+        let event_loc = EventLocation::from(loc_info);
+        self.locations
+            .as_mut()
+            .expect("we have growable list")
+            .push(event_loc);
+        self.clone()
+    }
 }
 
 /// The CalendarEvent Update Event
