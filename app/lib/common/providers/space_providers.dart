@@ -107,8 +107,6 @@ class SpaceRelationsOverview {
   Member? membership;
   List<Space> knownSubspaces;
   List<Convo> knownChats;
-  List<Space> formerlyKnownSubspaces;
-  List<Convo> formerlyKnownChats;
   Space? mainParent;
   List<Space> parents;
   List<Space> otherRelations;
@@ -118,8 +116,6 @@ class SpaceRelationsOverview {
     required this.membership,
     required this.knownSubspaces,
     required this.knownChats,
-    required this.formerlyKnownSubspaces,
-    required this.formerlyKnownChats,
     required this.mainParent,
     required this.parents,
     required this.otherRelations,
@@ -232,9 +228,7 @@ final spaceRelationsOverviewProvider = FutureProvider.autoDispose
   bool hasMoreSubspaces = false;
   bool hasMoreChats = false;
   final List<Space> knownSubspaces = [];
-  final List<Space> formerlyKnownSubspaces = [];
   final List<Convo> knownChats = [];
-  final List<Convo> formerlyKnownChats = [];
   List<Space> otherRelated = [];
   for (final related in relatedSpaces.children()) {
     String targetType = related.targetType();
@@ -242,10 +236,6 @@ final spaceRelationsOverviewProvider = FutureProvider.autoDispose
     if (targetType == 'ChatRoom') {
       try {
         final chat = await ref.watch(chatProvider(roomId).future);
-        if (!chat.isJoined()) {
-          formerlyKnownChats.add(chat);
-          continue;
-        }
         knownChats.add(chat);
       } catch (e) {
         hasMoreChats = true;
@@ -253,11 +243,8 @@ final spaceRelationsOverviewProvider = FutureProvider.autoDispose
     } else {
       try {
         final space = await ref.watch(spaceProvider(roomId).future);
-        if (!space.isJoined()) {
-          formerlyKnownSubspaces.add(space);
-          continue;
-        }
-        if (await space.isChildSpaceOf(spaceId)) {
+        final isChildSpaceOf = await space.isChildSpaceOf(spaceId);
+        if (isChildSpaceOf) {
           knownSubspaces.add(space);
         } else {
           otherRelated.add(space);
@@ -305,9 +292,7 @@ final spaceRelationsOverviewProvider = FutureProvider.autoDispose
     membership: membership,
     parents: parents,
     knownChats: knownChats,
-    formerlyKnownChats: formerlyKnownChats,
     knownSubspaces: knownSubspaces,
-    formerlyKnownSubspaces: formerlyKnownSubspaces,
     otherRelations: otherRelated,
     mainParent: mainParent,
     hasMoreSubspaces: hasMoreSubspaces,
