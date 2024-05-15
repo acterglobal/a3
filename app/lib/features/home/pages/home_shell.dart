@@ -250,7 +250,6 @@ class HomeShellState extends ConsumerState<HomeShell> {
         Breakpoints.large: SlotLayout.from(
           key: const Key('primaryNavigation'),
           builder: (BuildContext ctx) => SidebarWidget(
-            labelType: NavigationRailLabelType.all,
             navigationShell: widget.navigationShell,
           ),
         ),

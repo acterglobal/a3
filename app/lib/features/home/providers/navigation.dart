@@ -1,5 +1,3 @@
-import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/home/data/keys.dart';
@@ -7,8 +5,6 @@ import 'package:acter/features/home/data/models/nav_item.dart';
 import 'package:acter/features/home/widgets/activities_icon.dart';
 import 'package:acter/features/home/widgets/custom_selected_icon.dart';
 import 'package:acter/router/providers/router_providers.dart';
-import 'package:acter/router/utils.dart';
-import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
@@ -16,158 +12,7 @@ import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::home::navigation');
 
-const fallbackSidebarIdx = 1;
 const fallbackBottomBarIdx = 0;
-
-final spaceItemsProvider = FutureProvider.autoDispose
-    .family<List<SidebarNavigationItem>, BuildContext>((ref, context) async {
-  final spaces = ref.watch(spacesProvider);
-
-  return spaces.map((space) {
-    final profileData = ref.watch(spaceProfileDataProvider(space));
-    final roomId = space.getRoomIdStr();
-    final canonicalParent = ref.watch(canonicalParentProvider(roomId));
-    return profileData.when(
-      loading: () => SidebarNavigationItem(
-        icon: const Icon(Atlas.arrows_dots_rotate_thin),
-        label: Text(
-          roomId,
-          style: Theme.of(context).textTheme.labelSmall,
-          softWrap: false,
-        ),
-        location: '/$roomId',
-        isSpaceTab: true,
-      ),
-      error: (err, trace) => SidebarNavigationItem(
-        icon: const Icon(Atlas.warning_bold),
-        label: Text(
-          '$roomId: $err',
-          style: Theme.of(context).textTheme.labelSmall,
-          softWrap: false,
-        ),
-        location: '/$roomId',
-        isSpaceTab: true,
-      ),
-      data: (info) => SidebarNavigationItem(
-        icon: ActerAvatar(
-          mode: DisplayMode.Space,
-          avatarInfo: AvatarInfo(
-            uniqueId: roomId,
-            displayName: info.displayName,
-            avatar: info.getAvatarImage(),
-          ),
-          avatarsInfo: canonicalParent.valueOrNull != null
-              ? [
-                  AvatarInfo(
-                    uniqueId: canonicalParent.valueOrNull!.space.getRoomIdStr(),
-                    displayName:
-                        canonicalParent.valueOrNull!.profile.displayName,
-                    avatar:
-                        canonicalParent.valueOrNull!.profile.getAvatarImage(),
-                  ),
-                ]
-              : [],
-          size: 48,
-        ),
-        label: Text(
-          info.displayName ?? roomId,
-          style: Theme.of(context).textTheme.labelSmall,
-          softWrap: false,
-        ),
-        location: '/$roomId',
-        isSpaceTab: true,
-      ),
-    );
-  }).toList();
-});
-
-// provider that returns a string value
-final sidebarItemsProvider = Provider.autoDispose
-    .family<List<SidebarNavigationItem>, BuildContext>((ref, context) {
-  final config = ref.watch(spaceItemsProvider(context));
-  final features = [
-    SidebarNavigationItem(
-      icon: const Icon(
-        Atlas.magnifying_glass_thin,
-        key: MainNavKeys.quickJump,
-      ),
-      label: Text(
-        'Jump',
-        style: Theme.of(context).textTheme.labelSmall,
-        softWrap: false,
-      ),
-      location: Routes.quickJump.route,
-      pushToNavigate: true,
-      tutorialGlobalKey: jumpToKey,
-    ),
-    SidebarNavigationItem(
-      icon: const Icon(
-        Atlas.home_thin,
-        key: MainNavKeys.dashboardHome,
-      ),
-      label: Text(
-        'Home',
-        style: Theme.of(context).textTheme.labelSmall,
-        softWrap: false,
-      ),
-      branch: ShellBranch.homeShell,
-      tutorialGlobalKey: dashboardKey,
-    ),
-    SidebarNavigationItem(
-      icon: const Icon(
-        Atlas.chats_thin,
-        key: MainNavKeys.chats,
-      ),
-      label: Text(
-        'Chat',
-        style: Theme.of(context).textTheme.labelSmall,
-        softWrap: false,
-      ),
-      branch: ShellBranch.chatsShell,
-      tutorialGlobalKey: chatsKey,
-    ),
-    SidebarNavigationItem(
-      icon: const ActivitiesIcon(),
-      label: Column(
-        children: [
-          Text(
-            'Activities',
-            style: Theme.of(context).textTheme.labelSmall,
-            softWrap: false,
-          ),
-          const SizedBox(height: 10),
-          const Divider(indent: 10, endIndent: 10),
-        ],
-      ),
-      branch: ShellBranch.activitiesShell,
-      tutorialGlobalKey: activityKey,
-    ),
-  ];
-
-  return config.when(
-    loading: () => features,
-    error: (err, stack) => features,
-    data: (spaces) {
-      if (spaces.isEmpty) {
-        return features;
-      }
-      return [...features, ...spaces];
-    },
-  );
-});
-
-final currentSelectedSidebarIndexProvider =
-    Provider.autoDispose.family<int, BuildContext>((ref, context) {
-  final items = ref.watch(sidebarItemsProvider(context));
-  final location = ref.watch(currentRoutingLocation);
-  _log.info('location: $location');
-  final index = items.indexWhere(
-    (t) => t.location != null && location.startsWith(t.location!),
-  );
-  _log.info('index: $index');
-  // if index not found (-1), return 0
-  return index < 0 ? fallbackSidebarIdx : index;
-});
 
 final bottomBarItems = [
   BottomBarNavigationItem(
