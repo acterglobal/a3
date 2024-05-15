@@ -1,11 +1,10 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/home/data/models/nav_item.dart';
+import 'package:acter/features/home/widgets/activities_icon.dart';
 import 'package:acter/features/home/widgets/custom_selected_icon.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter/router/utils.dart';
@@ -82,41 +81,10 @@ final spaceItemsProvider = FutureProvider.autoDispose
   }).toList();
 });
 
-final activitiesIconProvider = Provider.family<Widget, BuildContext>(
-  (ref, context) {
-    final activites = ref.watch(hasActivitiesProvider);
-    const baseIcon = Icon(
-      Atlas.audio_wave_thin,
-      key: MainNavKeys.activities,
-    );
-    switch (activites) {
-      case HasActivities.important:
-        return Badge(
-          backgroundColor: Theme.of(context).colorScheme.badgeImportant,
-          child: baseIcon,
-        );
-      case HasActivities.urgent:
-        return Badge(
-          backgroundColor: Theme.of(context).colorScheme.badgeUrgent,
-          child: baseIcon,
-        );
-      case HasActivities.unread:
-        return Badge(
-          backgroundColor: Theme.of(context).colorScheme.badgeUnread,
-          child: baseIcon,
-        );
-      default:
-        // read and none, we do not show any icon to prevent notification fatigue
-        return baseIcon;
-    }
-  },
-);
-
 // provider that returns a string value
 final sidebarItemsProvider = Provider.autoDispose
     .family<List<SidebarNavigationItem>, BuildContext>((ref, context) {
   final config = ref.watch(spaceItemsProvider(context));
-  final activitiesIcon = ref.watch(activitiesIconProvider(context));
   final features = [
     SidebarNavigationItem(
       icon: const Icon(
@@ -146,7 +114,6 @@ final sidebarItemsProvider = Provider.autoDispose
       tutorialGlobalKey: dashboardKey,
     ),
     SidebarNavigationItem(
-      // icon: const Badge(child: Icon(Atlas.chats_thin)), // TODO: Badge example
       icon: const Icon(
         Atlas.chats_thin,
         key: MainNavKeys.chats,
@@ -160,7 +127,7 @@ final sidebarItemsProvider = Provider.autoDispose
       tutorialGlobalKey: chatsKey,
     ),
     SidebarNavigationItem(
-      icon: activitiesIcon,
+      icon: const ActivitiesIcon(),
       label: Column(
         children: [
           Text(
@@ -202,86 +169,78 @@ final currentSelectedSidebarIndexProvider =
   return index < 0 ? fallbackSidebarIdx : index;
 });
 
-final bottomBarNavProvider =
-    Provider.family<List<BottomBarNavigationItem>, BuildContext>(
-        (ref, context) {
-  final activitiesIcon = ref.watch(activitiesIconProvider(context));
-
-  return [
-    BottomBarNavigationItem(
-      icon: const Icon(
-        Atlas.home_thin,
-        key: MainNavKeys.dashboardHome,
-      ),
-      activeIcon: const CustomSelectedIcon(
-        icon: Icon(Atlas.home_bold),
-        key: MainNavKeys.dashboardHome,
-      ),
-      label: 'Dashboard',
-      initialLocation: Routes.dashboard.route,
-      tutorialGlobalKey: dashboardKey,
+final bottomBarItems = [
+  BottomBarNavigationItem(
+    icon: const Icon(
+      Atlas.home_thin,
+      key: MainNavKeys.dashboardHome,
     ),
-    BottomBarNavigationItem(
-      icon: const Icon(
-        key: MainNavKeys.updates,
-        Atlas.megaphone_thin,
-      ),
-      activeIcon: const CustomSelectedIcon(
-        icon: Icon(Atlas.megaphone_thin),
-        key: MainNavKeys.updates,
-      ),
-      label: 'Updates',
-      initialLocation: Routes.updates.route,
-      tutorialGlobalKey: updateKey,
+    activeIcon: const CustomSelectedIcon(
+      icon: Icon(Atlas.home_bold),
+      key: MainNavKeys.dashboardHome,
     ),
-    BottomBarNavigationItem(
-      icon: const Icon(
-        Atlas.chats_thin,
-        key: MainNavKeys.chats,
-      ),
-      activeIcon: const CustomSelectedIcon(
-        icon: Icon(Atlas.chats_thin),
-        key: MainNavKeys.chats,
-      ),
-      label: 'Chat',
-      initialLocation: Routes.chat.route,
-      tutorialGlobalKey: chatsKey,
+    label: 'Dashboard',
+    initialLocation: Routes.dashboard.route,
+    tutorialGlobalKey: dashboardKey,
+  ),
+  BottomBarNavigationItem(
+    icon: const Icon(
+      key: MainNavKeys.updates,
+      Atlas.megaphone_thin,
     ),
-    BottomBarNavigationItem(
-      icon: activitiesIcon,
-      activeIcon: CustomSelectedIcon(
-        icon: activitiesIcon,
-      ),
-      label: 'Activities',
-      initialLocation: Routes.activities.route,
-      tutorialGlobalKey: activityKey,
+    activeIcon: const CustomSelectedIcon(
+      icon: Icon(Atlas.megaphone_thin),
+      key: MainNavKeys.updates,
     ),
-    BottomBarNavigationItem(
-      icon: const Icon(
+    label: 'Updates',
+    initialLocation: Routes.updates.route,
+    tutorialGlobalKey: updateKey,
+  ),
+  BottomBarNavigationItem(
+    icon: const Icon(
+      Atlas.chats_thin,
+      key: MainNavKeys.chats,
+    ),
+    activeIcon: const CustomSelectedIcon(
+      icon: Icon(Atlas.chats_thin),
+      key: MainNavKeys.chats,
+    ),
+    label: 'Chat',
+    initialLocation: Routes.chat.route,
+    tutorialGlobalKey: chatsKey,
+  ),
+  BottomBarNavigationItem(
+    icon: const ActivitiesIcon(),
+    activeIcon: const CustomSelectedIcon(
+      icon: ActivitiesIcon(),
+    ),
+    label: 'Activities',
+    initialLocation: Routes.activities.route,
+    tutorialGlobalKey: activityKey,
+  ),
+  BottomBarNavigationItem(
+    icon: const Icon(
+      Atlas.magnifying_glass_thin,
+      key: MainNavKeys.quickJump,
+    ),
+    activeIcon: const CustomSelectedIcon(
+      key: MainNavKeys.quickJump,
+      icon: Icon(
         Atlas.magnifying_glass_thin,
-        key: MainNavKeys.quickJump,
       ),
-      activeIcon: const CustomSelectedIcon(
-        key: MainNavKeys.quickJump,
-        icon: Icon(
-          Atlas.magnifying_glass_thin,
-        ),
-      ),
-      label: 'Search',
-      initialLocation: Routes.search.route,
-      tutorialGlobalKey: jumpToKey,
     ),
-  ];
-});
+    label: 'Search',
+    initialLocation: Routes.search.route,
+    tutorialGlobalKey: jumpToKey,
+  ),
+];
 
-final currentSelectedBottomBarIndexProvider =
-    Provider.autoDispose.family<int, BuildContext>((ref, context) {
+final currentSelectedBottomBarIndexProvider = Provider.autoDispose((ref) {
   final location = ref.watch(currentRoutingLocation);
-  final bottomBarNav = ref.watch(bottomBarNavProvider(context));
 
   _log.info('bottom location: $location');
   final index =
-      bottomBarNav.indexWhere((t) => location.startsWith(t.initialLocation));
+      bottomBarItems.indexWhere((t) => location.startsWith(t.initialLocation));
   _log.info('bottom index: $index');
 
   return index < 0 ? fallbackBottomBarIdx : index;

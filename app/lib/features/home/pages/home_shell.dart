@@ -271,7 +271,6 @@ class HomeShellState extends ConsumerState<HomeShell> {
 
   Widget bottomNavigationWidget(BuildContext context) {
     final keyboardVisibility = ref.watch(keyboardVisibleProvider);
-    final bottomBarNav = ref.watch(bottomBarNavProvider(context));
     if (keyboardVisibility.valueOrNull != false) {
       return const SizedBox.shrink();
     }
@@ -280,7 +279,7 @@ class HomeShellState extends ConsumerState<HomeShell> {
         SizedBox(
           height: 50,
           child: Row(
-            children: bottomBarNav
+            children: bottomBarItems
                 .map(
                   (bottomBarNav) => Expanded(
                     child: Center(
@@ -305,7 +304,7 @@ class HomeShellState extends ConsumerState<HomeShell> {
               initialLocation: index == widget.navigationShell.currentIndex,
             );
           },
-          items: bottomBarNav,
+          items: bottomBarItems,
           type: BottomNavigationBarType.fixed,
         ),
       ],
