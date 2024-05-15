@@ -6,6 +6,7 @@ import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/space/pages/chats_page.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/space/widgets/space_header_profile.dart';
+import 'package:acter/features/space/widgets/top_nav.dart';
 import 'package:acter/features/spaces/model/keys.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter/material.dart';
@@ -50,6 +51,13 @@ extension ActerSpace on ConvenientTest {
 
     if (appTab != null) {
       final selectedApp = find.byKey(appTab);
+      if (!selectedApp.tryEvaluate()) {
+        // our tab might be hidden in the new submenu ..
+        final moreKey = find.byKey(TopNavBar.moreTabsKey);
+        await tester.ensureVisible(moreKey);
+        await moreKey.should(findsOneWidget);
+        await moreKey.tap();
+      }
       await tester.ensureVisible(selectedApp);
       await selectedApp.should(findsOneWidget);
       await selectedApp.tap();

@@ -531,7 +531,7 @@ class _OriginalMessageBuilder extends ConsumerWidget {
             constraints: const BoxConstraints(maxHeight: 50),
             margin: const EdgeInsets.all(12),
             child: ImageMessageBuilder(
-              convo: convo,
+              roomId: convo.getRoomIdStr(),
               message: repliedMessage,
               messageWidth: repliedMessage.size.toInt(),
               isReplyContent: true,

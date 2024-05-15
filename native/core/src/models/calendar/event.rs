@@ -98,6 +98,9 @@ impl ActerModel for CalendarEvent {
     fn event_id(&self) -> &EventId {
         &self.meta.event_id
     }
+    fn room_id(&self) -> &RoomId {
+        &self.meta.room_id
+    }
 
     fn capabilities(&self) -> &[Capability] {
         &[
@@ -163,6 +166,9 @@ impl ActerModel for CalendarEventUpdate {
 
     fn event_id(&self) -> &EventId {
         &self.meta.event_id
+    }
+    fn room_id(&self) -> &RoomId {
+        &self.meta.room_id
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<String>> {

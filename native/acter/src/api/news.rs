@@ -10,9 +10,13 @@ use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
 use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};
-use ruma_events::room::message::{
-    AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
-    LocationMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
+use ruma_events::{
+    room::message::{
+        AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
+        LocationMessageEventContent, MessageType, TextMessageEventContent,
+        VideoMessageEventContent,
+    },
+    MessageLikeEventType,
 };
 use std::{
     collections::{hash_map::Entry, HashMap},
@@ -23,12 +27,14 @@ use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::{trace, warn};
 
+use crate::MsgDraft;
+
 use super::{
     api::FfiBuffer,
     client::Client,
     common::{MsgContent, ThumbnailSize},
     spaces::Space,
-    stream::MsgContentDraft,
+    stream::msg_draft::MsgContentDraft,
     RUNTIME,
 };
 
@@ -41,11 +47,7 @@ impl Client {
                 else {
                     bail!("{key} is not a news");
                 };
-                let room = me
-                    .core
-                    .client()
-                    .get_room(content.room_id())
-                    .context("Room not found")?;
+                let room = me.room_by_id_typed(content.room_id())?;
                 NewsEntry::new(me.clone(), room, content).await
             })
             .await?
@@ -54,10 +56,10 @@ impl Client {
     pub async fn latest_news_entries(&self, mut count: u32) -> Result<Vec<NewsEntry>> {
         let mut news = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let mut all_news = client
+                let mut all_news = me
                     .store()
                     .get_list(KEYS::NEWS)
                     .await?
@@ -71,6 +73,7 @@ impl Client {
                     .collect::<Vec<models::NewsEntry>>();
                 all_news.sort_by(|a, b| b.meta.origin_server_ts.cmp(&a.meta.origin_server_ts));
 
+                let client = me.core.client();
                 for content in all_news {
                     if count == 0 {
                         break; // we filled what we wanted
@@ -88,7 +91,8 @@ impl Client {
                             }
                         }
                     };
-                    news.push(NewsEntry::new(client.clone(), room, content).await?);
+                    let news_entry = NewsEntry::new(me.clone(), room, content).await?;
+                    news.push(news_entry);
                     count -= 1;
                 }
                 Ok(news)
@@ -152,6 +156,7 @@ impl NewsSlide {
     pub fn type_str(&self) -> String {
         self.inner.content().type_str()
     }
+
     pub fn unique_id(&self) -> String {
         self.unique_id.clone()
     }
@@ -174,12 +179,10 @@ impl NewsSlide {
             | NewsContent::Fallback(FallbackNewsContent::Location(content)) => {
                 MsgContent::from(content)
             }
-
             NewsContent::Audio(content)
             | NewsContent::Fallback(FallbackNewsContent::Audio(content)) => {
                 MsgContent::from(content)
             }
-
             NewsContent::Video(content)
             | NewsContent::Fallback(FallbackNewsContent::Video(content)) => {
                 MsgContent::from(content)
@@ -285,175 +288,40 @@ impl NewsSlide {
 
 #[derive(Clone)]
 pub struct NewsSlideDraft {
-    content: MsgContentDraft,
+    content: MsgDraft,
     references: Vec<ObjRef>,
     colorize_builder: ColorizeBuilder,
 }
 
 impl NewsSlideDraft {
-    fn new(content: MsgContentDraft) -> Self {
+    fn new(content: MsgDraft) -> Self {
         NewsSlideDraft {
             content,
             references: vec![],
             colorize_builder: ColorizeBuilder::default(),
         }
     }
+
     #[allow(clippy::boxed_local)]
     pub fn color(&mut self, colors: Box<ColorizeBuilder>) {
         self.colorize_builder = *colors;
     }
 
     async fn build(self, client: &Client, room: &Room) -> Result<news::NewsSlide> {
-        let content = match self.content {
-            MsgContentDraft::TextPlain { body } => {
-                let text_content = TextMessageEventContent::plain(body);
-                NewsContent::Text(text_content)
-            }
-            MsgContentDraft::TextMarkdown { body } => {
-                let text_content = TextMessageEventContent::markdown(body);
-                NewsContent::Text(text_content)
-            }
-            MsgContentDraft::TextHtml { html, plain } => {
-                let text_content = TextMessageEventContent::html(plain, html);
-                NewsContent::Text(text_content)
-            }
-            MsgContentDraft::Image { source, info } => {
-                let info = info.expect("image info needed");
-                let mimetype = info.mimetype.clone().expect("mimetype needed");
-                let content_type = mimetype.parse::<mime::Mime>()?;
-                let path = PathBuf::from(source);
-                let mut image_content = if room.is_encrypted().await? {
-                    let mut reader = std::fs::File::open(path.clone())?;
-                    let encrypted_file = client
-                        .prepare_encrypted_file(&content_type, &mut reader)
-                        .await?;
-                    let body = path
-                        .file_name()
-                        .expect("it is not file")
-                        .to_string_lossy()
-                        .to_string();
-                    ImageMessageEventContent::encrypted(body, encrypted_file)
-                } else {
-                    let mut image_buf = std::fs::read(path.clone())?;
-                    let response = client.media().upload(&content_type, image_buf).await?;
-                    let body = path
-                        .file_name()
-                        .expect("it is not file")
-                        .to_string_lossy()
-                        .to_string();
-                    ImageMessageEventContent::plain(body, response.content_uri)
-                };
-                image_content.info = Some(Box::new(info));
-
-                NewsContent::Image(image_content)
-            }
-            MsgContentDraft::Audio { source, info } => {
-                let info = info.expect("audio info needed");
-                let mimetype = info.mimetype.clone().expect("mimetype needed");
-                let content_type = mimetype.parse::<mime::Mime>()?;
-                let path = PathBuf::from(source);
-                let mut audio_content = if room.is_encrypted().await? {
-                    let mut reader = std::fs::File::open(path.clone())?;
-                    let encrypted_file = client
-                        .prepare_encrypted_file(&content_type, &mut reader)
-                        .await?;
-                    let body = path
-                        .file_name()
-                        .expect("it is not file")
-                        .to_string_lossy()
-                        .to_string();
-                    AudioMessageEventContent::encrypted(body, encrypted_file)
-                } else {
-                    let mut audio_buf = std::fs::read(path.clone())?;
-                    let response = client.media().upload(&content_type, audio_buf).await?;
-                    let body = path
-                        .file_name()
-                        .expect("it is not file")
-                        .to_string_lossy()
-                        .to_string();
-                    AudioMessageEventContent::plain(body, response.content_uri)
-                };
-                audio_content.info = Some(Box::new(info));
-
-                NewsContent::Audio(audio_content)
-            }
-            MsgContentDraft::Video { source, info } => {
-                let info = info.expect("video info needed");
-                let mimetype = info.mimetype.clone().expect("mimetype needed");
-                let content_type = mimetype.parse::<mime::Mime>()?;
-                let path = PathBuf::from(source);
-                let mut video_content = if room.is_encrypted().await? {
-                    let mut reader = std::fs::File::open(path.clone())?;
-                    let encrypted_file = client
-                        .prepare_encrypted_file(&content_type, &mut reader)
-                        .await?;
-                    let body = path
-                        .file_name()
-                        .expect("it is not file")
-                        .to_string_lossy()
-                        .to_string();
-                    VideoMessageEventContent::encrypted(body, encrypted_file)
-                } else {
-                    let mut video_buf = std::fs::read(path.clone())?;
-                    let response = client.media().upload(&content_type, video_buf).await?;
-                    let body = path
-                        .file_name()
-                        .expect("it is not file")
-                        .to_string_lossy()
-                        .to_string();
-                    VideoMessageEventContent::plain(body, response.content_uri)
-                };
-                video_content.info = Some(Box::new(info));
-
-                NewsContent::Video(video_content)
-            }
-            MsgContentDraft::File {
-                source,
-                info,
-                filename,
-            } => {
-                let info = info.expect("file info needed");
-                let mimetype = info.mimetype.clone().expect("mimetype needed");
-                let content_type = mimetype.parse::<mime::Mime>()?;
-                let path = PathBuf::from(source);
-                let mut file_content = if room.is_encrypted().await? {
-                    let mut reader = std::fs::File::open(path.clone())?;
-                    let encrypted_file = client
-                        .prepare_encrypted_file(&content_type, &mut reader)
-                        .await?;
-                    let body = path
-                        .file_name()
-                        .expect("it is not file")
-                        .to_string_lossy()
-                        .to_string();
-                    FileMessageEventContent::encrypted(body, encrypted_file)
-                } else {
-                    let mut file_buf = std::fs::read(path.clone())?;
-                    let response = client.media().upload(&content_type, file_buf).await?;
-                    let body = path
-                        .file_name()
-                        .expect("it is not file")
-                        .to_string_lossy()
-                        .to_string();
-                    FileMessageEventContent::plain(body, response.content_uri)
-                };
-                file_content.info = Some(Box::new(info));
-                file_content.filename = filename;
-
-                NewsContent::File(file_content)
-            }
-            MsgContentDraft::Location {
-                body,
-                geo_uri,
-                info,
-            } => {
-                let mut location_content = LocationMessageEventContent::new(body, geo_uri);
-                if let Some(info) = info {
-                    location_content.info = Some(Box::new(info));
-                }
-                NewsContent::Location(location_content)
-            }
+        let msg = self.content.into_room_msg(room).await?;
+        let content = match msg.msgtype {
+            MessageType::Text(msg) => NewsContent::Text(msg),
+            MessageType::Image(content) => NewsContent::Image(content),
+            MessageType::Audio(content) => NewsContent::Audio(content),
+            MessageType::Video(content) => NewsContent::Video(content),
+            MessageType::File(content) => NewsContent::File(content),
+            MessageType::Location(content) => NewsContent::Location(content),
+            _ => bail!(
+                "Message type {0} not supported for news entry",
+                msg.msgtype.msgtype()
+            ),
         };
+
         Ok(NewsSlideBuilder::default()
             .content(content)
             .references(self.references)
@@ -634,8 +502,10 @@ impl NewsEntryDraft {
         trace!("starting send");
         let client = self.client.clone();
         let room = self.room.clone();
+        let my_id = self.client.user_id()?;
         let slides_drafts = self.slides.clone();
         let mut builder = self.content.clone();
+
         RUNTIME
             .spawn(async move {
                 let mut slides = vec![];
@@ -648,8 +518,14 @@ impl NewsEntryDraft {
                 trace!("send buildin");
                 let content = builder.build()?;
                 trace!("off we go");
-                let resp = room.send(content).await?;
-                Ok(resp.event_id)
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(content).await?;
+                Ok(response.event_id)
             })
             .await?
     }
@@ -705,12 +581,19 @@ impl NewsEntryUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-
+        let my_id = self.client.user_id()?;
         let content = self.content.build()?;
+
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content).await?;
-                Ok(resp.event_id)
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(content).await?;
+                Ok(response.event_id)
             })
             .await?
     }
@@ -730,10 +613,13 @@ impl Space {
     }
 }
 
-impl MsgContentDraft {
-    pub fn into_news_slide_draft(
-        &self, // into_* fn takes self by value not reference
-    ) -> NewsSlideDraft {
-        NewsSlideDraft::new(self.clone())
+impl From<MsgDraft> for NewsSlideDraft {
+    fn from(value: MsgDraft) -> Self {
+        NewsSlideDraft::new(value)
+    }
+}
+impl MsgDraft {
+    pub fn into_news_slide_draft(&self) -> NewsSlideDraft {
+        self.clone().into()
     }
 }

@@ -57,6 +57,12 @@ final timelineStreamProvider = StateProvider.family<TimelineStream, Convo>(
   (ref, convo) => convo.timelineStream(),
 );
 
+final timelineStreamProviderForId =
+    FutureProvider.family<TimelineStream, String>((ref, roomId) async {
+  final chat = await ref.watch(chatProvider(roomId).future);
+  return ref.watch(timelineStreamProvider(chat));
+});
+
 final filteredChatsProvider =
     FutureProvider.autoDispose<List<Convo>>((ref) async {
   final allRooms = ref.watch(chatsProvider);
@@ -95,9 +101,13 @@ final chatMentionsProvider =
     Map<String, String> record = {};
     final displayName = data.profile.displayName;
     record['id'] = mId;
-    record['displayName'] = '$displayName';
-    // all of our search terms:
-    record['display'] = '$displayName $mId';
+    if (displayName != null) {
+      record['displayName'] = displayName;
+      // all of our search terms:
+      record['display'] = displayName;
+    } else {
+      record['display'] = mId;
+    }
     mentionRecords.add(record);
   }
   return mentionRecords;

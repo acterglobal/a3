@@ -279,25 +279,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
               ),
             ),
             IconButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text(L10n.of(context).inviteCode),
-                      content: Text(L10n.of(context).inviteCodeInfo),
-                      actions: <Widget>[
-                        OutlinedButton(
-                          child: Text(L10n.of(context).ok),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
+              onPressed: showInviteCodeDialog,
               icon: const Icon(Atlas.question_chat, size: 20),
             ),
           ],
@@ -323,6 +305,64 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           },
         ),
       ],
+    );
+  }
+
+  void showInviteCodeDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(L10n.of(context).inviteCode),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(L10n.of(context).inviteCodeInfo),
+              const SizedBox(height: 10),
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.neutral,
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20.0,
+                  vertical: 10.0,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'tryacter',
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
+                    IconButton(
+                      onPressed: () async {
+                        context.pop(); // close the drawer
+                        EasyLoading.showToast(
+                          L10n.of(context).inviteCopiedToClipboard,
+                          toastPosition: EasyLoadingToastPosition.bottom,
+                        );
+                        await Clipboard.setData(
+                          const ClipboardData(text: 'tryacter'),
+                        );
+                      },
+                      icon: const Icon(Icons.copy, size: 20),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            OutlinedButton(
+              child: Text(L10n.of(context).ok),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 

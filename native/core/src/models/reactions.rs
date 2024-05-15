@@ -1,4 +1,5 @@
 use derive_getters::Getters;
+use ruma::RoomId;
 use ruma_common::{EventId, OwnedEventId, OwnedUserId, UserId};
 use ruma_events::{reaction::ReactionEventContent, relation::Annotation, OriginalMessageLikeEvent};
 use serde::{Deserialize, Serialize};
@@ -266,6 +267,9 @@ impl ActerModel for Reaction {
 
     fn event_id(&self) -> &EventId {
         &self.meta.event_id
+    }
+    fn room_id(&self) -> &RoomId {
+        &self.meta.room_id
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<String>> {

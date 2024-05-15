@@ -1,1 +1,0 @@
-- The app is now available in Polish. It will be autoselected if this is your system language and you didn't pick any language via the settings before. You can change your preferred language in your Profile settings.

@@ -3725,6 +3725,53 @@ class Api {
     return tmp7;
   }
 
+  EventId? __reactionManagerRedactReactionFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _reactionManagerRedactReactionFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
   ReactionManager? __reactionManagerReloadFuturePoll(
     int boxed,
     int postCobject,
@@ -5090,6 +5137,53 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     final tmp6 = _convoRemoveAvatarFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __convoSetNameFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _convoSetNameFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -11099,6 +11193,50 @@ class Api {
     return tmp7;
   }
 
+  bool? __clientWaitForRoomFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientWaitForRoomFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   Comment? __clientWaitForCommentFuturePoll(
     int boxed,
     int postCobject,
@@ -16808,6 +16946,38 @@ class Api {
             int,
             int,
           )>();
+  late final _calendarEventPhysicalLocationsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__CalendarEvent_physical_locations");
+
+  late final _calendarEventPhysicalLocations =
+      _calendarEventPhysicalLocationsPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _calendarEventVirtualLocationsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__CalendarEvent_virtual_locations");
+
+  late final _calendarEventVirtualLocations =
+      _calendarEventVirtualLocationsPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _calendarEventLocationsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__CalendarEvent_locations");
+
+  late final _calendarEventLocations = _calendarEventLocationsPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _calendarEventUpdateBuilderTitlePtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -16977,6 +17147,17 @@ class Api {
             int,
             int,
             int,
+            int,
+          )>();
+  late final _calendarEventUpdateBuilderUnsetLocationsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+          )>>("__CalendarEventUpdateBuilder_unset_locations");
+
+  late final _calendarEventUpdateBuilderUnsetLocations =
+      _calendarEventUpdateBuilderUnsetLocationsPtr.asFunction<
+          void Function(
             int,
           )>();
   late final _calendarEventUpdateBuilderSendPtr = _lookup<
@@ -17171,6 +17352,88 @@ class Api {
             int,
             int,
           )>();
+  late final _calendarEventDraftPhysicalLocationPtr = _lookup<
+      ffi.NativeFunction<
+          _CalendarEventDraftPhysicalLocationReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__CalendarEventDraft_physical_location");
+
+  late final _calendarEventDraftPhysicalLocation =
+      _calendarEventDraftPhysicalLocationPtr.asFunction<
+          _CalendarEventDraftPhysicalLocationReturn Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _calendarEventDraftVirtualLocationPtr = _lookup<
+      ffi.NativeFunction<
+          _CalendarEventDraftVirtualLocationReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__CalendarEventDraft_virtual_location");
+
+  late final _calendarEventDraftVirtualLocation =
+      _calendarEventDraftVirtualLocationPtr.asFunction<
+          _CalendarEventDraftVirtualLocationReturn Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
   late final _calendarEventDraftSendPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -17179,6 +17442,59 @@ class Api {
 
   late final _calendarEventDraftSend = _calendarEventDraftSendPtr.asFunction<
       int Function(
+        int,
+      )>();
+  late final _eventLocationInfoLocationTypePtr = _lookup<
+      ffi.NativeFunction<
+          _EventLocationInfoLocationTypeReturn Function(
+            ffi.Int64,
+          )>>("__EventLocationInfo_location_type");
+
+  late final _eventLocationInfoLocationType =
+      _eventLocationInfoLocationTypePtr.asFunction<
+          _EventLocationInfoLocationTypeReturn Function(
+            int,
+          )>();
+  late final _eventLocationInfoNamePtr = _lookup<
+      ffi.NativeFunction<
+          _EventLocationInfoNameReturn Function(
+            ffi.Int64,
+          )>>("__EventLocationInfo_name");
+
+  late final _eventLocationInfoName = _eventLocationInfoNamePtr.asFunction<
+      _EventLocationInfoNameReturn Function(
+        int,
+      )>();
+  late final _eventLocationInfoDescriptionPtr = _lookup<
+      ffi.NativeFunction<
+          _EventLocationInfoDescriptionReturn Function(
+            ffi.Int64,
+          )>>("__EventLocationInfo_description");
+
+  late final _eventLocationInfoDescription =
+      _eventLocationInfoDescriptionPtr.asFunction<
+          _EventLocationInfoDescriptionReturn Function(
+            int,
+          )>();
+  late final _eventLocationInfoCoordinatesPtr = _lookup<
+      ffi.NativeFunction<
+          _EventLocationInfoCoordinatesReturn Function(
+            ffi.Int64,
+          )>>("__EventLocationInfo_coordinates");
+
+  late final _eventLocationInfoCoordinates =
+      _eventLocationInfoCoordinatesPtr.asFunction<
+          _EventLocationInfoCoordinatesReturn Function(
+            int,
+          )>();
+  late final _eventLocationInfoUriPtr = _lookup<
+      ffi.NativeFunction<
+          _EventLocationInfoUriReturn Function(
+            ffi.Int64,
+          )>>("__EventLocationInfo_uri");
+
+  late final _eventLocationInfoUri = _eventLocationInfoUriPtr.asFunction<
+      _EventLocationInfoUriReturn Function(
         int,
       )>();
   late final _rsvpManagerHasRsvpEntriesPtr = _lookup<
@@ -17445,6 +17761,45 @@ class Api {
   late final _reactionManagerRedactLike =
       _reactionManagerRedactLikePtr.asFunction<
           int Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _reactionManagerRedactReactionPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__ReactionManager_redact_reaction");
+
+  late final _reactionManagerRedactReaction =
+      _reactionManagerRedactReactionPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
             int,
             int,
             int,
@@ -18339,110 +18694,138 @@ class Api {
       _SpaceDiffValueReturn Function(
         int,
       )>();
-  late final _msgContentDraftSizePtr = _lookup<
+  late final _msgDraftAddMentionPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int64 Function(
+          _MsgDraftAddMentionReturn Function(
+            ffi.Int64,
             ffi.Int64,
             ffi.Uint64,
-          )>>("__MsgContentDraft_size");
+            ffi.Uint64,
+          )>>("__MsgDraft_add_mention");
 
-  late final _msgContentDraftSize = _msgContentDraftSizePtr.asFunction<
-      int Function(
-        int,
-        int,
-      )>();
-  late final _msgContentDraftWidthPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Uint64,
-          )>>("__MsgContentDraft_width");
-
-  late final _msgContentDraftWidth = _msgContentDraftWidthPtr.asFunction<
-      int Function(
-        int,
-        int,
-      )>();
-  late final _msgContentDraftHeightPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Uint64,
-          )>>("__MsgContentDraft_height");
-
-  late final _msgContentDraftHeight = _msgContentDraftHeightPtr.asFunction<
-      int Function(
-        int,
-        int,
-      )>();
-  late final _msgContentDraftDurationPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Uint64,
-          )>>("__MsgContentDraft_duration");
-
-  late final _msgContentDraftDuration = _msgContentDraftDurationPtr.asFunction<
-      int Function(
-        int,
-        int,
-      )>();
-  late final _msgContentDraftBlurhashPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__MsgContentDraft_blurhash");
-
-  late final _msgContentDraftBlurhash = _msgContentDraftBlurhashPtr.asFunction<
-      int Function(
+  late final _msgDraftAddMention = _msgDraftAddMentionPtr.asFunction<
+      _MsgDraftAddMentionReturn Function(
         int,
         int,
         int,
         int,
       )>();
-  late final _msgContentDraftFilenamePtr = _lookup<
+  late final _msgDraftAddRoomMentionPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int64 Function(
+          _MsgDraftAddRoomMentionReturn Function(
             ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__MsgContentDraft_filename");
+            ffi.Uint8,
+          )>>("__MsgDraft_add_room_mention");
 
-  late final _msgContentDraftFilename = _msgContentDraftFilenamePtr.asFunction<
-      int Function(
-        int,
-        int,
+  late final _msgDraftAddRoomMention = _msgDraftAddRoomMentionPtr.asFunction<
+      _MsgDraftAddRoomMentionReturn Function(
         int,
         int,
       )>();
-  late final _msgContentDraftGeoUriPtr = _lookup<
+  late final _msgDraftSizePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint64,
+          )>>("__MsgDraft_size");
+
+  late final _msgDraftSize = _msgDraftSizePtr.asFunction<
+      int Function(
+        int,
+        int,
+      )>();
+  late final _msgDraftWidthPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint64,
+          )>>("__MsgDraft_width");
+
+  late final _msgDraftWidth = _msgDraftWidthPtr.asFunction<
+      int Function(
+        int,
+        int,
+      )>();
+  late final _msgDraftHeightPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint64,
+          )>>("__MsgDraft_height");
+
+  late final _msgDraftHeight = _msgDraftHeightPtr.asFunction<
+      int Function(
+        int,
+        int,
+      )>();
+  late final _msgDraftDurationPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint64,
+          )>>("__MsgDraft_duration");
+
+  late final _msgDraftDuration = _msgDraftDurationPtr.asFunction<
+      int Function(
+        int,
+        int,
+      )>();
+  late final _msgDraftBlurhashPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-          )>>("__MsgContentDraft_geo_uri");
+          )>>("__MsgDraft_blurhash");
 
-  late final _msgContentDraftGeoUri = _msgContentDraftGeoUriPtr.asFunction<
+  late final _msgDraftBlurhash = _msgDraftBlurhashPtr.asFunction<
       int Function(
         int,
         int,
         int,
         int,
       )>();
-  late final _msgContentDraftIntoNewsSlideDraftPtr = _lookup<
+  late final _msgDraftFilenamePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__MsgContentDraft_into_news_slide_draft");
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__MsgDraft_filename");
 
-  late final _msgContentDraftIntoNewsSlideDraft =
-      _msgContentDraftIntoNewsSlideDraftPtr.asFunction<
+  late final _msgDraftFilename = _msgDraftFilenamePtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _msgDraftGeoUriPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__MsgDraft_geo_uri");
+
+  late final _msgDraftGeoUri = _msgDraftGeoUriPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _msgDraftIntoNewsSlideDraftPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__MsgDraft_into_news_slide_draft");
+
+  late final _msgDraftIntoNewsSlideDraft =
+      _msgDraftIntoNewsSlideDraftPtr.asFunction<
           int Function(
             int,
           )>();
@@ -18712,6 +19095,22 @@ class Api {
 
   late final _convoTopic = _convoTopicPtr.asFunction<
       _ConvoTopicReturn Function(
+        int,
+      )>();
+  late final _convoSetNamePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__Convo_set_name");
+
+  late final _convoSetName = _convoSetNamePtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
         int,
       )>();
   late final _convoSetTopicPtr = _lookup<
@@ -23998,6 +24397,26 @@ class Api {
         int,
         int,
       )>();
+  late final _clientWaitForRoomPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Uint8,
+          )>>("__Client_wait_for_room");
+
+  late final _clientWaitForRoom = _clientWaitForRoomPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+      )>();
   late final _clientWaitForCommentPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -26012,6 +26431,21 @@ class Api {
             int,
             int,
           )>();
+  late final _reactionManagerRedactReactionFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ReactionManagerRedactReactionFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__ReactionManager_redact_reaction_future_poll");
+
+  late final _reactionManagerRedactReactionFuturePoll =
+      _reactionManagerRedactReactionFuturePollPtr.asFunction<
+          _ReactionManagerRedactReactionFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _reactionManagerReloadFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ReactionManagerReloadFuturePollReturn Function(
@@ -26459,6 +26893,20 @@ class Api {
             int,
             int,
           )>();
+  late final _convoSetNameFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ConvoSetNameFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Convo_set_name_future_poll");
+
+  late final _convoSetNameFuturePoll = _convoSetNameFuturePollPtr.asFunction<
+      _ConvoSetNameFuturePollReturn Function(
+        int,
+        int,
+        int,
+      )>();
   late final _convoSetTopicFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ConvoSetTopicFuturePollReturn Function(
@@ -28354,6 +28802,21 @@ class Api {
             int,
             int,
           )>();
+  late final _clientWaitForRoomFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientWaitForRoomFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Client_wait_for_room_future_poll");
+
+  late final _clientWaitForRoomFuturePoll =
+      _clientWaitForRoomFuturePollPtr.asFunction<
+          _ClientWaitForRoomFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _clientWaitForCommentFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ClientWaitForCommentFuturePollReturn Function(
@@ -29901,6 +30364,57 @@ class Api {
 
   late final _ffiListDeviceRecordInsert =
       _ffiListDeviceRecordInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListEventLocationInfo createFfiListEventLocationInfo() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListEventLocationInfoCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListEventLocationInfo");
+    return FfiListEventLocationInfo._(this, list_box);
+  }
+
+  late final _ffiListEventLocationInfoCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListEventLocationInfoCreate");
+
+  late final _ffiListEventLocationInfoCreate =
+      _ffiListEventLocationInfoCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListEventLocationInfoLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListEventLocationInfoLen");
+
+  late final _ffiListEventLocationInfoLen =
+      _ffiListEventLocationInfoLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListEventLocationInfoElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListEventLocationInfoElementAt");
+
+  late final _ffiListEventLocationInfoElementAt =
+      _ffiListEventLocationInfoElementAtPtr
+          .asFunction<int Function(int, int)>();
+
+  late final _ffiListEventLocationInfoRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListEventLocationInfoRemove");
+
+  late final _ffiListEventLocationInfoRemove =
+      _ffiListEventLocationInfoRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListEventLocationInfoAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListEventLocationInfoAdd");
+
+  late final _ffiListEventLocationInfoAdd =
+      _ffiListEventLocationInfoAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListEventLocationInfoInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
+              ffi.IntPtr)>>("__FfiListEventLocationInfoInsert");
+
+  late final _ffiListEventLocationInfoInsert =
+      _ffiListEventLocationInfoInsertPtr
+          .asFunction<void Function(int, int, int)>();
   FfiListFfiString createFfiListFfiString() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListFfiStringCreate());
@@ -34567,6 +35081,54 @@ class CalendarEvent {
     return tmp6;
   }
 
+  /// get the physical location(s) details
+  FfiListEventLocationInfo physicalLocations() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._calendarEventPhysicalLocations(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListEventLocationInfo");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListEventLocationInfo._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// get the virtual location(s) details
+  FfiListEventLocationInfo virtualLocations() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._calendarEventVirtualLocations(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListEventLocationInfo");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListEventLocationInfo._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// get all location details
+  FfiListEventLocationInfo locations() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._calendarEventLocations(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListEventLocationInfo");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListEventLocationInfo._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -34963,6 +35525,15 @@ class CalendarEventUpdateBuilder {
       }
       throw tmp11_0;
     }
+    return;
+  }
+
+  void unsetLocations() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._calendarEventUpdateBuilderUnsetLocations(
+      tmp0,
+    );
     return;
   }
 
@@ -35391,6 +35962,228 @@ class CalendarEventDraft {
     return;
   }
 
+  /// set the physical location details for this calendar event
+  void physicalLocation(
+    String name,
+    String description,
+    String? descriptionHtml,
+    String coordinates,
+    String? uri,
+  ) {
+    final tmp1 = name;
+    final tmp5 = description;
+    final tmp9 = descriptionHtml;
+    final tmp15 = coordinates;
+    final tmp19 = uri;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp12 = 0;
+    var tmp13 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp17 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    var tmp23 = 0;
+    var tmp24 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    if (tmp9 == null) {
+      tmp10 = 0;
+    } else {
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      final tmp11_0 = utf8.encode(tmp11);
+      tmp13 = tmp11_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
+      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
+      tmp12_1.setAll(0, tmp11_0);
+      tmp12 = tmp12_0.address;
+      tmp14 = tmp13;
+    }
+    final tmp15_0 = utf8.encode(tmp15);
+    tmp17 = tmp15_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
+    final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
+    tmp16_1.setAll(0, tmp15_0);
+    tmp16 = tmp16_0.address;
+    tmp18 = tmp17;
+    if (tmp19 == null) {
+      tmp20 = 0;
+    } else {
+      tmp20 = 1;
+      final tmp21 = tmp19;
+      final tmp21_0 = utf8.encode(tmp21);
+      tmp23 = tmp21_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp22_0 = _api.__allocate(tmp23 * 1, 1);
+      final Uint8List tmp22_1 = tmp22_0.asTypedList(tmp23);
+      tmp22_1.setAll(0, tmp21_0);
+      tmp22 = tmp22_0.address;
+      tmp24 = tmp23;
+    }
+    final tmp25 = _api._calendarEventDraftPhysicalLocation(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp12,
+      tmp13,
+      tmp14,
+      tmp16,
+      tmp17,
+      tmp18,
+      tmp20,
+      tmp22,
+      tmp23,
+      tmp24,
+    );
+    final tmp27 = tmp25.arg0;
+    final tmp28 = tmp25.arg1;
+    final tmp29 = tmp25.arg2;
+    final tmp30 = tmp25.arg3;
+    if (tmp27 == 0) {
+      debugAllocation("handle error", tmp28, tmp29);
+      final ffi.Pointer<ffi.Uint8> tmp28_0 = ffi.Pointer.fromAddress(tmp28);
+      final tmp27_0 =
+          utf8.decode(tmp28_0.asTypedList(tmp29), allowMalformed: true);
+      if (tmp29 > 0) {
+        final ffi.Pointer<ffi.Void> tmp28_0;
+        tmp28_0 = ffi.Pointer.fromAddress(tmp28);
+        _api.__deallocate(tmp28_0, tmp30, 1);
+      }
+      throw tmp27_0;
+    }
+    return;
+  }
+
+  /// set the virtual location details for this calendar event
+  void virtualLocation(
+    String name,
+    String description,
+    String? descriptionHtml,
+    String uri,
+  ) {
+    final tmp1 = name;
+    final tmp5 = description;
+    final tmp9 = descriptionHtml;
+    final tmp15 = uri;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp12 = 0;
+    var tmp13 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp17 = 0;
+    var tmp18 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    if (tmp9 == null) {
+      tmp10 = 0;
+    } else {
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      final tmp11_0 = utf8.encode(tmp11);
+      tmp13 = tmp11_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
+      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
+      tmp12_1.setAll(0, tmp11_0);
+      tmp12 = tmp12_0.address;
+      tmp14 = tmp13;
+    }
+    final tmp15_0 = utf8.encode(tmp15);
+    tmp17 = tmp15_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
+    final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
+    tmp16_1.setAll(0, tmp15_0);
+    tmp16 = tmp16_0.address;
+    tmp18 = tmp17;
+    final tmp19 = _api._calendarEventDraftVirtualLocation(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp12,
+      tmp13,
+      tmp14,
+      tmp16,
+      tmp17,
+      tmp18,
+    );
+    final tmp21 = tmp19.arg0;
+    final tmp22 = tmp19.arg1;
+    final tmp23 = tmp19.arg2;
+    final tmp24 = tmp19.arg3;
+    if (tmp21 == 0) {
+      debugAllocation("handle error", tmp22, tmp23);
+      final ffi.Pointer<ffi.Uint8> tmp22_0 = ffi.Pointer.fromAddress(tmp22);
+      final tmp21_0 =
+          utf8.decode(tmp22_0.asTypedList(tmp23), allowMalformed: true);
+      if (tmp23 > 0) {
+        final ffi.Pointer<ffi.Void> tmp22_0;
+        tmp22_0 = ffi.Pointer.fromAddress(tmp22);
+        _api.__deallocate(tmp22_0, tmp24, 1);
+      }
+      throw tmp21_0;
+    }
+    return;
+  }
+
   /// create this calendar event
   Future<EventId> send() {
     var tmp0 = 0;
@@ -35403,6 +36196,169 @@ class CalendarEventDraft {
     final tmp3_1 = _Box(_api, tmp3_0, "__CalendarEventDraft_send_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__calendarEventDraftSendFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class EventLocationInfo {
+  final Api _api;
+  final _Box _box;
+
+  EventLocationInfo._(this._api, this._box);
+
+  /// either of `Physical` or `Virtual`
+  String locationType() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._eventLocationInfoLocationType(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// get the name of location
+  String? name() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._eventLocationInfoName(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// get the location description
+  TextMessageContent? description() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._eventLocationInfoDescription(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_TextMessageContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = TextMessageContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// geo uri for the location
+  String? coordinates() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._eventLocationInfoCoordinates(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// an online link for the location
+  String? uri() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._eventLocationInfoUri(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
     return tmp2;
   }
 
@@ -35917,6 +36873,104 @@ class ReactionManager {
     final tmp14 =
         _nativeFuture(tmp15_1, _api.__reactionManagerRedactLikeFuturePoll);
     return tmp14;
+  }
+
+  /// remove the reaction using symbol key
+  Future<EventId> redactReaction(
+    String senderId,
+    String key,
+    String? reason,
+    String? txnId,
+  ) {
+    final tmp1 = senderId;
+    final tmp5 = key;
+    final tmp9 = reason;
+    final tmp15 = txnId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp12 = 0;
+    var tmp13 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    var tmp19 = 0;
+    var tmp20 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    if (tmp9 == null) {
+      tmp10 = 0;
+    } else {
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      final tmp11_0 = utf8.encode(tmp11);
+      tmp13 = tmp11_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
+      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
+      tmp12_1.setAll(0, tmp11_0);
+      tmp12 = tmp12_0.address;
+      tmp14 = tmp13;
+    }
+    if (tmp15 == null) {
+      tmp16 = 0;
+    } else {
+      tmp16 = 1;
+      final tmp17 = tmp15;
+      final tmp17_0 = utf8.encode(tmp17);
+      tmp19 = tmp17_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp18_0 = _api.__allocate(tmp19 * 1, 1);
+      final Uint8List tmp18_1 = tmp18_0.asTypedList(tmp19);
+      tmp18_1.setAll(0, tmp17_0);
+      tmp18 = tmp18_0.address;
+      tmp20 = tmp19;
+    }
+    final tmp21 = _api._reactionManagerRedactReaction(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp12,
+      tmp13,
+      tmp14,
+      tmp16,
+      tmp18,
+      tmp19,
+      tmp20,
+    );
+    final tmp23 = tmp21;
+    final ffi.Pointer<ffi.Void> tmp23_0 = ffi.Pointer.fromAddress(tmp23);
+    final tmp23_1 =
+        _Box(_api, tmp23_0, "__ReactionManager_redact_reaction_future_drop");
+    tmp23_1._finalizer = _api._registerFinalizer(tmp23_1);
+    final tmp22 =
+        _nativeFuture(tmp23_1, _api.__reactionManagerRedactReactionFuturePoll);
+    return tmp22;
   }
 
   /// get informed about changes to this manager
@@ -37917,14 +38971,99 @@ class SpaceDiff {
   }
 }
 
-class MsgContentDraft {
+class MsgDraft {
   final Api _api;
   final _Box _box;
 
-  MsgContentDraft._(this._api, this._box);
+  MsgDraft._(this._api, this._box);
+
+  /// add a user mention
+  MsgDraft addMention(
+    String userId,
+  ) {
+    final tmp1 = userId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._msgDraftAddMention(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 =
+          utf8.decode(tmp8_0.asTypedList(tmp9), allowMalformed: true);
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = MsgDraft._(_api, tmp11_1);
+    return tmp6;
+  }
+
+  /// whether to mention the entire room
+  MsgDraft addRoomMention(
+    bool mention,
+  ) {
+    final tmp1 = mention;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    final tmp3 = _api._msgDraftAddRoomMention(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3.arg0;
+    final tmp6 = tmp3.arg1;
+    final tmp7 = tmp3.arg2;
+    final tmp8 = tmp3.arg3;
+    final tmp9 = tmp3.arg4;
+    if (tmp5 == 0) {
+      debugAllocation("handle error", tmp6, tmp7);
+      final ffi.Pointer<ffi.Uint8> tmp6_0 = ffi.Pointer.fromAddress(tmp6);
+      final tmp5_0 =
+          utf8.decode(tmp6_0.asTypedList(tmp7), allowMalformed: true);
+      if (tmp7 > 0) {
+        final ffi.Pointer<ffi.Void> tmp6_0;
+        tmp6_0 = ffi.Pointer.fromAddress(tmp6);
+        _api.__deallocate(tmp6_0, tmp8, 1);
+      }
+      throw tmp5_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+    final tmp9_1 = _Box(_api, tmp9_0, "drop_box_MsgDraft");
+    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
+    final tmp4 = MsgDraft._(_api, tmp9_1);
+    return tmp4;
+  }
 
   /// available for only image/audio/video/file
-  MsgContentDraft size(
+  MsgDraft size(
     int value,
   ) {
     final tmp1 = value;
@@ -37932,20 +39071,20 @@ class MsgContentDraft {
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1;
-    final tmp3 = _api._msgContentDraftSize(
+    final tmp3 = _api._msgDraftSize(
       tmp0,
       tmp2,
     );
     final tmp5 = tmp3;
     final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_MsgContentDraft");
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_MsgDraft");
     tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 = MsgContentDraft._(_api, tmp5_1);
+    final tmp4 = MsgDraft._(_api, tmp5_1);
     return tmp4;
   }
 
   /// available for only image/video
-  MsgContentDraft width(
+  MsgDraft width(
     int value,
   ) {
     final tmp1 = value;
@@ -37953,20 +39092,20 @@ class MsgContentDraft {
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1;
-    final tmp3 = _api._msgContentDraftWidth(
+    final tmp3 = _api._msgDraftWidth(
       tmp0,
       tmp2,
     );
     final tmp5 = tmp3;
     final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_MsgContentDraft");
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_MsgDraft");
     tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 = MsgContentDraft._(_api, tmp5_1);
+    final tmp4 = MsgDraft._(_api, tmp5_1);
     return tmp4;
   }
 
   /// available for only image/video
-  MsgContentDraft height(
+  MsgDraft height(
     int value,
   ) {
     final tmp1 = value;
@@ -37974,20 +39113,20 @@ class MsgContentDraft {
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1;
-    final tmp3 = _api._msgContentDraftHeight(
+    final tmp3 = _api._msgDraftHeight(
       tmp0,
       tmp2,
     );
     final tmp5 = tmp3;
     final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_MsgContentDraft");
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_MsgDraft");
     tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 = MsgContentDraft._(_api, tmp5_1);
+    final tmp4 = MsgDraft._(_api, tmp5_1);
     return tmp4;
   }
 
   /// available for only audio/video
-  MsgContentDraft duration(
+  MsgDraft duration(
     int value,
   ) {
     final tmp1 = value;
@@ -37995,20 +39134,20 @@ class MsgContentDraft {
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1;
-    final tmp3 = _api._msgContentDraftDuration(
+    final tmp3 = _api._msgDraftDuration(
       tmp0,
       tmp2,
     );
     final tmp5 = tmp3;
     final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_MsgContentDraft");
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_MsgDraft");
     tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 = MsgContentDraft._(_api, tmp5_1);
+    final tmp4 = MsgDraft._(_api, tmp5_1);
     return tmp4;
   }
 
   /// available for only image/video
-  MsgContentDraft blurhash(
+  MsgDraft blurhash(
     String value,
   ) {
     final tmp1 = value;
@@ -38025,7 +39164,7 @@ class MsgContentDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._msgContentDraftBlurhash(
+    final tmp5 = _api._msgDraftBlurhash(
       tmp0,
       tmp2,
       tmp3,
@@ -38033,14 +39172,14 @@ class MsgContentDraft {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgContentDraft");
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgDraft");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = MsgContentDraft._(_api, tmp7_1);
+    final tmp6 = MsgDraft._(_api, tmp7_1);
     return tmp6;
   }
 
   /// available for only file
-  MsgContentDraft filename(
+  MsgDraft filename(
     String value,
   ) {
     final tmp1 = value;
@@ -38057,7 +39196,7 @@ class MsgContentDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._msgContentDraftFilename(
+    final tmp5 = _api._msgDraftFilename(
       tmp0,
       tmp2,
       tmp3,
@@ -38065,14 +39204,14 @@ class MsgContentDraft {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgContentDraft");
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgDraft");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = MsgContentDraft._(_api, tmp7_1);
+    final tmp6 = MsgDraft._(_api, tmp7_1);
     return tmp6;
   }
 
   /// available for only location
-  MsgContentDraft geoUri(
+  MsgDraft geoUri(
     String value,
   ) {
     final tmp1 = value;
@@ -38089,7 +39228,7 @@ class MsgContentDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._msgContentDraftGeoUri(
+    final tmp5 = _api._msgDraftGeoUri(
       tmp0,
       tmp2,
       tmp3,
@@ -38097,16 +39236,16 @@ class MsgContentDraft {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgContentDraft");
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgDraft");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = MsgContentDraft._(_api, tmp7_1);
+    final tmp6 = MsgDraft._(_api, tmp7_1);
     return tmp6;
   }
 
   NewsSlideDraft intoNewsSlideDraft() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._msgContentDraftIntoNewsSlideDraft(
+    final tmp1 = _api._msgDraftIntoNewsSlideDraft(
       tmp0,
     );
     final tmp3 = tmp1;
@@ -38206,7 +39345,7 @@ class TimelineStream {
 
   /// send message using draft
   Future<bool> sendMessage(
-    MsgContentDraft draft,
+    MsgDraft draft,
   ) {
     final tmp1 = draft;
     var tmp0 = 0;
@@ -38230,7 +39369,7 @@ class TimelineStream {
   /// modify message using draft
   Future<bool> editMessage(
     String eventId,
-    MsgContentDraft draft,
+    MsgDraft draft,
   ) {
     final tmp1 = eventId;
     final tmp5 = draft;
@@ -38269,7 +39408,7 @@ class TimelineStream {
   /// send reply to event
   Future<bool> replyMessage(
     String eventId,
-    MsgContentDraft draft,
+    MsgDraft draft,
   ) {
     final tmp1 = eventId;
     final tmp5 = draft;
@@ -38706,6 +39845,38 @@ class Convo {
       _api.__deallocate(tmp4_0, tmp6 * 1, 1);
     }
     return tmp2;
+  }
+
+  /// set the name of the chat
+  Future<EventId> setName(
+    String name,
+  ) {
+    final tmp1 = name;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._convoSetName(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__Convo_set_name_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__convoSetNameFuturePoll);
+    return tmp6;
   }
 
   /// set description / topic of the room
@@ -40250,7 +41421,7 @@ class AttachmentsManager {
 
   /// create news slide for image msg
   Future<AttachmentDraft> contentDraft(
-    MsgContentDraft baseDraft,
+    MsgDraft baseDraft,
   ) {
     final tmp1 = baseDraft;
     var tmp0 = 0;
@@ -48881,6 +50052,51 @@ class Client {
     return tmp6;
   }
 
+  /// Find the room or wait until it becomes available
+  Future<bool> waitForRoom(
+    String key,
+    int? timeout,
+  ) {
+    final tmp1 = key;
+    final tmp5 = timeout;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    if (tmp5 == null) {
+      tmp6 = 0;
+    } else {
+      tmp6 = 1;
+      final tmp7 = tmp5;
+      tmp8 = tmp7;
+    }
+    final tmp9 = _api._clientWaitForRoom(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "__Client_wait_for_room_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = _nativeFuture(tmp11_1, _api.__clientWaitForRoomFuturePoll);
+    return tmp10;
+  }
+
   /// Fetch the Comment or use its event_id to wait for it to come down the wire
   Future<Comment> waitForComment(
     String key,
@@ -49881,7 +51097,7 @@ class Client {
   }
 
   /// make draft to send text plain msg
-  MsgContentDraft textPlainDraft(
+  MsgDraft textPlainDraft(
     String body,
   ) {
     final tmp1 = body;
@@ -49906,14 +51122,14 @@ class Client {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgContentDraft");
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgDraft");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = MsgContentDraft._(_api, tmp7_1);
+    final tmp6 = MsgDraft._(_api, tmp7_1);
     return tmp6;
   }
 
   /// make draft to send text markdown msg
-  MsgContentDraft textMarkdownDraft(
+  MsgDraft textMarkdownDraft(
     String body,
   ) {
     final tmp1 = body;
@@ -49938,14 +51154,14 @@ class Client {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgContentDraft");
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgDraft");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = MsgContentDraft._(_api, tmp7_1);
+    final tmp6 = MsgDraft._(_api, tmp7_1);
     return tmp6;
   }
 
   /// make draft to send html marked up msg
-  MsgContentDraft textHtmlDraft(
+  MsgDraft textHtmlDraft(
     String html,
     String plain,
   ) {
@@ -49986,14 +51202,14 @@ class Client {
     );
     final tmp11 = tmp9;
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgContentDraft");
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgDraft");
     tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp10 = MsgContentDraft._(_api, tmp11_1);
+    final tmp10 = MsgDraft._(_api, tmp11_1);
     return tmp10;
   }
 
   /// make draft to send image msg
-  MsgContentDraft imageDraft(
+  MsgDraft imageDraft(
     String source,
     String mimetype,
   ) {
@@ -50034,14 +51250,14 @@ class Client {
     );
     final tmp11 = tmp9;
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgContentDraft");
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgDraft");
     tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp10 = MsgContentDraft._(_api, tmp11_1);
+    final tmp10 = MsgDraft._(_api, tmp11_1);
     return tmp10;
   }
 
   /// make draft to send audio msg
-  MsgContentDraft audioDraft(
+  MsgDraft audioDraft(
     String source,
     String mimetype,
   ) {
@@ -50082,14 +51298,14 @@ class Client {
     );
     final tmp11 = tmp9;
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgContentDraft");
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgDraft");
     tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp10 = MsgContentDraft._(_api, tmp11_1);
+    final tmp10 = MsgDraft._(_api, tmp11_1);
     return tmp10;
   }
 
   /// make draft to send video msg
-  MsgContentDraft videoDraft(
+  MsgDraft videoDraft(
     String source,
     String mimetype,
   ) {
@@ -50130,14 +51346,14 @@ class Client {
     );
     final tmp11 = tmp9;
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgContentDraft");
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgDraft");
     tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp10 = MsgContentDraft._(_api, tmp11_1);
+    final tmp10 = MsgDraft._(_api, tmp11_1);
     return tmp10;
   }
 
   /// make draft to send file msg
-  MsgContentDraft fileDraft(
+  MsgDraft fileDraft(
     String source,
     String mimetype,
   ) {
@@ -50178,14 +51394,14 @@ class Client {
     );
     final tmp11 = tmp9;
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgContentDraft");
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgDraft");
     tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp10 = MsgContentDraft._(_api, tmp11_1);
+    final tmp10 = MsgDraft._(_api, tmp11_1);
     return tmp10;
   }
 
   /// make draft to send location msg
-  MsgContentDraft locationDraft(
+  MsgDraft locationDraft(
     String body,
     String source,
   ) {
@@ -50226,9 +51442,9 @@ class Client {
     );
     final tmp11 = tmp9;
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgContentDraft");
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgDraft");
     tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp10 = MsgContentDraft._(_api, tmp11_1);
+    final tmp10 = MsgDraft._(_api, tmp11_1);
     return tmp10;
   }
 
@@ -52985,6 +54201,77 @@ class _CalendarEventDraftUtcEndFromFormatReturn extends ffi.Struct {
   external int arg3;
 }
 
+class _CalendarEventDraftPhysicalLocationReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _CalendarEventDraftVirtualLocationReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _EventLocationInfoLocationTypeReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _EventLocationInfoNameReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _EventLocationInfoDescriptionReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _EventLocationInfoCoordinatesReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _EventLocationInfoUriReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
 class _RsvpManagerRsvpDraftReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -53391,6 +54678,32 @@ class _SpaceDiffValueReturn extends ffi.Struct {
   external int arg0;
   @ffi.Int64()
   external int arg1;
+}
+
+class _MsgDraftAddMentionReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Int64()
+  external int arg4;
+}
+
+class _MsgDraftAddRoomMentionReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Int64()
+  external int arg4;
 }
 
 class _ConvoTopicReturn extends ffi.Struct {
@@ -55138,6 +56451,21 @@ class _ReactionManagerRedactLikeFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ReactionManagerRedactReactionFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _ReactionManagerReloadFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -55578,6 +56906,21 @@ class _ConvoUploadAvatarFuturePollReturn extends ffi.Struct {
 }
 
 class _ConvoRemoveAvatarFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ConvoSetNameFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -57518,6 +58861,21 @@ class _ClientCreateActerSpaceFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ClientWaitForRoomFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
 class _ClientWaitForCommentFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -58927,6 +60285,68 @@ class FfiListDeviceRecord extends Iterable<DeviceRecord>
   /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, DeviceRecord element) {
     _api._ffiListDeviceRecordInsert(
+        _box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListEventLocationInfo extends Iterable<EventLocationInfo>
+    implements CustomIterable<EventLocationInfo> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListEventLocationInfo._(this._api, this._box);
+
+  @override
+  Iterator<EventLocationInfo> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListEventLocationInfoLen(_box.borrow());
+  }
+
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  EventLocationInfo elementAt(int index) {
+    final address =
+        _api._ffiListEventLocationInfoElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return EventLocationInfo._(_api, reference);
+  }
+
+  EventLocationInfo operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  EventLocationInfo remove(int index) {
+    final address = _api._ffiListEventLocationInfoRemove(_box.borrow(), index);
+    final reference = _Box(
+        _api, ffi.Pointer.fromAddress(address), "drop_box_EventLocationInfo");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return EventLocationInfo._(_api, reference);
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void add(EventLocationInfo element) {
+    _api._ffiListEventLocationInfoAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, EventLocationInfo element) {
+    _api._ffiListEventLocationInfoInsert(
         _box.borrow(), index, element._box.borrow());
     element._box.move();
   }

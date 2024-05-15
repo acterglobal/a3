@@ -5,7 +5,7 @@ use ruma_macros::EventContent;
 use serde::{Deserialize, Serialize};
 use tracing::trace;
 
-use crate::{util::deserialize_some, Result};
+use crate::{models::TextMessageContent, util::deserialize_some, Result};
 
 /// Calendar Events
 /// modeled after [JMAP Calendar Events](https://jmap.io/spec-calendars.html#calendar-events), extensions to
@@ -54,6 +54,92 @@ pub enum EventLocation {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         icon: Option<Icon>,
     },
+}
+
+pub struct EventLocationInfo {
+    pub inner: EventLocation,
+}
+
+impl EventLocationInfo {
+    pub fn new(location: &EventLocation) -> Self {
+        match location {
+            EventLocation::Physical {
+                name,
+                description,
+                icon,
+                coordinates,
+                uri,
+            } => EventLocationInfo {
+                inner: EventLocation::Physical {
+                    name: name.clone(),
+                    description: description.clone(),
+                    icon: icon.clone(),
+                    coordinates: coordinates.clone(),
+                    uri: uri.clone(),
+                },
+            },
+            EventLocation::Virtual {
+                uri,
+                name,
+                description,
+                icon,
+            } => EventLocationInfo {
+                inner: EventLocation::Virtual {
+                    uri: uri.clone(),
+                    name: name.clone(),
+                    description: description.clone(),
+                    icon: icon.clone(),
+                },
+            },
+        }
+    }
+
+    pub fn location_type(&self) -> String {
+        match &self.inner {
+            EventLocation::Physical { .. } => "Physical".to_string(),
+            EventLocation::Virtual { .. } => "Virtual".to_string(),
+        }
+    }
+
+    pub fn name(&self) -> Option<String> {
+        match &self.inner {
+            EventLocation::Physical { name, .. } => name.clone(),
+            EventLocation::Virtual { name, .. } => name.clone(),
+        }
+    }
+
+    pub fn description(&self) -> Option<TextMessageContent> {
+        match &self.inner {
+            EventLocation::Physical { description, .. } => {
+                description.clone().map(TextMessageContent::from)
+            }
+            EventLocation::Virtual { description, .. } => {
+                description.clone().map(TextMessageContent::from)
+            }
+        }
+    }
+
+    pub fn icon(&self) -> Option<Icon> {
+        match &self.inner {
+            EventLocation::Physical { icon, .. } => icon.clone(),
+            EventLocation::Virtual { icon, .. } => icon.clone(),
+        }
+    }
+
+    pub fn coordinates(&self) -> Option<String> {
+        match &self.inner {
+            EventLocation::Physical { coordinates, .. } => coordinates.clone(),
+            _ => None,
+        }
+    }
+
+    /// always available for virtual location
+    pub fn uri(&self) -> Option<String> {
+        match &self.inner {
+            EventLocation::Physical { uri, .. } => uri.clone(),
+            EventLocation::Virtual { uri, .. } => Some(uri.clone()),
+        }
+    }
 }
 
 /// The Calendar Event
@@ -109,6 +195,17 @@ pub struct CalendarEventEventContent {
     #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub categories: Vec<String>,
+}
+
+impl CalendarEventBuilder {
+    pub fn into_event_loc(&mut self, loc_info: &EventLocationInfo) -> Self {
+        let event_loc = loc_info.inner.clone();
+        self.locations
+            .as_mut()
+            .expect("we have growable list")
+            .push(event_loc);
+        self.clone()
+    }
 }
 
 /// The CalendarEvent Update Event

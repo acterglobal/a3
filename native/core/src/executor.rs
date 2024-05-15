@@ -1,3 +1,4 @@
+use ruma::OwnedRoomId;
 use ruma_events::{room::redaction::OriginalRoomRedactionEvent, UnsignedRoomRedactionEvent};
 use scc::hash_map::{Entry, HashMap};
 use std::sync::Arc;
@@ -104,6 +105,12 @@ impl Executor {
                 Ok(())
             }
         }
+    }
+
+    pub async fn clear_room(&self, room_id: &OwnedRoomId) -> Result<()> {
+        let keys = self.store.clear_room(room_id).await?;
+        self.notify(keys);
+        Ok(())
     }
 
     pub async fn redact(

@@ -9,9 +9,11 @@ class MenuItemWidget extends StatelessWidget {
   final VoidCallback? onTap;
   final bool enabled;
   final bool withMenu;
+  final Key? innerKey;
 
   const MenuItemWidget({
     super.key,
+    this.innerKey,
     required this.iconData,
     this.iconColor,
     required this.title,
@@ -26,7 +28,7 @@ class MenuItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        key: key,
+        key: innerKey,
         onTap: onTap,
         leading: Icon(
           iconData,
