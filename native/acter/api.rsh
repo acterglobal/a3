@@ -1090,10 +1090,10 @@ object SpaceDiff {
 object MsgDraft {
 
     /// add a user mention
-    fn add_mention(user_id: string) -> Result<bool>;
+    fn add_mention(user_id: string) -> Result<MsgDraft>;
 
     /// whether to mention the entire room
-    fn add_room_mention(mention: bool) -> Result<bool>;
+    fn add_room_mention(mention: bool) -> Result<MsgDraft>;
     
     /// available for only image/audio/video/file
     fn size(value: u64) -> MsgDraft;

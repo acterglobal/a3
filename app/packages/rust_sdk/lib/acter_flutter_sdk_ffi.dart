@@ -38978,7 +38978,7 @@ class MsgDraft {
   MsgDraft._(this._api, this._box);
 
   /// add a user mention
-  bool addMention(
+  MsgDraft addMention(
     String userId,
   ) {
     final tmp1 = userId;
@@ -39018,12 +39018,15 @@ class MsgDraft {
       }
       throw tmp7_0;
     }
-    final tmp6 = tmp11 > 0;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = MsgDraft._(_api, tmp11_1);
     return tmp6;
   }
 
   /// whether to mention the entire room
-  bool addRoomMention(
+  MsgDraft addRoomMention(
     bool mention,
   ) {
     final tmp1 = mention;
@@ -39052,7 +39055,10 @@ class MsgDraft {
       }
       throw tmp5_0;
     }
-    final tmp4 = tmp9 > 0;
+    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+    final tmp9_1 = _Box(_api, tmp9_0, "drop_box_MsgDraft");
+    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
+    final tmp4 = MsgDraft._(_api, tmp9_1);
     return tmp4;
   }
 
@@ -54683,7 +54689,7 @@ class _MsgDraftAddMentionReturn extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-  @ffi.Uint8()
+  @ffi.Int64()
   external int arg4;
 }
 
@@ -54696,7 +54702,7 @@ class _MsgDraftAddRoomMentionReturn extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-  @ffi.Uint8()
+  @ffi.Int64()
   external int arg4;
 }
 
