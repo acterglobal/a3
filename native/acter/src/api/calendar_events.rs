@@ -269,26 +269,24 @@ impl CalendarEvent {
 
     pub fn physical_locations(&self) -> Vec<EventLocationInfo> {
         let calendar_event = self.clone();
-        let locations = calendar_event.inner.locations();
-        let mut result = Vec::new();
-        for loc in locations {
-            if let EventLocation::Virtual { .. } = loc {
-                result.push(EventLocationInfo::new(loc));
-            }
-        }
-        result
+        calendar_event
+            .inner
+            .locations()
+            .iter()
+            .filter(|e| matches!(e, EventLocation::Physical { .. }))
+            .map(EventLocationInfo::new)
+            .collect::<Vec<_>>()
     }
 
     pub fn virtual_locations(&self) -> Vec<EventLocationInfo> {
         let calendar_event = self.clone();
-        let locations = calendar_event.inner.locations();
-        let mut result = Vec::new();
-        for loc in locations {
-            if let EventLocation::Virtual { .. } = loc {
-                result.push(EventLocationInfo::new(loc));
-            }
-        }
-        result
+        calendar_event
+            .inner
+            .locations()
+            .iter()
+            .filter(|e| matches!(e, EventLocation::Virtual { .. }))
+            .map(EventLocationInfo::new)
+            .collect::<Vec<_>>()
     }
 
     pub fn locations(&self) -> Vec<EventLocationInfo> {
@@ -391,15 +389,15 @@ impl CalendarEventDraft {
         let desc_plain = TextMessageEventContent::plain(description.clone());
         let desc_html = description_html
             .map(|html| TextMessageEventContent::html(description.clone(), html.clone()));
-        let loc_info = EventLocationInfo {
-            location_type: "Physical".to_string(),
+        let inner = EventLocation::Physical {
             name: Some(name),
             description: desc_html.or(Some(desc_plain)),
-            // TODO : add icon support
+            // TODO: add icon support
             icon: None,
             coordinates: Some(cooridnates),
             uri: uri.clone(),
         };
+        let loc_info = EventLocationInfo { inner };
         // convert object to enum and push it
         self.inner.into_event_loc(&loc_info);
         Ok(())
@@ -416,15 +414,14 @@ impl CalendarEventDraft {
         let desc_plain = TextMessageEventContent::plain(description.clone());
         let desc_html = description_html
             .map(|html| TextMessageEventContent::html(description.clone(), html.clone()));
-        let event_location = EventLocationInfo {
-            location_type: "Virtual".to_string(),
+        let inner = EventLocation::Virtual {
             name: Some(name),
             description: desc_html.or(Some(desc_plain)),
-            // TODO : add icon support
+            // TODO: add icon support
             icon: None,
-            coordinates: None,
-            uri: Some(uri),
+            uri,
         };
+        let event_location = EventLocationInfo { inner };
         // convert object to enum and push it
         self.inner.into_event_loc(&event_location);
         Ok(())

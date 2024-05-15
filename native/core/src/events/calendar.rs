@@ -56,18 +56,8 @@ pub enum EventLocation {
     },
 }
 
-#[derive(Serialize, Deserialize)]
 pub struct EventLocationInfo {
-    pub location_type: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub name: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub description: Option<TextMessageEventContent>,
-    pub icon: Option<Icon>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub coordinates: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub uri: Option<String>,
+    pub inner: EventLocation,
 }
 
 impl EventLocationInfo {
@@ -80,12 +70,13 @@ impl EventLocationInfo {
                 coordinates,
                 uri,
             } => EventLocationInfo {
-                location_type: "Physical".to_string(),
-                name: name.clone(),
-                description: description.clone(),
-                icon: icon.clone(),
-                coordinates: coordinates.clone(),
-                uri: uri.clone(),
+                inner: EventLocation::Physical {
+                    name: name.clone(),
+                    description: description.clone(),
+                    icon: icon.clone(),
+                    coordinates: coordinates.clone(),
+                    uri: uri.clone(),
+                },
             },
             EventLocation::Virtual {
                 uri,
@@ -93,59 +84,60 @@ impl EventLocationInfo {
                 description,
                 icon,
             } => EventLocationInfo {
-                location_type: "Virtual".to_string(),
-                name: name.clone(),
-                description: description.clone(),
-                icon: icon.clone(),
-                coordinates: None,
-                uri: Some(uri.clone()),
+                inner: EventLocation::Virtual {
+                    uri: uri.clone(),
+                    name: name.clone(),
+                    description: description.clone(),
+                    icon: icon.clone(),
+                },
             },
         }
     }
 
     pub fn location_type(&self) -> String {
-        self.location_type.clone()
+        match &self.inner {
+            EventLocation::Physical { .. } => "Physical".to_string(),
+            EventLocation::Virtual { .. } => "Virtual".to_string(),
+        }
     }
 
     pub fn name(&self) -> Option<String> {
-        self.name.clone()
+        match &self.inner {
+            EventLocation::Physical { name, .. } => name.clone(),
+            EventLocation::Virtual { name, .. } => name.clone(),
+        }
     }
 
     pub fn description(&self) -> Option<TextMessageContent> {
-        self.description.clone().map(TextMessageContent::from)
+        match &self.inner {
+            EventLocation::Physical { description, .. } => {
+                description.clone().map(TextMessageContent::from)
+            }
+            EventLocation::Virtual { description, .. } => {
+                description.clone().map(TextMessageContent::from)
+            }
+        }
     }
 
     pub fn icon(&self) -> Option<Icon> {
-        self.icon.clone()
+        match &self.inner {
+            EventLocation::Physical { icon, .. } => icon.clone(),
+            EventLocation::Virtual { icon, .. } => icon.clone(),
+        }
     }
 
     pub fn coordinates(&self) -> Option<String> {
-        self.coordinates.clone()
+        match &self.inner {
+            EventLocation::Physical { coordinates, .. } => coordinates.clone(),
+            _ => None,
+        }
     }
 
     /// always available for virtual location
     pub fn uri(&self) -> Option<String> {
-        self.uri.clone()
-    }
-}
-
-impl From<&EventLocationInfo> for EventLocation {
-    fn from(location_info: &EventLocationInfo) -> Self {
-        match location_info.location_type.as_str() {
-            "Physical" => EventLocation::Physical {
-                name: location_info.name.clone(),
-                description: location_info.description.clone(),
-                icon: location_info.icon.clone(),
-                coordinates: location_info.coordinates.clone(),
-                uri: location_info.uri.clone(),
-            },
-            "Virtual" => EventLocation::Virtual {
-                uri: location_info.uri.clone().expect("always contains uri"),
-                name: location_info.name.clone(),
-                description: location_info.description.clone(),
-                icon: location_info.icon.clone(),
-            },
-            _ => panic!("Invalid location type: {}", location_info.location_type),
+        match &self.inner {
+            EventLocation::Physical { uri, .. } => uri.clone(),
+            EventLocation::Virtual { uri, .. } => Some(uri.clone()),
         }
     }
 }
@@ -207,7 +199,7 @@ pub struct CalendarEventEventContent {
 
 impl CalendarEventBuilder {
     pub fn into_event_loc(&mut self, loc_info: &EventLocationInfo) -> Self {
-        let event_loc = EventLocation::from(loc_info);
+        let event_loc = loc_info.inner.clone();
         self.locations
             .as_mut()
             .expect("we have growable list")
