@@ -1444,7 +1444,7 @@
   "@yesPleaseUpdate": {},
   "youAreAbleToJoinThisRoom": "You are able to join this Chat",
   "@youAreAbleToJoinThisRoom": {},
-  "youAreAboutToBlock": "You are about to unblock {userId}",
+  "youAreAboutToBlock": "You are about to block {userId}",
   "@youAreAboutToBlock": {},
   "youAreAboutToUnblock": "You are about to unblock {userId}",
   "@youAreAboutToUnblock": {},
