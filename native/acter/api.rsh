@@ -598,6 +598,15 @@ object CalendarEvent {
 
     /// Generate a iCal as a String for sharing with others
     fn ical_for_sharing(file_name: string) -> Result<bool>;
+
+    /// get the physical location(s) details 
+    fn physical_locations() -> Vec<EventLocationInfo>;
+
+    /// get the virtual location(s) details
+    fn virtual_locations() -> Vec<EventLocationInfo>;
+
+    /// get all location details
+    fn locations() -> Vec<EventLocationInfo>;
 }
 
 object CalendarEventUpdateBuilder {
@@ -623,6 +632,7 @@ object CalendarEventUpdateBuilder {
     fn utc_end_from_rfc2822(utc_end: string) -> Result<()>;
     /// set utc end in custom format
     fn utc_end_from_format(utc_end: string, format: string) -> Result<()>;
+    fn unset_locations();
 
     /// send builder update
     fn send() -> Future<Result<EventId>>;
@@ -653,9 +663,27 @@ object CalendarEventDraft {
     fn utc_end_from_rfc2822(utc_end: string) -> Result<()>;
     /// set the utc_end for this calendar event in custom format
     fn utc_end_from_format(utc_end: string, format: string) -> Result<()>;
+    /// set the physical location details for this calendar event
+    fn physical_location(name: string, description: string, description_html: Option<string>, coordinates: string, uri: Option<string>) -> Result<()>;
+    /// set the virtual location details for this calendar event
+    fn virtual_location(name: string, description: string, description_html: Option<string>, uri: string) -> Result<()>;
+
 
     /// create this calendar event
     fn send() -> Future<Result<EventId>>;
+}
+
+object EventLocationInfo {
+    /// either of `Physical` or `Virtual`
+    fn location_type() -> string;
+    /// get the name of location
+    fn name() -> Option<string>;
+    /// get the location description
+    fn description() -> Option<TextMessageContent>;
+    /// geo uri for the location
+    fn coordinates() -> Option<string>;
+    /// an online link for the location
+    fn uri() -> Option<string>;
 }
 
 
