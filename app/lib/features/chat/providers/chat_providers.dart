@@ -14,7 +14,9 @@ import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/providers/app_settings_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:riverpod/riverpod.dart';
 
 final autoDownloadMediaProvider =
@@ -40,6 +42,20 @@ final chatStateProvider =
     StateNotifierProvider.family<ChatRoomNotifier, ChatRoomState, Convo>(
   (ref, convo) => ChatRoomNotifier(ref: ref, convo: convo),
 );
+
+final chatMessagesProvider =
+    StateProvider.autoDispose.family<List<Message>, Convo>(
+  (ref, convo) => ref
+      .watch(chatStateProvider(convo).select((value) => value.messages))
+      .where(
+        // filter only items we can show
+        (m) => m is! types.UnsupportedMessage,
+      )
+      .toList()
+      .reversed
+      .toList(),
+);
+
 
 final isAuthorOfSelectedMessage =
     StateProvider.family<bool, String>((ref, roomId) {

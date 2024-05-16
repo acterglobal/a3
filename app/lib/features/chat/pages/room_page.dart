@@ -88,15 +88,14 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
     return OrientationBuilder(
       builder: (context, orientation) => Scaffold(
         resizeToAvoidBottomInset: orientation == Orientation.portrait,
-        body: CustomScrollView(
-          physics: const NeverScrollableScrollPhysics(),
-          slivers: [appBar(context), chatBody(context)],
+        body: Column(
+          children: [appBar(context), chatBody(context)],
         ),
       ),
     );
   }
 
-  SliverFillRemaining chatBody(BuildContext context) {
+  Widget chatBody(BuildContext context) {
     final userAppSettings = ref.watch(userAppSettingsProvider);
     final chatState = ref.watch(chatStateProvider(widget.convo));
     final userId = ref.watch(myUserIdStrProvider);
@@ -125,16 +124,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
       }
     }
 
-    final messages = chatState.messages
-        .where(
-          // filter only items we can show
-          (m) => m is! types.UnsupportedMessage,
-        )
-        .toList()
-        .reversed
-        .toList();
-
-    return SliverFillRemaining(
+    return Expanded(
       child: Container(
         decoration: const BoxDecoration(
           gradient: primaryGradient,
@@ -168,7 +158,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
             sendButtonAccessibilityLabel: '',
           ),
           timeFormat: DateFormat.jm(),
-          messages: messages,
+          messages: ref.watch(chatMessagesProvider(widget.convo)),
           onSendPressed: (types.PartialText partialText) {},
           user: types.User(id: userId),
           // disable image preview
@@ -255,11 +245,11 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
     );
   }
 
-  SliverAppBar appBar(BuildContext context) {
+  Widget appBar(BuildContext context) {
     final roomId = widget.convo.getRoomIdStr();
     final convoProfile = ref.watch(chatProfileDataProvider(widget.convo));
     final activeMembers = ref.watch(membersIdsProvider(roomId));
-    return SliverAppBar(
+    return AppBar(
       elevation: 0,
       automaticallyImplyLeading: widget.inSidebar ? false : true,
       centerTitle: true,
