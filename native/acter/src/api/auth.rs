@@ -445,15 +445,23 @@ pub async fn register_with_token_under_config(
 
 impl Client {
     pub async fn deactivate(&self, password: String) -> Result<bool> {
-        // ToDo: make this a proper User-Interactive Flow rather than hardcoded for
-        //       password-only instance.
         let account = self.account()?;
         RUNTIME
             .spawn(async move {
-                let auth_data =
-                    AuthData::Password(Password::new(account.user_id().into(), password.clone()));
-                account.deactivate(None, Some(auth_data)).await?;
-                // FIXME: remove local data, too!
+                if let Err(e) = account.deactivate(None, None).await {
+                    let Some(inf) = e.as_uiaa_response() else {
+                        bail!("Server did not indicate how to allow deactivation.")
+                    };
+                    if let Some(err) = &inf.auth_error {
+                        bail!("Found auth error: {:?}", err.message);
+                    }
+                    let pswd = assign!(Password::new(account.user_id().into(), password), {
+                        session: inf.session.clone(),
+                    });
+                    let auth_data = AuthData::Password(pswd);
+                    account.deactivate(None, Some(auth_data)).await?;
+                    // FIXME: remove local data, too!
+                }
                 Ok(true)
             })
             .await?
