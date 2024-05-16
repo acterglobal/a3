@@ -52,6 +52,7 @@ If you are not on a Linux machine, please [install vagrant](https://developer.ha
 <summary><strong>Local docker-compose</strong></summary>
 
 Alternatively to using the vagrant you can also run the synapse matrix backend with the proper configuration on any Linux base system with docker and docker-compose available. Just `cd utils/test_server` and start the docker-compose in there via `docker-compose up`. Ensure the server is up and available at `http://localhost:8118`.
+
 </details>
 <details>
 <summary><strong>Using the shared testing servers</strong></summary>
