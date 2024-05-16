@@ -93,13 +93,12 @@ async fn kyra_can_restore() -> Result<()> {
     let homeserver_url = option_env!("DEFAULT_HOMESERVER_URL")
         .unwrap_or("http://localhost:8118")
         .to_string();
-    let base_data = TempDir::new()?;
-    let base_path = base_data.path().to_string_lossy().to_string();
-    let media_data = TempDir::new()?;
+    let base_dir = TempDir::new()?;
+    let media_dir = TempDir::new()?;
     let (config, user_id) = make_client_config(
-        base_path,
+        base_dir.path().to_string_lossy().to_string(),
         "@kyra",
-        media_data.path().to_string_lossy().to_string(),
+        media_dir.path().to_string_lossy().to_string(),
         None,
         &homeserver_name,
         &homeserver_url,
@@ -140,14 +139,13 @@ async fn kyra_can_restore_with_db_passphrase() -> Result<()> {
     let homeserver_url = option_env!("DEFAULT_HOMESERVER_URL")
         .unwrap_or("http://localhost:8118")
         .to_string();
-    let tmp_dir = TempDir::new()?;
-    let base_path = tmp_dir.path().to_string_lossy().to_string();
-    let media_data_dir = TempDir::new()?;
+    let base_dir = TempDir::new()?;
+    let media_dir = TempDir::new()?;
     let db_passphrase = Uuid::new_v4().to_string();
     let (config, user_id) = make_client_config(
-        base_path,
+        base_dir.path().to_string_lossy().to_string(),
         "@kyra",
-        media_data_dir.path().to_string_lossy().to_string(),
+        media_dir.path().to_string_lossy().to_string(),
         Some(db_passphrase.clone()),
         &homeserver_name,
         &homeserver_url,
@@ -222,12 +220,12 @@ async fn user_changes_password() -> Result<()> {
     let result = client.logout().await?;
     assert!(result, "Couldn't logout successfully");
 
-    let base_data = TempDir::new()?;
-    let media_data = TempDir::new()?;
+    let base_dir = TempDir::new()?;
+    let media_dir = TempDir::new()?;
     let (config, uid) = make_client_config(
-        base_data.path().to_string_lossy().to_string(),
+        base_dir.path().to_string_lossy().to_string(),
         user_id.localpart(),
-        media_data.path().to_string_lossy().to_string(),
+        media_dir.path().to_string_lossy().to_string(),
         None,
         option_env!("DEFAULT_HOMESERVER_NAME").unwrap_or("localhost"),
         option_env!("DEFAULT_HOMESERVER_URL").unwrap_or("http://localhost:8118"),
