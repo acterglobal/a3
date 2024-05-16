@@ -46,7 +46,7 @@ class InvitePage extends ConsumerWidget {
       child: Row(
         children: [
           const Icon(
-            Icons.person_add_alt_1,
+            Icons.person_outline_outlined,
             size: 18,
           ),
           const SizedBox(width: 5),
@@ -88,28 +88,10 @@ class InvitePage extends ConsumerWidget {
   }
 
   Widget _buildInviteHeader(BuildContext context, WidgetRef ref) {
-    final roomItem =
-        ref.watch(briefRoomItemWithMembershipProvider(roomId)).valueOrNull;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        if (roomItem != null)
-          Column(
-            children: [
-              ActerAvatar(
-                mode: DisplayMode.Space,
-                avatarInfo: AvatarInfo(
-                  uniqueId: roomItem.roomId,
-                  displayName: roomItem.roomProfileData.displayName,
-                  avatar: roomItem.roomProfileData.getAvatarImage(),
-                ),
-                size: 50,
-              ),
-              const SizedBox(height: 10),
-              Text(roomItem.roomProfileData.displayName ?? ''),
-            ],
-          ),
+        _roomProfileDetailsUI(ref),
         const SizedBox(height: 10),
         Text(
           L10n.of(context).invite,
@@ -124,6 +106,25 @@ class InvitePage extends ConsumerWidget {
     );
   }
 
+  Widget _roomProfileDetailsUI(WidgetRef ref) {
+    final roomProfile = ref.watch(roomProfileDataProvider(roomId)).valueOrNull;
+    return Column(
+      children: [
+        ActerAvatar(
+          mode: DisplayMode.Space,
+          avatarInfo: AvatarInfo(
+            uniqueId: roomId,
+            displayName: roomProfile?.displayName,
+            avatar: roomProfile?.getAvatarImage(),
+          ),
+          size: 50,
+        ),
+        const SizedBox(height: 10),
+        Text(roomProfile?.displayName ?? ''),
+      ],
+    );
+  }
+
   Widget _buildInviteMethods(BuildContext context) {
     return Center(
       child: Container(
@@ -132,7 +133,7 @@ class InvitePage extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             MenuItemWidget(
-              iconData: Icons.person_add_alt_1,
+              iconData: Icons.people_alt_outlined,
               title: L10n.of(context).inviteSpaceMembersTitle,
               subTitle: L10n.of(context).inviteSpaceMembersSubtitle,
               onTap: () => EasyLoading.showInfo(L10n.of(context).comingSoon),

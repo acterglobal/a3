@@ -44,11 +44,14 @@ class _InviteIndividualUsersState extends ConsumerState<InviteIndividualUsers> {
         constraints: const BoxConstraints(maxWidth: 500),
         child: Column(
           children: [
+            const SizedBox(height: 10),
             Text(
               L10n.of(context).inviteIndividualUsersDescription,
               textAlign: TextAlign.center,
             ),
+            const SizedBox(height: 10),
             _buildSearchTextField(),
+            const SizedBox(height: 10),
             _buildUserDirectInvite(),
             if (ref.watch(searchValueProvider) == null ||
                 ref.watch(searchValueProvider)?.isEmpty == true)
@@ -167,6 +170,7 @@ class _InviteIndividualUsersState extends ConsumerState<InviteIndividualUsers> {
                 style: Theme.of(context).textTheme.titleSmall,
               ),
             ),
+            const SizedBox(height: 5),
             Expanded(
               child: ListView.builder(
                 itemCount: foundUsers.value!.length,

@@ -40,9 +40,9 @@ class _InvitePendingState extends ConsumerState<InvitePending> {
         alignment: Alignment.topCenter,
         child: invited.isEmpty
             ? EmptyState(
-                title: L10n.of(context).noUserFoundTitle,
-                subtitle: L10n.of(context).noUserFoundSubtitle,
-                image: 'assets/images/empty_activity.svg',
+                title: L10n.of(context).noPendingInvitesTitle,
+                subtitle: "",
+                image: 'assets/images/empty_chat.svg',
               )
             : ListView.builder(
                 itemCount: invited.length,
