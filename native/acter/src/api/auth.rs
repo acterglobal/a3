@@ -466,4 +466,26 @@ impl Client {
             })
             .await?
     }
+
+    pub async fn change_password(&self, old_val: String, new_val: String) -> Result<bool> {
+        let account = self.account()?;
+        RUNTIME
+            .spawn(async move {
+                if let Err(e) = account.change_password(&new_val, None).await {
+                    let Some(inf) = e.as_uiaa_response() else {
+                        bail!("Server did not indicate how to allow password change.")
+                    };
+                    if let Some(err) = &inf.auth_error {
+                        bail!("Found auth error: {:?}", err.message);
+                    }
+                    let pswd = assign!(Password::new(account.user_id().into(), old_val), {
+                        session: inf.session.clone(),
+                    });
+                    let auth_data = AuthData::Password(pswd);
+                    account.change_password(&new_val, Some(auth_data)).await?;
+                }
+                Ok(true)
+            })
+            .await?
+    }
 }
