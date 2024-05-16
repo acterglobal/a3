@@ -5,6 +5,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 final _log = Logger('a3::space::non_acter_space_card');
 
@@ -45,9 +46,9 @@ class NonActerSpaceCard extends ConsumerWidget {
               }
             },
             error: (error, stack) => Text(
-              '${L10n.of(context).loading}: $error',
+              L10n.of(context).errorLoading(error),
             ),
-            loading: () => fallback,
+            loading: () => Skeletonizer(child: fallback),
           ),
           const SizedBox(height: 10),
         ],

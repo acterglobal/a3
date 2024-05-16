@@ -58,8 +58,8 @@ pub use uniffi_api::*;
 pub use account::Account;
 pub use acter_core::{
     events::{
-        news::NewsContent, Colorize, ColorizeBuilder, ObjRef, ObjRefBuilder, RefDetails,
-        RefDetailsBuilder, UtcDateTime,
+        calendar::EventLocationInfo, news::NewsContent, Colorize, ColorizeBuilder, ObjRef,
+        ObjRefBuilder, RefDetails, RefDetailsBuilder, UtcDateTime,
     },
     models::{ActerModel, Tag, TextMessageContent},
 };

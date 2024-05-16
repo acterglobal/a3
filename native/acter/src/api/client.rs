@@ -344,6 +344,26 @@ impl Client {
             .context("Room not found")
     }
 
+    pub async fn wait_for_room(&self, room_id: String, timeout: Option<u8>) -> Result<bool> {
+        let executor = self.core.executor().clone();
+        let mut subscription = executor.subscribe(room_id.clone());
+        if self.room_by_id_typed(&RoomId::parse(room_id)?).is_ok() {
+            return Ok(true);
+        }
+
+        RUNTIME
+            .spawn(async move {
+                let waiter = subscription.recv();
+                if let Some(tm) = timeout {
+                    time::timeout(Duration::from_secs(tm as u64), waiter).await??;
+                } else {
+                    waiter.await?;
+                }
+                Ok(true)
+            })
+            .await?
+    }
+
     // ***_typed fn accepts rust-typed input, not string-based one
     async fn room_by_alias_typed(&self, room_alias: &RoomAliasId) -> Result<Room> {
         let client = self.core.client();

@@ -4,6 +4,7 @@ import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class LinksCard extends ConsumerWidget {
   final String spaceId;
@@ -68,7 +69,9 @@ class LinksCard extends ConsumerWidget {
                 error: (error, stack) => [
                   Text(L10n.of(context).loadingPinsFailed(error)),
                 ],
-                loading: () => [Text(L10n.of(context).loading)],
+                loading: () => [
+                  Skeletonizer(child: Text(L10n.of(context).loading)),
+                ],
               ),
             ],
           ),

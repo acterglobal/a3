@@ -1,4 +1,10 @@
-use acter::{new_space_settings_builder, ruma_events::StateEventType};
+use acter::{
+    new_join_rule_builder, new_space_settings_builder,
+    ruma_events::{
+        room::join_rules::{AllowRule, JoinRule, Restricted},
+        StateEventType,
+    },
+};
 use acter_core::statics::KEYS;
 use anyhow::{bail, Result};
 use tokio::sync::broadcast::error::TryRecvError;
@@ -129,7 +135,6 @@ async fn leaving_spaces() -> Result<()> {
     })
     .await?;
 
-    println!("all triggered");
     Retry::spawn(retry_strategy.clone(), || async {
         if first_listener.is_empty() {
             // not yet.
@@ -270,6 +275,114 @@ async fn create_subspace() -> Result<()> {
         Ok(())
     })
     .await?;
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn change_subspace_join_rule() -> Result<()> {
+    let _ = env_logger::try_init();
+    let (user, _sync_state, _engine) = random_user_with_template("subspace_create", TMPL).await?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = user.clone();
+    Retry::spawn(retry_strategy.clone(), move || {
+        let client = fetcher_client.clone();
+        async move {
+            if client.spaces().await?.len() != 1 {
+                bail!("not all spaces found");
+            }
+            Ok(())
+        }
+    })
+    .await?;
+
+    let mut spaces = user.spaces().await?;
+
+    assert_eq!(spaces.len(), 1);
+
+    let first = spaces.pop().unwrap();
+
+    let mut cfg = new_space_settings_builder();
+    cfg.set_name("subspace".to_owned());
+    cfg.set_parent(first.room_id().to_string());
+
+    let settings = cfg.build()?;
+    let subspace_id = user.create_acter_space(Box::new(settings)).await?;
+
+    let fetcher_client = user.clone();
+    Retry::spawn(retry_strategy.clone(), move || {
+        let client = fetcher_client.clone();
+        async move {
+            if client.spaces().await?.len() != 2 {
+                bail!("not the right number of spaces found");
+            }
+            Ok(())
+        }
+    })
+    .await?;
+
+    let space = user.space(subspace_id.to_string()).await?;
+    let space_relations = space.space_relations().await?;
+    let space_parent = space_relations
+        .main_parent()
+        .expect("Subspace doesn't have the parent");
+    assert_eq!(space_parent.room_id(), first.room_id());
+    assert_eq!(space.join_rule_str(), "restricted");
+
+    let mut update = new_join_rule_builder();
+    update.join_rule("private".to_string());
+
+    space.set_join_rule(Box::new(update)).await?;
+
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+
+    Retry::spawn(retry_strategy.clone(), || async {
+        let space = user.space(subspace_id.to_string()).await?;
+        if space.join_rule_str() != "private" {
+            bail!("update did not occur");
+        }
+        Ok(())
+    })
+    .await?;
+
+    // let's move it back to restricted
+    assert_eq!(space.join_rule_str(), "private");
+    let join_rule = space.join_rule();
+
+    assert!(matches!(join_rule, JoinRule::Private));
+
+    let mut update = new_join_rule_builder();
+    update.join_rule("restricted".to_string());
+    update.add_room(space_parent.room_id().to_string());
+
+    space.set_join_rule(Box::new(update)).await?;
+
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+
+    Retry::spawn(retry_strategy.clone(), || async {
+        let space = user.space(subspace_id.to_string()).await?;
+        if space.join_rule_str() != "restricted" {
+            bail!("update did not occur");
+        }
+        Ok(())
+    })
+    .await?;
+
+    let space = user.space(subspace_id.to_string()).await?;
+    let join_rule = space.join_rule();
+    let target = JoinRule::Restricted(Restricted::new(vec![AllowRule::room_membership(
+        space_parent.room_id(),
+    )]));
+
+    if join_rule != target {
+        bail!(
+            "Join rule is incorrect: {:?}, expected {:?}",
+            join_rule,
+            target
+        );
+    }
 
     Ok(())
 }
