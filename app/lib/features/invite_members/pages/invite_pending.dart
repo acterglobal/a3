@@ -41,7 +41,6 @@ class _InvitePendingState extends ConsumerState<InvitePending> {
         child: invited.isEmpty
             ? EmptyState(
                 title: L10n.of(context).noPendingInvitesTitle,
-                subtitle: "",
                 image: 'assets/images/empty_chat.svg',
               )
             : ListView.builder(
