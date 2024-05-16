@@ -466,8 +466,8 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
   void _handleInvite(Member membership) {
     if (membership.canString('CanInvite')) {
       context.pushNamed(
-        Routes.spaceInvite.name,
-        pathParameters: {'spaceId': widget.roomId},
+        Routes.chatInvite.name,
+        pathParameters: {'roomId': widget.roomId},
       );
     } else {
       EasyLoading.showError(
