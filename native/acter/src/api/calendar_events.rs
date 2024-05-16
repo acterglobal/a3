@@ -380,22 +380,14 @@ impl CalendarEventDraft {
 
     pub fn physical_location(
         &mut self,
-        name: String,
-        description: String,
-        description_html: Option<String>,
-        cooridnates: String,
-        uri: Option<String>,
+        name: Option<String>,
+        cooridnates: Option<String>,
     ) -> Result<()> {
-        let desc_plain = TextMessageEventContent::plain(description.clone());
-        let desc_html = description_html
-            .map(|html| TextMessageEventContent::html(description.clone(), html.clone()));
         let inner = EventLocation::Physical {
-            name: Some(name),
-            description: desc_html.or(Some(desc_plain)),
+            name,
             // TODO: add icon support
             icon: None,
-            coordinates: Some(cooridnates),
-            uri: uri.clone(),
+            coordinates: cooridnates,
         };
         let loc_info = EventLocationInfo { inner };
         // convert object to enum and push it
@@ -403,20 +395,9 @@ impl CalendarEventDraft {
         Ok(())
     }
 
-    pub fn virtual_location(
-        &mut self,
-        name: String,
-        description: String,
-        description_html: Option<String>,
-        uri: String,
-    ) -> Result<()> {
+    pub fn virtual_location(&mut self, uri: String) -> Result<()> {
         let calendar_event = self.inner.clone();
-        let desc_plain = TextMessageEventContent::plain(description.clone());
-        let desc_html = description_html
-            .map(|html| TextMessageEventContent::html(description.clone(), html.clone()));
         let inner = EventLocation::Virtual {
-            name: Some(name),
-            description: desc_html.or(Some(desc_plain)),
             // TODO: add icon support
             icon: None,
             uri,

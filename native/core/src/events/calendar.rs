@@ -5,7 +5,7 @@ use ruma_macros::EventContent;
 use serde::{Deserialize, Serialize};
 use tracing::trace;
 
-use crate::{models::TextMessageContent, util::deserialize_some, Result};
+use crate::{util::deserialize_some, Result};
 
 /// Calendar Events
 /// modeled after [JMAP Calendar Events](https://jmap.io/spec-calendars.html#calendar-events), extensions to
@@ -22,10 +22,6 @@ pub enum EventLocation {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         name: Option<String>,
 
-        /// further description to this location
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        description: Option<TextMessageEventContent>,
-
         /// Alternative Icon to show with this location
         #[serde(default, skip_serializing_if = "Option::is_none")]
         icon: Option<Icon>,
@@ -33,22 +29,10 @@ pub enum EventLocation {
         /// A `geo:` URI [RFC5870] for the location.
         #[serde(default, skip_serializing_if = "Option::is_none")]
         coordinates: Option<String>,
-
-        /// further Link
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        uri: Option<String>,
     },
     Virtual {
         /// URI to this virtual location
         uri: String,
-
-        /// Optional name of this virtual location
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        name: Option<String>,
-
-        /// further description for virtual location
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        description: Option<TextMessageEventContent>,
 
         /// Alternative Icon to show with this location
         #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -65,29 +49,18 @@ impl EventLocationInfo {
         match location {
             EventLocation::Physical {
                 name,
-                description,
                 icon,
                 coordinates,
-                uri,
             } => EventLocationInfo {
                 inner: EventLocation::Physical {
                     name: name.clone(),
-                    description: description.clone(),
                     icon: icon.clone(),
                     coordinates: coordinates.clone(),
-                    uri: uri.clone(),
                 },
             },
-            EventLocation::Virtual {
-                uri,
-                name,
-                description,
-                icon,
-            } => EventLocationInfo {
+            EventLocation::Virtual { uri, icon } => EventLocationInfo {
                 inner: EventLocation::Virtual {
                     uri: uri.clone(),
-                    name: name.clone(),
-                    description: description.clone(),
                     icon: icon.clone(),
                 },
             },
@@ -104,18 +77,7 @@ impl EventLocationInfo {
     pub fn name(&self) -> Option<String> {
         match &self.inner {
             EventLocation::Physical { name, .. } => name.clone(),
-            EventLocation::Virtual { name, .. } => name.clone(),
-        }
-    }
-
-    pub fn description(&self) -> Option<TextMessageContent> {
-        match &self.inner {
-            EventLocation::Physical { description, .. } => {
-                description.clone().map(TextMessageContent::from)
-            }
-            EventLocation::Virtual { description, .. } => {
-                description.clone().map(TextMessageContent::from)
-            }
+            _ => None,
         }
     }
 
@@ -136,8 +98,8 @@ impl EventLocationInfo {
     /// always available for virtual location
     pub fn uri(&self) -> Option<String> {
         match &self.inner {
-            EventLocation::Physical { uri, .. } => uri.clone(),
             EventLocation::Virtual { uri, .. } => Some(uri.clone()),
+            _ => None,
         }
     }
 }
