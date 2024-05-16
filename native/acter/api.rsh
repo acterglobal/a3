@@ -2743,7 +2743,31 @@ object SuperInvites {
 
     /// try to redeem a token
     fn redeem(token: string) -> Future<Result<Vec<string>>>;
+
+    /// get the token info
+    fn info(token: string) -> Future<Result<SuperInviteInfo>>;
 }
+
+object SuperInviteInfo {
+    /// whether or not this token will create a DM with the new user
+    fn create_dm() -> bool;
+
+    /// whether or not this token has been redeemed by the caller
+    fn has_redeemed() -> bool;
+
+    /// the number of rooms that will be added - includes DM if created
+    fn rooms_count() -> u32;
+
+    /// the UserId of the inviter
+    fn inviter_user_id_str() -> string;
+
+    /// the display_name of the inviter if known
+    fn inviter_display_name_str() -> Option<string>;
+
+    /// the Avatar URl of the inviter if known
+    fn inviter_avatar_url_str() -> Option<string>;
+}
+
 
 object SuperInviteToken {
     /// the textual ID of the token

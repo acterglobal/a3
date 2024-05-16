@@ -11,6 +11,8 @@ import 'package:acter/features/spaces/model/keys.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/services.dart';
+
 import 'login.dart';
 import 'util.dart';
 
@@ -22,6 +24,8 @@ extension ActerSpace on ConvenientTest {
   }
 
   Future<void> ensureIsMemberOfSpaces(List<String> spaceIds) async {
+    SystemChannels.textInput.invokeMethod('TextInput.hide');
+
     await find.byKey(Keys.mainNav).should(findsOneWidget);
     await navigateTo([
       MainNavKeys.dashboardHome,
@@ -37,6 +41,7 @@ extension ActerSpace on ConvenientTest {
   }
 
   Future<void> gotoSpace(String spaceId, {Key? appTab}) async {
+    SystemChannels.textInput.invokeMethod('TextInput.hide');
     await find.byKey(Keys.mainNav).should(findsOneWidget);
     await navigateTo([
       MainNavKeys.dashboardHome,
@@ -105,6 +110,7 @@ extension ActerSpace on ConvenientTest {
     StepCallback? onCreateForm,
     String? parentSpaceId,
   }) async {
+    SystemChannels.textInput.invokeMethod('TextInput.hide');
     await find.byKey(Keys.mainNav).should(findsOneWidget);
     final homeKey = find.byKey(MainNavKeys.dashboardHome);
     await homeKey.should(findsOneWidget);

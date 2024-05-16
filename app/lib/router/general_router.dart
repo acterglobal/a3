@@ -19,7 +19,7 @@ import 'package:acter/features/onboarding/pages/start_page.dart';
 import 'package:acter/features/onboarding/pages/upload_avatar_page.dart';
 import 'package:acter/features/pins/pages/create_pin_page.dart';
 import 'package:acter/features/search/pages/quick_jump.dart';
-import 'package:acter/features/settings/super_invites/pages/create.dart';
+import 'package:acter/features/super_invites/pages/create.dart';
 import 'package:acter/features/space/sheets/edit_space_sheet.dart';
 import 'package:acter/features/space/sheets/link_room_sheet.dart';
 import 'package:acter/features/spaces/sheets/create_space_sheet.dart';

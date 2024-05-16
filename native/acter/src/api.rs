@@ -114,7 +114,9 @@ pub use spaces::{
     RelationTargetType, Space, SpaceDiff,
 };
 pub use stream::{MsgDraft, RoomMessageDiff, TimelineStream};
-pub use super_invites::{SuperInviteToken, SuperInvites, SuperInvitesTokenUpdateBuilder};
+pub use super_invites::{
+    SuperInviteInfo, SuperInviteToken, SuperInvites, SuperInvitesTokenUpdateBuilder,
+};
 pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,
 };
