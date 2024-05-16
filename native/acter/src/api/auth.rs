@@ -468,9 +468,14 @@ impl Client {
     }
 
     pub async fn change_password(&self, old_val: String, new_val: String) -> Result<bool> {
+        let client = self.core.client().clone();
         let account = self.account()?;
         RUNTIME
             .spawn(async move {
+                let capabilities = client.get_capabilities().await?;
+                if !capabilities.change_password.enabled {
+                    bail!("This client doesn't support password change");
+                }
                 if let Err(e) = account.change_password(&new_val, None).await {
                     let Some(inf) = e.as_uiaa_response() else {
                         bail!("Server did not indicate how to allow password change.")
