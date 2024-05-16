@@ -96,33 +96,14 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
   }
 
   Widget chatBody(BuildContext context) {
-    final userAppSettings = ref.watch(userAppSettingsProvider);
     final chatState = ref.watch(chatStateProvider(widget.convo));
     final userId = ref.watch(myUserIdStrProvider);
     final roomId = widget.convo.getRoomIdStr();
-    List<types.User> typingUsers = [];
-    if (userAppSettings.valueOrNull != null) {
-      final settings = userAppSettings.requireValue;
-      if (settings.typingNotice() != false) {
-        final typingEvent = ref.watch(chatTypingEventProvider);
-        if (typingEvent.valueOrNull != null) {
-          final t = typingEvent.requireValue;
-          if (t != null) {
-            if (t.roomId().toString() == roomId) {
-              for (var i in t.userIds().toList()) {
-                if (i.toString() != userId) {
-                  final uid = types.User(
-                    id: i.toString(),
-                    firstName: i.toString(),
-                  );
-                  typingUsers.add(uid);
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+    final sendTypingNotice = ref.watch(
+      userAppSettingsProvider.select(
+        (settings) => settings.valueOrNull?.typingNotice() ?? false,
+      ),
+    );
 
     return Expanded(
       child: Container(
@@ -136,9 +117,11 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
           customBottomWidget: CustomChatInput(
             key: Key('chat-input-$roomId'),
             roomId: widget.convo.getRoomIdStr(),
-            onTyping: (typing) async {
-              widget.convo.typingNotice(typing);
-            },
+            onTyping: sendTypingNotice
+                ? (typing) async {
+                    widget.convo.typingNotice(typing);
+                  }
+                : null,
           ),
           textMessageBuilder: (
             types.TextMessage m, {
@@ -236,7 +219,8 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
           },
           typingIndicatorOptions: TypingIndicatorOptions(
             typingMode: TypingIndicatorMode.name,
-            typingUsers: typingUsers,
+            typingUsers:
+                ref.watch(chatTypingEventProvider(roomId)).valueOrNull ?? [],
           ),
           //Custom Theme class, see lib/common/store/chatTheme.dart
           theme: Theme.of(context).chatTheme,

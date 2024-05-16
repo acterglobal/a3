@@ -56,7 +56,6 @@ final chatMessagesProvider =
       .toList(),
 );
 
-
 final isAuthorOfSelectedMessage =
     StateProvider.family<bool, String>((ref, roomId) {
   final chatInputState = ref.watch(chatInputProvider(roomId));
@@ -129,9 +128,23 @@ final chatMentionsProvider =
   return mentionRecords;
 });
 
-final chatTypingEventProvider = StreamProvider<TypingEvent?>((ref) async* {
+final chatTypingEventProvider = StreamProvider.autoDispose
+    .family<List<types.User>, String>((ref, roomId) async* {
   final client = ref.watch(alwaysClientProvider);
-  await for (final event in client.typingEventRx()!) {
-    yield event;
+  final userId = ref.watch(myUserIdStrProvider);
+  yield [];
+  await for (final event in client.subscribeToTypingEventStream(roomId)) {
+    yield event
+        .userIds()
+        .toList()
+        .map((i) => i.toString())
+        .where((id) => id != userId) // remove our User ID
+        .map(
+          (id) => types.User(
+            id: id,
+            firstName: id,
+          ),
+        )
+        .toList();
   }
 });
