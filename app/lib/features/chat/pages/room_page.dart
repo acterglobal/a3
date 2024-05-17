@@ -107,6 +107,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
         (settings) => settings.valueOrNull?.typingNotice() ?? false,
       ),
     );
+    final messages = ref.watch(chatMessagesProvider(widget.convo));
 
     return Expanded(
       child: Container(
@@ -144,7 +145,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
             sendButtonAccessibilityLabel: '',
           ),
           timeFormat: DateFormat.jm(),
-          messages: ref.watch(chatMessagesProvider(widget.convo)),
+          messages: messages,
           onSendPressed: (types.PartialText partialText) {},
           user: types.User(id: userId),
           // disable image preview

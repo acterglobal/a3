@@ -11,6 +11,7 @@ import 'package:acter/features/chat/providers/notifiers/chat_input_notifier.dart
 import 'package:acter/features/chat/providers/notifiers/chat_room_notifier.dart';
 import 'package:acter/features/chat/providers/notifiers/media_chat_notifier.dart';
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
+import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/providers/app_settings_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -58,17 +59,24 @@ final chatTopic =
   return c?.topic();
 });
 
-final chatMessagesProvider =
+final renderableChatMessagesProvider =
     StateProvider.autoDispose.family<List<Message>, Convo>((ref, convo) {
-  final messages = ref
+  return ref
       .watch(chatStateProvider(convo).select((value) => value.messages))
       .where(
         // filter only items we can show
-        (m) => m is! types.UnsupportedMessage,
+        (m) =>
+            m is! types.UnsupportedMessage &&
+            !(m is types.CustomMessage && !renderCustomMessageBubble(m)),
       )
       .toList()
       .reversed
       .toList();
+});
+
+final chatMessagesProvider =
+    StateProvider.autoDispose.family<List<Message>, Convo>((ref, convo) {
+  final messages = ref.watch(renderableChatMessagesProvider(convo));
   if (ref.watch(chatStateProvider(convo).select((value) => !value.hasMore))) {
     // we have reached the end, show topic
     final topic = ref.watch(chatTopic(convo)).valueOrNull;

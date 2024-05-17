@@ -3,7 +3,6 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat/widgets/custom_message_builder.dart';
 import 'package:acter/features/chat/widgets/emoji_reaction_item.dart';
 import 'package:acter/features/chat/widgets/emoji_row.dart';
@@ -43,14 +42,6 @@ class BubbleBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (message is types.CustomMessage &&
-        !renderCustomMessageBubble(message as types.CustomMessage)) {
-      // not supported is hidden
-      _log.info(
-        'Ignoring to render bubble for unsupported custom message $message',
-      );
-      return const SizedBox.shrink();
-    }
     final myId = ref.watch(myUserIdStrProvider);
     final isAuthor = (myId == message.author.id);
     final roomId = convo.getRoomIdStr();

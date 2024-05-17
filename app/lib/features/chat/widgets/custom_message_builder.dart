@@ -1,4 +1,3 @@
-import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat/widgets/messages/encrypted_message.dart';
 import 'package:acter/features/chat/widgets/messages/location_message.dart';
 import 'package:acter/features/chat/widgets/messages/membership_update.dart';
@@ -24,12 +23,6 @@ class CustomMessageBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!renderCustomMessageBubble(message)) {
-      _log.warning(
-        'Asked to render a custom message despite it not being renderable: $message',
-      );
-      return const SizedBox.shrink();
-    }
     // state event
     switch (message.metadata?['eventType']) {
       case 'm.room.encrypted':
