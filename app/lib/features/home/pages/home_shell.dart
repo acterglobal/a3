@@ -1,7 +1,6 @@
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/notifications/notifications.dart';
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
-import 'package:acter/common/themes/app_theme.dart';
 
 import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';
 import 'package:acter/common/utils/constants.dart';
@@ -108,6 +107,64 @@ class HomeShellState extends ConsumerState<HomeShell> {
     });
   }
 
+  Widget buildLoggedOutScreen(BuildContext context, bool softLogout) {
+    // We have a special case
+    return Scaffold(
+      body: Container(
+        margin: const EdgeInsets.only(top: kToolbarHeight),
+        child: Center(
+          child: Column(
+            children: [
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 15),
+                height: 100,
+                width: 100,
+                child: SvgPicture.asset(
+                  'assets/images/undraw_access_denied_re_awnf.svg',
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 15),
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    text: L10n.of(context).access,
+                    style: Theme.of(context).textTheme.headlineLarge,
+                    children: <TextSpan>[
+                      TextSpan(
+                        text: ' ${L10n.of(context).denied}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.error,
+                          fontSize: 32,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 15),
+                child: Text(
+                  L10n.of(context).yourSessionHasBeenTerminatedByServer,
+                ),
+              ),
+              softLogout
+                  ? OutlinedButton(
+                      onPressed: onLoginAgain,
+                      child: Text(L10n.of(context).loginAgain),
+                    )
+                  : OutlinedButton(
+                      onPressed: onClearDB,
+                      child: Text(L10n.of(context).clearDBAndReLogin),
+                    ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // get platform of context.
@@ -120,68 +177,11 @@ class HomeShellState extends ConsumerState<HomeShell> {
         ),
       );
     }
-    final syncState = ref.watch(syncStateProvider);
-    final hasFirstSynced = !syncState.initialSync;
-    final errorMsg = syncState.errorMsg;
-
+    final errorMsg = ref.watch(syncStateProvider.select((v) => v.errorMsg));
     if (errorMsg != null) {
       final softLogout = errorMsg == 'SoftLogout';
       if (softLogout || errorMsg == 'Unauthorized') {
-        // We have a special case
-        return Scaffold(
-          body: Container(
-            margin: const EdgeInsets.only(top: kToolbarHeight),
-            child: Center(
-              child: Column(
-                children: [
-                  Container(
-                    margin: const EdgeInsets.symmetric(vertical: 15),
-                    height: 100,
-                    width: 100,
-                    child: SvgPicture.asset(
-                      'assets/images/undraw_access_denied_re_awnf.svg',
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.symmetric(vertical: 15),
-                    child: RichText(
-                      textAlign: TextAlign.center,
-                      text: TextSpan(
-                        text: L10n.of(context).access,
-                        style: Theme.of(context).textTheme.headlineLarge,
-                        children: <TextSpan>[
-                          TextSpan(
-                            text: ' ${L10n.of(context).denied}',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.error,
-                              fontSize: 32,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.symmetric(vertical: 15),
-                    child: Text(
-                      L10n.of(context).yourSessionHasBeenTerminatedByServer,
-                    ),
-                  ),
-                  softLogout
-                      ? OutlinedButton(
-                          onPressed: onLoginAgain,
-                          child: Text(L10n.of(context).loginAgain),
-                        )
-                      : OutlinedButton(
-                          onPressed: onClearDB,
-                          child: Text(L10n.of(context).clearDBAndReLogin),
-                        ),
-                ],
-              ),
-            ),
-          ),
-        );
+        return buildLoggedOutScreen(context, softLogout);
       }
     }
 
@@ -203,7 +203,7 @@ class HomeShellState extends ConsumerState<HomeShell> {
               children: [
                 const CrossSigning(),
                 Expanded(
-                  child: buildBody(context, hasFirstSynced),
+                  child: buildBody(context),
                 ),
               ],
             ),
@@ -222,110 +222,120 @@ class HomeShellState extends ConsumerState<HomeShell> {
     logoutConfirmationDialog(context, ref);
   }
 
-  Widget buildBody(BuildContext context, bool hasFirstSynced) {
-    final keyboardVisibility = ref.watch(keyboardVisibleProvider);
-    final bottomBarNav = ref.watch(bottomBarNavProvider(context));
-    return AdaptiveLayout(
-      key: _key,
-      topNavigation: !hasFirstSynced
-          ? SlotLayout(
-              config: <Breakpoint, SlotLayoutConfig?>{
-                Breakpoints.smallAndUp: SlotLayout.from(
-                  key: const Key('LoadingIndicator'),
-                  builder: (BuildContext ctx) {
-                    return LinearProgressIndicator(
-                      semanticsLabel: L10n.of(context).loadingFirstSync,
-                    );
-                  },
-                ),
-              },
-            )
-          : null,
-      primaryNavigation: isDesktop
-          ? SlotLayout(
-              config: <Breakpoint, SlotLayoutConfig?>{
-                // adapt layout according to platform.
-                Breakpoints.small: SlotLayout.from(
-                  key: const Key('primaryNavigation'),
-                  builder: (BuildContext ctx) => SidebarWidget(
-                    labelType: NavigationRailLabelType.selected,
-                    navigationShell: widget.navigationShell,
-                  ),
-                ),
-                Breakpoints.mediumAndUp: SlotLayout.from(
-                  key: const Key('primaryNavigation'),
-                  builder: (BuildContext ctx) => SidebarWidget(
-                    labelType: NavigationRailLabelType.all,
-                    navigationShell: widget.navigationShell,
-                  ),
-                ),
-              },
-            )
-          : null,
-      body: SlotLayout(
-        config: <Breakpoint, SlotLayoutConfig>{
-          Breakpoints.smallAndUp: SlotLayout.from(
-            key: const Key('Body Small'),
-            builder: (BuildContext ctx) => widget.navigationShell,
-          ),
-        },
-      ),
-      bottomNavigation: !isDesktop && keyboardVisibility.valueOrNull != true
-          ? SlotLayout(
-              config: <Breakpoint, SlotLayoutConfig>{
-                //In desktop, we have ability to adjust windows res,
-                // adjust to navbar as primary to smaller views.
-                Breakpoints.smallAndUp: SlotLayout.from(
-                  key: Keys.mainNav,
-                  inAnimation: AdaptiveScaffold.bottomToTop,
-                  outAnimation: AdaptiveScaffold.topToBottom,
-                  builder: (BuildContext ctx) => Stack(
-                    children: [
-                      SizedBox(
-                        height: 50,
-                        child: Row(
-                          children: bottomBarNav
-                              .map(
-                                (bottomBarNav) => Expanded(
-                                  child: Center(
-                                    child: SizedBox(
-                                      key: bottomBarNav.tutorialGlobalKey,
-                                      height: 40,
-                                      width: 40,
-                                    ),
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                        ),
-                      ),
-                      BottomNavigationBar(
-                        showSelectedLabels: false,
-                        showUnselectedLabels: false,
-                        currentIndex: widget.navigationShell.currentIndex,
-                        onTap: (index) {
-                          widget.navigationShell.goBranch(
-                            index,
-                            initialLocation:
-                                index == widget.navigationShell.currentIndex,
-                          );
-                        },
-                        items: bottomBarNav,
-                        type: BottomNavigationBarType.fixed,
-                      ),
-                    ],
-                  ),
-                ),
-              },
-            )
-          : null,
+  Widget topNavigationWidget(BuildContext context) {
+    final hasFirstSynced =
+        ref.watch(syncStateProvider.select((v) => !v.initialSync));
+    if (hasFirstSynced) {
+      return const SizedBox.shrink();
+    }
+    return LinearProgressIndicator(
+      semanticsLabel: L10n.of(context).loadingFirstSync,
     );
   }
 
-  void onBottomNavigated(int index) {
-    widget.navigationShell.goBranch(
-      index,
-      initialLocation: index == widget.navigationShell.currentIndex,
+  SlotLayout topNavigationLayout() {
+    return SlotLayout(
+      config: <Breakpoint, SlotLayoutConfig?>{
+        Breakpoints.smallAndUp: SlotLayout.from(
+          key: const Key('LoadingIndicator'),
+          builder: topNavigationWidget,
+        ),
+      },
+    );
+  }
+
+  SlotLayout primaryNavigationLayout() {
+    return SlotLayout(
+      config: <Breakpoint, SlotLayoutConfig?>{
+        Breakpoints.large: SlotLayout.from(
+          key: const Key('primaryNavigation'),
+          builder: (BuildContext ctx) => SidebarWidget(
+            navigationShell: widget.navigationShell,
+          ),
+        ),
+      },
+    );
+  }
+
+  SlotLayout bodySlot() {
+    return SlotLayout(
+      config: <Breakpoint, SlotLayoutConfig>{
+        Breakpoints.standard: SlotLayout.from(
+          key: const Key('Body Small'),
+          builder: (BuildContext ctx) => widget.navigationShell,
+        ),
+      },
+    );
+  }
+
+  Widget bottomNavigationWidget(BuildContext context) {
+    final keyboardVisibility = ref.watch(keyboardVisibleProvider);
+    if (keyboardVisibility.valueOrNull != false) {
+      return const SizedBox.shrink();
+    }
+    return Stack(
+      children: [
+        SizedBox(
+          height: 50,
+          child: Row(
+            children: bottomBarItems
+                .map(
+                  (bottomBarNav) => Expanded(
+                    child: Center(
+                      child: SizedBox(
+                        key: bottomBarNav.tutorialGlobalKey,
+                        height: 40,
+                        width: 40,
+                      ),
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+        ),
+        BottomNavigationBar(
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          currentIndex: widget.navigationShell.currentIndex,
+          onTap: (index) {
+            widget.navigationShell.goBranch(
+              index,
+              initialLocation: index == widget.navigationShell.currentIndex,
+            );
+          },
+          items: bottomBarItems,
+          type: BottomNavigationBarType.fixed,
+        ),
+      ],
+    );
+  }
+
+  SlotLayout bottomNavigationLayout() {
+    return SlotLayout(
+      config: <Breakpoint, SlotLayoutConfig>{
+        Breakpoints.small: SlotLayout.from(
+          key: Keys.mainNav,
+          inAnimation: AdaptiveScaffold.bottomToTop,
+          outAnimation: AdaptiveScaffold.topToBottom,
+          builder: bottomNavigationWidget,
+        ),
+        Breakpoints.medium: SlotLayout.from(
+          key: Keys.mainNav,
+          inAnimation: AdaptiveScaffold.bottomToTop,
+          outAnimation: AdaptiveScaffold.topToBottom,
+          builder: bottomNavigationWidget,
+        ),
+      },
+    );
+  }
+
+  Widget buildBody(BuildContext context) {
+    return AdaptiveLayout(
+      key: _key,
+      topNavigation: topNavigationLayout(),
+      primaryNavigation: primaryNavigationLayout(),
+      body: bodySlot(),
+      bottomNavigation: bottomNavigationLayout(),
     );
   }
 }
