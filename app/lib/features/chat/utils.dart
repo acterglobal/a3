@@ -35,9 +35,14 @@ bool renderCustomMessageBubble(types.CustomMessage message) {
     case 'm.room.topic':
     case 'm.space.child':
     case 'm.space.parent':
-    case 'm.room.member':
     case 'm.poll.start':
       // supported if we have a body
+      return message.metadata?['body'] != null;
+    case 'm.room.member':
+      if (message.metadata?['msgType'] == 'None') {
+        // not a change we want to show
+        return false;
+      }
       return message.metadata?['body'] != null;
     case 'm.call.answer':
     case 'm.call.candidates':
