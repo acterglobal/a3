@@ -67,6 +67,7 @@ base64ct = "1.6.0"
 derive-getters = "0.3.0"
 derive_builder = "0.20.0"
 icalendar = "0.16.1"
+scc = "2"
 
 [profile.release]
 panic = "unwind"

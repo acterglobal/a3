@@ -6,10 +6,10 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/chat/convo_with_profile_card.dart';
 import 'package:acter/common/widgets/chat/loading_convo_card.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter/features/settings/providers/app_settings_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -163,26 +163,10 @@ class _SubtitleWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userAppSettings = ref.watch(userAppSettingsProvider);
-    final myUserId = ref.watch(myUserIdStrProvider);
-    if (userAppSettings.valueOrNull != null) {
-      final settings = userAppSettings.requireValue;
-      if (settings.typingNotice() != false) {
-        // start listening typing events
-        final typingEvent = ref.watch(chatTypingEventProvider);
-        if (typingEvent.valueOrNull != null) {
-          final t = typingEvent.requireValue;
-          if (t != null) {
-            if (t.roomId().toString() == room.getRoomIdStr()) {
-              var userIds = t.userIds().toList();
-              userIds.removeWhere((id) => id.toString() == myUserId);
-              if (userIds.isNotEmpty) {
-                return renderTypingState(context, userIds, ref);
-              }
-            }
-          }
-        }
-      }
+    final userIds =
+        ref.watch(chatTypingEventProvider(room.getRoomIdStr())).valueOrNull;
+    if (userIds != null && userIds.isNotEmpty) {
+      return renderTypingState(context, userIds, ref);
     }
 
     RoomEventItem? eventItem = latestMessage.eventItem();
@@ -468,19 +452,19 @@ class _SubtitleWidget extends ConsumerWidget {
 
   Widget renderTypingState(
     BuildContext context,
-    List<UserId> userIds,
+    List<User> userIds,
     WidgetRef ref,
   ) {
     final textStyle = Theme.of(context).textTheme.bodySmall!;
     if (userIds.length == 1) {
-      final userName = simplifyUserId(userIds[0].toString());
+      final userName = simplifyUserId(userIds[0].id.toString());
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: Text(L10n.of(context).typingUser1(userName!), style: textStyle),
       );
     } else if (userIds.length == 2) {
-      final u1 = simplifyUserId(userIds[0].toString());
-      final u2 = simplifyUserId(userIds[1].toString());
+      final u1 = simplifyUserId(userIds[0].id.toString());
+      final u2 = simplifyUserId(userIds[1].id.toString());
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: Text(
@@ -489,7 +473,7 @@ class _SubtitleWidget extends ConsumerWidget {
         ),
       );
     } else {
-      final u1 = simplifyUserId(userIds[0].toString());
+      final u1 = simplifyUserId(userIds[0].id.toString());
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: Text(

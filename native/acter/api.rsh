@@ -300,11 +300,8 @@ object ReceiptRecord {
     fn receipt_thread() -> ReceiptThread;
 }
 
-/// Deliver typing event from rust to flutter
+/// Deliver typing event from rust
 object TypingEvent {
-    /// Get transaction id or flow id
-    fn room_id() -> RoomId;
-
     /// Get list of user id
     fn user_ids() -> Vec<UserId>;
 } 
@@ -2535,7 +2532,7 @@ object Client {
     fn device_changed_event_rx() -> Option<Stream<DeviceChangedEvent>>;
 
     /// Return the typing event receiver
-    fn typing_event_rx() -> Option<Stream<TypingEvent>>;
+    fn subscribe_to_typing_event_stream(room_id: string) -> Stream<TypingEvent>;
 
     /// Return the receipt event receiver
     fn receipt_event_rx() -> Option<Stream<ReceiptEvent>>;

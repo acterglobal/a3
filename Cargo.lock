@@ -58,6 +58,7 @@ dependencies = [
  "ruma-common",
  "ruma-events",
  "sanitize-filename-reader-friendly",
+ "scc",
  "serde",
  "serde_json",
  "strum",

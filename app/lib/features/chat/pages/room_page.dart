@@ -88,53 +88,24 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
     return OrientationBuilder(
       builder: (context, orientation) => Scaffold(
         resizeToAvoidBottomInset: orientation == Orientation.portrait,
-        body: CustomScrollView(
-          physics: const NeverScrollableScrollPhysics(),
-          slivers: [appBar(context), chatBody(context)],
+        body: Column(
+          children: [appBar(context), chatBody(context)],
         ),
       ),
     );
   }
 
-  SliverFillRemaining chatBody(BuildContext context) {
-    final userAppSettings = ref.watch(userAppSettingsProvider);
+  Widget chatBody(BuildContext context) {
     final chatState = ref.watch(chatStateProvider(widget.convo));
     final userId = ref.watch(myUserIdStrProvider);
     final roomId = widget.convo.getRoomIdStr();
-    List<types.User> typingUsers = [];
-    if (userAppSettings.valueOrNull != null) {
-      final settings = userAppSettings.requireValue;
-      if (settings.typingNotice() != false) {
-        final typingEvent = ref.watch(chatTypingEventProvider);
-        if (typingEvent.valueOrNull != null) {
-          final t = typingEvent.requireValue;
-          if (t != null) {
-            if (t.roomId().toString() == roomId) {
-              for (var i in t.userIds().toList()) {
-                if (i.toString() != userId) {
-                  final uid = types.User(
-                    id: i.toString(),
-                    firstName: i.toString(),
-                  );
-                  typingUsers.add(uid);
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+    final sendTypingNotice = ref.watch(
+      userAppSettingsProvider.select(
+        (settings) => settings.valueOrNull?.typingNotice() ?? false,
+      ),
+    );
 
-    final messages = chatState.messages
-        .where(
-          // filter only items we can show
-          (m) => m is! types.UnsupportedMessage,
-        )
-        .toList()
-        .reversed
-        .toList();
-
-    return SliverFillRemaining(
+    return Expanded(
       child: Container(
         decoration: const BoxDecoration(
           gradient: primaryGradient,
@@ -146,9 +117,11 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
           customBottomWidget: CustomChatInput(
             key: Key('chat-input-$roomId'),
             roomId: widget.convo.getRoomIdStr(),
-            onTyping: (typing) async {
-              widget.convo.typingNotice(typing);
-            },
+            onTyping: sendTypingNotice
+                ? (typing) async {
+                    widget.convo.typingNotice(typing);
+                  }
+                : null,
           ),
           textMessageBuilder: (
             types.TextMessage m, {
@@ -168,7 +141,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
             sendButtonAccessibilityLabel: '',
           ),
           timeFormat: DateFormat.jm(),
-          messages: messages,
+          messages: ref.watch(chatMessagesProvider(widget.convo)),
           onSendPressed: (types.PartialText partialText) {},
           user: types.User(id: userId),
           // disable image preview
@@ -246,7 +219,8 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
           },
           typingIndicatorOptions: TypingIndicatorOptions(
             typingMode: TypingIndicatorMode.name,
-            typingUsers: typingUsers,
+            typingUsers:
+                ref.watch(chatTypingEventProvider(roomId)).valueOrNull ?? [],
           ),
           //Custom Theme class, see lib/common/store/chatTheme.dart
           theme: Theme.of(context).chatTheme,
@@ -255,11 +229,11 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
     );
   }
 
-  SliverAppBar appBar(BuildContext context) {
+  Widget appBar(BuildContext context) {
     final roomId = widget.convo.getRoomIdStr();
     final convoProfile = ref.watch(chatProfileDataProvider(widget.convo));
     final activeMembers = ref.watch(membersIdsProvider(roomId));
-    return SliverAppBar(
+    return AppBar(
       elevation: 0,
       automaticallyImplyLeading: widget.inSidebar ? false : true,
       centerTitle: true,
