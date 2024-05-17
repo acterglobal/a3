@@ -12,33 +12,27 @@ import 'package:acter/features/invite_members/providers/invite_providers.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class InviteIndividualUsers extends ConsumerStatefulWidget {
+class InviteIndividualUsers extends ConsumerWidget {
   final String roomId;
 
   const InviteIndividualUsers({super.key, required this.roomId});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _InviteIndividualUsersState();
-}
-
-class _InviteIndividualUsersState extends ConsumerState<InviteIndividualUsers> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: _buildAppBar(),
-      body: _buildBody(),
+      appBar: _buildAppBar(context),
+      body: _buildBody(context, ref),
     );
   }
 
-  AppBar _buildAppBar() {
+  AppBar _buildAppBar(BuildContext context) {
     return AppBar(
       title: Text(L10n.of(context).inviteIndividualUsersTitle),
       centerTitle: true,
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(BuildContext context, WidgetRef ref) {
     return Center(
       child: Container(
         constraints: const BoxConstraints(maxWidth: 500),
@@ -50,21 +44,21 @@ class _InviteIndividualUsersState extends ConsumerState<InviteIndividualUsers> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10),
-            _buildSearchTextField(),
+            _buildSearchTextField(context, ref),
             const SizedBox(height: 10),
-            _buildUserDirectInvite(),
+            _buildUserDirectInvite(ref),
             if (ref.watch(searchValueProvider) == null ||
                 ref.watch(searchValueProvider)?.isEmpty == true)
-              _buildSuggestedUserList()
+              _buildSuggestedUserList(context, ref)
             else
-              _buildFoundUserList(),
+              _buildFoundUserList(context, ref),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSearchTextField() {
+  Widget _buildSearchTextField(BuildContext context, WidgetRef ref) {
     final searchTextCtrl = ref.watch(searchController);
     return Padding(
       padding: const EdgeInsets.all(10.0),
@@ -81,7 +75,7 @@ class _InviteIndividualUsersState extends ConsumerState<InviteIndividualUsers> {
     );
   }
 
-  Widget _buildUserDirectInvite() {
+  Widget _buildUserDirectInvite(WidgetRef ref) {
     final searchValue = ref.watch(searchValueProvider);
     if (searchValue?.isNotEmpty == true) {
       final cleaned = searchValue!.trim();
@@ -90,9 +84,9 @@ class _InviteIndividualUsersState extends ConsumerState<InviteIndividualUsers> {
         child: Column(
           children: [
             if (userNameRegExp.hasMatch(cleaned))
-              DirectInvite(roomId: widget.roomId, userId: cleaned),
+              DirectInvite(roomId: roomId, userId: cleaned),
             if (noAtUserNameRegExp.hasMatch(cleaned))
-              DirectInvite(roomId: widget.roomId, userId: '@$cleaned'),
+              DirectInvite(roomId: roomId, userId: '@$cleaned'),
           ],
         ),
       );
@@ -100,9 +94,9 @@ class _InviteIndividualUsersState extends ConsumerState<InviteIndividualUsers> {
     return const SizedBox.shrink();
   }
 
-  Widget _buildSuggestedUserList() {
+  Widget _buildSuggestedUserList(BuildContext context, WidgetRef ref) {
     final suggestedUsers =
-        ref.watch(filteredSuggestedUsersProvider(widget.roomId)).valueOrNull;
+        ref.watch(filteredSuggestedUsersProvider(roomId)).valueOrNull;
     if (suggestedUsers == null || suggestedUsers.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -124,18 +118,18 @@ class _InviteIndividualUsersState extends ConsumerState<InviteIndividualUsers> {
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 final user = suggestedUsers[index];
-                return _buildSuggestedUserItem(user);
+                return _buildSuggestedUserItem(ref, user);
               },
             ),
           ),
-          _buildDoneButton(),
+          _buildDoneButton(context),
         ],
       ),
     );
   }
 
-  Widget _buildSuggestedUserItem(FoundUser user) {
-    final room = ref.watch(briefRoomItemWithMembershipProvider(widget.roomId));
+  Widget _buildSuggestedUserItem(WidgetRef ref, FoundUser user) {
+    final room = ref.watch(briefRoomItemWithMembershipProvider(roomId));
     return Card(
       child: ListTile(
         title: Text(user.profile.displayName ?? user.userId),
@@ -156,7 +150,7 @@ class _InviteIndividualUsersState extends ConsumerState<InviteIndividualUsers> {
     );
   }
 
-  Widget _buildFoundUserList() {
+  Widget _buildFoundUserList(BuildContext context, WidgetRef ref) {
     final foundUsers = ref.watch(searchResultProvider);
     if (foundUsers.hasValue && foundUsers.value!.isNotEmpty) {
       return Expanded(
@@ -179,7 +173,7 @@ class _InviteIndividualUsersState extends ConsumerState<InviteIndividualUsers> {
                   return foundUsers.when(
                     data: (data) => UserBuilder(
                       profile: data[index],
-                      roomId: widget.roomId,
+                      roomId: roomId,
                     ),
                     error: (err, stackTrace) =>
                         Text(L10n.of(context).error(err)),
@@ -193,7 +187,7 @@ class _InviteIndividualUsersState extends ConsumerState<InviteIndividualUsers> {
                 },
               ),
             ),
-            _buildDoneButton(),
+            _buildDoneButton(context),
           ],
         ),
       );
@@ -205,7 +199,7 @@ class _InviteIndividualUsersState extends ConsumerState<InviteIndividualUsers> {
     );
   }
 
-  Widget _buildDoneButton() {
+  Widget _buildDoneButton(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
       child: ActerPrimaryActionButton(

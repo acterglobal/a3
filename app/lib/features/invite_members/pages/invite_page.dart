@@ -69,20 +69,10 @@ class InvitePage extends ConsumerWidget {
           const SizedBox(height: 20),
           _buildInviteMethods(context),
           const SizedBox(height: 20),
-          divider(context),
+          const Divider(indent: 70, endIndent: 70),
           const SizedBox(height: 30),
           _buildInviteFromCode(context),
         ],
-      ),
-    );
-  }
-
-  Widget divider(BuildContext context) {
-    return Center(
-      child: Container(
-        width: 250,
-        height: 1,
-        color: Theme.of(context).colorScheme.neutral5,
       ),
     );
   }

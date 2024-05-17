@@ -5,34 +5,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
-class InvitePending extends ConsumerStatefulWidget {
+class InvitePending extends ConsumerWidget {
   final String roomId;
 
   const InvitePending({super.key, required this.roomId});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _InvitePendingState();
-}
-
-class _InvitePendingState extends ConsumerState<InvitePending> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: _buildAppBar(),
-      body: _buildBody(),
+      appBar: _buildAppBar(context),
+      body: _buildBody(context, ref),
     );
   }
 
-  AppBar _buildAppBar() {
+  AppBar _buildAppBar(BuildContext context) {
     return AppBar(
       title: Text(L10n.of(context).pendingInvites),
       centerTitle: true,
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(BuildContext context, WidgetRef ref) {
     final invited =
-        ref.watch(roomInvitedMembersProvider(widget.roomId)).valueOrNull ?? [];
+        ref.watch(roomInvitedMembersProvider(roomId)).valueOrNull ?? [];
 
     return Center(
       child: Container(
@@ -49,7 +44,7 @@ class _InvitePendingState extends ConsumerState<InvitePending> {
                 itemBuilder: (context, index) {
                   return UserBuilder(
                     profile: invited[index].getProfile(),
-                    roomId: widget.roomId,
+                    roomId: roomId,
                   );
                 },
               ),
