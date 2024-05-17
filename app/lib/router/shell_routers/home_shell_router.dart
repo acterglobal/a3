@@ -1,8 +1,11 @@
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/invite_members/pages/invite_indicidual_users.dart';
+import 'package:acter/features/invite_members/pages/invite_page.dart';
 import 'package:acter/features/events/pages/create_edit_event_page.dart';
 import 'package:acter/features/events/pages/events_page.dart';
 import 'package:acter/features/events/pages/event_details_page.dart';
 import 'package:acter/features/home/pages/dashboard.dart';
+import 'package:acter/features/invite_members/pages/invite_pending.dart';
 import 'package:acter/features/pins/pages/pin_page.dart';
 import 'package:acter/features/pins/pages/pins_page.dart';
 import 'package:acter/features/settings/pages/backup_page.dart';
@@ -30,6 +33,7 @@ import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
 import 'package:acter/features/space/settings/pages/index_page.dart';
 import 'package:acter/features/space/settings/pages/notification_configuration_page.dart';
 import 'package:acter/features/public_room_search/pages/search_public_directory.dart';
+import 'package:acter/features/spaces/pages/create_space_page.dart';
 import 'package:acter/features/spaces/pages/spaces_page.dart';
 import 'package:acter/features/tasks/pages/task_list_page.dart';
 import 'package:acter/features/tasks/pages/task_page.dart';
@@ -465,6 +469,58 @@ List<RouteBase> makeHomeShellRoutes(ref) {
           key: state.pageKey,
           child: EventDetailPage(
             calendarId: state.pathParameters['calendarId']!,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.createSpace.name,
+      path: Routes.createSpace.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: CreateSpacePage(
+            initialParentsSpaceId: state.uri.queryParameters['parentSpaceId'],
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.spaceInvite.name,
+      path: Routes.spaceInvite.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: InvitePage(
+            roomId: state.pathParameters['spaceId']!,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.inviteIndividual.name,
+      path: Routes.inviteIndividual.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: InviteIndividualUsers(
+            roomId: state.uri.queryParameters['roomId']!,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.invitePending.name,
+      path: Routes.invitePending.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: InvitePending(
+            roomId: state.uri.queryParameters['roomId']!,
           ),
         );
       },

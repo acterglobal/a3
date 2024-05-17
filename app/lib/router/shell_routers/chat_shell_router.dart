@@ -3,6 +3,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
 import 'package:acter/features/chat/pages/room_profile_page.dart';
 import 'package:acter/features/chat/widgets/chat_layout_builder.dart';
+import 'package:acter/features/invite_members/pages/invite_page.dart';
 import 'package:acter/router/router.dart';
 import 'package:go_router/go_router.dart';
 
@@ -57,6 +58,19 @@ List<RouteBase> makeChatShellRoutes(ref) {
               roomId: roomId,
               inSidebar: inSidebar,
             ),
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.chatInvite.name,
+      path: Routes.chatInvite.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: InvitePage(
+            roomId: state.pathParameters['roomId']!,
           ),
         );
       },

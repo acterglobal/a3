@@ -2055,5 +2055,23 @@
   "updateDescriptionFailed": "Updating description failed: {error}",
   "@updateDescriptionFailed": {},
   "eventParticipants": "Event Participants",
-  "upcomingEvents": "Upcoming Events"
+  "upcomingEvents": "Upcoming Events",
+  "spaceInviteDescription": "Anyone you would like to invite to this space?",
+  "inviteSpaceMembersTitle": "Invite Space Members",
+  "inviteSpaceMembersSubtitle": "Invite users from selected space",
+  "inviteIndividualUsersTitle": "Invite Individual Users",
+  "inviteIndividualUsersSubtitle": "Invite users who are already on the Acter",
+  "inviteIndividualUsersDescription": "Invite anyone who is part of the the Acter platform",
+  "inviteJoinActer": "Invite to join Acter",
+  "inviteJoinActerDescription": "You can invite people to join Acter and automatically join this space with a custom registration code and share that with them",
+  "generateInviteCode": "Generate Invite Code",
+  "pendingInvites": "Pending Invites",
+  "noPendingInvitesTitle": "No pending Invites found",
+  "noUserFoundTitle": "No users found",
+  "noUserFoundSubtitle": "Search users with their username or display name",
+  "done": "Done",
+  "comingSoon": "Coming Soon",
+  "cancelInviteLoading": "Canceling invitation of {userId}",
+  "cancelInviteError": "User {userId} not found: {error}"
+
 }
