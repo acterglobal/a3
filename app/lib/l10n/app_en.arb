@@ -1713,6 +1713,8 @@
   "@redeeming": {},
   "encryptedDMChat": "Encrypted DM Chat",
   "@encryptedDMChat": {},
+  "encryptedChatMessage": "Failed to decrypt message. Re-request session keys",
+  "chatMessageDeleted": "Message deleted",
   "dmChat": "DM Chat",
   "@dmChat": {},
   "regularSpaceOrChat": "Regular Space or Chat",
