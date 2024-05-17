@@ -85,13 +85,11 @@ impl TimelineStream {
                 let options = PaginationOptions::simple_request(count);
                 timeline.paginate_backwards(options).await?;
                 loop {
-                    if let Some(status) = back_pagination_status.next().await {
-                        if status == BackPaginationStatus::Idle {
-                            return Ok(true); // has more
-                        }
-                        if status == BackPaginationStatus::TimelineStartReached {
-                            return Ok(false); // no more
-                        }
+                    match back_pagination_status.next().await {
+                        Some(BackPaginationStatus::TimelineStartReached) | None => {
+                            return Ok(false)
+                        } // has no more
+                        Some(_) => return Ok(true), // has more
                     }
                 }
             })
