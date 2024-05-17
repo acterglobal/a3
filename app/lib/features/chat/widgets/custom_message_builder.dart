@@ -6,7 +6,6 @@ import 'package:acter/features/chat/widgets/messages/poll_start_message.dart';
 import 'package:acter/features/chat/widgets/messages/redacted_message.dart';
 import 'package:acter/features/chat/widgets/messages/simple_state_update.dart';
 import 'package:acter/features/chat/widgets/messages/sticker_message.dart';
-import 'package:acter/features/chat/widgets/messages/topic.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:logging/logging.dart';

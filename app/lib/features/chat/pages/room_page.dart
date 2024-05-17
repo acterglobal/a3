@@ -235,7 +235,10 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
 
   Widget renderSystemMessage(types.SystemMessage message) {
     return switch (message.metadata?['type']) {
-      '_topic' => TopicWidget(message: message),
+      '_topic' => TopicSystemMessageWidget(
+          message: message,
+          roomId: widget.convo.getRoomIdStr(),
+        ),
       '_encryptedInfo' => const EncryptedInfoWidget(),
       _ => SystemMessage(key: Key(message.id), message: message.text)
     };

@@ -18,7 +18,7 @@ class EncryptedInfoWidget extends StatelessWidget {
             style: Theme.of(context).textTheme.labelSmall,
           ),
         ),
-      )),
+      ),),
     );
   }
 }

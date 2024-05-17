@@ -179,9 +179,12 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
-            child: RenderHtml(
-              text: data.topic() ?? '',
-              defaultTextStyle: Theme.of(context).textTheme.bodySmall,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: RenderHtml(
+                text: data.topic() ?? '',
+                defaultTextStyle: Theme.of(context).textTheme.bodySmall,
+              ),
             ),
           ),
           if (membership?.canString('CanSetTopic') == true)
