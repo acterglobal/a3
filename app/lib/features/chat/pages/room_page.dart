@@ -14,6 +14,8 @@ import 'package:acter/features/chat/widgets/custom_input.dart';
 import 'package:acter/features/chat/widgets/custom_message_builder.dart';
 import 'package:acter/features/chat/widgets/file_message_builder.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
+import 'package:acter/features/chat/widgets/messages/encrypted_info.dart';
+import 'package:acter/features/chat/widgets/messages/topic.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
 import 'package:acter/features/chat/widgets/video_message_builder.dart';
@@ -96,7 +98,8 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
   }
 
   Widget chatBody(BuildContext context) {
-    final chatState = ref.watch(chatStateProvider(widget.convo));
+    final endReached =
+        ref.watch(chatStateProvider(widget.convo).select((c) => !c.hasMore));
     final userId = ref.watch(myUserIdStrProvider);
     final roomId = widget.convo.getRoomIdStr();
     final sendTypingNotice = ref.watch(
@@ -149,7 +152,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
           // custom avatar builder
           avatarBuilder: (types.User user) =>
               AvatarBuilder(userId: user.id, roomId: roomId),
-          isLastPage: !chatState.hasMore,
+          isLastPage: endReached,
           bubbleBuilder: (
             Widget child, {
             required types.Message message,
@@ -203,6 +206,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
             message: message,
             messageWidth: messageWidth,
           ),
+          systemMessageBuilder: renderSystemMessage,
           showUserAvatars: true,
           onMessageLongPress: (
             BuildContext context,
@@ -227,6 +231,14 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
         ),
       ),
     );
+  }
+
+  Widget renderSystemMessage(types.SystemMessage message) {
+    return switch (message.metadata?['type']) {
+      '_topic' => TopicWidget(message: message),
+      '_encryptedInfo' => const EncryptedInfoWidget(),
+      _ => SystemMessage(key: Key(message.id), message: message.text)
+    };
   }
 
   Widget appBar(BuildContext context) {

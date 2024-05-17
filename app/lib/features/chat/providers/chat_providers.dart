@@ -43,9 +43,24 @@ final chatStateProvider =
   (ref, convo) => ChatRoomNotifier(ref: ref, convo: convo),
 );
 
+final chatIsEncrypted =
+    FutureProvider.autoDispose.family<bool, Convo>((ref, convo) async {
+  final c = await ref.watch(convoProvider(convo).future);
+  if (c == null) {
+    return false;
+  }
+  return await c.isEncrypted();
+});
+
+final chatTopic =
+    FutureProvider.autoDispose.family<String?, Convo>((ref, convo) async {
+  final c = await ref.watch(convoProvider(convo).future);
+  return c?.topic();
+});
+
 final chatMessagesProvider =
-    StateProvider.autoDispose.family<List<Message>, Convo>(
-  (ref, convo) => ref
+    StateProvider.autoDispose.family<List<Message>, Convo>((ref, convo) {
+  final messages = ref
       .watch(chatStateProvider(convo).select((value) => value.messages))
       .where(
         // filter only items we can show
@@ -53,8 +68,36 @@ final chatMessagesProvider =
       )
       .toList()
       .reversed
-      .toList(),
-);
+      .toList();
+  if (ref.watch(chatStateProvider(convo).select((value) => !value.hasMore))) {
+    // we have reached the end, show topic
+    final topic = ref.watch(chatTopic(convo)).valueOrNull;
+    if (topic != null) {
+      messages.add(
+        types.SystemMessage(
+          id: 'chat-topic',
+          text: topic,
+          metadata: const {
+            'type': '_topic',
+          },
+        ),
+      );
+    }
+    // and encryption information block
+    if (ref.watch(chatIsEncrypted(convo)).valueOrNull == true) {
+      messages.add(
+        const types.SystemMessage(
+          id: 'encrypted-information',
+          text: '',
+          metadata: {
+            'type': '_encryptedInfo',
+          },
+        ),
+      );
+    }
+  }
+  return messages;
+});
 
 final isAuthorOfSelectedMessage =
     StateProvider.family<bool, String>((ref, roomId) {
