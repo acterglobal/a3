@@ -9,16 +9,17 @@ class EncryptedInfoWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Card(
-          child: Container(
-        padding: const EdgeInsets.all(15),
-        child: ListTile(
-          leading: const Icon(Atlas.shield_chat),
-          title: Text(
-            L10n.of(context).encryptedChatInfo,
-            style: Theme.of(context).textTheme.labelSmall,
+        child: Container(
+          padding: const EdgeInsets.all(15),
+          child: ListTile(
+            leading: const Icon(Atlas.shield_chat_thin),
+            title: Text(
+              L10n.of(context).encryptedChatInfo,
+              style: Theme.of(context).textTheme.labelSmall,
+            ),
           ),
         ),
-      ),),
+      ),
     );
   }
 }
