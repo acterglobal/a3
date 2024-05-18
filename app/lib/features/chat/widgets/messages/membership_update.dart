@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -49,7 +50,9 @@ class MembershipUpdateWidget extends ConsumerWidget {
       child: RichText(
         text: TextSpan(
           text: textMsg,
-          style: Theme.of(context).textTheme.labelLarge,
+          style: Theme.of(context).textTheme.labelSmall!.copyWith(
+                color: Theme.of(context).colorScheme.neutral5,
+              ),
         ),
       ),
     );
