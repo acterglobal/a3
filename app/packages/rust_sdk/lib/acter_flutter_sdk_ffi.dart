@@ -39445,7 +39445,7 @@ class TimelineStream {
     return tmp6;
   }
 
-  /// Get the next count messages backwards, and return whether it has more items
+  /// Get the next count messages backwards, and return whether it reached the end
   Future<bool> paginateBackwards(
     int count,
   ) {

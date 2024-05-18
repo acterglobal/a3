@@ -58,7 +58,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         state = state.copyWith(
           loading: const ChatRoomLoadingState.loading(),
         );
-        final hasMore = await timeline.paginateBackwards(20);
+        final hasMore = !await timeline.paginateBackwards(20);
         // wait for diffRx to be finished
         state = state.copyWith(
           hasMore: hasMore,

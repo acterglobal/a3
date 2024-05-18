@@ -75,6 +75,7 @@ impl TimelineStream {
         }
     }
 
+    /// Get the next count messages backwards, and return whether it reached the end
     pub async fn paginate_backwards(&self, mut count: u16) -> Result<bool> {
         let timeline = self.timeline.clone();
 

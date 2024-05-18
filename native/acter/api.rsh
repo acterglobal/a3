@@ -1125,7 +1125,7 @@ object TimelineStream {
     /// get the specific message identified by the event_id
     fn get_message(event_id: string) -> Future<Result<RoomMessage>>;
 
-    /// Get the next count messages backwards, and return whether it has more items
+    /// Get the next count messages backwards, and return whether it reached the end
     fn paginate_backwards(count: u16) -> Future<Result<bool>>;
 
     /// send message using draft
