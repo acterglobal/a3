@@ -76,12 +76,12 @@ final renderableChatMessagesProvider =
 
 final chatMessagesProvider =
     StateProvider.autoDispose.family<List<Message>, Convo>((ref, convo) {
-  final messages = ref.watch(renderableChatMessagesProvider(convo));
+  final moreMessages = [];
   if (ref.watch(chatStateProvider(convo).select((value) => !value.hasMore))) {
     // we have reached the end, show topic
     final topic = ref.watch(chatTopic(convo)).valueOrNull;
     if (topic != null) {
-      messages.add(
+      moreMessages.add(
         types.SystemMessage(
           id: 'chat-topic',
           text: topic,
@@ -93,7 +93,7 @@ final chatMessagesProvider =
     }
     // and encryption information block
     if (ref.watch(chatIsEncrypted(convo)).valueOrNull == true) {
-      messages.add(
+      moreMessages.add(
         const types.SystemMessage(
           id: 'encrypted-information',
           text: '',
@@ -104,7 +104,12 @@ final chatMessagesProvider =
       );
     }
   }
-  return messages;
+  final messages = ref.watch(renderableChatMessagesProvider(convo));
+  if (moreMessages.isEmpty) {
+    return messages;
+  }
+  // return as a new list to ensure the provider is properly resetting
+  return [...messages, ...moreMessages];
 });
 
 final isAuthorOfSelectedMessage =
