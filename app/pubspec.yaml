@@ -127,6 +127,7 @@ dependencies:
   tutorial_coach_mark: ^1.2.11
   flutter_typeahead: ^5.2.0
   zoom_hover_pinch_image: ^1.0.3
+  dotted_border: ^2.1.0
 
 # FIXME keep until a new version has been published
 dependency_overrides:

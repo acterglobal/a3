@@ -1,6 +1,6 @@
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:riverpod/riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final hasSuperTokensAccess = FutureProvider<bool>((ref) async {
   final asyncVal = ref.watch(superInvitesTokensProvider);
@@ -31,8 +31,30 @@ final superInvitesForRoom = FutureProvider.autoDispose
       .toList();
 });
 
+/// Get SuperInviteToken that is associate with single roomId only
+final inviteCodeForSelectRoomOnly = FutureProvider.autoDispose
+    .family<SuperInviteToken?, String>((ref, roomId) async {
+  // Get all tokens
+  final allInvites = await ref.watch(superInvitesTokensProvider.future);
+  // Get list of tokens with associate with given roomId
+  var allInvitesRelatedToRoomId = allInvites
+      .where(
+        (invite) =>
+            invite.rooms().map((e) => e.toDartString()).contains(roomId),
+      )
+      .toList();
+  // Get single token which is associate with single roomId only
+  var inviteCodeWhichHaveSelectedRoomIdOnly = allInvitesRelatedToRoomId
+      .where((invite) => invite.rooms().length == 1)
+      .toList();
+
+  return inviteCodeWhichHaveSelectedRoomIdOnly.isEmpty
+      ? null
+      : inviteCodeWhichHaveSelectedRoomIdOnly[0];
+});
+
 /// Given the list of rooms this creates a new token with a random key
-Future<String> newSuperInviteForRooms(Ref ref, List<String> rooms) async {
+Future<String> newSuperInviteForRooms(WidgetRef ref, List<String> rooms) async {
   final superInvites = ref.read(superInvitesProvider);
   final builder = superInvites.newTokenUpdater();
   for (final roomId in rooms) {

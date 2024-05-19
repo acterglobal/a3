@@ -3,11 +3,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
-
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
@@ -149,6 +150,18 @@ Future<bool> openLink(String target, BuildContext context) async {
   } else {
     _log.info('Opening external URL: $url');
     return await launchUrl(url);
+  }
+}
+
+Future<void> whatsappTo(BuildContext context, {required String text}) async {
+  final url = 'whatsapp://send?text=$text';
+  final encodedUri = Uri.parse(url);
+  if (await canLaunchUrl(encodedUri)) {
+    await launchUrl(encodedUri);
+  } else {
+    if (!context.mounted) return;
+    _log.severe(L10n.of(context).appUnavailable);
+    EasyLoading.showError(L10n.of(context).appUnavailable);
   }
 }
 
