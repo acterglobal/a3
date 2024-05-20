@@ -1,8 +1,15 @@
-import 'dart:convert';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/features/chat/widgets/messages/encrypted_message.dart';
+import 'package:acter/features/chat/widgets/messages/location_message.dart';
+import 'package:acter/features/chat/widgets/messages/membership_update.dart';
+import 'package:acter/features/chat/widgets/messages/poll_start_message.dart';
+import 'package:acter/features/chat/widgets/messages/redacted_message.dart';
+import 'package:acter/features/chat/widgets/messages/simple_state_update.dart';
+import 'package:acter/features/chat/widgets/messages/sticker_message.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::chat::custom_message_builder');
 
 class CustomMessageBuilder extends StatelessWidget {
   final types.CustomMessage message;
@@ -18,6 +25,27 @@ class CustomMessageBuilder extends StatelessWidget {
   Widget build(BuildContext context) {
     // state event
     switch (message.metadata?['eventType']) {
+      case 'm.room.encrypted':
+        return const EncryptedMessageWidget();
+      case 'm.room.member':
+        return MembershipUpdateWidget(message: message);
+      case 'm.room.message':
+        if (message.metadata?['msgType'] == 'm.location') {
+          return LocationMessageWidget(message: message);
+        }
+        _log.warning(
+          "Asked to render room message that isn't a location isn't supported. $message",
+        );
+        return const SizedBox.shrink();
+      case 'm.room.redaction':
+        return const RedactedMessageWidget();
+      case 'm.sticker':
+        return StickerMessageWidget(
+          message: message,
+          messageWidth: messageWidth,
+        );
+      case 'm.poll.start':
+        return PollStartMessageWidget(message: message);
       case 'm.policy.rule.room':
       case 'm.policy.rule.server':
       case 'm.policy.rule.user':
@@ -38,165 +66,10 @@ class CustomMessageBuilder extends StatelessWidget {
       case 'm.room.topic':
       case 'm.space.child':
       case 'm.space.parent':
-        String? body = message.metadata?['body'];
-        if (body == null) {
-          return const SizedBox.shrink();
-        }
-        return Container(
-          padding: const EdgeInsets.only(left: 10, bottom: 5),
-          child: RichText(
-            text: TextSpan(
-              text: message.author.id,
-              style: Theme.of(context).textTheme.bodySmall,
-              children: [
-                const WidgetSpan(
-                  child: SizedBox(width: 3),
-                ),
-                TextSpan(
-                  text: body,
-                  style: Theme.of(context).textTheme.labelLarge,
-                ),
-              ],
-            ),
-          ),
-        );
+        return SimpleStateUpdateWidget(message: message);
     }
 
-    // message event
-    switch (message.metadata?['eventType']) {
-      case 'm.call.answer':
-      case 'm.call.candidates':
-      case 'm.call.hangup':
-      case 'm.call.invite':
-        break;
-      case 'm.room.encrypted':
-        String text = 'Failed to decrypt message. Re-request session keys';
-        return Container(
-          padding: const EdgeInsets.all(18),
-          child: Text(
-            text,
-            style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                  color: Theme.of(context).colorScheme.neutral5,
-                  fontStyle: FontStyle.italic,
-                ),
-          ),
-        );
-      case 'm.room.member':
-        String? body = message.metadata?['body'];
-        if (body == null) {
-          return const SizedBox.shrink();
-        }
-        return Container(
-          padding: const EdgeInsets.only(left: 10, bottom: 5),
-          child: RichText(
-            text: TextSpan(
-              text: message.author.id,
-              style: Theme.of(context).textTheme.bodySmall,
-              children: [
-                const WidgetSpan(
-                  child: SizedBox(width: 3),
-                ),
-                TextSpan(
-                  text: body,
-                  style: Theme.of(context).textTheme.labelLarge,
-                ),
-              ],
-            ),
-          ),
-        );
-      case 'm.room.message':
-        if (message.metadata?['msgType'] == 'm.location') {
-          return Container(
-            padding: const EdgeInsets.all(18),
-            child: Column(
-              children: [
-                Text(message.metadata?['body']),
-                Text(message.metadata?['geoUri']),
-              ],
-            ),
-          );
-        }
-        break;
-      case 'm.room.redaction':
-        String text = 'Message deleted';
-        return Container(
-          padding: const EdgeInsets.all(18),
-          child: Text(
-            text,
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall!
-                .copyWith(color: Theme.of(context).colorScheme.neutral5),
-          ),
-        );
-      case 'm.sticker':
-        return Container(
-          width: message.metadata?['width'],
-          padding: const EdgeInsets.all(18),
-          constraints: const BoxConstraints(minWidth: 57),
-          child: Image.memory(
-            base64Decode(message.metadata?['base64']),
-            errorBuilder: stickerErrorBuilder,
-            frameBuilder: stickerFrameBuilder,
-            cacheWidth: 256,
-            width: messageWidth.toDouble() / 2,
-            fit: BoxFit.cover,
-          ),
-        );
-      case 'm.poll.start':
-        String? body = message.metadata?['body'];
-        if (body == null) {
-          return const SizedBox.shrink();
-        }
-        return Container(
-          padding: const EdgeInsets.only(left: 10, bottom: 5),
-          child: RichText(
-            text: TextSpan(
-              text: message.author.id,
-              style: Theme.of(context).textTheme.bodySmall,
-              children: [
-                const WidgetSpan(
-                  child: SizedBox(width: 3),
-                ),
-                TextSpan(
-                  text: body,
-                  style: Theme.of(context).textTheme.labelLarge,
-                ),
-              ],
-            ),
-          ),
-        );
-    }
-
+    _log.warning('Asked to render an unsupported custom message $message');
     return const SizedBox();
-  }
-
-  Widget stickerErrorBuilder(
-    BuildContext context,
-    Object url,
-    StackTrace? error,
-  ) {
-    return Text(L10n.of(context).couldNotLoadImage(error.toString()));
-  }
-
-  Widget stickerFrameBuilder(
-    BuildContext context,
-    Widget child,
-    int? frame,
-    bool wasSynchronouslyLoaded,
-  ) {
-    if (wasSynchronouslyLoaded) {
-      return child;
-    }
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 200),
-      child: frame != null
-          ? child
-          : const SizedBox(
-              height: 60,
-              width: 60,
-              child: CircularProgressIndicator(strokeWidth: 6),
-            ),
-    );
   }
 }
