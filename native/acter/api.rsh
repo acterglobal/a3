@@ -300,11 +300,8 @@ object ReceiptRecord {
     fn receipt_thread() -> ReceiptThread;
 }
 
-/// Deliver typing event from rust to flutter
+/// Deliver typing event from rust
 object TypingEvent {
-    /// Get transaction id or flow id
-    fn room_id() -> RoomId;
-
     /// Get list of user id
     fn user_ids() -> Vec<UserId>;
 } 
@@ -598,6 +595,15 @@ object CalendarEvent {
 
     /// Generate a iCal as a String for sharing with others
     fn ical_for_sharing(file_name: string) -> Result<bool>;
+
+    /// get the physical location(s) details 
+    fn physical_locations() -> Vec<EventLocationInfo>;
+
+    /// get the virtual location(s) details
+    fn virtual_locations() -> Vec<EventLocationInfo>;
+
+    /// get all location details
+    fn locations() -> Vec<EventLocationInfo>;
 }
 
 object CalendarEventUpdateBuilder {
@@ -623,6 +629,7 @@ object CalendarEventUpdateBuilder {
     fn utc_end_from_rfc2822(utc_end: string) -> Result<()>;
     /// set utc end in custom format
     fn utc_end_from_format(utc_end: string, format: string) -> Result<()>;
+    fn unset_locations();
 
     /// send builder update
     fn send() -> Future<Result<EventId>>;
@@ -653,9 +660,27 @@ object CalendarEventDraft {
     fn utc_end_from_rfc2822(utc_end: string) -> Result<()>;
     /// set the utc_end for this calendar event in custom format
     fn utc_end_from_format(utc_end: string, format: string) -> Result<()>;
+    /// set the physical location details for this calendar event
+    fn physical_location(name: string, description: string, description_html: Option<string>, coordinates: string, uri: Option<string>) -> Result<()>;
+    /// set the virtual location details for this calendar event
+    fn virtual_location(name: string, description: string, description_html: Option<string>, uri: string) -> Result<()>;
+
 
     /// create this calendar event
     fn send() -> Future<Result<EventId>>;
+}
+
+object EventLocationInfo {
+    /// either of `Physical` or `Virtual`
+    fn location_type() -> string;
+    /// get the name of location
+    fn name() -> Option<string>;
+    /// get the location description
+    fn description() -> Option<TextMessageContent>;
+    /// geo uri for the location
+    fn coordinates() -> Option<string>;
+    /// an online link for the location
+    fn uri() -> Option<string>;
 }
 
 
@@ -1062,10 +1087,10 @@ object SpaceDiff {
 object MsgDraft {
 
     /// add a user mention
-    fn add_mention(user_id: string) -> Result<bool>;
+    fn add_mention(user_id: string) -> Result<MsgDraft>;
 
     /// whether to mention the entire room
-    fn add_room_mention(mention: bool) -> Result<bool>;
+    fn add_room_mention(mention: bool) -> Result<MsgDraft>;
     
     /// available for only image/audio/video/file
     fn size(value: u64) -> MsgDraft;
@@ -1100,7 +1125,7 @@ object TimelineStream {
     /// get the specific message identified by the event_id
     fn get_message(event_id: string) -> Future<Result<RoomMessage>>;
 
-    /// Get the next count messages backwards, and return whether it has more items
+    /// Get the next count messages backwards, and return whether it reached the end
     fn paginate_backwards(count: u16) -> Future<Result<bool>>;
 
     /// send message using draft
@@ -2510,7 +2535,7 @@ object Client {
     fn device_changed_event_rx() -> Option<Stream<DeviceChangedEvent>>;
 
     /// Return the typing event receiver
-    fn typing_event_rx() -> Option<Stream<TypingEvent>>;
+    fn subscribe_to_typing_event_stream(room_id: string) -> Stream<TypingEvent>;
 
     /// Return the receipt event receiver
     fn receipt_event_rx() -> Option<Stream<ReceiptEvent>>;
@@ -2523,6 +2548,9 @@ object Client {
 
     /// listen to updates to any model key
     fn subscribe_stream(key: string) -> Stream<bool>;
+
+    /// Find the room or wait until it becomes available
+    fn wait_for_room(key: string, timeout: Option<u8>) -> Future<Result<bool>>;
 
     /// Fetch the Comment or use its event_id to wait for it to come down the wire
     fn wait_for_comment(key: string, timeout: Option<u8>) -> Future<Result<Comment>>;
@@ -2715,7 +2743,31 @@ object SuperInvites {
 
     /// try to redeem a token
     fn redeem(token: string) -> Future<Result<Vec<string>>>;
+
+    /// get the token info
+    fn info(token: string) -> Future<Result<SuperInviteInfo>>;
 }
+
+object SuperInviteInfo {
+    /// whether or not this token will create a DM with the new user
+    fn create_dm() -> bool;
+
+    /// whether or not this token has been redeemed by the caller
+    fn has_redeemed() -> bool;
+
+    /// the number of rooms that will be added - includes DM if created
+    fn rooms_count() -> u32;
+
+    /// the UserId of the inviter
+    fn inviter_user_id_str() -> string;
+
+    /// the display_name of the inviter if known
+    fn inviter_display_name_str() -> Option<string>;
+
+    /// the Avatar URl of the inviter if known
+    fn inviter_avatar_url_str() -> Option<string>;
+}
+
 
 object SuperInviteToken {
     /// the textual ID of the token

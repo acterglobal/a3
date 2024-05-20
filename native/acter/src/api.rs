@@ -58,8 +58,8 @@ pub use uniffi_api::*;
 pub use account::Account;
 pub use acter_core::{
     events::{
-        news::NewsContent, Colorize, ColorizeBuilder, ObjRef, ObjRefBuilder, RefDetails,
-        RefDetailsBuilder, UtcDateTime,
+        calendar::EventLocationInfo, news::NewsContent, Colorize, ColorizeBuilder, ObjRef,
+        ObjRefBuilder, RefDetails, RefDetailsBuilder, UtcDateTime,
     },
     models::{ActerModel, Tag, TextMessageContent},
 };
@@ -114,7 +114,9 @@ pub use spaces::{
     RelationTargetType, Space, SpaceDiff,
 };
 pub use stream::{MsgDraft, RoomMessageDiff, TimelineStream};
-pub use super_invites::{SuperInviteToken, SuperInvites, SuperInvitesTokenUpdateBuilder};
+pub use super_invites::{
+    SuperInviteInfo, SuperInviteToken, SuperInvites, SuperInvitesTokenUpdateBuilder,
+};
 pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,
 };

@@ -1,4 +1,3 @@
-import 'package:acter/common/dialogs/invite_to_room_dialog.dart';
 import 'package:acter/common/pages/fatal_fail.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -19,10 +18,9 @@ import 'package:acter/features/onboarding/pages/start_page.dart';
 import 'package:acter/features/onboarding/pages/upload_avatar_page.dart';
 import 'package:acter/features/pins/pages/create_pin_page.dart';
 import 'package:acter/features/search/pages/quick_jump.dart';
-import 'package:acter/features/settings/super_invites/pages/create.dart';
+import 'package:acter/features/super_invites/pages/create.dart';
 import 'package:acter/features/space/sheets/edit_space_sheet.dart';
 import 'package:acter/features/space/sheets/link_room_sheet.dart';
-import 'package:acter/features/spaces/sheets/create_space_sheet.dart';
 import 'package:acter/features/tasks/dialogs/create_task_list_sheet.dart';
 import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -214,30 +212,6 @@ List<RouteBase> makeGeneralRoutes() {
     ),
     GoRoute(
       parentNavigatorKey: rootNavKey,
-      name: Routes.createSpace.name,
-      path: Routes.createSpace.route,
-      pageBuilder: (context, state) {
-        return SideSheetPage(
-          key: state.pageKey,
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return SlideTransition(
-              position: Tween(
-                begin: const Offset(1, 0),
-                end: const Offset(0, 0),
-              ).animate(
-                animation,
-              ),
-              child: child,
-            );
-          },
-          child: CreateSpacePage(
-            initialParentsSpaceId: state.uri.queryParameters['parentSpaceId'],
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      parentNavigatorKey: rootNavKey,
       name: Routes.linkChat.name,
       path: Routes.linkChat.route,
       pageBuilder: (context, state) {
@@ -347,26 +321,6 @@ List<RouteBase> makeGeneralRoutes() {
           child: EditSpacePage(spaceId: state.uri.queryParameters['spaceId']),
         );
       },
-    ),
-    GoRoute(
-      parentNavigatorKey: rootNavKey,
-      name: Routes.spaceInvite.name,
-      path: Routes.spaceInvite.route,
-      pageBuilder: (context, state) => DialogPage(
-        builder: (BuildContext ctx) => InviteToRoomDialog(
-          roomId: state.pathParameters['spaceId']!,
-        ),
-      ),
-    ),
-    GoRoute(
-      parentNavigatorKey: rootNavKey,
-      name: Routes.chatInvite.name,
-      path: Routes.chatInvite.route,
-      pageBuilder: (context, state) => DialogPage(
-        builder: (BuildContext ctx) => InviteToRoomDialog(
-          roomId: state.pathParameters['chatId']!,
-        ),
-      ),
     ),
     GoRoute(
       parentNavigatorKey: rootNavKey,

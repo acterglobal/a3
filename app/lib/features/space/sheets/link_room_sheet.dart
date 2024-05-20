@@ -383,6 +383,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
         for (final roomId in currentRooms) {
           update.addRoom(roomId);
         }
+        //FIXME : Below is not working at all.
         await room.setJoinRule(update);
       }
     }
@@ -404,7 +405,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       if (room != null) {
         room.addParentRoom(selectedParentSpaceId, true);
         // ignore: use_build_context_synchronously
-        await checkJoinRule(context, room, selectedParentSpaceId);
+        checkJoinRule(context, room, selectedParentSpaceId);
       }
     }
 

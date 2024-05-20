@@ -1,6 +1,8 @@
 use acter_core::{
     events::{
-        calendar::{self as calendar_events, CalendarEventBuilder},
+        calendar::{
+            self as calendar_events, CalendarEventBuilder, EventLocation, EventLocationInfo,
+        },
         rsvp::RsvpStatus,
         UtcDateTime,
     },
@@ -265,6 +267,34 @@ impl CalendarEvent {
             .await?
     }
 
+    pub fn physical_locations(&self) -> Vec<EventLocationInfo> {
+        let calendar_event = self.clone();
+        calendar_event
+            .inner
+            .locations()
+            .iter()
+            .filter(|e| matches!(e, EventLocation::Physical { .. }))
+            .map(EventLocationInfo::new)
+            .collect::<Vec<_>>()
+    }
+
+    pub fn virtual_locations(&self) -> Vec<EventLocationInfo> {
+        let calendar_event = self.clone();
+        calendar_event
+            .inner
+            .locations()
+            .iter()
+            .filter(|e| matches!(e, EventLocation::Virtual { .. }))
+            .map(EventLocationInfo::new)
+            .collect::<Vec<_>>()
+    }
+
+    pub fn locations(&self) -> Vec<EventLocationInfo> {
+        let calendar_event = self.clone();
+        let locations = calendar_event.inner.locations();
+        locations.iter().map(EventLocationInfo::new).collect()
+    }
+
     pub async fn responded_by_me(&self) -> Result<OptionRsvpStatus> {
         let me = self.clone();
         RUNTIME
@@ -345,6 +375,55 @@ impl CalendarEventDraft {
     pub fn utc_end_from_format(&mut self, utc_end: String, format: String) -> Result<()> {
         let dt: UtcDateTime = DateTime::parse_from_str(&utc_end, &format)?.into();
         self.inner.utc_end(dt);
+        Ok(())
+    }
+
+    pub fn physical_location(
+        &mut self,
+        name: String,
+        description: String,
+        description_html: Option<String>,
+        cooridnates: String,
+        uri: Option<String>,
+    ) -> Result<()> {
+        let desc_plain = TextMessageEventContent::plain(description.clone());
+        let desc_html = description_html
+            .map(|html| TextMessageEventContent::html(description.clone(), html.clone()));
+        let inner = EventLocation::Physical {
+            name: Some(name),
+            description: desc_html.or(Some(desc_plain)),
+            // TODO: add icon support
+            icon: None,
+            coordinates: Some(cooridnates),
+            uri: uri.clone(),
+        };
+        let loc_info = EventLocationInfo { inner };
+        // convert object to enum and push it
+        self.inner.into_event_loc(&loc_info);
+        Ok(())
+    }
+
+    pub fn virtual_location(
+        &mut self,
+        name: String,
+        description: String,
+        description_html: Option<String>,
+        uri: String,
+    ) -> Result<()> {
+        let calendar_event = self.inner.clone();
+        let desc_plain = TextMessageEventContent::plain(description.clone());
+        let desc_html = description_html
+            .map(|html| TextMessageEventContent::html(description.clone(), html.clone()));
+        let inner = EventLocation::Virtual {
+            name: Some(name),
+            description: desc_html.or(Some(desc_plain)),
+            // TODO: add icon support
+            icon: None,
+            uri,
+        };
+        let event_location = EventLocationInfo { inner };
+        // convert object to enum and push it
+        self.inner.into_event_loc(&event_location);
         Ok(())
     }
 
@@ -452,6 +531,16 @@ impl CalendarEventUpdateBuilder {
 
     pub fn unset_utc_end_update(&mut self) -> &mut Self {
         self.inner.utc_end(None);
+        self
+    }
+
+    pub fn unset_locations(&mut self) -> &mut Self {
+        self.inner.locations(Some(vec![]));
+        self
+    }
+
+    pub fn unset_locations_update(&mut self) -> &mut Self {
+        self.inner.locations(None);
         self
     }
 

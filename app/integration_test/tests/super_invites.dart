@@ -1,5 +1,6 @@
-import 'package:acter/features/settings/super_invites/pages/create.dart';
-import 'package:acter/features/settings/super_invites/pages/super_invites.dart';
+import 'package:acter/features/super_invites/dialogs/redeem_dialog.dart';
+import 'package:acter/features/super_invites/pages/create.dart';
+import 'package:acter/features/super_invites/pages/super_invites.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -30,7 +31,14 @@ void superInvitesTests() {
     // now let's try to create a new account with that token
     await t.logout();
     await t.freshAccount(displayName: 'Bob');
-    await t.redeemSuperInvite(token);
+    await t.redeemSuperInvite(
+      token,
+      dialogTest: () async {
+        final redeemInfo = find.byKey(redeemInfoKey);
+        await redeemInfo.should(findsOneWidget);
+        // info found
+      },
+    );
 
     // redeeming with the registration token should automatically trigger the invite process
     // check that we have been added.

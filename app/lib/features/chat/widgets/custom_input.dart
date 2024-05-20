@@ -669,10 +669,10 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
 
       // make the actual draft
       final client = ref.read(alwaysClientProvider);
-      final draft = client.textMarkdownDraft(markdownText);
+      MsgDraft draft = client.textMarkdownDraft(markdownText);
 
       for (final userId in userMentions) {
-        draft.addMention(userId);
+        draft = draft.addMention(userId);
       }
 
       // actually send it out

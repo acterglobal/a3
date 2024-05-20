@@ -8,7 +8,7 @@ use matrix_sdk::{
     room::{Receipts, Room},
     Client as SdkClient, RoomState,
 };
-use matrix_sdk_ui::timeline::{BackPaginationStatus, PaginationOptions, Timeline};
+use matrix_sdk_ui::timeline::Timeline;
 use ruma::{assign, UInt};
 use ruma_client_api::{receipt::create_receipt, sync::sync_events::v3::Rooms};
 use ruma_common::{EventId, OwnedEventId, OwnedTransactionId};
@@ -68,7 +68,7 @@ pub(crate) enum MsgContentDraft {
 }
 
 impl MsgContentDraft {
-    fn size(&mut self, value: u64) {
+    fn size(mut self, value: u64) -> Self {
         match self {
             MsgContentDraft::Image { ref mut info, .. } => {
                 if let Some(o) = info.as_mut() {
@@ -102,9 +102,10 @@ impl MsgContentDraft {
                 warn!("size is available for only image/audio/video/file");
             }
         }
+        self
     }
 
-    fn width(&mut self, value: u64) {
+    fn width(mut self, value: u64) -> Self {
         match self {
             MsgContentDraft::Image { ref mut info, .. } => {
                 if let Some(o) = info.as_mut() {
@@ -122,9 +123,10 @@ impl MsgContentDraft {
             }
             _ => warn!("width is available for only image/video"),
         }
+        self
     }
 
-    fn height(&mut self, value: u64) {
+    fn height(mut self, value: u64) -> Self {
         match self {
             MsgContentDraft::Image { ref mut info, .. } => {
                 if let Some(o) = info.as_mut() {
@@ -142,9 +144,10 @@ impl MsgContentDraft {
             }
             _ => warn!("height is available for only image/video"),
         }
+        self
     }
 
-    fn duration(&mut self, value: u64) {
+    fn duration(mut self, value: u64) -> Self {
         match self {
             MsgContentDraft::Audio { ref mut info, .. } => {
                 if let Some(o) = info.as_mut() {
@@ -166,9 +169,10 @@ impl MsgContentDraft {
             }
             _ => warn!("duration is available for only audio/video"),
         }
+        self
     }
 
-    fn blurhash(&mut self, value: String) {
+    fn blurhash(mut self, value: String) -> Self {
         match self {
             MsgContentDraft::Image { ref mut info, .. } => {
                 if let Some(o) = info.as_mut() {
@@ -186,22 +190,28 @@ impl MsgContentDraft {
             }
             _ => warn!("blurhash is available for only image/video"),
         }
+        self
     }
 
-    fn filename(&mut self, value: String) {
+    fn filename(mut self, value: String) -> Self {
         match self {
             MsgContentDraft::File {
                 source,
-                ref mut filename,
-                ..
+                info,
+                filename: _,
             } => {
-                *filename = Some(value);
+                return MsgContentDraft::File {
+                    source,
+                    filename: Some(value),
+                    info,
+                };
             }
             _ => warn!("filename is available for only file"),
         }
+        self
     }
 
-    fn geo_uri(&mut self, value: String) {
+    fn geo_uri(mut self, value: String) -> Self {
         match self {
             MsgContentDraft::Location {
                 ref mut geo_uri, ..
@@ -210,6 +220,7 @@ impl MsgContentDraft {
             }
             _ => warn!("geo_uri is available for only location"),
         }
+        self
     }
 }
 
@@ -220,42 +231,64 @@ pub struct MsgDraft {
 }
 
 impl MsgDraft {
-    pub fn add_mention(&mut self, user_id: String) -> Result<bool> {
-        self.mentions.user_ids.insert(user_id.parse()?);
-        Ok(true)
+    pub fn add_mention(&self, user_id: String) -> Result<Self> {
+        let mut mentions = self.mentions.clone();
+        mentions.user_ids.insert(user_id.parse()?);
+        Ok(MsgDraft {
+            inner: self.inner.clone(),
+            mentions,
+        })
     }
-    pub fn add_room_mention(&mut self, mention: bool) -> Result<bool> {
-        self.mentions.room = mention;
-        Ok(true)
+    pub fn add_room_mention(&self, mention: bool) -> Result<Self> {
+        let mut mentions = self.mentions.clone();
+        mentions.room = mention;
+        Ok(MsgDraft {
+            inner: self.inner.clone(),
+            mentions,
+        })
     }
 
-    pub fn size(&mut self, value: u64) -> &mut Self {
-        self.inner.size(value);
-        self
+    pub fn size(&self, value: u64) -> Self {
+        MsgDraft {
+            inner: self.inner.clone().size(value),
+            mentions: self.mentions.clone(),
+        }
     }
-    pub fn width(&mut self, value: u64) -> &mut Self {
-        self.inner.width(value);
-        self
+    pub fn width(&self, value: u64) -> Self {
+        MsgDraft {
+            inner: self.inner.clone().width(value),
+            mentions: self.mentions.clone(),
+        }
     }
-    pub fn height(&mut self, value: u64) -> &mut Self {
-        self.inner.height(value);
-        self
+    pub fn height(&self, value: u64) -> Self {
+        MsgDraft {
+            inner: self.inner.clone().height(value),
+            mentions: self.mentions.clone(),
+        }
     }
-    pub fn duration(&mut self, value: u64) -> &mut Self {
-        self.inner.duration(value);
-        self
+    pub fn duration(&self, value: u64) -> Self {
+        MsgDraft {
+            inner: self.inner.clone().duration(value),
+            mentions: self.mentions.clone(),
+        }
     }
-    pub fn blurhash(&mut self, value: String) -> &mut Self {
-        self.inner.blurhash(value);
-        self
+    pub fn blurhash(&self, value: String) -> Self {
+        MsgDraft {
+            inner: self.inner.clone().blurhash(value),
+            mentions: self.mentions.clone(),
+        }
     }
-    pub fn geo_uri(&mut self, value: String) -> &mut Self {
-        self.inner.geo_uri(value);
-        self
+    pub fn geo_uri(&self, value: String) -> Self {
+        MsgDraft {
+            inner: self.inner.clone().geo_uri(value),
+            mentions: self.mentions.clone(),
+        }
     }
-    pub fn filename(&mut self, value: String) -> &mut Self {
-        self.inner.filename(value);
-        self
+    pub fn filename(&self, value: String) -> Self {
+        MsgDraft {
+            inner: self.inner.clone().filename(value),
+            mentions: self.mentions.clone(),
+        }
     }
 }
 
