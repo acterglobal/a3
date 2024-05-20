@@ -153,14 +153,14 @@ Future<bool> openLink(String target, BuildContext context) async {
   }
 }
 
-Future<void> whatsappTo(BuildContext context, {required String text}) async {
+Future<void> shareTextToWhatsApp(BuildContext context, {required String text}) async {
   final url = 'whatsapp://send?text=$text';
   final encodedUri = Uri.parse(url);
   if (await canLaunchUrl(encodedUri)) {
     await launchUrl(encodedUri);
   } else {
+    _log.warning('WhatsApp not available');
     if (!context.mounted) return;
-    _log.severe(L10n.of(context).appUnavailable);
     EasyLoading.showError(L10n.of(context).appUnavailable);
   }
 }

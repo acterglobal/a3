@@ -18,55 +18,34 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::room::invite_page');
 
-class InvitePage extends ConsumerStatefulWidget {
+class InvitePage extends ConsumerWidget {
   final String roomId;
 
   const InvitePage({super.key, required this.roomId});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _InvitePageState();
-}
-
-class _InvitePageState extends ConsumerState<InvitePage> {
-  bool isSuperInviteEnable = false;
-  String? inviteCode;
-
-  @override
-  void initState() {
-    super.initState();
-    _getGeneratedToken();
-  }
-
-  Future<void> _getGeneratedToken() async {
-    final inviteCodeToken =
-        await ref.read(inviteCodeForSelectRoomOnly(widget.roomId).future);
-    setState(() => inviteCode = inviteCodeToken?.token());
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    isSuperInviteEnable = ref.watch(hasSuperTokensAccess).valueOrNull == true;
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: _buildAppBar(),
-      body: _buildBody(),
+      appBar: _buildAppBar(context),
+      body: _buildBody(context, ref),
     );
   }
 
-  AppBar _buildAppBar() {
+  AppBar _buildAppBar(BuildContext context) {
     return AppBar(
       actions: [
-        _buildPendingActionButton(),
+        _buildPendingActionButton(context),
         const SizedBox(width: 20),
       ],
     );
   }
 
-  Widget _buildPendingActionButton() {
+  Widget _buildPendingActionButton(BuildContext context) {
     return OutlinedButton(
       onPressed: () {
         context.pushNamed(
           Routes.invitePending.name,
-          queryParameters: {'roomId': widget.roomId.toString()},
+          queryParameters: {'roomId': roomId.toString()},
         );
       },
       style: OutlinedButton.styleFrom(
@@ -88,29 +67,30 @@ class _InvitePageState extends ConsumerState<InvitePage> {
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(BuildContext context, WidgetRef ref) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: 10),
-          _buildInviteHeader(),
+          _buildInviteHeader(context, ref),
           const SizedBox(height: 20),
-          _buildInviteMethods(),
+          _buildInviteMethods(context),
           const SizedBox(height: 20),
           const Divider(indent: 70, endIndent: 70),
           const SizedBox(height: 30),
-          if (isSuperInviteEnable) _buildInviteFromCode(),
+          if (ref.watch(hasSuperTokensAccess).valueOrNull == true)
+            _buildInviteFromCode(context, ref),
         ],
       ),
     );
   }
 
-  Widget _buildInviteHeader() {
+  Widget _buildInviteHeader(BuildContext context, WidgetRef ref) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        _roomProfileDetailsUI(),
+        _roomProfileDetailsUI(ref),
         const SizedBox(height: 10),
         Text(
           L10n.of(context).invite,
@@ -125,15 +105,14 @@ class _InvitePageState extends ConsumerState<InvitePage> {
     );
   }
 
-  Widget _roomProfileDetailsUI() {
-    final roomProfile =
-        ref.watch(roomProfileDataProvider(widget.roomId)).valueOrNull;
+  Widget _roomProfileDetailsUI(WidgetRef ref) {
+    final roomProfile = ref.watch(roomProfileDataProvider(roomId)).valueOrNull;
     return Column(
       children: [
         ActerAvatar(
           mode: DisplayMode.Space,
           avatarInfo: AvatarInfo(
-            uniqueId: widget.roomId,
+            uniqueId: roomId,
             displayName: roomProfile?.displayName,
             avatar: roomProfile?.getAvatarImage(),
           ),
@@ -145,7 +124,7 @@ class _InvitePageState extends ConsumerState<InvitePage> {
     );
   }
 
-  Widget _buildInviteMethods() {
+  Widget _buildInviteMethods(BuildContext context) {
     return Center(
       child: Container(
         constraints: const BoxConstraints(maxWidth: 500),
@@ -164,7 +143,7 @@ class _InvitePageState extends ConsumerState<InvitePage> {
               subTitle: L10n.of(context).inviteIndividualUsersSubtitle,
               onTap: () => context.pushNamed(
                 Routes.inviteIndividual.name,
-                queryParameters: {'roomId': widget.roomId.toString()},
+                queryParameters: {'roomId': roomId.toString()},
               ),
             ),
           ],
@@ -173,7 +152,7 @@ class _InvitePageState extends ConsumerState<InvitePage> {
     );
   }
 
-  Widget _buildInviteFromCode() {
+  Widget _buildInviteFromCode(BuildContext context, WidgetRef ref) {
     return Center(
       child: Container(
         decoration: BoxDecoration(
@@ -201,14 +180,16 @@ class _InvitePageState extends ConsumerState<InvitePage> {
               style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 20),
-            _inviteCodeUI(),
+            _inviteCodeUI(context, ref),
           ],
         ),
       ),
     );
   }
 
-  Widget _inviteCodeUI() {
+  Widget _inviteCodeUI(BuildContext context, WidgetRef ref) {
+    var inviteCode =
+        ref.watch(inviteCodeForSelectRoomOnly(roomId)).valueOrNull?.token();
     if (inviteCode != null) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -218,13 +199,15 @@ class _InvitePageState extends ConsumerState<InvitePage> {
               children: [
                 Expanded(
                   child: Text(
-                    inviteCode!,
+                    inviteCode,
                     textAlign: TextAlign.center,
                   ),
                 ),
                 IconButton(
                   onPressed: () {
-                    Clipboard.setData(ClipboardData(text: inviteCode!));
+                    Clipboard.setData(
+                      ClipboardData(text: inviteCode),
+                    );
                   },
                   icon: const Icon(Icons.copy),
                 ),
@@ -235,7 +218,7 @@ class _InvitePageState extends ConsumerState<InvitePage> {
           Align(
             alignment: Alignment.centerRight,
             child: ActerInlineTextButton(
-              onPressed: () => _inactiveInviteCode(),
+              onPressed: () => _inactiveInviteCode(context, ref, inviteCode),
               child: Text(
                 L10n.of(context).inactivate,
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
@@ -249,7 +232,10 @@ class _InvitePageState extends ConsumerState<InvitePage> {
           ActerPrimaryActionButton(
             onPressed: () => context.pushNamed(
               Routes.shareInviteCode.name,
-              queryParameters: {'inviteCode': inviteCode},
+              queryParameters: {
+                'inviteCode': inviteCode,
+                'roomId': roomId,
+              },
             ),
             child: Text(L10n.of(context).share),
           ),
@@ -257,21 +243,24 @@ class _InvitePageState extends ConsumerState<InvitePage> {
       );
     }
     return ActerPrimaryActionButton(
-      onPressed: () => generateNewInviteCode(),
+      onPressed: () => generateNewInviteCode(context, ref),
       child: Text(L10n.of(context).generateInviteCode),
     );
   }
 
-  Future<void> generateNewInviteCode() async {
+  Future<void> generateNewInviteCode(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
     try {
       EasyLoading.show(status: L10n.of(context).generateInviteCode);
-      final newInviteToken = await newSuperInviteForRooms(ref, [widget.roomId]);
-      setState(() => inviteCode = newInviteToken);
+      await newSuperInviteForRooms(ref, [roomId]);
+      ref.invalidate(superInvitesProvider);
       EasyLoading.dismiss();
     } catch (e) {
       EasyLoading.dismiss();
-      if (!mounted) return;
-      _log.severe(L10n.of(context).activateInviteCodeFailed(e));
+      _log.severe('Invite code activation failed');
+      if (!context.mounted) return;
       EasyLoading.showError(
         L10n.of(context).activateInviteCodeFailed(e),
         duration: const Duration(seconds: 3),
@@ -279,7 +268,11 @@ class _InvitePageState extends ConsumerState<InvitePage> {
     }
   }
 
-  Future<void> _inactiveInviteCode() async {
+  Future<void> _inactiveInviteCode(
+    BuildContext context,
+    WidgetRef ref,
+    String token,
+  ) async {
     final bool? confirm = await showAdaptiveDialog(
       context: context,
       builder: (_) {
@@ -308,20 +301,19 @@ class _InvitePageState extends ConsumerState<InvitePage> {
         );
       },
     );
-    if (confirm != true || !mounted || inviteCode == null) {
+    if (confirm != true || !context.mounted) {
       return;
     }
-
     EasyLoading.show(status: L10n.of(context).inactivateCode);
     try {
-      final provider = ref.read(superInvitesProvider);
-      await provider.delete(inviteCode!);
-      setState(() => inviteCode = null);
+      final provider = ref.watch(superInvitesProvider);
+      await provider.delete(token);
+      ref.invalidate(superInvitesProvider);
       EasyLoading.dismiss();
       ref.invalidate(superInvitesProvider);
     } catch (err) {
       EasyLoading.dismiss();
-      if (!mounted) return;
+      if (!context.mounted) return;
       EasyLoading.showError(
         L10n.of(context).inactivateInviteCodeFailed(err),
         duration: const Duration(seconds: 3),

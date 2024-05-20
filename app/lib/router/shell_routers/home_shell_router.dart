@@ -522,6 +522,7 @@ List<RouteBase> makeHomeShellRoutes(ref) {
           key: state.pageKey,
           child: ShareInviteCode(
             inviteCode: state.uri.queryParameters['inviteCode']!,
+            roomId: state.uri.queryParameters['roomId']!,
           ),
         );
       },

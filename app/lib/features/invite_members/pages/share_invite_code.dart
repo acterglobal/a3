@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -10,37 +11,23 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
-class ShareInviteCode extends ConsumerStatefulWidget {
+class ShareInviteCode extends ConsumerWidget {
   final String inviteCode;
+  final String roomId;
 
-  const ShareInviteCode({super.key, required this.inviteCode});
-
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _ShareInviteCodeState();
-}
-
-class _ShareInviteCodeState extends ConsumerState<ShareInviteCode> {
-  String userName = '';
+  const ShareInviteCode({
+    super.key,
+    required this.inviteCode,
+    required this.roomId,
+  });
 
   @override
-  void initState() {
-    super.initState();
-    getUserName();
-  }
-
-  Future<void> getUserName() async {
-    final account = await ref.read(accountProfileProvider.future);
-    userName = account.profile.displayName ?? '';
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: _buildAppBar(context),
-      body: _buildBody(context),
+      body: _buildBody(context, ref),
     );
   }
 
@@ -51,27 +38,81 @@ class _ShareInviteCodeState extends ConsumerState<ShareInviteCode> {
     );
   }
 
-  Widget _buildBody(BuildContext context) {
-    return Center(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        constraints: const BoxConstraints(maxWidth: 500),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildMessageContent(context),
-            const SizedBox(height: 30),
-            _buildShareIntents(context),
-            const SizedBox(height: 10),
-            _buildDoneButton(context),
-            const SizedBox(height: 5),
-          ],
+  Widget _buildBody(BuildContext context, WidgetRef ref) {
+    final account = ref.watch(accountProfileProvider);
+    final roomProfile = ref.watch(roomProfileDataProvider(roomId)).valueOrNull;
+    return account.when(
+      data: (data) {
+        final displayName = data.profile.displayName ?? '';
+        return Center(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            constraints: const BoxConstraints(maxWidth: 500),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildMessageContent(
+                  context,
+                  ref,
+                  displayName,
+                  roomProfile?.displayName ?? '',
+                ),
+                const SizedBox(height: 30),
+                _buildShareIntents(
+                  context,
+                  displayName,
+                  roomProfile?.displayName ?? '',
+                ),
+                const SizedBox(height: 10),
+                _buildDoneButton(context),
+                const SizedBox(height: 5),
+              ],
+            ),
+          ),
+        );
+      },
+      error: (e, trace) => Text('${L10n.of(context).error}: $e'),
+      loading: () => _shareInviteSkeletonWidget(context, ref),
+    );
+  }
+
+  Widget _shareInviteSkeletonWidget(BuildContext context, WidgetRef ref) {
+    return Skeletonizer(
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          constraints: const BoxConstraints(maxWidth: 500),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildMessageContent(
+                context,
+                ref,
+                'displayName',
+                'roomName',
+              ),
+              const SizedBox(height: 30),
+              _buildShareIntents(
+                context,
+                'displayName',
+                'roomName',
+              ),
+              const SizedBox(height: 10),
+              _buildDoneButton(context),
+              const SizedBox(height: 5),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildMessageContent(BuildContext context) {
+  Widget _buildMessageContent(
+    BuildContext context,
+    WidgetRef ref,
+    String displayName,
+    String roomName,
+  ) {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -91,7 +132,7 @@ class _ShareInviteCodeState extends ConsumerState<ShareInviteCode> {
               child: SingleChildScrollView(
                 child: Text(
                   L10n.of(context)
-                      .shareInviteContent(widget.inviteCode, userName),
+                      .shareInviteContent(inviteCode, roomName, displayName),
                 ),
               ),
             ),
@@ -101,7 +142,11 @@ class _ShareInviteCodeState extends ConsumerState<ShareInviteCode> {
     );
   }
 
-  Widget _buildShareIntents(BuildContext context) {
+  Widget _buildShareIntents(
+    BuildContext context,
+    String displayName,
+    String roomName,
+  ) {
     return Wrap(
       direction: Axis.horizontal,
       alignment: WrapAlignment.center,
@@ -113,19 +158,21 @@ class _ShareInviteCodeState extends ConsumerState<ShareInviteCode> {
           onTap: () => mailTo(
             toAddress: '',
             subject: 'body=${L10n.of(context).shareInviteContent(
-              widget.inviteCode,
-              userName,
+              inviteCode,
+              roomName,
+              displayName,
             )}',
           ),
         ),
         _shareIntentsItem(
           context: context,
           iconData: Atlas.whatsapp,
-          onTap: () => whatsappTo(
+          onTap: () => shareTextToWhatsApp(
             context,
             text: L10n.of(context).shareInviteContent(
-              widget.inviteCode,
-              userName,
+              inviteCode,
+              roomName,
+              displayName,
             ),
           ),
         ),
@@ -135,8 +182,9 @@ class _ShareInviteCodeState extends ConsumerState<ShareInviteCode> {
           onTap: () {
             Share.share(
               L10n.of(context).shareInviteContent(
-                widget.inviteCode,
-                userName,
+                inviteCode,
+                roomName,
+                displayName,
               ),
             );
           },
@@ -148,8 +196,9 @@ class _ShareInviteCodeState extends ConsumerState<ShareInviteCode> {
             Clipboard.setData(
               ClipboardData(
                 text: L10n.of(context).shareInviteContent(
-                  widget.inviteCode,
-                  userName,
+                  inviteCode,
+                  roomName,
+                  displayName,
                 ),
               ),
             );

@@ -37,14 +37,14 @@ final inviteCodeForSelectRoomOnly = FutureProvider.autoDispose
   // Get all tokens
   final allInvites = await ref.watch(superInvitesTokensProvider.future);
   // Get list of tokens with associate with given roomId
-  var allInvitesRelatedToRoomId = allInvites
+  final allInvitesRelatedToRoomId = allInvites
       .where(
         (invite) =>
             invite.rooms().map((e) => e.toDartString()).contains(roomId),
       )
       .toList();
   // Get single token which is associate with single roomId only
-  var inviteCodeWhichHaveSelectedRoomIdOnly = allInvitesRelatedToRoomId
+  final inviteCodeWhichHaveSelectedRoomIdOnly = allInvitesRelatedToRoomId
       .where((invite) => invite.rooms().length == 1)
       .toList();
 
