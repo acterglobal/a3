@@ -1,3 +1,4 @@
+import 'package:acter/common/models/types.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/home/data/keys.dart';
@@ -16,17 +17,17 @@ class ActivitiesIcon extends ConsumerWidget {
       key: MainNavKeys.activities,
     );
     switch (activities) {
-      case HasActivities.important:
+      case UrgencyBadge.important:
         return Badge(
           backgroundColor: Theme.of(context).colorScheme.badgeImportant,
           child: baseIcon,
         );
-      case HasActivities.urgent:
+      case UrgencyBadge.urgent:
         return Badge(
           backgroundColor: Theme.of(context).colorScheme.badgeUrgent,
           child: baseIcon,
         );
-      case HasActivities.unread:
+      case UrgencyBadge.unread:
         return Badge(
           backgroundColor: Theme.of(context).colorScheme.badgeUnread,
           child: baseIcon,

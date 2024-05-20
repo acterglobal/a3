@@ -1,5 +1,7 @@
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -57,8 +59,7 @@ class ConvoWithProfileCard extends ConsumerWidget {
                     Theme.of(context).colorScheme.secondaryContainer,
                 onFocusChange: onFocusChange,
                 onLongPress: onLongPress,
-                leading: avatar ??
-                    RoomAvatar(roomId: roomId, showParent: showParent),
+                leading: avatarWithIndicator(context, ref),
                 title: Text(
                   profile.displayName ?? roomId,
                   style: Theme.of(context)
@@ -75,5 +76,34 @@ class ConvoWithProfileCard extends ConsumerWidget {
         );
       },
     );
+  }
+
+  Widget avatarWithIndicator(BuildContext context, WidgetRef ref) {
+    final unreadCounters =
+        ref.watch(unreadCountersProvider(roomId)).valueOrNull;
+
+    final child = avatar ?? RoomAvatar(roomId: roomId, showParent: showParent);
+    if (unreadCounters == null) {
+      return child;
+    }
+
+    if (unreadCounters.$1 > 0) {
+      return Badge(
+        backgroundColor: Theme.of(context).colorScheme.badgeImportant,
+        child: child,
+      );
+    } else if (unreadCounters.$2 > 0) {
+      return Badge(
+        backgroundColor: Theme.of(context).colorScheme.badgeUrgent,
+        child: child,
+      );
+    } else if (unreadCounters.$3 > 0) {
+      return Badge(
+        backgroundColor: Theme.of(context).colorScheme.badgeUnread,
+        child: child,
+      );
+    }
+    // nothing urgent enough for us to indicate anything
+    return child;
   }
 }

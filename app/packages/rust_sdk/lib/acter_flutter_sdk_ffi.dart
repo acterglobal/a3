@@ -14088,6 +14088,39 @@ class Api {
     return tmp9;
   }
 
+  bool? __roomSubscribeToUpdatesStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _roomSubscribeToUpdatesStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final tmp9 = tmp11 > 0;
+    return tmp9;
+  }
+
   RoomMessageDiff? __timelineStreamMessagesStreamStreamPoll(
     int boxed,
     int postCobject,
@@ -18387,6 +18420,16 @@ class Api {
       _RoomRoomIdStrReturn Function(
         int,
       )>();
+  late final _roomSubscribeToUpdatesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Room_subscribe_to_updates");
+
+  late final _roomSubscribeToUpdates = _roomSubscribeToUpdatesPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _roomIsSpacePtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint8 Function(
@@ -19219,6 +19262,37 @@ class Api {
           )>>("__Convo_timeline_stream");
 
   late final _convoTimelineStream = _convoTimelineStreamPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _convoNumUnreadNotificationCountPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint64 Function(
+            ffi.Int64,
+          )>>("__Convo_num_unread_notification_count");
+
+  late final _convoNumUnreadNotificationCount =
+      _convoNumUnreadNotificationCountPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _convoNumUnreadMessagesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint64 Function(
+            ffi.Int64,
+          )>>("__Convo_num_unread_messages");
+
+  late final _convoNumUnreadMessages = _convoNumUnreadMessagesPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _convoNumUnreadMentionsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint64 Function(
+            ffi.Int64,
+          )>>("__Convo_num_unread_mentions");
+
+  late final _convoNumUnreadMentions = _convoNumUnreadMentionsPtr.asFunction<
       int Function(
         int,
       )>();
@@ -29870,6 +29944,23 @@ class Api {
             int,
             int,
           )>();
+  late final _roomSubscribeToUpdatesStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomSubscribeToUpdatesStreamPollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Room_subscribe_to_updates_stream_poll");
+
+  late final _roomSubscribeToUpdatesStreamPoll =
+      _roomSubscribeToUpdatesStreamPollPtr.asFunction<
+          _RoomSubscribeToUpdatesStreamPollReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
   late final _timelineStreamMessagesStreamStreamPollPtr = _lookup<
       ffi.NativeFunction<
           _TimelineStreamMessagesStreamStreamPollReturn Function(
@@ -38415,6 +38506,22 @@ class Room {
     return tmp2;
   }
 
+  /// Whether new updates have been received for this room
+  Stream<bool> subscribeToUpdates() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomSubscribeToUpdates(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__Room_subscribe_to_updates_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeStream(tmp3_1, _api.__roomSubscribeToUpdatesStreamPoll);
+    return tmp2;
+  }
+
   /// whether this is a Space
   bool isSpace() {
     var tmp0 = 0;
@@ -40125,6 +40232,42 @@ class Convo {
     final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TimelineStream");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = TimelineStream._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// how many unread notifications for this chat
+  int numUnreadNotificationCount() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoNumUnreadNotificationCount(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// how many unread messages for this chat
+  int numUnreadMessages() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoNumUnreadMessages(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// how many unread mentions for this chat
+  int numUnreadMentions() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoNumUnreadMentions(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
     return tmp2;
   }
 
@@ -60136,6 +60279,13 @@ class _RsvpManagerSubscribeStreamStreamPollReturn extends ffi.Struct {
 }
 
 class _ReactionManagerSubscribeStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+}
+
+class _RoomSubscribeToUpdatesStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

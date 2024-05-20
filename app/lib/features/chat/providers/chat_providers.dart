@@ -204,3 +204,28 @@ final chatTypingEventProvider = StreamProvider.autoDispose
         .toList();
   }
 });
+
+// unread notifications, unread mentions, unread messages
+typedef UnreadCounters = (int, int, int);
+
+final unreadCountersProvider = FutureProvider.autoDispose
+    .family<UnreadCounters, String>((ref, roomId) async {
+  final convo = await ref.watch(chatProvider(roomId).future);
+  return (
+    convo.numUnreadNotificationCount(),
+    convo.numUnreadMentions(),
+    convo.numUnreadMessages()
+  );
+});
+
+// final UrgencyBadgeProvider = StateProvider((ref) {
+//   final invitations = ref.watch(invitationListProvider);
+//   if (invitations.isNotEmpty) {
+//     return UrgencyBadge.important;
+//   }
+//   final syncStatus = ref.watch(syncStateProvider);
+//   if (syncStatus.errorMsg != null) {
+//     return UrgencyBadge.important;
+//   }
+//   return UrgencyBadge.none;
+// });

@@ -989,6 +989,9 @@ object Room {
     /// the RoomId as a String
     fn room_id_str() -> string;
 
+    /// Whether new updates have been received for this room
+    fn subscribe_to_updates() -> Stream<bool>;
+
     /// whether this is a Space
     fn is_space() -> bool;
 
@@ -1206,6 +1209,15 @@ object Convo {
 
     /// Get the timeline for the room
     fn timeline_stream() -> TimelineStream;
+
+    /// how many unread notifications for this chat
+    fn num_unread_notification_count() -> u64;
+
+    /// how many unread messages for this chat
+    fn num_unread_messages() -> u64;
+
+    /// how many unread mentions for this chat
+    fn num_unread_mentions() -> u64;
 
     /// The last message sent to the room
     fn latest_message() -> Option<RoomMessage>;
