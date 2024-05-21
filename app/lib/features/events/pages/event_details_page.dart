@@ -9,9 +9,11 @@ import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/events/model/keys.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/events/widgets/participants_list.dart';
 import 'package:acter/features/events/widgets/skeletons/event_details_skeleton_widget.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
+import 'package:acter/features/space/widgets/member_avatar.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -484,33 +486,58 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           return Text(L10n.of(context).noParticipantsGoing);
         }
 
-        List<Widget> avtarList = [];
-        for (final participantId in eventParticipantsList) {
-          final memberInfo = ref.watch(
-            roomMemberProvider((roomId: roomId, userId: participantId)),
-          );
-          var participant = memberInfo.when(
-            data: (data) {
-              final profileData = data.profile;
-              return ActerAvatar(
-                mode: DisplayMode.DM,
-                avatarInfo: AvatarInfo(
-                  uniqueId: roomId,
-                  displayName: profileData.displayName ?? roomId,
-                  avatar: profileData.getAvatarImage(),
-                ),
-                size: 18,
-              );
-            },
-            error: (err, stackTrace) => fallbackAvatar(roomId),
-            loading: () => fallbackAvatar(roomId),
-          );
-          avtarList.add(
-            Padding(padding: const EdgeInsets.all(5.0), child: participant),
-          );
+        final membersCount = eventParticipantsList.length;
+        List<String> firstFiveEventParticipantsList = eventParticipantsList;
+        if (membersCount > 5) {
+          firstFiveEventParticipantsList = firstFiveEventParticipantsList.sublist(0, 5);
         }
 
-        return Wrap(children: avtarList);
+        return GestureDetector(
+          onTap: () => showAllParticipantListDialog(roomId),
+          child: Wrap(
+            direction: Axis.horizontal,
+            spacing: -10,
+            children: [
+              ...firstFiveEventParticipantsList.map(
+                (a) => MemberAvatar(
+                  memberId: a,
+                  roomId: roomId,
+                ),
+              ),
+              if (membersCount > 5)
+                CircleAvatar(
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Text(
+                      '+${membersCount - 5}',
+                      textAlign: TextAlign.center,
+                      textScaler: const TextScaler.linear(0.8),
+                      style: Theme.of(context).textTheme.labelLarge,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void showAllParticipantListDialog(String roomId) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
+      useSafeArea: true,
+      builder: (_) {
+        return FractionallySizedBox(
+          heightFactor: 1,
+          child: ParticipantsList(
+            roomId: roomId,
+            participants: eventParticipantsList.value,
+          ),
+        );
       },
     );
   }

@@ -50,6 +50,7 @@ ruma-client-api = { workspace = true }
 ruma-common = { workspace = true, features = ["client", "unstable-unspecified"] }
 ruma-events = { workspace = true }
 sanitize-filename-reader-friendly = "2.2.1"
+scc = { workspace = true }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 strum = { workspace = true }

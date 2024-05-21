@@ -176,14 +176,14 @@ const aOptions = AndroidOptions(
   preferencesKeyPrefix: isDevBuild ? 'dev.flutter' : null,
 );
 const iOptions = IOSOptions(
-  synchronizable: true,
+  synchronizable: false,
   accessibility: KeychainAccessibility
       .first_unlock, // must have been unlocked since reboot
   groupId:
       appleKeychainAppGroupName, // to allow the background process to access the same store
 );
 const mOptions = MacOsOptions(
-  synchronizable: true,
+  synchronizable: false,
   accessibility: KeychainAccessibility
       .first_unlock, // must have been unlocked since reboot
   groupId:
@@ -313,12 +313,20 @@ class ActerSdk {
       sessionsStr = await storage.read(key: _sessionKey);
     } on PlatformException catch (error, stack) {
       if (error.code == '-25300') {
-      _log.severe('Ignoring read failure for missing key $_sessionKey');
-      } else  {
-        _log.severe('Ignoring read failure of session key $_sessionKey', error, stack);
+        _log.severe('Ignoring read failure for missing key $_sessionKey');
+      } else {
+        _log.severe(
+          'Ignoring read failure of session key $_sessionKey',
+          error,
+          stack,
+        );
       }
     } catch (error, stack) {
-      _log.severe('Ignoring read failure of session key $_sessionKey', error, stack);
+      _log.severe(
+        'Ignoring read failure of session key $_sessionKey',
+        error,
+        stack,
+      );
     }
 
     if (sessionsStr == null) {

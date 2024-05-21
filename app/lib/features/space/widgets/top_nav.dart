@@ -10,6 +10,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 final _log = Logger('a3::space::top_nav_bar');
 
 class TopNavBar extends ConsumerStatefulWidget {
+  static const moreTabsKey = Key('space-more-tabs');
   final String spaceId;
 
   const TopNavBar({
@@ -21,12 +22,16 @@ class TopNavBar extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _TopNavBarState();
 }
 
-class _TopNavBarState extends ConsumerState<TopNavBar>
-    with TickerProviderStateMixin {
+class _TopNavBarState extends ConsumerState<TopNavBar> {
+  final spaceOverviewKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
-    spaceOverviewTutorials(context: context);
+    spaceOverviewTutorials(
+      context: context,
+      spaceOverviewKey: spaceOverviewKey,
+    );
   }
 
   @override
@@ -192,9 +197,11 @@ class _TopNavBarState extends ConsumerState<TopNavBar>
 
   Widget buildMoreMenu(List<TabEntry> items) {
     return PopupMenuButton(
+      key: TopNavBar.moreTabsKey,
       itemBuilder: (ctx) => items
           .map(
             (tabItem) => PopupMenuItem(
+              key: tabItem.key,
               child: Row(
                 children: [
                   tabItem.makeIcon(context, Colors.white),

@@ -35,6 +35,7 @@ impl BackupManager {
             })
             .await?
     }
+
     pub async fn reset(&self) -> Result<String> {
         let inner = self.inner.clone();
         RUNTIME
@@ -44,6 +45,7 @@ impl BackupManager {
             })
             .await?
     }
+
     pub async fn disable(&self) -> Result<bool> {
         let encryption = self.inner.clone();
         RUNTIME
@@ -53,6 +55,7 @@ impl BackupManager {
             })
             .await?
     }
+
     pub fn state_str(&self) -> String {
         state_to_string(&self.inner.recovery().state())
     }

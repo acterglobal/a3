@@ -14,6 +14,8 @@ import 'package:acter/features/chat/widgets/custom_input.dart';
 import 'package:acter/features/chat/widgets/custom_message_builder.dart';
 import 'package:acter/features/chat/widgets/file_message_builder.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
+import 'package:acter/features/chat/widgets/messages/encrypted_info.dart';
+import 'package:acter/features/chat/widgets/messages/topic.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
 import 'package:acter/features/chat/widgets/video_message_builder.dart';
@@ -88,53 +90,26 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
     return OrientationBuilder(
       builder: (context, orientation) => Scaffold(
         resizeToAvoidBottomInset: orientation == Orientation.portrait,
-        body: CustomScrollView(
-          physics: const NeverScrollableScrollPhysics(),
-          slivers: [appBar(context), chatBody(context)],
+        body: Column(
+          children: [appBar(context), chatBody(context)],
         ),
       ),
     );
   }
 
-  SliverFillRemaining chatBody(BuildContext context) {
-    final userAppSettings = ref.watch(userAppSettingsProvider);
-    final chatState = ref.watch(chatStateProvider(widget.convo));
+  Widget chatBody(BuildContext context) {
+    final endReached =
+        ref.watch(chatStateProvider(widget.convo).select((c) => !c.hasMore));
     final userId = ref.watch(myUserIdStrProvider);
     final roomId = widget.convo.getRoomIdStr();
-    List<types.User> typingUsers = [];
-    if (userAppSettings.valueOrNull != null) {
-      final settings = userAppSettings.requireValue;
-      if (settings.typingNotice() != false) {
-        final typingEvent = ref.watch(chatTypingEventProvider);
-        if (typingEvent.valueOrNull != null) {
-          final t = typingEvent.requireValue;
-          if (t != null) {
-            if (t.roomId().toString() == roomId) {
-              for (var i in t.userIds().toList()) {
-                if (i.toString() != userId) {
-                  final uid = types.User(
-                    id: i.toString(),
-                    firstName: i.toString(),
-                  );
-                  typingUsers.add(uid);
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+    final sendTypingNotice = ref.watch(
+      userAppSettingsProvider.select(
+        (settings) => settings.valueOrNull?.typingNotice() ?? false,
+      ),
+    );
+    final messages = ref.watch(chatMessagesProvider(widget.convo));
 
-    final messages = chatState.messages
-        .where(
-          // filter only items we can show
-          (m) => m is! types.UnsupportedMessage,
-        )
-        .toList()
-        .reversed
-        .toList();
-
-    return SliverFillRemaining(
+    return Expanded(
       child: Container(
         decoration: const BoxDecoration(
           gradient: primaryGradient,
@@ -143,8 +118,15 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
           keyboardDismissBehavior: Platform.isIOS
               ? ScrollViewKeyboardDismissBehavior.onDrag
               : ScrollViewKeyboardDismissBehavior.manual,
-          customBottomWidget:
-              CustomChatInput(key: Key(roomId), convo: widget.convo),
+          customBottomWidget: CustomChatInput(
+            key: Key('chat-input-$roomId'),
+            roomId: widget.convo.getRoomIdStr(),
+            onTyping: sendTypingNotice
+                ? (typing) async {
+                    widget.convo.typingNotice(typing);
+                  }
+                : null,
+          ),
           textMessageBuilder: (
             types.TextMessage m, {
             required int messageWidth,
@@ -171,7 +153,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
           // custom avatar builder
           avatarBuilder: (types.User user) =>
               AvatarBuilder(userId: user.id, roomId: roomId),
-          isLastPage: !chatState.hasMore,
+          isLastPage: endReached,
           bubbleBuilder: (
             Widget child, {
             required types.Message message,
@@ -194,7 +176,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
             required int messageWidth,
           }) =>
               ImageMessageBuilder(
-            convo: widget.convo,
+            roomId: widget.convo.getRoomIdStr(),
             message: message,
             messageWidth: messageWidth,
           ),
@@ -225,6 +207,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
             message: message,
             messageWidth: messageWidth,
           ),
+          systemMessageBuilder: renderSystemMessage,
           showUserAvatars: true,
           onMessageLongPress: (
             BuildContext context,
@@ -241,7 +224,8 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
           },
           typingIndicatorOptions: TypingIndicatorOptions(
             typingMode: TypingIndicatorMode.name,
-            typingUsers: typingUsers,
+            typingUsers:
+                ref.watch(chatTypingEventProvider(roomId)).valueOrNull ?? [],
           ),
           //Custom Theme class, see lib/common/store/chatTheme.dart
           theme: Theme.of(context).chatTheme,
@@ -250,11 +234,22 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
     );
   }
 
-  SliverAppBar appBar(BuildContext context) {
+  Widget renderSystemMessage(types.SystemMessage message) {
+    return switch (message.metadata?['type']) {
+      '_topic' => TopicSystemMessageWidget(
+          message: message,
+          roomId: widget.convo.getRoomIdStr(),
+        ),
+      '_encryptedInfo' => const EncryptedInfoWidget(),
+      _ => SystemMessage(key: Key(message.id), message: message.text)
+    };
+  }
+
+  Widget appBar(BuildContext context) {
     final roomId = widget.convo.getRoomIdStr();
     final convoProfile = ref.watch(chatProfileDataProvider(widget.convo));
     final activeMembers = ref.watch(membersIdsProvider(roomId));
-    return SliverAppBar(
+    return AppBar(
       elevation: 0,
       automaticallyImplyLeading: widget.inSidebar ? false : true,
       centerTitle: true,

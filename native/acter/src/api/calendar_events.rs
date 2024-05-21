@@ -1,6 +1,8 @@
 use acter_core::{
     events::{
-        calendar::{self as calendar_events, CalendarEventBuilder},
+        calendar::{
+            self as calendar_events, CalendarEventBuilder, EventLocation, EventLocationInfo,
+        },
         rsvp::RsvpStatus,
         UtcDateTime,
     },
@@ -14,7 +16,7 @@ use icalendar::Calendar as iCalendar;
 use matrix_sdk::{room::Room, RoomState};
 use ruma::serde::PartialEqAsRefStr;
 use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};
-use ruma_events::room::message::TextMessageEventContent;
+use ruma_events::{room::message::TextMessageEventContent, MessageLikeEventType};
 use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
@@ -38,26 +40,22 @@ impl Client {
                 else {
                     bail!("{key} is not a calendar_event");
                 };
-                let room = me
-                    .core
-                    .client()
-                    .get_room(inner.room_id())
-                    .context("Room not found")?;
+                let room = me.room_by_id_typed(inner.room_id())?;
                 Ok(CalendarEvent::new(me.clone(), room, inner))
             })
             .await?
     }
 
     pub async fn calendar_event(&self, calendar_id: String) -> Result<CalendarEvent> {
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::CalendarEvent(inner) = client.store().get(&calendar_id).await?
+                let AnyActerModel::CalendarEvent(inner) = me.store().get(&calendar_id).await?
                 else {
                     bail!("Calendar event not found");
                 };
-                let room = client.get_room(inner.room_id()).context("Room not found")?;
-                Ok(CalendarEvent::new(client, room, inner))
+                let room = me.room_by_id_typed(inner.room_id())?;
+                Ok(CalendarEvent::new(me, room, inner))
             })
             .await?
     }
@@ -65,10 +63,11 @@ impl Client {
     pub async fn calendar_events(&self) -> Result<Vec<CalendarEvent>> {
         let mut calendar_events = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                for mdl in client.store().get_list(KEYS::CALENDAR).await? {
+                let client = me.core.client();
+                for mdl in me.store().get_list(KEYS::CALENDAR).await? {
                     if let AnyActerModel::CalendarEvent(t) = mdl {
                         let room_id = t.room_id().to_owned();
                         let room = match rooms_map.entry(room_id) {
@@ -83,7 +82,7 @@ impl Client {
                                 }
                             }
                         };
-                        calendar_events.push(CalendarEvent::new(client.clone(), room, t));
+                        calendar_events.push(CalendarEvent::new(me.clone(), room, t));
                     } else {
                         warn!(
                             "Non calendar_event model found in `calendar_events` index: {:?}",
@@ -230,6 +229,7 @@ impl CalendarEvent {
         let event_id = self.inner.event_id().to_owned();
         crate::CommentsManager::new(client, room, event_id).await
     }
+
     pub async fn attachments(&self) -> Result<crate::AttachmentsManager> {
         let client = self.client.clone();
         let room = self.room.clone();
@@ -252,23 +252,51 @@ impl CalendarEvent {
     }
 
     pub async fn participants(&self) -> Result<Vec<String>> {
-        let calendar_event = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let manager = calendar_event.rsvps().await?;
-                Ok(manager
+                let manager = me.rsvps().await?;
+                let users = manager
                     .users_at_status_typed(RsvpStatus::Yes)
                     .await?
                     .into_iter()
                     .map(|u| u.to_string())
-                    .collect())
+                    .collect();
+                Ok(users)
             })
             .await?
     }
 
+    pub fn physical_locations(&self) -> Vec<EventLocationInfo> {
+        let calendar_event = self.clone();
+        calendar_event
+            .inner
+            .locations()
+            .iter()
+            .filter(|e| matches!(e, EventLocation::Physical { .. }))
+            .map(EventLocationInfo::new)
+            .collect::<Vec<_>>()
+    }
+
+    pub fn virtual_locations(&self) -> Vec<EventLocationInfo> {
+        let calendar_event = self.clone();
+        calendar_event
+            .inner
+            .locations()
+            .iter()
+            .filter(|e| matches!(e, EventLocation::Virtual { .. }))
+            .map(EventLocationInfo::new)
+            .collect::<Vec<_>>()
+    }
+
+    pub fn locations(&self) -> Vec<EventLocationInfo> {
+        let calendar_event = self.clone();
+        let locations = calendar_event.inner.locations();
+        locations.iter().map(EventLocationInfo::new).collect()
+    }
+
     pub async fn responded_by_me(&self) -> Result<OptionRsvpStatus> {
         let me = self.clone();
-
         RUNTIME
             .spawn(async move {
                 let manager = me.rsvps().await?;
@@ -350,13 +378,70 @@ impl CalendarEventDraft {
         Ok(())
     }
 
+    pub fn physical_location(
+        &mut self,
+        name: String,
+        description: String,
+        description_html: Option<String>,
+        cooridnates: String,
+        uri: Option<String>,
+    ) -> Result<()> {
+        let desc_plain = TextMessageEventContent::plain(description.clone());
+        let desc_html = description_html
+            .map(|html| TextMessageEventContent::html(description.clone(), html.clone()));
+        let inner = EventLocation::Physical {
+            name: Some(name),
+            description: desc_html.or(Some(desc_plain)),
+            // TODO: add icon support
+            icon: None,
+            coordinates: Some(cooridnates),
+            uri: uri.clone(),
+        };
+        let loc_info = EventLocationInfo { inner };
+        // convert object to enum and push it
+        self.inner.into_event_loc(&loc_info);
+        Ok(())
+    }
+
+    pub fn virtual_location(
+        &mut self,
+        name: String,
+        description: String,
+        description_html: Option<String>,
+        uri: String,
+    ) -> Result<()> {
+        let calendar_event = self.inner.clone();
+        let desc_plain = TextMessageEventContent::plain(description.clone());
+        let desc_html = description_html
+            .map(|html| TextMessageEventContent::html(description.clone(), html.clone()));
+        let inner = EventLocation::Virtual {
+            name: Some(name),
+            description: desc_html.or(Some(desc_plain)),
+            // TODO: add icon support
+            icon: None,
+            uri,
+        };
+        let event_location = EventLocationInfo { inner };
+        // convert object to enum and push it
+        self.inner.into_event_loc(&event_location);
+        Ok(())
+    }
+
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
+        let my_id = self.client.user_id()?;
         let inner = self.inner.build()?;
+
         RUNTIME
             .spawn(async move {
-                let resp = room.send(inner).await?;
-                Ok(resp.event_id)
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(inner).await?;
+                Ok(response.event_id)
             })
             .await?
     }
@@ -449,13 +534,31 @@ impl CalendarEventUpdateBuilder {
         self
     }
 
+    pub fn unset_locations(&mut self) -> &mut Self {
+        self.inner.locations(Some(vec![]));
+        self
+    }
+
+    pub fn unset_locations_update(&mut self) -> &mut Self {
+        self.inner.locations(None);
+        self
+    }
+
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
+        let my_id = self.client.user_id()?;
         let inner = self.inner.build()?;
+
         RUNTIME
             .spawn(async move {
-                let resp = room.send(inner).await?;
-                Ok(resp.event_id)
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(inner).await?;
+                Ok(response.event_id)
             })
             .await?
     }

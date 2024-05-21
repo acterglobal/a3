@@ -7,7 +7,9 @@ use matrix_sdk::{
     room::Room,
     Client as SdkClient,
 };
-use ruma_common::{MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId};
+use ruma_common::{
+    EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId, UserId,
+};
 use ruma_events::receipt::{ReceiptThread as SdkReceiptThread, ReceiptType, SyncReceiptEvent};
 use std::sync::Arc;
 use tokio::sync::Mutex;
@@ -111,15 +113,15 @@ impl ReceiptEvent {
 
     pub(crate) fn add_receipt_record(
         &mut self,
-        event_id: &OwnedEventId,
-        seen_by: &OwnedUserId,
+        event_id: &EventId,
+        seen_by: &UserId,
         ts: Option<MilliSecondsSinceUnixEpoch>,
         receipt_thread: &SdkReceiptThread,
         receipt_type: ReceiptType,
     ) {
         let record = ReceiptRecord::new(
-            event_id.clone(),
-            seen_by.clone(),
+            event_id.to_owned(),
+            seen_by.to_owned(),
             ts,
             receipt_thread.clone(),
             receipt_type,

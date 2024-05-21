@@ -11,7 +11,7 @@ use chrono::DateTime;
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
 use ruma_common::{EventId, OwnedEventId, OwnedRoomId, OwnedUserId};
-use ruma_events::room::message::TextMessageEventContent;
+use ruma_events::{room::message::TextMessageEventContent, MessageLikeEventType};
 use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
@@ -33,11 +33,7 @@ impl Client {
                 else {
                     bail!("{key} is not a task");
                 };
-                let room = me
-                    .core
-                    .client()
-                    .get_room(content.room_id())
-                    .context("Room not found")?;
+                let room = me.room_by_id_typed(content.room_id())?;
                 Ok(TaskList {
                     client: me.clone(),
                     room,
@@ -54,11 +50,7 @@ impl Client {
                 let AnyActerModel::Task(content) = me.wait_for(key.clone(), timeout).await? else {
                     bail!("{key} is not a task");
                 };
-                let room = me
-                    .core
-                    .client()
-                    .get_room(content.room_id())
-                    .context("Room not found")?;
+                let room = me.room_by_id_typed(content.room_id())?;
                 Ok(Task {
                     client: me.clone(),
                     room,
@@ -71,10 +63,11 @@ impl Client {
     pub async fn task_lists(&self) -> Result<Vec<TaskList>> {
         let mut task_lists = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                for mdl in client.store().get_list(KEYS::TASKS::TASKS).await? {
+                let client = me.core.client();
+                for mdl in me.store().get_list(KEYS::TASKS::TASKS).await? {
                     #[allow(irrefutable_let_patterns)]
                     if let AnyActerModel::TaskList(content) = mdl {
                         let room_id = content.room_id().to_owned();
@@ -91,7 +84,7 @@ impl Client {
                             }
                         };
                         task_lists.push(TaskList {
-                            client: client.clone(),
+                            client: me.clone(),
                             room,
                             content,
                         })
@@ -107,10 +100,11 @@ impl Client {
     pub async fn my_open_tasks(&self) -> Result<Vec<Task>> {
         let mut tasks = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                for mdl in client.store().get_list(KEYS::TASKS::MY_OPEN_TASKS).await? {
+                let client = me.core.client();
+                for mdl in me.store().get_list(KEYS::TASKS::MY_OPEN_TASKS).await? {
                     #[allow(irrefutable_let_patterns)]
                     if let AnyActerModel::Task(content) = mdl {
                         let room_id = content.room_id().to_owned();
@@ -127,7 +121,7 @@ impl Client {
                             }
                         };
                         tasks.push(Task {
-                            client: client.clone(),
+                            client: me.clone(),
                             room,
                             content,
                         })
@@ -273,11 +267,19 @@ impl TaskListDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
+        let my_id = self.client.user_id()?;
         let content = self.content.build()?;
+
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content).await?;
-                Ok(resp.event_id)
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(content).await?;
+                Ok(response.event_id)
             })
             .await?
     }
@@ -638,11 +640,19 @@ impl Task {
             bail!("Can only update tasks in joined rooms");
         }
         let room = self.room.clone();
+        let my_id = self.client.user_id()?;
         let content = self.content.self_assign_event_content();
+
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content).await?;
-                Ok(resp.event_id)
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(content).await?;
+                Ok(response.event_id)
             })
             .await?
     }
@@ -652,11 +662,19 @@ impl Task {
             bail!("Can only update tasks in joined rooms");
         }
         let room = self.room.clone();
+        let my_id = self.client.user_id()?;
         let content = self.content.self_unassign_event_content();
+
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content).await?;
-                Ok(resp.event_id)
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(content).await?;
+                Ok(response.event_id)
             })
             .await?
     }
@@ -816,11 +834,19 @@ impl TaskDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
+        let my_id = self.client.user_id()?;
         let content = self.content.build()?;
+
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content).await?;
-                Ok(resp.event_id)
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(content).await?;
+                Ok(response.event_id)
             })
             .await?
     }
@@ -1005,11 +1031,19 @@ impl TaskUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
+        let my_id = self.client.user_id()?;
         let content = self.content.build()?;
+
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content).await?;
-                Ok(resp.event_id)
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(content).await?;
+                Ok(response.event_id)
             })
             .await?
     }
@@ -1104,11 +1138,19 @@ impl TaskListUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
+        let my_id = self.client.user_id()?;
         let content = self.content.build()?;
+
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content).await?;
-                Ok(resp.event_id)
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(content).await?;
+                Ok(response.event_id)
             })
             .await?
     }

@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class ChatsCard extends ConsumerWidget {
   final String spaceId;
@@ -31,7 +32,9 @@ class ChatsCard extends ConsumerWidget {
             error: (error, stack) => Text(
               L10n.of(context).loadingChatsFailed(error),
             ),
-            loading: () => Text(L10n.of(context).loading),
+            loading: () => Skeletonizer(
+              child: Text(L10n.of(context).loading),
+            ),
             data: (chats) {
               if (chats.isEmpty) {
                 return Text(

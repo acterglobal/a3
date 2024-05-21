@@ -5,7 +5,7 @@ use futures::{
     stream::StreamExt,
 };
 use matrix_sdk::{executor::JoinHandle, Client as SdkClient};
-use ruma_common::OwnedDeviceId;
+use ruma_common::{OwnedDeviceId, OwnedUserId};
 use std::{
     sync::Arc,
     time::{Duration, SystemTime, UNIX_EPOCH},
@@ -35,6 +35,13 @@ impl DeviceNewEvent {
 
     pub fn device_id(&self) -> OwnedDeviceId {
         self.device_id.clone()
+    }
+
+    pub(crate) fn user_id(&self) -> Result<OwnedUserId> {
+        self.client
+            .user_id()
+            .context("You must be logged in to do that")
+            .map(|x| x.to_owned())
     }
 }
 
@@ -129,11 +136,12 @@ impl Client {
     }
 
     pub async fn device_records(&self, verified: bool) -> Result<Vec<DeviceRecord>> {
-        let client = self.clone();
+        let user_id = self.user_id()?;
+        let this_device_id = self.device_id()?;
+        let client = self.core.client().clone();
+
         RUNTIME
             .spawn(async move {
-                let user_id = client.user_id()?;
-                let this_device_id = client.device_id()?;
                 let response = client.devices().await?;
                 let crypto_devices = client.encryption().get_user_devices(&user_id).await?;
                 let mut sessions = vec![];

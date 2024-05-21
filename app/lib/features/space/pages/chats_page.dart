@@ -174,7 +174,10 @@ class SpaceChatsPage extends ConsumerWidget {
           RiverPagedBuilder<Next?, SpaceHierarchyRoomInfo>.autoDispose(
         firstPageKey: const Next(isStart: true),
         provider: provider,
-        itemBuilder: (context, item, index) => ConvoHierarchyCard(space: item),
+        itemBuilder: (context, item, index) => ConvoHierarchyCard(
+          parentId: spaceIdOrAlias,
+          roomInfo: item,
+        ),
         noItemsFoundIndicatorBuilder: (context, controller) =>
             _renderEmpty(context, ref),
         pagedBuilder: (controller, builder) => PagedSliverList(

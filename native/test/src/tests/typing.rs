@@ -1,4 +1,4 @@
-use anyhow::{Context, Result};
+use anyhow::Result;
 use core::time::Duration;
 use tokio::time::sleep;
 use tokio_retry::{
@@ -49,24 +49,18 @@ async fn kyra_detects_sisko_typing() -> Result<()> {
     })
     .await?;
 
+    let mut event_rx = kyra.subscribe_to_typing_event(room_id.to_string());
     let sent = sisko_convo.typing_notice(true).await?;
     println!("sent: {sent:?}");
-
-    let mut event_rx = kyra
-        .typing_event_rx()
-        .context("kyra needs typing event receiver")?;
 
     let mut i = 10;
     let mut found = false;
     while i > 0 {
-        match event_rx.try_next() {
-            Ok(Some(event)) => {
+        match event_rx.try_recv() {
+            Ok(event) => {
                 info!("received: {event:?}");
                 found = true;
                 break;
-            }
-            Ok(None) => {
-                println!("received: none");
             }
             Err(e) => {
                 info!("received error: {:?}", e);

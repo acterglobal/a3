@@ -294,6 +294,41 @@ pub async fn register(
     register_under_config(config, user_id, password, Some(db_passphrase), user_agent).await
 }
 
+fn clearify_error(err: matrix_sdk::Error) -> anyhow::Error {
+    if let matrix_sdk::Error::Http(matrix_sdk::HttpError::Api(api_error)) = &err {
+        match api_error {
+            matrix_sdk::ruma::api::error::FromHttpResponseError::Deserialization(des) => {
+                return anyhow::anyhow!("Deserialization failed: {des}");
+            }
+            matrix_sdk::ruma::api::error::FromHttpResponseError::Server(inner) => match inner {
+                matrix_sdk::RumaApiError::ClientApi(error) => {
+                    if let matrix_sdk::ruma::api::client::error::ErrorBody::Standard {
+                        kind,
+                        message,
+                    } = &error.body
+                    {
+                        return anyhow::anyhow!("{message} [{kind}]");
+                    }
+                    return anyhow::anyhow!("{0:?} [{1}]", error.body, error.status_code);
+                }
+                matrix_sdk::RumaApiError::Uiaa(uiaa_error) => {
+                    if let Some(err) = &uiaa_error.auth_error {
+                        return anyhow::anyhow!("{0} [{1}]", err.message, err.kind);
+                    }
+
+                    error!(?uiaa_error, "Other UIAA response");
+                    return anyhow::anyhow!("Unsupported User Interaction needed.");
+                }
+                matrix_sdk::RumaApiError::Other(err) => {
+                    return anyhow::anyhow!("{0:?} [{1}]", err.body, err.status_code);
+                }
+            },
+            _ => {}
+        }
+    }
+    err.into()
+}
+
 pub async fn register_under_config(
     config: ClientBuilder,
     user_id: OwnedUserId,
@@ -310,18 +345,20 @@ pub async fn register_under_config(
                 .await
             {
                 // FIXME: do actually check the registration types...
-                if resp.as_uiaa_response().is_some() {
-                    let request = assign!(register::v3::Request::new(), {
-                        username: Some(user_id.localpart().to_owned()),
-                        password: Some(password.clone()),
-                        initial_device_display_name: Some(user_agent.clone()),
-                        auth: Some(AuthData::Dummy(Dummy::new())),
-                    });
-                    client.matrix_auth().register(request).await?;
-                } else {
-                    error!(?resp, "Not a UIAA response");
-                    bail!("No a uiaa response");
-                }
+                let Some(_r) = resp.as_uiaa_response() else {
+                    return Err(clearify_error(resp));
+                };
+                let request = assign!(register::v3::Request::new(), {
+                    username: Some(user_id.localpart().to_owned()),
+                    password: Some(password.clone()),
+                    initial_device_display_name: Some(user_agent.clone()),
+                    auth: Some(AuthData::Dummy(Dummy::new())),
+                });
+                client
+                    .matrix_auth()
+                    .register(request)
+                    .await
+                    .map_err(clearify_error)?;
             }
 
             info!(
@@ -395,21 +432,26 @@ pub async fn register_with_token_under_config(
             });
 
             if let Err(err) = client.matrix_auth().register(request).await {
-                let response = err
-                    .as_uiaa_response()
-                    .context("Server did not indicate how to allow registration.")?;
+                // FIXME: do actually check the registration types...
+                let Some(response) = err.as_uiaa_response() else {
+                    return Err(clearify_error(err));
+                };
 
                 info!("Acceptable auth flows: {response:?}");
 
                 // FIXME: do actually check the registration types...
-                let token_request = assign!(register::v3::Request::new(), {
+                let request = assign!(register::v3::Request::new(), {
                     auth: Some(AuthData::RegistrationToken(
                         assign!(RegistrationToken::new(registration_token), {
                             session: response.session.clone(),
                         }),
                     )),
                 });
-                client.matrix_auth().register(token_request).await?;
+                client
+                    .matrix_auth()
+                    .register(request)
+                    .await
+                    .map_err(clearify_error)?;
             } // else all went well.
 
             info!(

@@ -3,6 +3,8 @@ import 'package:acter/common/themes/app_theme.dart';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/activities/providers/invitations_providers.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Invitation;
 import 'package:flutter/material.dart';
@@ -10,6 +12,9 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::activities::invitation_card');
 
 class InvitationCard extends ConsumerWidget {
   final Invitation invitation;
@@ -44,7 +49,7 @@ class InvitationCard extends ConsumerWidget {
                 const SizedBox(width: 15),
                 // Accept Invitation Button
                 ActerPrimaryActionButton(
-                  onPressed: () => _onTapAcceptInvite(context),
+                  onPressed: () => _onTapAcceptInvite(context, ref),
                   child: Text(L10n.of(context).accept),
                 ),
               ],
@@ -137,7 +142,7 @@ class InvitationCard extends ConsumerWidget {
         loading: () => Skeletonizer(child: Text(roomId)),
         error: (e, s) => Text(L10n.of(context).errorLoadingRoom(e, roomId)),
       ),
-      subtitle: Row(
+      subtitle: Wrap(
         children: [
           Text(L10n.of(context).invitationToChat),
           inviter(
@@ -194,35 +199,63 @@ class InvitationCard extends ConsumerWidget {
   }
 
   // method for post-process invitation accept
-  void _onTapAcceptInvite(BuildContext context) async {
+  void _onTapAcceptInvite(BuildContext context, WidgetRef ref) async {
     EasyLoading.show(status: L10n.of(context).joining);
-    bool res = await invitation.accept();
-    if (!context.mounted) {
-      EasyLoading.dismiss();
-      return;
-    }
-    if (res) {
-      EasyLoading.showToast(L10n.of(context).joined);
-    } else {
+    final client = ref.read(alwaysClientProvider);
+    final roomId = invitation.roomIdStr();
+    final isSpace = invitation.room().isSpace();
+    final lang = L10n.of(context);
+    try {
+      await invitation.accept();
+    } catch (error) {
+      _log.severe('Failure accepting invite', error);
+      if (!context.mounted) return;
       EasyLoading.showError(
-        L10n.of(context).failedToJoin,
+        lang.failedToAcceptInvite(error),
         duration: const Duration(seconds: 3),
       );
+      return;
+    }
+
+    try {
+      // timeout to wait for 10seconds to ensure the room is ready
+      await client.waitForRoom(roomId, 10);
+    } catch (error) {
+      _log.warning("Joining $roomId didn't return within 10 seconds");
+      EasyLoading.showToast(lang.joinedDelayed);
+      // do not forward in this case
+      return;
+    }
+    EasyLoading.showToast(lang.joined);
+    if (context.mounted) {
+      if (isSpace) {
+        goToSpace(context, invitation.room().roomIdStr());
+      } else {
+        goToChat(context, invitation.room().roomIdStr());
+      }
     }
   }
 
   void _onTapDeclineInvite(BuildContext context) async {
     EasyLoading.show(status: L10n.of(context).rejecting);
-    bool res = await invitation.reject();
-    if (!context.mounted) {
-      EasyLoading.dismiss();
-      return;
-    }
-    if (res) {
-      EasyLoading.showToast(L10n.of(context).rejected);
-    } else {
+    try {
+      bool res = await invitation.reject();
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      if (res) {
+        EasyLoading.showToast(L10n.of(context).rejected);
+      } else {
+        EasyLoading.showError(
+          L10n.of(context).failedToReject,
+          duration: const Duration(seconds: 3),
+        );
+      }
+    } catch (error) {
+      _log.severe('Failure reject invite', error);
       EasyLoading.showError(
-        L10n.of(context).failedToReject,
+        L10n.of(context).failedToRejectInvite(error),
         duration: const Duration(seconds: 3),
       );
     }

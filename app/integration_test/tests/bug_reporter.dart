@@ -2,6 +2,7 @@ import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
 import 'package:acter/features/search/model/keys.dart';
+import 'package:acter/router/router.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

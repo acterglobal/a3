@@ -1,6 +1,6 @@
 import 'package:acter/common/widgets/sliver_scaffold.dart';
 import 'package:acter/features/space/sheets/link_room_sheet.dart';
-import 'package:acter/features/space/widgets/relatest_spaces.dart';
+import 'package:acter/features/space/pages/sub_spaces_page.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,12 +22,7 @@ void subSpaceTests() {
 
     // redeeming with the registration token should automatically trigger the invite process
     // check that we have been added.
-    await t.gotoSpace(spaceId);
-
-    // brings us to the related spaces view
-    final spacesNav = find.byKey(const Key('spaces'));
-    await t.tester.ensureVisible(spacesNav);
-    await spacesNav.tap();
+    await t.gotoSpace(spaceId, appTab: const Key('spaces'));
 
     // we can see the sub space
     final subSpaceSelector = find.byKey(Key('subspace-list-item-$subSpace'));
@@ -40,8 +35,8 @@ void subSpaceTests() {
     await t.gotoSpace(spaceId);
     await t.navigateTo([
       const Key('spaces'),
-      RelatedSpaces.moreOptionKey,
-      RelatedSpaces.linkSubspaceKey,
+      SubSpacesPage.moreOptionKey,
+      SubSpacesPage.linkSubspaceKey,
     ]);
 
     final roomListEntry = find.byKey(Key('room-list-link-$subSpace'));
@@ -64,10 +59,10 @@ void subSpaceTests() {
 
     // redeeming with the registration token should automatically trigger the invite process
     // check that we have been added.
-    await t.gotoSpace(spaceId);
-    await t.navigateTo([
-      const Key('spaces'),
-    ]);
+    await t.gotoSpace(
+      spaceId,
+      appTab: const Key('spaces'),
+    );
 
     // brings us to the related spaces view
 
@@ -85,8 +80,8 @@ void subSpaceTests() {
     await t.gotoSpace(spaceId);
     await t.navigateTo([
       const Key('spaces'),
-      RelatedSpaces.moreOptionKey,
-      RelatedSpaces.linkSubspaceKey,
+      SubSpacesPage.moreOptionKey,
+      SubSpacesPage.linkSubspaceKey,
     ]);
 
     final roomListEntry = find.byKey(Key('room-list-link-$subSpace'));

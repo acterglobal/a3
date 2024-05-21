@@ -22,6 +22,7 @@ pub use news::{NewsEntry, NewsEntryUpdate};
 pub use pins::{Pin, PinUpdate};
 pub use reactions::{Reaction, ReactionManager, ReactionStats};
 pub use rsvp::{Rsvp, RsvpManager, RsvpStats};
+use ruma::RoomId;
 use ruma_common::{
     serde::Raw, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId, UserId,
 };
@@ -115,6 +116,10 @@ pub trait ActerModel: Debug {
     fn indizes(&self, user_id: &UserId) -> Vec<String>;
     /// The key to store this model under
     fn event_id(&self) -> &EventId;
+
+    /// The room id this model belongs to
+    fn room_id(&self) -> &RoomId;
+
     /// The models to inform about this model as it belongs to that
     fn belongs_to(&self) -> Option<Vec<String>> {
         None
@@ -231,6 +236,9 @@ impl RedactedActerModel {
 }
 
 impl ActerModel for RedactedActerModel {
+    fn room_id(&self) -> &RoomId {
+        &self.meta.room_id
+    }
     fn indizes(&self, _user_id: &UserId) -> Vec<String> {
         self.indizes.clone()
     }

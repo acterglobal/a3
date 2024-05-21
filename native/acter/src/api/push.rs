@@ -28,7 +28,7 @@ use ruma_events::{
     room::{message::MessageType, MediaSource},
     AnySyncMessageLikeEvent, AnySyncTimelineEvent, MessageLikeEvent, SyncMessageLikeEvent,
 };
-use std::sync::Arc;
+use std::{ops::Deref, sync::Arc};
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use urlencoding::encode;
 
@@ -108,10 +108,10 @@ pub struct NotificationRoom {
     client: Client,
 }
 impl NotificationRoom {
-    fn from(client: Client, notif: &SdkNotificationItem, room_id: &OwnedRoomId) -> Self {
+    fn from(client: Client, notif: &SdkNotificationItem, room_id: &RoomId) -> Self {
         NotificationRoom {
             room_id: room_id.to_string(),
-            display_name: notif.room_display_name.clone(),
+            display_name: notif.room_computed_display_name.clone(),
             image: notif
                 .room_avatar_url
                 .clone()
@@ -228,7 +228,7 @@ impl NotificationItem {
             .room(NotificationRoom::from(client.clone(), &inner, &room_id))
             .client(client)
             .thread_id(room_id.to_string())
-            .title(inner.room_display_name)
+            .title(inner.room_computed_display_name)
             .noisy(inner.is_noisy)
             .push_style("fallback".to_owned())
             .target_url(format!(
@@ -381,7 +381,7 @@ impl Pusher {
     }
 
     pub async fn delete(&self) -> Result<bool> {
-        let client = self.client.core.client().clone();
+        let client = self.client.deref().clone();
         let app_id = self.app_id();
         let pushkey = self.pushkey();
         RUNTIME
@@ -401,31 +401,34 @@ impl Client {
         room_id: String,
         event_id: String,
     ) -> Result<NotificationItem> {
-        let client = self.clone();
+        let me = self.clone();
         let room_id = RoomId::parse(room_id)?;
         let event_id = EventId::parse(event_id)?;
         RUNTIME
             .spawn(async move {
-                let notif_client = NotificationClient::builder(
-                    client.core.client().clone(),
+                let notif_client = NotificationClient::new(
+                    me.core.client().clone(),
                     NotificationProcessSetup::MultipleProcesses,
                 )
-                .await?
-                .build();
+                .await?;
 
                 let notif = notif_client
                     .get_notification(&room_id, &event_id)
                     .await?
                     .context("(hidden notification)")?;
-                NotificationItem::from(client, notif, room_id)
+                NotificationItem::from(me, notif, room_id)
             })
             .await?
     }
+
     pub async fn notification_settings(&self) -> Result<NotificationSettings> {
         let client = self.core.client().clone();
-        Ok(RUNTIME
-            .spawn(async move { NotificationSettings::new(client.notification_settings().await) })
-            .await?)
+        RUNTIME
+            .spawn(async move {
+                let inner = client.notification_settings().await;
+                Ok(NotificationSettings::new(inner))
+            })
+            .await?
     }
 
     pub async fn add_email_pusher(
@@ -466,13 +469,13 @@ impl Client {
         lang: Option<String>,
     ) -> Result<bool> {
         let client = self.core.client().clone();
-        let device_id = client.device_id().context("DeviceId not found")?;
+        let device_id = self.device_id()?;
         let push_data = if with_ios_defaults {
             assign!(HttpPusherData::new(server_url), {
                 default_payload: serde_json::json!({
-                        "aps": {
-                            "mutable-content": 1,
-                            "content-available": 1
+                    "aps": {
+                        "mutable-content": 1,
+                        "content-available": 1
                     },
                     "device_id": device_id,
                 })
@@ -503,31 +506,30 @@ impl Client {
     }
 
     pub async fn pushers(&self) -> Result<Vec<Pusher>> {
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let resp = client
+                let resp = me
                     .core
                     .client()
                     .send(get_pushers::v3::Request::new(), None)
                     .await?;
-                Ok(resp
+                let items = resp
                     .pushers
                     .into_iter()
-                    .map(|inner| Pusher::new(inner, client.clone()))
-                    .collect())
+                    .map(|inner| Pusher::new(inner, me.clone()))
+                    .collect();
+                Ok(items)
             })
             .await?
     }
 
     pub async fn install_default_acter_push_rules(&self) -> Result<bool> {
-        let client = self.clone();
+        let client = self.core.client().clone();
         RUNTIME
             .spawn(async move {
                 for rule in default_rules() {
                     let resp = client
-                        .core
-                        .client()
                         .send(
                             set_pushrule::v3::Request::new(RuleScope::Global, rule),
                             None,
@@ -540,12 +542,10 @@ impl Client {
     }
 
     pub async fn push_rules(&self) -> Result<ruma::push::Ruleset> {
-        let client = self.clone();
+        let client = self.core.client().clone();
         RUNTIME
             .spawn(async move {
                 let resp = client
-                    .core
-                    .client()
                     .send(get_pushrules_all::v3::Request::new(), None)
                     .await?;
                 Ok(resp.global)

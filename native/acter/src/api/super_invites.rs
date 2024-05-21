@@ -1,9 +1,46 @@
 // internal API
 
-use acter_core::super_invites::{api, CreateToken, Token, UpdateToken};
+use acter_core::super_invites::{api, CreateToken, Token, TokenInfo, UpdateToken};
 use anyhow::{Context, Result};
 
 use crate::{Client, RUNTIME};
+
+pub struct SuperInviteInfo {
+    token: TokenInfo,
+}
+
+impl SuperInviteInfo {
+    fn new(token: TokenInfo) -> SuperInviteInfo {
+        SuperInviteInfo { token }
+    }
+    pub fn create_dm(&self) -> bool {
+        self.token.create_dm
+    }
+
+    pub fn rooms_count(&self) -> u32 {
+        self.token.rooms_count
+    }
+
+    pub fn has_redeemed(&self) -> bool {
+        self.token.has_redeemed
+    }
+
+    pub fn inviter_user_id_str(&self) -> String {
+        self.token.inviter.user_id.to_string()
+    }
+
+    pub fn inviter_display_name_str(&self) -> Option<String> {
+        self.token.inviter.display_name.clone()
+    }
+
+    pub fn inviter_avatar_url_str(&self) -> Option<String> {
+        self.token
+            .inviter
+            .avatar_url
+            .as_ref()
+            .map(ToString::to_string)
+    }
+}
 
 pub struct SuperInviteToken {
     token: Token,
@@ -122,6 +159,17 @@ impl SuperInvites {
             .await?
     }
 
+    pub async fn info(&self, token: String) -> Result<SuperInviteInfo> {
+        let c = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let req = api::info::Request::new(token);
+                let resp = c.send(req, None).await?;
+                Ok(SuperInviteInfo::new(resp.info))
+            })
+            .await?
+    }
+
     pub async fn create_or_update_token(
         &self,
         builder: Box<SuperInvitesTokenUpdateBuilder>,
@@ -162,7 +210,8 @@ impl SuperInvites {
 
 impl Client {
     pub fn super_invites(&self) -> SuperInvites {
-        let c = self.clone();
-        SuperInvites { client: c }
+        SuperInvites {
+            client: self.clone(),
+        }
     }
 }

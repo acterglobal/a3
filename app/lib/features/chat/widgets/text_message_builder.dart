@@ -4,6 +4,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/member/dialogs/show_member_info_drawer.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -96,6 +97,7 @@ class _TextMessageBuilderConsumerState
           isNotice: isNotice,
           isReply: widget.isReply,
           wasEdited: wasEdited,
+          roomId: widget.convo.getRoomIdStr(),
         ),
         width: widget.messageWidth.toDouble(),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -110,6 +112,7 @@ class _TextMessageBuilderConsumerState
         isNotice: isNotice,
         isReply: widget.isReply,
         wasEdited: wasEdited,
+        roomId: widget.convo.getRoomIdStr(),
       ),
     );
   }
@@ -127,6 +130,7 @@ class _TextWidget extends ConsumerWidget {
   final bool isNotice;
   final bool isReply;
   final bool wasEdited;
+  final String roomId;
 
   const _TextWidget({
     required this.message,
@@ -135,6 +139,7 @@ class _TextWidget extends ConsumerWidget {
     required this.isNotice,
     required this.isReply,
     required this.wasEdited,
+    required this.roomId,
   });
 
   @override
@@ -158,6 +163,7 @@ class _TextWidget extends ConsumerWidget {
                 )
               : Html(
                   onLinkTap: (url) => onLinkTap(url, context, ref),
+                  onPillTap: (id) => onPillTap(context, id),
                   backgroundColor: Colors.transparent,
                   data: message.text,
                   shrinkToFit: true,
@@ -186,6 +192,19 @@ class _TextWidget extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  Future<void> onPillTap(BuildContext context, String identifier) async {
+    if (identifier.isEmpty) return;
+    final userId = extractUserIdFromUri(identifier);
+    if (userId != null) {
+      return await showMemberInfoDrawer(
+        context: context,
+        roomId: roomId,
+        memberId: userId,
+        // isShowActions: false,
+      );
+    }
   }
 
   Future<void> onLinkTap(Uri uri, BuildContext context, WidgetRef ref) async {

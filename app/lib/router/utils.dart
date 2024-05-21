@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/home/pages/home_shell.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter/router/router.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +32,8 @@ bool navigateOnRightBranch(
   void Function(BuildContext) navigationCallback, {
   bool initialLocation = true,
 }) {
-  final navState = StatefulNavigationShell.of(context);
+  final navState =
+      (homeShellKey.currentContext?.widget as HomeShell).navigationShell;
   if (navState.currentIndex != targetBranch.index) {
     // when routed to chat, we always want to jump to the chat
     // tab

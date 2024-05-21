@@ -15,7 +15,7 @@ class EventsCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final events = ref.watch(spaceEventsProvider(spaceId));
+    final events = ref.watch(spaceUpcomingEventsProvider(spaceId));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -23,7 +23,7 @@ class EventsCard extends ConsumerWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Text(
-            L10n.of(context).events,
+            L10n.of(context).upcomingEvents,
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),

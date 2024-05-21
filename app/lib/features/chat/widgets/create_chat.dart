@@ -1,8 +1,9 @@
 import 'dart:io';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/widgets/user_builder.dart';
+import 'package:acter/features/invite_members/providers/invite_providers.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:acter/common/dialogs/invite_to_room_dialog.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';

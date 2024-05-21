@@ -1,9 +1,11 @@
-use crate::RUNTIME;
 pub use acter_core::events::settings::{
     ActerUserAppSettingsContent, ActerUserAppSettingsContentBuilder, AppChatSettings, AutoDownload,
 };
+use anyhow::Result;
 use core::ops::Deref;
 use matrix_sdk::Account;
+
+use crate::RUNTIME;
 
 #[derive(Clone)]
 pub struct ActerUserAppSettings {
@@ -49,17 +51,17 @@ impl ActerUserAppSettings {
 }
 
 impl ActerUserAppSettingsBuilder {
-    pub fn auto_download_chat(&mut self, new_value: String) -> anyhow::Result<&mut Self> {
+    pub fn auto_download_chat(&mut self, new_value: String) -> Result<&mut Self> {
         self.inner.auto_download_chat(new_value)?;
         Ok(self)
     }
 
-    pub fn typing_notice(&mut self, value: bool) -> anyhow::Result<&mut Self> {
+    pub fn typing_notice(&mut self, value: bool) -> Result<&mut Self> {
         self.inner.typing_notice(value)?;
         Ok(self)
     }
 
-    pub async fn send(&self) -> anyhow::Result<bool> {
+    pub async fn send(&self) -> Result<bool> {
         let account = self.account.clone();
         let update = self.inner.build()?;
 

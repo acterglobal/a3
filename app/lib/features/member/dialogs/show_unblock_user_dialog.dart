@@ -3,7 +3,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:go_router/go_router.dart';
 
 Future<void> showUnblockUserDialog(BuildContext context, Member member) async {
   final userId = member.userId().toString();
@@ -28,7 +27,7 @@ Future<void> showUnblockUserDialog(BuildContext context, Member member) async {
         actionsAlignment: MainAxisAlignment.spaceEvenly,
         actions: <Widget>[
           OutlinedButton(
-            onPressed: () => context.pop(),
+            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
             child: Text(L10n.of(context).no),
           ),
           ActerPrimaryActionButton(
@@ -51,6 +50,7 @@ Future<void> showUnblockUserDialog(BuildContext context, Member member) async {
                   duration: const Duration(seconds: 3),
                 );
               }
+              Navigator.of(context, rootNavigator: true).pop();
             },
             child: Text(L10n.of(context).yes),
           ),

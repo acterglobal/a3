@@ -4,7 +4,7 @@ import 'package:acter/common/toolkit/menu_item_widget.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
-import 'package:acter/features/settings/super_invites/providers/super_invites_providers.dart';
+import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -148,7 +148,7 @@ class SettingsMenu extends ConsumerWidget {
           sectionTitle: L10n.of(context).community,
           children: [
             MenuItemWidget(
-              key: SettingsMenu.superInvitations,
+              innerKey: SettingsMenu.superInvitations,
               iconData: Atlas.plus_envelope_thin,
               enabled: isSuperInviteEnable,
               iconColor: routedColor(context, ref, Routes.settingsSuperInvites),
