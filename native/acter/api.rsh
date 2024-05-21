@@ -661,9 +661,9 @@ object CalendarEventDraft {
     /// set the utc_end for this calendar event in custom format
     fn utc_end_from_format(utc_end: string, format: string) -> Result<()>;
     /// set the physical location details for this calendar event
-    fn physical_location(name: string, description: string, description_html: Option<string>, coordinates: string, uri: Option<string>) -> Result<()>;
+    fn physical_location(name: Option<string>, description: Option<string>, description_html: Option<string>, coordinates: Option<string>, uri: Option<string>) -> Result<()>;
     /// set the virtual location details for this calendar event
-    fn virtual_location(name: string, description: string, description_html: Option<string>, uri: string) -> Result<()>;
+    fn virtual_location(name: Option<string>, description: Option<string>, description_html: Option<string>, uri: string) -> Result<()>;
 
 
     /// create this calendar event
