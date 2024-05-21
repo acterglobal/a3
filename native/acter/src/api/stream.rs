@@ -8,7 +8,7 @@ use matrix_sdk::{
     room::{Receipts, Room as SdkRoom},
     Client as SdkClient, RoomState,
 };
-use matrix_sdk_ui::timeline::{BackPaginationStatus, PaginationOptions, Timeline};
+use matrix_sdk_ui::timeline::Timeline;
 use ruma::{assign, UInt};
 use ruma_client_api::{receipt::create_receipt, sync::sync_events::v3::Rooms};
 use ruma_common::{EventId, OwnedEventId, OwnedTransactionId};
@@ -75,27 +75,13 @@ impl TimelineStream {
         }
     }
 
+    /// Get the next count messages backwards, and return whether it reached the end
     pub async fn paginate_backwards(&self, mut count: u16) -> Result<bool> {
         let timeline = self.timeline.clone();
 
-        RUNTIME
-            .spawn(async move {
-                let mut back_pagination_status = timeline.back_pagination_status();
-                let (timeline_items, mut timeline_stream) = timeline.subscribe().await;
-                let options = PaginationOptions::simple_request(count);
-                timeline.paginate_backwards(options).await?;
-                loop {
-                    if let Some(status) = back_pagination_status.next().await {
-                        if status == BackPaginationStatus::Idle {
-                            return Ok(true); // has more
-                        }
-                        if status == BackPaginationStatus::TimelineStartReached {
-                            return Ok(false); // no more
-                        }
-                    }
-                }
-            })
-            .await?
+        Ok(RUNTIME
+            .spawn(async move { timeline.paginate_backwards(count).await })
+            .await??)
     }
 
     pub async fn get_message(&self, event_id: String) -> Result<RoomMessage> {
@@ -178,9 +164,7 @@ impl TimelineStream {
                     bail!("This event item cannot be edited");
                 }
                 let new_content = draft.into_room_msg(&room).await?;
-                timeline
-                    .edit(new_content.with_relation(None), &edit_item)
-                    .await?;
+                timeline.edit(new_content, &edit_item).await?;
                 Ok(true)
             })
             .await?
