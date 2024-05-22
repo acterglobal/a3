@@ -6,11 +6,62 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/dom.dart' as html;
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 //Check for mentioned user link
 final mentionedUserLinkRegex = RegExp(
   r'https://matrix.to/#/(?<alias>@.+):(?<server>.+)',
 );
+
+bool renderCustomMessageBubble(types.CustomMessage message) {
+  switch (message.metadata?['eventType']) {
+    case 'm.policy.rule.room':
+    case 'm.policy.rule.server':
+    case 'm.policy.rule.user':
+    case 'm.room.aliases':
+    case 'm.room.avatar':
+    case 'm.room.canonical_alias':
+    case 'm.room.create':
+    case 'm.room.encryption':
+    case 'm.room.guest.access':
+    case 'm.room.history_visibility':
+    case 'm.room.join.rules':
+    case 'm.room.name':
+    case 'm.room.pinned_events':
+    case 'm.room.power_levels':
+    case 'm.room.server_acl':
+    case 'm.room.third_party_invite':
+    case 'm.room.tombstone':
+    case 'm.room.topic':
+    case 'm.space.child':
+    case 'm.space.parent':
+    case 'm.poll.start':
+      // supported if we have a body
+      return message.metadata?['body'] != null;
+    case 'm.room.member':
+      if (message.metadata?['msgType'] == 'None') {
+        // not a change we want to show
+        return false;
+      }
+      return message.metadata?['body'] != null;
+    case 'm.call.answer':
+    case 'm.call.candidates':
+    case 'm.call.hangup':
+    case 'm.call.invite':
+      // no support yet
+      return false;
+    case 'm.sticker':
+    case 'm.room.redaction':
+    case 'm.room.encrypted':
+      // supported
+      return true;
+    case 'm.room.message':
+      // special case of supporting locations
+      return message.metadata?['msgType'] == 'm.location';
+  }
+
+  return false;
+}
 
 class UserMentionMessageData {
   String parsedMessage;

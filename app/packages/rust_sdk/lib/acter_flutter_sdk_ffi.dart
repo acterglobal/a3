@@ -14634,7 +14634,7 @@ class Api {
     return tmp9;
   }
 
-  TypingEvent? __clientTypingEventRxStreamPoll(
+  TypingEvent? __clientSubscribeToTypingEventStreamStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -14652,7 +14652,7 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     tmp7 = tmp6;
-    final tmp8 = _clientTypingEventRxStreamPoll(
+    final tmp8 = _clientSubscribeToTypingEventStreamStreamPoll(
       tmp1,
       tmp3,
       tmp5,
@@ -16000,16 +16000,6 @@ class Api {
           int Function(
             int,
           )>();
-  late final _typingEventRoomIdPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-          )>>("__TypingEvent_room_id");
-
-  late final _typingEventRoomId = _typingEventRoomIdPtr.asFunction<
-      int Function(
-        int,
-      )>();
   late final _typingEventUserIdsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -17447,9 +17437,7 @@ class Api {
       ffi.NativeFunction<
           _CalendarEventDraftPhysicalLocationReturn Function(
             ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
+            ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
@@ -17457,6 +17445,11 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
@@ -17487,14 +17480,19 @@ class Api {
             int,
             int,
             int,
+            int,
+            int,
+            int,
           )>();
   late final _calendarEventDraftVirtualLocationPtr = _lookup<
       ffi.NativeFunction<
           _CalendarEventDraftVirtualLocationReturn Function(
             ffi.Int64,
+            ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
+            ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
@@ -17510,6 +17508,8 @@ class Api {
   late final _calendarEventDraftVirtualLocation =
       _calendarEventDraftVirtualLocationPtr.asFunction<
           _CalendarEventDraftVirtualLocationReturn Function(
+            int,
+            int,
             int,
             int,
             int,
@@ -24450,16 +24450,23 @@ class Api {
           _ClientDeviceChangedEventRxReturn Function(
             int,
           )>();
-  late final _clientTypingEventRxPtr = _lookup<
+  late final _clientSubscribeToTypingEventStreamPtr = _lookup<
       ffi.NativeFunction<
-          _ClientTypingEventRxReturn Function(
+          ffi.Int64 Function(
             ffi.Int64,
-          )>>("__Client_typing_event_rx");
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__Client_subscribe_to_typing_event_stream");
 
-  late final _clientTypingEventRx = _clientTypingEventRxPtr.asFunction<
-      _ClientTypingEventRxReturn Function(
-        int,
-      )>();
+  late final _clientSubscribeToTypingEventStream =
+      _clientSubscribeToTypingEventStreamPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
   late final _clientReceiptEventRxPtr = _lookup<
       ffi.NativeFunction<
           _ClientReceiptEventRxReturn Function(
@@ -30192,18 +30199,18 @@ class Api {
             int,
             int,
           )>();
-  late final _clientTypingEventRxStreamPollPtr = _lookup<
+  late final _clientSubscribeToTypingEventStreamStreamPollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientTypingEventRxStreamPollReturn Function(
+          _ClientSubscribeToTypingEventStreamStreamPollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__Client_typing_event_rx_stream_poll");
+          )>>("__Client_subscribe_to_typing_event_stream_stream_poll");
 
-  late final _clientTypingEventRxStreamPoll =
-      _clientTypingEventRxStreamPollPtr.asFunction<
-          _ClientTypingEventRxStreamPollReturn Function(
+  late final _clientSubscribeToTypingEventStreamStreamPoll =
+      _clientSubscribeToTypingEventStreamStreamPollPtr.asFunction<
+          _ClientSubscribeToTypingEventStreamStreamPollReturn Function(
             int,
             int,
             int,
@@ -33212,27 +33219,12 @@ class ReceiptRecord {
   }
 }
 
-/// Deliver typing event from rust to flutter
+/// Deliver typing event from rust
 class TypingEvent {
   final Api _api;
   final _Box _box;
 
   TypingEvent._(this._api, this._box);
-
-  /// Get transaction id or flow id
-  RoomId roomId() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._typingEventRoomId(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_RoomId");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = RoomId._(_api, tmp3_1);
-    return tmp2;
-  }
 
   /// Get list of user id
   FfiListUserId userIds() {
@@ -36188,27 +36180,26 @@ class CalendarEventDraft {
 
   /// set the physical location details for this calendar event
   void physicalLocation(
-    String name,
-    String description,
+    String? name,
+    String? description,
     String? descriptionHtml,
-    String coordinates,
+    String? coordinates,
     String? uri,
   ) {
     final tmp1 = name;
-    final tmp5 = description;
-    final tmp9 = descriptionHtml;
-    final tmp15 = coordinates;
-    final tmp19 = uri;
+    final tmp7 = description;
+    final tmp13 = descriptionHtml;
+    final tmp19 = coordinates;
+    final tmp25 = uri;
     var tmp0 = 0;
     var tmp2 = 0;
-    var tmp3 = 0;
     var tmp4 = 0;
+    var tmp5 = 0;
     var tmp6 = 0;
-    var tmp7 = 0;
     var tmp8 = 0;
     var tmp10 = 0;
+    var tmp11 = 0;
     var tmp12 = 0;
-    var tmp13 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
     var tmp17 = 0;
@@ -36217,45 +36208,53 @@ class CalendarEventDraft {
     var tmp22 = 0;
     var tmp23 = 0;
     var tmp24 = 0;
+    var tmp26 = 0;
+    var tmp28 = 0;
+    var tmp29 = 0;
+    var tmp30 = 0;
     tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5_0 = utf8.encode(tmp5);
-    tmp7 = tmp5_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
-    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
-    tmp6_1.setAll(0, tmp5_0);
-    tmp6 = tmp6_0.address;
-    tmp8 = tmp7;
-    if (tmp9 == null) {
-      tmp10 = 0;
+    if (tmp1 == null) {
+      tmp2 = 0;
     } else {
-      tmp10 = 1;
-      final tmp11 = tmp9;
-      final tmp11_0 = utf8.encode(tmp11);
-      tmp13 = tmp11_0.length;
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      final tmp3_0 = utf8.encode(tmp3);
+      tmp5 = tmp3_0.length;
 
-      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
-      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
-      tmp12_1.setAll(0, tmp11_0);
-      tmp12 = tmp12_0.address;
-      tmp14 = tmp13;
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = _api.__allocate(tmp5 * 1, 1);
+      final Uint8List tmp4_1 = tmp4_0.asTypedList(tmp5);
+      tmp4_1.setAll(0, tmp3_0);
+      tmp4 = tmp4_0.address;
+      tmp6 = tmp5;
     }
-    final tmp15_0 = utf8.encode(tmp15);
-    tmp17 = tmp15_0.length;
+    if (tmp7 == null) {
+      tmp8 = 0;
+    } else {
+      tmp8 = 1;
+      final tmp9 = tmp7;
+      final tmp9_0 = utf8.encode(tmp9);
+      tmp11 = tmp9_0.length;
 
-    final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
-    final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
-    tmp16_1.setAll(0, tmp15_0);
-    tmp16 = tmp16_0.address;
-    tmp18 = tmp17;
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+      final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+      tmp10_1.setAll(0, tmp9_0);
+      tmp10 = tmp10_0.address;
+      tmp12 = tmp11;
+    }
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      final tmp15_0 = utf8.encode(tmp15);
+      tmp17 = tmp15_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
+      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
+      tmp16_1.setAll(0, tmp15_0);
+      tmp16 = tmp16_0.address;
+      tmp18 = tmp17;
+    }
     if (tmp19 == null) {
       tmp20 = 0;
     } else {
@@ -36270,17 +36269,30 @@ class CalendarEventDraft {
       tmp22 = tmp22_0.address;
       tmp24 = tmp23;
     }
-    final tmp25 = _api._calendarEventDraftPhysicalLocation(
+    if (tmp25 == null) {
+      tmp26 = 0;
+    } else {
+      tmp26 = 1;
+      final tmp27 = tmp25;
+      final tmp27_0 = utf8.encode(tmp27);
+      tmp29 = tmp27_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp28_0 = _api.__allocate(tmp29 * 1, 1);
+      final Uint8List tmp28_1 = tmp28_0.asTypedList(tmp29);
+      tmp28_1.setAll(0, tmp27_0);
+      tmp28 = tmp28_0.address;
+      tmp30 = tmp29;
+    }
+    final tmp31 = _api._calendarEventDraftPhysicalLocation(
       tmp0,
       tmp2,
-      tmp3,
       tmp4,
+      tmp5,
       tmp6,
-      tmp7,
       tmp8,
       tmp10,
+      tmp11,
       tmp12,
-      tmp13,
       tmp14,
       tmp16,
       tmp17,
@@ -36289,121 +36301,141 @@ class CalendarEventDraft {
       tmp22,
       tmp23,
       tmp24,
+      tmp26,
+      tmp28,
+      tmp29,
+      tmp30,
     );
-    final tmp27 = tmp25.arg0;
-    final tmp28 = tmp25.arg1;
-    final tmp29 = tmp25.arg2;
-    final tmp30 = tmp25.arg3;
-    if (tmp27 == 0) {
-      debugAllocation("handle error", tmp28, tmp29);
-      final ffi.Pointer<ffi.Uint8> tmp28_0 = ffi.Pointer.fromAddress(tmp28);
-      final tmp27_0 =
-          utf8.decode(tmp28_0.asTypedList(tmp29), allowMalformed: true);
-      if (tmp29 > 0) {
-        final ffi.Pointer<ffi.Void> tmp28_0;
-        tmp28_0 = ffi.Pointer.fromAddress(tmp28);
-        _api.__deallocate(tmp28_0, tmp30, 1);
+    final tmp33 = tmp31.arg0;
+    final tmp34 = tmp31.arg1;
+    final tmp35 = tmp31.arg2;
+    final tmp36 = tmp31.arg3;
+    if (tmp33 == 0) {
+      debugAllocation("handle error", tmp34, tmp35);
+      final ffi.Pointer<ffi.Uint8> tmp34_0 = ffi.Pointer.fromAddress(tmp34);
+      final tmp33_0 =
+          utf8.decode(tmp34_0.asTypedList(tmp35), allowMalformed: true);
+      if (tmp35 > 0) {
+        final ffi.Pointer<ffi.Void> tmp34_0;
+        tmp34_0 = ffi.Pointer.fromAddress(tmp34);
+        _api.__deallocate(tmp34_0, tmp36, 1);
       }
-      throw tmp27_0;
+      throw tmp33_0;
     }
     return;
   }
 
   /// set the virtual location details for this calendar event
   void virtualLocation(
-    String name,
-    String description,
+    String? name,
+    String? description,
     String? descriptionHtml,
     String uri,
   ) {
     final tmp1 = name;
-    final tmp5 = description;
-    final tmp9 = descriptionHtml;
-    final tmp15 = uri;
+    final tmp7 = description;
+    final tmp13 = descriptionHtml;
+    final tmp19 = uri;
     var tmp0 = 0;
     var tmp2 = 0;
-    var tmp3 = 0;
     var tmp4 = 0;
+    var tmp5 = 0;
     var tmp6 = 0;
-    var tmp7 = 0;
     var tmp8 = 0;
     var tmp10 = 0;
+    var tmp11 = 0;
     var tmp12 = 0;
-    var tmp13 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
     var tmp17 = 0;
     var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp21 = 0;
+    var tmp22 = 0;
     tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5_0 = utf8.encode(tmp5);
-    tmp7 = tmp5_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
-    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
-    tmp6_1.setAll(0, tmp5_0);
-    tmp6 = tmp6_0.address;
-    tmp8 = tmp7;
-    if (tmp9 == null) {
-      tmp10 = 0;
+    if (tmp1 == null) {
+      tmp2 = 0;
     } else {
-      tmp10 = 1;
-      final tmp11 = tmp9;
-      final tmp11_0 = utf8.encode(tmp11);
-      tmp13 = tmp11_0.length;
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      final tmp3_0 = utf8.encode(tmp3);
+      tmp5 = tmp3_0.length;
 
-      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
-      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
-      tmp12_1.setAll(0, tmp11_0);
-      tmp12 = tmp12_0.address;
-      tmp14 = tmp13;
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = _api.__allocate(tmp5 * 1, 1);
+      final Uint8List tmp4_1 = tmp4_0.asTypedList(tmp5);
+      tmp4_1.setAll(0, tmp3_0);
+      tmp4 = tmp4_0.address;
+      tmp6 = tmp5;
     }
-    final tmp15_0 = utf8.encode(tmp15);
-    tmp17 = tmp15_0.length;
+    if (tmp7 == null) {
+      tmp8 = 0;
+    } else {
+      tmp8 = 1;
+      final tmp9 = tmp7;
+      final tmp9_0 = utf8.encode(tmp9);
+      tmp11 = tmp9_0.length;
 
-    final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
-    final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
-    tmp16_1.setAll(0, tmp15_0);
-    tmp16 = tmp16_0.address;
-    tmp18 = tmp17;
-    final tmp19 = _api._calendarEventDraftVirtualLocation(
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+      final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+      tmp10_1.setAll(0, tmp9_0);
+      tmp10 = tmp10_0.address;
+      tmp12 = tmp11;
+    }
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      final tmp15_0 = utf8.encode(tmp15);
+      tmp17 = tmp15_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
+      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
+      tmp16_1.setAll(0, tmp15_0);
+      tmp16 = tmp16_0.address;
+      tmp18 = tmp17;
+    }
+    final tmp19_0 = utf8.encode(tmp19);
+    tmp21 = tmp19_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp20_0 = _api.__allocate(tmp21 * 1, 1);
+    final Uint8List tmp20_1 = tmp20_0.asTypedList(tmp21);
+    tmp20_1.setAll(0, tmp19_0);
+    tmp20 = tmp20_0.address;
+    tmp22 = tmp21;
+    final tmp23 = _api._calendarEventDraftVirtualLocation(
       tmp0,
       tmp2,
-      tmp3,
       tmp4,
+      tmp5,
       tmp6,
-      tmp7,
       tmp8,
       tmp10,
+      tmp11,
       tmp12,
-      tmp13,
       tmp14,
       tmp16,
       tmp17,
       tmp18,
+      tmp20,
+      tmp21,
+      tmp22,
     );
-    final tmp21 = tmp19.arg0;
-    final tmp22 = tmp19.arg1;
-    final tmp23 = tmp19.arg2;
-    final tmp24 = tmp19.arg3;
-    if (tmp21 == 0) {
-      debugAllocation("handle error", tmp22, tmp23);
-      final ffi.Pointer<ffi.Uint8> tmp22_0 = ffi.Pointer.fromAddress(tmp22);
-      final tmp21_0 =
-          utf8.decode(tmp22_0.asTypedList(tmp23), allowMalformed: true);
-      if (tmp23 > 0) {
-        final ffi.Pointer<ffi.Void> tmp22_0;
-        tmp22_0 = ffi.Pointer.fromAddress(tmp22);
-        _api.__deallocate(tmp22_0, tmp24, 1);
+    final tmp25 = tmp23.arg0;
+    final tmp26 = tmp23.arg1;
+    final tmp27 = tmp23.arg2;
+    final tmp28 = tmp23.arg3;
+    if (tmp25 == 0) {
+      debugAllocation("handle error", tmp26, tmp27);
+      final ffi.Pointer<ffi.Uint8> tmp26_0 = ffi.Pointer.fromAddress(tmp26);
+      final tmp25_0 =
+          utf8.decode(tmp26_0.asTypedList(tmp27), allowMalformed: true);
+      if (tmp27 > 0) {
+        final ffi.Pointer<ffi.Void> tmp26_0;
+        tmp26_0 = ffi.Pointer.fromAddress(tmp26);
+        _api.__deallocate(tmp26_0, tmp28, 1);
       }
-      throw tmp21_0;
+      throw tmp25_0;
     }
     return;
   }
@@ -39544,7 +39576,7 @@ class TimelineStream {
     return tmp6;
   }
 
-  /// Get the next count messages backwards, and return whether it has more items
+  /// Get the next count messages backwards, and return whether it reached the end
   Future<bool> paginateBackwards(
     int count,
   ) {
@@ -50212,22 +50244,37 @@ class Client {
   }
 
   /// Return the typing event receiver
-  Stream<TypingEvent>? typingEventRx() {
+  Stream<TypingEvent> subscribeToTypingEventStream(
+    String roomId,
+  ) {
+    final tmp1 = roomId;
     var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._clientTypingEventRx(
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._clientSubscribeToTypingEventStream(
       tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
     );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "__Client_typing_event_rx_stream_drop");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = _nativeStream(tmp4_1, _api.__clientTypingEventRxStreamPoll);
-    return tmp2;
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(
+        _api, tmp7_0, "__Client_subscribe_to_typing_event_stream_stream_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeStream(
+        tmp7_1, _api.__clientSubscribeToTypingEventStreamStreamPoll);
+    return tmp6;
   }
 
   /// Return the receipt event receiver
@@ -56193,13 +56240,6 @@ class _ClientDeviceChangedEventRxReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _ClientTypingEventRxReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
 class _ClientReceiptEventRxReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -60398,7 +60438,7 @@ class _ClientDeviceChangedEventRxStreamPollReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _ClientTypingEventRxStreamPollReturn extends ffi.Struct {
+class _ClientSubscribeToTypingEventStreamStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()

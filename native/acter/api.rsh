@@ -300,11 +300,8 @@ object ReceiptRecord {
     fn receipt_thread() -> ReceiptThread;
 }
 
-/// Deliver typing event from rust to flutter
+/// Deliver typing event from rust
 object TypingEvent {
-    /// Get transaction id or flow id
-    fn room_id() -> RoomId;
-
     /// Get list of user id
     fn user_ids() -> Vec<UserId>;
 } 
@@ -664,9 +661,9 @@ object CalendarEventDraft {
     /// set the utc_end for this calendar event in custom format
     fn utc_end_from_format(utc_end: string, format: string) -> Result<()>;
     /// set the physical location details for this calendar event
-    fn physical_location(name: string, description: string, description_html: Option<string>, coordinates: string, uri: Option<string>) -> Result<()>;
+    fn physical_location(name: Option<string>, description: Option<string>, description_html: Option<string>, coordinates: Option<string>, uri: Option<string>) -> Result<()>;
     /// set the virtual location details for this calendar event
-    fn virtual_location(name: string, description: string, description_html: Option<string>, uri: string) -> Result<()>;
+    fn virtual_location(name: Option<string>, description: Option<string>, description_html: Option<string>, uri: string) -> Result<()>;
 
 
     /// create this calendar event
@@ -1128,7 +1125,7 @@ object TimelineStream {
     /// get the specific message identified by the event_id
     fn get_message(event_id: string) -> Future<Result<RoomMessage>>;
 
-    /// Get the next count messages backwards, and return whether it has more items
+    /// Get the next count messages backwards, and return whether it reached the end
     fn paginate_backwards(count: u16) -> Future<Result<bool>>;
 
     /// send message using draft
@@ -2538,7 +2535,7 @@ object Client {
     fn device_changed_event_rx() -> Option<Stream<DeviceChangedEvent>>;
 
     /// Return the typing event receiver
-    fn typing_event_rx() -> Option<Stream<TypingEvent>>;
+    fn subscribe_to_typing_event_stream(room_id: string) -> Stream<TypingEvent>;
 
     /// Return the receipt event receiver
     fn receipt_event_rx() -> Option<Stream<ReceiptEvent>>;

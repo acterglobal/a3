@@ -114,6 +114,25 @@ class UserStateButton extends ConsumerWidget {
     }
   }
 
+  void _cancelInvite(BuildContext context, WidgetRef ref) async {
+    EasyLoading.show(
+      status: L10n.of(context).cancelInviteLoading(userId),
+      dismissOnTap: false,
+    );
+    try {
+      final profile = ref
+          .read(roomMemberProvider((userId: userId, roomId: room.roomIdStr())))
+          .valueOrNull;
+      if (profile?.member != null) {
+        await profile!.member.kick('Cancel Invite');
+      }
+      EasyLoading.dismiss();
+    } catch (e) {
+      // ignore: use_build_context_synchronously
+      EasyLoading.showToast(L10n.of(context).cancelInviteError(e, userId));
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final invited =
@@ -122,9 +141,12 @@ class UserStateButton extends ConsumerWidget {
     final joined =
         ref.watch(membersIdsProvider(room.roomIdStr())).valueOrNull ?? [];
     if (isInvited(userId, invited)) {
-      return Chip(
-        label: Text(L10n.of(context).invited),
-        backgroundColor: Theme.of(context).colorScheme.success,
+      return InkWell(
+        onTap: () => _cancelInvite(context, ref),
+        child: Chip(
+          label: Text(L10n.of(context).revoke),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
       );
     }
     if (isJoined(userId, joined)) {

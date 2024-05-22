@@ -10,6 +10,9 @@ extension ChatRoomLoadingStateGetters on ChatRoomLoadingState {
 
 @freezed
 class ChatRoomLoadingState with _$ChatRoomLoadingState {
+  ///Initial
+  const factory ChatRoomLoadingState.initial() = _ChatRoomLoadingStateInitial;
+
   ///Loading
   const factory ChatRoomLoadingState.loading() = _ChatRoomLoadingStateLoading;
 
@@ -25,7 +28,7 @@ class ChatRoomLoadingState with _$ChatRoomLoadingState {
 class ChatRoomState with _$ChatRoomState {
   const factory ChatRoomState({
     @Default([]) List<Message> messages,
-    @Default(ChatRoomLoadingState.loading()) ChatRoomLoadingState loading,
+    @Default(ChatRoomLoadingState.initial()) ChatRoomLoadingState loading,
     @Default(true) bool hasMore,
   }) = _ChatRoomState;
 }

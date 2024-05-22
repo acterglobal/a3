@@ -46,6 +46,11 @@ enum Routes {
   task('/tasks/:taskListId([^/]+)/:taskId([^/]+)'),
   taskList('/tasks/:taskListId([^/]+)'),
 
+  // --- Invite
+  inviteIndividual('/inviteIndividual'),
+  shareInviteCode('/shareInviteCode'),
+  invitePending('/invitePending'),
+
   // -- spaces
   spaces('/spaces'),
   createSpace('/spaces/create'),

@@ -8,7 +8,7 @@ use matrix_sdk::{
 use ruma::assign;
 use ruma_client_api::{
     account::register,
-    uiaa::{AuthData, AuthType, Dummy, Password, RegistrationToken},
+    uiaa::{AuthData, Dummy, Password, RegistrationToken},
 };
 use ruma_common::{OwnedUserId, UserId};
 use std::sync::RwLock;
@@ -295,6 +295,41 @@ pub async fn register(
     register_under_config(config, user_id, password, Some(db_passphrase), user_agent).await
 }
 
+fn clearify_error(err: matrix_sdk::Error) -> anyhow::Error {
+    if let matrix_sdk::Error::Http(matrix_sdk::HttpError::Api(api_error)) = &err {
+        match api_error {
+            matrix_sdk::ruma::api::error::FromHttpResponseError::Deserialization(des) => {
+                return anyhow::anyhow!("Deserialization failed: {des}");
+            }
+            matrix_sdk::ruma::api::error::FromHttpResponseError::Server(inner) => match inner {
+                matrix_sdk::RumaApiError::ClientApi(error) => {
+                    if let matrix_sdk::ruma::api::client::error::ErrorBody::Standard {
+                        kind,
+                        message,
+                    } = &error.body
+                    {
+                        return anyhow::anyhow!("{message} [{kind}]");
+                    }
+                    return anyhow::anyhow!("{0:?} [{1}]", error.body, error.status_code);
+                }
+                matrix_sdk::RumaApiError::Uiaa(uiaa_error) => {
+                    if let Some(err) = &uiaa_error.auth_error {
+                        return anyhow::anyhow!("{0} [{1}]", err.message, err.kind);
+                    }
+
+                    error!(?uiaa_error, "Other UIAA response");
+                    return anyhow::anyhow!("Unsupported User Interaction needed.");
+                }
+                matrix_sdk::RumaApiError::Other(err) => {
+                    return anyhow::anyhow!("{0:?} [{1}]", err.body, err.status_code);
+                }
+            },
+            _ => {}
+        }
+    }
+    err.into()
+}
+
 pub async fn register_under_config(
     config: ClientBuilder,
     user_id: OwnedUserId,
@@ -305,30 +340,26 @@ pub async fn register_under_config(
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
-            // user registration follows UIAA spec
-            // req-resp exchange continues until final stage of auth process
-            let request = register::v3::Request::new();
-            if let Err(e) = client.matrix_auth().register(request).await {
-                let Some(inf) = e.as_uiaa_response() else {
-                    bail!("No a uiaa response")
-                };
-                if let Some(err) = &inf.auth_error {
-                    bail!("Found auth error: {:?}", err.message);
+            if let Err(e) = client
+                .matrix_auth()
+                .register(register::v3::Request::new())
+                .await
+            {
+                // FIXME: do actually check the registration types...
+                if e.as_uiaa_response().is_none() {
+                    return Err(clearify_error(e));
                 }
-                let has_flow = inf
-                    .flows
-                    .iter()
-                    .any(|f| f.stages.contains(&AuthType::Dummy));
-                let was_completed = inf.completed.contains(&AuthType::Dummy);
-                if has_flow && !was_completed {
-                    let request = assign!(register::v3::Request::new(), {
-                        username: Some(user_id.localpart().to_owned()),
-                        password: Some(password.clone()),
-                        initial_device_display_name: Some(user_agent.clone()),
-                        auth: Some(AuthData::Dummy(Dummy::new())),
-                    });
-                    client.matrix_auth().register(request).await?;
-                }
+                let request = assign!(register::v3::Request::new(), {
+                    username: Some(user_id.localpart().to_owned()),
+                    password: Some(password.clone()),
+                    initial_device_display_name: Some(user_agent.clone()),
+                    auth: Some(AuthData::Dummy(Dummy::new())),
+                });
+                client
+                    .matrix_auth()
+                    .register(request)
+                    .await
+                    .map_err(clearify_error)?;
             }
 
             info!(
@@ -394,35 +425,34 @@ pub async fn register_with_token_under_config(
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
-            // user registration follows UIAA spec
-            // req-resp exchange continues until final stage of auth process
             let request = assign!(register::v3::Request::new(), {
                 username: Some(user_id.localpart().to_owned()),
                 password: Some(password.clone()),
                 initial_device_display_name: Some(user_agent.clone()),
                 auth: Some(AuthData::Dummy(Dummy::new())),
             });
+
             if let Err(e) = client.matrix_auth().register(request).await {
+                // FIXME: do actually check the registration types...
                 let Some(inf) = e.as_uiaa_response() else {
-                    bail!("Server did not indicate how to allow registration.")
+                    return Err(clearify_error(e));
                 };
-                if let Some(err) = &inf.auth_error {
-                    bail!("Found auth error: {:?}", err.message);
-                }
-                let has_flow = inf
-                    .flows
-                    .iter()
-                    .any(|f| f.stages.contains(&AuthType::Dummy));
-                let was_completed = inf.completed.contains(&AuthType::Dummy);
-                if has_flow && !was_completed {
-                    let reg_token = assign!(RegistrationToken::new(registration_token), {
-                        session: inf.session.clone(),
-                    });
-                    let request = assign!(register::v3::Request::new(), {
-                        auth: Some(AuthData::RegistrationToken(reg_token)),
-                    });
-                    client.matrix_auth().register(request).await?;
-                }
+
+                info!("Acceptable auth flows: {inf:?}");
+
+                // FIXME: do actually check the registration types...
+                let request = assign!(register::v3::Request::new(), {
+                    auth: Some(AuthData::RegistrationToken(
+                        assign!(RegistrationToken::new(registration_token), {
+                            session: inf.session.clone(),
+                        }),
+                    )),
+                });
+                client
+                    .matrix_auth()
+                    .register(request)
+                    .await
+                    .map_err(clearify_error)?;
             } // else all went well.
 
             info!(
@@ -449,18 +479,17 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 if let Err(e) = account.deactivate(None, None).await {
-                    let Some(inf) = e.as_uiaa_response() else {
-                        bail!("Server did not indicate how to allow deactivation.")
-                    };
-                    if let Some(err) = &inf.auth_error {
-                        bail!("Found auth error: {:?}", err.message);
+                    if let Some(resp) = e.as_uiaa_response() {
+                        let pswd = assign!(Password::new(account.user_id().into(), password), {
+                            session: resp.session.clone(),
+                        });
+                        let auth_data = AuthData::Password(pswd);
+                        account.deactivate(None, Some(auth_data)).await?;
+                        // FIXME: remove local data, too!
+                    } else {
+                        error!(?e, "Not a UIAA response");
+                        bail!("No a uiaa response");
                     }
-                    let pswd = assign!(Password::new(account.user_id().into(), password), {
-                        session: inf.session.clone(),
-                    });
-                    let auth_data = AuthData::Password(pswd);
-                    account.deactivate(None, Some(auth_data)).await?;
-                    // FIXME: remove local data, too!
                 }
                 Ok(true)
             })
@@ -474,20 +503,20 @@ impl Client {
             .spawn(async move {
                 let capabilities = client.get_capabilities().await?;
                 if !capabilities.change_password.enabled {
-                    bail!("This client doesn't support password change");
+                    bail!("Server doesn't support password change");
                 }
                 if let Err(e) = account.change_password(&new_val, None).await {
                     let Some(inf) = e.as_uiaa_response() else {
-                        bail!("Server did not indicate how to allow password change.")
+                        return Err(clearify_error(e));
                     };
-                    if let Some(err) = &inf.auth_error {
-                        bail!("Found auth error: {:?}", err.message);
-                    }
                     let pswd = assign!(Password::new(account.user_id().into(), old_val), {
                         session: inf.session.clone(),
                     });
                     let auth_data = AuthData::Password(pswd);
-                    account.change_password(&new_val, Some(auth_data)).await?;
+                    account
+                        .change_password(&new_val, Some(auth_data))
+                        .await
+                        .map_err(clearify_error)?;
                 }
                 Ok(true)
             })
