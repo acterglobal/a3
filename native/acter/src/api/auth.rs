@@ -340,15 +340,15 @@ pub async fn register_under_config(
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
-            if let Err(resp) = client
+            if let Err(e) = client
                 .matrix_auth()
                 .register(register::v3::Request::new())
                 .await
             {
                 // FIXME: do actually check the registration types...
-                let Some(_r) = resp.as_uiaa_response() else {
-                    return Err(clearify_error(resp));
-                };
+                if e.as_uiaa_response().is_none() {
+                    return Err(clearify_error(e));
+                }
                 let request = assign!(register::v3::Request::new(), {
                     username: Some(user_id.localpart().to_owned()),
                     password: Some(password.clone()),
@@ -432,19 +432,19 @@ pub async fn register_with_token_under_config(
                 auth: Some(AuthData::Dummy(Dummy::new())),
             });
 
-            if let Err(err) = client.matrix_auth().register(request).await {
+            if let Err(e) = client.matrix_auth().register(request).await {
                 // FIXME: do actually check the registration types...
-                let Some(response) = err.as_uiaa_response() else {
-                    return Err(clearify_error(err));
+                let Some(inf) = e.as_uiaa_response() else {
+                    return Err(clearify_error(e));
                 };
 
-                info!("Acceptable auth flows: {response:?}");
+                info!("Acceptable auth flows: {inf:?}");
 
                 // FIXME: do actually check the registration types...
                 let request = assign!(register::v3::Request::new(), {
                     auth: Some(AuthData::RegistrationToken(
                         assign!(RegistrationToken::new(registration_token), {
-                            session: response.session.clone(),
+                            session: inf.session.clone(),
                         }),
                     )),
                 });
@@ -507,16 +507,16 @@ impl Client {
                 }
                 if let Err(e) = account.change_password(&new_val, None).await {
                     let Some(inf) = e.as_uiaa_response() else {
-                        bail!("Server did not indicate how to allow password change.")
+                        return Err(clearify_error(e));
                     };
-                    if let Some(err) = &inf.auth_error {
-                        bail!("Found auth error: {:?}", err.message);
-                    }
                     let pswd = assign!(Password::new(account.user_id().into(), old_val), {
                         session: inf.session.clone(),
                     });
                     let auth_data = AuthData::Password(pswd);
-                    account.change_password(&new_val, Some(auth_data)).await?;
+                    account
+                        .change_password(&new_val, Some(auth_data))
+                        .await
+                        .map_err(clearify_error)?;
                 }
                 Ok(true)
             })
