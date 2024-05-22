@@ -6,6 +6,7 @@ import 'package:acter/features/events/pages/events_page.dart';
 import 'package:acter/features/events/pages/event_details_page.dart';
 import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/invite_members/pages/invite_pending.dart';
+import 'package:acter/features/invite_members/pages/invite_space_members.dart';
 import 'package:acter/features/invite_members/pages/share_invite_code.dart';
 import 'package:acter/features/pins/pages/pin_page.dart';
 import 'package:acter/features/pins/pages/pins_page.dart';
@@ -508,6 +509,19 @@ List<RouteBase> makeHomeShellRoutes(ref) {
         return NoTransitionPage(
           key: state.pageKey,
           child: InviteIndividualUsers(
+            roomId: state.uri.queryParameters['roomId']!,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.inviteSpaceMembers.name,
+      path: Routes.inviteSpaceMembers.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: InviteSpaceMembers(
             roomId: state.uri.queryParameters['roomId']!,
           ),
         );
