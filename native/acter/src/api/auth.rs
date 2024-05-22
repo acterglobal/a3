@@ -503,7 +503,7 @@ impl Client {
             .spawn(async move {
                 let capabilities = client.get_capabilities().await?;
                 if !capabilities.change_password.enabled {
-                    bail!("This client doesn't support password change");
+                    bail!("Server doesn't support password change");
                 }
                 if let Err(e) = account.change_password(&new_val, None).await {
                     let Some(inf) = e.as_uiaa_response() else {
