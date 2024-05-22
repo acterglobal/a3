@@ -2420,6 +2420,9 @@ object Client {
     // be blocked from any future usage, all personal data will be removed.
     fn deactivate(password: string) -> Future<Result<bool>>;
 
+    /// change password
+    fn change_password(old_val: string, new_val: string) -> Future<Result<bool>>;
+
     // Special
 
     /// start the sync
