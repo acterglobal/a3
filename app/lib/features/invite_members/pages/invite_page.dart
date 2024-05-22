@@ -135,7 +135,10 @@ class InvitePage extends ConsumerWidget {
               iconData: Icons.people_alt_outlined,
               title: L10n.of(context).inviteSpaceMembersTitle,
               subTitle: L10n.of(context).inviteSpaceMembersSubtitle,
-              onTap: () => EasyLoading.showInfo(L10n.of(context).comingSoon),
+              onTap: () => context.pushNamed(
+                Routes.inviteSpaceMembers.name,
+                queryParameters: {'roomId': roomId.toString()},
+              ),
             ),
             MenuItemWidget(
               iconData: Icons.person_add_alt_1,
