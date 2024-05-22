@@ -30,5 +30,9 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>whatsapp</string>
+    </array>
 </dict>
 </plist>
