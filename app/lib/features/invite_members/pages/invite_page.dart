@@ -257,12 +257,12 @@ class InvitePage extends ConsumerWidget {
       await newSuperInviteForRooms(ref, [roomId]);
       ref.invalidate(superInvitesProvider);
       EasyLoading.dismiss();
-    } catch (e) {
+    } catch (error) {
       EasyLoading.dismiss();
-      _log.severe('Invite code activation failed');
+      _log.severe('Invite code activation failed', error);
       if (!context.mounted) return;
       EasyLoading.showError(
-        L10n.of(context).activateInviteCodeFailed(e),
+        L10n.of(context).activateInviteCodeFailed(error),
         duration: const Duration(seconds: 3),
       );
     }
@@ -313,6 +313,7 @@ class InvitePage extends ConsumerWidget {
       ref.invalidate(superInvitesProvider);
     } catch (err) {
       EasyLoading.dismiss();
+      _log.severe('Invite code creation failed', err);
       if (!context.mounted) return;
       EasyLoading.showError(
         L10n.of(context).inactivateInviteCodeFailed(err),
