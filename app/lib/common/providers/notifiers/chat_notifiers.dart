@@ -20,9 +20,12 @@ class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, Convo> {
     _listener = client.subscribeStream(convoId); // keep it resident in memory
     _poller = _listener.listen(
       (e) async {
-        state = await AsyncValue.guard(() async => await client.convo(convoId));
+        final newConvo = await client.convo(convoId);
+        print("convo reloaded");
+        state = AsyncValue.data(newConvo);
       },
       onError: (e, stack) {
+        state = AsyncValue.error(e, stack);
         _log.severe('stream errored.', e, stack);
       },
       onDone: () {
