@@ -3,6 +3,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/home/data/models/nav_item.dart';
 import 'package:acter/features/home/widgets/activities_icon.dart';
+import 'package:acter/features/home/widgets/chats_icon.dart';
 import 'package:acter/features/home/widgets/custom_selected_icon.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -42,14 +43,8 @@ final bottomBarItems = [
     tutorialGlobalKey: updateKey,
   ),
   BottomBarNavigationItem(
-    icon: const Icon(
-      Atlas.chats_thin,
-      key: MainNavKeys.chats,
-    ),
-    activeIcon: const CustomSelectedIcon(
-      icon: Icon(Atlas.chats_thin),
-      key: MainNavKeys.chats,
-    ),
+    icon: const ChatsIcon(),
+    activeIcon: const CustomSelectedIcon(icon: ChatsIcon()),
     label: 'Chat',
     initialLocation: Routes.chat.route,
     tutorialGlobalKey: chatsKey,

@@ -157,7 +157,7 @@ class ActivitiesPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // update the inner provider...
     // ignore: unused_local_variable
-    final allDone = ref.watch(hasActivitiesProvider) == UrgencyBadge.none;
+    final _allDone = ref.watch(hasActivitiesProvider) == UrgencyBadge.none;
     final children = [];
     bool renderEmptyState = true;
 

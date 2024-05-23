@@ -3,6 +3,7 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/network_provider.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
@@ -14,6 +15,7 @@ import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/providers/app_settings_provider.dart';
+import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -210,22 +212,44 @@ typedef UnreadCounters = (int, int, int);
 
 final unreadCountersProvider = FutureProvider.autoDispose
     .family<UnreadCounters, String>((ref, roomId) async {
-  final convo = await ref.watch(chatProvider(roomId).future);
-  return (
+  final convo = await ref.watch(
+    convoProvider(await ref.watch(chatProvider(roomId).future)).future,
+  );
+  if (convo == null) {
+    return (0, 0, 0);
+  }
+  final ret = (
     convo.numUnreadNotificationCount(),
     convo.numUnreadMentions(),
     convo.numUnreadMessages()
   );
+  return ret;
 });
 
-// final UrgencyBadgeProvider = StateProvider((ref) {
-//   final invitations = ref.watch(invitationListProvider);
-//   if (invitations.isNotEmpty) {
-//     return UrgencyBadge.important;
-//   }
-//   final syncStatus = ref.watch(syncStateProvider);
-//   if (syncStatus.errorMsg != null) {
-//     return UrgencyBadge.important;
-//   }
-//   return UrgencyBadge.none;
-// });
+final hasUnreadChatsProvider = FutureProvider.autoDispose((ref) async {
+  if (!ref.watch(isActiveProvider(LabsFeature.chatUnread))) {
+    // feature not active
+
+    return UrgencyBadge.none;
+  }
+  final chats = ref.watch(chatsProvider);
+  if (chats.isEmpty) {
+    return UrgencyBadge.none;
+  }
+  UrgencyBadge currentBadge = UrgencyBadge.none;
+
+  for (final chat in chats) {
+    // this is highly inefficient
+    final unreadCounter =
+        await ref.watch(unreadCountersProvider(chat.getRoomIdStr()).future);
+    if (unreadCounter.$1 > 0) {
+      // mentions, we just blurb
+      return UrgencyBadge.important;
+    }
+    if (unreadCounter.$2 > 0) {
+      //
+      currentBadge = UrgencyBadge.unread;
+    }
+  }
+  return currentBadge;
+});

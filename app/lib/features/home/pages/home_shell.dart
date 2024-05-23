@@ -93,13 +93,15 @@ class HomeShellState extends ConsumerState<HomeShell> {
   }
 
   Future<void> initNotifications() async {
-    final client = ref.read(alwaysClientProvider);
-    _initPushForClient(client);
     ref.listenManual(clientProvider, (previous, next) {
       if (next != null) {
         _initPushForClient(next);
       }
     });
+    final client = ref.read(clientProvider);
+    if (client != null) {
+      _initPushForClient(client);
+    }
   }
 
   Future<void> _initPushForClient(Client client) async {
