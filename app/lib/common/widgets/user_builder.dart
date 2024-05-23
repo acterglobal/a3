@@ -145,8 +145,8 @@ class UserStateButton extends ConsumerWidget {
       return InkWell(
         onTap: () => _cancelInvite(context, ref),
         child: Chip(
-          label: Text(L10n.of(context).invited),
-          backgroundColor: Theme.of(context).colorScheme.success,
+          label: Text(L10n.of(context).revoke),
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
     }

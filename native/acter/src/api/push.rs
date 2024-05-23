@@ -111,7 +111,7 @@ impl NotificationRoom {
     fn from(client: Client, notif: &SdkNotificationItem, room_id: &RoomId) -> Self {
         NotificationRoom {
             room_id: room_id.to_string(),
-            display_name: notif.room_display_name.clone(),
+            display_name: notif.room_computed_display_name.clone(),
             image: notif
                 .room_avatar_url
                 .clone()
@@ -228,7 +228,7 @@ impl NotificationItem {
             .room(NotificationRoom::from(client.clone(), &inner, &room_id))
             .client(client)
             .thread_id(room_id.to_string())
-            .title(inner.room_display_name)
+            .title(inner.room_computed_display_name)
             .noisy(inner.is_noisy)
             .push_style("fallback".to_owned())
             .target_url(format!(
@@ -406,12 +406,11 @@ impl Client {
         let event_id = EventId::parse(event_id)?;
         RUNTIME
             .spawn(async move {
-                let notif_client = NotificationClient::builder(
+                let notif_client = NotificationClient::new(
                     me.core.client().clone(),
                     NotificationProcessSetup::MultipleProcesses,
                 )
-                .await?
-                .build();
+                .await?;
 
                 let notif = notif_client
                     .get_notification(&room_id, &event_id)

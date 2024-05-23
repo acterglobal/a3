@@ -380,21 +380,27 @@ impl CalendarEventDraft {
 
     pub fn physical_location(
         &mut self,
-        name: String,
-        description: String,
+        name: Option<String>,
+        description: Option<String>,
         description_html: Option<String>,
-        cooridnates: String,
+        cooridnates: Option<String>,
         uri: Option<String>,
     ) -> Result<()> {
-        let desc_plain = TextMessageEventContent::plain(description.clone());
-        let desc_html = description_html
-            .map(|html| TextMessageEventContent::html(description.clone(), html.clone()));
+        let mut desc_plain = None;
+        let mut desc_html = None;
+        if let Some(ref desc) = description {
+            if !desc.is_empty() {
+                desc_plain = Some(TextMessageEventContent::plain(desc.clone()));
+                desc_html =
+                    description_html.map(|html| TextMessageEventContent::html(desc.clone(), html));
+            }
+        }
         let inner = EventLocation::Physical {
-            name: Some(name),
-            description: desc_html.or(Some(desc_plain)),
+            name,
+            description: desc_html.or(desc_plain),
             // TODO: add icon support
             icon: None,
-            coordinates: Some(cooridnates),
+            coordinates: cooridnates,
             uri: uri.clone(),
         };
         let loc_info = EventLocationInfo { inner };
@@ -405,18 +411,25 @@ impl CalendarEventDraft {
 
     pub fn virtual_location(
         &mut self,
-        name: String,
-        description: String,
+        name: Option<String>,
+        description: Option<String>,
         description_html: Option<String>,
         uri: String,
     ) -> Result<()> {
         let calendar_event = self.inner.clone();
-        let desc_plain = TextMessageEventContent::plain(description.clone());
-        let desc_html = description_html
-            .map(|html| TextMessageEventContent::html(description.clone(), html.clone()));
+        let mut desc_plain = None;
+        let mut desc_html = None;
+        if let Some(ref desc) = description {
+            if !desc.is_empty() {
+                desc_plain = Some(TextMessageEventContent::plain(desc.clone()));
+                desc_html =
+                    description_html.map(|html| TextMessageEventContent::html(desc.clone(), html));
+            }
+        }
+
         let inner = EventLocation::Virtual {
-            name: Some(name),
-            description: desc_html.or(Some(desc_plain)),
+            name,
+            description: desc_html.or(desc_plain),
             // TODO: add icon support
             icon: None,
             uri,

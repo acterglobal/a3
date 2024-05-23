@@ -12,12 +12,13 @@ part of 'chat_room_state.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$ChatRoomLoadingState {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
+    required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function() loaded,
     required TResult Function(String? error) error,
@@ -25,6 +26,7 @@ mixin _$ChatRoomLoadingState {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? initial,
     TResult? Function()? loading,
     TResult? Function()? loaded,
     TResult? Function(String? error)? error,
@@ -32,6 +34,7 @@ mixin _$ChatRoomLoadingState {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? initial,
     TResult Function()? loading,
     TResult Function()? loaded,
     TResult Function(String? error)? error,
@@ -40,6 +43,7 @@ mixin _$ChatRoomLoadingState {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
+    required TResult Function(_ChatRoomLoadingStateInitial value) initial,
     required TResult Function(_ChatRoomLoadingStateLoading value) loading,
     required TResult Function(_ChatRoomLoadingStateLoaded value) loaded,
     required TResult Function(_ChatRoomLoadingStateError value) error,
@@ -47,6 +51,7 @@ mixin _$ChatRoomLoadingState {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_ChatRoomLoadingStateInitial value)? initial,
     TResult? Function(_ChatRoomLoadingStateLoading value)? loading,
     TResult? Function(_ChatRoomLoadingStateLoaded value)? loaded,
     TResult? Function(_ChatRoomLoadingStateError value)? error,
@@ -54,6 +59,7 @@ mixin _$ChatRoomLoadingState {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
+    TResult Function(_ChatRoomLoadingStateInitial value)? initial,
     TResult Function(_ChatRoomLoadingStateLoading value)? loading,
     TResult Function(_ChatRoomLoadingStateLoaded value)? loaded,
     TResult Function(_ChatRoomLoadingStateError value)? error,
@@ -79,6 +85,126 @@ class _$ChatRoomLoadingStateCopyWithImpl<$Res,
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
+}
+
+/// @nodoc
+abstract class _$$ChatRoomLoadingStateInitialImplCopyWith<$Res> {
+  factory _$$ChatRoomLoadingStateInitialImplCopyWith(
+          _$ChatRoomLoadingStateInitialImpl value,
+          $Res Function(_$ChatRoomLoadingStateInitialImpl) then) =
+      __$$ChatRoomLoadingStateInitialImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$ChatRoomLoadingStateInitialImplCopyWithImpl<$Res>
+    extends _$ChatRoomLoadingStateCopyWithImpl<$Res,
+        _$ChatRoomLoadingStateInitialImpl>
+    implements _$$ChatRoomLoadingStateInitialImplCopyWith<$Res> {
+  __$$ChatRoomLoadingStateInitialImplCopyWithImpl(
+      _$ChatRoomLoadingStateInitialImpl _value,
+      $Res Function(_$ChatRoomLoadingStateInitialImpl) _then)
+      : super(_value, _then);
+}
+
+/// @nodoc
+
+class _$ChatRoomLoadingStateInitialImpl
+    implements _ChatRoomLoadingStateInitial {
+  const _$ChatRoomLoadingStateInitialImpl();
+
+  @override
+  String toString() {
+    return 'ChatRoomLoadingState.initial()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ChatRoomLoadingStateInitialImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() initial,
+    required TResult Function() loading,
+    required TResult Function() loaded,
+    required TResult Function(String? error) error,
+  }) {
+    return initial();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? initial,
+    TResult? Function()? loading,
+    TResult? Function()? loaded,
+    TResult? Function(String? error)? error,
+  }) {
+    return initial?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? initial,
+    TResult Function()? loading,
+    TResult Function()? loaded,
+    TResult Function(String? error)? error,
+    required TResult orElse(),
+  }) {
+    if (initial != null) {
+      return initial();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_ChatRoomLoadingStateInitial value) initial,
+    required TResult Function(_ChatRoomLoadingStateLoading value) loading,
+    required TResult Function(_ChatRoomLoadingStateLoaded value) loaded,
+    required TResult Function(_ChatRoomLoadingStateError value) error,
+  }) {
+    return initial(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_ChatRoomLoadingStateInitial value)? initial,
+    TResult? Function(_ChatRoomLoadingStateLoading value)? loading,
+    TResult? Function(_ChatRoomLoadingStateLoaded value)? loaded,
+    TResult? Function(_ChatRoomLoadingStateError value)? error,
+  }) {
+    return initial?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_ChatRoomLoadingStateInitial value)? initial,
+    TResult Function(_ChatRoomLoadingStateLoading value)? loading,
+    TResult Function(_ChatRoomLoadingStateLoaded value)? loaded,
+    TResult Function(_ChatRoomLoadingStateError value)? error,
+    required TResult orElse(),
+  }) {
+    if (initial != null) {
+      return initial(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _ChatRoomLoadingStateInitial implements ChatRoomLoadingState {
+  const factory _ChatRoomLoadingStateInitial() =
+      _$ChatRoomLoadingStateInitialImpl;
 }
 
 /// @nodoc
@@ -124,6 +250,7 @@ class _$ChatRoomLoadingStateLoadingImpl
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
+    required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function() loaded,
     required TResult Function(String? error) error,
@@ -134,6 +261,7 @@ class _$ChatRoomLoadingStateLoadingImpl
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? initial,
     TResult? Function()? loading,
     TResult? Function()? loaded,
     TResult? Function(String? error)? error,
@@ -144,6 +272,7 @@ class _$ChatRoomLoadingStateLoadingImpl
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? initial,
     TResult Function()? loading,
     TResult Function()? loaded,
     TResult Function(String? error)? error,
@@ -158,6 +287,7 @@ class _$ChatRoomLoadingStateLoadingImpl
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
+    required TResult Function(_ChatRoomLoadingStateInitial value) initial,
     required TResult Function(_ChatRoomLoadingStateLoading value) loading,
     required TResult Function(_ChatRoomLoadingStateLoaded value) loaded,
     required TResult Function(_ChatRoomLoadingStateError value) error,
@@ -168,6 +298,7 @@ class _$ChatRoomLoadingStateLoadingImpl
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_ChatRoomLoadingStateInitial value)? initial,
     TResult? Function(_ChatRoomLoadingStateLoading value)? loading,
     TResult? Function(_ChatRoomLoadingStateLoaded value)? loaded,
     TResult? Function(_ChatRoomLoadingStateError value)? error,
@@ -178,6 +309,7 @@ class _$ChatRoomLoadingStateLoadingImpl
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
+    TResult Function(_ChatRoomLoadingStateInitial value)? initial,
     TResult Function(_ChatRoomLoadingStateLoading value)? loading,
     TResult Function(_ChatRoomLoadingStateLoaded value)? loaded,
     TResult Function(_ChatRoomLoadingStateError value)? error,
@@ -237,6 +369,7 @@ class _$ChatRoomLoadingStateLoadedImpl implements _ChatRoomLoadingStateLoaded {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
+    required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function() loaded,
     required TResult Function(String? error) error,
@@ -247,6 +380,7 @@ class _$ChatRoomLoadingStateLoadedImpl implements _ChatRoomLoadingStateLoaded {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? initial,
     TResult? Function()? loading,
     TResult? Function()? loaded,
     TResult? Function(String? error)? error,
@@ -257,6 +391,7 @@ class _$ChatRoomLoadingStateLoadedImpl implements _ChatRoomLoadingStateLoaded {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? initial,
     TResult Function()? loading,
     TResult Function()? loaded,
     TResult Function(String? error)? error,
@@ -271,6 +406,7 @@ class _$ChatRoomLoadingStateLoadedImpl implements _ChatRoomLoadingStateLoaded {
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
+    required TResult Function(_ChatRoomLoadingStateInitial value) initial,
     required TResult Function(_ChatRoomLoadingStateLoading value) loading,
     required TResult Function(_ChatRoomLoadingStateLoaded value) loaded,
     required TResult Function(_ChatRoomLoadingStateError value) error,
@@ -281,6 +417,7 @@ class _$ChatRoomLoadingStateLoadedImpl implements _ChatRoomLoadingStateLoaded {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_ChatRoomLoadingStateInitial value)? initial,
     TResult? Function(_ChatRoomLoadingStateLoading value)? loading,
     TResult? Function(_ChatRoomLoadingStateLoaded value)? loaded,
     TResult? Function(_ChatRoomLoadingStateError value)? error,
@@ -291,6 +428,7 @@ class _$ChatRoomLoadingStateLoadedImpl implements _ChatRoomLoadingStateLoaded {
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
+    TResult Function(_ChatRoomLoadingStateInitial value)? initial,
     TResult Function(_ChatRoomLoadingStateLoading value)? loading,
     TResult Function(_ChatRoomLoadingStateLoaded value)? loaded,
     TResult Function(_ChatRoomLoadingStateError value)? error,
@@ -376,6 +514,7 @@ class _$ChatRoomLoadingStateErrorImpl implements _ChatRoomLoadingStateError {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
+    required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function() loaded,
     required TResult Function(String? error) error,
@@ -386,6 +525,7 @@ class _$ChatRoomLoadingStateErrorImpl implements _ChatRoomLoadingStateError {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? initial,
     TResult? Function()? loading,
     TResult? Function()? loaded,
     TResult? Function(String? error)? error,
@@ -396,6 +536,7 @@ class _$ChatRoomLoadingStateErrorImpl implements _ChatRoomLoadingStateError {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? initial,
     TResult Function()? loading,
     TResult Function()? loaded,
     TResult Function(String? error)? error,
@@ -410,6 +551,7 @@ class _$ChatRoomLoadingStateErrorImpl implements _ChatRoomLoadingStateError {
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
+    required TResult Function(_ChatRoomLoadingStateInitial value) initial,
     required TResult Function(_ChatRoomLoadingStateLoading value) loading,
     required TResult Function(_ChatRoomLoadingStateLoaded value) loaded,
     required TResult Function(_ChatRoomLoadingStateError value) error,
@@ -420,6 +562,7 @@ class _$ChatRoomLoadingStateErrorImpl implements _ChatRoomLoadingStateError {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_ChatRoomLoadingStateInitial value)? initial,
     TResult? Function(_ChatRoomLoadingStateLoading value)? loading,
     TResult? Function(_ChatRoomLoadingStateLoaded value)? loaded,
     TResult? Function(_ChatRoomLoadingStateError value)? error,
@@ -430,6 +573,7 @@ class _$ChatRoomLoadingStateErrorImpl implements _ChatRoomLoadingStateError {
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
+    TResult Function(_ChatRoomLoadingStateInitial value)? initial,
     TResult Function(_ChatRoomLoadingStateLoading value)? loading,
     TResult Function(_ChatRoomLoadingStateLoaded value)? loaded,
     TResult Function(_ChatRoomLoadingStateError value)? error,
@@ -569,7 +713,7 @@ class __$$ChatRoomStateImplCopyWithImpl<$Res>
 class _$ChatRoomStateImpl implements _ChatRoomState {
   const _$ChatRoomStateImpl(
       {final List<Message> messages = const [],
-      this.loading = const ChatRoomLoadingState.loading(),
+      this.loading = const ChatRoomLoadingState.initial(),
       this.hasMore = true})
       : _messages = messages;
 

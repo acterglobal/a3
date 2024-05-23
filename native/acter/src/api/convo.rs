@@ -3,10 +3,7 @@ use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use futures::stream::{Stream, StreamExt};
 use matrix_sdk::{executor::JoinHandle, RoomMemberships};
-use matrix_sdk_ui::{
-    timeline::{PaginationOptions, RoomExt},
-    Timeline,
-};
+use matrix_sdk_ui::{timeline::RoomExt, Timeline};
 use ruma::assign;
 use ruma_client_api::room::{create_room, Visibility};
 use ruma_common::{
@@ -155,8 +152,7 @@ impl Convo {
             }
             if (!event_found && !has_latest_msg) {
                 // let's trigger a back pagination in hope that helps us...
-                let options = PaginationOptions::until_num_items(20, 10);
-                if let Err(error) = last_msg_tl.paginate_backwards(options).await {
+                if let Err(error) = last_msg_tl.paginate_backwards(10).await {
                     error!(?error, room_id=?latest_msg_room.room_id(), "backpagination failed");
                 }
             }

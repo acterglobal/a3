@@ -48,6 +48,8 @@ enum Routes {
 
   // --- Invite
   inviteIndividual('/inviteIndividual'),
+  shareInviteCode('/shareInviteCode'),
+  inviteSpaceMembers('/inviteSpaceMembers'),
   invitePending('/invitePending'),
 
   // -- spaces

@@ -8,7 +8,7 @@ use matrix_sdk::{
     room::{Receipts, Room},
     Client as SdkClient, RoomState,
 };
-use matrix_sdk_ui::timeline::{BackPaginationStatus, PaginationOptions, Timeline};
+use matrix_sdk_ui::timeline::Timeline;
 use ruma::{assign, UInt};
 use ruma_client_api::{receipt::create_receipt, sync::sync_events::v3::Rooms};
 use ruma_common::{EventId, OwnedEventId, OwnedTransactionId};
