@@ -1,6 +1,15 @@
 version: "3"
 
 services:
+  mailhog:
+    build:
+      context: .config/acter-mailhog-ci
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - 1025:1025 # smtp server
+      - 8025:8025 # web ui
+
   synapse:
     build:
       context: .config/acter-synapse-ci
