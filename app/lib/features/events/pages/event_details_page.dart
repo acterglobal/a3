@@ -489,7 +489,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         final membersCount = eventParticipantsList.length;
         List<String> firstFiveEventParticipantsList = eventParticipantsList;
         if (membersCount > 5) {
-          firstFiveEventParticipantsList = firstFiveEventParticipantsList.sublist(0, 5);
+          firstFiveEventParticipantsList =
+              firstFiveEventParticipantsList.sublist(0, 5);
         }
 
         return GestureDetector(
@@ -544,8 +545,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
 
   ActerAvatar fallbackAvatar(String roomId) {
     return ActerAvatar(
-      mode: DisplayMode.Space,
-      avatarInfo: AvatarInfo(uniqueId: roomId),
+      options: AvatarOptions(AvatarInfo(uniqueId: roomId)),
     );
   }
 

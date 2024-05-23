@@ -58,11 +58,12 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
                 child: Card(
                   child: ListTile(
                     leading: ActerAvatar(
-                      mode: DisplayMode.DM,
-                      avatarInfo: const AvatarInfo(
-                        uniqueId: 'nothing',
+                      options: const AvatarOptions.DM(
+                        AvatarInfo(
+                          uniqueId: 'nothing',
+                        ),
+                        size: 18,
                       ),
-                      size: 18,
                     ),
                     title: const Text('some random name'),
                   ),
@@ -105,12 +106,13 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
             L10n.of(context).superInvitedTo(info.roomsCount()),
           ),
           leading: ActerAvatar(
-            mode: DisplayMode.DM,
-            avatarInfo: AvatarInfo(
-              uniqueId: userId,
-              displayName: displayName,
+            options: AvatarOptions.DM(
+              AvatarInfo(
+                uniqueId: userId,
+                displayName: displayName,
+              ),
+              size: 18,
             ),
-            size: 18,
           ),
         ),
       ),

@@ -322,25 +322,26 @@ class SidebarWidget extends ConsumerWidget {
         ),
         data: (info) => _SidebarItem(
           icon: ActerAvatar(
-            mode: DisplayMode.Space,
-            avatarInfo: AvatarInfo(
-              uniqueId: roomId,
-              displayName: info.displayName,
-              avatar: info.getAvatarImage(),
+            options: AvatarOptions(
+              AvatarInfo(
+                uniqueId: roomId,
+                displayName: info.displayName,
+                avatar: info.getAvatarImage(),
+              ),
+              parentBadges: canonicalParent.valueOrNull != null
+                  ? [
+                      AvatarInfo(
+                        uniqueId:
+                            canonicalParent.valueOrNull!.space.getRoomIdStr(),
+                        displayName:
+                            canonicalParent.valueOrNull!.profile.displayName,
+                        avatar: canonicalParent.valueOrNull!.profile
+                            .getAvatarImage(),
+                      ),
+                    ]
+                  : [],
+              size: 48,
             ),
-            avatarsInfo: canonicalParent.valueOrNull != null
-                ? [
-                    AvatarInfo(
-                      uniqueId:
-                          canonicalParent.valueOrNull!.space.getRoomIdStr(),
-                      displayName:
-                          canonicalParent.valueOrNull!.profile.displayName,
-                      avatar:
-                          canonicalParent.valueOrNull!.profile.getAvatarImage(),
-                    ),
-                  ]
-                : [],
-            size: 48,
           ),
           label: Text(
             info.displayName ?? roomId,

@@ -12,12 +12,11 @@ packages:
   acter_avatar:
     dependency: "direct main"
     description:
-      path: "."
-      ref: ben-fix-parent-avatar
-      resolved-ref: "98a2552e6b82b4d063e2be03796646f476c56551"
-      url: "https://github.com/acterglobal/acter-avatar"
-    source: git
-    version: "1.0.0+4"
+      name: acter_avatar
+      sha256: "3cd3b9824c70ef22ec98eeb5afe0e0fbcae788390c98c096a41a86ea4bca1799"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0+5"
   acter_flutter_sdk:
     dependency: "direct main"
     description:

@@ -20,26 +20,29 @@ class MentionProfileBuilder extends ConsumerWidget {
         ref.watch(roomMemberProvider((userId: authorId, roomId: roomId)));
     return mentionProfile.when(
       data: (data) => ActerAvatar(
-        mode: DisplayMode.DM,
-        avatarInfo: AvatarInfo(
-          uniqueId: authorId,
-          avatar: data.profile.getAvatarImage(),
-          displayName: data.profile.displayName,
+        options: AvatarOptions.DM(
+          AvatarInfo(
+            uniqueId: authorId,
+            avatar: data.profile.getAvatarImage(),
+            displayName: data.profile.displayName,
+          ),
+          size: 18,
         ),
-        size: 18,
       ),
       error: (e, st) {
         return ActerAvatar(
-          mode: DisplayMode.DM,
-          avatarInfo: AvatarInfo(uniqueId: authorId),
-          size: 18,
+          options: AvatarOptions.DM(
+            AvatarInfo(uniqueId: authorId),
+            size: 18,
+          ),
         );
       },
       loading: () => Skeletonizer(
         child: ActerAvatar(
-          mode: DisplayMode.DM,
-          avatarInfo: AvatarInfo(uniqueId: authorId),
-          size: 18,
+          options: AvatarOptions.DM(
+            AvatarInfo(uniqueId: authorId),
+            size: 18,
+          ),
         ),
       ),
     );

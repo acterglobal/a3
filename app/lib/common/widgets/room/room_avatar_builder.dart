@@ -9,7 +9,6 @@ final _log = Logger('a3::common::room_avatar');
 
 class RoomAvatarBuilder extends ConsumerWidget {
   final String roomId;
-  final DisplayMode displayMode;
   final EdgeInsetsGeometry? padding;
   final double avatarSize;
 
@@ -17,7 +16,6 @@ class RoomAvatarBuilder extends ConsumerWidget {
     super.key,
     required this.roomId,
     this.padding,
-    this.displayMode = DisplayMode.Space,
     this.avatarSize = 14,
   });
 
@@ -26,27 +24,30 @@ class RoomAvatarBuilder extends ConsumerWidget {
     final roomProfile = ref.watch(roomProfileDataProvider(roomId));
     final child = roomProfile.when(
       data: (profile) => ActerAvatar(
-        mode: displayMode,
-        avatarInfo: AvatarInfo(
-          uniqueId: roomId,
-          displayName: profile.displayName ?? roomId,
-          avatar: profile.getAvatarImage(),
+        options: AvatarOptions(
+          AvatarInfo(
+            uniqueId: roomId,
+            displayName: profile.displayName ?? roomId,
+            avatar: profile.getAvatarImage(),
+          ),
+          size: avatarSize,
         ),
-        size: avatarSize,
       ),
       error: (e, st) {
         _log.severe('error loading room avatar', e, st);
         return ActerAvatar(
-          mode: displayMode,
-          avatarInfo: AvatarInfo(uniqueId: roomId, displayName: roomId),
-          size: avatarSize,
+          options: AvatarOptions(
+            AvatarInfo(uniqueId: roomId, displayName: roomId),
+            size: avatarSize,
+          ),
         );
       },
       loading: () => Skeletonizer(
         child: ActerAvatar(
-          mode: displayMode,
-          avatarInfo: AvatarInfo(uniqueId: roomId, displayName: roomId),
-          size: avatarSize,
+          options: AvatarOptions(
+            AvatarInfo(uniqueId: roomId, displayName: roomId),
+            size: avatarSize,
+          ),
         ),
       ),
     );

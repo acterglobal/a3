@@ -26,11 +26,12 @@ class MemberInfoSkeleton extends StatelessWidget {
                     ),
                   ),
                   child: ActerAvatar(
-                    mode: DisplayMode.DM,
-                    avatarInfo: const AvatarInfo(
-                      uniqueId: '@memberId:acter.global',
+                    options: const AvatarOptions.DM(
+                      AvatarInfo(
+                        uniqueId: '@memberId:acter.global',
+                      ),
+                      size: 50,
                     ),
-                    size: 50,
                   ),
                 ),
               ),

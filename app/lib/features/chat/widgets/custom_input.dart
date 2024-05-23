@@ -564,30 +564,33 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         const SizedBox(width: 4),
         replyProfile.when(
           data: (data) => ActerAvatar(
-            mode: DisplayMode.DM,
-            avatarInfo: AvatarInfo(
-              uniqueId: authorId,
-              displayName: data.profile.displayName ?? authorId,
-              avatar: data.profile.getAvatarImage(),
+            options: AvatarOptions.DM(
+              AvatarInfo(
+                uniqueId: authorId,
+                displayName: data.profile.displayName ?? authorId,
+                avatar: data.profile.getAvatarImage(),
+              ),
+              size: 12,
             ),
-            size: 12,
           ),
           error: (e, st) {
             _log.severe('Error loading avatar', e, st);
             return ActerAvatar(
-              mode: DisplayMode.DM,
-              avatarInfo: AvatarInfo(
-                uniqueId: authorId,
-                displayName: authorId,
+              options: AvatarOptions.DM(
+                AvatarInfo(
+                  uniqueId: authorId,
+                  displayName: authorId,
+                ),
+                size: 24,
               ),
-              size: 24,
             );
           },
           loading: () => Skeletonizer(
             child: ActerAvatar(
-              mode: DisplayMode.DM,
-              avatarInfo: AvatarInfo(uniqueId: authorId),
-              size: 24,
+              options: AvatarOptions.DM(
+                AvatarInfo(uniqueId: authorId),
+                size: 24,
+              ),
             ),
           ),
         ),

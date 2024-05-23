@@ -137,14 +137,15 @@ class _UserReceiptsWidget extends ConsumerWidget {
                             return Padding(
                               padding: const EdgeInsets.only(right: 10),
                               child: ActerAvatar(
-                                mode: DisplayMode.DM,
-                                avatarInfo: AvatarInfo(
-                                  uniqueId: userId,
-                                  displayName:
-                                      data.profile.displayName ?? userId,
-                                  avatar: data.profile.getAvatarImage(),
+                                options: AvatarOptions.DM(
+                                  AvatarInfo(
+                                    uniqueId: userId,
+                                    displayName:
+                                        data.profile.displayName ?? userId,
+                                    avatar: data.profile.getAvatarImage(),
+                                  ),
+                                  size: 8,
                                 ),
-                                size: 8,
                               ),
                             );
                           },
@@ -153,12 +154,13 @@ class _UserReceiptsWidget extends ConsumerWidget {
                             return Padding(
                               padding: const EdgeInsets.only(right: 10),
                               child: ActerAvatar(
-                                mode: DisplayMode.DM,
-                                avatarInfo: AvatarInfo(
-                                  uniqueId: userId,
-                                  displayName: userId,
+                                options: AvatarOptions.DM(
+                                  AvatarInfo(
+                                    uniqueId: userId,
+                                    displayName: userId,
+                                  ),
+                                  size: 8,
                                 ),
-                                size: 8,
                               ),
                             );
                           },
@@ -193,13 +195,15 @@ class _UserReceiptsWidget extends ConsumerWidget {
                           return Padding(
                             padding: const EdgeInsets.only(right: 10),
                             child: ActerAvatar(
-                              mode: DisplayMode.DM,
-                              avatarInfo: AvatarInfo(
-                                uniqueId: userId,
-                                displayName: data.profile.displayName ?? userId,
-                                avatar: data.profile.getAvatarImage(),
+                              options: AvatarOptions.DM(
+                                AvatarInfo(
+                                  uniqueId: userId,
+                                  displayName:
+                                      data.profile.displayName ?? userId,
+                                  avatar: data.profile.getAvatarImage(),
+                                ),
+                                size: 8,
                               ),
-                              size: 8,
                             ),
                           );
                         },
@@ -208,12 +212,13 @@ class _UserReceiptsWidget extends ConsumerWidget {
                           return Padding(
                             padding: const EdgeInsets.only(right: 10),
                             child: ActerAvatar(
-                              mode: DisplayMode.DM,
-                              avatarInfo: AvatarInfo(
-                                uniqueId: userId,
-                                displayName: userId,
+                              options: AvatarOptions(
+                                AvatarInfo(
+                                  uniqueId: userId,
+                                  displayName: userId,
+                                ),
+                                size: 8,
                               ),
-                              size: 8,
                             ),
                           );
                         },
@@ -266,14 +271,15 @@ class _UserReceiptsWidget extends ConsumerWidget {
                             return Padding(
                               padding: const EdgeInsets.only(right: 10),
                               child: ActerAvatar(
-                                mode: DisplayMode.DM,
-                                avatarInfo: AvatarInfo(
-                                  uniqueId: seenList[index],
-                                  displayName:
-                                      data.profile.displayName ?? userId,
-                                  avatar: data.profile.getAvatarImage(),
+                                options: AvatarOptions.DM(
+                                  AvatarInfo(
+                                    uniqueId: seenList[index],
+                                    displayName:
+                                        data.profile.displayName ?? userId,
+                                    avatar: data.profile.getAvatarImage(),
+                                  ),
+                                  size: 8,
                                 ),
-                                size: 8,
                               ),
                             );
                           },
@@ -282,12 +288,13 @@ class _UserReceiptsWidget extends ConsumerWidget {
                             return Padding(
                               padding: const EdgeInsets.only(right: 10),
                               child: ActerAvatar(
-                                mode: DisplayMode.DM,
-                                avatarInfo: AvatarInfo(
-                                  uniqueId: userId,
-                                  displayName: userId,
+                                options: AvatarOptions.DM(
+                                  AvatarInfo(
+                                    uniqueId: userId,
+                                    displayName: userId,
+                                  ),
+                                  size: 8,
                                 ),
-                                size: 8,
                               ),
                             );
                           },
