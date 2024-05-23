@@ -236,27 +236,30 @@ class _ChatBubble extends ConsumerWidget {
       children: [
         replyProfile.when(
           data: (data) => ActerAvatar(
-            mode: DisplayMode.DM,
-            avatarInfo: AvatarInfo(
-              uniqueId: authorId,
-              displayName: data.profile.displayName,
-              avatar: data.profile.getAvatarImage(),
+            options: AvatarOptions.DM(
+              AvatarInfo(
+                uniqueId: authorId,
+                displayName: data.profile.displayName,
+                avatar: data.profile.getAvatarImage(),
+              ),
+              size: 12,
             ),
-            size: 12,
           ),
           error: (err, stackTrace) {
             _log.severe('Failed to load profile', err, stackTrace);
             return ActerAvatar(
-              mode: DisplayMode.DM,
-              avatarInfo: AvatarInfo(uniqueId: authorId),
-              size: 24,
+              options: AvatarOptions.DM(
+                AvatarInfo(uniqueId: authorId),
+                size: 24,
+              ),
             );
           },
           loading: () => Skeletonizer(
             child: ActerAvatar(
-              mode: DisplayMode.DM,
-              avatarInfo: AvatarInfo(uniqueId: authorId),
-              size: 24,
+              options: AvatarOptions.DM(
+                AvatarInfo(uniqueId: authorId),
+                size: 24,
+              ),
             ),
           ),
         ),

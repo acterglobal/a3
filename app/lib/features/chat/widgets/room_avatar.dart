@@ -31,7 +31,8 @@ class RoomAvatar extends ConsumerWidget {
       height: avatarSize,
       child: ref.watch(chatProvider(roomId)).when(
             data: (convo) => chatAvatarUI(convo, ref, context),
-            error: (e, s) => Center(child: Text(L10n.of(context).loadingRoomFailed(e))),
+            error: (e, s) =>
+                Center(child: Text(L10n.of(context).loadingRoomFailed(e))),
             loading: () => Center(child: Text(L10n.of(context).loading)),
           ),
     );
@@ -74,29 +75,31 @@ class RoomAvatar extends ConsumerWidget {
         //Group : Show default image if avatar is not available
         if (!convo.isDm()) {
           return ActerAvatar(
-            mode: DisplayMode.Space,
-            avatarInfo: AvatarInfo(
-              uniqueId: roomId,
-              displayName: profile.displayName ?? roomId,
-              avatar: profile.getAvatarImage(),
+            options: AvatarOptions(
+              AvatarInfo(
+                uniqueId: roomId,
+                displayName: profile.displayName ?? roomId,
+                avatar: profile.getAvatarImage(),
+              ),
+              size: avatarSize,
+              parentBadges: renderParentInfo(roomId, ref),
+              badgesSize: avatarSize / 2,
             ),
-            size: avatarSize,
-            avatarsInfo: renderParentInfo(roomId, ref),
-            badgeSize: avatarSize / 2,
           );
         } else if (profile.hasAvatar()) {
           return ActerAvatar(
-            mode: DisplayMode.DM,
-            avatarInfo: AvatarInfo(
-              uniqueId: roomId,
-              displayName: profile.displayName ?? roomId,
-              avatar: profile.getAvatarImage(),
+            options: AvatarOptions.DM(
+              AvatarInfo(
+                uniqueId: roomId,
+                displayName: profile.displayName ?? roomId,
+                avatar: profile.getAvatarImage(),
+              ),
+              size: 18,
             ),
-            size: 18,
           );
         }
 
-        //Type == DM and no avatar: Handle avatar according to the members counts
+        // Type == DM and no avatar: Handle avatar according to the members counts
         else {
           return dmAvatar(ref, context);
         }
@@ -104,20 +107,27 @@ class RoomAvatar extends ConsumerWidget {
       skipLoadingOnReload: false,
       error: (err, stackTrace) {
         _log.severe('Failed to load avatar', err, stackTrace);
+        final options = convo.isDm()
+            ? AvatarOptions.DM(
+                AvatarInfo(
+                  uniqueId: roomId,
+                  displayName: roomId,
+                ),
+                size: avatarSize,
+              )
+            : AvatarOptions(
+                AvatarInfo(
+                  uniqueId: roomId,
+                  displayName: roomId,
+                ),
+              );
         return ActerAvatar(
-          mode: convo.isDm() ? DisplayMode.DM : DisplayMode.GroupChat,
-          avatarInfo: AvatarInfo(
-            uniqueId: roomId,
-            displayName: roomId,
-          ),
-          size: avatarSize,
+          options: options,
         );
       },
       loading: () => Skeletonizer(
         child: ActerAvatar(
-          mode: DisplayMode.DM,
-          avatarInfo: AvatarInfo(uniqueId: roomId),
-          size: 24,
+          options: AvatarOptions.DM(AvatarInfo(uniqueId: roomId), size: 24),
         ),
       ),
     );
@@ -148,7 +158,8 @@ class RoomAvatar extends ConsumerWidget {
         }
       },
       skipLoadingOnReload: false,
-      error: (error, stackTrace) => Text(L10n.of(context).loadingMembersCountFailed(error)),
+      error: (error, stackTrace) =>
+          Text(L10n.of(context).loadingMembersCountFailed(error)),
       loading: () => const CircularProgressIndicator(),
     );
   }
@@ -158,29 +169,32 @@ class RoomAvatar extends ConsumerWidget {
         ref.watch(roomMemberProvider((userId: userId, roomId: roomId)));
     return memberProfile.when(
       data: (data) => ActerAvatar(
-        mode: DisplayMode.DM,
-        avatarInfo: AvatarInfo(
-          uniqueId: userId,
-          displayName: data.profile.displayName,
-          avatar: data.profile.getAvatarImage(),
+        options: AvatarOptions.DM(
+          AvatarInfo(
+            uniqueId: userId,
+            displayName: data.profile.displayName,
+            avatar: data.profile.getAvatarImage(),
+          ),
+          size: avatarSize,
         ),
-        size: avatarSize,
       ),
       error: (err, stackTrace) {
         _log.severe("Couldn't load avatar", err, stackTrace);
         return ActerAvatar(
-          mode: DisplayMode.DM,
-          avatarInfo: AvatarInfo(
-            uniqueId: userId,
+          options: AvatarOptions.DM(
+            AvatarInfo(
+              uniqueId: userId,
+            ),
+            size: avatarSize,
           ),
-          size: avatarSize,
         );
       },
       loading: () => Skeletonizer(
         child: ActerAvatar(
-          mode: DisplayMode.DM,
-          avatarInfo: AvatarInfo(uniqueId: userId),
-          size: avatarSize,
+          options: AvatarOptions.DM(
+            AvatarInfo(uniqueId: userId),
+            size: avatarSize,
+          ),
         ),
       ),
     );
@@ -197,58 +211,61 @@ class RoomAvatar extends ConsumerWidget {
     return profile.when(
       data: (data) {
         return ActerAvatar(
-          avatarInfo: AvatarInfo(
-            uniqueId: userId,
-            displayName: data.profile.displayName,
-            avatar: data.profile.getAvatarImage(),
-          ),
-          avatarsInfo: secondaryProfile.maybeWhen(
-            data: (secData) => [
-              AvatarInfo(
-                uniqueId: secondaryUserId,
-                displayName: secData.profile.displayName,
-                avatar: secData.profile.getAvatarImage(),
-              ),
-              for (int i = 2; i < members.length; i++)
+          options: AvatarOptions.GroupDM(
+            AvatarInfo(
+              uniqueId: userId,
+              displayName: data.profile.displayName,
+              avatar: data.profile.getAvatarImage(),
+            ),
+            groupAvatars: secondaryProfile.maybeWhen(
+              data: (secData) => [
                 AvatarInfo(
-                  uniqueId: members[i],
+                  uniqueId: secondaryUserId,
+                  displayName: secData.profile.displayName,
+                  avatar: secData.profile.getAvatarImage(),
                 ),
-            ],
-            orElse: () => [],
+                for (int i = 2; i < members.length; i++)
+                  AvatarInfo(
+                    uniqueId: members[i],
+                  ),
+              ],
+              orElse: () => [],
+            ),
+            size: avatarSize / 2,
           ),
-          mode: DisplayMode.GroupDM,
-          size: avatarSize / 2,
         );
       },
       loading: () => Skeletonizer(
         child: ActerAvatar(
-          mode: DisplayMode.GroupDM,
-          avatarInfo: AvatarInfo(uniqueId: userId),
-          size: avatarSize / 2,
+          options: AvatarOptions.GroupDM(
+            AvatarInfo(uniqueId: userId),
+            size: avatarSize / 2,
+          ),
         ),
       ),
       error: (err, st) {
         _log.severe('Couldn\'t load group Avatar', err, st);
         return ActerAvatar(
-          avatarInfo: AvatarInfo(
-            uniqueId: userId,
-            displayName: userId,
-          ),
-          avatarsInfo: secondaryProfile.maybeWhen(
-            data: (secData) => [
-              AvatarInfo(
-                uniqueId: secondaryUserId,
-                displayName: secData.profile.displayName,
-                avatar: secData.profile.getAvatarImage(),
-              ),
-              for (int i = 2; i < members.length; i++)
+          options: AvatarOptions.GroupDM(
+            AvatarInfo(
+              uniqueId: userId,
+              displayName: userId,
+            ),
+            groupAvatars: secondaryProfile.maybeWhen(
+              data: (secData) => [
                 AvatarInfo(
-                  uniqueId: members[i],
+                  uniqueId: secondaryUserId,
+                  displayName: secData.profile.displayName,
+                  avatar: secData.profile.getAvatarImage(),
                 ),
-            ],
-            orElse: () => [],
+                for (int i = 2; i < members.length; i++)
+                  AvatarInfo(
+                    uniqueId: members[i],
+                  ),
+              ],
+              orElse: () => [],
+            ),
           ),
-          mode: DisplayMode.GroupDM,
         );
       },
     );

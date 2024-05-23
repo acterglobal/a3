@@ -135,11 +135,12 @@ class InviteIndividualUsers extends ConsumerWidget {
         title: Text(user.profile.displayName ?? user.userId),
         subtitle: user.profile.displayName != null ? Text(user.userId) : null,
         leading: ActerAvatar(
-          mode: DisplayMode.DM,
-          avatarInfo: AvatarInfo(
-            uniqueId: user.userId,
-            displayName: user.profile.displayName,
-            avatar: user.profile.getAvatarImage(),
+          options: AvatarOptions.DM(
+            AvatarInfo(
+              uniqueId: user.userId,
+              displayName: user.profile.displayName,
+              avatar: user.profile.getAvatarImage(),
+            ),
           ),
         ),
         trailing: UserStateButton(

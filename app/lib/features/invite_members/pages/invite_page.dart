@@ -101,13 +101,14 @@ class InvitePage extends ConsumerWidget {
     return Column(
       children: [
         ActerAvatar(
-          mode: DisplayMode.Space,
-          avatarInfo: AvatarInfo(
-            uniqueId: roomId,
-            displayName: roomProfile?.displayName,
-            avatar: roomProfile?.getAvatarImage(),
+          options: AvatarOptions(
+            AvatarInfo(
+              uniqueId: roomId,
+              displayName: roomProfile?.displayName,
+              avatar: roomProfile?.getAvatarImage(),
+            ),
+            size: 50,
           ),
-          size: 50,
         ),
         const SizedBox(height: 10),
         Text(roomProfile?.displayName ?? ''),

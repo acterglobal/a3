@@ -18,11 +18,12 @@ class _MemberListInnerSkeleton extends StatelessWidget {
     return ListTile(
       leading: Skeletonizer(
         child: ActerAvatar(
-          mode: DisplayMode.DM,
-          avatarInfo: AvatarInfo(
-            uniqueId: L10n.of(context).noIdGiven,
+          options: AvatarOptions.DM(
+            AvatarInfo(
+              uniqueId: L10n.of(context).noIdGiven,
+            ),
+            size: 18,
           ),
-          size: 18,
         ),
       ),
       title: Skeletonizer(
@@ -121,13 +122,14 @@ class _MemberListEntryInner extends ConsumerWidget {
         }
       },
       leading: ActerAvatar(
-        mode: DisplayMode.DM,
-        avatarInfo: AvatarInfo(
-          uniqueId: userId,
-          displayName: profile.displayName,
-          avatar: profile.getAvatarImage(),
+        options: AvatarOptions.DM(
+          AvatarInfo(
+            uniqueId: userId,
+            displayName: profile.displayName,
+            avatar: profile.getAvatarImage(),
+          ),
+          size: 18,
         ),
-        size: 18,
       ),
       title: Text(
         profile.displayName ?? userId,

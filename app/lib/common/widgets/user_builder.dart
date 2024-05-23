@@ -67,13 +67,14 @@ class UserBuilder extends ConsumerWidget {
         title: Text(displayName ?? userId),
         subtitle: (displayName == null) ? null : Text(userId),
         leading: ActerAvatar(
-          mode: DisplayMode.DM,
-          avatarInfo: AvatarInfo(
-            uniqueId: userId,
-            displayName: displayName,
-            avatar: avatarProv.valueOrNull,
+          options: AvatarOptions.DM(
+            AvatarInfo(
+              uniqueId: userId,
+              displayName: displayName,
+              avatar: avatarProv.valueOrNull,
+            ),
+            size: 18,
           ),
-          size: 18,
         ),
         trailing: room.when(
           data: (data) => UserStateButton(
