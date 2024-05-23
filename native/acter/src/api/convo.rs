@@ -204,14 +204,14 @@ impl Convo {
     }
 
     pub fn num_unread_notification_count(&self) -> u64 {
-        self.inner.num_unread_notifications()
+        self.inner.unread_notification_counts().notification_count
     }
     pub fn num_unread_messages(&self) -> u64 {
         self.inner.num_unread_messages()
     }
 
     pub fn num_unread_mentions(&self) -> u64 {
-        self.inner.num_unread_mentions()
+        self.inner.unread_notification_counts().highlight_count
     }
 
     pub fn latest_message_ts(&self) -> u64 {
