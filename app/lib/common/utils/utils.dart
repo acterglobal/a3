@@ -154,7 +154,7 @@ Future<bool> openLink(String target, BuildContext context) async {
 }
 
 Future<void> shareTextToWhatsApp(BuildContext context,
-    {required String text}) async {
+    {required String text,}) async {
   final url = 'whatsapp://send?text=$text';
   final encodedUri = Uri.parse(url);
   if (await canLaunchUrl(encodedUri)) {

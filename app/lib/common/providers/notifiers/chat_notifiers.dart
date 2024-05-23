@@ -21,7 +21,6 @@ class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, Convo> {
     _poller = _listener.listen(
       (e) async {
         final newConvo = await client.convo(convoId);
-        print("convo reloaded");
         state = AsyncValue.data(newConvo);
       },
       onError: (e, stack) {

@@ -1151,6 +1151,12 @@ object TimelineStream {
     /// private_read_receipt: optional event id
     fn send_multiple_receipts(full_read: Option<string>, public_read_receipt: Option<string>, private_read_receipt: Option<string>) -> Future<Result<bool>>;
 
+    /// Mark this room as read.
+    /// user_triggered indicate whether that was issued by the user actively
+    /// (e.g. by pushing a button) or implicitly upon smart read tracking
+    /// Returns a boolean indicating if we sent the request or not.
+    fn mark_as_read(user_triggered: bool) -> Future<Result<bool>>;
+
     /// send reaction to event
     /// if sent twice, reaction is redacted
     fn toggle_reaction(event_id: string, key: string) -> Future<Result<bool>>;

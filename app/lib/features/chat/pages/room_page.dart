@@ -29,6 +29,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 
 class RoomPage extends ConsumerWidget {
   static const roomPageKey = Key('chat-room-page');
@@ -68,7 +69,24 @@ class ChatRoom extends ConsumerStatefulWidget {
 }
 
 class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
-  void onBackgroundTap() {}
+  AutoScrollController scrollController = AutoScrollController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    scrollController.addListener(() async {
+      // debounce
+      await Future.delayed(const Duration(milliseconds: 300), () async {
+        // this might be a bit too simple ...
+        if (scrollController.offset == 0) {
+          final marked = await ref
+              .read(timelineStreamProvider(widget.convo))
+              .markAsRead(false);
+        }
+      });
+    });
+  }
 
   void showMessageOptions(
     BuildContext context,
@@ -138,6 +156,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
           ? ScrollViewKeyboardDismissBehavior.onDrag
           : ScrollViewKeyboardDismissBehavior.manual,
       customBottomWidget: const SizedBox.shrink(),
+      scrollController: scrollController,
       textMessageBuilder: (
         types.TextMessage m, {
         required int messageWidth,

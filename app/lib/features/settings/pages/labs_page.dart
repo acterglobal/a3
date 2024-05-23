@@ -62,7 +62,7 @@ class SettingsLabsPage extends ConsumerWidget {
                 onToggle: (newVal) =>
                     updateFeatureState(ref, LabsFeature.chatUnread, newVal),
               ),
-            ]),
+            ],),
             SettingsSection(
               title: Text(L10n.of(context).apps),
               tiles: [

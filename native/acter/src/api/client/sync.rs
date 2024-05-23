@@ -466,7 +466,7 @@ impl Client {
                 };
 
                 trace!(target: "acter::sync_response::full", "sync response: {:#?}", response);
-                
+
                 if initial.compare_exchange(true, false, Ordering::Relaxed, Ordering::Relaxed)
                     == Ok(true)
                 {
