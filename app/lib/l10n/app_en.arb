@@ -2087,6 +2087,18 @@
   "done": "Done",
   "comingSoon": "Coming Soon",
   "cancelInviteLoading": "Canceling invitation of {userId}",
-  "cancelInviteError": "User {userId} not found: {error}"
-
+  "cancelInviteError": "User {userId} not found: {error}",
+  "inactivate": "Inactivate",
+  "shareInviteCode": "Share Invite Code",
+  "appUnavailable": "App Unavailable",
+  "shareInviteContent": "{userName} would like to invite you to the {roomName}. Please follow below steps to get started!\n\nSTEP-1: Download the Acter App from below links https://next.acter.global/acter-app\n\nSTEP-2: Use below invitation code on the registration.\nInvitation Code : {code}\n\nThat's it! Enjoy the new way of work organisation :)",
+  "inactivateCode": "Inactivate code",
+  "doYouWantToInactiveInviteCode": "Do you really want to irreversibly inactive the invite code? It can’t be used again after.",
+  "activateInviteCodeFailed": "Activate code failed: {error}",
+  "inactivateInviteCodeFailed": "Inactivate code failed: {error}",
+  "revoke": "Revoke",
+  "otherSpaces": "Other Spaces",
+  "invitingSpaceMembersLoading": "Inviting Space Members",
+  "invitingSpaceMembersError": "Inviting Space Members Error: {error}",
+  "membersInvited": "{count} members invited"
 }
