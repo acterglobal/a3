@@ -51,6 +51,18 @@ class SettingsLabsPage extends ConsumerWidget {
                 ),
               ],
             ),
+            SettingsSection(title: Text(L10n.of(context).chat), tiles: [
+              SettingsTile.switchTile(
+                title: Text(L10n.of(context).unreadMarkerFeatureTitle),
+                description: Text(
+                  L10n.of(context).unreadMarkerFeatureDescription,
+                ),
+                initialValue:
+                    ref.watch(isActiveProvider(LabsFeature.chatUnread)),
+                onToggle: (newVal) =>
+                    updateFeatureState(ref, LabsFeature.chatUnread, newVal),
+              ),
+            ]),
             SettingsSection(
               title: Text(L10n.of(context).apps),
               tiles: [

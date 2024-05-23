@@ -153,7 +153,8 @@ Future<bool> openLink(String target, BuildContext context) async {
   }
 }
 
-Future<void> shareTextToWhatsApp(BuildContext context, {required String text}) async {
+Future<void> shareTextToWhatsApp(BuildContext context,
+    {required String text}) async {
   final url = 'whatsapp://send?text=$text';
   final encodedUri = Uri.parse(url);
   if (await canLaunchUrl(encodedUri)) {
@@ -310,6 +311,9 @@ enum LabsFeature {
   polls,
   discussions,
   comments,
+
+  // specific features
+  chatUnread,
 
   // not a lab anymore but needs to stay for backwards compat
   events,
