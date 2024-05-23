@@ -120,6 +120,7 @@ class RoomAvatar extends ConsumerWidget {
                   uniqueId: roomId,
                   displayName: roomId,
                 ),
+                size: avatarSize,
               );
         return ActerAvatar(
           options: options,
