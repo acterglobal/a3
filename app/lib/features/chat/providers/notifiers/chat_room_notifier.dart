@@ -477,6 +477,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           author: author,
           createdAt: createdAt,
           id: eventId,
+          remoteId: eventItem.uniqueId(),
           metadata: {
             'itemType': 'event',
             'eventType': eventType,
@@ -506,6 +507,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           metadata['repliedTo'] = inReplyTo;
         }
         return types.CustomMessage(
+          remoteId: eventItem.uniqueId(),
           author: author,
           createdAt: createdAt,
           id: eventId,
@@ -522,6 +524,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           metadata['repliedTo'] = inReplyTo;
         }
         return types.CustomMessage(
+          remoteId: eventItem.uniqueId(),
           author: author,
           createdAt: createdAt,
           id: eventId,
@@ -536,6 +539,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             author: author,
             createdAt: createdAt,
             id: eventId,
+            remoteId: eventItem.uniqueId(),
             metadata: {
               'itemType': 'event',
               'eventType': eventType,
@@ -578,6 +582,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               return types.AudioMessage(
                 author: author,
                 createdAt: createdAt,
+                remoteId: eventItem.uniqueId(),
                 duration: Duration(seconds: msgContent.duration() ?? 0),
                 id: eventId,
                 metadata: metadata,
@@ -610,6 +615,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               metadata['enlargeEmoji'] = isOnlyEmojis(body);
               return types.TextMessage(
                 author: author,
+                remoteId: eventItem.uniqueId(),
                 createdAt: createdAt,
                 id: eventId,
                 metadata: metadata,
@@ -635,6 +641,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               }
               return types.FileMessage(
                 author: author,
+                remoteId: eventItem.uniqueId(),
                 createdAt: createdAt,
                 id: eventId,
                 metadata: metadata,
@@ -663,6 +670,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               }
               return types.ImageMessage(
                 author: author,
+                remoteId: eventItem.uniqueId(),
                 createdAt: createdAt,
                 height: msgContent.height()?.toDouble(),
                 id: eventId,
@@ -718,6 +726,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               }
               return types.CustomMessage(
                 author: author,
+                remoteId: eventItem.uniqueId(),
                 createdAt: createdAt,
                 id: eventId,
                 metadata: metadata,
@@ -731,6 +740,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               String body = msgContent.body(); // always exists
               return types.TextMessage(
                 author: author,
+                remoteId: eventItem.uniqueId(),
                 createdAt: createdAt,
                 id: eventId,
                 text: formattedBody ?? body,
@@ -753,6 +763,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               String body = msgContent.body(); // always exists
               return types.TextMessage(
                 author: author,
+                remoteId: eventItem.uniqueId(),
                 createdAt: createdAt,
                 id: eventId,
                 text: formattedBody ?? body,
@@ -790,6 +801,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               metadata['enlargeEmoji'] = isOnlyEmojis(body);
               return types.TextMessage(
                 author: author,
+                remoteId: eventItem.uniqueId(),
                 createdAt: createdAt,
                 id: eventId,
                 metadata: metadata,
@@ -816,6 +828,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               }
               return types.VideoMessage(
                 author: author,
+                remoteId: eventItem.uniqueId(),
                 createdAt: createdAt,
                 id: eventId,
                 metadata: metadata,
@@ -870,6 +883,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           }
           return types.CustomMessage(
             author: author,
+            remoteId: eventItem.uniqueId(),
             createdAt: createdAt,
             id: eventId,
             metadata: metadata,
@@ -882,6 +896,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           String body = msgContent.body();
           return types.CustomMessage(
             author: author,
+            remoteId: eventItem.uniqueId(),
             createdAt: createdAt,
             id: eventId,
             metadata: {
@@ -900,6 +915,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     }
     return types.UnsupportedMessage(
       author: const types.User(id: 'virtual'),
+      remoteId: eventItem.uniqueId(),
       id: UniqueKey().toString(),
       metadata: const {
         'itemType': 'virtual',

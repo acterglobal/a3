@@ -80,9 +80,19 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
       await Future.delayed(const Duration(milliseconds: 300), () async {
         // this might be a bit too simple ...
         if (scrollController.offset == 0) {
-          final marked = await ref
-              .read(timelineStreamProvider(widget.convo))
-              .markAsRead(false);
+          final message = ref.read(latestTrackableMessageId(widget.convo));
+          print('marking $message as read');
+          if (message != null) {
+            await ref
+                .read(timelineStreamProvider(widget.convo))
+                .sendSingleReceipt('Read', 'Main', message);
+          }
+
+          // FIXME: this is the proper API, but it doesn't seem to
+          // properly be handled by the server yet
+          // final marked = await ref
+          //
+          //     .markAsRead(false);
         }
       });
     });

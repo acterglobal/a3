@@ -76,6 +76,17 @@ final renderableChatMessagesProvider =
       .toList();
 });
 
+final latestTrackableMessageId =
+    StateProvider.autoDispose.family<String?, Convo>((ref, convo) {
+  return ref.watch(
+    chatStateProvider(convo).select(
+      (value) =>
+          // find the last remote item we can use for tracking
+          value.messages.lastOrNull?.remoteId,
+    ),
+  );
+});
+
 final chatMessagesProvider =
     StateProvider.autoDispose.family<List<Message>, Convo>((ref, convo) {
   final moreMessages = [];
