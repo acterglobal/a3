@@ -89,7 +89,7 @@ jobs:
             flutter_build_args: "build linux"
             artifact_prefix: acter-nightly-linux-x64
             artifact_path: app/build/linux/x64/release/bundle/
-            tar_files: lib/ data/ acter
+            tar_files: lib/ data/ acter logo.png *.desktop  LICENSE*
           - name: iOS
             os: macos-14
             target: ios
@@ -343,6 +343,13 @@ jobs:
         run: |
           mv "${{matrix.rename_file}}" "${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.${{matrix.rename_suffix}}"
 
+      - name: Copy further assets
+        if: matrix.target == 'linux'
+        run: |
+          cp app/flatpak/global.acter.a3.desktop ${{ matrix.artifact_path }}
+          cp app/assets/icon/logo.png ${{ matrix.artifact_path }}
+          cp LICENSE* ${{ matrix.artifact_path }}
+
       - name: Package Tar file
         if: matrix.tar_files
         working-directory: ${{ matrix.artifact_path }}
@@ -474,3 +481,31 @@ jobs:
             Direct install links:
              - 🤖 [Android devices](https://github.com/acterglobal/a3/releases/download/nightly-${{ needs.tags.outputs.tag }}/acter-nightly-android-arm64-${{ needs.tags.outputs.tag }}.apk)
              - 🍎 [iOS devices](itms-services://?action=download-manifest&amp;url=https://github.com/acterglobal/a3/releases/download/nightly-${{ needs.tags.outputs.tag }}/ios-manifest.plist) (for ad-hoc registered devices only)
+
+  publish_aur:
+    environment: release
+    needs:
+      - tags
+      - build
+    name: Publish AUR
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: Changelog
+      - uses: actions/download-artifact@v3
+        with:
+          name: Linux x64
+      - run: |
+          sed -i "s/%{{VERSION}}%/${{ needs.tags.outputs.tag }}/" app/linux/packaging/aur/PKGBUILD-nightly
+          sed -i "s/%{{PKGREL}}%/1/" app/linux/packaging/aur/PKGBUILD-nightly
+          sed -i "s/%{{LINUX_MD5}}%/`md5sum acter-nightly-linux-x64-2024-05-24.tar.bz2  | awk '{print $1}'`/" app/linux/packaging/aur/PKGBUILD-nightly
+      - uses: KSXGitHub/github-actions-deploy-aur@v2.7.1
+        with:
+          pkgname: acter-nightly-bin
+          pkgbuild: app/linux/packaging/aur/PKGBUILD-nightly
+          commit_username: Sari
+          commit_email: sari@acter.global
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: Updated to ${{ needs.tags.outputs.tag }}
