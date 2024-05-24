@@ -5,21 +5,22 @@ use matrix_sdk::{
     matrix_auth::{MatrixSession, MatrixSessionTokens},
     Client as SdkClient, ClientBuilder, SessionMeta,
 };
-use ruma::assign;
+use ruma::{assign, uint};
 use ruma_client_api::{
-    account::register,
+    account::{register, request_registration_token_via_email},
     uiaa::{AuthData, Dummy, Password, RegistrationToken},
 };
-use ruma_common::{OwnedUserId, UserId};
+use ruma_common::{ClientSecret, OwnedUserId, UserId};
 use std::sync::RwLock;
 use tracing::{error, info};
+use url::Url;
 use uuid::Uuid;
 
 use super::{
     client::{Client, ClientStateBuilder},
     RUNTIME,
 };
-use crate::platform;
+use crate::{platform, OptionString};
 
 lazy_static! {
     static ref PROXY_URL: RwLock<Option<String>> = RwLock::new(None);
@@ -471,6 +472,58 @@ pub async fn register_with_token_under_config(
             }
         })
         .await?
+}
+
+pub async fn request_registration_token_via_email(
+    base_path: String,
+    media_cache_base_path: String,
+    username: String,
+    default_homeserver_name: String,
+    default_homeserver_url: String,
+    email: String,
+) -> Result<RegistrationTokenViaEmailResponse> {
+    let homeserver_url = Url::parse(&default_homeserver_url)?;
+    let db_passphrase = Uuid::new_v4().to_string();
+    let (config, user_id) = make_client_config(
+        base_path,
+        &username,
+        media_cache_base_path,
+        Some(db_passphrase.clone()),
+        &default_homeserver_name,
+        &default_homeserver_url,
+        true,
+    )
+    .await?;
+    info!("request user id: {:?}", user_id);
+    RUNTIME
+        .spawn(async move {
+            let client = SdkClient::new(homeserver_url).await?;
+            info!("new client constructed");
+            let client_secret = ClientSecret::new();
+            let request = request_registration_token_via_email::v3::Request::new(
+                client_secret,
+                email,
+                uint!(0),
+            );
+            let inner = client.send(request, None).await?;
+            Ok(RegistrationTokenViaEmailResponse { inner })
+        })
+        .await?
+}
+
+#[derive(Clone)]
+pub struct RegistrationTokenViaEmailResponse {
+    inner: request_registration_token_via_email::v3::Response,
+}
+
+impl RegistrationTokenViaEmailResponse {
+    pub fn sid(&self) -> String {
+        self.inner.sid.to_string()
+    }
+
+    pub fn submit_url(&self) -> OptionString {
+        OptionString::new(self.inner.submit_url.clone())
+    }
 }
 
 impl Client {

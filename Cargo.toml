@@ -56,6 +56,10 @@ version = "0.28.1"
 [workspace.dependencies.ruma-macros]
 version = "0.13.0"
 
+[workspace.dependencies.url]
+version = "2.5.0"
+features = ["serde"]
+
 [workspace.dependencies]
 strum = { version = "0.26.1", features = ["derive"] }
 base64ct = "1.6.0"

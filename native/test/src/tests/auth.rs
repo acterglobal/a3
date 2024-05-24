@@ -1,10 +1,10 @@
 use acter::api::{
     guest_client, login_new_client, login_new_client_under_config, login_with_token_under_config,
-    make_client_config,
+    request_registration_token_via_email, make_client_config,
 };
 use anyhow::Result;
 use tempfile::TempDir;
-use tracing::warn;
+use tracing::{info, warn};
 use uuid::Uuid;
 
 use crate::utils::{default_user_password, login_test_user, random_user_with_random_space};
@@ -242,5 +242,33 @@ async fn user_changes_password() -> Result<()> {
         new_pswd_res.is_ok(),
         "Should be able to login with new password"
     );
+    Ok(())
+}
+
+#[tokio::test]
+async fn can_request_registration_token_via_email() -> Result<()> {
+    let _ = env_logger::try_init();
+
+    let base_dir = TempDir::new()?;
+    let media_dir = TempDir::new()?;
+    let prefix = "reset_password".to_owned();
+    let uuid = Uuid::new_v4().to_string();
+    let email = "test2@localhost".to_owned();
+
+    let resp = request_registration_token_via_email(
+        base_dir.path().to_string_lossy().to_string(),
+        media_dir.path().to_string_lossy().to_string(),
+        format!("it-{prefix}-{uuid}"),
+        option_env!("DEFAULT_HOMESERVER_NAME").unwrap_or("localhost").to_owned(),
+        option_env!("DEFAULT_HOMESERVER_URL").unwrap_or("http://localhost:8118").to_owned(),
+        email,
+    )
+    .await?;
+
+    let sid = resp.sid();
+    let submit_url = resp.submit_url().text();
+    info!("registration token via email - sid: {}", sid);
+    info!("registration token via email - submit_url: {:?}", submit_url);
+
     Ok(())
 }

@@ -12,9 +12,9 @@ email:
   smtp_port: 1025
   smtp_user: \"test1\"
   smtp_pass: \"test\"
-  force_tls: true
-  require_transport_security: true
-  enable_tls: true
+  force_tls: false
+  require_transport_security: false
+  enable_tls: false
   notif_from: \"Your Friendly %(app)s homeserver <noreply@example.com>\"
   app_name: Acter
   enable_notifs: true
