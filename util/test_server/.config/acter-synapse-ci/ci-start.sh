@@ -36,10 +36,6 @@ email:
     password_reset: \"[%(server_name)s] Password reset\"
     email_validation: \"[%(server_name)s] Validate your email\"
 
-allowed_local_3pids:
-  - medium: email
-    pattern: '^.*$'
-
 allow_guest_access: true
 enable_registration_without_verification: true
 enable_registration: true
