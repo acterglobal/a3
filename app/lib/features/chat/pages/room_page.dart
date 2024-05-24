@@ -247,7 +247,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
         message: message,
         messageWidth: messageWidth,
       ),
-      systemMessageBuilder: renderSystemMessage,
+      systemMessageBuilder: (msg) => renderSystemMessage(context, msg),
       showUserAvatars: true,
       onMessageLongPress: (
         BuildContext context,
@@ -271,11 +271,17 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
     );
   }
 
-  Widget renderSystemMessage(types.SystemMessage message) {
+  Widget renderSystemMessage(
+    BuildContext context,
+    types.SystemMessage message,
+  ) {
     return switch (message.metadata?['type']) {
       '_topic' => TopicSystemMessageWidget(
           message: message,
           roomId: widget.convo.getRoomIdStr(),
+        ),
+      '_read_marker' => Center(
+          child: Divider(color: Theme.of(context).indicatorColor),
         ),
       '_encryptedInfo' => const EncryptedInfoWidget(),
       _ => SystemMessage(key: Key(message.id), message: message.text)
