@@ -49,16 +49,18 @@ class _EmojiContainerState extends State<EmojiContainer>
     }
     reactions = metadata['reactions'];
     keys = reactions.keys.toList();
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 3),
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+      color: Theme.of(context).colorScheme.neutral2,
       child: Wrap(
         direction: Axis.horizontal,
-        spacing: 5,
         runSpacing: 3,
         children: List.generate(keys.length, (int index) {
           String key = keys[index];
           final records = reactions[key]! as List<ReactionRecord>;
           final sentByMe = records.any((x) => x.sentByMe());
+          final emoji = Text(key, style: EmojiConfig.emojiTextStyle);
+          final moreThanOne = records.length > 1;
           return InkWell(
             onLongPress: () {
               showEmojiReactionsSheet(reactions, widget.roomId);
@@ -67,16 +69,26 @@ class _EmojiContainerState extends State<EmojiContainer>
               widget.onToggle(widget.message.id, key);
             },
             child: Chip(
-              padding: const EdgeInsets.symmetric(
-                vertical: 1,
-                horizontal: 2,
-              ),
+              padding: moreThanOne
+                  ? const EdgeInsets.only(right: 4)
+                  : const EdgeInsets.symmetric(horizontal: 2),
               backgroundColor: sentByMe
-                  ? Theme.of(context).colorScheme.inversePrimary
-                  : Colors.transparent,
-              labelPadding: const EdgeInsets.only(left: 2, right: 1),
-              avatar: Text(key, style: EmojiConfig.emojiTextStyle),
-              label: Text(records.length.toString()),
+                  ? Theme.of(context).colorScheme.neutral3
+                  : Theme.of(context).colorScheme.neutral2,
+              visualDensity: VisualDensity.compact,
+              labelPadding: const EdgeInsets.all(0),
+              shape: const StadiumBorder(
+                side: BorderSide(
+                  color: Colors.transparent,
+                ),
+              ),
+              avatar: moreThanOne ? emoji : null,
+              label: moreThanOne
+                  ? Text(
+                      records.length.toString(),
+                      style: Theme.of(context).textTheme.labelSmall,
+                    )
+                  : emoji,
             ),
           );
         }),
