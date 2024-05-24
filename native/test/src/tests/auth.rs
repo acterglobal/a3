@@ -1,6 +1,6 @@
 use acter::api::{
     guest_client, login_new_client, login_new_client_under_config, login_with_token_under_config,
-    request_registration_token_via_email, make_client_config,
+    make_client_config, request_registration_token_via_email,
 };
 use anyhow::Result;
 use tempfile::TempDir;
@@ -259,16 +259,21 @@ async fn can_request_registration_token_via_email() -> Result<()> {
         base_dir.path().to_string_lossy().to_string(),
         media_dir.path().to_string_lossy().to_string(),
         format!("it-{prefix}-{uuid}"),
-        option_env!("DEFAULT_HOMESERVER_NAME").unwrap_or("localhost").to_owned(),
-        option_env!("DEFAULT_HOMESERVER_URL").unwrap_or("http://localhost:8118").to_owned(),
+        option_env!("DEFAULT_HOMESERVER_NAME")
+            .unwrap_or("localhost")
+            .to_owned(),
+        option_env!("DEFAULT_HOMESERVER_URL")
+            .unwrap_or("http://localhost:8118")
+            .to_owned(),
         email,
     )
     .await?;
 
-    let sid = resp.sid();
-    let submit_url = resp.submit_url().text();
-    info!("registration token via email - sid: {}", sid);
-    info!("registration token via email - submit_url: {:?}", submit_url);
+    info!("registration token via email - sid: {}", resp.sid());
+    info!(
+        "registration token via email - submit_url: {:?}",
+        resp.submit_url().text(),
+    );
 
     Ok(())
 }
