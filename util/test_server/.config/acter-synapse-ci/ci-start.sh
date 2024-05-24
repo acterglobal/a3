@@ -10,7 +10,7 @@ echo """
 email:
   smtp_host: localhost
   smtp_port: 1025
-  smtp_user: \"test\"
+  smtp_user: \"test1\"
   smtp_pass: \"test\"
   force_tls: true
   require_transport_security: true
