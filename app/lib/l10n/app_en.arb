@@ -2100,5 +2100,14 @@
   "otherSpaces": "Other Spaces",
   "invitingSpaceMembersLoading": "Inviting Space Members",
   "invitingSpaceMembersError": "Inviting Space Members Error: {error}",
-  "membersInvited": "{count} members invited"
+  "membersInvited": "{count} members invited",
+  "changePassword": "Change Password",
+  "changePasswordDescription": "Change your Password",
+  "oldPassword": "Old Password",
+  "newPassword": "New Password",
+  "confirmPassword": "Confirm Password",
+  "emptyOldPassword": "Please enter old password",
+  "emptyNewPassword": "Please enter new password",
+  "emptyConfirmPassword": "Please enter confirm password",
+  "validateSamePassword": "Password must be same"
 }
