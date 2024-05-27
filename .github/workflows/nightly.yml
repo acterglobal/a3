@@ -493,9 +493,6 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
         with:
-          name: Changelog
-      - uses: actions/download-artifact@v3
-        with:
           name: Linux x64
       - run: |
           sed -i "s/%{{VERSION}}%/${{ needs.tags.outputs.tag }}/" app/linux/packaging/aur/PKGBUILD-nightly
