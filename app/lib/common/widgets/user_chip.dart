@@ -30,13 +30,14 @@ class UserChip extends ConsumerWidget {
       data: (data) => Chip(
         visualDensity: visualDensity,
         avatar: ActerAvatar(
-          mode: DisplayMode.DM,
-          avatarInfo: AvatarInfo(
-            uniqueId: memberId,
-            displayName: data.profile.displayName,
-            avatar: data.profile.getAvatarImage(),
+          options: AvatarOptions.DM(
+            AvatarInfo(
+              uniqueId: memberId,
+              displayName: data.profile.displayName,
+              avatar: data.profile.getAvatarImage(),
+            ),
+            size: 24,
           ),
-          size: 24,
         ),
         label: Text(data.profile.displayName ?? memberId),
         onDeleted: onDeleted,

@@ -101,23 +101,24 @@ class SpaceWithProfileCard extends StatelessWidget {
     final title = displayName?.isNotEmpty == true ? displayName! : roomId;
 
     final avatar = ActerAvatar(
-      mode: DisplayMode.Space,
-      avatarInfo: AvatarInfo(
-        uniqueId: roomId,
-        displayName: title,
-        avatar: profile.getAvatarImage(),
+      options: AvatarOptions(
+        AvatarInfo(
+          uniqueId: roomId,
+          displayName: title,
+          avatar: profile.getAvatarImage(),
+        ),
+        parentBadges: showParent && parentRoomId != null
+            ? [
+                AvatarInfo(
+                  uniqueId: parentRoomId!,
+                  displayName: parentProfile?.displayName ?? parentRoomId,
+                  avatar: parentProfile?.getAvatarImage(),
+                ),
+              ]
+            : [],
+        size: avatarSize,
+        badgesSize: avatarSize / 2,
       ),
-      avatarsInfo: showParent && parentRoomId != null
-          ? [
-              AvatarInfo(
-                uniqueId: parentRoomId!,
-                displayName: parentProfile?.displayName ?? parentRoomId,
-                avatar: parentProfile?.getAvatarImage(),
-              ),
-            ]
-          : [],
-      size: avatarSize,
-      badgeSize: avatarSize / 2,
     );
 
     return Card(

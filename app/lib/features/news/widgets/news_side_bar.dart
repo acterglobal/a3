@@ -90,31 +90,34 @@ class NewsSideBar extends ConsumerWidget {
         const SizedBox(height: 10),
         space.when(
           data: (space) => ActerAvatar(
-            mode: DisplayMode.Space,
-            avatarInfo: AvatarInfo(
-              uniqueId: roomId,
-              displayName: space.spaceProfileData.displayName,
-              avatar: space.spaceProfileData.getAvatarImage(),
+            options: AvatarOptions(
+              AvatarInfo(
+                uniqueId: roomId,
+                displayName: space.spaceProfileData.displayName,
+                avatar: space.spaceProfileData.getAvatarImage(),
+              ),
+              size: 42,
             ),
-            size: 42,
             onAvatarTap: () => goToSpace(context, roomId),
           ),
           error: (e, st) {
             _log.severe('Error loading space', e, st);
             return ActerAvatar(
-              mode: DisplayMode.Space,
-              avatarInfo: AvatarInfo(
-                uniqueId: roomId,
-                displayName: roomId,
+              options: AvatarOptions(
+                AvatarInfo(
+                  uniqueId: roomId,
+                  displayName: roomId,
+                ),
+                size: 42,
               ),
-              size: 42,
             );
           },
           loading: () => Skeletonizer(
             child: ActerAvatar(
-              mode: DisplayMode.Space,
-              avatarInfo: AvatarInfo(uniqueId: roomId),
-              size: 42,
+              options: AvatarOptions(
+                AvatarInfo(uniqueId: roomId),
+                size: 42,
+              ),
             ),
           ),
         ),

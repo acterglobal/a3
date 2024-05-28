@@ -40,19 +40,20 @@ class CommentWidget extends ConsumerWidget {
             children: [
               ListTile(
                 leading: ActerAvatar(
-                  mode: DisplayMode.DM,
-                  avatarInfo: AvatarInfo(
-                    uniqueId: userId,
-                    displayName: displayName ?? userId,
-                    avatar: avatarImage,
+                  options: AvatarOptions.DM(
+                    AvatarInfo(
+                      uniqueId: userId,
+                      displayName: displayName ?? userId,
+                      avatar: avatarImage,
+                    ),
+                    size: 18,
                   ),
-                  size: 18,
                 ),
                 title: Text(
                   displayName ?? userId,
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
-                subtitle: displayName == null ? null : Text(userId) ,
+                subtitle: displayName == null ? null : Text(userId),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),

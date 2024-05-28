@@ -6,7 +6,6 @@ import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
 import 'package:acter/features/news/widgets/news_post_editor/post_attachment_options.dart';
-import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:cross_file_image/cross_file_image.dart';
 import 'package:flutter/material.dart';
@@ -142,7 +141,6 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
                 children: [
                   RoomAvatarBuilder(
                     roomId: newsPostSpaceId,
-                    displayMode: DisplayMode.Space,
                     avatarSize: 42,
                   ),
                   Positioned(

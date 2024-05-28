@@ -103,14 +103,15 @@ class ConvoHierarchyCard extends ConsumerWidget {
     return profile.when(
       data: (profile) => ConvoWithProfileCard(
         avatar: ActerAvatar(
-          mode: DisplayMode.Space,
-          avatarInfo: AvatarInfo(
-            uniqueId: roomId,
-            displayName: profile.displayName,
-            avatar: profile.getAvatarImage(),
+          options: AvatarOptions(
+            AvatarInfo(
+              uniqueId: roomId,
+              displayName: profile.displayName,
+              avatar: profile.getAvatarImage(),
+            ),
+            size: avatarSize,
+            badgesSize: avatarSize / 2,
           ),
-          size: avatarSize,
-          badgeSize: avatarSize / 2,
         ),
         roomId: roomId,
         profile: profile,

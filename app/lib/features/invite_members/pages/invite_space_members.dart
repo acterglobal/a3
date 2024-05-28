@@ -160,12 +160,12 @@ class _InviteSpaceMembersConsumerState
     );
 
     try {
-      final currentSpace = ref.watch(spaceProvider(widget.roomId)).valueOrNull;
+      final currentSpace = ref.read(spaceProvider(widget.roomId)).valueOrNull;
       final invited =
-          ref.watch(spaceInvitedMembersProvider(widget.roomId)).valueOrNull ??
+          ref.read(spaceInvitedMembersProvider(widget.roomId)).valueOrNull ??
               [];
       final joined =
-          ref.watch(membersIdsProvider(widget.roomId)).valueOrNull ?? [];
+          ref.read(membersIdsProvider(widget.roomId)).valueOrNull ?? [];
       var inviteCount = 0;
       for (final space in selectedSpaces) {
         final members = (await space.activeMembers()).toList();

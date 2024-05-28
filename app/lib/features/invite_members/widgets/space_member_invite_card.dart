@@ -46,28 +46,30 @@ class SpaceMemberInviteCard extends ConsumerWidget {
     ProfileData profile,
   ) {
     final roomId = space.getRoomIdStr();
-    final title = profile.displayName?.isNotEmpty == true ? profile.displayName! : roomId;
+    final title =
+        profile.displayName?.isNotEmpty == true ? profile.displayName! : roomId;
     final parent = ref.watch(canonicalParentProvider(roomId)).valueOrNull;
     final parentRoomId = parent?.space.getRoomIdStr();
 
     final avatar = ActerAvatar(
-      mode: DisplayMode.Space,
-      avatarInfo: AvatarInfo(
-        uniqueId: roomId,
-        displayName: title,
-        avatar: profile.getAvatarImage(),
+      options: AvatarOptions(
+        AvatarInfo(
+          uniqueId: roomId,
+          displayName: title,
+          avatar: profile.getAvatarImage(),
+        ),
+        parentBadges: parentRoomId != null
+            ? [
+                AvatarInfo(
+                  uniqueId: parentRoomId,
+                  displayName: parent?.profile.displayName ?? parentRoomId,
+                  avatar: parent?.profile.getAvatarImage(),
+                ),
+              ]
+            : [],
+        size: 45,
+        badgesSize: 45 / 2,
       ),
-      avatarsInfo: parentRoomId != null
-          ? [
-              AvatarInfo(
-                uniqueId: parentRoomId,
-                displayName: parent?.profile.displayName ?? parentRoomId,
-                avatar: parent?.profile.getAvatarImage(),
-              ),
-            ]
-          : [],
-      size: 45,
-      badgeSize: 45 / 2,
     );
 
     return Card(
