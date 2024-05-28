@@ -209,12 +209,6 @@ sudo systemctl status matrix-synapse
 
 You needn't to add `admin` user with `register_new_matrix_user`.
 
-#### Firewall
-
-If you are running synapse on a virtual or remote machine and API call is not working, you can update the firewall rules to allow access to the ports. To turn off the public profile of a server firewall on a `Ubuntu` linux, you can use `gufw` and disable it like so:
-
-![Ubuntu Firewall](../../../static/images/ubuntu-firewall.png)
-
 </details>
 
 <details>
@@ -361,13 +355,13 @@ sudo systemctl status matrix-synapse
 
 You needn't to add `admin` user with `register_new_matrix_user`.
 
+</details>
+
 #### Firewall
 
 If you are running synapse on a virtual or remote machine and API call is not working, you can update the firewall rules to allow access to the ports. To turn off the public profile of a server firewall on a `Ubuntu` linux, you can use `gufw` and disable it like so:
 
 ![Ubuntu Firewall](../../../static/images/ubuntu-firewall.png)
-
-</details>
 
 #### Testing the server
 
