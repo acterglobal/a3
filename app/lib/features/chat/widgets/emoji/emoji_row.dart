@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Simform Solutions
+ * Copyright (c) 2024, Acter Global, (c) 2022 Simform Solutions
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,24 +20,24 @@
  * SOFTWARE.
  */
 
-import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 typedef StringsCallBack = void Function(String emoji, String messageId);
 
-class EmojiRow extends ConsumerWidget {
+class EmojiRow extends StatelessWidget {
   final double? size;
   final types.Message message;
   final String roomId;
+  final bool isAuthor;
   final Function(String messageId, String emoji) onEmojiTap;
   EmojiRow({
     super.key,
+    required this.isAuthor,
     required this.message,
     required this.roomId,
     required this.onEmojiTap,
@@ -55,10 +55,7 @@ class EmojiRow extends ConsumerWidget {
   ];
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final myId = ref.watch(myUserIdStrProvider);
-    final isAuthor = (myId == message.author.id);
-
+  Widget build(BuildContext context) {
     final emojiList = _emojiUnicodes;
     return Container(
       constraints: const BoxConstraints(maxWidth: 238, maxHeight: 42),
