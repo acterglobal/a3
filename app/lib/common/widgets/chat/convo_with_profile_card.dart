@@ -26,7 +26,7 @@ class ConvoWithProfileCard extends ConsumerWidget {
 
   /// Whether or not to render the parent Icon
   ///
-  final bool showParent;
+  final bool showParents;
 
   const ConvoWithProfileCard({
     super.key,
@@ -38,7 +38,7 @@ class ConvoWithProfileCard extends ConsumerWidget {
     this.onFocusChange,
     this.subtitle,
     this.trailing,
-    this.showParent = true,
+    this.showParents = true,
   });
 
   @override
@@ -58,7 +58,7 @@ class ConvoWithProfileCard extends ConsumerWidget {
                 onFocusChange: onFocusChange,
                 onLongPress: onLongPress,
                 leading: avatar ??
-                    RoomAvatar(roomId: roomId, showParent: showParent),
+                    RoomAvatar(roomId: roomId, showParents: showParents),
                 title: Text(
                   profile.displayName ?? roomId,
                   style: Theme.of(context)

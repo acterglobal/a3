@@ -136,7 +136,7 @@ class SpaceChatsPage extends ConsumerWidget {
             sizeFactor: animation,
             child: ConvoCard(
               room: rooms[index],
-              showParent: false,
+              showParents: false,
               onTap: () => goToChat(context, rooms[index].getRoomIdStr()),
             ),
           ),

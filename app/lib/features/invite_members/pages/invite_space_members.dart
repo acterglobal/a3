@@ -53,7 +53,7 @@ class _InviteSpaceMembersConsumerState
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 10),
-          _buildParentSpace(),
+          _buildParentSpaces(),
           const SizedBox(height: 20),
           _buildOtherSpace(),
           _buildDoneButton(),
@@ -63,28 +63,31 @@ class _InviteSpaceMembersConsumerState
     );
   }
 
-  Widget _buildParentSpace() {
-    final parentSpace =
-        ref.watch(canonicalParentProvider(widget.roomId)).valueOrNull;
+  Widget _buildParentSpaces() {
+    final parentSpaces =
+        ref.watch(canonicalParentsProvider(widget.roomId)).valueOrNull;
 
-    if (parentSpace == null) return const SizedBox.shrink();
+    if (parentSpaces == null && parentSpaces!.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         Text(L10n.of(context).parentSpace),
-        SpaceMemberInviteCard(
-          space: parentSpace.space,
-          isSelected: selectedSpaces.contains(parentSpace.space),
-          onChanged: (value) {
-            if (selectedSpaces.contains(parentSpace.space)) {
-              selectedSpaces.remove(parentSpace.space);
-            } else {
-              selectedSpaces.add(parentSpace.space);
-            }
-            setState(() {});
-          },
-        ),
+        for (var parent in parentSpaces)
+          SpaceMemberInviteCard(
+            space: parent.space,
+            isSelected: selectedSpaces.contains(parent.space),
+            onChanged: (value) {
+              if (selectedSpaces.contains(parent.space)) {
+                selectedSpaces.remove(parent.space);
+              } else {
+                selectedSpaces.add(parent.space);
+              }
+              setState(() {});
+            },
+          ),
         const SizedBox(height: 16),
         Text(L10n.of(context).otherSpaces),
       ],

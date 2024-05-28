@@ -20,9 +20,9 @@ class ConvoCard extends ConsumerStatefulWidget {
 
   final Function()? onTap;
 
-  /// Whether or not to render the parent Icon
+  /// Whether or not to render the parents Icon
   ///
-  final bool showParent;
+  final bool showParents;
 
   /// Custom Trailing Widget
   final Widget? trailing;
@@ -31,7 +31,7 @@ class ConvoCard extends ConsumerStatefulWidget {
     super.key,
     required this.room,
     this.onTap,
-    this.showParent = true,
+    this.showParents = true,
     this.trailing,
   });
 
@@ -57,7 +57,7 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
     return convoProfile.when(
       data: (profile) => ConvoWithProfileCard(
         roomId: roomId,
-        showParent: widget.showParent,
+        showParents: widget.showParents,
         profile: profile,
         onTap: widget.onTap,
         subtitle: latestMsg != null

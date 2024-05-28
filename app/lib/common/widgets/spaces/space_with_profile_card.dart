@@ -1,13 +1,13 @@
 import 'package:acter/common/models/profile_data.dart';
+import 'package:acter/common/models/types.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class SpaceWithProfileCard extends StatelessWidget {
   final String roomId;
-  final String? parentRoomId;
   final ProfileData profile;
-  final ProfileData? parentProfile;
+  final List<SpaceWithProfileData>? parents;
   final Widget? subtitle;
   final Widget? trailing;
   final double avatarSize;
@@ -70,16 +70,15 @@ class SpaceWithProfileCard extends StatelessWidget {
   /// the default border.
   final bool withBorder;
 
-  /// Whether or not to render the parent Icon
+  /// Whether or not to render the parent(s) Icon
   ///
-  final bool showParent;
+  final bool showParents;
 
   const SpaceWithProfileCard({
     super.key,
     required this.roomId,
-    this.parentRoomId,
     required this.profile,
-    this.parentProfile,
+    this.parents,
     this.subtitle,
     this.trailing,
     this.onTap,
@@ -90,7 +89,7 @@ class SpaceWithProfileCard extends StatelessWidget {
     this.leadingAndTrailingTextStyle,
     this.shape,
     this.withBorder = true,
-    this.showParent = true,
+    this.showParents = true,
     required this.avatarSize,
     required this.contentPadding,
   });
@@ -107,14 +106,16 @@ class SpaceWithProfileCard extends StatelessWidget {
           displayName: title,
           avatar: profile.getAvatarImage(),
         ),
-        parentBadges: showParent && parentRoomId != null
-            ? [
-                AvatarInfo(
-                  uniqueId: parentRoomId!,
-                  displayName: parentProfile?.displayName ?? parentRoomId,
-                  avatar: parentProfile?.getAvatarImage(),
-                ),
-              ]
+        parentBadges: showParents && (parents != null && parents!.isEmpty)
+            ? List.generate(parents!.length, (i) {
+                final roomId = parents![i].space.getRoomIdStr();
+                final displayName = parents![i].profile.displayName ?? roomId;
+                return AvatarInfo(
+                  uniqueId: roomId,
+                  displayName: displayName,
+                  avatar: parents![i].profile.getAvatarImage(),
+                );
+              })
             : [],
         size: avatarSize,
         badgesSize: avatarSize / 2,

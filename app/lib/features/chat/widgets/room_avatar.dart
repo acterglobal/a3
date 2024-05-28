@@ -14,13 +14,13 @@ final _log = Logger('a3::chat::room_avatar');
 class RoomAvatar extends ConsumerWidget {
   final String roomId;
   final double avatarSize;
-  final bool showParent;
+  final bool showParents;
 
   const RoomAvatar({
     super.key,
     required this.roomId,
     this.avatarSize = 36,
-    this.showParent = false,
+    this.showParents = false,
   });
 
   @override
@@ -38,26 +38,26 @@ class RoomAvatar extends ConsumerWidget {
     );
   }
 
-  List<AvatarInfo> renderParentInfo(String convoId, WidgetRef ref) {
-    if (!showParent) {
+  List<AvatarInfo> renderParentsInfo(String convoId, WidgetRef ref) {
+    if (!showParents) {
       return [];
     }
-    final canonicalParent = ref.watch(canonicalParentProvider(convoId));
-    return canonicalParent.when(
-      data: (parent) {
-        if (parent == null) {
+    final canonicalParents = ref.watch(canonicalParentsProvider(convoId));
+    return canonicalParents.when(
+      data: (parents) {
+        if (parents.isEmpty) {
           return [];
         }
-        final space = parent.space;
-        final profile = parent.profile;
 
-        return [
-          AvatarInfo(
+        return List.generate(parents.length, (i) {
+          final space = parents[i].space;
+          final profile = parents[i].profile;
+          return AvatarInfo(
             uniqueId: space.getRoomIdStr(),
             displayName: profile.displayName ?? space.getRoomIdStr(),
             avatar: profile.getAvatarImage(),
-          ),
-        ];
+          );
+        });
       },
       error: (e, s) => [],
       loading: () => [],
@@ -82,7 +82,7 @@ class RoomAvatar extends ConsumerWidget {
                 avatar: profile.getAvatarImage(),
               ),
               size: avatarSize,
-              parentBadges: renderParentInfo(roomId, ref),
+              parentBadges: renderParentsInfo(roomId, ref),
               badgesSize: avatarSize / 2,
             ),
           );

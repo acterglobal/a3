@@ -148,32 +148,49 @@ final spaceRelationsProvider = FutureProvider.autoDispose
   return await room.spaceRelations();
 });
 
-/// Get the canonical parent of the space. Errors if the space isn't found. Stays up
+/// Get the canonical parents of the space. Errors if the space isn't found. Stays up
 /// to date with underlying client data if a space was found.
-final canonicalParentProvider = FutureProvider.autoDispose
-    .family<SpaceWithProfileData?, String>((ref, roomId) async {
+final canonicalParentsProvider = FutureProvider.autoDispose
+    .family<List<SpaceWithProfileData>, String>((ref, roomId) async {
   try {
+    List<SpaceWithProfileData> parentList = List.empty(growable: true);
     final relations = await ref.watch(spaceRelationsProvider(roomId).future);
     if (relations == null) {
-      return null;
+      return parentList;
     }
     final parent = relations.mainParent();
-    if (parent == null) {
-      return null;
+    final otherParents = relations.otherParents().toList();
+
+    if (parent != null) {
+      final parentSpace = await ref
+          .watch(maybeSpaceProvider(parent.roomId().toString()).future);
+      if (parentSpace == null) {
+        return parentList;
+      }
+      final profile =
+          await ref.watch(spaceProfileDataProvider(parentSpace).future);
+      final SpaceWithProfileData data = (space: parentSpace, profile: profile);
+      parentList.add(data);
+
+      // if (otherParents.isNotEmpty) {
+      //   for (final parent in otherParents) {
+      //     final space = await ref
+      //         .watch(maybeSpaceProvider(parent.roomId.toString()).future);
+      //     if (space == null) {
+      //       break;
+      //     }
+      //     final profile =
+      //         await ref.watch(spaceProfileDataProvider(space).future);
+      //     final SpaceWithProfileData data = (space: space, profile: profile);
+      //     parentList.add(data);
+      //   }
+      // }
     }
 
-    final parentSpace =
-        await ref.watch(maybeSpaceProvider(parent.roomId().toString()).future);
-    if (parentSpace == null) {
-      return null;
-    }
-    final profile =
-        await ref.watch(spaceProfileDataProvider(parentSpace).future);
-    final SpaceWithProfileData data = (space: parentSpace, profile: profile);
-    return data;
+    return parentList;
   } catch (e) {
-    _log.warning('Failed to load canonical parent for $roomId');
-    return null;
+    _log.warning('Failed to load canonical parents for $roomId');
+    return [];
   }
 });
 

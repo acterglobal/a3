@@ -21,7 +21,28 @@ class SpaceHeaderProfile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profileData = ref.watch(spaceProfileDataForSpaceIdProvider(spaceId));
-    final canonicalParent = ref.watch(canonicalParentProvider(spaceId));
+    final canonicalParents = ref.watch(canonicalParentsProvider(spaceId));
+    List<AvatarInfo> parentBadges = List.empty(growable: true);
+    if (canonicalParents.valueOrNull != null) {
+      var parents = canonicalParents.requireValue;
+      debugPrint('$parents');
+      if (parents.isNotEmpty) {
+        parentBadges.addAll(
+          parents.map((e) {
+            final roomId = e.space.getRoomIdStr();
+            final displayName = e.profile.displayName ?? roomId;
+            final avatar = e.profile.getAvatarImage();
+            return AvatarInfo(
+              uniqueId: roomId,
+              displayName: displayName,
+              avatar: avatar,
+              onAvatarTap: () => goToSpace(context, roomId),
+            );
+          }).toList(),
+        );
+      }
+    }
+
     return profileData.when(
       data: (spaceProfile) {
         return Padding(
@@ -34,26 +55,11 @@ class SpaceHeaderProfile extends ConsumerWidget {
                     uniqueId: spaceId,
                     displayName: spaceProfile.profile.displayName,
                     avatar: spaceProfile.profile.getAvatarImage(),
+                    onAvatarTap: () => goToSpace(context, spaceId),
                   ),
-                  parentBadges: canonicalParent.valueOrNull != null
-                      ? [
-                          AvatarInfo(
-                            uniqueId: canonicalParent.valueOrNull!.space
-                                .getRoomIdStr(),
-                            displayName: canonicalParent
-                                .valueOrNull!.profile.displayName,
-                            avatar: canonicalParent.valueOrNull!.profile
-                                .getAvatarImage(),
-                          ),
-                        ]
-                      : [],
+                  parentBadges: parentBadges,
                   size: 80,
                   badgesSize: 30,
-                ),
-                onAvatarTap: () => goToSpace(context, spaceId),
-                onParentBadgesTap: () => goToSpace(
-                  context,
-                  canonicalParent.valueOrNull!.space.getRoomIdStr(),
                 ),
               ),
               Column(

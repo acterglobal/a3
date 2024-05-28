@@ -56,7 +56,10 @@ dependencies:
       url: https://github.com/acterglobal/flutter_matrix_html.git
   flutter_slidable: ^3.0.0
   quds_popup_menu: ^0.0.1+1
-  acter_avatar: 2.0.0+5
+  acter_avatar:
+    git:
+      url: https://github.com/acterglobal/acter-avatar.git
+      ref: main
   table_calendar: ^3.0.9
   omni_datetime_picker: ^1.0.9
   flutter_easyloading: ^3.0.5

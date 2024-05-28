@@ -30,16 +30,16 @@ final otherSpacesForInviteMembersProvider = FutureProvider.autoDispose
   final allSpaces = ref.watch(spacesProvider);
 
   //GET PARENT SPACE
-  final parentSpace = ref.watch(canonicalParentProvider(spaceId)).valueOrNull;
-  final parentSpaceId = parentSpace?.space.getRoomIdStr();
+  final parentSpaces = ref.watch(canonicalParentsProvider(spaceId)).valueOrNull;
 
-  //GET LIST OF SPACES EXCLUDING PARENT SPACE && EXCLUDING CURRENT SPACE
-  final spacesExcludingParentSpaceAndCurrentSpace = allSpaces.where((space) {
+  //GET LIST OF SPACES EXCLUDING PARENT SPACES && EXCLUDING CURRENT SPACE
+  final spacesExcludingParentSpacesAndCurrentSpace = allSpaces.where((space) {
     final roomId = space.getRoomIdStr();
-    return roomId != parentSpaceId && roomId != spaceId;
+    return !(parentSpaces!.any((p) => p.space.getRoomIdStr() == roomId)) &&
+        roomId != spaceId;
   }).toList();
 
-  return spacesExcludingParentSpaceAndCurrentSpace;
+  return spacesExcludingParentSpacesAndCurrentSpace;
 });
 
 /// Map a spaceId to the space, keeps up to date with underlying client
