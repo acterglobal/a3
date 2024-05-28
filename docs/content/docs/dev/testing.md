@@ -408,6 +408,81 @@ CREATE DATABASE synapse ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' template=tem
 
 This server name must be the same as one in `/etc/matrix-synapse/conf.d/server_name.yaml`.
 
+#### Email config
+
+We will use `mailhog` as local mail server for authentication.
+Probably `mailtutan` may be good choice, but it is dummy server that doesn't respond a request from `synapse`.
+`synapse` is pending if there is no reply from mail server.
+
+1. Clone & prepare to run `mailhog`
+
+```
+git clone https://github.com/mailhog/MailHog.git
+go mod vendor
+```
+
+2. Create `auth.txt` file in root of `mailhog` project and enter lines of `username:password` for basic authentication of mail sender (`test1`) & receiver (`test2`), where password is `test` wrapped by `bcrypt`
+
+```
+test1:$2a$04$qxRo.ftFoNep7ld/5jfKtuBTnGqff/fZVyj53mUC5sVf9dtDLAi/S
+test2:$2a$04$qxRo.ftFoNep7ld/5jfKtuBTnGqff/fZVyj53mUC5sVf9dtDLAi/S
+```
+
+3. Run `mailhog` with specified auth file
+
+```
+MH_AUTH_FILE="auth.txt" go run .
+```
+
+Provided that username is `test2` and password is `test`, you can access `http://localhost:8025` to view maillist of `test2`.
+
+4. Insert the following config to `homeserver.yaml`
+
+```yaml
+email:
+  smtp_host: localhost
+  smtp_port: 1025
+  smtp_user: "test1"
+  smtp_pass: "test"
+  force_tls: false
+  require_transport_security: false
+  enable_tls: false
+  notif_from: "Your Friendly %(app)s homeserver <noreply@example.com>"
+  app_name: Acter
+  enable_notifs: true
+  notif_for_new_users: false
+  client_base_url: "http://localhost/riot"
+  validation_token_lifetime: 15m
+  invite_client_location: https://app.element.io
+  can_verify_email: true
+
+  subjects:
+    message_from_person_in_room: "[%(app)s] You have a message on %(app)s from %(person)s in the %(room)s room..."
+    message_from_person: "[%(app)s] You have a message on %(app)s from %(person)s..."
+    messages_from_person: "[%(app)s] You have messages on %(app)s from %(person)s..."
+    messages_in_room: "[%(app)s] You have messages on %(app)s in the %(room)s room..."
+    messages_in_room_and_others: "[%(app)s] You have messages on %(app)s in the %(room)s room and others..."
+    messages_from_person_and_others: "[%(app)s] You have messages on %(app)s from %(person)s and others..."
+    invite_from_person_to_room: "[%(app)s] %(person)s has invited you to join the %(room)s room on %(app)s..."
+    invite_from_person: "[%(app)s] %(person)s has invited you to chat on %(app)s..."
+    password_reset: "[%(server_name)s] Password reset"
+    email_validation: "[%(server_name)s] Validate your email"
+```
+
+Here `force_tls/require_transport_security/enable_tls` should be `false` as `mailhog` doesn't support TLS properly.
+And `can_verify_email` should be set because `synapse` uses it.
+
+5. Restart `synapse`
+
+When you run tests (ex: `auth::can_register_via_email` or `auth::can_reset_password_via_email`) related with authentication via email, you can see `test2` receives email from `noreply@example.com`.
+
+**One-time use of email address for password reset**
+
+Once an email address is used to authenticate in password reset, it is bound to that account.
+It can't be used again for another account.
+You have to use another email address.
+If you want, you can reset database because binding info is stored there.
+
 ### Rust integration tests
 
 To run the rust integration tests, you need a fresh integration testing infrastructure (see above) available at `$DEFAULT_HOMESERVER_URL`. Assuming you are running the docker-compose setup, this would be `http://localhost:8118` (which is the fallback default, so you don't have to put it into your environment). Then you can run the integration test with:
