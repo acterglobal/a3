@@ -81,7 +81,6 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
         // this might be a bit too simple ...
         if (scrollController.offset == 0) {
           final message = ref.read(latestTrackableMessageId(widget.convo));
-          print('marking $message as read');
           if (message != null) {
             await ref
                 .read(timelineStreamProvider(widget.convo))
