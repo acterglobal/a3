@@ -1354,7 +1354,7 @@
   "@video": {},
   "volunteer": "freiwillig melden",
   "@volunteer": {},
-  "welcomeTo": "Willkommen bei",
+  "welcomeTo": "Willkommen bei ",
   "@welcomeTo": {},
   "whatToCallThisChat": "Wie soll dieser Chat heißen?",
   "@whatToCallThisChat": {},
@@ -2171,5 +2171,13 @@
   "eventParticipants": "Teilnehmende",
   "@eventParticipants": {},
   "upcomingEvents": "Anstehende Events",
-  "@upcomingEvents": {}
+  "@upcomingEvents": {},
+  "invitingSpaceMembersLoading": "Space Mitglieder einladen",
+  "@invitingSpaceMembersLoading": {},
+  "membersInvited": "{count} Mitglieder eingeladen",
+  "@membersInvited": {},
+  "otherSpaces": "Andere Spaces",
+  "@otherSpaces": {},
+  "invitingSpaceMembersError": "Fehler beim Einladen der Space Mitglieder: {error}",
+  "@invitingSpaceMembersError": {}
 }
