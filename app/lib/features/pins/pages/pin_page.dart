@@ -117,9 +117,7 @@ class PinPage extends ConsumerWidget {
         title: L10n.of(context).removeThisPin,
         eventId: pin.eventIdStr(),
         onSuccess: () {
-          if (context.mounted && context.canPop()) {
-            context.pop();
-          }
+          if (context.canPop()) context.pop();
         },
         senderId: pin.sender().toString(),
         roomId: roomId,

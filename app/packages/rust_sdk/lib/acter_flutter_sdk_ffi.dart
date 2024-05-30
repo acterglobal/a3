@@ -41262,6 +41262,8 @@ class Convo {
 
   /// redact an event from this room
   /// reason - The reason for the event being reported (optional).
+  /// it's the callers job to ensure the person has the privileges to
+  /// redact that content.
   Future<EventId> redactContent(
     String eventId,
     String? reason,
@@ -46822,6 +46824,8 @@ class Space {
 
   /// redact an event from this room
   /// reason - The reason for the event being reported (optional).
+  /// it's the callers job to ensure the person has the privileges to
+  /// redact that content.
   Future<EventId> redactContent(
     String eventId,
     String? reason,

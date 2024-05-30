@@ -181,7 +181,7 @@ class ActionBox extends ConsumerWidget {
               title: L10n.of(context).removeThisPost,
               eventId: news.eventId().toString(),
               onSuccess: () {
-                context.pop();
+                if (context.canPop()) context.pop();
                 ref.invalidate(newsListProvider);
               },
               senderId: senderId,

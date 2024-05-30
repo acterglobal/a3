@@ -1303,6 +1303,8 @@ object Convo {
 
     /// redact an event from this room
     /// reason - The reason for the event being reported (optional).
+    /// it's the callers job to ensure the person has the privileges to
+    /// redact that content.
     fn redact_content(event_id: string, reason: Option<string>) -> Future<Result<EventId>>;
 
     fn is_joined() -> bool;
@@ -2048,6 +2050,8 @@ object Space {
 
     /// redact an event from this room
     /// reason - The reason for the event being reported (optional).
+    /// it's the callers job to ensure the person has the privileges to
+    /// redact that content.
     fn redact_content(event_id: string, reason: Option<string>) -> Future<Result<EventId>>;
 }
 
