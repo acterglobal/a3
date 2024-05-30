@@ -27,7 +27,7 @@ class DownloadButton extends StatelessWidget {
   Widget build(BuildContext context) {
     if (Platform.isAndroid) {
       // Saving unfortunately crashes on Android at the moment
-      // FIXME: github link
+      // FIXME: https://github.com/acterglobal/a3/issues/1803
       return const SizedBox.shrink();
     }
     return IconButton(
