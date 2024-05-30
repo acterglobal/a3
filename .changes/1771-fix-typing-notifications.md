@@ -1,2 +1,0 @@
-- [fix] do not send typing notifications if the user disabled that in the settings
-- [fix] only one room could be receiving typing state at a time despite multiple rooms actually being in that state.
