@@ -410,6 +410,9 @@ object NewsEntry {
 
     /// get event id
     fn event_id() -> EventId;
+    
+    /// whether or not this user can redact this item
+    fn can_redact() -> Future<Result<bool>>;
 
     /// get the reaction manager
     fn reactions() -> Future<Result<ReactionManager>>;
@@ -518,6 +521,9 @@ object ActerPin {
 
     /// replace the current pin with one with the latest state
     fn refresh() -> Future<Result<ActerPin>>;
+
+    /// whether or not this user can redact this item
+    fn can_redact() -> Future<Result<bool>>;
 
     /// get the comments manager for this pin
     fn comments() -> Future<Result<CommentsManager>>;
@@ -1521,6 +1527,9 @@ object Task {
 
     /// replace the current task with one with the latest state
     fn refresh() -> Future<Result<Task>>;
+    
+    /// whether or not this user can redact this item
+    fn can_redact() -> Future<Result<bool>>;
 
     /// get the comments manager for this task
     fn comments() -> Future<Result<CommentsManager>>;
@@ -1684,6 +1693,9 @@ object TaskList {
 
     /// replace the current task with one with the latest state
     fn refresh() -> Future<Result<TaskList>>;
+
+    /// whether or not this user can redact this item
+    fn can_redact() -> Future<Result<bool>>;
 
     /// the space this TaskList belongs to
     fn space() -> Space;

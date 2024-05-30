@@ -2414,6 +2414,50 @@ class Api {
     return tmp7;
   }
 
+  bool? __newsEntryCanRedactFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _newsEntryCanRedactFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   ReactionManager? __newsEntryReactionsFuturePoll(
     int boxed,
     int postCobject,
@@ -2781,6 +2825,50 @@ class Api {
     final tmp13_1 = _Box(this, tmp13_0, "drop_box_ActerPin");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp7 = ActerPin._(this, tmp13_1);
+    return tmp7;
+  }
+
+  bool? __acterPinCanRedactFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _acterPinCanRedactFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
     return tmp7;
   }
 
@@ -6863,6 +6951,50 @@ class Api {
     return tmp7;
   }
 
+  bool? __taskCanRedactFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _taskCanRedactFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   CommentsManager? __taskCommentsFuturePoll(
     int boxed,
     int postCobject,
@@ -7190,6 +7322,50 @@ class Api {
     final tmp13_1 = _Box(this, tmp13_0, "drop_box_TaskList");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp7 = TaskList._(this, tmp13_1);
+    return tmp7;
+  }
+
+  bool? __taskListCanRedactFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _taskListCanRedactFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
     return tmp7;
   }
 
@@ -16293,6 +16469,16 @@ class Api {
       int Function(
         int,
       )>();
+  late final _newsEntryCanRedactPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__NewsEntry_can_redact");
+
+  late final _newsEntryCanRedact = _newsEntryCanRedactPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _newsEntryReactionsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -16677,6 +16863,16 @@ class Api {
           )>>("__ActerPin_refresh");
 
   late final _acterPinRefresh = _acterPinRefreshPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _acterPinCanRedactPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__ActerPin_can_redact");
+
+  late final _acterPinCanRedact = _acterPinCanRedactPtr.asFunction<
       int Function(
         int,
       )>();
@@ -20279,6 +20475,16 @@ class Api {
       int Function(
         int,
       )>();
+  late final _taskCanRedactPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Task_can_redact");
+
+  late final _taskCanRedact = _taskCanRedactPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _taskCommentsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -21140,6 +21346,16 @@ class Api {
           )>>("__TaskList_refresh");
 
   late final _taskListRefresh = _taskListRefreshPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _taskListCanRedactPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__TaskList_can_redact");
+
+  late final _taskListCanRedact = _taskListCanRedactPtr.asFunction<
       int Function(
         int,
       )>();
@@ -26214,6 +26430,21 @@ class Api {
             int,
             int,
           )>();
+  late final _newsEntryCanRedactFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _NewsEntryCanRedactFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__NewsEntry_can_redact_future_poll");
+
+  late final _newsEntryCanRedactFuturePoll =
+      _newsEntryCanRedactFuturePollPtr.asFunction<
+          _NewsEntryCanRedactFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _newsEntryReactionsFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _NewsEntryReactionsFuturePollReturn Function(
@@ -26329,6 +26560,21 @@ class Api {
   late final _acterPinRefreshFuturePoll =
       _acterPinRefreshFuturePollPtr.asFunction<
           _ActerPinRefreshFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _acterPinCanRedactFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ActerPinCanRedactFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__ActerPin_can_redact_future_poll");
+
+  late final _acterPinCanRedactFuturePoll =
+      _acterPinCanRedactFuturePollPtr.asFunction<
+          _ActerPinCanRedactFuturePollReturn Function(
             int,
             int,
             int,
@@ -27629,6 +27875,20 @@ class Api {
         int,
         int,
       )>();
+  late final _taskCanRedactFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskCanRedactFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Task_can_redact_future_poll");
+
+  late final _taskCanRedactFuturePoll = _taskCanRedactFuturePollPtr.asFunction<
+      _TaskCanRedactFuturePollReturn Function(
+        int,
+        int,
+        int,
+      )>();
   late final _taskCommentsFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _TaskCommentsFuturePollReturn Function(
@@ -27726,6 +27986,21 @@ class Api {
   late final _taskListRefreshFuturePoll =
       _taskListRefreshFuturePollPtr.asFunction<
           _TaskListRefreshFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _taskListCanRedactFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskListCanRedactFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__TaskList_can_redact_future_poll");
+
+  late final _taskListCanRedactFuturePoll =
+      _taskListCanRedactFuturePollPtr.asFunction<
+          _TaskListCanRedactFuturePollReturn Function(
             int,
             int,
             int,
@@ -33987,6 +34262,21 @@ class NewsEntry {
     return tmp2;
   }
 
+  /// whether or not this user can redact this item
+  Future<bool> canRedact() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsEntryCanRedact(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__NewsEntry_can_redact_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__newsEntryCanRedactFuturePoll);
+    return tmp2;
+  }
+
   /// get the reaction manager
   Future<ReactionManager> reactions() {
     var tmp0 = 0;
@@ -34707,6 +34997,21 @@ class ActerPin {
     final tmp3_1 = _Box(_api, tmp3_0, "__ActerPin_refresh_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__acterPinRefreshFuturePoll);
+    return tmp2;
+  }
+
+  /// whether or not this user can redact this item
+  Future<bool> canRedact() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterPinCanRedact(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__ActerPin_can_redact_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__acterPinCanRedactFuturePoll);
     return tmp2;
   }
 
@@ -42311,6 +42616,21 @@ class Task {
     return tmp2;
   }
 
+  /// whether or not this user can redact this item
+  Future<bool> canRedact() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskCanRedact(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Task_can_redact_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__taskCanRedactFuturePoll);
+    return tmp2;
+  }
+
   /// get the comments manager for this task
   Future<CommentsManager> comments() {
     var tmp0 = 0;
@@ -43649,6 +43969,21 @@ class TaskList {
     final tmp3_1 = _Box(_api, tmp3_0, "__TaskList_refresh_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__taskListRefreshFuturePoll);
+    return tmp2;
+  }
+
+  /// whether or not this user can redact this item
+  Future<bool> canRedact() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskListCanRedact(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__TaskList_can_redact_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__taskListCanRedactFuturePoll);
     return tmp2;
   }
 
@@ -56552,6 +56887,21 @@ class _NewsSlideSourceBinaryFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _NewsEntryCanRedactFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
 class _NewsEntryReactionsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -56669,6 +57019,21 @@ class _ActerPinRefreshFuturePollReturn extends ffi.Struct {
   @ffi.Uint64()
   external int arg4;
   @ffi.Int64()
+  external int arg5;
+}
+
+class _ActerPinCanRedactFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
   external int arg5;
 }
 
@@ -57985,6 +58350,21 @@ class _TaskRefreshFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _TaskCanRedactFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
 class _TaskCommentsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -58087,6 +58467,21 @@ class _TaskListRefreshFuturePollReturn extends ffi.Struct {
   @ffi.Uint64()
   external int arg4;
   @ffi.Int64()
+  external int arg5;
+}
+
+class _TaskListCanRedactFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
   external int arg5;
 }
 
