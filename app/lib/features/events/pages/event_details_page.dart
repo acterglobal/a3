@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -97,6 +98,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   Widget _buildActionMenu(CalendarEvent event) {
     //Get membership details
     final spaceId = event.roomIdStr();
+    final canRedact = ref.watch(canRedactProvider(event));
     final membership = ref.watch(roomMembershipProvider(spaceId));
 
     //Create event actions
@@ -124,47 +126,46 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           ),
         );
       }
+    }
 
-      //Delete Event Action
-      if (member.canString('CanRedactOwn') &&
-          member.userId().toString() == event.sender().toString()) {
-        final roomId = event.roomIdStr();
-        actions.addAll([
-          PopupMenuItem(
-            key: EventsKeys.eventDeleteBtn,
-            onTap: () => showAdaptiveDialog(
-              context: context,
-              builder: (context) => RedactContentWidget(
-                removeBtnKey: EventsKeys.eventRemoveBtn,
-                title: L10n.of(context).removeThisPost,
-                eventId: event.eventId().toString(),
-                onSuccess: () {
-                  ref.invalidate(calendarEventProvider);
-                  if (context.mounted) {
-                    context.goNamed(
-                      Routes.spaceEvents.name,
-                      pathParameters: {'spaceId': roomId},
-                    );
-                  }
-                },
-                senderId: event.sender().toString(),
-                roomId: roomId,
-                isSpace: true,
-              ),
-            ),
-            child: Row(
-              children: <Widget>[
-                Icon(
-                  Atlas.trash_can_thin,
-                  color: Theme.of(context).colorScheme.error,
-                ),
-                const SizedBox(width: 10),
-                Text(L10n.of(context).eventRemove),
-              ],
+    //Delete Event Action
+    if (canRedact.valueOrNull == true) {
+      final roomId = event.roomIdStr();
+      actions.addAll([
+        PopupMenuItem(
+          key: EventsKeys.eventDeleteBtn,
+          onTap: () => showAdaptiveDialog(
+            context: context,
+            builder: (context) => RedactContentWidget(
+              removeBtnKey: EventsKeys.eventRemoveBtn,
+              title: L10n.of(context).removeThisPost,
+              eventId: event.eventId().toString(),
+              onSuccess: () {
+                ref.invalidate(calendarEventProvider);
+                if (context.mounted) {
+                  context.goNamed(
+                    Routes.spaceEvents.name,
+                    pathParameters: {'spaceId': roomId},
+                  );
+                }
+              },
+              senderId: event.sender().toString(),
+              roomId: roomId,
+              isSpace: true,
             ),
           ),
-        ]);
-      }
+          child: Row(
+            children: <Widget>[
+              Icon(
+                Atlas.trash_can_thin,
+                color: Theme.of(context).colorScheme.error,
+              ),
+              const SizedBox(width: 10),
+              Text(L10n.of(context).eventRemove),
+            ],
+          ),
+        ),
+      ]);
     }
 
     //Report Event Action

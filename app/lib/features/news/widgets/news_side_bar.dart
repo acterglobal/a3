@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/default_bottom_sheet.dart';
@@ -165,37 +164,14 @@ class ActionBox extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final senderId = news.sender().toString();
-    final membership = ref.watch(roomMembershipProvider(roomId)).valueOrNull;
+    final canRedact = ref.watch(canRedactProvider(news));
     final isAuthor = senderId == userId;
     List<Widget> actions = [
       Text(L10n.of(context).actions),
       const Divider(),
     ];
 
-    if (!isAuthor) {
-      actions.add(
-        TextButton.icon(
-          key: NewsUpdateKeys.newsSidebarActionReportBtn,
-          onPressed: () => showAdaptiveDialog(
-            context: context,
-            builder: (context) => ReportContentWidget(
-              title: L10n.of(context).reportThisPost,
-              eventId: news.eventId().toString(),
-              description: L10n.of(context).reportPostContent,
-              senderId: senderId,
-              roomId: roomId,
-              isSpace: true,
-            ),
-          ),
-          icon: const Icon(Atlas.exclamation_chat_thin),
-          label: Text(L10n.of(context).reportThis),
-        ),
-      );
-    }
-
-    if (isAuthor &&
-        membership != null &&
-        membership.canString('CanRedactOwn')) {
+    if (canRedact.valueOrNull == true) {
       actions.add(
         TextButton.icon(
           key: NewsUpdateKeys.newsSidebarActionRemoveBtn,
@@ -216,6 +192,25 @@ class ActionBox extends ConsumerWidget {
           ),
           icon: const Icon(Atlas.trash_thin),
           label: Text(L10n.of(context).remove),
+        ),
+      );
+    } else if (!isAuthor) {
+      actions.add(
+        TextButton.icon(
+          key: NewsUpdateKeys.newsSidebarActionReportBtn,
+          onPressed: () => showAdaptiveDialog(
+            context: context,
+            builder: (context) => ReportContentWidget(
+              title: L10n.of(context).reportThisPost,
+              eventId: news.eventId().toString(),
+              description: L10n.of(context).reportPostContent,
+              senderId: senderId,
+              roomId: roomId,
+              isSpace: true,
+            ),
+          ),
+          icon: const Icon(Atlas.exclamation_chat_thin),
+          label: Text(L10n.of(context).reportThis),
         ),
       );
     }

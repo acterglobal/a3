@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
@@ -37,6 +38,7 @@ class PinPage extends ConsumerWidget {
     final spaceId = pin.roomIdStr();
     List<PopupMenuEntry<String>> actions = [];
     final pinEditNotifier = ref.watch(pinEditProvider(pin).notifier);
+    final canRedact = ref.watch(canRedactProvider(pin));
     final membership = ref.watch(roomMembershipProvider(spaceId));
     if (membership.valueOrNull != null) {
       final memb = membership.requireValue!;
@@ -56,8 +58,7 @@ class PinPage extends ConsumerWidget {
         );
       }
 
-      if (memb.canString('CanRedactOwn') &&
-          memb.userId().toString() == pin.sender().toString()) {
+      if (canRedact.valueOrNull == true) {
         final roomId = pin.roomIdStr();
         actions.add(
           PopupMenuItem<String>(
