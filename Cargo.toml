@@ -9,57 +9,57 @@ default-members = ["native/acter"]
 
 [workspace.dependencies.matrix-sdk]
 git = "https://github.com/acterglobal/matrix-rust-sdk"
-rev = "a4190a98d6fbb2c2f9b68e54eb5fe485f02bbc2b"
+rev = "5e7a05c26f7b7029a3dc4176cf758c3cc459b04f"
 default-features = false
 features = ["experimental-sliding-sync"]
 
 [workspace.dependencies.matrix-sdk-base]
 git = "https://github.com/acterglobal/matrix-rust-sdk"
-rev = "a4190a98d6fbb2c2f9b68e54eb5fe485f02bbc2b"
+rev = "5e7a05c26f7b7029a3dc4176cf758c3cc459b04f"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-sqlite]
 git = "https://github.com/acterglobal/matrix-rust-sdk"
-rev = "a4190a98d6fbb2c2f9b68e54eb5fe485f02bbc2b"
+rev = "5e7a05c26f7b7029a3dc4176cf758c3cc459b04f"
 default-features = false
 features = ["crypto-store", "state-store"]
 
 [workspace.dependencies.matrix-sdk-store-encryption]
 git = "https://github.com/acterglobal/matrix-rust-sdk"
-rev = "a4190a98d6fbb2c2f9b68e54eb5fe485f02bbc2b"
+rev = "5e7a05c26f7b7029a3dc4176cf758c3cc459b04f"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-test]
 git = "https://github.com/acterglobal/matrix-rust-sdk"
-rev = "a4190a98d6fbb2c2f9b68e54eb5fe485f02bbc2b"
+rev = "5e7a05c26f7b7029a3dc4176cf758c3cc459b04f"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-ui]
 git = "https://github.com/acterglobal/matrix-rust-sdk"
-rev = "a4190a98d6fbb2c2f9b68e54eb5fe485f02bbc2b"
+rev = "5e7a05c26f7b7029a3dc4176cf758c3cc459b04f"
 default-features = false
 features = ["e2e-encryption"]
 
 [workspace.dependencies.ruma]
 git = "https://github.com/acterglobal/ruma"
-rev = "1045473792509c4cbe271bf0c450727e6d848820"
+rev = "c74a4dcc4ff6406288bbf83fa7475dc732fe3a5e"
 features = ["client-api-c", "compat-upload-signatures", "compat-user-id", "compat-arbitrary-length-ids", "unstable-msc3401"]
 
 [workspace.dependencies.ruma-client-api]
 git = "https://github.com/acterglobal/ruma"
-rev = "1045473792509c4cbe271bf0c450727e6d848820"
+rev = "c74a4dcc4ff6406288bbf83fa7475dc732fe3a5e"
 
 [workspace.dependencies.ruma-common]
 git = "https://github.com/acterglobal/ruma"
-rev = "1045473792509c4cbe271bf0c450727e6d848820"
+rev = "c74a4dcc4ff6406288bbf83fa7475dc732fe3a5e"
 
 [workspace.dependencies.ruma-events]
 git = "https://github.com/acterglobal/ruma"
-rev = "1045473792509c4cbe271bf0c450727e6d848820"
+rev = "c74a4dcc4ff6406288bbf83fa7475dc732fe3a5e"
 
 [workspace.dependencies.ruma-macros]
 git = "https://github.com/acterglobal/ruma"
-rev = "1045473792509c4cbe271bf0c450727e6d848820"
+rev = "c74a4dcc4ff6406288bbf83fa7475dc732fe3a5e"
 
 [workspace.dependencies.url]
 version = "2.5.0"
