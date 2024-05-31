@@ -3,18 +3,20 @@ import 'package:path/path.dart';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 Future<void> downloadFile(BuildContext context, File file) async {
-  String filename = basename(file.path);
+  final lang = L10n.of(context);
+  final filename = basename(file.path);
   String? outputFile = await FilePicker.platform.saveFile(
-    dialogTitle: 'Please select where to store the file',
+    dialogTitle: lang.downloadFileDialogTitle,
     fileName: filename,
   );
 
   if (outputFile != null) {
     await file.copy(outputFile);
-    EasyLoading.showToast('File saved to $outputFile');
+    EasyLoading.showToast(lang.downloadFileSuccess(outputFile));
   }
 }
 
