@@ -7,6 +7,7 @@ import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
 import 'package:acter/features/home/widgets/activities_icon.dart';
+import 'package:acter/features/home/widgets/chats_icon.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -259,10 +260,7 @@ class SidebarWidget extends ConsumerWidget {
         ),
       ),
       _SidebarItem(
-        icon: const Icon(
-          Atlas.chats_thin,
-          key: MainNavKeys.chats,
-        ),
+        icon: const ChatsIcon(),
         label: Text(
           'Chat',
           style: Theme.of(context).textTheme.labelSmall,

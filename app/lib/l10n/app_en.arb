@@ -1287,6 +1287,8 @@
   "@unblockUserFailed": {},
   "unclearJoinRule": "Unclear join rule {rule}",
   "@unclearJoinRule": {},
+  "unreadMarkerFeatureTitle": "Unread Markers",
+  "unreadMarkerFeatureDescription": "Track and show which Chats have been read",
   "undefined": "undefined",
   "@undefined": {},
   "unknown": "unknown",
