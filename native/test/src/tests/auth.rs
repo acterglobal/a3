@@ -1,13 +1,21 @@
-use acter::api::{
-    guest_client, login_new_client, login_new_client_under_config, login_with_token_under_config,
-    make_client_config, request_registration_token_via_email,
+use acter::{
+    api::{
+        guest_client, login_new_client, login_new_client_under_config,
+        login_with_token_under_config, make_client_config,
+        request_password_change_email_token, request_registration_token_via_email,
+    },
+    matrix_sdk::reqwest::Client,
 };
-use anyhow::Result;
+use anyhow::{Context, Result};
+use mail_parser::MessageParser;
+use mailhog_rs::{ListMessagesParams, MailHog};
+use regex::Regex;
+use std::collections::HashMap;
 use tempfile::TempDir;
 use tracing::{info, warn};
 use uuid::Uuid;
 
-use crate::utils::{default_user_password, login_test_user, random_user_with_random_space};
+use crate::utils::{default_user_password, login_test_user, random_user};
 
 #[tokio::test]
 async fn guest_can_login() -> Result<()> {
@@ -181,7 +189,7 @@ async fn kyra_can_restore_with_db_passphrase() -> Result<()> {
 async fn can_deactivate_user() -> Result<()> {
     let _ = env_logger::try_init();
     let username = {
-        let (client, _space_id) = random_user_with_random_space("deactivate_me").await?;
+        let client = random_user("deactivate_me").await?;
         // password in tests can be figured out from the username
         let username = client.user_id().expect("we just logged in");
         let password = default_user_password(username.localpart());
@@ -206,7 +214,7 @@ async fn can_deactivate_user() -> Result<()> {
 async fn user_changes_password() -> Result<()> {
     let _ = env_logger::try_init();
 
-    let (mut client, _) = random_user_with_random_space("change_password").await?;
+    let mut client = random_user("change_password").await?;
     let user_id = client.user_id().expect("we just logged in");
     let password = default_user_password(user_id.localpart());
     let new_password = format!("new_{:?}", password.as_str());
@@ -246,7 +254,8 @@ async fn user_changes_password() -> Result<()> {
 }
 
 #[tokio::test]
-async fn can_request_registration_token_via_email() -> Result<()> {
+#[ignore = "if test2 account is wasted for this fn, it can't be used for can_reset_password_via_email :("]
+async fn can_register_via_email() -> Result<()> {
     let _ = env_logger::try_init();
 
     let base_dir = TempDir::new()?;
@@ -275,5 +284,176 @@ async fn can_request_registration_token_via_email() -> Result<()> {
         resp.submit_url().text(),
     );
 
+    read_email_msg("test2", "test", "_matrix/client/unstable/registration").await?;
+
     Ok(())
+}
+
+#[tokio::test]
+async fn can_reset_password_via_email() -> Result<()> {
+    let _ = env_logger::try_init();
+
+    let mut client = random_user("reset_password").await?;
+    let user_id = client.user_id().expect("we just logged in");
+    let username = user_id.localpart();
+    let old_pswd = default_user_password(username);
+    let account = client.account()?;
+    let resp = account
+        .request_3pid_email_token("test2@localhost".to_owned())
+        .await?;
+    let client_secret = resp.client_secret();
+    let sid = resp.sid();
+
+    read_email_msg("test2", "test", "_matrix/client/unstable/add_threepid").await?;
+
+    account
+        .add_3pid(client_secret, sid, old_pswd.clone())
+        .await?;
+
+    let homeserver_name = option_env!("DEFAULT_HOMESERVER_NAME").unwrap_or("localhost");
+    let homeserver_url = option_env!("DEFAULT_HOMESERVER_URL").unwrap_or("http://localhost:8118");
+    let email = "test2@localhost".to_owned();
+
+    let resp = request_password_change_email_token(homeserver_url.to_owned(), email).await?;
+
+    info!("password change token via email - sid: {}", resp.sid());
+    info!(
+        "password change token via email - submit_url: {:?}",
+        resp.submit_url().text(),
+    );
+
+    let (token, client_secret, sid) =
+        confirm_email_msg("test2", "test", "_synapse/client/password_reset").await?;
+    let new_pswd = format!("new_{}", &old_pswd);
+
+    account
+        .reset_password(
+            sid,
+            client_secret,
+            "localhost".to_owned(),
+            token,
+            new_pswd.clone(),
+        )
+        .await?;
+
+    client.logout().await?;
+
+    let base_dir = TempDir::new()?;
+    let media_dir = TempDir::new()?;
+    let res = login_new_client(
+        base_dir.path().to_string_lossy().to_string(),
+        media_dir.path().to_string_lossy().to_string(),
+        username.to_string(),
+        old_pswd,
+        homeserver_name.to_string(),
+        homeserver_url.to_string(),
+        None,
+    )
+    .await;
+
+    assert!(res.is_err(), "old password should be unavailable now");
+
+    let base_dir = TempDir::new()?;
+    let media_dir = TempDir::new()?;
+    let res = login_new_client(
+        base_dir.path().to_string_lossy().to_string(),
+        media_dir.path().to_string_lossy().to_string(),
+        username.to_string(),
+        new_pswd,
+        homeserver_name.to_string(),
+        homeserver_url.to_string(),
+        None,
+    )
+    .await;
+
+    assert!(res.is_ok(), "new password should be available now");
+
+    Ok(())
+}
+
+async fn read_email_msg(user: &str, pswd: &str, dir: &str) -> Result<(String, String, String)> {
+    let base_url = format!("http://{}:{}@localhost:8025", user, pswd); // url should include authorization
+    let mailhog = MailHog::new(base_url);
+    let params = ListMessagesParams {
+        start: None,
+        limit: None,
+    };
+    let msg_list = mailhog.list_messages(params).await?;
+    let latest_msg = msg_list
+        .items
+        .first()
+        .context("User should receive at least a mail msg")?;
+
+    info!("last msg content headers: {:?}", latest_msg.content.headers);
+    info!("last msg content body: {:?}", latest_msg.content.body);
+    info!("last msg created: {:?}", latest_msg.created);
+    info!("last msg from: {:?}", latest_msg.from);
+    info!("last msg id: {:?}", latest_msg.id);
+
+    let mut headers = vec![];
+    for (key, vals) in latest_msg.content.headers.iter() {
+        for (pos, val) in vals.iter().enumerate() {
+            if pos == 0 {
+                headers.push(format!("{key}: {val}"));
+            } else {
+                headers.push(val.clone());
+            }
+        }
+    }
+    let content = format!(
+        "{}\r\n\r\n{}",
+        headers.join("\r\n"),
+        latest_msg.content.body,
+    );
+    let mail_msg = MessageParser::default()
+        .parse(&content)
+        .context("mail content should be parsed")?;
+    let plain_body = mail_msg
+        .body_text(0)
+        .context("plain text should be extracted")?
+        .to_string();
+
+    info!("plain body: {}", plain_body);
+
+    let pattern = format!(
+        r"(?m)^.*https://localhost/{}/email/submit_token\?token=(.*)&client_secret=(.*)&sid=(.*)\n.*$",
+        dir
+    );
+    let re = Regex::new(&pattern)?;
+    let caps = re.captures(&plain_body).context("should capture url")?;
+
+    let token = caps.get(1).map_or("", |m| m.as_str());
+    let client_secret = caps.get(2).map_or("", |m| m.as_str());
+    let sid = caps.get(3).map_or("", |m| m.as_str());
+
+    info!("token: {}", token);
+    info!("client secret: {}", client_secret);
+    info!("session id: {}", sid);
+
+    let client = Client::new();
+    let submit_url = format!("http://localhost:8118/{}/email/submit_token", dir);
+    let params = [
+        ("token", token),
+        ("client_secret", client_secret),
+        ("sid", sid),
+    ];
+    let req = client.get(submit_url).query(&params).build()?;
+    let _resp = client.execute(req).await?.error_for_status()?;
+
+    Ok((token.to_owned(), client_secret.to_owned(), sid.to_owned()))
+}
+
+async fn confirm_email_msg(user: &str, pswd: &str, dir: &str) -> Result<(String, String, String)> {
+    let (token, client_secret, sid) = read_email_msg(user, pswd, dir).await?;
+
+    let client = Client::new();
+    let submit_url = format!("http://localhost:8118/{}/email/submit_token", dir);
+    let mut params = HashMap::new();
+    params.insert("token", token.clone());
+    params.insert("client_secret", client_secret.clone());
+    params.insert("sid", sid.clone());
+    let req = client.post(submit_url).form(&params).build()?;
+    let _resp = client.execute(req).await?.error_for_status()?;
+
+    Ok((token, client_secret, sid))
 }

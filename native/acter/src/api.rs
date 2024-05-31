@@ -66,7 +66,7 @@ pub use acter_core::{
 pub use attachments::{Attachment, AttachmentDraft, AttachmentsManager};
 pub use auth::{
     destroy_local_data, guest_client, login_new_client, login_with_token, register_with_token,
-    request_registration_token_via_email, set_proxy,
+    request_password_change_email_token, request_registration_token_via_email, set_proxy,
 };
 #[cfg(feature = "testing")]
 pub use auth::{

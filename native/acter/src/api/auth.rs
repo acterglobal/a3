@@ -7,17 +7,21 @@ use matrix_sdk::{
 };
 use ruma::{assign, uint};
 use ruma_client_api::{
-    account::{register, request_registration_token_via_email},
+    account::{
+        add_3pid, register, request_password_change_token_via_email,
+        request_registration_token_via_email,
+    },
     uiaa::{AuthData, Dummy, Password, RegistrationToken},
 };
-use ruma_common::{ClientSecret, OwnedUserId, UserId};
-use std::sync::RwLock;
+use ruma_common::{ClientSecret, OwnedUserId, SessionId, UserId};
+use std::{ops::Deref, sync::RwLock};
 use tracing::{error, info};
 use url::Url;
 use uuid::Uuid;
 
 use super::{
     client::{Client, ClientStateBuilder},
+    common::clearify_error,
     RUNTIME,
 };
 use crate::{platform, OptionString};
@@ -296,41 +300,6 @@ pub async fn register(
     register_under_config(config, user_id, password, Some(db_passphrase), user_agent).await
 }
 
-fn clearify_error(err: matrix_sdk::Error) -> anyhow::Error {
-    if let matrix_sdk::Error::Http(matrix_sdk::HttpError::Api(api_error)) = &err {
-        match api_error {
-            matrix_sdk::ruma::api::error::FromHttpResponseError::Deserialization(des) => {
-                return anyhow::anyhow!("Deserialization failed: {des}");
-            }
-            matrix_sdk::ruma::api::error::FromHttpResponseError::Server(inner) => match inner {
-                matrix_sdk::RumaApiError::ClientApi(error) => {
-                    if let matrix_sdk::ruma::api::client::error::ErrorBody::Standard {
-                        kind,
-                        message,
-                    } = &error.body
-                    {
-                        return anyhow::anyhow!("{message} [{kind}]");
-                    }
-                    return anyhow::anyhow!("{0:?} [{1}]", error.body, error.status_code);
-                }
-                matrix_sdk::RumaApiError::Uiaa(uiaa_error) => {
-                    if let Some(err) = &uiaa_error.auth_error {
-                        return anyhow::anyhow!("{0} [{1}]", err.message, err.kind);
-                    }
-
-                    error!(?uiaa_error, "Other UIAA response");
-                    return anyhow::anyhow!("Unsupported User Interaction needed.");
-                }
-                matrix_sdk::RumaApiError::Other(err) => {
-                    return anyhow::anyhow!("{0:?} [{1}]", err.body, err.status_code);
-                }
-            },
-            _ => {}
-        }
-    }
-    err.into()
-}
-
 pub async fn register_under_config(
     config: ClientBuilder,
     user_id: OwnedUserId,
@@ -494,11 +463,10 @@ pub async fn request_registration_token_via_email(
         true,
     )
     .await?;
-    info!("request user id: {:?}", user_id);
+
     RUNTIME
         .spawn(async move {
             let client = SdkClient::new(homeserver_url).await?;
-            info!("new client constructed");
             let client_secret = ClientSecret::new();
             let request = request_registration_token_via_email::v3::Request::new(
                 client_secret,
@@ -526,18 +494,54 @@ impl RegistrationTokenViaEmailResponse {
     }
 }
 
+pub async fn request_password_change_email_token(
+    default_homeserver_url: String,
+    email: String,
+) -> Result<PasswordChangeEmailTokenResponse> {
+    let homeserver_url = Url::parse(&default_homeserver_url)?;
+
+    RUNTIME
+        .spawn(async move {
+            let client = SdkClient::new(homeserver_url).await?;
+            let client_secret = ClientSecret::new();
+            let request = request_password_change_token_via_email::v3::Request::new(
+                client_secret,
+                email,
+                uint!(0),
+            );
+            let inner = client.send(request, None).await?;
+            Ok(PasswordChangeEmailTokenResponse { inner })
+        })
+        .await?
+}
+
+#[derive(Clone)]
+pub struct PasswordChangeEmailTokenResponse {
+    inner: request_password_change_token_via_email::v3::Response,
+}
+
+impl PasswordChangeEmailTokenResponse {
+    pub fn sid(&self) -> String {
+        self.inner.sid.to_string()
+    }
+
+    pub fn submit_url(&self) -> OptionString {
+        OptionString::new(self.inner.submit_url.clone())
+    }
+}
+
 impl Client {
     pub async fn deactivate(&self, password: String) -> Result<bool> {
         let account = self.account()?;
         RUNTIME
             .spawn(async move {
-                if let Err(e) = account.deactivate(None, None).await {
+                if let Err(e) = account.deref().deactivate(None, None).await {
                     if let Some(resp) = e.as_uiaa_response() {
                         let pswd = assign!(Password::new(account.user_id().into(), password), {
                             session: resp.session.clone(),
                         });
                         let auth_data = AuthData::Password(pswd);
-                        account.deactivate(None, Some(auth_data)).await?;
+                        account.deref().deactivate(None, Some(auth_data)).await?;
                         // FIXME: remove local data, too!
                     } else {
                         error!(?e, "Not a UIAA response");
@@ -558,7 +562,7 @@ impl Client {
                 if !capabilities.change_password.enabled {
                     bail!("Server doesn't support password change");
                 }
-                if let Err(e) = account.change_password(&new_val, None).await {
+                if let Err(e) = account.deref().change_password(&new_val, None).await {
                     let Some(inf) = e.as_uiaa_response() else {
                         return Err(clearify_error(e));
                     };
@@ -567,6 +571,7 @@ impl Client {
                     });
                     let auth_data = AuthData::Password(pswd);
                     account
+                        .deref()
                         .change_password(&new_val, Some(auth_data))
                         .await
                         .map_err(clearify_error)?;

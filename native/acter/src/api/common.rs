@@ -23,6 +23,7 @@ use ruma_events::{
 };
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
+use tracing::error;
 
 use super::api::FfiBuffer;
 
@@ -681,4 +682,38 @@ pub fn new_obj_ref_builder(
     } else {
         Ok(ObjRefBuilder::new(None, *reference))
     }
+}
+
+pub fn clearify_error(err: matrix_sdk::Error) -> anyhow::Error {
+    if let matrix_sdk::Error::Http(matrix_sdk::HttpError::Api(api_error)) = &err {
+        match api_error {
+            matrix_sdk::ruma::api::error::FromHttpResponseError::Deserialization(des) => {
+                return anyhow::anyhow!("Deserialization failed: {des}");
+            }
+            matrix_sdk::ruma::api::error::FromHttpResponseError::Server(inner) => match inner {
+                matrix_sdk::RumaApiError::ClientApi(error) => {
+                    if let matrix_sdk::ruma::api::client::error::ErrorBody::Standard {
+                        kind,
+                        message,
+                    } = &error.body
+                    {
+                        return anyhow::anyhow!("{message} [{kind}]");
+                    }
+                    return anyhow::anyhow!("{0:?} [{1}]", error.body, error.status_code);
+                }
+                matrix_sdk::RumaApiError::Uiaa(uiaa_error) => {
+                    if let Some(err) = &uiaa_error.auth_error {
+                        return anyhow::anyhow!("{0} [{1}]", err.message, err.kind);
+                    }
+                    error!(?uiaa_error, "Other UIAA response");
+                    return anyhow::anyhow!("Unsupported User Interaction needed.");
+                }
+                matrix_sdk::RumaApiError::Other(err) => {
+                    return anyhow::anyhow!("{0:?} [{1}]", err.body, err.status_code);
+                }
+            },
+            _ => {}
+        }
+    }
+    err.into()
 }
