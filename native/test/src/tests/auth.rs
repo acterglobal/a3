@@ -1,8 +1,8 @@
 use acter::{
     api::{
         guest_client, login_new_client, login_new_client_under_config,
-        login_with_token_under_config, make_client_config,
-        request_password_change_email_token, request_registration_token_via_email,
+        login_with_token_under_config, make_client_config, request_password_change_email_token,
+        request_registration_token_via_email,
     },
     matrix_sdk::reqwest::Client,
 };
