@@ -93,18 +93,25 @@ class HomeShellState extends ConsumerState<HomeShell> {
   }
 
   Future<void> initNotifications() async {
+    final client = ref.read(clientProvider);
+    if (client != null) {
+      _initPushForClient(client);
+    }
     ref.listenManual(clientProvider, (previous, next) {
       if (next != null) {
-        if (!ref.read(
-          isActiveProvider(LabsFeature.mobilePushNotifications),
-        )) {
-          return;
-        }
-        _log.info('Attempting to ask for push notifications');
-        setupPushNotifications(next);
-        return;
+        _initPushForClient(next);
       }
     });
+  }
+
+  Future<void> _initPushForClient(Client client) async {
+    if (!ref.read(
+      isActiveProvider(LabsFeature.mobilePushNotifications),
+    )) {
+      return;
+    }
+    _log.info('Attempting to ask for push notifications');
+    setupPushNotifications(client);
   }
 
   Widget buildLoggedOutScreen(BuildContext context, bool softLogout) {

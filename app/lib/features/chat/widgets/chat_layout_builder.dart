@@ -3,19 +3,21 @@ import 'package:acter/features/chat/config.dart';
 import 'package:acter/features/chat/pages/chat_select_page.dart';
 import 'package:acter/features/chat/widgets/rooms_list.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class ChatLayoutBuilder extends ConsumerWidget {
+class ChatLayoutBuilder extends StatelessWidget {
   // (bool inSideBar) -> Widget
   final Widget Function(bool)? centerBuilder;
   // (bool inSideBar) -> Widget
   final Widget Function(bool)? expandedBuilder;
-  const ChatLayoutBuilder(
-      {this.centerBuilder, this.expandedBuilder, super.key,});
+  const ChatLayoutBuilder({
+    this.centerBuilder,
+    this.expandedBuilder,
+    super.key,
+  });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth < sidebarMinWidth) {

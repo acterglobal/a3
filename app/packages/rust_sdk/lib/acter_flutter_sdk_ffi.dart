@@ -4896,6 +4896,50 @@ class Api {
     return tmp7;
   }
 
+  bool? __timelineStreamMarkAsReadFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _timelineStreamMarkAsReadFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   bool? __timelineStreamToggleReactionFuturePoll(
     int boxed,
     int postCobject,
@@ -14132,6 +14176,39 @@ class Api {
     return tmp9;
   }
 
+  bool? __roomSubscribeToUpdatesStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _roomSubscribeToUpdatesStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final tmp9 = tmp11 > 0;
+    return tmp9;
+  }
+
   RoomMessageDiff? __timelineStreamMessagesStreamStreamPoll(
     int boxed,
     int postCobject,
@@ -18441,6 +18518,16 @@ class Api {
       _RoomRoomIdStrReturn Function(
         int,
       )>();
+  late final _roomSubscribeToUpdatesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Room_subscribe_to_updates");
+
+  late final _roomSubscribeToUpdates = _roomSubscribeToUpdatesPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _roomIsSpacePtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint8 Function(
@@ -19076,6 +19163,19 @@ class Api {
             int,
             int,
           )>();
+  late final _timelineStreamMarkAsReadPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint8,
+          )>>("__TimelineStream_mark_as_read");
+
+  late final _timelineStreamMarkAsRead =
+      _timelineStreamMarkAsReadPtr.asFunction<
+          int Function(
+            int,
+            int,
+          )>();
   late final _timelineStreamToggleReactionPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -19273,6 +19373,37 @@ class Api {
           )>>("__Convo_timeline_stream");
 
   late final _convoTimelineStream = _convoTimelineStreamPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _convoNumUnreadNotificationCountPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint64 Function(
+            ffi.Int64,
+          )>>("__Convo_num_unread_notification_count");
+
+  late final _convoNumUnreadNotificationCount =
+      _convoNumUnreadNotificationCountPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _convoNumUnreadMessagesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint64 Function(
+            ffi.Int64,
+          )>>("__Convo_num_unread_messages");
+
+  late final _convoNumUnreadMessages = _convoNumUnreadMessagesPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _convoNumUnreadMentionsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint64 Function(
+            ffi.Int64,
+          )>>("__Convo_num_unread_mentions");
+
+  late final _convoNumUnreadMentions = _convoNumUnreadMentionsPtr.asFunction<
       int Function(
         int,
       )>();
@@ -27004,6 +27135,21 @@ class Api {
             int,
             int,
           )>();
+  late final _timelineStreamMarkAsReadFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _TimelineStreamMarkAsReadFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__TimelineStream_mark_as_read_future_poll");
+
+  late final _timelineStreamMarkAsReadFuturePoll =
+      _timelineStreamMarkAsReadFuturePollPtr.asFunction<
+          _TimelineStreamMarkAsReadFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _timelineStreamToggleReactionFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _TimelineStreamToggleReactionFuturePollReturn Function(
@@ -29956,6 +30102,23 @@ class Api {
   late final _reactionManagerSubscribeStreamStreamPoll =
       _reactionManagerSubscribeStreamStreamPollPtr.asFunction<
           _ReactionManagerSubscribeStreamStreamPollReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _roomSubscribeToUpdatesStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomSubscribeToUpdatesStreamPollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Room_subscribe_to_updates_stream_poll");
+
+  late final _roomSubscribeToUpdatesStreamPoll =
+      _roomSubscribeToUpdatesStreamPollPtr.asFunction<
+          _RoomSubscribeToUpdatesStreamPollReturn Function(
             int,
             int,
             int,
@@ -38546,6 +38709,22 @@ class Room {
     return tmp2;
   }
 
+  /// Whether new updates have been received for this room
+  Stream<bool> subscribeToUpdates() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomSubscribeToUpdates(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__Room_subscribe_to_updates_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeStream(tmp3_1, _api.__roomSubscribeToUpdatesStreamPoll);
+    return tmp2;
+  }
+
   /// whether this is a Space
   bool isSpace() {
     var tmp0 = 0;
@@ -39861,6 +40040,32 @@ class TimelineStream {
     return tmp20;
   }
 
+  /// Mark this room as read.
+  /// user_triggered indicate whether that was issued by the user actively
+  /// (e.g. by pushing a button) or implicitly upon smart read tracking
+  /// Returns a boolean indicating if we sent the request or not.
+  Future<bool> markAsRead(
+    bool userTriggered,
+  ) {
+    final tmp1 = userTriggered;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    final tmp3 = _api._timelineStreamMarkAsRead(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 =
+        _Box(_api, tmp5_0, "__TimelineStream_mark_as_read_future_drop");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 =
+        _nativeFuture(tmp5_1, _api.__timelineStreamMarkAsReadFuturePoll);
+    return tmp4;
+  }
+
   /// send reaction to event
   /// if sent twice, reaction is redacted
   Future<bool> toggleReaction(
@@ -40256,6 +40461,42 @@ class Convo {
     final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TimelineStream");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = TimelineStream._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// how many unread notifications for this chat
+  int numUnreadNotificationCount() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoNumUnreadNotificationCount(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// how many unread messages for this chat
+  int numUnreadMessages() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoNumUnreadMessages(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// how many unread mentions for this chat
+  int numUnreadMentions() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoNumUnreadMentions(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
     return tmp2;
   }
 
@@ -57351,6 +57592,21 @@ class _TimelineStreamSendMultipleReceiptsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _TimelineStreamMarkAsReadFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
 class _TimelineStreamToggleReactionFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -60330,6 +60586,13 @@ class _RsvpManagerSubscribeStreamStreamPollReturn extends ffi.Struct {
 }
 
 class _ReactionManagerSubscribeStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+}
+
+class _RoomSubscribeToUpdatesStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

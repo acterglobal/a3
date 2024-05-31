@@ -103,11 +103,12 @@ class SelectSpaceFormField extends ConsumerWidget {
       loading: () => Skeletonizer(
         child: Chip(
           avatar: ActerAvatar(
-            mode: DisplayMode.Space,
-            avatarInfo: AvatarInfo(
-              uniqueId: L10n.of(context).loading,
+            options: AvatarOptions(
+              AvatarInfo(
+                uniqueId: L10n.of(context).loading,
+              ),
+              size: 24,
             ),
-            size: 24,
           ),
           label: Text(L10n.of(context).loading),
         ),

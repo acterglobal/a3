@@ -41,13 +41,14 @@ class LoadingConvoCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final avatar = ActerAvatar(
-      mode: DisplayMode.Space,
-      avatarInfo: AvatarInfo(uniqueId: roomId),
-      avatarsInfo: showParent && parentRoomId != null
-          ? [
-              AvatarInfo(uniqueId: parentRoomId!, displayName: parentRoomId!),
-            ]
-          : [],
+      options: AvatarOptions(
+        AvatarInfo(uniqueId: roomId),
+        parentBadges: showParent && parentRoomId != null
+            ? [
+                AvatarInfo(uniqueId: parentRoomId!, displayName: parentRoomId!),
+              ]
+            : [],
+      ),
     );
 
     return LayoutBuilder(

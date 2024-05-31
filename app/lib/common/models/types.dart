@@ -13,3 +13,11 @@ typedef MemberWithProfile = ({Member member, ProfileData profile});
 enum AttachmentType { camera, image, audio, video, location, file }
 
 typedef AttachmentInfo = ({AttachmentType type, File file});
+
+enum UrgencyBadge {
+  urgent,
+  important,
+  unread,
+  read,
+  none,
+}

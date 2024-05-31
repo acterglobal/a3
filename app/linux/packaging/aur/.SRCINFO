@@ -1,0 +1,14 @@
+pkgbase = acter
+	pkgdesc = Casual Community Organizing
+	pkgver = 1.24.3516
+	pkgrel = 1
+	url = https://github.com/KRTirtho/spotube/
+	arch = x86_64
+	license = custom
+	depends = mpv
+  depends = libsecret
+  depends = jsoncpp
+  depends = xdg-user-dirs
+	source = https://github.com/acterglobal/a3/archive/refs/tags/v1.24.3516.tar.gz
+
+pkgname = acter

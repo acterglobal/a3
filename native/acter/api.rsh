@@ -989,6 +989,9 @@ object Room {
     /// the RoomId as a String
     fn room_id_str() -> string;
 
+    /// Whether new updates have been received for this room
+    fn subscribe_to_updates() -> Stream<bool>;
+
     /// whether this is a Space
     fn is_space() -> bool;
 
@@ -1148,6 +1151,12 @@ object TimelineStream {
     /// private_read_receipt: optional event id
     fn send_multiple_receipts(full_read: Option<string>, public_read_receipt: Option<string>, private_read_receipt: Option<string>) -> Future<Result<bool>>;
 
+    /// Mark this room as read.
+    /// user_triggered indicate whether that was issued by the user actively
+    /// (e.g. by pushing a button) or implicitly upon smart read tracking
+    /// Returns a boolean indicating if we sent the request or not.
+    fn mark_as_read(user_triggered: bool) -> Future<Result<bool>>;
+
     /// send reaction to event
     /// if sent twice, reaction is redacted
     fn toggle_reaction(event_id: string, key: string) -> Future<Result<bool>>;
@@ -1206,6 +1215,15 @@ object Convo {
 
     /// Get the timeline for the room
     fn timeline_stream() -> TimelineStream;
+
+    /// how many unread notifications for this chat
+    fn num_unread_notification_count() -> u64;
+
+    /// how many unread messages for this chat
+    fn num_unread_messages() -> u64;
+
+    /// how many unread mentions for this chat
+    fn num_unread_mentions() -> u64;
 
     /// The last message sent to the room
     fn latest_message() -> Option<RoomMessage>;

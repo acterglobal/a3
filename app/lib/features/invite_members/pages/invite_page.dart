@@ -110,13 +110,14 @@ class InvitePage extends ConsumerWidget {
     return Column(
       children: [
         ActerAvatar(
-          mode: DisplayMode.Space,
-          avatarInfo: AvatarInfo(
-            uniqueId: roomId,
-            displayName: roomProfile?.displayName,
-            avatar: roomProfile?.getAvatarImage(),
+          options: AvatarOptions(
+            AvatarInfo(
+              uniqueId: roomId,
+              displayName: roomProfile?.displayName,
+              avatar: roomProfile?.getAvatarImage(),
+            ),
+            size: 50,
           ),
-          size: 50,
         ),
         const SizedBox(height: 10),
         Text(roomProfile?.displayName ?? ''),
@@ -135,7 +136,10 @@ class InvitePage extends ConsumerWidget {
               iconData: Icons.people_alt_outlined,
               title: L10n.of(context).inviteSpaceMembersTitle,
               subTitle: L10n.of(context).inviteSpaceMembersSubtitle,
-              onTap: () => EasyLoading.showInfo(L10n.of(context).comingSoon),
+              onTap: () => context.pushNamed(
+                Routes.inviteSpaceMembers.name,
+                queryParameters: {'roomId': roomId.toString()},
+              ),
             ),
             MenuItemWidget(
               iconData: Icons.person_add_alt_1,

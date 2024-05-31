@@ -12,12 +12,11 @@ packages:
   acter_avatar:
     dependency: "direct main"
     description:
-      path: "."
-      ref: ben-fix-parent-avatar
-      resolved-ref: "98a2552e6b82b4d063e2be03796646f476c56551"
-      url: "https://github.com/acterglobal/acter-avatar"
-    source: git
-    version: "1.0.0+4"
+      name: acter_avatar
+      sha256: "3cd3b9824c70ef22ec98eeb5afe0e0fbcae788390c98c096a41a86ea4bca1799"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0+5"
   acter_flutter_sdk:
     dependency: "direct main"
     description:
@@ -45,10 +44,10 @@ packages:
     dependency: "direct main"
     description:
       name: appflowy_editor
-      sha256: caf8b03ece70683c1739e328aabe1478795b90f97c738994a4c9b7fb0e5d0eab
+      sha256: "031bacb46b254f364fd8361166bf217b4bdb7b4183ec8953857720cc9f26d93b"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.4"
+    version: "2.4.0"
   archive:
     dependency: transitive
     description:
@@ -398,10 +397,10 @@ packages:
     dependency: "direct main"
     description:
       name: device_info_plus
-      sha256: "77f757b789ff68e4eaf9c56d1752309bd9f7ad557cb105b938a7f8eb89e59110"
+      sha256: eead12d1a1ed83d8283ab4c2f3fca23ac4082f29f25f29dff0f758f57d06ec91
       url: "https://pub.dev"
     source: hosted
-    version: "9.1.2"
+    version: "10.1.0"
   device_info_plus_platform_interface:
     dependency: transitive
     description:
@@ -470,10 +469,10 @@ packages:
     dependency: "direct main"
     description:
       name: fc_native_video_thumbnail
-      sha256: "56f5fd4cb9b928b410363f80b13aca5ae503137bfa0d8c250821ce33d28351a4"
+      sha256: bb6cc5d846e1325fec1ea21511e12940877b1e681400e4f2fe2c8747b64c856d
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.0"
+    version: "0.8.0"
   ffi:
     dependency: transitive
     description:
@@ -494,10 +493,10 @@ packages:
     dependency: "direct main"
     description:
       name: file_picker
-      sha256: "1bbf65dd997458a08b531042ec3794112a6c39c07c37ff22113d2e7e4f81d4e4"
+      sha256: "29c90806ac5f5fb896547720b73b17ee9aed9bba540dc5d91fe29f8c5745b10a"
       url: "https://pub.dev"
     source: hosted
-    version: "6.2.1"
+    version: "8.0.3"
   file_selector_linux:
     dependency: transitive
     description:
@@ -1686,70 +1685,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.0"
-  rich_clipboard:
-    dependency: transitive
-    description:
-      name: rich_clipboard
-      sha256: "48bfc84a0d3eeec5692b3afd0277aa658a7c95d1dbda72bb623188fba6a8e253"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.1"
-  rich_clipboard_android:
-    dependency: transitive
-    description:
-      name: rich_clipboard_android
-      sha256: "72725b248d5359a7ad6db2fea5aef921015ba9a00af275cbce3721a4fef20356"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.1"
-  rich_clipboard_ios:
-    dependency: transitive
-    description:
-      name: rich_clipboard_ios
-      sha256: "9d6bc037463b1b24cb14ae35ee9d7530bd6b2bdb15b30909fb47a1af01bf3233"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0"
-  rich_clipboard_linux:
-    dependency: transitive
-    description:
-      name: rich_clipboard_linux
-      sha256: "0d0ab273afd60cb7314d01fdf3994fa01be2be79528f448241d9d70ea19b3db9"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.1"
-  rich_clipboard_macos:
-    dependency: transitive
-    description:
-      name: rich_clipboard_macos
-      sha256: "1aeb409e267576baaced347549e42dabc59895b10b2e09dabd9f753f469deb3e"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.1"
-  rich_clipboard_platform_interface:
-    dependency: transitive
-    description:
-      name: rich_clipboard_platform_interface
-      sha256: a1cbf255719cd4e340d33eca02b619d9ffb9cb571f1905e80b9345d4266e893d
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0"
-  rich_clipboard_web:
-    dependency: transitive
-    description:
-      name: rich_clipboard_web
-      sha256: c1dd2b75b8ce83fed0027828900bbfd5c33c0f8ff22efb266931db5aa7acffa0
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.2"
-  rich_clipboard_windows:
-    dependency: transitive
-    description:
-      name: rich_clipboard_windows
-      sha256: "633198bcd74642bb03c4a628c7e350ee18bb391cd8c6132152f7c97ab250e901"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.3"
   riverpod:
     dependency: "direct main"
     description:
@@ -1839,7 +1774,7 @@ packages:
     source: hosted
     version: "2.3.0"
   scroll_to_index:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: scroll_to_index
       sha256: b707546e7500d9f070d63e5acf74fd437ec7eeeb68d3412ef7b0afada0b4f176
@@ -1890,18 +1825,18 @@ packages:
     dependency: "direct main"
     description:
       name: share_plus
-      sha256: f74fc3f1cbd99f39760182e176802f693fa0ec9625c045561cfad54681ea93dd
+      sha256: ef3489a969683c4f3d0239010cc8b7a2a46543a8d139e111c06c558875083544
       url: "https://pub.dev"
     source: hosted
-    version: "7.2.1"
+    version: "9.0.0"
   share_plus_platform_interface:
     dependency: transitive
     description:
       name: share_plus_platform_interface
-      sha256: df08bc3a07d01f5ea47b45d03ffcba1fa9cd5370fb44b3f38c70e42cced0f956
+      sha256: "0f9e4418835d1b2c3ae78fdb918251959106cefdbc4dd43526e182f80e82f6d4"
       url: "https://pub.dev"
     source: hosted
-    version: "3.3.1"
+    version: "4.0.0"
   shared_preferences:
     dependency: "direct main"
     description:

@@ -29,31 +29,32 @@ class SpaceHeaderProfile extends ConsumerWidget {
           child: Row(
             children: <Widget>[
               ActerAvatar(
-                mode: DisplayMode.Space,
-                avatarInfo: AvatarInfo(
-                  uniqueId: spaceId,
-                  displayName: spaceProfile.profile.displayName,
-                  avatar: spaceProfile.profile.getAvatarImage(),
+                options: AvatarOptions(
+                  AvatarInfo(
+                    uniqueId: spaceId,
+                    displayName: spaceProfile.profile.displayName,
+                    avatar: spaceProfile.profile.getAvatarImage(),
+                  ),
+                  parentBadges: canonicalParent.valueOrNull != null
+                      ? [
+                          AvatarInfo(
+                            uniqueId: canonicalParent.valueOrNull!.space
+                                .getRoomIdStr(),
+                            displayName: canonicalParent
+                                .valueOrNull!.profile.displayName,
+                            avatar: canonicalParent.valueOrNull!.profile
+                                .getAvatarImage(),
+                          ),
+                        ]
+                      : [],
+                  size: 80,
+                  badgesSize: 30,
                 ),
-                avatarsInfo: canonicalParent.valueOrNull != null
-                    ? [
-                        AvatarInfo(
-                          uniqueId:
-                              canonicalParent.valueOrNull!.space.getRoomIdStr(),
-                          displayName:
-                              canonicalParent.valueOrNull!.profile.displayName,
-                          avatar: canonicalParent.valueOrNull!.profile
-                              .getAvatarImage(),
-                        ),
-                      ]
-                    : [],
                 onAvatarTap: () => goToSpace(context, spaceId),
-                onParentBadgeTap: () => goToSpace(
+                onParentBadgesTap: () => goToSpace(
                   context,
                   canonicalParent.valueOrNull!.space.getRoomIdStr(),
                 ),
-                badgeSize: 30,
-                size: 80,
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
