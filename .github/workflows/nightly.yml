@@ -502,18 +502,19 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: Linux x64
-      - name: Patch PKGBUILD file
+      - name: Patch PKGBUILD file 
         run: |
-          sed -i "s/%{{TAG}}%/${{ needs.tags.outputs.tag }}/" app/linux/packaging/aur/PKGBUILD-nightly
+          cp app/linux/packaging/aur/PKGBUILD-nightly PKGBUILD
+          sed -i "s/%{{TAG}}%/${{ needs.tags.outputs.tag }}/" PKGBUILD
           VERSION=$(echo ${{ needs.tags.outputs.tag }} | sed "s/-/./g")
-          sed -i "s/%{{VERSION}}%/$VERSION/" app/linux/packaging/aur/PKGBUILD-nightly
-          sed -i "s/%{{PKGREL}}%/1/" app/linux/packaging/aur/PKGBUILD-nightly
-          sed -i "s/%{{LINUX_MD5}}%/`md5sum acter-nightly-linux-x64-${{ needs.tags.outputs.tag }}.tar.bz2  | awk '{print $1}'`/" app/linux/packaging/aur/PKGBUILD-nightly
+          sed -i "s/%{{VERSION}}%/$VERSION/" PKGBUILD
+          sed -i "s/%{{PKGREL}}%/1/" PKGBUILD
+          sed -i "s/%{{LINUX_MD5}}%/`md5sum acter-nightly-linux-x64-${{ needs.tags.outputs.tag }}.tar.bz2  | awk '{print $1}'`/" PKGBUILD
       - uses: KSXGitHub/github-actions-deploy-aur@v2.7.1
         name: Publish to AUR
         with:
           pkgname: acter-nightly-bin
-          pkgbuild: app/linux/packaging/aur/PKGBUILD-nightly
+          pkgbuild: ./PKGBUILD
           commit_username: Sari
           commit_email: sari@acter.global
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
