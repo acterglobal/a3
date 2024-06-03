@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/spaces/has_space_permission.dart';
 import 'package:acter/common/widgets/visibility/room_visibilty_type.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -47,15 +48,20 @@ class _VisibilityAccessibilityPageState
     final space = ref.watch(spaceProvider(widget.spaceId));
     return space.when(
       data: (spaceData) {
-        return SingleChildScrollView(
-          child: Column(
-            children: [
-              _buildVisibilityUI(spaceData),
-              const SizedBox(height: 20),
-              if (ref.watch(selectedVisibilityProvider) ==
-                  RoomVisibility.SpaceVisible)
-                _buildSpaceWithAccess(spaceData),
-            ],
+        return HasSpacePermission(
+          spaceId: spaceData.getRoomIdStr(),
+          permission: 'CanUpdatePowerLevels',
+          fallback: _buildVisibilityUI(spaceData, hasPermission: false),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                _buildVisibilityUI(spaceData),
+                const SizedBox(height: 20),
+                if (ref.watch(selectedVisibilityProvider) ==
+                    RoomVisibility.SpaceVisible)
+                  _buildSpaceWithAccess(spaceData),
+              ],
+            ),
           ),
         );
       },
@@ -68,17 +74,22 @@ class _VisibilityAccessibilityPageState
     );
   }
 
-  Widget _buildVisibilityUI(Space space) {
+  Widget _buildVisibilityUI(Space space, {bool hasPermission = true}) {
     final selectedVisibility = ref.watch(selectedVisibilityProvider) ??
         (space.isPublic() ? RoomVisibility.Public : RoomVisibility.Private);
     return RoomVisibilityType(
       selectedVisibilityEnum: selectedVisibility,
-      onVisibilityChange: (value) {
-        ref.read(selectedVisibilityProvider.notifier).update((state) => value);
-        if (value == RoomVisibility.SpaceVisible && spaceList.isEmpty) {
-          selectSpace();
-        }
-      },
+      onVisibilityChange: !hasPermission
+          ? (value) =>
+              EasyLoading.showToast(L10n.of(context).visibilityNoPermission)
+          : (value) {
+              ref
+                  .read(selectedVisibilityProvider.notifier)
+                  .update((state) => value);
+              if (value == RoomVisibility.SpaceVisible && spaceList.isEmpty) {
+                selectSpace();
+              }
+            },
     );
   }
 

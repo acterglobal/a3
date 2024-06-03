@@ -2169,6 +2169,7 @@
   "selectVisibility": "Select Visibility",
   "visibilityTitle": "Visibility",
   "visibilitySubtitle": "Select who can join this space.",
+  "visibilityNoPermission": "You don't have necessary permissions to change this space visiblity",
   "public": "Public",
   "publicVisibilitySubtitle": "Open space for anyone, best for Invite only, best for yourself or teams communities",
   "privateVisibilitySubtitle": "Invite only, best for yourself or teams",
