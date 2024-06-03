@@ -193,7 +193,9 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
     try {
       final client = ref.read(alwaysClientProvider);
       await client.changePassword(
-          oldPassword.toString(), newPassword.toString());
+        oldPassword.toString(),
+        newPassword.toString(),
+      );
       EasyLoading.dismiss();
     } catch (err) {
       EasyLoading.dismiss();
