@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -18,6 +19,7 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -390,8 +392,23 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
 
   Future<void> onShareEvent(CalendarEvent event) async {
     try {
-      final tempDir = await getTemporaryDirectory();
       final filename = event.title().replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_');
+
+      if (isDesktop) {
+        String? outputFile = await FilePicker.platform.saveFile(
+          dialogTitle: 'Please select where to store the file',
+          fileName: '$filename.ics',
+        );
+
+        if (outputFile != null) {
+          // User canceled the picker
+          event.icalForSharing(outputFile);
+          EasyLoading.showToast('File saved to $outputFile');
+        }
+        return;
+      }
+
+      final tempDir = await getTemporaryDirectory();
       final icalPath = join(tempDir.path, '$filename.ics');
       event.icalForSharing(icalPath);
 

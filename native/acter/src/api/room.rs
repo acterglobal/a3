@@ -16,6 +16,7 @@ use acter_core::{
     statics::PURPOSE_FIELD_DEV,
 };
 use anyhow::{bail, Context, Result};
+use futures::Stream;
 use matrix_sdk::{
     deserialized_responses::SyncOrStrippedState,
     media::{MediaFormat, MediaRequest},
@@ -44,6 +45,7 @@ use ruma_events::{
     MessageLikeEventType, StateEvent, StateEventType, StaticEventContent,
 };
 use std::{io::Write, ops::Deref, path::PathBuf};
+use tokio_stream::{wrappers::BroadcastStream, StreamExt};
 use tracing::{info, warn};
 
 use crate::{
@@ -574,6 +576,10 @@ pub struct Room {
 impl Room {
     pub fn new(core: CoreClient, room: SdkRoom) -> Self {
         Room { core, room }
+    }
+
+    pub fn subscribe_to_updates(&self) -> impl Stream<Item = bool> {
+        BroadcastStream::new(self.room.subscribe_to_updates()).map(|f| f.is_ok())
     }
 
     pub async fn is_acter_space(&self) -> Result<bool> {
