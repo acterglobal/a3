@@ -420,7 +420,8 @@ async fn read_email_msg(user: &str, pswd: &str, dir: &str) -> Result<(String, St
         dir
     );
     let re = Regex::new(&pattern)?;
-    let caps = re.captures(&plain_body).context("should capture url")?;
+    let err = format!("should capture url: {}", &plain_body);
+    let caps = re.captures(&plain_body).context(err)?;
 
     let token = caps.get(1).map_or("", |m| m.as_str());
     let client_secret = caps.get(2).map_or("", |m| m.as_str());
