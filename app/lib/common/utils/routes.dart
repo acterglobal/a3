@@ -70,6 +70,7 @@ enum Routes {
   // -- space Settings
   spaceSettings('/:spaceId([!#][^/]+)/settings'),
   spaceSettingsApps('/:spaceId([!#][^/]+)/settings/app'),
+  spaceSettingsVisibility('/:spaceId([!#][^/]+)/settings/visibility'),
   spaceSettingsNotifications('/:spaceId([!#][^/]+)/settings/notifications'),
 
   // -- pins

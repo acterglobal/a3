@@ -3,6 +3,7 @@ import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/notifiers/space_notifiers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:logging/logging.dart';
@@ -91,6 +92,9 @@ final maybeSpaceInfoProvider =
 /// gives current context space id
 final selectedSpaceIdProvider =
     StateProvider.autoDispose<String?>((ref) => null);
+
+final selectedVisibilityProvider =
+    StateProvider.autoDispose<RoomVisibility?>((ref) => null);
 
 /// gives current context space details based on id, will throw null if id is null
 final selectedSpaceDetailsProvider =

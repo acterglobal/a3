@@ -2100,5 +2100,15 @@
   "otherSpaces": "Other Spaces",
   "invitingSpaceMembersLoading": "Inviting Space Members",
   "invitingSpaceMembersError": "Inviting Space Members Error: {error}",
-  "membersInvited": "{count} members invited"
+  "membersInvited": "{count} members invited",
+  "selectVisibility": "Select Visibility",
+  "visibilityTitle": "Visibility",
+  "visibilitySubtitle": "Select who can join this space.",
+  "public": "Public",
+  "publicVisibilitySubtitle": "Open space for anyone, best for Invite only, best for yourself or teams communities",
+  "privateVisibilitySubtitle": "Invite only, best for yourself or teams",
+  "limited": "Limited",
+  "limitedVisibilitySubtitle": "Anyone in current space and selected parent space can find and join",
+  "visibilityAndAccessibility": "Visibility and Accessibility",
+  "spaceWithAccess": "Space with access"
 }

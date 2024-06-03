@@ -131,11 +131,16 @@ class SpaceSettingsMenu extends ConsumerWidget {
                       L10n.of(context).spaceConfigurationDescription,
                     ),
                     leading: const Icon(Atlas.lab_appliance_thin),
-                    enabled: false,
                     onPressed: (context) {
                       isDesktop || size.width > 770
-                          ? context.goNamed(Routes.settingsLabs.name)
-                          : context.pushNamed(Routes.settingsLabs.name);
+                          ? context.goNamed(
+                              Routes.spaceSettingsVisibility.name,
+                              pathParameters: {'spaceId': spaceId},
+                            )
+                          : context.pushNamed(
+                              Routes.spaceSettingsVisibility.name,
+                              pathParameters: {'spaceId': spaceId},
+                            );
                     },
                   ),
                   SettingsTile(
