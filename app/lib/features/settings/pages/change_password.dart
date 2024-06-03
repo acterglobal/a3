@@ -192,10 +192,7 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
     EasyLoading.show(status: L10n.of(context).changingYourPassword);
     try {
       final client = ref.read(alwaysClientProvider);
-      await client.changePassword(
-        oldPassword.toString(),
-        newPassword.toString(),
-      );
+      await client.changePassword(oldPassword.text, newPassword.text);
       EasyLoading.dismiss();
     } catch (err) {
       EasyLoading.dismiss();
@@ -211,9 +208,7 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
   Widget _buildChangePasswordButton() {
     return ActerPrimaryActionButton(
       onPressed: () => _changePassword(context),
-      child: Text(
-        L10n.of(context).changePassword,
-      ),
+      child: Text(L10n.of(context).changePassword),
     );
   }
 }
