@@ -1,3 +1,4 @@
+import 'package:acter/common/models/types.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 
@@ -156,7 +157,7 @@ class ActivitiesPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // update the inner provider...
     // ignore: unused_local_variable
-    final allDone = ref.watch(hasActivitiesProvider) == HasActivities.none;
+    final allDone = ref.watch(hasActivitiesProvider) == UrgencyBadge.none;
     final children = [];
     bool renderEmptyState = true;
 

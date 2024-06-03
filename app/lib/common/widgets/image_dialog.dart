@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/widgets/download_button.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,6 +21,7 @@ class ImageDialog extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
+    final canShare = !isDesktop;
     return Dialog(
       insetPadding: EdgeInsets.zero,
       child: Container(
@@ -39,12 +41,14 @@ class ImageDialog extends ConsumerWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                IconButton(
-                  onPressed: () {
-                    Share.shareXFiles([XFile(imageFile.path)]);
-                  },
-                  icon: const Icon(Icons.share),
-                ),
+                if (canShare)
+                  IconButton(
+                    onPressed: () {
+                      Share.shareXFiles([XFile(imageFile.path)]);
+                    },
+                    icon: const Icon(Icons.share),
+                  ),
+                DownloadButton(file: imageFile),
                 IconButton(
                   onPressed: () => Navigator.pop(context),
                   icon: const Icon(Icons.close),

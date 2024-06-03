@@ -1,4 +1,6 @@
 import 'package:acter/common/models/attachment_media_state/attachment_media_state.dart';
+import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/widgets/download_button.dart';
 import 'package:acter/features/attachments/providers/attachment_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Attachment;
 import 'package:flutter/material.dart';
@@ -45,7 +47,11 @@ class FileView extends ConsumerWidget {
     return InkWell(
       onTap: () async {
         if (mediaState.mediaFile != null) {
-          Share.shareXFiles([XFile(mediaState.mediaFile!.path)]);
+          if (isDesktop) {
+            downloadFile(context, mediaState.mediaFile!);
+          } else {
+            Share.shareXFiles([XFile(mediaState.mediaFile!.path)]);
+          }
         } else {
           ref
               .read(attachmentMediaStateProvider(attachment).notifier)
@@ -90,7 +96,13 @@ class FileView extends ConsumerWidget {
   Widget fileUI(BuildContext context, AttachmentMediaState mediaState) {
     return InkWell(
       onTap: openView!
-          ? () => Share.shareXFiles([XFile(mediaState.mediaFile!.path)])
+          ? () async {
+              if (isDesktop) {
+                downloadFile(context, mediaState.mediaFile!);
+              } else {
+                Share.shareXFiles([XFile(mediaState.mediaFile!.path)]);
+              }
+            }
           : null,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(6),
