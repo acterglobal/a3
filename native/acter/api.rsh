@@ -1974,6 +1974,12 @@ object Space {
     /// set name of the room
     fn set_name(name: string) -> Future<Result<EventId>>;
 
+    /// is this a bookmarked space
+    fn is_bookmarked() -> bool;
+
+    /// set this a bookmarked space
+    fn set_bookmarked(is_bookmarked: bool) -> Future<Result<bool>>;
+
     /// the members currently in the space
     fn active_members_ids() -> Future<Result<Vec<string>>>;
 

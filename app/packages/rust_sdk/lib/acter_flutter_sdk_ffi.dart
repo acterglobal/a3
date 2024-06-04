@@ -8157,6 +8157,50 @@ class Api {
     return tmp7;
   }
 
+  bool? __spaceSetBookmarkedFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceSetBookmarkedFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   FfiListFfiString? __spaceActiveMembersIdsFuturePoll(
     int boxed,
     int postCobject,
@@ -22665,6 +22709,28 @@ class Api {
         int,
         int,
       )>();
+  late final _spaceIsBookmarkedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__Space_is_bookmarked");
+
+  late final _spaceIsBookmarked = _spaceIsBookmarkedPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _spaceSetBookmarkedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint8,
+          )>>("__Space_set_bookmarked");
+
+  late final _spaceSetBookmarked = _spaceSetBookmarkedPtr.asFunction<
+      int Function(
+        int,
+        int,
+      )>();
   late final _spaceActiveMembersIdsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -28389,6 +28455,21 @@ class Api {
         int,
         int,
       )>();
+  late final _spaceSetBookmarkedFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceSetBookmarkedFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Space_set_bookmarked_future_poll");
+
+  late final _spaceSetBookmarkedFuturePoll =
+      _spaceSetBookmarkedFuturePollPtr.asFunction<
+          _SpaceSetBookmarkedFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _spaceActiveMembersIdsFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _SpaceActiveMembersIdsFuturePollReturn Function(
@@ -46368,6 +46449,39 @@ class Space {
     return tmp6;
   }
 
+  /// is this a bookmarked space
+  bool isBookmarked() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceIsBookmarked(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// set this a bookmarked space
+  Future<bool> setBookmarked(
+    bool isBookmarked,
+  ) {
+    final tmp1 = isBookmarked;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    final tmp3 = _api._spaceSetBookmarked(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "__Space_set_bookmarked_future_drop");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(tmp5_1, _api.__spaceSetBookmarkedFuturePoll);
+    return tmp4;
+  }
+
   /// the members currently in the space
   Future<FfiListFfiString> activeMembersIds() {
     var tmp0 = 0;
@@ -58978,6 +59092,21 @@ class _SpaceSetNameFuturePollReturn extends ffi.Struct {
   @ffi.Uint64()
   external int arg4;
   @ffi.Int64()
+  external int arg5;
+}
+
+class _SpaceSetBookmarkedFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
   external int arg5;
 }
 
