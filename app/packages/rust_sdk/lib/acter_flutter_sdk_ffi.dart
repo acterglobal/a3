@@ -5725,7 +5725,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __convoSetFavoriteFuturePoll(
+  bool? __convoSetBookmarkedFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -5739,7 +5739,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _convoSetFavoriteFuturePoll(
+    final tmp6 = _convoSetBookmarkedFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -19705,24 +19705,24 @@ class Api {
       int Function(
         int,
       )>();
-  late final _convoIsFavoritePtr = _lookup<
+  late final _convoIsBookmarkedPtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint8 Function(
             ffi.Int64,
-          )>>("__Convo_is_favorite");
+          )>>("__Convo_is_bookmarked");
 
-  late final _convoIsFavorite = _convoIsFavoritePtr.asFunction<
+  late final _convoIsBookmarked = _convoIsBookmarkedPtr.asFunction<
       int Function(
         int,
       )>();
-  late final _convoSetFavoritePtr = _lookup<
+  late final _convoSetBookmarkedPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
             ffi.Uint8,
-          )>>("__Convo_set_favorite");
+          )>>("__Convo_set_bookmarked");
 
-  late final _convoSetFavorite = _convoSetFavoritePtr.asFunction<
+  late final _convoSetBookmarked = _convoSetBookmarkedPtr.asFunction<
       int Function(
         int,
         int,
@@ -27619,17 +27619,17 @@ class Api {
             int,
             int,
           )>();
-  late final _convoSetFavoriteFuturePollPtr = _lookup<
+  late final _convoSetBookmarkedFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConvoSetFavoriteFuturePollReturn Function(
+          _ConvoSetBookmarkedFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__Convo_set_favorite_future_poll");
+          )>>("__Convo_set_bookmarked_future_poll");
 
-  late final _convoSetFavoriteFuturePoll =
-      _convoSetFavoriteFuturePollPtr.asFunction<
-          _ConvoSetFavoriteFuturePollReturn Function(
+  late final _convoSetBookmarkedFuturePoll =
+      _convoSetBookmarkedFuturePollPtr.asFunction<
+          _ConvoSetBookmarkedFuturePollReturn Function(
             int,
             int,
             int,
@@ -41012,11 +41012,11 @@ class Convo {
     return tmp2;
   }
 
-  /// is this a favorite chat
-  bool isFavorite() {
+  /// is this a bookmarked chat
+  bool isBookmarked() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._convoIsFavorite(
+    final tmp1 = _api._convoIsBookmarked(
       tmp0,
     );
     final tmp3 = tmp1;
@@ -41024,24 +41024,24 @@ class Convo {
     return tmp2;
   }
 
-  /// set this a favorite chat
-  Future<bool> setFavorite(
-    bool isFavorite,
+  /// set this a bookmarked chat
+  Future<bool> setBookmarked(
+    bool isBookmarked,
   ) {
-    final tmp1 = isFavorite;
+    final tmp1 = isBookmarked;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1 ? 1 : 0;
-    final tmp3 = _api._convoSetFavorite(
+    final tmp3 = _api._convoSetBookmarked(
       tmp0,
       tmp2,
     );
     final tmp5 = tmp3;
     final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 = _Box(_api, tmp5_0, "__Convo_set_favorite_future_drop");
+    final tmp5_1 = _Box(_api, tmp5_0, "__Convo_set_bookmarked_future_drop");
     tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 = _nativeFuture(tmp5_1, _api.__convoSetFavoriteFuturePoll);
+    final tmp4 = _nativeFuture(tmp5_1, _api.__convoSetBookmarkedFuturePoll);
     return tmp4;
   }
 
@@ -58201,7 +58201,7 @@ class _ConvoMediaBinaryFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConvoSetFavoriteFuturePollReturn extends ffi.Struct {
+class _ConvoSetBookmarkedFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

@@ -1266,11 +1266,11 @@ object Convo {
     /// is this a direct message
     fn is_dm() -> bool;
 
-    /// is this a favorite chat
-    fn is_favorite() -> bool;
+    /// is this a bookmarked chat
+    fn is_bookmarked() -> bool;
 
-    /// set this a favorite chat
-    fn set_favorite(is_favorite: bool) -> Future<Result<bool>>;
+    /// set this a bookmarked chat
+    fn set_bookmarked(is_bookmarked: bool) -> Future<Result<bool>>;
 
     /// is this a low priority chat
     fn is_low_priority() -> bool;
