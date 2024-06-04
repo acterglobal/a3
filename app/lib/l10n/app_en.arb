@@ -2176,7 +2176,7 @@
   "limited": "Limited",
   "limitedVisibilitySubtitle": "Anyone in current space and selected parent space can find and join",
   "visibilityAndAccessibility": "Visibility and Accessibility",
-  "spaceWithAccess": "Space with access"
+  "spaceWithAccess": "Space with access",
   "@membersInvited": {},
   "changePassword": "Change Password",
   "changePasswordDescription": "Change your Password",
