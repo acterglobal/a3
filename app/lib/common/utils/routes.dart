@@ -1,7 +1,6 @@
 enum Routes {
   // primary & quickjump actions
   // actionAddTask('/actions/addTask'),
-  actionAddTaskList('/actions/addTaskList'),
   actionAddPin('/actions/addPin'),
   actionAddEvent('/actions/addEvent'),
   actionCreateSuperInvite('/actions/createSuperInvite'),

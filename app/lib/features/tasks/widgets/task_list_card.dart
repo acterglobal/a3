@@ -4,6 +4,7 @@ import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/tasks/providers/tasks.dart';
+import 'package:acter/features/tasks/sheets/create_update_task_item.dart';
 import 'package:acter/features/tasks/widgets/task_entry.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -35,6 +36,7 @@ class TaskListCard extends ConsumerStatefulWidget {
 
 class _TaskListCardState extends ConsumerState<TaskListCard> {
   bool showInlineAddTask = false;
+
   @override
   Widget build(BuildContext context) {
     final taskList = widget.taskList;
@@ -185,6 +187,7 @@ class _TaskListCardState extends ConsumerState<TaskListCard> {
 class _InlineTaskAdd extends StatefulWidget {
   final Function() cancel;
   final TaskList taskList;
+
   const _InlineTaskAdd({required this.cancel, required this.taskList});
 
   @override
@@ -214,11 +217,24 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
         controller: _textCtrl,
         decoration: InputDecoration(
           prefixIcon: const Icon(Atlas.plus_circle_thin),
-          focusedBorder: const UnderlineInputBorder(),
-          errorBorder: const UnderlineInputBorder(),
-          enabledBorder: const UnderlineInputBorder(),
-          labelText: L10n.of(context).titleTheNewTask,
+          focusedBorder: InputBorder.none,
+          errorBorder: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          hintText: L10n.of(context).titleTheNewTask,
           suffix: IconButton(
+            onPressed: () => showCreateUpdateTaskItemBottomSheet(
+              context,
+              taskList: widget.taskList,
+              taskName: _textCtrl.text,
+              cancel: widget.cancel,
+            ),
+            padding: EdgeInsets.zero,
+            icon: const Icon(
+              Atlas.arrows_up_right_down_left,
+              size: 18,
+            ),
+          ),
+          suffixIcon: IconButton(
             key: Key('task-list-$tlId-add-task-inline-cancel'),
             onPressed: widget.cancel,
             icon: const Icon(
