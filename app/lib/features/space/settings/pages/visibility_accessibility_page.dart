@@ -75,8 +75,9 @@ class _VisibilityAccessibilityPageState
   }
 
   Widget _buildVisibilityUI(Space space, {bool hasPermission = true}) {
-    final selectedVisibility = ref.watch(selectedVisibilityProvider) ??
-        (space.isPublic() ? RoomVisibility.Public : RoomVisibility.Private);
+    final joinRule = space.joinRuleStr();
+    final selectedVisibility =
+        ref.watch(selectedVisibilityProvider) ?? _initialVisibility(joinRule);
     return RoomVisibilityType(
       selectedVisibilityEnum: selectedVisibility,
       onVisibilityChange: !hasPermission
@@ -91,6 +92,19 @@ class _VisibilityAccessibilityPageState
               }
             },
     );
+  }
+
+  RoomVisibility _initialVisibility(String joinRule) {
+    switch (joinRule) {
+      case 'public':
+        return RoomVisibility.Public;
+      case 'restricted':
+        return RoomVisibility.SpaceVisible;
+      case 'invite':
+        return RoomVisibility.Private;
+      default:
+        return RoomVisibility.Private;
+    }
   }
 
   Widget _buildSpaceWithAccess(Space spaceData) {

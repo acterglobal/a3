@@ -33,62 +33,65 @@ class SpaceSettingsMenu extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            ...spaceProfile.when(
-              data: (spaceProfile) => [
-                ActerAvatar(
-                  options: AvatarOptions(
-                    AvatarInfo(
-                      uniqueId: spaceId,
-                      displayName: spaceProfile.profile.displayName,
-                      avatar: spaceProfile.profile.getAvatarImage(),
+        title: FittedBox(
+          fit: BoxFit.fitWidth,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              ...spaceProfile.when(
+                data: (spaceProfile) => [
+                  ActerAvatar(
+                    options: AvatarOptions(
+                      AvatarInfo(
+                        uniqueId: spaceId,
+                        displayName: spaceProfile.profile.displayName,
+                        avatar: spaceProfile.profile.getAvatarImage(),
+                      ),
+                      parentBadges: canonicalParent.valueOrNull != null
+                          ? [
+                              AvatarInfo(
+                                uniqueId: canonicalParent.valueOrNull!.space
+                                    .getRoomIdStr(),
+                                displayName: canonicalParent
+                                    .valueOrNull!.profile.displayName,
+                                avatar: canonicalParent.valueOrNull!.profile
+                                    .getAvatarImage(),
+                              ),
+                            ]
+                          : [],
+                      badgesSize: 18,
                     ),
-                    parentBadges: canonicalParent.valueOrNull != null
-                        ? [
-                            AvatarInfo(
-                              uniqueId: canonicalParent.valueOrNull!.space
-                                  .getRoomIdStr(),
-                              displayName: canonicalParent
-                                  .valueOrNull!.profile.displayName,
-                              avatar: canonicalParent.valueOrNull!.profile
-                                  .getAvatarImage(),
-                            ),
-                          ]
-                        : [],
-                    badgesSize: 18,
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 15),
-                  child: Text(spaceProfile.profile.displayName ?? spaceId),
-                ),
-              ],
-              error: (e, s) => [
-                Text(L10n.of(context).loadingFailed(e)),
-              ],
-              loading: () => [
-                ActerAvatar(
-                  options: AvatarOptions(
-                    AvatarInfo(
-                      uniqueId: spaceId,
-                      tooltip: TooltipStyle.None,
+                  Padding(
+                    padding: const EdgeInsets.only(left: 15),
+                    child: Text(spaceProfile.profile.displayName ?? spaceId),
+                  ),
+                ],
+                error: (e, s) => [
+                  Text(L10n.of(context).loadingFailed(e)),
+                ],
+                loading: () => [
+                  ActerAvatar(
+                    options: AvatarOptions(
+                      AvatarInfo(
+                        uniqueId: spaceId,
+                        tooltip: TooltipStyle.None,
+                      ),
+                      size: 35,
                     ),
-                    size: 35,
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 15),
-                  child: Text(spaceId),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 15),
-              child: Text(L10n.of(context).settings),
-            ),
-          ],
+                  Padding(
+                    padding: const EdgeInsets.only(left: 15),
+                    child: Text(spaceId),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 15),
+                child: Text(L10n.of(context).settings),
+              ),
+            ],
+          ),
         ),
       ),
       body: Center(

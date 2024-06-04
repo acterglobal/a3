@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -16,7 +16,8 @@ class VisibilityChip extends ConsumerWidget {
     final space = ref.watch(spaceProvider(roomId));
     return space.when(
       data: (space) {
-        return renderSpace(context, space);
+        final joinRule = space.joinRuleStr();
+        return renderSpaceChip(context, joinRule);
       },
       error: (error, st) => Chip(
         label: Text(L10n.of(context).loadingFailed(error)),
@@ -34,15 +35,26 @@ class VisibilityChip extends ConsumerWidget {
     );
   }
 
-  Widget renderSpace(BuildContext context, Space space) {
+  Widget renderSpaceChip(BuildContext context, String joinRule) {
+    IconData icon = Icons.lock;
+    String label = L10n.of(context).private;
+    switch (joinRule) {
+      case 'public':
+        icon = Icons.language;
+        label = L10n.of(context).public;
+        break;
+      case 'restricted':
+        icon = Atlas.users;
+        label = L10n.of(context).limited;
+      case 'invite':
+        break;
+    }
     return Chip(
       avatar: Icon(
-        space.isPublic() ? Icons.language : Icons.lock,
+        icon,
         color: Theme.of(context).colorScheme.neutral6,
       ),
-      label: Text(
-        space.isPublic() ? L10n.of(context).public : L10n.of(context).private,
-      ),
+      label: Text(label),
     );
   }
 }
