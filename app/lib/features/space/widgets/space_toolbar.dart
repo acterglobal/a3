@@ -19,6 +19,8 @@ class SpaceToolbar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
+    final isBookmarked = ref.watch(spaceProvider(spaceId).select(
+        (asyncValue) => (asyncValue.valueOrNull?.isBookmarked()) == true,),);
     final invited =
         ref.watch(spaceInvitedMembersProvider(spaceId)).valueOrNull ?? [];
     final showInviteBtn = membership?.canString('CanInvite') == true;
@@ -74,6 +76,12 @@ class SpaceToolbar extends ConsumerWidget {
                 child: Text(L10n.of(context).invite),
               )
             : const SizedBox.shrink(),
+        IconButton(
+          icon: Icon(isBookmarked ? Icons.bookmark : Icons.bookmark_border),
+          onPressed: () async =>
+              await (await ref.read(spaceProvider(spaceId).future))
+                  .setBookmarked(!isBookmarked),
+        ),
         PopupMenuButton(
           icon: Icon(
             key: optionsMenu,
