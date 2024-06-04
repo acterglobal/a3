@@ -141,6 +141,22 @@ class SettingsMenu extends ConsumerWidget {
                   ? context.goNamed(Routes.blockedUsers.name)
                   : context.pushNamed(Routes.blockedUsers.name),
             ),
+            MenuItemWidget(
+              iconData: Atlas.passcode,
+              iconColor: routedColor(context, ref, Routes.changePassword),
+              title: L10n.of(context).changePassword,
+              subTitle: L10n.of(context).changePasswordDescription,
+              titleStyles: TextStyle(
+                color: routedColor(
+                  context,
+                  ref,
+                  Routes.changePassword,
+                ),
+              ),
+              onTap: () => shouldGoNotNamed
+                  ? context.goNamed(Routes.changePassword.name)
+                  : context.pushNamed(Routes.changePassword.name),
+            ),
           ],
         ),
         _settingMenuSection(
