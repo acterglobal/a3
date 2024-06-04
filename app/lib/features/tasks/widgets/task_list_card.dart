@@ -1,3 +1,4 @@
+import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
@@ -9,6 +10,7 @@ import 'package:acter/features/tasks/widgets/task_entry.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -136,19 +138,17 @@ class _TaskListCardState extends ConsumerState<TaskListCard> {
                     );
                   } else {
                     children.add(
-                      Padding(
+                      Container(
+                        alignment: Alignment.centerLeft,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 24,
                           vertical: 8,
                         ),
-                        child: OutlinedButton(
+                        child: ActerInlineTextButton(
                           key: Key('task-list-$tlId-add-task-inline'),
                           onPressed: () =>
                               {setState(() => showInlineAddTask = true)},
-                          child: Text(
-                            L10n.of(context).addTask,
-                            style: Theme.of(context).textTheme.bodySmall!,
-                          ),
+                          child: Text(L10n.of(context).addTask),
                         ),
                       ),
                     );
