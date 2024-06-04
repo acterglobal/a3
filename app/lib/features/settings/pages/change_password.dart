@@ -193,7 +193,11 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
     try {
       final client = ref.read(alwaysClientProvider);
       await client.changePassword(oldPassword.text, newPassword.text);
-      EasyLoading.dismiss();
+      oldPassword.clear();
+      newPassword.clear();
+      confirmPassword.clear();
+      if (!context.mounted) return;
+      EasyLoading.showSuccess(L10n.of(context).passwordChangedSuccessfully);
     } catch (err) {
       EasyLoading.dismiss();
       _log.severe('Change password failed', err);

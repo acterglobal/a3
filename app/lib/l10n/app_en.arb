@@ -2177,5 +2177,6 @@
   "emptyConfirmPassword": "Please enter confirm password",
   "validateSamePassword": "Password must be same",
   "changingYourPassword": "Changing your password",
-  "changePasswordFailed": "Change password failed: {error}"
+  "changePasswordFailed": "Change password failed: {error}",
+  "passwordChangedSuccessfully": "Password changed successfully"
 }
