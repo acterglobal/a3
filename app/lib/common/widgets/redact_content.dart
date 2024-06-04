@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::common::redact');
@@ -114,6 +115,7 @@ class RedactContentWidget extends ConsumerWidget {
         return;
       }
       EasyLoading.showToast(L10n.of(ctx).contentSuccessfullyRemoved);
+      if (ctx.canPop()) ctx.pop();
       if (onSuccess != null) {
         onSuccess!();
       }

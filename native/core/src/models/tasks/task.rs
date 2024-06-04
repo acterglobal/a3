@@ -44,6 +44,10 @@ impl Task {
         &self.meta.room_id
     }
 
+    pub fn sender(&self) -> &UserId {
+        &self.meta.sender
+    }
+
     pub fn is_done(&self) -> bool {
         self.inner
             .progress_percent
