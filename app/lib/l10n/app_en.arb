@@ -2177,4 +2177,17 @@
   "limitedVisibilitySubtitle": "Anyone in current space and selected parent space can find and join",
   "visibilityAndAccessibility": "Visibility and Accessibility",
   "spaceWithAccess": "Space with access"
+  "@membersInvited": {},
+  "changePassword": "Change Password",
+  "changePasswordDescription": "Change your Password",
+  "oldPassword": "Old Password",
+  "newPassword": "New Password",
+  "confirmPassword": "Confirm Password",
+  "emptyOldPassword": "Please enter old password",
+  "emptyNewPassword": "Please enter new password",
+  "emptyConfirmPassword": "Please enter confirm password",
+  "validateSamePassword": "Password must be same",
+  "changingYourPassword": "Changing your password",
+  "changePasswordFailed": "Change password failed: {error}",
+  "passwordChangedSuccessfully": "Password changed successfully"
 }

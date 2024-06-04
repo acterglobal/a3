@@ -1,6 +1,6 @@
 use acter_core::{
     events::comments::CommentBuilder,
-    models::{self, ActerModel, AnyActerModel},
+    models::{self, can_redact, ActerModel, AnyActerModel},
 };
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
@@ -63,6 +63,15 @@ impl Comment {
             room: self.room.clone(),
             inner: self.inner.reply_builder(),
         })
+    }
+
+    pub async fn can_redact(&self) -> Result<bool> {
+        let sender = self.sender().to_owned();
+        let room = self.room.clone();
+
+        RUNTIME
+            .spawn(async move { Ok(can_redact(&room, &sender).await?) })
+            .await?
     }
 
     pub fn sender(&self) -> OwnedUserId {

@@ -410,6 +410,9 @@ object NewsEntry {
 
     /// get event id
     fn event_id() -> EventId;
+    
+    /// whether or not this user can redact this item
+    fn can_redact() -> Future<Result<bool>>;
 
     /// get the reaction manager
     fn reactions() -> Future<Result<ReactionManager>>;
@@ -518,6 +521,9 @@ object ActerPin {
 
     /// replace the current pin with one with the latest state
     fn refresh() -> Future<Result<ActerPin>>;
+
+    /// whether or not this user can redact this item
+    fn can_redact() -> Future<Result<bool>>;
 
     /// get the comments manager for this pin
     fn comments() -> Future<Result<CommentsManager>>;
@@ -1315,6 +1321,8 @@ object Convo {
 
     /// redact an event from this room
     /// reason - The reason for the event being reported (optional).
+    /// it's the callers job to ensure the person has the privileges to
+    /// redact that content.
     fn redact_content(event_id: string, reason: Option<string>) -> Future<Result<EventId>>;
 
     fn is_joined() -> bool;
@@ -1539,6 +1547,9 @@ object Task {
 
     /// replace the current task with one with the latest state
     fn refresh() -> Future<Result<Task>>;
+    
+    /// whether or not this user can redact this item
+    fn can_redact() -> Future<Result<bool>>;
 
     /// get the comments manager for this task
     fn comments() -> Future<Result<CommentsManager>>;
@@ -1702,6 +1713,9 @@ object TaskList {
 
     /// replace the current task with one with the latest state
     fn refresh() -> Future<Result<TaskList>>;
+
+    /// whether or not this user can redact this item
+    fn can_redact() -> Future<Result<bool>>;
 
     /// the space this TaskList belongs to
     fn space() -> Space;
@@ -2054,6 +2068,8 @@ object Space {
 
     /// redact an event from this room
     /// reason - The reason for the event being reported (optional).
+    /// it's the callers job to ensure the person has the privileges to
+    /// redact that content.
     fn redact_content(event_id: string, reason: Option<string>) -> Future<Result<EventId>>;
 }
 

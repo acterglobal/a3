@@ -47,6 +47,10 @@ impl TaskList {
         format!("{}::{}", self.meta.event_id, KEYS::TASKS::TASKS)
     }
 
+    pub fn sender(&self) -> &UserId {
+        &self.meta.sender
+    }
+
     pub fn redacted(&self) -> bool {
         false
     }

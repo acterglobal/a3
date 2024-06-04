@@ -92,6 +92,7 @@ enum Routes {
   settingLanguage('/settings/language'),
   settingNotifications('/settings/notifications'),
   blockedUsers('/settings/blockedUsers'),
+  changePassword('/settings/changePassword'),
   emailAddresses('/settings/emailAddresses'),
   info('/info'),
   licenses('/info/licenses'),

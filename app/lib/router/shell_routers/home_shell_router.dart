@@ -11,6 +11,7 @@ import 'package:acter/features/invite_members/pages/share_invite_code.dart';
 import 'package:acter/features/pins/pages/pin_page.dart';
 import 'package:acter/features/pins/pages/pins_page.dart';
 import 'package:acter/features/settings/pages/backup_page.dart';
+import 'package:acter/features/settings/pages/change_password.dart';
 import 'package:acter/features/settings/pages/chat_settings_page.dart';
 import 'package:acter/features/settings/pages/language_select_page.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
@@ -205,7 +206,17 @@ List<RouteBase> makeHomeShellRoutes(ref) {
         );
       },
     ),
-
+    GoRoute(
+      name: Routes.changePassword.name,
+      path: Routes.changePassword.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: const ChangePasswordPage(),
+        );
+      },
+    ),
     GoRoute(
       name: Routes.spaceRelatedSpaces.name,
       path: Routes.spaceRelatedSpaces.route,

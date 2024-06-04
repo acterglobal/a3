@@ -283,13 +283,7 @@ class ActerSdk {
     await prefs.remove('$_sessionKey::currentClientIdx');
   }
 
-  Future<void> _restore() async {
-    if (_clients.isNotEmpty) {
-      _log.warning('double restore. ignore');
-      return;
-    }
-    String appDocPath = await appDir();
-    String appCachePath = await appCacheDir();
+  static Future<List<String>?> sessionKeys() async {
     int delayedCounter = 0;
     while (!await storage.isCupertinoProtectedDataAvailable()) {
       if (delayedCounter > 10) {
@@ -331,27 +325,43 @@ class ActerSdk {
 
     if (sessionsStr == null) {
       _log.info('Secure Store: session key not found, checking for migration');
-      // not yet set. let's see if we maybe want to migrate instead:
-      await _maybeMigrateFromPrefs(appDocPath, appCachePath);
-      return;
+      return null;
     }
 
     _log.info('Secure Store: decoding sessions');
     final List<dynamic> sessionKeys = json.decode(sessionsStr);
     _log.info('Secure Store: decoding sessions: ${sessionKeys.length} found');
-    for (final deviceId in sessionKeys) {
-      _log.info('Secure Store[$deviceId]: attempting to read session');
-      final token = await storage.read(key: deviceId as String);
-      if (token != null) {
-        _log.info('Secure Store[$deviceId]: token found');
-        ffi.Client client =
-            await _api.loginWithToken(appDocPath, appCachePath, token);
-        _log.info('Secure Store[$deviceId]: login successful');
-        _clients.add(client);
-      } else {
-        _log.severe(
-          'Secure Store[$deviceId]: not found. despite in session list',
-        );
+    return sessionKeys.map((e) => e as String).toList();
+  }
+
+  Future<void> _restore() async {
+    if (_clients.isNotEmpty) {
+      _log.warning('double restore. ignore');
+      return;
+    }
+    String appDocPath = await appDir();
+    String appCachePath = await appCacheDir();
+    List<String>? deviceIds = await sessionKeys();
+    if (deviceIds == null) {
+      // not yet set. let's see if we maybe want to migrate instead:
+      await _maybeMigrateFromPrefs(appDocPath, appCachePath);
+      deviceIds = await sessionKeys();
+    }
+    if (deviceIds != null && deviceIds.isNotEmpty) {
+      for (final deviceId in deviceIds) {
+        _log.info('Secure Store[$deviceId]: attempting to read session');
+        final token = await storage.read(key: deviceId);
+        if (token != null) {
+          _log.info('Secure Store[$deviceId]: token found');
+          ffi.Client client =
+              await _api.loginWithToken(appDocPath, appCachePath, token);
+          _log.info('Secure Store[$deviceId]: login successful');
+          _clients.add(client);
+        } else {
+          _log.severe(
+            'Secure Store[$deviceId]: not found. despite in session list',
+          );
+        }
       }
     }
     final key = await storage.read(key: '$_sessionKey::currentClientIdx');

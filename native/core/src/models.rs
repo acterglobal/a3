@@ -285,6 +285,19 @@ impl EventMeta {
     }
 }
 
+pub async fn can_redact(room: &matrix_sdk::Room, sender_id: &UserId) -> crate::error::Result<bool> {
+    let client = room.client();
+    let Some(user_id) = client.user_id() else {
+        // not logged in means we can't redact
+        return Ok(false);
+    };
+    Ok(if sender_id == user_id {
+        room.can_user_redact_own(user_id).await?
+    } else {
+        room.can_user_redact_other(user_id).await?
+    })
+}
+
 #[enum_dispatch]
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum AnyActerModel {

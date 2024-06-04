@@ -3,7 +3,7 @@ use acter_core::{
         news::{self, FallbackNewsContent, NewsContent, NewsEntryBuilder, NewsSlideBuilder},
         Colorize, ColorizeBuilder, ObjRef,
     },
-    models::{self, ActerModel, AnyActerModel, ReactionManager},
+    models::{self, can_redact, ActerModel, AnyActerModel, ReactionManager},
     statics::KEYS,
 };
 use anyhow::{bail, Context, Result};
@@ -411,6 +411,15 @@ impl NewsEntry {
                 };
                 NewsEntry::new(client, room, content).await
             })
+            .await?
+    }
+
+    pub async fn can_redact(&self) -> Result<bool> {
+        let sender = self.content.sender().to_owned();
+        let room = self.room.clone();
+
+        RUNTIME
+            .spawn(async move { Ok(can_redact(&room, &sender).await?) })
             .await?
     }
 
