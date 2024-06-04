@@ -415,8 +415,11 @@ async fn read_email_msg(user: &str, pswd: &str, dir: &str) -> Result<(String, St
 
     info!("plain body: {}", plain_body);
 
+    // starts with "https://localhost" on local synapse
+    // starts with "http://localhost:8118" on github actions workflow
+    // FIXME: these 2 prefixes can be unified into one, if something is modified in email config of homeserver.yaml???
     let pattern = format!(
-        r"(?m)^.*https://localhost/{}/email/submit_token\?token=(.*)&client_secret=(.*)&sid=(.*)\n.*$",
+        r"(?m)^.*(https://localhost|http://localhost:8118)/{}/email/submit_token\?token=(.*)&client_secret=(.*)&sid=(.*)\n.*$",
         dir
     );
     let re = Regex::new(&pattern)?;
