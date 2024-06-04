@@ -48,6 +48,7 @@ class _VisibilityAccessibilityPageState
     final space = ref.watch(spaceProvider(widget.spaceId));
     return space.when(
       data: (spaceData) {
+        final spaceId = spaceData.getRoomIdStr();
         return HasSpacePermission(
           spaceId: spaceData.getRoomIdStr(),
           permission: 'CanUpdatePowerLevels',
@@ -57,7 +58,7 @@ class _VisibilityAccessibilityPageState
               children: [
                 _buildVisibilityUI(spaceData),
                 const SizedBox(height: 20),
-                if (ref.watch(selectedVisibilityProvider) ==
+                if (ref.watch(spaceVisibilityProvider(spaceId)).value ==
                     RoomVisibility.SpaceVisible)
                   _buildSpaceWithAccess(spaceData),
               ],
@@ -75,36 +76,32 @@ class _VisibilityAccessibilityPageState
   }
 
   Widget _buildVisibilityUI(Space space, {bool hasPermission = true}) {
-    final joinRule = space.joinRuleStr();
-    final selectedVisibility =
-        ref.watch(selectedVisibilityProvider) ?? _initialVisibility(joinRule);
-    return RoomVisibilityType(
-      selectedVisibilityEnum: selectedVisibility,
-      onVisibilityChange: !hasPermission
-          ? (value) =>
-              EasyLoading.showToast(L10n.of(context).visibilityNoPermission)
-          : (value) {
-              ref
-                  .read(selectedVisibilityProvider.notifier)
-                  .update((state) => value);
-              if (value == RoomVisibility.SpaceVisible && spaceList.isEmpty) {
-                selectSpace();
-              }
-            },
+    final spaceId = space.getRoomIdStr();
+    final selectedVisibility = ref.watch(spaceVisibilityProvider(spaceId));
+    return selectedVisibility.when(
+      data: (visibility) {
+        return RoomVisibilityType(
+          selectedVisibilityEnum: visibility,
+          onVisibilityChange: !hasPermission
+              ? (value) =>
+                  EasyLoading.showToast(L10n.of(context).visibilityNoPermission)
+              : (value) {
+                  if (value == RoomVisibility.SpaceVisible &&
+                      spaceList.isEmpty) {
+                    selectSpace();
+                  }
+                },
+        );
+      },
+      error: (e, st) => const RoomVisibilityType(
+        selectedVisibilityEnum: RoomVisibility.Private,
+      ),
+      loading: () => const Skeletonizer(
+        child: RoomVisibilityType(
+          selectedVisibilityEnum: RoomVisibility.Private,
+        ),
+      ),
     );
-  }
-
-  RoomVisibility _initialVisibility(String joinRule) {
-    switch (joinRule) {
-      case 'public':
-        return RoomVisibility.Public;
-      case 'restricted':
-        return RoomVisibility.SpaceVisible;
-      case 'invite':
-        return RoomVisibility.Private;
-      default:
-        return RoomVisibility.Private;
-    }
   }
 
   Widget _buildSpaceWithAccess(Space spaceData) {

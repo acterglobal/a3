@@ -19,6 +19,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
+// user selected visibility provider
+final _selectedVisibilityProvider =
+    StateProvider.autoDispose<RoomVisibility?>((ref) => null);
+
 class CreateSpacePage extends ConsumerStatefulWidget {
   final String? initialParentsSpaceId;
 
@@ -47,11 +51,11 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       // SPACE VISIBLE : If parent space is selected
       if (widget.initialParentsSpaceId != null) {
         ref
-            .read(selectedVisibilityProvider.notifier)
+            .read(_selectedVisibilityProvider.notifier)
             .update((state) => RoomVisibility.SpaceVisible);
       } else {
         ref
-            .read(selectedVisibilityProvider.notifier)
+            .read(_selectedVisibilityProvider.notifier)
             .update((state) => RoomVisibility.Private);
       }
 
@@ -59,11 +63,11 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       ref.listenManual(selectedSpaceIdProvider, (previous, next) {
         if (next != null) {
           ref
-              .read(selectedVisibilityProvider.notifier)
+              .read(_selectedVisibilityProvider.notifier)
               .update((state) => RoomVisibility.SpaceVisible);
         } else {
           ref
-              .read(selectedVisibilityProvider.notifier)
+              .read(_selectedVisibilityProvider.notifier)
               .update((state) => RoomVisibility.Private);
         }
       });
@@ -224,7 +228,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
         const SizedBox(height: 10),
         InkWell(
           onTap: () async {
-            final spaceVisibility = ref.read(selectedVisibilityProvider);
+            final spaceVisibility = ref.read(_selectedVisibilityProvider);
             final selected = await selectVisibilityDrawer(
               context: context,
               selectedVisibilityEnum: spaceVisibility,
@@ -233,7 +237,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
             );
             if (selected != null) {
               ref
-                  .read(selectedVisibilityProvider.notifier)
+                  .read(_selectedVisibilityProvider.notifier)
                   .update((state) => selected);
             }
           },
@@ -244,7 +248,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   }
 
   Widget selectedVisibility() {
-    final selectedVisibility = ref.watch(selectedVisibilityProvider);
+    final selectedVisibility = ref.watch(_selectedVisibilityProvider);
     switch (selectedVisibility) {
       case RoomVisibility.Public:
         return RoomVisibilityItem(
@@ -311,7 +315,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       if (parentRoomId != null) {
         config.setParent(parentRoomId);
       }
-      final roomVisibility = ref.read(selectedVisibilityProvider);
+      final roomVisibility = ref.read(_selectedVisibilityProvider);
       if (roomVisibility != null) {
         config.setVisibility(roomVisibility.name);
       }

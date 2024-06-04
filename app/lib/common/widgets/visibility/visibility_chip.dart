@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,11 +14,10 @@ class VisibilityChip extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final space = ref.watch(spaceProvider(roomId));
-    return space.when(
-      data: (space) {
-        final joinRule = space.joinRuleStr();
-        return renderSpaceChip(context, joinRule);
+    final spaceVisibility = ref.watch(spaceVisibilityProvider(roomId));
+    return spaceVisibility.when(
+      data: (visibility) {
+        return renderSpaceChip(context, visibility);
       },
       error: (error, st) => Chip(
         label: Text(L10n.of(context).loadingFailed(error)),
@@ -35,18 +35,18 @@ class VisibilityChip extends ConsumerWidget {
     );
   }
 
-  Widget renderSpaceChip(BuildContext context, String joinRule) {
+  Widget renderSpaceChip(BuildContext context, RoomVisibility? visibility) {
     IconData icon = Icons.lock;
     String label = L10n.of(context).private;
-    switch (joinRule) {
-      case 'public':
+    switch (visibility) {
+      case RoomVisibility.Public:
         icon = Icons.language;
         label = L10n.of(context).public;
         break;
-      case 'restricted':
+      case RoomVisibility.SpaceVisible:
         icon = Atlas.users;
         label = L10n.of(context).limited;
-      case 'invite':
+      default:
         break;
     }
     return Chip(
