@@ -3,7 +3,8 @@ use anyhow::{bail, Context, Result};
 use lazy_static::lazy_static;
 use matrix_sdk::{
     matrix_auth::{MatrixSession, MatrixSessionTokens},
-    Client as SdkClient, ClientBuilder, SessionMeta,
+    reqwest::{ClientBuilder as ReqClientBuilder, StatusCode},
+    Client as SdkClient, ClientBuilder as SdkClientBuilder, SessionMeta,
 };
 use ruma::{assign, uint};
 use ruma_client_api::{
@@ -11,9 +12,10 @@ use ruma_client_api::{
         add_3pid, register, request_password_change_token_via_email,
         request_registration_token_via_email,
     },
-    uiaa::{AuthData, Dummy, Password, RegistrationToken},
+    uiaa::{AuthData, Dummy, EmailIdentity, Password, RegistrationToken, ThirdpartyIdCredentials},
 };
-use ruma_common::{ClientSecret, OwnedUserId, SessionId, UserId};
+use ruma_common::{ClientSecret, OwnedClientSecret, OwnedUserId, SessionId, UserId};
+use serde::Deserialize;
 use std::{ops::Deref, sync::RwLock};
 use tracing::{error, info};
 use url::Url;
@@ -73,7 +75,7 @@ pub async fn make_client_config(
     default_homeserver_name: &str,
     default_homeserver_url: &str,
     reset_if_existing: bool,
-) -> Result<(ClientBuilder, OwnedUserId)> {
+) -> Result<(SdkClientBuilder, OwnedUserId)> {
     let (user_id, fallback) = sanitize_user(username, default_homeserver_name).await?;
     let mut builder = platform::new_client_config(
         base_path,
@@ -149,7 +151,7 @@ pub async fn guest_client(
 
 pub async fn login_with_token_under_config(
     restore_token: RestoreToken,
-    config: ClientBuilder,
+    config: SdkClientBuilder,
 ) -> Result<Client> {
     let RestoreToken {
         session,
@@ -232,7 +234,7 @@ async fn login_client(
 }
 
 pub async fn login_new_client_under_config(
-    config: ClientBuilder,
+    config: SdkClientBuilder,
     user_id: OwnedUserId,
     password: String,
     db_passphrase: Option<String>,
@@ -301,7 +303,7 @@ pub async fn register(
 }
 
 pub async fn register_under_config(
-    config: ClientBuilder,
+    config: SdkClientBuilder,
     user_id: OwnedUserId,
     password: String,
     db_passphrase: Option<String>,
@@ -384,7 +386,7 @@ pub async fn register_with_token(
 }
 
 pub async fn register_with_token_under_config(
-    config: ClientBuilder,
+    config: SdkClientBuilder,
     user_id: OwnedUserId,
     password: String,
     db_passphrase: Option<String>,
@@ -528,6 +530,246 @@ impl PasswordChangeEmailTokenResponse {
     pub fn submit_url(&self) -> OptionString {
         OptionString::new(self.inner.submit_url.clone())
     }
+}
+
+async fn request_password_change_token_via_email_without_login(
+    default_homeserver_url: &str,
+    email: &str,
+) -> Result<()> {
+    let http_client = ReqClientBuilder::new().build()?;
+    let homeserver_url = Url::parse(default_homeserver_url)?;
+    let submit_url =
+        homeserver_url.join("/_matrix/client/v3/account/password/email/requestToken")?;
+
+    let body = serde_json::json!({
+        "client_secret": ClientSecret::new().to_string(),
+        "email": email.to_owned(),
+        "send_attempt": 0,
+    });
+
+    let resp = http_client
+        .post(submit_url.to_string())
+        .body(body.to_string())
+        .send()
+        .await?;
+
+    info!(
+        "request_password_change_token_via_email_without_login: {:?}",
+        resp
+    );
+
+    if resp.status() != StatusCode::OK {
+        let text = resp.text().await?;
+        bail!(
+            "request_password_change_token_via_email_without_login failed: {}",
+            text
+        );
+    }
+
+    Ok(())
+}
+
+pub async fn fetch_session_for_password_change(
+    default_homeserver_url: &str,
+) -> Result<FetchSessionForPasswordChangeResponse> {
+    let http_client = ReqClientBuilder::new().build()?;
+    let homeserver_url = Url::parse(default_homeserver_url)?;
+    let submit_url = homeserver_url.join("/_matrix/client/v3/account/password")?;
+
+    let body = serde_json::json!({});
+
+    let resp = http_client
+        .post(submit_url.to_string())
+        .body(body.to_string())
+        .send()
+        .await?;
+
+    info!("fetch_session_for_password_change: {:?}", resp);
+
+    if resp.status() == StatusCode::UNAUTHORIZED {
+        // it is expected because of not logged in
+        let text = resp.text().await?;
+        let res = serde_json::from_str::<FetchSessionForPasswordChangeResponse>(&text)?;
+        return Ok(res);
+    }
+
+    let text = resp.text().await?;
+    bail!("fetch_session_for_password_change failed: {}", text)
+}
+
+#[derive(Clone, Deserialize)]
+struct PasswordChangeFlow {
+    stages: Vec<String>,
+}
+
+#[derive(Clone, Deserialize)]
+pub struct FetchSessionForPasswordChangeResponse {
+    session: String,
+    flows: Vec<PasswordChangeFlow>,
+}
+
+impl FetchSessionForPasswordChangeResponse {
+    pub fn session(&self) -> String {
+        self.session.clone()
+    }
+
+    pub fn has_flow(&self, stage: String) -> bool {
+        self.flows.iter().any(|x| x.stages.contains(&stage))
+    }
+}
+
+pub async fn change_password_without_login(
+    default_homeserver_url: &str,
+    new_val: &str,
+    sid: String,
+    client_secret: String,
+    id_server: String,
+    id_access_token: String,
+    session: String,
+) -> Result<()> {
+    let http_client = ReqClientBuilder::new().build()?;
+    let homeserver_url = Url::parse(default_homeserver_url)?;
+    let submit_url = homeserver_url.join("/_matrix/client/v3/account/password")?;
+
+    info!("change_password_without_login session: {}", &session);
+
+    let body = serde_json::json!({
+        "new_password": new_val.to_owned(),
+        "logout_devices": false,
+        "auth": {
+            "threepid_creds": {
+                "sid": sid,
+                "client_secret": client_secret,
+                "id_server": id_server,
+                "id_access_token": id_access_token
+            },
+            "session": session,
+            "type": "m.login.email.identity".to_owned()
+        }
+    });
+
+    let resp = http_client
+        .post(submit_url.to_string())
+        .body(body.to_string())
+        .send()
+        .await?;
+
+    info!("change_password_without_login: {:?}", resp);
+
+    if resp.status() != StatusCode::OK {
+        let text = resp.text().await?;
+        bail!("change_password_without_login failed: {}", text);
+    }
+
+    Ok(())
+}
+
+pub async fn reset_password_1st_stage(
+    default_homeserver_url: String,
+    email: String,
+    new_val: String,
+) -> Result<PasswordResetFirstResponse> {
+    let homeserver_url = Url::parse(&default_homeserver_url)?;
+
+    RUNTIME
+        .spawn(async move {
+            let resp = request_password_change_token_via_email_without_login(
+                &default_homeserver_url,
+                &email,
+            )
+            .await?;
+
+            let client = SdkClient::new(homeserver_url).await?; // not-logged-in
+            let account = client.account();
+
+            // first calling of password change api
+            info!("change_password before");
+            if let Err(e) = client.account().change_password(&new_val, None).await {
+                info!("change_password after");
+                let Some(inf) = e.as_uiaa_response() else {
+                    info!("change_password uiaa response failed: {:?}", e);
+                    return Err(clearify_error(e));
+                };
+
+                // request 3pid token
+                let client_secret = ClientSecret::new();
+                let req = request_password_change_token_via_email::v3::Request::new(
+                    client_secret.clone(),
+                    email,
+                    uint!(0),
+                );
+                let inner = client.send(req, None).await?;
+
+                return Ok(PasswordResetFirstResponse {
+                    client_secret,
+                    session: inf.session.clone(),
+                    inner,
+                });
+            }
+
+            bail!("couldn't get a set of flows from change_password");
+        })
+        .await?
+}
+
+#[derive(Clone)]
+pub struct PasswordResetFirstResponse {
+    client_secret: OwnedClientSecret,
+    session: Option<String>,
+    inner: request_password_change_token_via_email::v3::Response,
+}
+
+impl PasswordResetFirstResponse {
+    pub fn client_secret(&self) -> String {
+        self.client_secret.to_string()
+    }
+
+    pub fn session(&self) -> Option<String> {
+        self.session.clone()
+    }
+
+    pub fn sid(&self) -> String {
+        self.inner.sid.to_string()
+    }
+
+    pub fn submit_url(&self) -> OptionString {
+        OptionString::new(self.inner.submit_url.clone())
+    }
+}
+
+pub async fn reset_password_2nd_stage(
+    default_homeserver_url: String,
+    sid: String,
+    client_secret: String,
+    id_server: String,
+    id_access_token: String,
+    session: Option<String>,
+    new_val: String,
+) -> Result<()> {
+    let homeserver_url = Url::parse(&default_homeserver_url)?;
+    let sid = SessionId::parse(&sid)?;
+    let client_secret = ClientSecret::parse_box(client_secret.as_str())?;
+
+    RUNTIME
+        .spawn(async move {
+            let client = SdkClient::new(homeserver_url).await?;
+            let account = client.account();
+
+            // second calling of password change api
+            let thirdparty_id_creds =
+                ThirdpartyIdCredentials::new(sid, client_secret, id_server, id_access_token);
+            let email_ident = assign!(EmailIdentity::new(thirdparty_id_creds), {
+                session,
+            });
+            let auth_data = AuthData::EmailIdentity(email_ident);
+            account
+                .change_password(&new_val, Some(auth_data))
+                .await
+                .map_err(clearify_error)?;
+
+            Ok(())
+        })
+        .await?
 }
 
 impl Client {

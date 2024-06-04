@@ -1,7 +1,8 @@
 use acter::{
     api::{
-        guest_client, login_new_client, login_new_client_under_config,
-        login_with_token_under_config, make_client_config, request_password_change_email_token,
+        change_password_without_login, fetch_session_for_password_change, guest_client,
+        login_new_client, login_new_client_under_config, login_with_token_under_config,
+        make_client_config, request_password_change_email_token,
         request_registration_token_via_email,
     },
     matrix_sdk::reqwest::Client,
@@ -289,10 +290,10 @@ async fn can_register_via_email() -> Result<()> {
 }
 
 #[tokio::test]
-async fn can_reset_password_via_email() -> Result<()> {
+async fn can_reset_password_via_email_with_login() -> Result<()> {
     let _ = env_logger::try_init();
 
-    let mut client = random_user("reset_password").await?;
+    let mut client = random_user("reset_password_with_login").await?;
     let user_id = client.user_id().expect("we just logged in");
     let username = user_id.localpart();
     let old_pswd = default_user_password(username);
@@ -313,7 +314,7 @@ async fn can_reset_password_via_email() -> Result<()> {
     let homeserver_url = option_env!("DEFAULT_HOMESERVER_URL").unwrap_or("http://localhost:8118");
     let email = "test3@localhost".to_owned();
 
-    let resp = request_password_change_email_token(homeserver_url.to_owned(), email).await?;
+    let resp = request_password_change_email_token(homeserver_url.to_owned(), email).await?; // here m.login.email.identity is started
 
     info!("password change token via email - sid: {}", resp.sid());
     info!(
@@ -330,6 +331,96 @@ async fn can_reset_password_via_email() -> Result<()> {
         .await?;
 
     client.logout().await?;
+
+    let base_dir = TempDir::new()?;
+    let media_dir = TempDir::new()?;
+    let res = login_new_client(
+        base_dir.path().to_string_lossy().to_string(),
+        media_dir.path().to_string_lossy().to_string(),
+        username.to_string(),
+        old_pswd,
+        homeserver_name.to_string(),
+        homeserver_url.to_string(),
+        None,
+    )
+    .await;
+
+    assert!(res.is_err(), "old password should be unavailable now");
+
+    let base_dir = TempDir::new()?;
+    let media_dir = TempDir::new()?;
+    let res = login_new_client(
+        base_dir.path().to_string_lossy().to_string(),
+        media_dir.path().to_string_lossy().to_string(),
+        username.to_string(),
+        new_pswd,
+        homeserver_name.to_string(),
+        homeserver_url.to_string(),
+        None,
+    )
+    .await;
+
+    assert!(res.is_ok(), "new password should be available now");
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn can_reset_password_via_email_without_login() -> Result<()> {
+    let _ = env_logger::try_init();
+
+    let mut client = random_user("reset_password_without_login").await?;
+    let user_id = client.user_id().expect("we just logged in");
+    let username = user_id.localpart();
+    let old_pswd = default_user_password(username);
+    let account = client.account()?;
+    let resp = account
+        .request_3pid_email_token("test4@localhost".to_owned())
+        .await?;
+    let client_secret = resp.client_secret();
+    let sid = resp.sid();
+
+    read_email_msg("test4", "test", "_matrix/client/unstable/add_threepid").await?;
+
+    account
+        .add_3pid(client_secret, sid, old_pswd.clone())
+        .await?;
+
+    client.logout().await?;
+
+    let homeserver_name = option_env!("DEFAULT_HOMESERVER_NAME").unwrap_or("localhost");
+    let homeserver_url = option_env!("DEFAULT_HOMESERVER_URL").unwrap_or("http://localhost:8118");
+    let email = "test4@localhost".to_owned();
+
+    let resp = request_password_change_email_token(homeserver_url.to_owned(), email).await?; // here m.login.email.identity is started
+
+    info!("password change token via email - sid: {}", resp.sid());
+    info!(
+        "password change token via email - submit_url: {:?}",
+        resp.submit_url().text(),
+    );
+
+    let resp = fetch_session_for_password_change(homeserver_url).await?;
+    let session = resp.session();
+
+    let (token, client_secret, sid) =
+        confirm_email_msg("test4", "test", "_synapse/client/password_reset").await?; // here m.login.email.identity is completed
+    let new_pswd = format!("new_{}", &old_pswd);
+
+    let resp = change_password_without_login(
+        homeserver_url,
+        &new_pswd,
+        sid,
+        client_secret,
+        "localhost".to_owned(),
+        token,
+        session,
+    )
+    .await?;
+
+    // account
+    //     .change_password(old_pswd.clone(), new_pswd.clone())
+    //     .await?;
 
     let base_dir = TempDir::new()?;
     let media_dir = TempDir::new()?;
