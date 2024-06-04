@@ -1,3 +1,5 @@
+import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/spaces/has_space_permission.dart';
@@ -28,6 +30,45 @@ class VisibilityAccessibilityPage extends ConsumerStatefulWidget {
 class _VisibilityAccessibilityPageState
     extends ConsumerState<VisibilityAccessibilityPage> {
   List<SpaceItem> spaceList = [];
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final spaceVisibility =
+        ref.read(spaceVisibilityProvider(widget.spaceId)).valueOrNull;
+    if (spaceVisibility != null &&
+        spaceVisibility == RoomVisibility.SpaceVisible) {
+      _showLimitedSpacesAccess();
+    }
+  }
+
+  Future<void> _showLimitedSpacesAccess() async {
+    final space = await ref.read(spaceProvider(widget.spaceId).future);
+    final relations = await space.spaceRelations();
+    final mainParent = relations.mainParent();
+    final otherParents = relations.otherParents().toList();
+    final children = relations.children().toList();
+    final linkedSpaces = <SpaceRelation>[];
+    if (mainParent != null) {
+      linkedSpaces.add(mainParent);
+    }
+    linkedSpaces.addAll(otherParents);
+    linkedSpaces.addAll(children);
+    for (SpaceRelation e in linkedSpaces) {
+      final profileData = await ref.read(
+        spaceProfileDataForSpaceIdProvider(e.roomId().toString()).future,
+      );
+      spaceList.add(
+        SpaceItem(
+          roomId: e.roomId().toString(),
+          activeMembers: [],
+          spaceProfileData: profileData.profile,
+        ),
+      );
+    }
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +129,12 @@ class _VisibilityAccessibilityPageState
               : (value) {
                   if (value == RoomVisibility.SpaceVisible &&
                       spaceList.isEmpty) {
-                    selectSpace();
+                    selectSpace(spaceId);
+                  } else {
+                    updateSpaceVisibility(
+                      value ?? RoomVisibility.Private,
+                      spaceId,
+                    );
                   }
                 },
         );
@@ -105,6 +151,7 @@ class _VisibilityAccessibilityPageState
   }
 
   Widget _buildSpaceWithAccess(Space spaceData) {
+    final spaceId = spaceData.getRoomIdStr();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Column(
@@ -117,7 +164,7 @@ class _VisibilityAccessibilityPageState
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               IconButton(
-                onPressed: () => selectSpace(),
+                onPressed: () => selectSpace(spaceId),
                 icon: const Icon(Atlas.plus_circle),
               ),
             ],
@@ -128,7 +175,7 @@ class _VisibilityAccessibilityPageState
             itemCount: spaceList.length,
             itemBuilder: (context, index) {
               final spaceItem = spaceList[index];
-              return spaceItemUI(spaceItem);
+              return spaceItemUI(spaceData, spaceItem);
             },
           ),
         ],
@@ -136,7 +183,7 @@ class _VisibilityAccessibilityPageState
     );
   }
 
-  Widget spaceItemUI(SpaceItem spaceItem) {
+  Widget spaceItemUI(Space? space, SpaceItem spaceItem) {
     final avatar = ActerAvatar(
       options: AvatarOptions(
         AvatarInfo(
@@ -164,7 +211,7 @@ class _VisibilityAccessibilityPageState
         ),
         leading: avatar,
         trailing: IconButton(
-          onPressed: () => removeSpace(spaceItem),
+          onPressed: () => removeSpace(space, spaceItem),
           icon: Icon(
             Atlas.trash,
             color: Theme.of(context).colorScheme.error,
@@ -174,13 +221,25 @@ class _VisibilityAccessibilityPageState
     );
   }
 
-  void removeSpace(SpaceItem spaceItem) {
+  Future<void> removeSpace(Space? space, SpaceItem spaceItem) async {
+    final room =
+        await ref.read(maybeRoomProvider(space!.getRoomIdStr()).future);
+    if (room != null) {
+      if (await space.isChildSpaceOf(spaceItem.roomId)) {
+        await room.removeParentRoom(spaceItem.roomId, null);
+      } else {
+        await space.removeChildRoom(spaceItem.roomId, null);
+      }
+    }
     setState(() {
       spaceList.remove(spaceItem);
+      if (spaceList.isEmpty) {
+        selectSpace(space.getRoomIdStr());
+      }
     });
   }
 
-  Future<void> selectSpace() async {
+  Future<void> selectSpace(String roomId) async {
     try {
       final spaceId = await selectSpaceDrawer(context: context);
       if (spaceId != null) {
@@ -190,6 +249,11 @@ class _VisibilityAccessibilityPageState
             spaceList.any((element) => element.roomId == spaceItem?.roomId);
         if (spaceItem != null && !isAlreadyAdded) {
           spaceList.add(spaceItem);
+          updateSpaceVisibility(
+            RoomVisibility.SpaceVisible,
+            spaceId,
+            roomId: roomId,
+          );
           setState(() {});
         }
       }
@@ -200,6 +264,47 @@ class _VisibilityAccessibilityPageState
         L10n.of(context).failedToLoadSpace(e),
         toastPosition: EasyLoadingToastPosition.bottom,
       );
+    }
+  }
+
+  Future<void> updateSpaceVisibility(
+    RoomVisibility value,
+    String spaceId, {
+    String? roomId,
+  }) async {
+    try {
+      EasyLoading.show(status: 'Updating space settings', dismissOnTap: false);
+      final sdk = await ref.read(sdkProvider.future);
+      final room = await ref.read(maybeRoomProvider(spaceId).future);
+      final space = await ref.read(maybeSpaceProvider(spaceId).future);
+      final update = sdk.api.newJoinRuleBuilder();
+      switch (value) {
+        case RoomVisibility.Public:
+          update.joinRule('public');
+          break;
+        case RoomVisibility.Private:
+          update.joinRule('invite');
+          break;
+        case RoomVisibility.SpaceVisible:
+          update.joinRule('restricted');
+          if (roomId != null) {
+            if (!(await space!.isChildSpaceOf(roomId))) {
+              await room!.addParentRoom(roomId, true);
+              break;
+            } else {
+              await space.addChildRoom(roomId);
+              break;
+            }
+          }
+          break;
+      }
+
+      await room!.setJoinRule(update);
+      EasyLoading.dismiss();
+    } catch (e) {
+      _log.severe('Error updating visibility: $e');
+      EasyLoading.showError('Error updating visibility: $e');
+      return;
     }
   }
 }
