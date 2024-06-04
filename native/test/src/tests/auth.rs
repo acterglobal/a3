@@ -254,7 +254,6 @@ async fn user_changes_password() -> Result<()> {
 }
 
 #[tokio::test]
-#[ignore = "if test2 account is wasted for this fn, it can't be used for can_reset_password_via_email :("]
 async fn can_register_via_email() -> Result<()> {
     let _ = env_logger::try_init();
 
@@ -299,12 +298,12 @@ async fn can_reset_password_via_email() -> Result<()> {
     let old_pswd = default_user_password(username);
     let account = client.account()?;
     let resp = account
-        .request_3pid_email_token("test2@localhost".to_owned())
+        .request_3pid_email_token("test3@localhost".to_owned())
         .await?;
     let client_secret = resp.client_secret();
     let sid = resp.sid();
 
-    read_email_msg("test2", "test", "_matrix/client/unstable/add_threepid").await?;
+    read_email_msg("test3", "test", "_matrix/client/unstable/add_threepid").await?;
 
     account
         .add_3pid(client_secret, sid, old_pswd.clone())
@@ -312,7 +311,7 @@ async fn can_reset_password_via_email() -> Result<()> {
 
     let homeserver_name = option_env!("DEFAULT_HOMESERVER_NAME").unwrap_or("localhost");
     let homeserver_url = option_env!("DEFAULT_HOMESERVER_URL").unwrap_or("http://localhost:8118");
-    let email = "test2@localhost".to_owned();
+    let email = "test3@localhost".to_owned();
 
     let resp = request_password_change_email_token(homeserver_url.to_owned(), email).await?;
 
@@ -323,7 +322,7 @@ async fn can_reset_password_via_email() -> Result<()> {
     );
 
     let (token, client_secret, sid) =
-        confirm_email_msg("test2", "test", "_synapse/client/password_reset").await?;
+        confirm_email_msg("test3", "test", "_synapse/client/password_reset").await?;
     let new_pswd = format!("new_{}", &old_pswd);
 
     account

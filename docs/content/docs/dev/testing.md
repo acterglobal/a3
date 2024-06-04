@@ -481,7 +481,10 @@ When you run tests (ex: `auth::can_register_via_email` or `auth::can_reset_passw
 Once an email address is used to authenticate in password reset, it is bound to that account.
 It can't be used again for another account.
 You have to use another email address.
-If you want, you can reset database because binding info is stored there.
+For example, `test2` is for `can_register_via_email()` and you can add `test3` user for `can_reset_password_via_email()`.
+So from beginning you can prepare `auth.txt` with 100 accounts in advance.
+In local synapse, each time a test is executed, number suffix of test account increases.
+After wasting up all 100 accounts, you might want to reset database because binding info is stored there.
 
 ### Rust integration tests
 
