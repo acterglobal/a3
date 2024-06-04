@@ -321,18 +321,12 @@ async fn can_reset_password_via_email() -> Result<()> {
         resp.submit_url().text(),
     );
 
-    let (token, client_secret, sid) =
-        confirm_email_msg("test3", "test", "_synapse/client/password_reset").await?;
+    let (_token, _client_secret, _sid) =
+        confirm_email_msg("test3", "test", "_synapse/client/password_reset").await?; // here m.login.email.identity is completed
     let new_pswd = format!("new_{}", &old_pswd);
 
     account
-        .reset_password(
-            sid,
-            client_secret,
-            "localhost".to_owned(),
-            token,
-            new_pswd.clone(),
-        )
+        .change_password(old_pswd.clone(), new_pswd.clone())
         .await?;
 
     client.logout().await?;
