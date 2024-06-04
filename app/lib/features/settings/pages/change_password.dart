@@ -97,9 +97,6 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
               },
             ),
           ),
-          inputFormatters: [
-            FilteringTextInputFormatter.deny(RegExp(r'\s')),
-          ],
           validator: (val) {
             if (val == null || val.trim().isEmpty) {
               return L10n.of(context).emptyOldPassword;
@@ -192,7 +189,7 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
     EasyLoading.show(status: L10n.of(context).changingYourPassword);
     try {
       final client = ref.read(alwaysClientProvider);
-      await client.changePassword(oldPassword.text, newPassword.text);
+      await client.changePassword(oldPassword.text.trim(), newPassword.text.trim());
       oldPassword.clear();
       newPassword.clear();
       confirmPassword.clear();
