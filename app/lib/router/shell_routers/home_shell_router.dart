@@ -23,6 +23,7 @@ import 'package:acter/features/settings/pages/labs_page.dart';
 import 'package:acter/features/settings/pages/licenses_page.dart';
 import 'package:acter/features/settings/pages/notifications_page.dart';
 import 'package:acter/features/settings/pages/sessions_page.dart';
+import 'package:acter/features/space/settings/pages/visibility_accessibility_page.dart';
 import 'package:acter/features/super_invites/pages/super_invites.dart';
 import 'package:acter/features/space/pages/chats_page.dart';
 import 'package:acter/features/space/pages/events_page.dart';
@@ -361,6 +362,19 @@ List<RouteBase> makeHomeShellRoutes(ref) {
           key: state.pageKey,
           child: SpaceAppsSettingsPage(
             spaceId: state.pathParameters['spaceId']!,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.spaceSettingsVisibility.name,
+      path: Routes.spaceSettingsVisibility.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: VisibilityAccessibilityPage(
+            roomId: state.pathParameters['spaceId']!,
           ),
         );
       },

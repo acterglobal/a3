@@ -10,6 +10,7 @@ import 'package:acter/common/widgets/chat/edit_room_description_sheet.dart';
 import 'package:acter/common/widgets/chat/edit_room_name_sheet.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/render_html.dart';
+import 'package:acter/common/widgets/visibility/visibility_chip.dart';
 import 'package:acter/features/chat/widgets/member_list.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/chat/widgets/skeletons/action_item_skeleton_widget.dart';
@@ -334,6 +335,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
   }
 
   Widget _optionsBody(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Column(
       children: [
         // Notification section
@@ -352,6 +354,26 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
               SettingsSection(
                 tiles: [
                   NotificationsSettingsTile(roomId: widget.roomId),
+                ],
+              ),
+              SettingsSection(
+                tiles: [
+                  SettingsTile(
+                    title: Text(L10n.of(context).accessAndVisibility),
+                    description: VisibilityChip(roomId: widget.roomId),
+                    leading: const Icon(Atlas.lab_appliance_thin),
+                    onPressed: (context) {
+                      isDesktop || size.width > 770
+                          ? context.goNamed(
+                              Routes.chatSettingsVisibility.name,
+                              pathParameters: {'roomId': widget.roomId},
+                            )
+                          : context.pushNamed(
+                              Routes.chatSettingsVisibility.name,
+                              pathParameters: {'roomId': widget.roomId},
+                            );
+                    },
+                  ),
                 ],
               ),
             ],

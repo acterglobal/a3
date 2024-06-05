@@ -2104,6 +2104,7 @@ enum MemberPermission {
     CanUpgradeToActerSpace,
     CanSetName,
     CanUpdateAvatar,
+    CanUpdateJoinRule,
     CanSetTopic,
     CanLinkSpaces,
     CanUpdatePowerLevels,
