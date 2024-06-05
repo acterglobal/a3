@@ -5,6 +5,7 @@ import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -50,6 +51,18 @@ class _ConvosListConsumerState extends ConsumerState<ConvosList> {
     }
 
     if (chats.isEmpty) {
+      final hasFirstSynced =
+          ref.watch(syncStateProvider.select((x) => !x.initialSync));
+      if (!hasFirstSynced) {
+        return Center(
+          heightFactor: 1.5,
+          child: EmptyState(
+            title: L10n.of(context).noChatsStillSyncing,
+            subtitle: L10n.of(context).noChatsStillSyncingSubtitle,
+            image: 'assets/images/empty_chat.svg',
+          ),
+        );
+      }
       return Center(
         heightFactor: 1.5,
         child: EmptyState(
