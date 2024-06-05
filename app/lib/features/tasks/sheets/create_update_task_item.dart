@@ -1,3 +1,4 @@
+import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/tasks/providers/tasklists.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -170,6 +171,25 @@ class _CreateUpdateItemListConsumerState
           onTap: selectDueDate,
           controller: _taskDueDateController,
         ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            ActerInlineTextButton(
+              onPressed: () => setState(() {
+                selectedDate = DateTime.now();
+                _taskDueDateController.text = taskDueDateFormat(selectedDate!);
+              }),
+              child: Text(L10n.of(context).today),
+            ),
+            ActerInlineTextButton(
+              onPressed: () => setState(() {
+                selectedDate = DateTime.now().addDays(1);
+                _taskDueDateController.text = taskDueDateFormat(selectedDate!);
+              }),
+              child: Text(L10n.of(context).tomorrow),
+            ),
+          ],
+        ),
       ],
     );
   }
@@ -182,9 +202,10 @@ class _CreateUpdateItemListConsumerState
       lastDate: DateTime.now().addYears(1),
     );
     if (date == null || !mounted) return;
-    selectedDate = date;
-    _taskDueDateController.text = taskDueDateFormat(date);
-    setState(() {});
+    setState(() {
+      selectedDate = date;
+      _taskDueDateController.text = taskDueDateFormat(date);
+    });
   }
 
   Widget _widgetAddButton() {
