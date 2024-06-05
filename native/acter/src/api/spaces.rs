@@ -561,7 +561,6 @@ impl Space {
             .await??)
     }
 
-
     pub async fn set_acter_space_states(&self) -> Result<bool> {
         if !self.inner.is_joined() {
             bail!("Unable to convert a space you didn't join");
