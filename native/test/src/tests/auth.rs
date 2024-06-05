@@ -7,12 +7,16 @@ use acter::{
     },
     matrix_sdk::reqwest::Client,
 };
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
 use mail_parser::MessageParser;
 use mailhog_rs::{ListMessagesParams, MailHog};
 use regex::Regex;
 use std::collections::HashMap;
 use tempfile::TempDir;
+use tokio_retry::{
+    strategy::{jitter, FibonacciBackoff},
+    Retry,
+};
 use tracing::{info, warn};
 use uuid::Uuid;
 
@@ -462,6 +466,23 @@ async fn read_email_msg(user: &str, pswd: &str, dir: &str) -> Result<(String, St
         start: None,
         limit: None,
     };
+
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let mailhog_cl = mailhog.clone();
+    let params_cl = params.clone();
+    Retry::spawn(retry_strategy, move || {
+        let mailhog = mailhog_cl.clone();
+        let params = params_cl.clone();
+        async move {
+            let msg_list = mailhog.list_messages(params).await?;
+            if msg_list.count == 0 {
+                bail!("email msg not found");
+            }
+            Ok(())
+        }
+    })
+    .await?;
+
     let msg_list = mailhog.list_messages(params).await?;
     let latest_msg = msg_list
         .items
