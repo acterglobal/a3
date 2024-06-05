@@ -177,6 +177,15 @@ final canonicalParentProvider = FutureProvider.autoDispose
   }
 });
 
+final joinRulesAllowedRoomsProvider = FutureProvider.autoDispose
+    .family<List<String>, String>((ref, roomId) async {
+  final room = await ref.watch(maybeRoomProvider(roomId).future);
+  if (room == null) {
+    return [];
+  }
+  return room.restrictedRoomIdsStr().map((e) => e.toDartString()).toList();
+});
+
 /// Get the List of related of the spaces for the space. Errors if the space or any
 /// related space isn't found. Stays up  to date with underlying client data if
 /// a space was found.

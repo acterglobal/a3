@@ -45,14 +45,16 @@ class RoomVisibilityItem extends StatelessWidget {
               .labelMedium!
               .copyWith(color: Theme.of(context).colorScheme.neutral4),
         ),
-        onTap: isShowRadio && spaceVisibilityValue != null
+        onTap: isShowRadio && spaceVisibilityValue != null && onChanged != null
             ? () => onChange(spaceVisibilityValue, context)
             : null,
         trailing: isShowRadio && spaceVisibilityValue != null
             ? Radio<RoomVisibility>(
                 value: spaceVisibilityValue!,
                 groupValue: selectedVisibilityValue,
-                onChanged: (value) => onChange(value, context),
+                onChanged: onChanged != null
+                    ? (value) => onChange(value, context)
+                    : null,
               )
             : const Icon(Icons.keyboard_arrow_down_sharp),
       ),

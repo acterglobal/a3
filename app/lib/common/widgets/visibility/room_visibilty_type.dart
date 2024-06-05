@@ -9,11 +9,13 @@ class RoomVisibilityType extends ConsumerWidget {
   final RoomVisibility? selectedVisibilityEnum;
   final ValueChanged<RoomVisibility?>? onVisibilityChange;
   final bool isLimitedVisibilityShow;
+  final bool canChange;
 
   const RoomVisibilityType({
     super.key,
     this.onVisibilityChange,
     this.selectedVisibilityEnum,
+    this.canChange = true,
     this.isLimitedVisibilityShow = true,
   });
 
@@ -30,7 +32,7 @@ class RoomVisibilityType extends ConsumerWidget {
             subtitle: L10n.of(context).publicVisibilitySubtitle,
             selectedVisibilityValue: selectedVisibilityEnum,
             spaceVisibilityValue: RoomVisibility.Public,
-            onChanged: onVisibilityChange,
+            onChanged: canChange ? onVisibilityChange : null,
           ),
           const SizedBox(height: 10),
           RoomVisibilityItem(
@@ -39,7 +41,7 @@ class RoomVisibilityType extends ConsumerWidget {
             subtitle: L10n.of(context).privateVisibilitySubtitle,
             selectedVisibilityValue: selectedVisibilityEnum,
             spaceVisibilityValue: RoomVisibility.Private,
-            onChanged: onVisibilityChange,
+            onChanged: canChange ? onVisibilityChange : null,
           ),
           const SizedBox(height: 10),
           if (isLimitedVisibilityShow)
@@ -49,7 +51,7 @@ class RoomVisibilityType extends ConsumerWidget {
               subtitle: L10n.of(context).limitedVisibilitySubtitle,
               selectedVisibilityValue: selectedVisibilityEnum,
               spaceVisibilityValue: RoomVisibility.SpaceVisible,
-              onChanged: onVisibilityChange,
+              onChanged: canChange ? onVisibilityChange : null,
             ),
         ],
       ),
