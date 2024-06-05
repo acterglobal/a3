@@ -370,7 +370,7 @@ class CreateEditEventPageConsumerState
         Container(
           height: 200,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.background,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(10.0),
           ),
           child: HtmlEditor(

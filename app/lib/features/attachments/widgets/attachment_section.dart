@@ -250,7 +250,7 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
   }
 
   Widget _buildAddAttachment(BuildContext context, AttachmentsManager manager) {
-    final containerColor = Theme.of(context).colorScheme.background;
+    final containerColor = Theme.of(context).colorScheme.surface;
     final iconColor = Theme.of(context).colorScheme.secondary;
     final iconTextStyle = Theme.of(context).textTheme.labelLarge;
     return InkWell(

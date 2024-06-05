@@ -65,7 +65,7 @@ class EmojiRow extends StatelessWidget {
           : const EdgeInsets.only(bottom: 4, right: 8),
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(20)),
-        color: Theme.of(context).colorScheme.background,
+        color: Theme.of(context).colorScheme.surface,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

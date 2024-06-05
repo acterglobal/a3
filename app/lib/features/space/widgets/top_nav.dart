@@ -56,7 +56,7 @@ class _TopNavBarState extends ConsumerState<TopNavBar> {
           topLeft: Radius.circular(10),
           topRight: Radius.circular(10),
         ),
-        color: Theme.of(context).colorScheme.background,
+        color: Theme.of(context).colorScheme.surface,
       ),
       padding: const EdgeInsets.symmetric(vertical: 10),
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),

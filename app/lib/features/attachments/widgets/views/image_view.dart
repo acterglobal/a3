@@ -71,7 +71,7 @@ class ImageView extends ConsumerWidget {
           const SizedBox(height: 8),
           Container(
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.background,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(8),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 12),

@@ -45,7 +45,7 @@ class _NewsItemState extends ConsumerState<NewsItem> {
     final color = slides[currentSlideIndex].colors();
     final bgColor = convertColor(
       color?.background(),
-      Theme.of(context).colorScheme.background,
+      Theme.of(context).colorScheme.surface,
     );
     final fgColor = convertColor(
       color?.color(),

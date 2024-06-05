@@ -115,7 +115,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
       children: [
         const SizedBox(height: 5),
         SearchBar(
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
             const RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(16),
@@ -182,7 +182,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
         ref.watch(roomListFilterProvider.select((value) => value.selection));
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.background,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(16),
           bottomRight: Radius.circular(16),
