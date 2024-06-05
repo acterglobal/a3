@@ -101,8 +101,10 @@ dependencies:
   flutter_math_fork: ^0.7.2
   shared_preferences: ^2.2.0
   image_picker_for_web: ^3.0.1
-  riverpod_infinite_scroll: ^1.0.9
-  infinite_scroll_pagination: ^3.2.0
+  riverpod_infinite_scroll:
+    git: 
+      url: https://github.com/acterglobal/riverpod_infinite_scroll.git
+  infinite_scroll_pagination: ^4.0.0
   convert: ^3.1.1
   push: ^2.1.0
   logging: ^1.2.0
