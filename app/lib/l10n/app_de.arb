@@ -2243,5 +2243,9 @@
   "unreadMarkerFeatureTitle": "Gelesen Tracking",
   "@unreadMarkerFeatureTitle": {},
   "bookmarkedSpaces": "Gebookmarkte Spaces",
-  "@bookmarkedSpaces": {}
+  "@bookmarkedSpaces": {},
+  "noChatsStillSyncing": "Synchronisiere...",
+  "@noChatsStillSyncing": {},
+  "noChatsStillSyncingSubtitle": "Wir laden deine Chats. Bei großen Konten kann das initiale Laden etwas dauern ...",
+  "@noChatsStillSyncingSubtitle": {}
 }
