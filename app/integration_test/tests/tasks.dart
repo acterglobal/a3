@@ -7,9 +7,9 @@ import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
 import 'package:acter/features/space/settings/widgets/space_settings_menu.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/features/space/widgets/space_toolbar.dart';
-import 'package:acter/features/tasks/dialogs/create_task_list_sheet.dart';
 import 'package:acter/features/tasks/pages/task_list_page.dart';
 import 'package:acter/features/tasks/pages/tasks_page.dart';
+import 'package:acter/features/tasks/sheets/create_update_task_list.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
 import 'package:acter/features/tasks/widgets/task_entry.dart';
 import 'package:acter/features/tasks/widgets/task_info.dart';
@@ -70,15 +70,15 @@ extension ActerTasks on ConvenientTest {
     String? selectSpaceId,
   }) async {
     final params = {
-      CreateTaskListSheet.titleKey: title,
+      CreateUpdateTaskList.titleKey: title,
     };
     if (description != null) {
-      params[CreateTaskListSheet.descKey] = description;
+      params[CreateUpdateTaskList.descKey] = description;
     }
     await fillForm(
       params,
       // we are coming from space, we don't need to select it.
-      submitBtnKey: CreateTaskListSheet.submitKey,
+      submitBtnKey: CreateUpdateTaskList.submitKey,
       selectSpaceId: selectSpaceId,
     );
 

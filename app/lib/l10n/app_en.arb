@@ -2179,5 +2179,9 @@
   "validateSamePassword": "Password must be same",
   "changingYourPassword": "Changing your password",
   "changePasswordFailed": "Change password failed: {error}",
-  "passwordChangedSuccessfully": "Password changed successfully"
+  "passwordChangedSuccessfully": "Password changed successfully",
+  "emptyTaskList": "No Task list created yet",
+  "addMoreDetails": "Add More Details",
+  "taskName": "Task name",
+  "addingTask": "Adding Task"
 }
