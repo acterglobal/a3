@@ -505,11 +505,11 @@ jobs:
       - name: Patch PKGBUILD file 
         run: |
           cp app/linux/packaging/aur/PKGBUILD-nightly PKGBUILD
-          sed -i "s/%{{TAG}}%/${{ needs.tags.outputs.tag }}/" PKGBUILD
+          sed -i "s/%{{TAG}}%/${{ needs.tags.outputs.tag }}/g" PKGBUILD
           VERSION=$(echo ${{ needs.tags.outputs.tag }} | sed "s/-/./g")
-          sed -i "s/%{{VERSION}}%/$VERSION/" PKGBUILD
-          sed -i "s/%{{PKGREL}}%/1/" PKGBUILD
-          sed -i "s/%{{LINUX_MD5}}%/`md5sum acter-nightly-linux-x64-${{ needs.tags.outputs.tag }}.tar.bz2  | awk '{print $1}'`/" PKGBUILD
+          sed -i "s/%{{VERSION}}%/$VERSION/g" PKGBUILD
+          sed -i "s/%{{PKGREL}}%/1/g" PKGBUILD
+          sed -i "s/%{{LINUX_MD5}}%/`md5sum acter-nightly-linux-x64-${{ needs.tags.outputs.tag }}.tar.bz2  | awk '{print $1}'`/g" PKGBUILD
       - uses: KSXGitHub/github-actions-deploy-aur@v2.7.1
         name: Publish to AUR
         with:

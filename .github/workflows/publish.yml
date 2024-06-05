@@ -347,6 +347,13 @@ jobs:
         working-directory: app
         run: dart pub run msix:create --store --build-windows false --version ${{ needs.tags.outputs.tag }}.0 -v
 
+      - name: Copy further assets
+        if: matrix.target == 'linux'
+        run: |
+          cp app/flatpak/global.acter.a3.desktop ${{ matrix.artifact_path }}
+          cp app/assets/icon/logo.png ${{ matrix.artifact_path }}
+          cp LICENSE* ${{ matrix.artifact_path }}
+
       - name: Rename file
         if: matrix.rename_file
         working-directory: ${{ matrix.artifact_path }}
@@ -784,6 +791,48 @@ jobs:
           security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
           rm ~/Library/MobileDevice/Provisioning\ Profiles/*
           rm .github/assets/git-crypt-key
+
+
+   ###    ########   ######  ##     ##       ###    ##     ## ########  
+  ## ##   ##     ## ##    ## ##     ##      ## ##   ##     ## ##     ## 
+ ##   ##  ##     ## ##       ##     ##     ##   ##  ##     ## ##     ## 
+##     ## ########  ##       #########    ##     ## ##     ## ########  
+######### ##   ##   ##       ##     ##    ######### ##     ## ##   ##   
+##     ## ##    ##  ##    ## ##     ##    ##     ## ##     ## ##    ##  
+##     ## ##     ##  ######  ##     ##    ##     ##  #######  ##     ## 
+
+
+
+  publish_aur:
+    environment: release
+    needs:
+      - tags
+      - build
+    name: Publish AUR
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: Linux x64
+      - name: Create PKGBUILD file
+        run: |
+          cp app/linux/packaging/aur/PKGBUILD PKGBUILD
+          sed -i "s/%{{TAG}}%/${{ needs.tags.outputs.tag }}/g" PKGBUILD
+          VERSION=$(echo ${{ needs.tags.outputs.tag }} | sed "s/-/./g")
+          sed -i "s/%{{VERSION}}%/$VERSION/g" PKGBUILD
+          sed -i "s/%{{PKGREL}}%/1/g" PKGBUILD
+          sed -i "s/%{{LINUX_MD5}}%/`md5sum acter-linux-x64-${{ needs.tags.outputs.tag }}.tar.bz2  | awk '{print $1}'`/g" PKGBUILD
+      - uses: KSXGitHub/github-actions-deploy-aur@v2.7.1
+        name: Publish to AUR
+        with:
+          pkgname: acter-bin
+          pkgbuild: ./PKGBUILD
+          commit_username: Sari
+          commit_email: sari@acter.global
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: Updated to ${{ needs.tags.outputs.tag }}
+
 
 
  ######   #### ######## ##     ## ##     ## ########     ########  ##     ## ########  ##       ####  ######  ##     ## 
