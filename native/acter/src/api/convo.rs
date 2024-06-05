@@ -240,15 +240,15 @@ impl Convo {
         self.inner.room.direct_targets_length() > 0
     }
 
-    pub fn is_favorite(&self) -> bool {
+    pub fn is_bookmarked(&self) -> bool {
         self.inner.room.is_favourite()
     }
 
-    pub async fn set_favorite(&self, is_favorite: bool) -> Result<bool> {
+    pub async fn set_bookmarked(&self, is_bookmarked: bool) -> Result<bool> {
         let room = self.inner.room.clone();
         Ok(RUNTIME
             .spawn(async move {
-                room.set_is_favourite(is_favorite, None)
+                room.set_is_favourite(is_bookmarked, None)
                     .await
                     .map(|()| true)
             })

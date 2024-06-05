@@ -231,12 +231,12 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         // Bookmark
         convoLoader.when(
           data: (conv) {
-            final isFav = conv.isFavorite();
+            final isBookmarked = conv.isBookmarked();
             return _actionItem(
               context: context,
-              iconData: isFav ? Icons.bookmark : Icons.bookmark_border,
+              iconData: isBookmarked ? Icons.bookmark : Icons.bookmark_border,
               actionName: L10n.of(context).bookmark,
-              onTap: () async => await conv.setFavorite(!isFav),
+              onTap: () async => await conv.setBookmarked(!isBookmarked),
             );
           },
           error: (e, st) => Skeletonizer(
