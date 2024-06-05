@@ -51,10 +51,13 @@ class _TaskListCardState extends ConsumerState<TaskListCard> {
       body.add(
         ListTile(
           title: InkWell(
-            onTap: () => context.pushNamed(
-              Routes.taskList.name,
-              pathParameters: {'taskListId': tlId},
-            ),
+            onTap: () {
+              showInlineAddTask.value = false;
+              context.pushNamed(
+                Routes.taskList.name,
+                pathParameters: {'taskListId': tlId},
+              );
+            },
             child: Text(
               key: Key('task-list-title-$tlId'),
               taskList.name(),
@@ -94,89 +97,96 @@ class _TaskListCardState extends ConsumerState<TaskListCard> {
       }
     }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      child: Card(
-        key: Key('task-list-card-$tlId'),
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Column(
-            children: [
-              ...body,
-              tasks.when(
-                data: (overview) {
-                  List<Widget> children = [];
-                  final int total =
-                      overview.doneTasks.length + overview.openTasks.length;
+    return GestureDetector(
+      onTap: () => showInlineAddTask.value = false,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        child: Card(
+          key: Key('task-list-card-$tlId'),
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              children: [
+                ...body,
+                tasks.when(
+                  data: (overview) {
+                    List<Widget> children = [];
+                    final int total =
+                        overview.doneTasks.length + overview.openTasks.length;
 
-                  if (total > 3) {
-                    children.add(
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: Text(
-                          L10n.of(context)
-                              .countTasksDone(overview.doneTasks.length, total),
+                    if (total > 3) {
+                      children.add(
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: Text(
+                            L10n.of(context).countTasksDone(
+                                overview.doneTasks.length, total),
+                          ),
                         ),
-                      ),
-                    );
-                  }
+                      );
+                    }
 
-                  for (final task in overview.openTasks) {
+                    for (final task in overview.openTasks) {
+                      children.add(
+                        TaskEntry(
+                          onTap: () => showInlineAddTask.value = false,
+                          task: task,
+                        ),
+                      );
+                    }
                     children.add(
-                      TaskEntry(
-                        task: task,
+                      ValueListenableBuilder(
+                        valueListenable: showInlineAddTask,
+                        builder: (context, value, child) {
+                          return value
+                              ? _InlineTaskAdd(
+                                  taskList: taskList,
+                                  cancel: () => showInlineAddTask.value = false,
+                                )
+                              : Container(
+                                  alignment: Alignment.centerLeft,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                    vertical: 8,
+                                  ),
+                                  child: ActerInlineTextButton(
+                                    key: Key('task-list-$tlId-add-task-inline'),
+                                    onPressed: () =>
+                                        showInlineAddTask.value = true,
+                                    child: Text(L10n.of(context).addTask),
+                                  ),
+                                );
+                        },
                       ),
                     );
-                  }
-                  children.add(
-                    ValueListenableBuilder(
-                      valueListenable: showInlineAddTask,
-                      builder: (context, value, child) {
-                        return value
-                            ? _InlineTaskAdd(
-                                taskList: taskList,
-                                cancel: () => showInlineAddTask.value = false,
-                              )
-                            : Container(
-                                alignment: Alignment.centerLeft,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 24,
-                                  vertical: 8,
-                                ),
-                                child: ActerInlineTextButton(
-                                  key: Key('task-list-$tlId-add-task-inline'),
-                                  onPressed: () =>
-                                      showInlineAddTask.value = true,
-                                  child: Text(L10n.of(context).addTask),
-                                ),
-                              );
-                      },
-                    ),
-                  );
 
-                  for (final task in overview.doneTasks) {
-                    children.add(TaskEntry(task: task));
-                  }
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: children,
-                    ),
-                  );
-                },
-                error: (error, stack) =>
-                    Text(L10n.of(context).errorLoadingTasks(error)),
-                loading: () => Text(L10n.of(context).loading),
-              ),
-              if (widget.showAttachmentsAndComments) ...[
-                const SizedBox(height: 20),
-                AttachmentSectionWidget(manager: taskList.attachments()),
-                const SizedBox(height: 20),
-                CommentsSection(manager: taskList.comments()),
-                const SizedBox(height: 20),
+                    for (final task in overview.doneTasks) {
+                      children.add(TaskEntry(
+                        task: task,
+                        onTap: () => showInlineAddTask.value = false,
+                      ));
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: children,
+                      ),
+                    );
+                  },
+                  error: (error, stack) =>
+                      Text(L10n.of(context).errorLoadingTasks(error)),
+                  loading: () => Text(L10n.of(context).loading),
+                ),
+                if (widget.showAttachmentsAndComments) ...[
+                  const SizedBox(height: 20),
+                  AttachmentSectionWidget(manager: taskList.attachments()),
+                  const SizedBox(height: 20),
+                  CommentsSection(manager: taskList.comments()),
+                  const SizedBox(height: 20),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),
