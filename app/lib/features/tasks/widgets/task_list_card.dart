@@ -10,7 +10,6 @@ import 'package:acter/features/tasks/widgets/task_entry.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -37,7 +36,7 @@ class TaskListCard extends ConsumerStatefulWidget {
 }
 
 class _TaskListCardState extends ConsumerState<TaskListCard> {
-  bool showInlineAddTask = false;
+  ValueNotifier<bool> showInlineAddTask = ValueNotifier(false);
 
   @override
   Widget build(BuildContext context) {
@@ -129,30 +128,31 @@ class _TaskListCardState extends ConsumerState<TaskListCard> {
                       ),
                     );
                   }
-                  if (showInlineAddTask) {
-                    children.add(
-                      _InlineTaskAdd(
-                        taskList: taskList,
-                        cancel: () => setState(() => showInlineAddTask = false),
-                      ),
-                    );
-                  } else {
-                    children.add(
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 8,
-                        ),
-                        child: ActerInlineTextButton(
-                          key: Key('task-list-$tlId-add-task-inline'),
-                          onPressed: () =>
-                              {setState(() => showInlineAddTask = true)},
-                          child: Text(L10n.of(context).addTask),
-                        ),
-                      ),
-                    );
-                  }
+                  children.add(
+                    ValueListenableBuilder(
+                      valueListenable: showInlineAddTask,
+                      builder: (context, value, child) {
+                        return value
+                            ? _InlineTaskAdd(
+                                taskList: taskList,
+                                cancel: () => showInlineAddTask.value = false,
+                              )
+                            : Container(
+                                alignment: Alignment.centerLeft,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 8,
+                                ),
+                                child: ActerInlineTextButton(
+                                  key: Key('task-list-$tlId-add-task-inline'),
+                                  onPressed: () =>
+                                      showInlineAddTask.value = true,
+                                  child: Text(L10n.of(context).addTask),
+                                ),
+                              );
+                      },
+                    ),
+                  );
 
                   for (final task in overview.doneTasks) {
                     children.add(TaskEntry(task: task));
