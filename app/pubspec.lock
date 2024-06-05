@@ -44,10 +44,10 @@ packages:
     dependency: "direct main"
     description:
       name: appflowy_editor
-      sha256: "031bacb46b254f364fd8361166bf217b4bdb7b4183ec8953857720cc9f26d93b"
+      sha256: "7ddf4e61d79f3a6d51667d8c4590f581bf3d6736c2c86a572a900424d1c1feb9"
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.0"
+    version: "2.5.1"
   archive:
     dependency: transitive
     description:
@@ -308,19 +308,19 @@ packages:
     dependency: "direct dev"
     description:
       name: convenient_test_dev
-      sha256: "165d31fcd90bb76ced24344c3b1500e4a3b7970e0e87bb12ddcd342a8814d20c"
+      sha256: "709e80ace2735f4a656489794c0648d730f5d4536a6273e68994155b010af556"
       url: "https://pub.dev"
     source: hosted
-    version: "1.3.2"
+    version: "1.3.7"
   convenient_test_manager_dart:
     dependency: "direct dev"
     description:
       path: "packages/convenient_test_manager_dart"
       ref: HEAD
-      resolved-ref: "2dfee8760b820e3951de7dceb4edc96c14cc6980"
+      resolved-ref: "10164b0e94fd4a70ee7cdaeb1f247fbf8adfcfe9"
       url: "https://github.com/fzyzcjy/flutter_convenient_test/"
     source: git
-    version: "1.3.3"
+    version: "1.3.7"
   convert:
     dependency: "direct main"
     description:
@@ -373,10 +373,10 @@ packages:
     dependency: "direct main"
     description:
       name: dart_date
-      sha256: "3e337559e021a73c186e4e53c5a7b90ee7bae2d7d8b752fff28759f4105834cf"
+      sha256: "27f00f342710ba310f6052e415cc5799b3b6ad04f72f6bc5fae4da4f6365725e"
       url: "https://pub.dev"
     source: hosted
-    version: "1.3.2"
+    version: "1.3.3"
   dart_style:
     dependency: transitive
     description:
@@ -1088,10 +1088,10 @@ packages:
     dependency: "direct main"
     description:
       name: intl
-      sha256: "3bc132a9dbce73a7e4a21a17d06e1878839ffbf975568bc875c60537824b0c4d"
+      sha256: d6f56758b7d3014a48af9701c085700aac781a92a87a62b1333b46d8879661cf
       url: "https://pub.dev"
     source: hosted
-    version: "0.18.1"
+    version: "0.19.0"
   intl_utils:
     dependency: transitive
     description:
@@ -1120,10 +1120,10 @@ packages:
     dependency: "direct main"
     description:
       name: jiffy
-      sha256: cc1d4b75016a9156c29b5d61f0c9176c3e0fb0580cc5a0e0422b5d2cab3fbfff
+      sha256: "3497caaa36d36a29033e66803c9739ce6bccbc7e241ca46070f76ee9e6f6eb0c"
       url: "https://pub.dev"
     source: hosted
-    version: "6.2.1"
+    version: "6.3.1"
   js:
     dependency: transitive
     description:
@@ -1152,26 +1152,26 @@ packages:
     dependency: transitive
     description:
       name: leak_tracker
-      sha256: "78eb209deea09858f5269f5a5b02be4049535f568c07b275096836f01ea323fa"
+      sha256: "7f0df31977cb2c0b88585095d168e689669a2cc9b97c309665e3386f3e9d341a"
       url: "https://pub.dev"
     source: hosted
-    version: "10.0.0"
+    version: "10.0.4"
   leak_tracker_flutter_testing:
     dependency: transitive
     description:
       name: leak_tracker_flutter_testing
-      sha256: b46c5e37c19120a8a01918cfaf293547f47269f7cb4b0058f21531c2465d6ef0
+      sha256: "06e98f569d004c1315b991ded39924b21af84cf14cc94791b8aea337d25b57f8"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.1"
+    version: "3.0.3"
   leak_tracker_testing:
     dependency: transitive
     description:
       name: leak_tracker_testing
-      sha256: a597f72a664dbd293f3bfc51f9ba69816f84dcd403cdac7066cb3f6003f3ab47
+      sha256: "6ba465d5d76e67ddf503e1161d1f4a6bc42306f9d66ca1e8f079a47290fb06d3"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.1"
+    version: "3.0.1"
   linkify:
     dependency: transitive
     description:
@@ -1304,10 +1304,10 @@ packages:
     dependency: transitive
     description:
       name: meta
-      sha256: d584fa6707a52763a52446f02cc621b077888fb63b93bbcb1143a7be5a0c0c04
+      sha256: "7687075e408b093f36e6bbf6c91878cc0d4cd10f409506f7bc996f68220b9136"
       url: "https://pub.dev"
     source: hosted
-    version: "1.11.0"
+    version: "1.12.0"
   mime:
     dependency: "direct main"
     description:
@@ -1769,10 +1769,10 @@ packages:
     dependency: "direct main"
     description:
       name: screenshot
-      sha256: "5488135006b34529bf3765a7b1900ca94ccafca300c573550a0474a7162ebf95"
+      sha256: "63817697a7835e6ce82add4228e15d233b74d42975c143ad8cfe07009fab866b"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.0"
+    version: "3.0.0"
   scroll_to_index:
     dependency: "direct main"
     description:
@@ -2054,10 +2054,10 @@ packages:
     dependency: "direct main"
     description:
       name: table_calendar
-      sha256: "1e3521a3e6d3fc7f645a58b135ab663d458ab12504f1ea7f9b4b81d47086c478"
+      sha256: b759eb6caa88dda8e51c70ee43c19d1682f8244458f84cced9138ee35b2ce416
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.9"
+    version: "3.1.1"
   term_glyph:
     dependency: transitive
     description:
@@ -2070,18 +2070,18 @@ packages:
     dependency: transitive
     description:
       name: test_api
-      sha256: "5c2f730018264d276c20e4f1503fd1308dfbbae39ec8ee63c5236311ac06954b"
+      sha256: "9955ae474176f7ac8ee4e989dadfb411a58c30415bcfb648fa04b2b8a03afa7f"
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.1"
+    version: "0.7.0"
   timeago:
     dependency: transitive
     description:
       name: timeago
-      sha256: c44b80cbc6b44627c00d76960f2af571f6f50e5dbedef4d9215d455e4335165b
+      sha256: d3204eb4c788214883380253da7f23485320a58c11d145babc82ad16bf4e7764
       url: "https://pub.dev"
     source: hosted
-    version: "3.6.0"
+    version: "3.6.1"
   timezone:
     dependency: transitive
     description:
@@ -2318,10 +2318,10 @@ packages:
     dependency: transitive
     description:
       name: vm_service
-      sha256: b3d56ff4341b8f182b96aceb2fa20e3dcb336b9f867bc0eafc0de10f1048e957
+      sha256: "3923c89304b715fb1eb6423f017651664a03bf5f4b29983627c4da791f74a4ec"
       url: "https://pub.dev"
     source: hosted
-    version: "13.0.0"
+    version: "14.2.1"
   volume_controller:
     dependency: transitive
     description:
@@ -2428,4 +2428,4 @@ packages:
     version: "1.0.3"
 sdks:
   dart: ">=3.3.0 <4.0.0"
-  flutter: ">=3.19.6"
+  flutter: ">=3.22.0"
