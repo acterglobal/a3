@@ -9,12 +9,12 @@ use matrix_sdk::{
 use ruma::{assign, uint};
 use ruma_client_api::{
     account::{
-        add_3pid, register, request_password_change_token_via_email,
+        register, request_password_change_token_via_email,
         request_registration_token_via_email,
     },
-    uiaa::{AuthData, Dummy, EmailIdentity, Password, RegistrationToken, ThirdpartyIdCredentials},
+    uiaa::{AuthData, Dummy, Password, RegistrationToken},
 };
-use ruma_common::{ClientSecret, OwnedClientSecret, OwnedUserId, SessionId, UserId};
+use ruma_common::{ClientSecret, OwnedUserId, UserId};
 use serde::Deserialize;
 use std::{ops::Deref, sync::RwLock};
 use tracing::{error, info};
@@ -662,114 +662,6 @@ pub async fn change_password_without_login(
     }
 
     Ok(())
-}
-
-pub async fn reset_password_1st_stage(
-    default_homeserver_url: String,
-    email: String,
-    new_val: String,
-) -> Result<PasswordResetFirstResponse> {
-    let homeserver_url = Url::parse(&default_homeserver_url)?;
-
-    RUNTIME
-        .spawn(async move {
-            let resp = request_password_change_token_via_email_without_login(
-                &default_homeserver_url,
-                &email,
-            )
-            .await?;
-
-            let client = SdkClient::new(homeserver_url).await?; // not-logged-in
-            let account = client.account();
-
-            // first calling of password change api
-            info!("change_password before");
-            if let Err(e) = client.account().change_password(&new_val, None).await {
-                info!("change_password after");
-                let Some(inf) = e.as_uiaa_response() else {
-                    info!("change_password uiaa response failed: {:?}", e);
-                    return Err(clearify_error(e));
-                };
-
-                // request 3pid token
-                let client_secret = ClientSecret::new();
-                let req = request_password_change_token_via_email::v3::Request::new(
-                    client_secret.clone(),
-                    email,
-                    uint!(0),
-                );
-                let inner = client.send(req, None).await?;
-
-                return Ok(PasswordResetFirstResponse {
-                    client_secret,
-                    session: inf.session.clone(),
-                    inner,
-                });
-            }
-
-            bail!("couldn't get a set of flows from change_password");
-        })
-        .await?
-}
-
-#[derive(Clone)]
-pub struct PasswordResetFirstResponse {
-    client_secret: OwnedClientSecret,
-    session: Option<String>,
-    inner: request_password_change_token_via_email::v3::Response,
-}
-
-impl PasswordResetFirstResponse {
-    pub fn client_secret(&self) -> String {
-        self.client_secret.to_string()
-    }
-
-    pub fn session(&self) -> Option<String> {
-        self.session.clone()
-    }
-
-    pub fn sid(&self) -> String {
-        self.inner.sid.to_string()
-    }
-
-    pub fn submit_url(&self) -> OptionString {
-        OptionString::new(self.inner.submit_url.clone())
-    }
-}
-
-pub async fn reset_password_2nd_stage(
-    default_homeserver_url: String,
-    sid: String,
-    client_secret: String,
-    id_server: String,
-    id_access_token: String,
-    session: Option<String>,
-    new_val: String,
-) -> Result<()> {
-    let homeserver_url = Url::parse(&default_homeserver_url)?;
-    let sid = SessionId::parse(&sid)?;
-    let client_secret = ClientSecret::parse_box(client_secret.as_str())?;
-
-    RUNTIME
-        .spawn(async move {
-            let client = SdkClient::new(homeserver_url).await?;
-            let account = client.account();
-
-            // second calling of password change api
-            let thirdparty_id_creds =
-                ThirdpartyIdCredentials::new(sid, client_secret, id_server, id_access_token);
-            let email_ident = assign!(EmailIdentity::new(thirdparty_id_creds), {
-                session,
-            });
-            let auth_data = AuthData::EmailIdentity(email_ident);
-            account
-                .change_password(&new_val, Some(auth_data))
-                .await
-                .map_err(clearify_error)?;
-
-            Ok(())
-        })
-        .await?
 }
 
 impl Client {
