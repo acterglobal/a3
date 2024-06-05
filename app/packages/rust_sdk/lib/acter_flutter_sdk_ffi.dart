@@ -54407,6 +54407,7 @@ enum MemberPermissionTag {
   CanUpgradeToActerSpace,
   CanSetName,
   CanUpdateAvatar,
+  CanUpdateJoinRule,
   CanSetTopic,
   CanLinkSpaces,
   CanUpdatePowerLevels,
@@ -54493,22 +54494,26 @@ class MemberPermission {
 
         break;
       case 17:
-        this._tag = MemberPermissionTag.CanSetTopic;
+        this._tag = MemberPermissionTag.CanUpdateJoinRule;
 
         break;
       case 18:
-        this._tag = MemberPermissionTag.CanLinkSpaces;
+        this._tag = MemberPermissionTag.CanSetTopic;
 
         break;
       case 19:
-        this._tag = MemberPermissionTag.CanUpdatePowerLevels;
+        this._tag = MemberPermissionTag.CanLinkSpaces;
 
         break;
       case 20:
-        this._tag = MemberPermissionTag.CanSetParentSpace;
+        this._tag = MemberPermissionTag.CanUpdatePowerLevels;
 
         break;
       case 21:
+        this._tag = MemberPermissionTag.CanSetParentSpace;
+
+        break;
+      case 22:
         this._tag = MemberPermissionTag.CanChangeAppSettings;
 
         break;

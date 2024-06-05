@@ -374,7 +374,7 @@ List<RouteBase> makeHomeShellRoutes(ref) {
         return NoTransitionPage(
           key: state.pageKey,
           child: VisibilityAccessibilityPage(
-            spaceId: state.pathParameters['spaceId']!,
+            roomId: state.pathParameters['spaceId']!,
           ),
         );
       },

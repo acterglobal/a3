@@ -334,6 +334,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
   }
 
   Widget _optionsBody(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Column(
       children: [
         // Notification section
@@ -352,6 +353,28 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
               SettingsSection(
                 tiles: [
                   NotificationsSettingsTile(roomId: widget.roomId),
+                ],
+              ),
+              SettingsSection(
+                tiles: [
+                  SettingsTile(
+                    title: Text(L10n.of(context).accessAndVisibility),
+                    description: Text(
+                      L10n.of(context).spaceConfigurationDescription,
+                    ),
+                    leading: const Icon(Atlas.lab_appliance_thin),
+                    onPressed: (context) {
+                      isDesktop || size.width > 770
+                          ? context.goNamed(
+                              Routes.chatSettingsVisibility.name,
+                              pathParameters: {'roomId': widget.roomId},
+                            )
+                          : context.pushNamed(
+                              Routes.chatSettingsVisibility.name,
+                              pathParameters: {'roomId': widget.roomId},
+                            );
+                    },
+                  ),
                 ],
               ),
             ],

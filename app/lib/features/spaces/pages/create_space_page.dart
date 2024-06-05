@@ -49,27 +49,18 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       //Set default visibility based on the parent space selection
       // PRIVATE : If no parent is selected
       // SPACE VISIBLE : If parent space is selected
-      if (widget.initialParentsSpaceId != null) {
-        ref
-            .read(_selectedVisibilityProvider.notifier)
-            .update((state) => RoomVisibility.SpaceVisible);
-      } else {
-        ref
-            .read(_selectedVisibilityProvider.notifier)
-            .update((state) => RoomVisibility.Private);
-      }
-
+      ref.read(_selectedVisibilityProvider.notifier).update(
+            (state) => widget.initialParentsSpaceId != null
+                ? RoomVisibility.SpaceVisible
+                : RoomVisibility.Private,
+          );
       //LISTEN for changes on parent space selection
       ref.listenManual(selectedSpaceIdProvider, (previous, next) {
-        if (next != null) {
-          ref
-              .read(_selectedVisibilityProvider.notifier)
-              .update((state) => RoomVisibility.SpaceVisible);
-        } else {
-          ref
-              .read(_selectedVisibilityProvider.notifier)
-              .update((state) => RoomVisibility.Private);
-        }
+        ref.read(_selectedVisibilityProvider.notifier).update(
+              (state) => next != null
+                  ? RoomVisibility.SpaceVisible
+                  : RoomVisibility.Private,
+            );
       });
     });
   }

@@ -6,21 +6,26 @@ import 'package:acter/common/widgets/spaces/has_space_permission.dart';
 import 'package:acter/common/widgets/visibility/room_visibilty_type.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 final _log = Logger('a3::space::settings::visibility_accessibility_settings');
 
 class VisibilityAccessibilityPage extends ConsumerStatefulWidget {
-  final String spaceId;
+  final String roomId;
+  final bool showCloseX;
 
-  const VisibilityAccessibilityPage({super.key, required this.spaceId});
+  const VisibilityAccessibilityPage({
+    super.key,
+    required this.roomId,
+    this.showCloseX = false,
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -41,53 +46,48 @@ class _VisibilityAccessibilityPageState
     return AppBar(
       title: Text(L10n.of(context).visibilityAndAccessibility),
       centerTitle: true,
+      // custom x-circle when we are in widescreen mode;
+      leading: widget.showCloseX
+          ? IconButton(
+              onPressed: () => context.pop(),
+              icon: const Icon(Atlas.xmark_circle_thin),
+            )
+          : null,
     );
   }
 
   Widget _buildBody() {
-    final space = ref.watch(spaceProvider(widget.spaceId));
-    return space.when(
-      data: (spaceData) {
-        final spaceId = spaceData.getRoomIdStr();
-        return HasSpacePermission(
-          spaceId: spaceData.getRoomIdStr(),
-          permission: 'CanUpdatePowerLevels',
-          fallback: SingleChildScrollView(
-            child: Column(
-              children: [
-                _buildVisibilityUI(spaceData, hasPermission: false),
-                const SizedBox(height: 20),
-                if (ref.watch(spaceVisibilityProvider(spaceId)).value ==
-                    RoomVisibility.SpaceVisible)
-                  _buildSpaceWithAccess(hasPermission: false),
-              ],
-            ),
-          ),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                _buildVisibilityUI(spaceData),
-                const SizedBox(height: 20),
-                if (ref.watch(spaceVisibilityProvider(spaceId)).value ==
-                    RoomVisibility.SpaceVisible)
-                  _buildSpaceWithAccess(),
-              ],
-            ),
-          ),
-        );
-      },
-      error: (error, stack) => Text(
-        L10n.of(context).loadingFailed(error),
+    return HasSpacePermission(
+      spaceId: widget.roomId,
+      permission: 'CanUpdateJoinRule',
+      fallback: SingleChildScrollView(
+        child: Column(
+          children: [
+            _buildVisibilityUI(hasPermission: false),
+            const SizedBox(height: 20),
+            if (ref.watch(roomVisibilityProvider(widget.roomId)).value ==
+                RoomVisibility.SpaceVisible)
+              _buildSpaceWithAccess(hasPermission: false),
+          ],
+        ),
       ),
-      loading: () => Skeletonizer(
-        child: Text(L10n.of(context).loading),
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            _buildVisibilityUI(),
+            const SizedBox(height: 20),
+            if (ref.watch(roomVisibilityProvider(widget.roomId)).value ==
+                RoomVisibility.SpaceVisible)
+              _buildSpaceWithAccess(),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildVisibilityUI(Space space, {bool hasPermission = true}) {
-    final spaceId = widget.spaceId;
-    final selectedVisibility = ref.watch(spaceVisibilityProvider(spaceId));
+  Widget _buildVisibilityUI({bool hasPermission = true}) {
+    final spaceId = widget.roomId;
+    final selectedVisibility = ref.watch(roomVisibilityProvider(spaceId));
     final spaceList = ref.watch(joinRulesAllowedRoomsProvider(spaceId));
     return selectedVisibility.when(
       data: (visibility) {
@@ -122,7 +122,7 @@ class _VisibilityAccessibilityPageState
   }
 
   Widget _buildSpaceWithAccess({bool hasPermission = true}) {
-    final spaceIds = ref.watch(joinRulesAllowedRoomsProvider(widget.spaceId));
+    final spaceIds = ref.watch(joinRulesAllowedRoomsProvider(widget.roomId));
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Column(
@@ -136,7 +136,7 @@ class _VisibilityAccessibilityPageState
               ),
               if (hasPermission)
                 IconButton(
-                  onPressed: () => selectSpace(widget.spaceId),
+                  onPressed: () => selectSpace(widget.roomId),
                   icon: const Icon(Atlas.plus_circle),
                 ),
             ],
@@ -287,7 +287,7 @@ class _VisibilityAccessibilityPageState
       EasyLoading.show(status: 'Updating space settings', dismissOnTap: false);
       final sdk = await ref.read(sdkProvider.future);
       final update = sdk.api.newJoinRuleBuilder();
-      final room = await ref.read(maybeRoomProvider(widget.spaceId).future);
+      final room = await ref.read(maybeRoomProvider(widget.roomId).future);
       if (room == null) {
         // should never actually happen in practice.
         throw 'Room not found';

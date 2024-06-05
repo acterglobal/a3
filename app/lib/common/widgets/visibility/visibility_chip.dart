@@ -1,4 +1,4 @@
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -14,7 +14,7 @@ class VisibilityChip extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final spaceVisibility = ref.watch(spaceVisibilityProvider(roomId));
+    final spaceVisibility = ref.watch(roomVisibilityProvider(roomId));
     return spaceVisibility.when(
       data: (visibility) {
         return renderSpaceChip(context, visibility);

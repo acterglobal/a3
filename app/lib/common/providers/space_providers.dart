@@ -93,27 +93,6 @@ final maybeSpaceInfoProvider =
 final selectedSpaceIdProvider =
     StateProvider.autoDispose<String?>((ref) => null);
 
-/// gives current visibility state of space, return empty if no space is found
-final spaceVisibilityProvider = FutureProvider.family
-    .autoDispose<RoomVisibility?, String>((ref, spaceId) async {
-  final space = await ref.watch(maybeSpaceProvider(spaceId).future);
-  if (space == null) {
-    return null;
-  }
-  final joinRule = space.joinRuleStr();
-  switch (joinRule) {
-    case 'public':
-      return RoomVisibility.Public;
-    case 'restricted':
-      return RoomVisibility.SpaceVisible;
-    case 'invite':
-      return RoomVisibility.Private;
-    default:
-      _log.warning('Unsupported joinRule for $spaceId: $joinRule');
-      throw 'Unsupported joinRule $joinRule';
-  }
-});
-
 /// gives current context space details based on id, will throw null if id is null
 final selectedSpaceDetailsProvider =
     FutureProvider.autoDispose<SpaceItem?>((ref) async {

@@ -39,6 +39,7 @@ enum Routes {
   createChat('/chat/create'),
   chatroom('/chat/:roomId([!#][^/]+)'), // !roomId, #roomName
   chatProfile('/chat/:roomId([!#][^/]+)/profile'),
+  chatSettingsVisibility('/chat/:roomId([!#][^/]+)/access'),
   chatInvite('/:roomId([!#][^/]+)/invite'),
 
   // --- tasks
@@ -70,7 +71,7 @@ enum Routes {
   // -- space Settings
   spaceSettings('/:spaceId([!#][^/]+)/settings'),
   spaceSettingsApps('/:spaceId([!#][^/]+)/settings/app'),
-  spaceSettingsVisibility('/:spaceId([!#][^/]+)/settings/visibility'),
+  spaceSettingsVisibility('/:spaceId([!#][^/]+)/settings/access'),
   spaceSettingsNotifications('/:spaceId([!#][^/]+)/settings/notifications'),
 
   // -- pins

@@ -57,6 +57,27 @@ final roomProfileDataProvider =
   }
 });
 
+/// gives current visibility state of space, return empty if no space is found
+final roomVisibilityProvider = FutureProvider.family
+    .autoDispose<RoomVisibility?, String>((ref, roomId) async {
+  final room = await ref.watch(maybeRoomProvider(roomId).future);
+  if (room == null) {
+    return null;
+  }
+  final joinRule = room.joinRuleStr();
+  switch (joinRule) {
+    case 'public':
+      return RoomVisibility.Public;
+    case 'restricted':
+      return RoomVisibility.SpaceVisible;
+    case 'invite':
+      return RoomVisibility.Private;
+    default:
+      _log.warning('Unsupported joinRule for $roomId: $joinRule');
+      throw 'Unsupported joinRule $joinRule';
+  }
+});
+
 /// Get the members invited of a given roomId the user knows about. Errors
 /// if the room isn't found. Stays up to date with underlying client data
 /// if a room was found.
