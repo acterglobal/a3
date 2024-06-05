@@ -109,7 +109,8 @@ final spaceVisibilityProvider = FutureProvider.family
     case 'invite':
       return RoomVisibility.Private;
     default:
-      return RoomVisibility.Private;
+      _log.warning('Unsupported joinRule for $spaceId: $joinRule');
+      throw 'Unsupported joinRule $joinRule';
   }
 });
 
