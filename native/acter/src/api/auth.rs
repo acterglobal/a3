@@ -9,8 +9,7 @@ use matrix_sdk::{
 use ruma::{assign, uint};
 use ruma_client_api::{
     account::{
-        register, request_password_change_token_via_email,
-        request_registration_token_via_email,
+        register, request_password_change_token_via_email, request_registration_token_via_email,
     },
     uiaa::{AuthData, Dummy, Password, RegistrationToken},
 };
