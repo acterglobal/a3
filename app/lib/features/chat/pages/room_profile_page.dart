@@ -10,6 +10,7 @@ import 'package:acter/common/widgets/chat/edit_room_description_sheet.dart';
 import 'package:acter/common/widgets/chat/edit_room_name_sheet.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/render_html.dart';
+import 'package:acter/common/widgets/visibility/visibility_chip.dart';
 import 'package:acter/features/chat/widgets/member_list.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/chat/widgets/skeletons/action_item_skeleton_widget.dart';
@@ -359,9 +360,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
                 tiles: [
                   SettingsTile(
                     title: Text(L10n.of(context).accessAndVisibility),
-                    description: Text(
-                      L10n.of(context).spaceConfigurationDescription,
-                    ),
+                    description: VisibilityChip(roomId: widget.roomId),
                     leading: const Icon(Atlas.lab_appliance_thin),
                     onPressed: (context) {
                       isDesktop || size.width > 770
