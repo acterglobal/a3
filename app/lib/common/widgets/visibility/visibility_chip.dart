@@ -50,11 +50,26 @@ class VisibilityChip extends ConsumerWidget {
         break;
     }
     return Chip(
+      padding: const EdgeInsets.symmetric(horizontal: 2),
+      backgroundColor: Theme.of(context).colorScheme.neutral,
+      visualDensity: VisualDensity.compact,
+      shape: RoundedRectangleBorder(
+        borderRadius: const BorderRadius.all(Radius.circular(5)),
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.neutral3,
+        ),
+      ),
       avatar: Icon(
         icon,
-        color: Theme.of(context).colorScheme.neutral6,
+        color: Theme.of(context).colorScheme.neutral5,
       ),
-      label: Text(label),
+      label: Text(
+        label,
+        style: Theme.of(context)
+            .textTheme
+            .labelSmall!
+            .copyWith(color: Theme.of(context).colorScheme.neutral5),
+      ),
     );
   }
 }
