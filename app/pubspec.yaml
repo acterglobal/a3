@@ -118,7 +118,7 @@ dependencies:
   media_kit_libs_windows_video: any
   media_kit_libs_linux: any
   video_player: ^2.8.1
-  share_plus: ^9.0.0
+  share_plus: ^7.2.1
   carousel_indicator: ^1.0.6
   stack_trace: ^1.11.1
   tutorial_coach_mark: ^1.2.11
