@@ -18,7 +18,6 @@ import 'package:acter/features/settings/providers/app_settings_provider.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:riverpod/riverpod.dart';
 
@@ -28,8 +27,7 @@ final autoDownloadMediaProvider =
   final userSettings = await ref.read(userAppSettingsProvider.future);
   final globalAutoDownload = (userSettings.autoDownloadChat() ?? 'always');
   if (globalAutoDownload == 'wifiOnly') {
-    final con = await ref.watch(networkConnectivityProvider.future);
-    return con == ConnectivityResult.wifi;
+    return ref.watch(hasWifiNetworkProvider);
   }
 
   return globalAutoDownload == 'always';
