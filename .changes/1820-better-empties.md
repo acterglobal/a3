@@ -1,1 +1,0 @@
-- As a space admin you can now link subspace and space chats right from the empty screen

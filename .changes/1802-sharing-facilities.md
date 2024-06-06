@@ -1,1 +1,0 @@
-- Next to sharing an Attachment & iCal you can now download them, if your device supports that.
