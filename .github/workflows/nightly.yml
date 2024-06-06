@@ -428,9 +428,15 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
+
+      - name: Configure git
+        run: | # make sure we have the tags and all
+          git fetch --prune --unshallow --tags
+          git config --global user.name 'Sari'
+          git config --global user.email 'acter-sari@users.noreply.github.com'
+
       - name: Generate Changelog
         run: |
-          git fetch --prune --unshallow --tags
           cargo run -p mr_minutes -- --since nightly-latest --output nightly-changes-generated.md
           echo "** Changes since ${{ needs.tags.outputs.prev_tag }} **" > nightly-changes.md
           cat nightly-changes-generated.md >>  nightly-changes.md
@@ -447,9 +453,6 @@ jobs:
 
       - name: Tag for nightly release
         run: |
-
-          git config --global user.name 'Sari'
-          git config --global user.email 'acter-sari@users.noreply.github.com'
           git add "docs/content/nightly/${{ needs.tags.outputs.tag }}.md"
           echo "Tagging ${{ needs.tags.outputs.tag }}" > notes.md
           echo "" >> notes.md
