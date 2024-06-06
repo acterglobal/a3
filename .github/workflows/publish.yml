@@ -102,7 +102,7 @@ jobs:
             flutter_build_args: "build linux"
             artifact_prefix: acter-linux-x64
             artifact_path: app/build/linux/x64/release/bundle/
-            tar_files: lib/ data/ acter
+            tar_files: lib/ data/ acter logo.png *.desktop  LICENSE*
           - name: iOS
             os: macos-14
             target: ios
