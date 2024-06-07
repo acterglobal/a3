@@ -1,17 +1,15 @@
 use acter::{
     api::{
-        change_password_without_login, fetch_session_for_password_change, guest_client,
-        login_new_client, login_new_client_under_config, login_with_token_under_config,
-        make_client_config, request_password_change_email_token,
-        request_registration_token_via_email,
+        change_password_without_login, guest_client, login_new_client,
+        login_new_client_under_config, login_with_token_under_config, make_client_config,
+        request_password_change_email_token, request_registration_token_via_email,
     },
-    matrix_sdk::reqwest::Client,
+    matrix_sdk::{self, reqwest::Client},
 };
 use anyhow::{bail, Context, Result};
 use mail_parser::MessageParser;
-use mailhog_rs::{ListMessagesParams, MailHog};
+use mailhog_rs::{MailHog, MessageList, SearchKind, SearchParams};
 use regex::Regex;
-use std::collections::HashMap;
 use tempfile::TempDir;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
@@ -266,7 +264,7 @@ async fn can_register_via_email() -> Result<()> {
     let media_dir = TempDir::new()?;
     let prefix = "reset_password".to_owned();
     let uuid = Uuid::new_v4().to_string();
-    let email = "test2@localhost".to_owned();
+    let email = format!("{uuid}@example.org");
 
     let resp = request_registration_token_via_email(
         base_dir.path().to_string_lossy().to_string(),
@@ -278,7 +276,7 @@ async fn can_register_via_email() -> Result<()> {
         option_env!("DEFAULT_HOMESERVER_URL")
             .unwrap_or("http://localhost:8118")
             .to_owned(),
-        email,
+        email.clone(),
     )
     .await?;
 
@@ -288,7 +286,7 @@ async fn can_register_via_email() -> Result<()> {
         resp.submit_url(),
     );
 
-    read_email_msg("test2", "test", "_matrix/client/unstable/registration").await?;
+    confirm_email_msg(email, "_matrix/client/unstable/registration").await?;
 
     Ok(())
 }
@@ -302,13 +300,12 @@ async fn can_reset_password_via_email_with_login() -> Result<()> {
     let username = user_id.localpart();
     let old_pswd = default_user_password(username);
     let account = client.account()?;
-    let resp = account
-        .request_3pid_email_token("test3@localhost".to_owned())
-        .await?;
+    let email = format!("{username}@example.org");
+    let resp = account.request_3pid_email_token(email.clone()).await?;
     let client_secret = resp.client_secret();
     let sid = resp.sid();
 
-    read_email_msg("test3", "test", "_matrix/client/unstable/add_threepid").await?;
+    confirm_email_msg(email.clone(), "_matrix/client/unstable/add_threepid").await?;
 
     account
         .add_3pid(client_secret, sid, old_pswd.clone())
@@ -316,9 +313,9 @@ async fn can_reset_password_via_email_with_login() -> Result<()> {
 
     let homeserver_name = option_env!("DEFAULT_HOMESERVER_NAME").unwrap_or("localhost");
     let homeserver_url = option_env!("DEFAULT_HOMESERVER_URL").unwrap_or("http://localhost:8118");
-    let email = "test3@localhost".to_owned();
 
-    let resp = request_password_change_email_token(homeserver_url.to_owned(), email).await?; // here m.login.email.identity is started
+    let resp =
+        request_password_change_email_token(homeserver_url.to_owned(), email.clone()).await?; // here m.login.email.identity is started
 
     info!("password change token via email - sid: {}", resp.sid());
     info!(
@@ -326,8 +323,7 @@ async fn can_reset_password_via_email_with_login() -> Result<()> {
         resp.submit_url(),
     );
 
-    let (_token, _client_secret, _sid) =
-        confirm_email_msg("test3", "test", "_synapse/client/password_reset").await?; // here m.login.email.identity is completed
+    confirm_email_msg(email.clone(), "_synapse/client/password_reset").await?; // here m.login.email.identity is completed
     let new_pswd = format!("new_{}", &old_pswd);
 
     account
@@ -376,16 +372,16 @@ async fn can_reset_password_via_email_without_login() -> Result<()> {
     let mut client = random_user("reset_password_without_login").await?;
     let user_id = client.user_id().expect("we just logged in");
     let username = user_id.localpart();
+    let email = format!("{username}@example.org");
     let old_pswd = default_user_password(username);
     let account = client.account()?;
-    let resp = account
-        .request_3pid_email_token("test4@localhost".to_owned())
-        .await?;
+    let resp = account.request_3pid_email_token(email.clone()).await?;
     let client_secret = resp.client_secret();
     let sid = resp.sid();
 
-    read_email_msg("test4", "test", "_matrix/client/unstable/add_threepid").await?;
+    confirm_email_msg(email.clone(), "_matrix/client/unstable/add_threepid").await?;
 
+    // confirm on the client side, too
     account
         .add_3pid(client_secret, sid, old_pswd.clone())
         .await?;
@@ -394,9 +390,9 @@ async fn can_reset_password_via_email_without_login() -> Result<()> {
 
     let homeserver_name = option_env!("DEFAULT_HOMESERVER_NAME").unwrap_or("localhost");
     let homeserver_url = option_env!("DEFAULT_HOMESERVER_URL").unwrap_or("http://localhost:8118");
-    let email = "test4@localhost".to_owned();
 
-    let resp = request_password_change_email_token(homeserver_url.to_owned(), email).await?; // here m.login.email.identity is started
+    let resp =
+        request_password_change_email_token(homeserver_url.to_owned(), email.clone()).await?; // here m.login.email.identity is started
 
     info!("password change token via email - sid: {}", resp.sid());
     info!(
@@ -404,23 +400,11 @@ async fn can_reset_password_via_email_without_login() -> Result<()> {
         resp.submit_url(),
     );
 
-    let resp = fetch_session_for_password_change(homeserver_url).await?;
-    let session = resp.session();
-
-    let (token, client_secret, sid) =
-        confirm_email_msg("test4", "test", "_synapse/client/password_reset").await?; // here m.login.email.identity is completed
+    confirm_email_msg_with_post(email.clone(), "_synapse/client/password_reset").await?; // here m.login.email.identity is completed
     let new_pswd = format!("new_{}", &old_pswd);
 
-    change_password_without_login(
-        homeserver_url,
-        &new_pswd,
-        sid,
-        client_secret,
-        "localhost".to_owned(),
-        token,
-        session,
-    )
-    .await?;
+    change_password_without_login(homeserver_url, &new_pswd, resp.sid(), resp.client_secret())
+        .await?;
 
     // account
     //     .change_password(old_pswd.clone(), new_pswd.clone())
@@ -459,110 +443,124 @@ async fn can_reset_password_via_email_without_login() -> Result<()> {
     Ok(())
 }
 
-async fn read_email_msg(user: &str, pswd: &str, dir: &str) -> Result<(String, String, String)> {
-    let base_url = format!("http://{}:{}@localhost:8025", user, pswd); // url should include authorization
-    let mailhog = MailHog::new(base_url);
-    let params = ListMessagesParams {
+async fn get_emails_of(email_addr: String) -> Result<MessageList> {
+    let mailhog_url = option_env!("MAILHOG_URL")
+        .unwrap_or("http://localhost:8025")
+        .to_string();
+    let mailhog = MailHog::new(mailhog_url);
+    let params = SearchParams {
         start: None,
         limit: None,
+        kind: SearchKind::To,
+        query: email_addr,
     };
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let mailhog_cl = mailhog.clone();
     let params_cl = params.clone();
-    Retry::spawn(retry_strategy, move || {
+    Ok(Retry::spawn(retry_strategy, move || {
         let mailhog = mailhog_cl.clone();
         let params = params_cl.clone();
         async move {
-            let msg_list = mailhog.list_messages(params).await?;
+            let msg_list = mailhog.search(params).await?;
             if msg_list.count == 0 {
                 bail!("email msg not found");
             }
-            Ok(())
+            Ok(msg_list)
         }
     })
-    .await?;
+    .await?)
+}
 
-    let msg_list = mailhog.list_messages(params).await?;
-    let latest_msg = msg_list
-        .items
-        .first()
-        .context("User should receive at least a mail msg")?;
+async fn confirm_email_msg(email_addr: String, dir: &str) -> Result<matrix_sdk::reqwest::Response> {
+    confirm_email_msg_inner(email_addr, dir, false).await
+}
 
-    info!("last msg content headers: {:?}", latest_msg.content.headers);
-    info!("last msg content body: {:?}", latest_msg.content.body);
-    info!("last msg created: {:?}", latest_msg.created);
-    info!("last msg from: {:?}", latest_msg.from);
-    info!("last msg id: {:?}", latest_msg.id);
+async fn confirm_email_msg_with_post(
+    email_addr: String,
+    dir: &str,
+) -> Result<matrix_sdk::reqwest::Response> {
+    confirm_email_msg_inner(email_addr, dir, true).await
+}
 
-    let mut headers = vec![];
-    for (key, vals) in latest_msg.content.headers.iter() {
-        for (pos, val) in vals.iter().enumerate() {
-            if pos == 0 {
-                headers.push(format!("{key}: {val}"));
-            } else {
-                headers.push(val.clone());
-            }
-        }
-    }
-    let content = format!(
-        "{}\r\n\r\n{}",
-        headers.join("\r\n"),
-        latest_msg.content.body,
-    );
-    let mail_msg = MessageParser::default()
-        .parse(&content)
-        .context("mail content should be parsed")?;
-    let plain_body = mail_msg
-        .body_text(0)
-        .context("plain text should be extracted")?
-        .to_string();
+async fn confirm_email_msg_inner(
+    email_addr: String,
+    dir: &str,
+    do_post: bool,
+) -> Result<matrix_sdk::reqwest::Response> {
+    let (token, client_secret, sid) = get_email_tokens(email_addr, dir).await?;
 
-    info!("plain body: {}", plain_body);
-
-    // starts with "https://localhost" on local synapse
-    // starts with "http://localhost:8118" on github actions workflow
-    // FIXME: these 2 prefixes can be unified into one, if something is modified in email config of homeserver.yaml???
-    let pattern = format!(
-        r"(?m)^.*(https://localhost|http://localhost:8118)/{}/email/submit_token\?token=(.*)&client_secret=(.*)&sid=(.*)\n.*$",
-        dir
-    );
-    let re = Regex::new(&pattern)?;
-    let err = format!("should capture url: {}", &plain_body);
-    let caps = re.captures(&plain_body).context(err)?;
-
-    let token = caps.get(2).map_or("", |m| m.as_str());
-    let client_secret = caps.get(3).map_or("", |m| m.as_str());
-    let sid = caps.get(4).map_or("", |m| m.as_str());
-
-    info!("token: {}", token);
-    info!("client secret: {}", client_secret);
-    info!("session id: {}", sid);
+    let homeserver_url = option_env!("DEFAULT_HOMESERVER_URL").unwrap_or("http://localhost:8118");
 
     let client = Client::new();
-    let submit_url = format!("http://localhost:8118/{}/email/submit_token", dir);
+    let submit_url = format!("{homeserver_url}/{dir}/email/submit_token");
     let params = [
         ("token", token),
         ("client_secret", client_secret),
         ("sid", sid),
     ];
-    let req = client.get(submit_url).query(&params).build()?;
-    let _resp = client.execute(req).await?.error_for_status()?;
-
-    Ok((token.to_owned(), client_secret.to_owned(), sid.to_owned()))
+    let req = if do_post {
+        client.post(submit_url)
+    } else {
+        client.get(submit_url)
+    };
+    Ok(client
+        .execute(req.query(&params).build()?)
+        .await?
+        .error_for_status()?)
 }
 
-async fn confirm_email_msg(user: &str, pswd: &str, dir: &str) -> Result<(String, String, String)> {
-    let (token, client_secret, sid) = read_email_msg(user, pswd, dir).await?;
+async fn get_email_tokens(email_addr: String, dir: &str) -> Result<(String, String, String)> {
+    let message_list = get_emails_of(email_addr).await?;
+    let mut failures = vec![];
+    for msg in message_list.items {
+        info!("last msg content headers: {:?}", msg.content.headers);
+        info!("last msg content body: {:?}", msg.content.body);
+        info!("last msg created: {:?}", msg.created);
+        info!("last msg from: {:?}", msg.from);
+        info!("last msg id: {:?}", msg.id);
 
-    let client = Client::new();
-    let submit_url = format!("http://localhost:8118/{}/email/submit_token", dir);
-    let mut params = HashMap::new();
-    params.insert("token", token.clone());
-    params.insert("client_secret", client_secret.clone());
-    params.insert("sid", sid.clone());
-    let req = client.post(submit_url).form(&params).build()?;
-    let _resp = client.execute(req).await?.error_for_status()?;
+        let mut headers = vec![];
+        for (key, vals) in msg.content.headers.iter() {
+            for (pos, val) in vals.iter().enumerate() {
+                if pos == 0 {
+                    headers.push(format!("{key}: {val}"));
+                } else {
+                    headers.push(val.clone());
+                }
+            }
+        }
+        let content = format!("{}\r\n\r\n{}", headers.join("\r\n"), msg.content.body,);
+        let mail_msg = MessageParser::default()
+            .parse(&content)
+            .context("mail content should be parsed")?;
+        let plain_body = mail_msg
+            .body_text(0)
+            .context("plain text should be extracted")?
+            .to_string();
 
-    Ok((token, client_secret, sid))
+        info!("plain body: {}", plain_body);
+
+        // starts with "https://localhost" on local synapse
+        // starts with "http://localhost:8118" on github actions workflow
+        // FIXME: these 2 prefixes can be unified into one, if something is modified in email config of homeserver.yaml???
+        let pattern = format!(
+            r"(?m)^.*{dir}/email/submit_token\?token=(\w+)&client_secret=(\w+)&sid=(\w+)\n.*$",
+        );
+        let re = Regex::new(&pattern)?;
+        if let Some(caps) = re.captures(&plain_body) {
+            let token = caps.get(1).map(|m| m.as_str()).unwrap();
+            let client_secret = caps.get(2).map(|m| m.as_str()).unwrap();
+            let sid = caps.get(3).map(|m| m.as_str()).unwrap();
+
+            info!("token: {}", token);
+            info!("client secret: {}", client_secret);
+            info!("session id: {}", sid);
+
+            return Ok((token.to_owned(), client_secret.to_owned(), sid.to_owned()));
+        } else {
+            failures.push(format!("should capture url ({pattern}): \n {plain_body}"))
+        }
+    }
+    bail!("No email found matching: {}", failures.join("\n----\n"))
 }

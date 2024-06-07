@@ -6,7 +6,7 @@ use matrix_sdk::{
     reqwest::{ClientBuilder as ReqClientBuilder, StatusCode},
     Client as SdkClient, ClientBuilder as SdkClientBuilder, SessionMeta,
 };
-use ruma::{assign, uint};
+use ruma::{assign, uint, OwnedClientSecret};
 use ruma_client_api::{
     account::{
         register, request_password_change_token_via_email, request_registration_token_via_email,
@@ -506,22 +506,29 @@ pub async fn request_password_change_email_token(
             let client = SdkClient::new(homeserver_url).await?;
             let client_secret = ClientSecret::new();
             let request = request_password_change_token_via_email::v3::Request::new(
-                client_secret,
+                client_secret.clone(),
                 email,
                 uint!(0),
             );
             let inner = client.send(request, None).await?;
-            Ok(PasswordChangeEmailTokenResponse { inner })
+            Ok(PasswordChangeEmailTokenResponse {
+                client_secret,
+                inner,
+            })
         })
         .await?
 }
 
 #[derive(Clone)]
 pub struct PasswordChangeEmailTokenResponse {
+    client_secret: OwnedClientSecret,
     inner: request_password_change_token_via_email::v3::Response,
 }
 
 impl PasswordChangeEmailTokenResponse {
+    pub fn client_secret(&self) -> String {
+        self.client_secret.to_string()
+    }
     pub fn sid(&self) -> String {
         self.inner.sid.to_string()
     }
@@ -568,34 +575,6 @@ async fn request_password_change_token_via_email_without_login(
     Ok(())
 }
 
-pub async fn fetch_session_for_password_change(
-    default_homeserver_url: &str,
-) -> Result<FetchSessionForPasswordChangeResponse> {
-    let http_client = ReqClientBuilder::new().build()?;
-    let homeserver_url = Url::parse(default_homeserver_url)?;
-    let submit_url = homeserver_url.join("/_matrix/client/v3/account/password")?;
-
-    let body = serde_json::json!({});
-
-    let resp = http_client
-        .post(submit_url.to_string())
-        .body(body.to_string())
-        .send()
-        .await?;
-
-    info!("fetch_session_for_password_change: {:?}", resp);
-
-    if resp.status() == StatusCode::UNAUTHORIZED {
-        // it is expected because of not logged in
-        let text = resp.text().await?;
-        let res = serde_json::from_str::<FetchSessionForPasswordChangeResponse>(&text)?;
-        return Ok(res);
-    }
-
-    let text = resp.text().await?;
-    bail!("fetch_session_for_password_change failed: {}", text)
-}
-
 #[derive(Clone, Deserialize)]
 struct PasswordChangeFlow {
     stages: Vec<String>,
@@ -622,15 +601,10 @@ pub async fn change_password_without_login(
     new_val: &str,
     sid: String,
     client_secret: String,
-    id_server: String,
-    id_access_token: String,
-    session: String,
 ) -> Result<()> {
     let http_client = ReqClientBuilder::new().build()?;
     let homeserver_url = Url::parse(default_homeserver_url)?;
     let submit_url = homeserver_url.join("/_matrix/client/v3/account/password")?;
-
-    info!("change_password_without_login session: {}", &session);
 
     let body = serde_json::json!({
         "new_password": new_val.to_owned(),
@@ -640,10 +614,8 @@ pub async fn change_password_without_login(
             "threepid_creds": {
                 "sid": sid,
                 "client_secret": client_secret,
-                "id_server": id_server,
-                "id_access_token": id_access_token
             },
-            "session": session
+            "type": "m.login.email.identity".to_owned()
         }
     });
 
