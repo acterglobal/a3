@@ -308,7 +308,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
         margin: const EdgeInsets.symmetric(horizontal: 5),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.background,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(10.0),
         ),
         child: InkWell(
@@ -394,7 +394,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.background,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(10.0),
       ),
       child: Column(

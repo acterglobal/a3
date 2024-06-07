@@ -177,7 +177,7 @@ class _EmojiContainerState extends State<EmojiContainer>
                 padding: const EdgeInsets.all(24),
                 controller: tabBarController,
                 overlayColor:
-                    MaterialStateProperty.all<Color>(Colors.transparent),
+                    WidgetStateProperty.all<Color>(Colors.transparent),
                 indicator: const BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(12)),
                 ),

@@ -119,7 +119,7 @@ class _NotificationSettingsTile extends ConsumerWidget {
           ? Icon(
               Atlas.check_circle,
               size: 18,
-              color: Theme.of(context).colorScheme.onBackground,
+              color: Theme.of(context).colorScheme.onSurface,
             )
           : null,
     );

@@ -56,5 +56,5 @@ TextButtonThemeData textButtonTheme(ColorScheme colors) => TextButtonThemeData(
       ),
     );
 final iconButtonTheme = IconButtonThemeData(
-  style: ButtonStyle(foregroundColor: MaterialStateProperty.all(Colors.white)),
+  style: ButtonStyle(foregroundColor: WidgetStateProperty.all(Colors.white)),
 );

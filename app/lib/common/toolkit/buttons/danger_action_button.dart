@@ -31,7 +31,7 @@ class ActerDangerActionButton extends ElevatedButton {
     FocusNode? focusNode,
     bool? autofocus,
     Clip? clipBehavior,
-    MaterialStatesController? statesController,
+    WidgetStatesController? statesController,
     required Widget icon,
     required Widget label,
   }) {

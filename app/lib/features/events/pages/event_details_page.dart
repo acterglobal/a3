@@ -342,7 +342,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     );
 
     return Container(
-      color: Theme.of(context).colorScheme.background,
+      color: Theme.of(context).colorScheme.surface,
       padding: const EdgeInsets.symmetric(vertical: 15.0),
       child: Row(
         children: [

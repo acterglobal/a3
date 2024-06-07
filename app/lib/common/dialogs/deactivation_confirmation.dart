@@ -39,7 +39,7 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
                       horizontal: 10,
                       vertical: 5,
                     ),
-                    color: Theme.of(context).colorScheme.background,
+                    color: Theme.of(context).colorScheme.surface,
                     child: Column(
                       children: [
                         Text(

@@ -26,7 +26,7 @@ class SpaceItem extends ConsumerWidget {
       onTap: callback,
       child: Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.background,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Container(

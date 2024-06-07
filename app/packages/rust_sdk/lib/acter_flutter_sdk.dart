@@ -285,7 +285,7 @@ class ActerSdk {
 
   static Future<List<String>?> sessionKeys() async {
     int delayedCounter = 0;
-    while (!await storage.isCupertinoProtectedDataAvailable()) {
+    while ((await storage.isCupertinoProtectedDataAvailable()) == false) {
       if (delayedCounter > 10) {
         _log.severe('Secure Store: not available after 10 seconds');
         throw 'Secure Store: not available';
