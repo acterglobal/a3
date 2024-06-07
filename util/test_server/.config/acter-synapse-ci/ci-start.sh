@@ -8,14 +8,14 @@ echo " ====== Patching for local fixes  ====== "
 echo """
 
 email:
-  smtp_host: localhost
+  smtp_host: mailhog
   smtp_port: 1025
   smtp_user: \"test1\"
   smtp_pass: \"test\"
   force_tls: false
   require_transport_security: false
   enable_tls: false
-  notif_from: \"Your Friendly %(app)s homeserver <noreply@example.com>\"
+  notif_from: \"Your Friendly %(app)s homeserver <noreply@acter.global>\"
   app_name: Acter
   enable_notifs: true
   notif_for_new_users: false

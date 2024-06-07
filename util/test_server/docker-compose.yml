@@ -2,9 +2,7 @@ version: "3"
 
 services:
   mailhog:
-    build:
-      context: .config/acter-mailhog-ci
-      dockerfile: Dockerfile
+    image: mailhog/mailhog
     restart: unless-stopped
     ports:
       - 1025:1025 # smtp server
