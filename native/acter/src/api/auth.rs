@@ -635,15 +635,15 @@ pub async fn change_password_without_login(
     let body = serde_json::json!({
         "new_password": new_val.to_owned(),
         "logout_devices": false,
-        "auth": {
+        "auth": { // [ref] https://spec.matrix.org/v1.10/client-server-api/#email-based-identity--homeserver
+            "type": "m.login.email.identity".to_owned(),
             "threepid_creds": {
                 "sid": sid,
                 "client_secret": client_secret,
                 "id_server": id_server,
                 "id_access_token": id_access_token
             },
-            "session": session,
-            "type": "m.login.email.identity".to_owned()
+            "session": session
         }
     });
 
