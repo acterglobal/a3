@@ -95,24 +95,30 @@ class TaskItem extends ConsumerWidget {
 
   Widget subtitle(WidgetRef ref, BuildContext context) {
     final description = task.description();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (showBreadCrumb)
-          ref.watch(taskListProvider(task.taskListIdStr())).when(
-                data: (taskList) => Text(taskList.name()),
-                error: (e, s) => Text(L10n.of(context).loadingFailed(e)),
-                loading: () => Skeletonizer(
-                  child: Text(L10n.of(context).loading),
+    return Padding(
+      padding: const EdgeInsets.only(right: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (showBreadCrumb)
+            ref.watch(taskListProvider(task.taskListIdStr())).when(
+                  data: (taskList) => Text(taskList.name()),
+                  error: (e, s) => Text(L10n.of(context).loadingFailed(e)),
+                  loading: () => Skeletonizer(
+                    child: Text(L10n.of(context).loading),
+                  ),
                 ),
-              ),
-        if (description?.body() != null && !showBreadCrumb)
-          Text(
-            description!.body(),
-            style: Theme.of(context).textTheme.labelMedium,
-          ),
-        dueDateWidget(context),
-      ],
+          if (description?.body() != null && !showBreadCrumb)
+            Text(
+              description!.body(),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
+          const SizedBox(height: 8),
+          dueDateWidget(context),
+        ],
+      ),
     );
   }
 
