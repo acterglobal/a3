@@ -411,7 +411,7 @@ async fn can_reset_password_via_email_without_login() -> Result<()> {
         confirm_email_msg("test4", "test", "_synapse/client/password_reset").await?; // here m.login.email.identity is completed
     let new_pswd = format!("new_{}", &old_pswd);
 
-    let resp = change_password_without_login(
+    change_password_without_login(
         homeserver_url,
         &new_pswd,
         sid,
