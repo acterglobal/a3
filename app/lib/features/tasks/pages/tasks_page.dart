@@ -80,6 +80,7 @@ class TasksPage extends ConsumerWidget {
                         return TaskListItemCard(
                           taskList: taskList,
                           showCompletedTask: value,
+                          showSpace: true,
                         );
                       },
                     );
