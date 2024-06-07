@@ -69,11 +69,7 @@ jobs:
         run: |
           wget -q https://github.com/mailhog/MailHog/releases/download/v1.0.1/MailHog_linux_amd64
           sudo chmod +x MailHog_linux_amd64
-          echo 'test1:$2a$04$qxRo.ftFoNep7ld/5jfKtuBTnGqff/fZVyj53mUC5sVf9dtDLAi/S' >> mailhog-auth.txt
-          echo 'test2:$2a$04$qxRo.ftFoNep7ld/5jfKtuBTnGqff/fZVyj53mUC5sVf9dtDLAi/S' >> mailhog-auth.txt
-          echo 'test3:$2a$04$qxRo.ftFoNep7ld/5jfKtuBTnGqff/fZVyj53mUC5sVf9dtDLAi/S' >> mailhog-auth.txt
-          echo 'test4:$2a$04$qxRo.ftFoNep7ld/5jfKtuBTnGqff/fZVyj53mUC5sVf9dtDLAi/S' >> mailhog-auth.txt
-          ./MailHog_linux_amd64 -auth-file=./mailhog-auth.txt &
+          ./MailHog_linux_amd64 &
 
       - uses: michaelkaye/setup-matrix-synapse@main
         with:
@@ -91,7 +87,7 @@ jobs:
               force_tls: false
               require_transport_security: false
               enable_tls: false
-              notif_from: "Your Friendly %(app)s homeserver <noreply@example.com>"
+              notif_from: "Your Friendly %(app)s homeserver <noreply@example.org>"
               app_name: Acter
               enable_notifs: true
               notif_for_new_users: false
