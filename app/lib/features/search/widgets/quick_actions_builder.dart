@@ -41,8 +41,7 @@ class QuickActionsBuilder extends ConsumerWidget {
       hasSpaceWithPermissionProvider('CanPostTaskList'),
     );
     final canPostEvent = (canPostEventProvider.valueOrNull ?? false);
-    final canPostTaskList = isActive(LabsFeature.tasks) &&
-        (canCreateTaskListProvider.valueOrNull ?? false);
+    final canPostTaskList = canCreateTaskListProvider.valueOrNull ?? false;
     return Wrap(
       alignment: WrapAlignment.spaceEvenly,
       spacing: 8,
