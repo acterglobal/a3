@@ -25,7 +25,6 @@ class TaskItemsListWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    print("TASK RENDER - 4");
     final tasks = ref.watch(tasksProvider(taskList));
     return tasks.when(
       data: (overview) => taskData(context, overview),
