@@ -8,6 +8,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
+import 'package:acter/features/tasks/widgets/due_picker.dart';
 
 void showCreateUpdateTaskItemBottomSheet(
   BuildContext context, {
@@ -195,13 +196,12 @@ class _CreateUpdateItemListConsumerState
   }
 
   Future<void> selectDueDate() async {
-    final date = await showDatePicker(
+    final due = await showDuePicker(
       context: context,
       initialDate: selectedDate,
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().addYears(1),
     );
-    if (date == null || !mounted) return;
+    if (due == null || !mounted) return;
+    final date = due.due;
     setState(() {
       selectedDate = date;
       _taskDueDateController.text = taskDueDateFormat(date);

@@ -574,7 +574,7 @@ void tasksTests() {
     await dueDateFinder.tap(); // open due dialog
 
     // select tomorrow
-    final tomorrow = find.byKey(DuePicker.quickSelectTomorrow);
+    final tomorrow = find.byKey(quickSelectTomorrow);
     await tomorrow.should(findsOneWidget);
     await tomorrow.tap(); // set to tomorrow
 
@@ -587,7 +587,7 @@ void tasksTests() {
     await dueDateFinder.tap(); // open due dialog
 
     // select today
-    final today = find.byKey(DuePicker.quickSelectToday);
+    final today = find.byKey(quickSelectToday);
     await today.should(findsOneWidget);
     await today.tap(); // set to today
 
@@ -804,7 +804,7 @@ void tasksTests() {
     await dueDateFinder.tap(); // open due dialog
 
     // select today
-    final today = find.byKey(DuePicker.quickSelectToday);
+    final today = find.byKey(quickSelectToday);
     await today.should(findsOneWidget);
     await today.tap(); // set to today
 
