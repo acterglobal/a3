@@ -394,8 +394,8 @@ impl ThreePidEmailTokenResponse {
         self.inner.sid.to_string()
     }
 
-    pub fn submit_url(&self) -> OptionString {
-        OptionString::new(self.inner.submit_url.clone())
+    pub fn submit_url(&self) -> Option<String> {
+        self.inner.submit_url.clone()
     }
 
     pub fn client_secret(&self) -> String {

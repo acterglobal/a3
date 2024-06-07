@@ -285,7 +285,7 @@ async fn can_register_via_email() -> Result<()> {
     info!("registration token via email - sid: {}", resp.sid());
     info!(
         "registration token via email - submit_url: {:?}",
-        resp.submit_url().text(),
+        resp.submit_url(),
     );
 
     read_email_msg("test2", "test", "_matrix/client/unstable/registration").await?;
@@ -323,7 +323,7 @@ async fn can_reset_password_via_email_with_login() -> Result<()> {
     info!("password change token via email - sid: {}", resp.sid());
     info!(
         "password change token via email - submit_url: {:?}",
-        resp.submit_url().text(),
+        resp.submit_url(),
     );
 
     let (_token, _client_secret, _sid) =
@@ -401,7 +401,7 @@ async fn can_reset_password_via_email_without_login() -> Result<()> {
     info!("password change token via email - sid: {}", resp.sid());
     info!(
         "password change token via email - submit_url: {:?}",
-        resp.submit_url().text(),
+        resp.submit_url(),
     );
 
     let resp = fetch_session_for_password_change(homeserver_url).await?;

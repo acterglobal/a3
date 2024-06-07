@@ -25,7 +25,7 @@ use super::{
     common::clearify_error,
     RUNTIME,
 };
-use crate::{platform, OptionString};
+use crate::platform;
 
 lazy_static! {
     static ref PROXY_URL: RwLock<Option<String>> = RwLock::new(None);
@@ -490,8 +490,8 @@ impl RegistrationTokenViaEmailResponse {
         self.inner.sid.to_string()
     }
 
-    pub fn submit_url(&self) -> OptionString {
-        OptionString::new(self.inner.submit_url.clone())
+    pub fn submit_url(&self) -> Option<String> {
+        self.inner.submit_url.clone()
     }
 }
 
@@ -526,8 +526,8 @@ impl PasswordChangeEmailTokenResponse {
         self.inner.sid.to_string()
     }
 
-    pub fn submit_url(&self) -> OptionString {
-        OptionString::new(self.inner.submit_url.clone())
+    pub fn submit_url(&self) -> Option<String> {
+        self.inner.submit_url.clone()
     }
 }
 
