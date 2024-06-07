@@ -43,8 +43,8 @@ enum Routes {
 
   // --- tasks
   tasks('/tasks'),
-  task('/tasks/:taskListId([^/]+)/:taskId([^/]+)'),
-  taskList('/tasks/:taskListId([^/]+)'),
+  taskListDetails('/tasks/:taskListId([^/]+)'),
+  taskItemDetails('/tasks/:taskListId([^/]+)/:taskId([^/]+)'),
 
   // --- Invite
   inviteIndividual('/inviteIndividual'),

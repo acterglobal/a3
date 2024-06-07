@@ -2199,5 +2199,15 @@
   "emptyTaskList": "No Task list created yet",
   "addMoreDetails": "Add More Details",
   "taskName": "Task name",
-  "addingTask": "Adding Task"
+  "addingTask": "Adding Task",
+  "countTasksCompleted": "{count} Completed",
+  "showCompleted": "Show Completed",
+  "hideCompleted": "Hide Completed",
+  "assignment": "Assignment",
+  "noAssignment": "No Assignment",
+  "assignMyself": "Assign Myself",
+  "removeMyself": "Remove Myself",
+  "updateTask": "Update Task",
+  "updatingTask": "Updating Task",
+  "updatingTaskFailed": "Updating Task failed {error}"
 }
