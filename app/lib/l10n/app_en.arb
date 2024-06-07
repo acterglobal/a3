@@ -744,6 +744,8 @@
   "@noChatsFoundMatchingYourSearchTerm": {},
   "noChatsInThisSpaceYet": "No chats in this space yet",
   "@noChatsInThisSpaceYet": {},
+  "noChatsStillSyncing": "Synchronizing...",
+  "noChatsStillSyncingSubtitle": "We are loading your chats. On large accounts the initial loading takes a bit ...",
   "noConnectedSpaces": "No connected spaces",
   "@noConnectedSpaces": {},
   "noDisplayName": "no display name",
