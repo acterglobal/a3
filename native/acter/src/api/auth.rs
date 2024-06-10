@@ -556,7 +556,7 @@ pub async fn change_password_without_login(
             "type": "m.login.email.identity".to_owned(),
             "threepid_creds": {
                 "sid": sid,
-                "client_secret": client_secret,
+                "client_secret": client_secret
             }
         }
     });
