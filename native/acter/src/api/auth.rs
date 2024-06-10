@@ -6,14 +6,14 @@ use matrix_sdk::{
     reqwest::{ClientBuilder as ReqClientBuilder, StatusCode},
     Client as SdkClient, ClientBuilder as SdkClientBuilder, SessionMeta,
 };
-use ruma::{assign, uint, OwnedClientSecret};
+use ruma::{assign, uint};
 use ruma_client_api::{
     account::{
         register, request_password_change_token_via_email, request_registration_token_via_email,
     },
     uiaa::{AuthData, Dummy, Password, RegistrationToken},
 };
-use ruma_common::{ClientSecret, OwnedUserId, UserId};
+use ruma_common::{ClientSecret, OwnedClientSecret, OwnedUserId, UserId};
 use serde::Deserialize;
 use std::{ops::Deref, sync::RwLock};
 use tracing::{error, info};
@@ -529,6 +529,7 @@ impl PasswordChangeEmailTokenResponse {
     pub fn client_secret(&self) -> String {
         self.client_secret.to_string()
     }
+
     pub fn sid(&self) -> String {
         self.inner.sid.to_string()
     }
@@ -614,8 +615,7 @@ pub async fn change_password_without_login(
             "threepid_creds": {
                 "sid": sid,
                 "client_secret": client_secret,
-            },
-            "type": "m.login.email.identity".to_owned()
+            }
         }
     });
 

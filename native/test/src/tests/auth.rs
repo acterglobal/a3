@@ -4,7 +4,7 @@ use acter::{
         login_new_client_under_config, login_with_token_under_config, make_client_config,
         request_password_change_email_token, request_registration_token_via_email,
     },
-    matrix_sdk::{self, reqwest::Client},
+    matrix_sdk::reqwest::{Client as ReqClient, Response as ReqResponse},
 };
 use anyhow::{bail, Context, Result};
 use mail_parser::MessageParser;
@@ -406,10 +406,6 @@ async fn can_reset_password_via_email_without_login() -> Result<()> {
     change_password_without_login(homeserver_url, &new_pswd, resp.sid(), resp.client_secret())
         .await?;
 
-    // account
-    //     .change_password(old_pswd.clone(), new_pswd.clone())
-    //     .await?;
-
     let base_dir = TempDir::new()?;
     let media_dir = TempDir::new()?;
     let res = login_new_client(
@@ -472,42 +468,39 @@ async fn get_emails_of(email_addr: String) -> Result<MessageList> {
     .await?)
 }
 
-async fn confirm_email_msg(email_addr: String, dir: &str) -> Result<matrix_sdk::reqwest::Response> {
+async fn confirm_email_msg(email_addr: String, dir: &str) -> Result<ReqResponse> {
     confirm_email_msg_inner(email_addr, dir, false).await
 }
 
-async fn confirm_email_msg_with_post(
-    email_addr: String,
-    dir: &str,
-) -> Result<matrix_sdk::reqwest::Response> {
+async fn confirm_email_msg_with_post(email_addr: String, dir: &str) -> Result<ReqResponse> {
     confirm_email_msg_inner(email_addr, dir, true).await
 }
 
 async fn confirm_email_msg_inner(
     email_addr: String,
     dir: &str,
-    do_post: bool,
-) -> Result<matrix_sdk::reqwest::Response> {
+    is_post: bool, // if false, it means GET method
+) -> Result<ReqResponse> {
     let (token, client_secret, sid) = get_email_tokens(email_addr, dir).await?;
 
     let homeserver_url = option_env!("DEFAULT_HOMESERVER_URL").unwrap_or("http://localhost:8118");
 
-    let client = Client::new();
+    let client = ReqClient::new();
     let submit_url = format!("{homeserver_url}/{dir}/email/submit_token");
     let params = [
         ("token", token),
         ("client_secret", client_secret),
         ("sid", sid),
     ];
-    let req = if do_post {
+    let req_builder = if is_post {
         client.post(submit_url)
     } else {
         client.get(submit_url)
     };
-    Ok(client
-        .execute(req.query(&params).build()?)
-        .await?
-        .error_for_status()?)
+    let req = req_builder.query(&params).build()?;
+
+    let resp = client.execute(req).await?.error_for_status()?;
+    Ok(resp)
 }
 
 async fn get_email_tokens(email_addr: String, dir: &str) -> Result<(String, String, String)> {
@@ -541,9 +534,6 @@ async fn get_email_tokens(email_addr: String, dir: &str) -> Result<(String, Stri
 
         info!("plain body: {}", plain_body);
 
-        // starts with "https://localhost" on local synapse
-        // starts with "http://localhost:8118" on github actions workflow
-        // FIXME: these 2 prefixes can be unified into one, if something is modified in email config of homeserver.yaml???
         let pattern = format!(
             r"(?m)^.*{dir}/email/submit_token\?token=(\w+)&client_secret=(\w+)&sid=(\w+)\n.*$",
         );
