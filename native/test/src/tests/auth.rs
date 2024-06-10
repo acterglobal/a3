@@ -193,11 +193,12 @@ async fn can_deactivate_user() -> Result<()> {
     let _ = env_logger::try_init();
     let username = {
         let client = random_user("deactivate_me").await?;
+        let account = client.account()?;
         // password in tests can be figured out from the username
         let username = client.user_id().expect("we just logged in");
         let password = default_user_password(username.localpart());
         print!("with password: {password}");
-        assert!(client.deactivate(password).await?, "deactivation failed");
+        assert!(account.deactivate(password).await?, "deactivation failed");
         username
     };
 
@@ -218,12 +219,12 @@ async fn user_changes_password() -> Result<()> {
     let _ = env_logger::try_init();
 
     let mut client = random_user("change_password").await?;
+    let account = client.account()?;
     let user_id = client.user_id().expect("we just logged in");
     let password = default_user_password(user_id.localpart());
     let new_password = format!("new_{:?}", password.as_str());
 
-    let result = client
-        .clone()
+    let result = account
         .change_password(password.clone(), new_password.clone())
         .await?;
     assert!(result, "Couldn't change password successfully");

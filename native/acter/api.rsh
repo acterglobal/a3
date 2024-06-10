@@ -2209,6 +2209,13 @@ object Account {
 
     /// listen to updates to the app settings
     fn subscribe_app_settings_stream() -> Stream<bool>;
+
+    // deactivate the account. This can not be reversed. The username will
+    // be blocked from any future usage, all personal data will be removed.
+    fn deactivate(password: string) -> Future<Result<bool>>;
+
+    /// change password
+    fn change_password(old_val: string, new_val: string) -> Future<Result<bool>>;
 }
 
 object ThreePidManager {
@@ -2433,16 +2440,6 @@ object CreateSpaceSettings {}
 
 /// Main entry point for `acter`.
 object Client {
-
-    // deactivate the account. This can not be reversed. The username will
-    // be blocked from any future usage, all personal data will be removed.
-    fn deactivate(password: string) -> Future<Result<bool>>;
-
-    /// change password
-    fn change_password(old_val: string, new_val: string) -> Future<Result<bool>>;
-
-    // Special
-
     /// start the sync
     fn start_sync() -> SyncState;
 

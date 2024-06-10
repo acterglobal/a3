@@ -1,6 +1,4 @@
-use acter_core::events::settings::{
-    ActerUserAppSettingsContent, ActerUserAppSettingsContentBuilder, APP_USER_SETTINGS,
-};
+use acter_core::events::settings::{ActerUserAppSettingsContent, APP_USER_SETTINGS};
 use anyhow::{bail, Context, Result};
 use futures::StreamExt;
 use matrix_sdk::{media::MediaRequest, Account as SdkAccount};
