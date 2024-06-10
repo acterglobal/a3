@@ -418,23 +418,18 @@ Probably `mailtutan` may be good choice, but it is dummy server that doesn't res
 
 ```
 git clone https://github.com/mailhog/MailHog.git
+cd MailHog
 go mod vendor
 ```
 
-2. Create `auth.txt` file in root of `mailhog` project and enter lines of `username:password` for basic authentication of mail sender (`test1`) & receiver (`test2`), where password is `test` wrapped by `bcrypt`
+2. Run `mailhog` without specific auth file
 
 ```
-test1:$2a$04$qxRo.ftFoNep7ld/5jfKtuBTnGqff/fZVyj53mUC5sVf9dtDLAi/S
-test2:$2a$04$qxRo.ftFoNep7ld/5jfKtuBTnGqff/fZVyj53mUC5sVf9dtDLAi/S
+go run .
 ```
 
-3. Run `mailhog` with specified auth file
-
-```
-MH_AUTH_FILE="auth.txt" go run .
-```
-
-Provided that username is `test2` and password is `test`, you can access `http://localhost:8025` to view maillist of `test2`.
+If you don't specify separate auth file, `mailhog` captures emails incoming to all domains.
+For example, we are using `{uuid}@example.org` in integration test and `mailhog` captures email incoming to `example.org`.
 
 4. Insert the following config to `homeserver.yaml`
 
@@ -470,21 +465,11 @@ email:
 ```
 
 Here `force_tls/require_transport_security/enable_tls` should be `false` as `mailhog` doesn't support TLS properly.
-And `can_verify_email` should be set because `synapse` uses it.
+And `can_verify_email` is not specified in [dev docs](https://matrix-org.github.io/synapse/latest/usage/configuration/config_documentation.html#email), but it should be set because `synapse` uses it.
 
 5. Restart `synapse`
 
-When you run tests (ex: `auth::can_register_via_email` or `auth::can_reset_password_via_email`) related with authentication via email, you can see `test2` receives email from `noreply@example.com`.
-
-**One-time use of email address for password reset**
-
-Once an email address is used to authenticate in password reset, it is bound to that account.
-It can't be used again for another account.
-You have to use another email address.
-For example, `test2` is for `can_register_via_email()` and you can add `test3` user for `can_reset_password_via_email()`.
-So from beginning you can prepare `auth.txt` with 100 accounts in advance.
-In local synapse, each time a test is executed, number suffix of test account increases.
-After wasting up all 100 accounts, you might want to reset database because binding info is stored there.
+When you run tests (ex: `auth::can_register_via_email` or `auth::can_reset_password_via_email`) related with authentication via email, you can see `{uuid}@example.org` receives email from `noreply@example.com`.
 
 ### Rust integration tests
 
