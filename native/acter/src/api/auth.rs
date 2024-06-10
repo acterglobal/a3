@@ -539,64 +539,6 @@ impl PasswordChangeEmailTokenResponse {
     }
 }
 
-async fn request_password_change_token_via_email_without_login(
-    default_homeserver_url: &str,
-    email: &str,
-) -> Result<()> {
-    let http_client = ReqClientBuilder::new().build()?;
-    let homeserver_url = Url::parse(default_homeserver_url)?;
-    let submit_url =
-        homeserver_url.join("/_matrix/client/v3/account/password/email/requestToken")?;
-
-    let body = serde_json::json!({
-        "client_secret": ClientSecret::new().to_string(),
-        "email": email.to_owned(),
-        "send_attempt": 0,
-    });
-
-    let resp = http_client
-        .post(submit_url.to_string())
-        .body(body.to_string())
-        .send()
-        .await?;
-
-    info!(
-        "request_password_change_token_via_email_without_login: {:?}",
-        resp
-    );
-
-    if resp.status() != StatusCode::OK {
-        let text = resp.text().await?;
-        bail!(
-            "request_password_change_token_via_email_without_login failed: {}",
-            text
-        );
-    }
-
-    Ok(())
-}
-
-#[derive(Clone, Deserialize)]
-struct PasswordChangeFlow {
-    stages: Vec<String>,
-}
-
-#[derive(Clone, Deserialize)]
-pub struct FetchSessionForPasswordChangeResponse {
-    session: String,
-    flows: Vec<PasswordChangeFlow>,
-}
-
-impl FetchSessionForPasswordChangeResponse {
-    pub fn session(&self) -> String {
-        self.session.clone()
-    }
-
-    pub fn has_flow(&self, stage: String) -> bool {
-        self.flows.iter().any(|x| x.stages.contains(&stage))
-    }
-}
-
 pub async fn change_password_without_login(
     default_homeserver_url: &str,
     new_val: &str,
