@@ -428,9 +428,15 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
+
+      - name: Configure git
+        run: | # make sure we have the tags and all
+          git fetch --prune --unshallow --tags
+          git config --global user.name 'Sari'
+          git config --global user.email 'acter-sari@users.noreply.github.com'
+
       - name: Generate Changelog
         run: |
-          git fetch --prune --unshallow --tags
           cargo run -p mr_minutes -- --since nightly-latest --output nightly-changes-generated.md
           echo "** Changes since ${{ needs.tags.outputs.prev_tag }} **" > nightly-changes.md
           cat nightly-changes-generated.md >>  nightly-changes.md
@@ -447,9 +453,6 @@ jobs:
 
       - name: Tag for nightly release
         run: |
-
-          git config --global user.name 'Sari'
-          git config --global user.email 'acter-sari@users.noreply.github.com'
           git add "docs/content/nightly/${{ needs.tags.outputs.tag }}.md"
           echo "Tagging ${{ needs.tags.outputs.tag }}" > notes.md
           echo "" >> notes.md
@@ -502,18 +505,19 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: Linux x64
-      - name: Patch PKGBUILD file
+      - name: Patch PKGBUILD file 
         run: |
-          sed -i "s/%{{TAG}}%/${{ needs.tags.outputs.tag }}/" app/linux/packaging/aur/PKGBUILD-nightly
+          cp app/linux/packaging/aur/PKGBUILD-nightly PKGBUILD
+          sed -i "s/%{{TAG}}%/${{ needs.tags.outputs.tag }}/g" PKGBUILD
           VERSION=$(echo ${{ needs.tags.outputs.tag }} | sed "s/-/./g")
-          sed -i "s/%{{VERSION}}%/$VERSION/" app/linux/packaging/aur/PKGBUILD-nightly
-          sed -i "s/%{{PKGREL}}%/1/" app/linux/packaging/aur/PKGBUILD-nightly
-          sed -i "s/%{{LINUX_MD5}}%/`md5sum acter-nightly-linux-x64-${{ needs.tags.outputs.tag }}.tar.bz2  | awk '{print $1}'`/" app/linux/packaging/aur/PKGBUILD-nightly
+          sed -i "s/%{{VERSION}}%/$VERSION/g" PKGBUILD
+          sed -i "s/%{{PKGREL}}%/1/g" PKGBUILD
+          sed -i "s/%{{LINUX_MD5}}%/`md5sum acter-nightly-linux-x64-${{ needs.tags.outputs.tag }}.tar.bz2  | awk '{print $1}'`/g" PKGBUILD
       - uses: KSXGitHub/github-actions-deploy-aur@v2.7.1
         name: Publish to AUR
         with:
           pkgname: acter-nightly-bin
-          pkgbuild: app/linux/packaging/aur/PKGBUILD-nightly
+          pkgbuild: ./PKGBUILD
           commit_username: Sari
           commit_email: sari@acter.global
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}

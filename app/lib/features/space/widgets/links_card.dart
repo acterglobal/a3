@@ -47,8 +47,7 @@ class LinksCard extends ConsumerWidget {
                         await openLink(target, context);
                       },
                       style: ButtonStyle(
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5),
                             side: BorderSide(

@@ -23,6 +23,10 @@ final spacesProvider =
   return SpaceListNotifier(ref: ref, client: client);
 });
 
+final bookmarkedSpacesProvider = Provider(
+  (ref) => ref.watch(spacesProvider).where((s) => s.isBookmarked()).toList(),
+);
+
 /// List of spaces other than current space and it's parent space
 final otherSpacesForInviteMembersProvider = FutureProvider.autoDispose
     .family<List<Space>, String>((ref, spaceId) async {

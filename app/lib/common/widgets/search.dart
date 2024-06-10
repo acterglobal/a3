@@ -7,8 +7,11 @@ class Search extends StatelessWidget {
   final TextEditingController searchController;
   final Function(dynamic) onChanged;
 
-  const Search(
-      {super.key, required this.searchController, required this.onChanged,});
+  const Search({
+    super.key,
+    required this.searchController,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +22,7 @@ class Search extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: Theme.of(context).colorScheme.background,
+              color: Theme.of(context).colorScheme.surface,
             ),
             child: TextField(
               decoration: InputDecoration(

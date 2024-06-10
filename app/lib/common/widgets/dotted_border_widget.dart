@@ -9,7 +9,7 @@ class DottedBorderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DottedBorder(
-      color: Theme.of(context).colorScheme.onBackground,
+      color: Theme.of(context).colorScheme.onSurface,
       strokeWidth: 2,
       borderType: BorderType.RRect,
       radius: const Radius.circular(10),

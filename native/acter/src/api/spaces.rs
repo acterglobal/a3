@@ -546,6 +546,21 @@ impl Space {
         self.room_id().to_string()
     }
 
+    pub fn is_bookmarked(&self) -> bool {
+        self.inner.room.is_favourite()
+    }
+
+    pub async fn set_bookmarked(&self, is_bookmarked: bool) -> Result<bool> {
+        let room = self.inner.room.clone();
+        Ok(RUNTIME
+            .spawn(async move {
+                room.set_is_favourite(is_bookmarked, None)
+                    .await
+                    .map(|()| true)
+            })
+            .await??)
+    }
+
     pub async fn set_acter_space_states(&self) -> Result<bool> {
         if !self.inner.is_joined() {
             bail!("Unable to convert a space you didn't join");

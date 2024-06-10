@@ -90,6 +90,7 @@ pub enum MemberPermission {
     CanUpgradeToActerSpace,
     CanSetName,
     CanUpdateAvatar,
+    CanUpdateJoinRule,
     CanSetTopic,
     CanLinkSpaces,
     CanSetParentSpace,
@@ -176,6 +177,7 @@ impl Member {
             MemberPermission::CanSendSticker => MessageLikeEventType::Sticker.into(),
             MemberPermission::CanSetName => StateEventType::RoomName.into(),
             MemberPermission::CanUpdateAvatar => StateEventType::RoomAvatar.into(),
+            MemberPermission::CanUpdateJoinRule => StateEventType::RoomJoinRules.into(),
             MemberPermission::CanSetTopic => StateEventType::RoomTopic.into(),
             MemberPermission::CanLinkSpaces => StateEventType::SpaceChild.into(),
             MemberPermission::CanSetParentSpace => StateEventType::SpaceParent.into(),
@@ -1680,6 +1682,9 @@ impl Room {
             .await?
     }
 
+    /// sent a redaction message for this content
+    /// it's the callers job to ensure the person has the privileges to
+    /// redact that content.
     pub async fn redact_content(
         &self,
         event_id: String,
@@ -1694,16 +1699,6 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let evt = room.event(&event_id).await?;
-                let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
-                let permitted = if event_content.sender() == my_id {
-                    room.can_user_redact_own(&my_id).await?
-                } else {
-                    room.can_user_redact_other(&my_id).await?
-                };
-                if !permitted {
-                    bail!("No permissions to redact this message");
-                }
                 let response = room.redact(&event_id, reason.as_deref(), None).await?;
                 Ok(response.event_id)
             })

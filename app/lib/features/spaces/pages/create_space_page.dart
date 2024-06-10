@@ -4,8 +4,11 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
+import 'package:acter/common/widgets/visibility/room_visibility_item.dart';
+import 'package:acter/common/widgets/visibility/visibility_selector_drawer.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/spaces/model/keys.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -15,6 +18,10 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+
+// user selected visibility provider
+final _selectedVisibilityProvider =
+    StateProvider.autoDispose<RoomVisibility?>((ref) => null);
 
 class CreateSpacePage extends ConsumerStatefulWidget {
   final String? initialParentsSpaceId;
@@ -38,6 +45,23 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
       final parentNotifier = ref.read(selectedSpaceIdProvider.notifier);
       parentNotifier.state = widget.initialParentsSpaceId;
+
+      //Set default visibility based on the parent space selection
+      // PRIVATE : If no parent is selected
+      // SPACE VISIBLE : If parent space is selected
+      ref.read(_selectedVisibilityProvider.notifier).update(
+            (state) => widget.initialParentsSpaceId != null
+                ? RoomVisibility.SpaceVisible
+                : RoomVisibility.Private,
+          );
+      //LISTEN for changes on parent space selection
+      ref.listenManual(selectedSpaceIdProvider, (previous, next) {
+        ref.read(_selectedVisibilityProvider.notifier).update(
+              (state) => next != null
+                  ? RoomVisibility.SpaceVisible
+                  : RoomVisibility.Private,
+            );
+      });
     });
   }
 
@@ -79,6 +103,8 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
               _buildSpaceDescriptionTextField(),
               const SizedBox(height: 20),
               _buildParentSpace(),
+              const SizedBox(height: 10),
+              _buildVisibility(),
               const SizedBox(height: 20),
               _buildSpaceActionButtons(),
               const SizedBox(height: 20),
@@ -176,6 +202,76 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     );
   }
 
+  Widget _buildVisibility() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          L10n.of(context).visibilityTitle,
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        Text(
+          L10n.of(context).visibilitySubtitle,
+          style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                color: Theme.of(context).colorScheme.neutral4,
+              ),
+        ),
+        const SizedBox(height: 10),
+        InkWell(
+          onTap: () async {
+            final spaceVisibility = ref.read(_selectedVisibilityProvider);
+            final selected = await selectVisibilityDrawer(
+              context: context,
+              selectedVisibilityEnum: spaceVisibility,
+              isLimitedVisibilityShow:
+                  ref.read(selectedSpaceIdProvider) != null,
+            );
+            if (selected != null) {
+              ref
+                  .read(_selectedVisibilityProvider.notifier)
+                  .update((state) => selected);
+            }
+          },
+          child: selectedVisibility(),
+        ),
+      ],
+    );
+  }
+
+  Widget selectedVisibility() {
+    final selectedVisibility = ref.watch(_selectedVisibilityProvider);
+    switch (selectedVisibility) {
+      case RoomVisibility.Public:
+        return RoomVisibilityItem(
+          iconData: Icons.language,
+          title: L10n.of(context).public,
+          subtitle: L10n.of(context).publicVisibilitySubtitle,
+          isShowRadio: false,
+        );
+      case RoomVisibility.Private:
+        return RoomVisibilityItem(
+          iconData: Icons.lock,
+          title: L10n.of(context).private,
+          subtitle: L10n.of(context).privateVisibilitySubtitle,
+          isShowRadio: false,
+        );
+      case RoomVisibility.SpaceVisible:
+        return RoomVisibilityItem(
+          iconData: Atlas.users,
+          title: L10n.of(context).limited,
+          subtitle: L10n.of(context).limitedVisibilitySubtitle,
+          isShowRadio: false,
+        );
+      default:
+        return RoomVisibilityItem(
+          iconData: Icons.lock,
+          title: L10n.of(context).private,
+          subtitle: L10n.of(context).privateVisibilitySubtitle,
+          isShowRadio: false,
+        );
+    }
+  }
+
   Widget _buildSpaceActionButtons() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
@@ -209,6 +305,10 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       final parentRoomId = ref.read(selectedSpaceIdProvider);
       if (parentRoomId != null) {
         config.setParent(parentRoomId);
+      }
+      final roomVisibility = ref.read(_selectedVisibilityProvider);
+      if (roomVisibility != null) {
+        config.setVisibility(roomVisibility.name);
       }
       final client = ref.read(alwaysClientProvider);
       final roomId = await client.createActerSpace(config.build());
