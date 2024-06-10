@@ -286,51 +286,6 @@ impl Account {
             .await?
     }
 
-    pub async fn reset_password(
-        &self,
-        sid: String,
-        client_secret: String,
-        id_server: String,
-        id_access_token: String,
-        new_val: String,
-    ) -> Result<bool> {
-        let client = self.client.deref().clone();
-        let account = self.account.clone();
-        let user_id = self.user_id.clone();
-        let sid = SessionId::parse(&sid)?;
-        let client_secret = ClientSecret::parse_box(client_secret.as_str())?;
-
-        RUNTIME
-            .spawn(async move {
-                let capabilities = client.get_capabilities().await?;
-                if !capabilities.change_password.enabled {
-                    bail!("Server doesn't support password change");
-                }
-                if let Err(e) = account.change_password(&new_val, None).await {
-                    let Some(inf) = e.as_uiaa_response() else {
-                        return Err(clearify_error(e));
-                    };
-                    let thirdparty_id_creds = ThirdpartyIdCredentials::new(
-                        sid,
-                        client_secret,
-                        id_server,
-                        id_access_token,
-                    );
-                    let email_ident = assign!(EmailIdentity::new(thirdparty_id_creds), {
-                        session: inf.session.clone(),
-                    });
-                    let auth_data = AuthData::EmailIdentity(email_ident);
-                    info!("reset password error: {:?}", e);
-                    account
-                        .change_password(&new_val, Some(auth_data))
-                        .await
-                        .map_err(clearify_error)?;
-                }
-                Ok(true)
-            })
-            .await?
-    }
-
     pub async fn deactivate(&self, password: String) -> Result<bool> {
         let account = self.account.clone();
         let user_id = self.user_id.clone();

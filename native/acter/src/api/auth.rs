@@ -539,18 +539,18 @@ impl PasswordChangeEmailTokenResponse {
     }
 }
 
-pub async fn change_password_without_login(
-    default_homeserver_url: &str,
-    new_val: &str,
+pub async fn reset_password(
+    default_homeserver_url: String,
     sid: String,
     client_secret: String,
-) -> Result<()> {
+    new_val: String,
+) -> Result<bool> {
     let http_client = ReqClientBuilder::new().build()?;
-    let homeserver_url = Url::parse(default_homeserver_url)?;
+    let homeserver_url = Url::parse(&default_homeserver_url)?;
     let submit_url = homeserver_url.join("/_matrix/client/v3/account/password")?;
 
     let body = serde_json::json!({
-        "new_password": new_val.to_owned(),
+        "new_password": new_val,
         "logout_devices": false,
         "auth": { // [ref] https://spec.matrix.org/v1.10/client-server-api/#email-based-identity--homeserver
             "type": "m.login.email.identity".to_owned(),
@@ -567,12 +567,12 @@ pub async fn change_password_without_login(
         .send()
         .await?;
 
-    info!("change_password_without_login: {:?}", resp);
+    info!("reset_password: {:?}", resp);
 
     if resp.status() != StatusCode::OK {
         let text = resp.text().await?;
-        bail!("change_password_without_login failed: {}", text);
+        bail!("reset_password failed: {}", text);
     }
 
-    Ok(())
+    Ok(true)
 }

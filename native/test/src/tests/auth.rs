@@ -1,8 +1,8 @@
 use acter::{
     api::{
-        change_password_without_login, guest_client, login_new_client,
-        login_new_client_under_config, login_with_token_under_config, make_client_config,
-        request_password_change_email_token, request_registration_token_via_email,
+        guest_client, login_new_client, login_new_client_under_config,
+        login_with_token_under_config, make_client_config, request_password_change_email_token,
+        request_registration_token_via_email, reset_password,
     },
     matrix_sdk::reqwest::{Client as ReqClient, Response as ReqResponse},
 };
@@ -404,8 +404,13 @@ async fn can_reset_password_via_email_without_login() -> Result<()> {
     confirm_email_msg_with_post(email.clone(), "_synapse/client/password_reset").await?; // here m.login.email.identity is completed
     let new_pswd = format!("new_{}", &old_pswd);
 
-    change_password_without_login(homeserver_url, &new_pswd, resp.sid(), resp.client_secret())
-        .await?;
+    reset_password(
+        homeserver_url.to_owned(),
+        resp.sid(),
+        resp.client_secret(),
+        new_pswd.clone(),
+    )
+    .await?;
 
     let base_dir = TempDir::new()?;
     let media_dir = TempDir::new()?;
@@ -414,8 +419,8 @@ async fn can_reset_password_via_email_without_login() -> Result<()> {
         media_dir.path().to_string_lossy().to_string(),
         username.to_string(),
         old_pswd,
-        homeserver_name.to_string(),
-        homeserver_url.to_string(),
+        homeserver_name.to_owned(),
+        homeserver_url.to_owned(),
         None,
     )
     .await;
@@ -429,8 +434,8 @@ async fn can_reset_password_via_email_without_login() -> Result<()> {
         media_dir.path().to_string_lossy().to_string(),
         username.to_string(),
         new_pswd,
-        homeserver_name.to_string(),
-        homeserver_url.to_string(),
+        homeserver_name.to_owned(),
+        homeserver_url.to_owned(),
         None,
     )
     .await;

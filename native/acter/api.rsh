@@ -41,6 +41,9 @@ fn request_registration_token_via_email(base_path: string, media_cache_base_path
 /// Request the password change token via email
 fn request_password_change_email_token(default_homeserver_url: string, email: string) -> Future<Result<PasswordChangeEmailTokenResponse>>;
 
+/// Finish password reset without login
+fn reset_password(default_homeserver_url: string, sid: string, client_secret: string, new_val: string) -> Future<Result<bool>>;
+
 /// destroy the local data of a session
 fn destroy_local_data(base_path: string, media_cache_base_path: Option<string>, username: string, default_homeserver_name: string) -> Future<Result<bool>>;
 

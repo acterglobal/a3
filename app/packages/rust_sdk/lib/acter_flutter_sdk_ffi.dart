@@ -1418,6 +1418,83 @@ class Api {
     return tmp9;
   }
 
+  /// Finish password reset without login
+  Future<bool> resetPassword(
+    String defaultHomeserverUrl,
+    String sid,
+    String clientSecret,
+    String newVal,
+  ) {
+    final tmp0 = defaultHomeserverUrl;
+    final tmp4 = sid;
+    final tmp8 = clientSecret;
+    final tmp12 = newVal;
+    var tmp1 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp9 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp13 = 0;
+    var tmp14 = 0;
+    var tmp15 = 0;
+    final tmp0_0 = utf8.encode(tmp0);
+    tmp2 = tmp0_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
+    final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
+    tmp1_1.setAll(0, tmp0_0);
+    tmp1 = tmp1_0.address;
+    tmp3 = tmp2;
+    final tmp4_0 = utf8.encode(tmp4);
+    tmp6 = tmp4_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp5_0 = this.__allocate(tmp6 * 1, 1);
+    final Uint8List tmp5_1 = tmp5_0.asTypedList(tmp6);
+    tmp5_1.setAll(0, tmp4_0);
+    tmp5 = tmp5_0.address;
+    tmp7 = tmp6;
+    final tmp8_0 = utf8.encode(tmp8);
+    tmp10 = tmp8_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp9_0 = this.__allocate(tmp10 * 1, 1);
+    final Uint8List tmp9_1 = tmp9_0.asTypedList(tmp10);
+    tmp9_1.setAll(0, tmp8_0);
+    tmp9 = tmp9_0.address;
+    tmp11 = tmp10;
+    final tmp12_0 = utf8.encode(tmp12);
+    tmp14 = tmp12_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp13_0 = this.__allocate(tmp14 * 1, 1);
+    final Uint8List tmp13_1 = tmp13_0.asTypedList(tmp14);
+    tmp13_1.setAll(0, tmp12_0);
+    tmp13 = tmp13_0.address;
+    tmp15 = tmp14;
+    final tmp16 = _resetPassword(
+      tmp1,
+      tmp2,
+      tmp3,
+      tmp5,
+      tmp6,
+      tmp7,
+      tmp9,
+      tmp10,
+      tmp11,
+      tmp13,
+      tmp14,
+      tmp15,
+    );
+    final tmp18 = tmp16;
+    final ffi.Pointer<ffi.Void> tmp18_0 = ffi.Pointer.fromAddress(tmp18);
+    final tmp18_1 = _Box(this, tmp18_0, "__reset_password_future_drop");
+    tmp18_1._finalizer = this._registerFinalizer(tmp18_1);
+    final tmp17 = _nativeFuture(tmp18_1, this.__resetPasswordFuturePoll);
+    return tmp17;
+  }
+
   /// destroy the local data of a session
   Future<bool> destroyLocalData(
     String basePath,
@@ -2433,6 +2510,50 @@ class Api {
         _Box(this, tmp13_0, "drop_box_PasswordChangeEmailTokenResponse");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp7 = PasswordChangeEmailTokenResponse._(this, tmp13_1);
+    return tmp7;
+  }
+
+  bool? __resetPasswordFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _resetPasswordFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
     return tmp7;
   }
 
@@ -15756,6 +15877,38 @@ class Api {
             int,
             int,
           )>();
+  late final _resetPasswordPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__reset_password");
+
+  late final _resetPassword = _resetPasswordPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+      )>();
   late final _destroyLocalDataPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -26958,6 +27111,20 @@ class Api {
             int,
             int,
           )>();
+  late final _resetPasswordFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ResetPasswordFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__reset_password_future_poll");
+
+  late final _resetPasswordFuturePoll = _resetPasswordFuturePollPtr.asFunction<
+      _ResetPasswordFuturePollReturn Function(
+        int,
+        int,
+        int,
+      )>();
   late final _destroyLocalDataFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _DestroyLocalDataFuturePollReturn Function(
@@ -57837,6 +58004,21 @@ class _RequestPasswordChangeEmailTokenFuturePollReturn extends ffi.Struct {
   @ffi.Uint64()
   external int arg4;
   @ffi.Int64()
+  external int arg5;
+}
+
+class _ResetPasswordFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
   external int arg5;
 }
 
