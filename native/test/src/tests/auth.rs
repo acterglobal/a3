@@ -263,7 +263,7 @@ async fn can_register_via_email() -> Result<()> {
 
     let base_dir = TempDir::new()?;
     let media_dir = TempDir::new()?;
-    let prefix = "reset_password".to_owned();
+    let prefix = "register_via_email".to_owned();
     let uuid = Uuid::new_v4().to_string();
     let email = format!("{uuid}@example.org");
 
