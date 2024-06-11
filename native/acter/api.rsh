@@ -410,6 +410,9 @@ object NewsEntry {
 
     /// get event id
     fn event_id() -> EventId;
+    
+    /// whether or not this user can redact this item
+    fn can_redact() -> Future<Result<bool>>;
 
     /// get the reaction manager
     fn reactions() -> Future<Result<ReactionManager>>;
@@ -518,6 +521,9 @@ object ActerPin {
 
     /// replace the current pin with one with the latest state
     fn refresh() -> Future<Result<ActerPin>>;
+
+    /// whether or not this user can redact this item
+    fn can_redact() -> Future<Result<bool>>;
 
     /// get the comments manager for this pin
     fn comments() -> Future<Result<CommentsManager>>;
@@ -989,6 +995,9 @@ object Room {
     /// the RoomId as a String
     fn room_id_str() -> string;
 
+    /// Whether new updates have been received for this room
+    fn subscribe_to_updates() -> Stream<bool>;
+
     /// whether this is a Space
     fn is_space() -> bool;
 
@@ -1148,6 +1157,12 @@ object TimelineStream {
     /// private_read_receipt: optional event id
     fn send_multiple_receipts(full_read: Option<string>, public_read_receipt: Option<string>, private_read_receipt: Option<string>) -> Future<Result<bool>>;
 
+    /// Mark this room as read.
+    /// user_triggered indicate whether that was issued by the user actively
+    /// (e.g. by pushing a button) or implicitly upon smart read tracking
+    /// Returns a boolean indicating if we sent the request or not.
+    fn mark_as_read(user_triggered: bool) -> Future<Result<bool>>;
+
     /// send reaction to event
     /// if sent twice, reaction is redacted
     fn toggle_reaction(event_id: string, key: string) -> Future<Result<bool>>;
@@ -1207,6 +1222,15 @@ object Convo {
     /// Get the timeline for the room
     fn timeline_stream() -> TimelineStream;
 
+    /// how many unread notifications for this chat
+    fn num_unread_notification_count() -> u64;
+
+    /// how many unread messages for this chat
+    fn num_unread_messages() -> u64;
+
+    /// how many unread mentions for this chat
+    fn num_unread_mentions() -> u64;
+
     /// The last message sent to the room
     fn latest_message() -> Option<RoomMessage>;
 
@@ -1242,11 +1266,11 @@ object Convo {
     /// is this a direct message
     fn is_dm() -> bool;
 
-    /// is this a favorite chat
-    fn is_favorite() -> bool;
+    /// is this a bookmarked chat
+    fn is_bookmarked() -> bool;
 
-    /// set this a favorite chat
-    fn set_favorite(is_favorite: bool) -> Future<Result<bool>>;
+    /// set this a bookmarked chat
+    fn set_bookmarked(is_bookmarked: bool) -> Future<Result<bool>>;
 
     /// is this a low priority chat
     fn is_low_priority() -> bool;
@@ -1297,6 +1321,8 @@ object Convo {
 
     /// redact an event from this room
     /// reason - The reason for the event being reported (optional).
+    /// it's the callers job to ensure the person has the privileges to
+    /// redact that content.
     fn redact_content(event_id: string, reason: Option<string>) -> Future<Result<EventId>>;
 
     fn is_joined() -> bool;
@@ -1521,6 +1547,9 @@ object Task {
 
     /// replace the current task with one with the latest state
     fn refresh() -> Future<Result<Task>>;
+    
+    /// whether or not this user can redact this item
+    fn can_redact() -> Future<Result<bool>>;
 
     /// get the comments manager for this task
     fn comments() -> Future<Result<CommentsManager>>;
@@ -1684,6 +1713,9 @@ object TaskList {
 
     /// replace the current task with one with the latest state
     fn refresh() -> Future<Result<TaskList>>;
+
+    /// whether or not this user can redact this item
+    fn can_redact() -> Future<Result<bool>>;
 
     /// the space this TaskList belongs to
     fn space() -> Space;
@@ -1942,6 +1974,12 @@ object Space {
     /// set name of the room
     fn set_name(name: string) -> Future<Result<EventId>>;
 
+    /// is this a bookmarked space
+    fn is_bookmarked() -> bool;
+
+    /// set this a bookmarked space
+    fn set_bookmarked(is_bookmarked: bool) -> Future<Result<bool>>;
+
     /// the members currently in the space
     fn active_members_ids() -> Future<Result<Vec<string>>>;
 
@@ -2036,6 +2074,8 @@ object Space {
 
     /// redact an event from this room
     /// reason - The reason for the event being reported (optional).
+    /// it's the callers job to ensure the person has the privileges to
+    /// redact that content.
     fn redact_content(event_id: string, reason: Option<string>) -> Future<Result<EventId>>;
 }
 
@@ -2064,6 +2104,7 @@ enum MemberPermission {
     CanUpgradeToActerSpace,
     CanSetName,
     CanUpdateAvatar,
+    CanUpdateJoinRule,
     CanSetTopic,
     CanLinkSpaces,
     CanUpdatePowerLevels,

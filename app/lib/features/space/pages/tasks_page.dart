@@ -1,15 +1,14 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
-import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/features/tasks/providers/tasklists.dart';
-import 'package:acter/features/tasks/widgets/all_tasks_done.dart';
+import 'package:acter/features/tasks/sheets/create_update_task_list.dart';
+import 'package:acter/features/tasks/widgets/empty_task_list.dart';
 import 'package:acter/features/tasks/widgets/task_list_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SpaceTasksPage extends ConsumerWidget {
@@ -32,37 +31,42 @@ class SpaceTasksPage extends ConsumerWidget {
             child: SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
           ),
           SliverToBoxAdapter(
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    taskLists.hasValue && taskLists.valueOrNull!.isNotEmpty
-                        ? L10n.of(context)
-                            .tasksCount(taskLists.valueOrNull!.length)
-                        : L10n.of(context).tasks,
-                    style: Theme.of(context).textTheme.titleMedium,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      taskLists.hasValue && taskLists.valueOrNull!.isNotEmpty
+                          ? L10n.of(context)
+                              .tasksCount(taskLists.valueOrNull!.length)
+                          : L10n.of(context).tasks,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                   ),
-                ),
-                IconButton(
-                  key: createTaskKey,
-                  icon: Icon(
-                    Atlas.plus_circle_thin,
-                    color: Theme.of(context).colorScheme.neutral5,
+                  IconButton(
+                    key: createTaskKey,
+                    icon: Icon(
+                      Atlas.plus_circle_thin,
+                      color: Theme.of(context).colorScheme.neutral5,
+                    ),
+                    iconSize: 28,
+                    color: Theme.of(context).colorScheme.surface,
+                    onPressed: () => showCreateUpdateTaskListBottomSheet(
+                      context,
+                      initialSelectedSpace: spaceIdOrAlias,
+                    ),
                   ),
-                  iconSize: 28,
-                  color: Theme.of(context).colorScheme.surface,
-                  onPressed: () => context.pushNamed(
-                    Routes.actionAddTaskList.name,
-                    queryParameters: {'spaceId': spaceIdOrAlias},
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           taskLists.when(
             data: (taskLists) {
               if (taskLists.isEmpty) {
-                return const SliverToBoxAdapter(child: AllTasksDone());
+                return SliverToBoxAdapter(
+                  child: EmptyTaskList(initialSelectedSpace: spaceIdOrAlias),
+                );
               }
               return SliverList(
                 delegate: SliverChildBuilderDelegate(

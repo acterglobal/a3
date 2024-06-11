@@ -28,27 +28,30 @@ class EmojiReactionItem extends ConsumerWidget {
     return ListTile(
       leading: profile.when(
         data: (data) => ActerAvatar(
-          mode: DisplayMode.DM,
-          avatarInfo: AvatarInfo(
-            uniqueId: userId,
-            displayName: data.profile.displayName,
-            avatar: data.profile.getAvatarImage(),
+          options: AvatarOptions.DM(
+            AvatarInfo(
+              uniqueId: userId,
+              displayName: data.profile.displayName,
+              avatar: data.profile.getAvatarImage(),
+            ),
+            size: 18,
           ),
-          size: 18,
         ),
         loading: () => Skeletonizer(
           child: ActerAvatar(
-            mode: DisplayMode.DM,
-            avatarInfo: AvatarInfo(uniqueId: userId),
-            size: 24,
+            options: AvatarOptions.DM(
+              AvatarInfo(uniqueId: userId),
+              size: 24,
+            ),
           ),
         ),
         error: (e, s) {
           _log.severe('loading avatar failed', e, s);
           return ActerAvatar(
-            mode: DisplayMode.DM,
-            avatarInfo: AvatarInfo(uniqueId: userId, displayName: userId),
-            size: 18,
+            options: AvatarOptions(
+              AvatarInfo(uniqueId: userId, displayName: userId),
+              size: 18,
+            ),
           );
         },
       ),

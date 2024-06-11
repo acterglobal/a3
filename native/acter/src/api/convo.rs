@@ -2,7 +2,7 @@ use acter_core::{statics::default_acter_convo_states, Error};
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use futures::stream::{Stream, StreamExt};
-use matrix_sdk::{executor::JoinHandle, RoomMemberships};
+use matrix_sdk::{executor::JoinHandle, sync::RoomUpdate, RoomMemberships};
 use matrix_sdk_ui::{timeline::RoomExt, Timeline};
 use ruma::assign;
 use ruma_client_api::room::{create_room, Visibility};
@@ -25,6 +25,7 @@ use std::{
     sync::{Arc, RwLock},
 };
 use tokio_retry::{strategy::FixedInterval, Retry};
+use tokio_stream::wrappers::BroadcastStream;
 use tracing::{error, info, trace, warn};
 
 use crate::TimelineStream;
@@ -202,6 +203,17 @@ impl Convo {
         TimelineStream::new(self.inner.clone(), self.timeline.clone())
     }
 
+    pub fn num_unread_notification_count(&self) -> u64 {
+        self.inner.unread_notification_counts().notification_count
+    }
+    pub fn num_unread_messages(&self) -> u64 {
+        self.inner.num_unread_messages()
+    }
+
+    pub fn num_unread_mentions(&self) -> u64 {
+        self.inner.unread_notification_counts().highlight_count
+    }
+
     pub fn latest_message_ts(&self) -> u64 {
         self.latest_message
             .read()
@@ -228,15 +240,15 @@ impl Convo {
         self.inner.room.direct_targets_length() > 0
     }
 
-    pub fn is_favorite(&self) -> bool {
+    pub fn is_bookmarked(&self) -> bool {
         self.inner.room.is_favourite()
     }
 
-    pub async fn set_favorite(&self, is_favorite: bool) -> Result<bool> {
+    pub async fn set_bookmarked(&self, is_bookmarked: bool) -> Result<bool> {
         let room = self.inner.room.clone();
         Ok(RUNTIME
             .spawn(async move {
-                room.set_is_favourite(is_favorite, None)
+                room.set_is_favourite(is_bookmarked, None)
                     .await
                     .map(|()| true)
             })

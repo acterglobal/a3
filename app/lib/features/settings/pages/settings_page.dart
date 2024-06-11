@@ -57,11 +57,12 @@ class SettingsPage extends ConsumerWidget {
                     ? context.goNamed(Routes.myProfile.name)
                     : context.pushNamed(Routes.myProfile.name),
                 leading: ActerAvatar(
-                  mode: DisplayMode.DM,
-                  avatarInfo: AvatarInfo(
-                    uniqueId: userId,
-                    avatar: data.profile.getAvatarImage(),
-                    displayName: data.profile.displayName,
+                  options: AvatarOptions.DM(
+                    AvatarInfo(
+                      uniqueId: userId,
+                      avatar: data.profile.getAvatarImage(),
+                      displayName: data.profile.displayName,
+                    ),
                   ),
                 ),
                 title: Text(

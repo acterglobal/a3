@@ -102,7 +102,7 @@ jobs:
             flutter_build_args: "build linux"
             artifact_prefix: acter-linux-x64
             artifact_path: app/build/linux/x64/release/bundle/
-            tar_files: lib/ data/ acter
+            tar_files: lib/ data/ acter logo.png *.desktop  LICENSE*
           - name: iOS
             os: macos-14
             target: ios
@@ -210,7 +210,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         name: Set up flutter
         with:
-          flutter-version: '3.19'
+          flutter-version: '3.22'
           channel: 'stable'
 
       - name: Flutter info
@@ -346,6 +346,13 @@ jobs:
         if: matrix.target == 'windows'
         working-directory: app
         run: dart pub run msix:create --store --build-windows false --version ${{ needs.tags.outputs.tag }}.0 -v
+
+      - name: Copy further assets
+        if: matrix.target == 'linux'
+        run: |
+          cp app/flatpak/global.acter.a3.desktop ${{ matrix.artifact_path }}
+          cp app/assets/icon/logo.png ${{ matrix.artifact_path }}
+          cp LICENSE* ${{ matrix.artifact_path }}
 
       - name: Rename file
         if: matrix.rename_file
@@ -786,6 +793,48 @@ jobs:
           rm .github/assets/git-crypt-key
 
 
+   ###    ########   ######  ##     ##       ###    ##     ## ########  
+  ## ##   ##     ## ##    ## ##     ##      ## ##   ##     ## ##     ## 
+ ##   ##  ##     ## ##       ##     ##     ##   ##  ##     ## ##     ## 
+##     ## ########  ##       #########    ##     ## ##     ## ########  
+######### ##   ##   ##       ##     ##    ######### ##     ## ##   ##   
+##     ## ##    ##  ##    ## ##     ##    ##     ## ##     ## ##    ##  
+##     ## ##     ##  ######  ##     ##    ##     ##  #######  ##     ## 
+
+
+
+  publish_aur:
+    environment: release
+    needs:
+      - tags
+      - build
+    name: Publish AUR
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: Linux x64
+      - name: Create PKGBUILD file
+        run: |
+          cp app/linux/packaging/aur/PKGBUILD PKGBUILD
+          sed -i "s/%{{TAG}}%/${{ needs.tags.outputs.tag }}/g" PKGBUILD
+          VERSION=$(echo ${{ needs.tags.outputs.tag }} | sed "s/-/./g")
+          sed -i "s/%{{VERSION}}%/$VERSION/g" PKGBUILD
+          sed -i "s/%{{PKGREL}}%/2/g" PKGBUILD
+          sed -i "s/%{{LINUX_MD5}}%/`md5sum acter-linux-x64-${{ needs.tags.outputs.tag }}.tar.bz2  | awk '{print $1}'`/g" PKGBUILD
+      - uses: KSXGitHub/github-actions-deploy-aur@v2.7.1
+        name: Publish to AUR
+        with:
+          pkgname: acter-bin
+          pkgbuild: ./PKGBUILD
+          commit_username: Sari
+          commit_email: sari@acter.global
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: Updated to ${{ needs.tags.outputs.tag }}
+
+
+
  ######   #### ######## ##     ## ##     ## ########     ########  ##     ## ########  ##       ####  ######  ##     ## 
 ##    ##   ##     ##    ##     ## ##     ## ##     ##    ##     ## ##     ## ##     ## ##        ##  ##    ## ##     ## 
 ##         ##     ##    ##     ## ##     ## ##     ##    ##     ## ##     ## ##     ## ##        ##  ##       ##     ## 
@@ -829,6 +878,7 @@ jobs:
           cat CHANGELOG.md >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
 
       - name: Clear old docs
+        continue-on-error: true
         run: |
           git rm .changes/*.md
           git commit -m "Clearing .changes for v${{ needs.tags.outputs.tag }}"
@@ -841,9 +891,9 @@ jobs:
       - name: Tag for release
         run: |
           git add "docs/content/releases/${{ needs.tags.outputs.tag }}.md"
-          echo "Add release ${{ needs.tags.outputs.tag }}"
+          echo "Add release v${{ needs.tags.outputs.tag }}"
           git commit -m "Releasing v${{ needs.tags.outputs.tag }}"
-          git tag v${{ needs.tags.outputs.tag }}
+          git tag -f v${{ needs.tags.outputs.tag }}
           git tag -f release-latest
           git push -f origin main v${{ needs.tags.outputs.tag }} release-latest
 
@@ -851,16 +901,15 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          # publish this nightly release now
+          # publish this full release now
           draft: true
           generate_release_notes: false
           name: Acter ${{ needs.tags.outputs.tag }}
           tag_name: v${{ needs.tags.outputs.tag }}
           body_path: CHANGELOG.md
-      # publish this full release now
+          make_latest: true
       - uses: eregon/publish-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           release_id: ${{ steps.create_release.outputs.id }}
-

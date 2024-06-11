@@ -1,4 +1,6 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -18,6 +20,7 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -97,6 +100,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   Widget _buildActionMenu(CalendarEvent event) {
     //Get membership details
     final spaceId = event.roomIdStr();
+    final canRedact = ref.watch(canRedactProvider(event));
     final membership = ref.watch(roomMembershipProvider(spaceId));
 
     //Create event actions
@@ -124,47 +128,47 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           ),
         );
       }
+    }
 
-      //Delete Event Action
-      if (member.canString('CanRedactOwn') &&
-          member.userId().toString() == event.sender().toString()) {
-        final roomId = event.roomIdStr();
-        actions.addAll([
-          PopupMenuItem(
-            key: EventsKeys.eventDeleteBtn,
-            onTap: () => showAdaptiveDialog(
-              context: context,
-              builder: (context) => RedactContentWidget(
-                removeBtnKey: EventsKeys.eventRemoveBtn,
-                title: L10n.of(context).removeThisPost,
-                eventId: event.eventId().toString(),
-                onSuccess: () {
-                  ref.invalidate(calendarEventProvider);
-                  if (context.mounted) {
-                    context.goNamed(
-                      Routes.spaceEvents.name,
-                      pathParameters: {'spaceId': roomId},
-                    );
-                  }
-                },
-                senderId: event.sender().toString(),
-                roomId: roomId,
-                isSpace: true,
-              ),
-            ),
-            child: Row(
-              children: <Widget>[
-                Icon(
-                  Atlas.trash_can_thin,
-                  color: Theme.of(context).colorScheme.error,
-                ),
-                const SizedBox(width: 10),
-                Text(L10n.of(context).eventRemove),
-              ],
+    //Delete Event Action
+    if (canRedact.valueOrNull == true) {
+      final roomId = event.roomIdStr();
+      actions.addAll([
+        PopupMenuItem(
+          key: EventsKeys.eventDeleteBtn,
+          onTap: () => showAdaptiveDialog(
+            context: context,
+            builder: (context) => RedactContentWidget(
+              removeBtnKey: EventsKeys.eventRemoveBtn,
+              title: L10n.of(context).removeThisPost,
+              eventId: event.eventId().toString(),
+              onSuccess: () {
+                ref.invalidate(calendarEventProvider);
+                if (context.canPop()) context.pop();
+                if (context.mounted) {
+                  context.goNamed(
+                    Routes.spaceEvents.name,
+                    pathParameters: {'spaceId': roomId},
+                  );
+                }
+              },
+              senderId: event.sender().toString(),
+              roomId: roomId,
+              isSpace: true,
             ),
           ),
-        ]);
-      }
+          child: Row(
+            children: <Widget>[
+              Icon(
+                Atlas.trash_can_thin,
+                color: Theme.of(context).colorScheme.error,
+              ),
+              const SizedBox(width: 10),
+              Text(L10n.of(context).eventRemove),
+            ],
+          ),
+        ),
+      ]);
     }
 
     //Report Event Action
@@ -338,7 +342,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     );
 
     return Container(
-      color: Theme.of(context).colorScheme.background,
+      color: Theme.of(context).colorScheme.surface,
       padding: const EdgeInsets.symmetric(vertical: 15.0),
       child: Row(
         children: [
@@ -390,8 +394,23 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
 
   Future<void> onShareEvent(CalendarEvent event) async {
     try {
-      final tempDir = await getTemporaryDirectory();
       final filename = event.title().replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_');
+
+      if (isDesktop) {
+        String? outputFile = await FilePicker.platform.saveFile(
+          dialogTitle: 'Please select where to store the file',
+          fileName: '$filename.ics',
+        );
+
+        if (outputFile != null) {
+          // User canceled the picker
+          event.icalForSharing(outputFile);
+          EasyLoading.showToast('File saved to $outputFile');
+        }
+        return;
+      }
+
+      final tempDir = await getTemporaryDirectory();
       final icalPath = join(tempDir.path, '$filename.ics');
       event.icalForSharing(icalPath);
 
@@ -489,7 +508,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         final membersCount = eventParticipantsList.length;
         List<String> firstFiveEventParticipantsList = eventParticipantsList;
         if (membersCount > 5) {
-          firstFiveEventParticipantsList = firstFiveEventParticipantsList.sublist(0, 5);
+          firstFiveEventParticipantsList =
+              firstFiveEventParticipantsList.sublist(0, 5);
         }
 
         return GestureDetector(
@@ -544,8 +564,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
 
   ActerAvatar fallbackAvatar(String roomId) {
     return ActerAvatar(
-      mode: DisplayMode.Space,
-      avatarInfo: AvatarInfo(uniqueId: roomId),
+      options: AvatarOptions(AvatarInfo(uniqueId: roomId)),
     );
   }
 

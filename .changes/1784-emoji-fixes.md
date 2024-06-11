@@ -1,0 +1,1 @@
+- Improved layout of selected emoji reactions in chat: takes up less space, should be easier to grasp on a quick view.

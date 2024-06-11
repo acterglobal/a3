@@ -117,7 +117,7 @@ class _CalendarWidgetConsumerState extends ConsumerState<CalendarWidget> {
               color: Theme.of(context).colorScheme.tertiary,
             ),
             formatButtonDecoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.background,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
             ),
             formatButtonPadding: const EdgeInsets.all(8),

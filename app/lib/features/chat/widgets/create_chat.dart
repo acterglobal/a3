@@ -285,13 +285,14 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       ActerAvatar(
-                        mode: DisplayMode.DM,
-                        avatarInfo: AvatarInfo(
-                          uniqueId: userId,
-                          displayName: displayName ?? userId,
-                          avatar: avatarProv.valueOrNull,
+                        options: AvatarOptions.DM(
+                          AvatarInfo(
+                            uniqueId: userId,
+                            displayName: displayName ?? userId,
+                            avatar: avatarProv.valueOrNull,
+                          ),
+                          size: 14,
                         ),
-                        size: 14,
                       ),
                       const SizedBox(width: 5),
                       Text(
@@ -336,10 +337,10 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
       contentPadding: const EdgeInsets.only(left: 0),
       leading: selectedUsers.isEmpty
           ? ActerAvatar(
-              mode: DisplayMode.GroupChat,
-              avatarInfo: const AvatarInfo(uniqueId: '#'),
-              size: 48,
-              tooltip: TooltipStyle.None,
+              options: const AvatarOptions(
+                AvatarInfo(uniqueId: '#', tooltip: TooltipStyle.None),
+                size: 48,
+              ),
             )
           : selectedUsers.length > 1
               ? CircleAvatar(
@@ -351,15 +352,16 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                   ),
                 )
               : ActerAvatar(
-                  mode: DisplayMode.DM,
-                  avatarInfo: AvatarInfo(
-                    uniqueId: selectedUsers[0].userId().toString(),
-                    displayName: selectedUsers[0].getDisplayName(),
-                    avatar: ref
-                        .watch(userAvatarProvider(selectedUsers[0]))
-                        .valueOrNull,
+                  options: AvatarOptions.DM(
+                    AvatarInfo(
+                      uniqueId: selectedUsers[0].userId().toString(),
+                      displayName: selectedUsers[0].getDisplayName(),
+                      avatar: ref
+                          .watch(userAvatarProvider(selectedUsers[0]))
+                          .valueOrNull,
+                    ),
+                    size: 20,
                   ),
-                  size: 20,
                 ),
       title: Text(
         _makeTitle(ref),
@@ -747,21 +749,23 @@ class _UserWidget extends ConsumerWidget {
       leading: avatarProv.when(
         data: (data) {
           return ActerAvatar(
-            mode: DisplayMode.DM,
-            avatarInfo: AvatarInfo(
-              uniqueId: userId,
-              displayName: displayName,
-              avatar: data,
+            options: AvatarOptions.DM(
+              AvatarInfo(
+                uniqueId: userId,
+                displayName: displayName,
+                avatar: data,
+              ),
+              size: 18,
             ),
-            size: 18,
           );
         },
         error: (e, st) => Text(L10n.of(context).errorLoadingAvatar(e)),
         loading: () => Skeletonizer(
           child: ActerAvatar(
-            mode: DisplayMode.DM,
-            avatarInfo: AvatarInfo(uniqueId: userId),
-            size: 18,
+            options: AvatarOptions.DM(
+              AvatarInfo(uniqueId: userId),
+              size: 18,
+            ),
           ),
         ),
       ),

@@ -6,7 +6,7 @@ use acter_core::{
         rsvp::RsvpStatus,
         UtcDateTime,
     },
-    models::{self, ActerModel, AnyActerModel},
+    models::{self, can_redact, ActerModel, AnyActerModel},
     statics::KEYS,
 };
 use anyhow::{bail, Context, Result};
@@ -196,6 +196,15 @@ impl CalendarEvent {
                 };
                 Ok(CalendarEvent::new(client, room, inner))
             })
+            .await?
+    }
+
+    pub async fn can_redact(&self) -> Result<bool> {
+        let sender = self.inner.sender().to_owned();
+        let room = self.room.clone();
+
+        RUNTIME
+            .spawn(async move { Ok(can_redact(&room, &sender).await?) })
             .await?
     }
 

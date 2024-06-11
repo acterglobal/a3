@@ -81,7 +81,7 @@ class SaveUsernamePage extends StatelessWidget {
     return Center(
       child: Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.background,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(10.0),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),

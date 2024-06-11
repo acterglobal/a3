@@ -23,6 +23,29 @@ final spacesProvider =
   return SpaceListNotifier(ref: ref, client: client);
 });
 
+final bookmarkedSpacesProvider = Provider(
+  (ref) => ref.watch(spacesProvider).where((s) => s.isBookmarked()).toList(),
+);
+
+/// List of spaces other than current space and it's parent space
+final otherSpacesForInviteMembersProvider = FutureProvider.autoDispose
+    .family<List<Space>, String>((ref, spaceId) async {
+  //GET LIST OF ALL SPACES
+  final allSpaces = ref.watch(spacesProvider);
+
+  //GET PARENT SPACE
+  final parentSpace = ref.watch(canonicalParentProvider(spaceId)).valueOrNull;
+  final parentSpaceId = parentSpace?.space.getRoomIdStr();
+
+  //GET LIST OF SPACES EXCLUDING PARENT SPACE && EXCLUDING CURRENT SPACE
+  final spacesExcludingParentSpaceAndCurrentSpace = allSpaces.where((space) {
+    final roomId = space.getRoomIdStr();
+    return roomId != parentSpaceId && roomId != spaceId;
+  }).toList();
+
+  return spacesExcludingParentSpaceAndCurrentSpace;
+});
+
 /// Map a spaceId to the space, keeps up to date with underlying client
 /// throws is the space isn't found.
 final spaceProvider =

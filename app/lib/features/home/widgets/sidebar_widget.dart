@@ -7,6 +7,7 @@ import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
 import 'package:acter/features/home/widgets/activities_icon.dart';
+import 'package:acter/features/home/widgets/chats_icon.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -259,10 +260,7 @@ class SidebarWidget extends ConsumerWidget {
         ),
       ),
       _SidebarItem(
-        icon: const Icon(
-          Atlas.chats_thin,
-          key: MainNavKeys.chats,
-        ),
+        icon: const ChatsIcon(),
         label: Text(
           'Chat',
           style: Theme.of(context).textTheme.labelSmall,
@@ -322,25 +320,26 @@ class SidebarWidget extends ConsumerWidget {
         ),
         data: (info) => _SidebarItem(
           icon: ActerAvatar(
-            mode: DisplayMode.Space,
-            avatarInfo: AvatarInfo(
-              uniqueId: roomId,
-              displayName: info.displayName,
-              avatar: info.getAvatarImage(),
+            options: AvatarOptions(
+              AvatarInfo(
+                uniqueId: roomId,
+                displayName: info.displayName,
+                avatar: info.getAvatarImage(),
+              ),
+              parentBadges: canonicalParent.valueOrNull != null
+                  ? [
+                      AvatarInfo(
+                        uniqueId:
+                            canonicalParent.valueOrNull!.space.getRoomIdStr(),
+                        displayName:
+                            canonicalParent.valueOrNull!.profile.displayName,
+                        avatar: canonicalParent.valueOrNull!.profile
+                            .getAvatarImage(),
+                      ),
+                    ]
+                  : [],
+              size: 48,
             ),
-            avatarsInfo: canonicalParent.valueOrNull != null
-                ? [
-                    AvatarInfo(
-                      uniqueId:
-                          canonicalParent.valueOrNull!.space.getRoomIdStr(),
-                      displayName:
-                          canonicalParent.valueOrNull!.profile.displayName,
-                      avatar:
-                          canonicalParent.valueOrNull!.profile.getAvatarImage(),
-                    ),
-                  ]
-                : [],
-            size: 48,
           ),
           label: Text(
             info.displayName ?? roomId,

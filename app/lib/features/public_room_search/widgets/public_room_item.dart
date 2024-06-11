@@ -98,11 +98,12 @@ class PublicRoomItem extends ConsumerWidget {
                 ),
                 leading: profileInfo.when(
                   data: (profile) => ActerAvatar(
-                    mode: DisplayMode.Space,
-                    avatarInfo: AvatarInfo(
-                      uniqueId: item.roomIdStr(),
-                      displayName: profile.displayName,
-                      avatar: profile.getAvatarImage(),
+                    options: AvatarOptions(
+                      AvatarInfo(
+                        uniqueId: item.roomIdStr(),
+                        displayName: profile.displayName,
+                        avatar: profile.getAvatarImage(),
+                      ),
                     ),
                   ),
                   error: (e, s) {
@@ -148,10 +149,11 @@ class PublicRoomItem extends ConsumerWidget {
 
   ActerAvatar fallbackAvatar() {
     return ActerAvatar(
-      mode: DisplayMode.Space,
-      avatarInfo: AvatarInfo(
-        uniqueId: item.roomIdStr(),
-        displayName: item.name(),
+      options: AvatarOptions(
+        AvatarInfo(
+          uniqueId: item.roomIdStr(),
+          displayName: item.name(),
+        ),
       ),
     );
   }

@@ -79,7 +79,7 @@ class __OptionsSettingsTileState<T> extends State<_OptionsSettingsTile<T>> {
           ? Icon(
               Atlas.check_circle,
               size: 18,
-              color: Theme.of(context).colorScheme.onBackground,
+              color: Theme.of(context).colorScheme.onSurface,
             )
           : null,
     );

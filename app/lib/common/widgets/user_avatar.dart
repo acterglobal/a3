@@ -21,22 +21,19 @@ class UserAvatarWidget extends ConsumerWidget {
     final accountProfile = ref.watch(accountProfileProvider);
     return accountProfile.when(
       data: (data) => ActerAvatar(
-        mode: DisplayMode.DM,
-        size: size,
-        avatarInfo: AvatarInfo(
-          uniqueId: userId,
-          displayName: data.profile.displayName,
-          avatar: data.profile.getAvatarImage(),
+        options: AvatarOptions.DM(
+          AvatarInfo(
+            uniqueId: userId,
+            displayName: data.profile.displayName,
+            avatar: data.profile.getAvatarImage(),
+          ),
+          size: size,
         ),
       ),
       error: (error, stackTrace) => Text(L10n.of(context).couldNotLoadAvatar),
       loading: () => Skeletonizer(
         child: ActerAvatar(
-          mode: DisplayMode.DM,
-          size: size,
-          avatarInfo: AvatarInfo(
-            uniqueId: userId,
-          ),
+          options: AvatarOptions.DM(AvatarInfo(uniqueId: userId)),
         ),
       ),
     );

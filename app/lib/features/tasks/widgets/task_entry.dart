@@ -16,12 +16,14 @@ class TaskEntry extends ConsumerWidget {
   final Task task;
   final bool showBreadCrumb;
   final Function()? onDone;
+  final Function()? onTap;
 
   const TaskEntry({
     super.key,
     required this.task,
     this.showBreadCrumb = false,
     this.onDone,
+    this.onTap,
   });
 
   @override
@@ -119,6 +121,7 @@ class TaskEntry extends ConsumerWidget {
             ],
           ),
           onTap: () {
+            onTap?.call();
             context.pushNamed(
               Routes.task.name,
               pathParameters: {

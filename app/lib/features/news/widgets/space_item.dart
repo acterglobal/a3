@@ -26,7 +26,7 @@ class SpaceItem extends ConsumerWidget {
       onTap: callback,
       child: Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.background,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Container(
@@ -36,12 +36,13 @@ class SpaceItem extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.all(5.0),
                 child: ActerAvatar(
-                  mode: DisplayMode.Space,
-                  avatarInfo: AvatarInfo(
-                    uniqueId: client.userId().toString(),
-                    avatar: avatar,
+                  options: AvatarOptions(
+                    AvatarInfo(
+                      uniqueId: client.userId().toString(),
+                      avatar: avatar,
+                    ),
+                    size: 36,
                   ),
-                  size: 36,
                 ),
               ),
               Container(

@@ -262,13 +262,14 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
           ),
         ),
         child: ActerAvatar(
-          mode: DisplayMode.DM,
-          avatarInfo: AvatarInfo(
-            uniqueId: memberId,
-            avatar: memberProfile.getAvatarImage(),
-            displayName: memberProfile.displayName,
+          options: AvatarOptions.DM(
+            AvatarInfo(
+              uniqueId: memberId,
+              avatar: memberProfile.getAvatarImage(),
+              displayName: memberProfile.displayName,
+            ),
+            size: 50,
           ),
-          size: 50,
         ),
       ),
     );

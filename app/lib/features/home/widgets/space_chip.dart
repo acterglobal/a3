@@ -42,11 +42,12 @@ class SpaceChip extends ConsumerWidget {
     return Skeletonizer(
       child: Chip(
         avatar: ActerAvatar(
-          mode: DisplayMode.Space,
-          avatarInfo: AvatarInfo(
-            uniqueId: spaceId,
+          options: AvatarOptions(
+            AvatarInfo(
+              uniqueId: spaceId,
+            ),
+            size: 24,
           ),
-          size: 24,
         ),
         label: Text(spaceId),
       ),
@@ -59,13 +60,14 @@ class SpaceChip extends ConsumerWidget {
           onTapOpenSpaceDetail ? () => goToSpace(context, space.roomId) : null,
       child: Chip(
         avatar: ActerAvatar(
-          mode: DisplayMode.Space,
-          avatarInfo: AvatarInfo(
-            uniqueId: space.roomId,
-            displayName: space.spaceProfileData.displayName,
-            avatar: space.spaceProfileData.getAvatarImage(),
+          options: AvatarOptions(
+            AvatarInfo(
+              uniqueId: space.roomId,
+              displayName: space.spaceProfileData.displayName,
+              avatar: space.spaceProfileData.getAvatarImage(),
+            ),
+            size: 24,
           ),
-          size: 24,
         ),
         label: Text(space.spaceProfileData.displayName ?? space.roomId),
       ),

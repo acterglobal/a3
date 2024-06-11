@@ -242,6 +242,19 @@ impl TimelineStream {
             .await?
     }
 
+    pub async fn mark_as_read(&self, user_triggered: bool) -> Result<bool> {
+        let timeline = self.timeline.clone();
+        let receipt = if user_triggered {
+            ruma_client_api::receipt::create_receipt::v3::ReceiptType::Read
+        } else {
+            ruma_client_api::receipt::create_receipt::v3::ReceiptType::FullyRead
+        };
+
+        Ok(RUNTIME
+            .spawn(async move { timeline.mark_as_read(receipt).await })
+            .await??)
+    }
+
     pub async fn send_multiple_receipts(
         &self,
         fully_read: Option<String>,

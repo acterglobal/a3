@@ -47,7 +47,7 @@ class MessageActions extends ConsumerWidget {
           : const EdgeInsets.only(top: 4),
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(5)),
-        color: Theme.of(context).colorScheme.background,
+        color: Theme.of(context).colorScheme.surface,
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,

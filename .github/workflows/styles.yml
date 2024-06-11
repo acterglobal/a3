@@ -37,7 +37,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.19'
+          flutter-version: '3.22'
           channel: 'stable'
 
       - name: version

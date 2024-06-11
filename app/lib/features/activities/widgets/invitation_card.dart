@@ -80,20 +80,22 @@ class InvitationCard extends ConsumerWidget {
     return ListTile(
       leading: roomProfile.maybeWhen(
         data: (room) => ActerAvatar(
-          mode: DisplayMode.Space,
-          avatarInfo: AvatarInfo(
-            uniqueId: roomId,
-            displayName: room.displayName,
-            avatar: room.getAvatarImage(),
+          options: AvatarOptions(
+            AvatarInfo(
+              uniqueId: roomId,
+              displayName: room.displayName,
+              avatar: room.getAvatarImage(),
+            ),
+            size: 48,
           ),
-          size: 48,
         ),
         orElse: () => ActerAvatar(
-          mode: DisplayMode.Space,
-          avatarInfo: AvatarInfo(
-            uniqueId: roomId,
+          options: AvatarOptions(
+            AvatarInfo(
+              uniqueId: roomId,
+            ),
+            size: 48,
           ),
-          size: 48,
         ),
       ),
       title: roomProfile.when(
@@ -121,20 +123,22 @@ class InvitationCard extends ConsumerWidget {
     return ListTile(
       leading: roomProfile.maybeWhen(
         data: (room) => ActerAvatar(
-          mode: DisplayMode.GroupChat,
-          avatarInfo: AvatarInfo(
-            uniqueId: roomId,
-            displayName: room.displayName,
-            avatar: room.getAvatarImage(),
+          options: AvatarOptions(
+            AvatarInfo(
+              uniqueId: roomId,
+              displayName: room.displayName,
+              avatar: room.getAvatarImage(),
+            ),
+            size: 48,
           ),
-          size: 48,
         ),
         orElse: () => ActerAvatar(
-          mode: DisplayMode.Space,
-          avatarInfo: AvatarInfo(
-            uniqueId: roomId,
+          options: AvatarOptions(
+            AvatarInfo(
+              uniqueId: roomId,
+            ),
+            size: 48,
           ),
-          size: 48,
         ),
       ),
       title: roomProfile.when(
@@ -163,13 +167,14 @@ class InvitationCard extends ConsumerWidget {
     final roomId = invitation.roomIdStr();
     return ListTile(
       leading: ActerAvatar(
-        mode: DisplayMode.DM,
-        avatarInfo: AvatarInfo(
-          uniqueId: roomId,
-          displayName: profile?.displayName,
-          avatar: profile?.getAvatarImage(),
+        options: AvatarOptions.DM(
+          AvatarInfo(
+            uniqueId: roomId,
+            displayName: profile?.displayName,
+            avatar: profile?.getAvatarImage(),
+          ),
+          size: 48,
         ),
-        size: 24,
       ),
       title: (profile?.displayName) != null
           ? Text('${profile?.displayName} ($senderId)')
@@ -186,13 +191,14 @@ class InvitationCard extends ConsumerWidget {
     return Chip(
       visualDensity: VisualDensity.compact,
       avatar: ActerAvatar(
-        mode: DisplayMode.DM,
-        avatarInfo: AvatarInfo(
-          uniqueId: userId,
-          displayName: profile?.displayName,
-          avatar: profile?.getAvatarImage(),
+        options: AvatarOptions.DM(
+          AvatarInfo(
+            uniqueId: userId,
+            displayName: profile?.displayName,
+            avatar: profile?.getAvatarImage(),
+          ),
+          size: 24,
         ),
-        size: 24,
       ),
       label: Text(profile?.displayName ?? userId),
     );

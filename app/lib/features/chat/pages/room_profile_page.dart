@@ -10,6 +10,7 @@ import 'package:acter/common/widgets/chat/edit_room_description_sheet.dart';
 import 'package:acter/common/widgets/chat/edit_room_name_sheet.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/render_html.dart';
+import 'package:acter/common/widgets/visibility/visibility_chip.dart';
 import 'package:acter/features/chat/widgets/member_list.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/chat/widgets/skeletons/action_item_skeleton_widget.dart';
@@ -231,12 +232,12 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         // Bookmark
         convoLoader.when(
           data: (conv) {
-            final isFav = conv.isFavorite();
+            final isBookmarked = conv.isBookmarked();
             return _actionItem(
               context: context,
-              iconData: isFav ? Icons.bookmark : Icons.bookmark_border,
+              iconData: isBookmarked ? Icons.bookmark : Icons.bookmark_border,
               actionName: L10n.of(context).bookmark,
-              onTap: () async => await conv.setFavorite(!isFav),
+              onTap: () async => await conv.setBookmarked(!isBookmarked),
             );
           },
           error: (e, st) => Skeletonizer(
@@ -307,7 +308,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
         margin: const EdgeInsets.symmetric(horizontal: 5),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.background,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(10.0),
         ),
         child: InkWell(
@@ -334,6 +335,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
   }
 
   Widget _optionsBody(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Column(
       children: [
         // Notification section
@@ -354,6 +356,26 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
                   NotificationsSettingsTile(roomId: widget.roomId),
                 ],
               ),
+              SettingsSection(
+                tiles: [
+                  SettingsTile(
+                    title: Text(L10n.of(context).accessAndVisibility),
+                    description: VisibilityChip(roomId: widget.roomId),
+                    leading: const Icon(Atlas.lab_appliance_thin),
+                    onPressed: (context) {
+                      isDesktop || size.width > 770
+                          ? context.goNamed(
+                              Routes.chatSettingsVisibility.name,
+                              pathParameters: {'roomId': widget.roomId},
+                            )
+                          : context.pushNamed(
+                              Routes.chatSettingsVisibility.name,
+                              pathParameters: {'roomId': widget.roomId},
+                            );
+                    },
+                  ),
+                ],
+              ),
             ],
           ),
         ),
@@ -372,7 +394,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.background,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(10.0),
       ),
       child: Column(

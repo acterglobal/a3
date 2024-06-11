@@ -25,30 +25,33 @@ class MemberAvatar extends ConsumerWidget {
       ),
       child: profile.when(
         data: (data) => ActerAvatar(
-          mode: DisplayMode.DM,
-          avatarInfo: AvatarInfo(
-            uniqueId: memberId,
-            avatar: data.profile.getAvatarImage(),
-            displayName: data.profile.displayName,
+          options: AvatarOptions.DM(
+            AvatarInfo(
+              uniqueId: memberId,
+              avatar: data.profile.getAvatarImage(),
+              displayName: data.profile.displayName,
+            ),
+            size: 18,
           ),
-          size: 18,
         ),
         error: (err, stackTrace) {
           _log.severe("Couldn't load avatar", err, stackTrace);
           return ActerAvatar(
-            mode: DisplayMode.DM,
-            avatarInfo: AvatarInfo(
-              uniqueId: memberId,
-              displayName: memberId,
+            options: AvatarOptions.DM(
+              AvatarInfo(
+                uniqueId: memberId,
+                displayName: memberId,
+              ),
+              size: 18,
             ),
-            size: 18,
           );
         },
         loading: () => Skeletonizer(
           child: ActerAvatar(
-            mode: DisplayMode.DM,
-            avatarInfo: AvatarInfo(uniqueId: memberId),
-            size: 18,
+            options: AvatarOptions.DM(
+              AvatarInfo(uniqueId: memberId),
+              size: 18,
+            ),
           ),
         ),
       ),
