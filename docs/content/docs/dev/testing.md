@@ -50,7 +50,30 @@ If you are not on a Linux machine, please [install vagrant](https://developer.ha
 
 <details>
 <summary><strong>Local docker-compose</strong></summary>
+
 Alternatively to using the vagrant you can also run the synapse matrix backend with the proper configuration on any Linux base system with docker and docker-compose available. Just `cd utils/test_server` and start the docker-compose in there via `docker-compose up`. Ensure the server is up and available at `http://localhost:8118`.
+
+- **Install docker**
+
+```sh
+sudo apt install apt-transport-https ca-certificates curl software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+apt-cache policy docker-ce
+sudo apt install docker-ce
+sudo systemctl status docker
+```
+
+- **Install docker-compose**
+
+You can't use `v1.x.x`, because it doesn't parse `mode` param in `rageshake.volumes.tmpfs`.
+
+```sh
+sudo curl -L "https://github.com/docker/compose/releases/download/v2.27.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+docker-compose --version
+```
+
 </details>
 <details>
 <summary><strong>Using the shared testing servers</strong></summary>
@@ -421,7 +444,7 @@ We are using `convenient_tests` framework to build and run flutter integration t
 
 #### Running with the Manager
 
-You can easily run the test manager by preparing everything for the target you want to test on (e.g. start the android-emulator, build `cargo make android-dev`) and then start the test-server and test-manager app by running `cargo make ui-tester`. While leaving this open, in a second terminal start the app in ui test mode via `cargo make ui-test-app` (or `cargo make ui-test-app-android-emulator` for the android-emulator version). You can now reconnect from the manager UI and run the specific tests
+You can easily run the test manager by preparing everything for the target you want to test on (e.g. start the android-emulator, build `cargo make android-dev`) and then start the test-server and test-manager app by running `cargo make ui-tester`. While leaving this open, in a second terminal start the app in ui test mode via `cargo make ui-test-app-android-emulator` (for the android-emulator version or `cargo make ui-test-app-local` for the local desktop app). You can now reconnect from the manager UI and run the specific tests
 
 **Alternatives**
 

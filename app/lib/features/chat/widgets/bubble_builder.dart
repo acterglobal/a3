@@ -1,24 +1,26 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/custom_message_builder.dart';
-import 'package:acter/features/chat/widgets/emoji_reaction_item.dart';
-import 'package:acter/features/chat/widgets/emoji_row.dart';
+import 'package:acter/features/chat/widgets/emoji/emoji_container.dart';
+import 'package:acter/features/chat/widgets/emoji/emoji_row.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
+import 'package:acter/features/chat/widgets/message_actions.dart';
 import 'package:acter/features/chat/widgets/message_metadata_builder.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:swipe_to/swipe_to.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 final _log = Logger('a3::chat::bubble_builder');
 
@@ -44,10 +46,6 @@ class BubbleBuilder extends ConsumerWidget {
     final isAuthor = (myId == message.author.id);
     final roomId = convo.getRoomIdStr();
 
-    final chatInputState = ref.watch(chatInputProvider(roomId));
-    final chatInputNotifier = ref.watch(chatInputProvider(roomId).notifier);
-    final chatInputFocusState = ref.watch(chatInputFocusProvider.notifier);
-
     String eventType = message.metadata?['eventType'] ?? '';
     bool isMemberEvent = eventType == 'm.room.member';
 
@@ -58,39 +56,20 @@ class BubbleBuilder extends ConsumerWidget {
         isMemberEvent
             ? child
             : SwipeTo(
-                onLeftSwipe: !isAuthor
-                    ? null
-                    : (DragUpdateDetails details) {
-                        FocusScope.of(context)
-                            .requestFocus(chatInputFocusState.state);
-                        if (chatInputState.currentMessageId != null) {
-                          chatInputNotifier.emojiRowVisible(false);
-                          chatInputNotifier.setRepliedToMessage(message);
-                          chatInputNotifier.showReplyView(true);
-                          chatInputNotifier.setReplyWidget(child);
-                        } else {
-                          chatInputNotifier.showReplyView(true);
-                          chatInputNotifier.setRepliedToMessage(message);
-                          chatInputNotifier.setReplyWidget(child);
-                        }
-                      },
+                onLeftSwipe: (DragUpdateDetails details) {
+                  ref
+                      .read(chatInputProvider(roomId).notifier)
+                      .setReplyToMessage(message);
+                },
+                iconOnLeftSwipe: Icons.reply_rounded,
                 onRightSwipe: isAuthor
-                    ? null
-                    : (DragUpdateDetails details) {
-                        FocusScope.of(context)
-                            .requestFocus(chatInputFocusState.state);
-                        if (chatInputState.emojiRowVisible) {
-                          chatInputNotifier.emojiRowVisible(false);
-
-                          chatInputNotifier.setRepliedToMessage(message);
-                          chatInputNotifier.showReplyView(true);
-                          chatInputNotifier.setReplyWidget(child);
-                        } else {
-                          chatInputNotifier.showReplyView(true);
-                          chatInputNotifier.setRepliedToMessage(message);
-                          chatInputNotifier.setReplyWidget(child);
-                        }
-                      },
+                    ? (DragUpdateDetails details) {
+                        ref
+                            .read(chatInputProvider(roomId).notifier)
+                            .setEditMessage(message);
+                      }
+                    : null,
+                iconOnRightSwipe: Atlas.pencil_edit_thin,
                 child: _ChatBubble(
                   convo: convo,
                   message: message,
@@ -124,100 +103,41 @@ class _ChatBubble extends ConsumerWidget {
     final myId = ref.watch(myUserIdStrProvider);
     final isAuthor = (myId == message.author.id);
     final roomId = convo.getRoomIdStr();
-    bool hasRepliedMessage = message.repliedMessage != null;
-
-    return Column(
-      crossAxisAlignment:
-          isAuthor ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-      children: [
+    final actionsVisible = ref.watch(
+      chatInputProvider(roomId).select(
+        (state) => // only when showing actions and this is the selected message
+            state.selectedMessageState == SelectedMessageState.actions &&
+            state.selectedMessage?.id == message.id,
+      ),
+    );
+    late List<Widget> children;
+    if (actionsVisible) {
+      children = [
         EmojiRow(
           roomId: roomId,
+          isAuthor: isAuthor,
           onEmojiTap: (String eventId, String emoji) {
-            final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
-            inputNotifier.setCurrentMessageId(null);
-            inputNotifier.emojiRowVisible(false);
-            toggleReaction(eventId, emoji);
+            ref.read(chatInputProvider(roomId).notifier).unsetSelectedMessage();
+            toggleReaction(ref, eventId, emoji);
           },
           message: message,
         ),
+        enlargeEmoji ? child : renderBubble(context, isAuthor),
+        MessageActions(
+          convo: convo,
+          roomId: roomId,
+        ),
+      ];
+    } else {
+      children = [
         const SizedBox(height: 4),
-        enlargeEmoji
-            ? child
-            : Bubble(
-                color: isAuthor
-                    ? Theme.of(context).colorScheme.surface
-                    : Theme.of(context).colorScheme.neutral2,
-                borderColor: Colors.transparent,
-                style: BubbleStyle(
-                  margin: nextMessageInGroup
-                      ? const BubbleEdges.symmetric(horizontal: 2)
-                      : null,
-                  radius: const Radius.circular(22),
-                  padding: (message is types.ImageMessage && !hasRepliedMessage)
-                      ? const BubbleEdges.all(0)
-                      : null,
-                  nip: (nextMessageInGroup || message is types.ImageMessage)
-                      ? BubbleNip.no
-                      : !isAuthor
-                          ? BubbleNip.leftBottom
-                          : BubbleNip.rightBottom,
-                  nipHeight: 18,
-                  nipWidth: 0.5,
-                  nipRadius: 0,
-                ),
-                child: hasRepliedMessage
-                    ? Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Container(
-                            decoration: BoxDecoration(
-                              color: isAuthor
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Theme.of(context)
-                                      .colorScheme
-                                      .neutral
-                                      .withOpacity(0.3),
-                              borderRadius: BorderRadius.circular(22),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    left: 10,
-                                    top: 15,
-                                  ),
-                                  child: Consumer(
-                                    builder: (ctx, ref, child) =>
-                                        replyProfileBuilder(
-                                      context,
-                                      roomId,
-                                      ref,
-                                    ),
-                                  ),
-                                ),
-                                _OriginalMessageBuilder(
-                                  convo: convo,
-                                  message: message,
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          child,
-                        ],
-                      )
-                    : child,
-              ),
-        Align(
-          alignment: !isAuthor ? Alignment.bottomLeft : Alignment.bottomRight,
-          child: _EmojiContainer(
-            roomId: roomId,
-            onToggle: toggleReaction,
-            isAuthor: isAuthor,
-            message: message,
-            nextMessageInGroup: nextMessageInGroup,
-          ),
+        enlargeEmoji ? child : renderBubble(context, isAuthor),
+        EmojiContainer(
+          roomId: roomId,
+          onToggle: (eventId, emoji) => toggleReaction(ref, eventId, emoji),
+          isAuthor: isAuthor,
+          message: message,
+          nextMessageInGroup: nextMessageInGroup,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -228,15 +148,92 @@ class _ChatBubble extends ConsumerWidget {
             ),
           ],
         ),
-      ],
+      ];
+    }
+
+    return Column(
+      crossAxisAlignment:
+          isAuthor ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      children: children,
+    );
+  }
+
+  Bubble renderBubble(
+    BuildContext context,
+    bool isAuthor,
+  ) {
+    bool hasRepliedMessage = message.repliedMessage != null;
+    Widget bubbleChild = child;
+    if (hasRepliedMessage) {
+      bubbleChild = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            decoration: BoxDecoration(
+              color: isAuthor
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.neutral.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(22),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 10,
+                    top: 15,
+                  ),
+                  child: Consumer(
+                    builder: (ctx, ref, child) => replyProfileBuilder(
+                      context,
+                      ref,
+                    ),
+                  ),
+                ),
+                _OriginalMessageBuilder(
+                  convo: convo,
+                  message: message,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 5),
+          child,
+        ],
+      );
+    }
+
+    return Bubble(
+      color: isAuthor
+          ? Theme.of(context).colorScheme.surface
+          : Theme.of(context).colorScheme.neutral2,
+      borderColor: Colors.transparent,
+      style: BubbleStyle(
+        margin: nextMessageInGroup
+            ? const BubbleEdges.symmetric(horizontal: 2)
+            : null,
+        radius: const Radius.circular(22),
+        padding: (message is types.ImageMessage && !hasRepliedMessage)
+            ? const BubbleEdges.all(0)
+            : null,
+        nip: (nextMessageInGroup || message is types.ImageMessage)
+            ? BubbleNip.no
+            : !isAuthor
+                ? BubbleNip.leftBottom
+                : BubbleNip.rightBottom,
+        nipHeight: 18,
+        nipWidth: 0.5,
+        nipRadius: 0,
+      ),
+      child: bubbleChild,
     );
   }
 
   Widget replyProfileBuilder(
     BuildContext context,
-    String roomId,
     WidgetRef ref,
   ) {
+    final roomId = convo.getRoomIdStr();
     final authorId = message.repliedMessage!.author.id;
     final replyProfile =
         ref.watch(roomMemberProvider((userId: authorId, roomId: roomId)));
@@ -244,27 +241,30 @@ class _ChatBubble extends ConsumerWidget {
       children: [
         replyProfile.when(
           data: (data) => ActerAvatar(
-            mode: DisplayMode.DM,
-            avatarInfo: AvatarInfo(
-              uniqueId: authorId,
-              displayName: data.profile.displayName,
-              avatar: data.profile.getAvatarImage(),
+            options: AvatarOptions.DM(
+              AvatarInfo(
+                uniqueId: authorId,
+                displayName: data.profile.displayName,
+                avatar: data.profile.getAvatarImage(),
+              ),
+              size: 12,
             ),
-            size: 12,
           ),
           error: (err, stackTrace) {
             _log.severe('Failed to load profile', err, stackTrace);
             return ActerAvatar(
-              mode: DisplayMode.DM,
-              avatarInfo: AvatarInfo(uniqueId: authorId),
-              size: 24,
+              options: AvatarOptions.DM(
+                AvatarInfo(uniqueId: authorId),
+                size: 24,
+              ),
             );
           },
           loading: () => Skeletonizer(
             child: ActerAvatar(
-              mode: DisplayMode.DM,
-              avatarInfo: AvatarInfo(uniqueId: authorId),
-              size: 24,
+              options: AvatarOptions.DM(
+                AvatarInfo(uniqueId: authorId),
+                size: 24,
+              ),
             ),
           ),
         ),
@@ -287,234 +287,17 @@ class _ChatBubble extends ConsumerWidget {
   }
 
   // send emoji reaction to message event
-  Future<void> toggleReaction(String eventId, String emoji) async {
+  Future<void> toggleReaction(
+    WidgetRef ref,
+    String eventId,
+    String emoji,
+  ) async {
     try {
-      final stream = convo.timelineStream();
+      final stream = ref.read(timelineStreamProvider(convo));
       await stream.toggleReaction(eventId, emoji);
     } catch (e, s) {
       _log.severe('Reaction toggle failed', e, s);
     }
-  }
-}
-
-class _EmojiContainer extends ConsumerStatefulWidget {
-  final String roomId;
-  final Function(String messageId, String emoji) onToggle;
-  final bool isAuthor;
-  final types.Message message;
-  final bool nextMessageInGroup;
-
-  const _EmojiContainer({
-    required this.roomId,
-    required this.onToggle,
-    required this.isAuthor,
-    required this.message,
-    required this.nextMessageInGroup,
-  });
-
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      __EmojiContainerState();
-}
-
-class __EmojiContainerState extends ConsumerState<_EmojiContainer>
-    with TickerProviderStateMixin {
-  late TabController tabBarController;
-  List<Tab> reactionTabs = [];
-
-  @override
-  void initState() {
-    super.initState();
-    tabBarController = TabController(
-      length: reactionTabs.length,
-      vsync: this,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    List<String> keys = [];
-    if (widget.message.metadata != null) {
-      if (widget.message.metadata!.containsKey('reactions')) {
-        Map<String, dynamic> reactions = widget.message.metadata!['reactions'];
-        keys = reactions.keys.toList();
-      }
-    }
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 3),
-          child: Wrap(
-            direction: Axis.horizontal,
-            spacing: 5,
-            runSpacing: 3,
-            children: List.generate(keys.length, (int index) {
-              String key = keys[index];
-              Map<String, dynamic> reactions =
-                  widget.message.metadata!['reactions'];
-              final recordsCount = reactions[key]?.length;
-              var sentByMe = (reactions[key]! as List<ReactionRecord>)
-                  .any((x) => x.sentByMe());
-              return InkWell(
-                onLongPress: () {
-                  showEmojiReactionsSheet(reactions, widget.roomId);
-                },
-                onTap: () {
-                  if (sentByMe) {
-                    customMsgSnackbar(
-                      context,
-                      L10n.of(context).revokingEmojiReactionsNotYetSupported,
-                    );
-                  } else {
-                    widget.onToggle(widget.message.id, key);
-                  }
-                },
-                child: Chip(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 1,
-                    horizontal: 2,
-                  ),
-                  backgroundColor: sentByMe
-                      ? AppTheme.theme.colorScheme.inversePrimary
-                      : Colors.transparent,
-                  labelPadding: const EdgeInsets.only(left: 2, right: 1),
-                  avatar: Text(
-                    key,
-                    style: EmojiConfig.emojiTextStyle,
-                  ),
-                  label: Text(recordsCount!.toString()),
-                ),
-              );
-            }),
-          ),
-        );
-      },
-    );
-  }
-
-  //Emoji reaction info bottom sheet.
-  void showEmojiReactionsSheet(Map<String, dynamic> reactions, String roomId) {
-    List<String> keys = reactions.keys.toList();
-    Map<String, List<String>> reactionsByUsers = {};
-    Map<String, List<String>> usersByReaction = {};
-    reactions.forEach((key, value) {
-      usersByReaction.putIfAbsent(
-        key,
-        () => List<String>.empty(growable: true),
-      );
-      for (final reaction in value) {
-        final userId = reaction.senderId().toString();
-        reactionsByUsers.putIfAbsent(
-          userId,
-          () => List<String>.empty(growable: true),
-        );
-        usersByReaction[key]!.add(userId);
-        reactionsByUsers[userId]!.add(key);
-      }
-    });
-    // sort the users per item on the number of emojis sent - highest first
-    usersByReaction.forEach((key, users) {
-      users.sort(
-        (userIdA, userIdB) => reactionsByUsers[userIdB]!
-            .length
-            .compareTo(reactionsByUsers[userIdA]!.length),
-      );
-    });
-    final allUsers = reactionsByUsers.keys.toList();
-    allUsers.sort(
-      (userIdA, userIdB) => reactionsByUsers[userIdB]!
-          .length
-          .compareTo(reactionsByUsers[userIdA]!.length),
-    );
-
-    num total = 0;
-    if (mounted) {
-      setState(() {
-        reactions.forEach((key, value) {
-          total += value.length;
-          reactionTabs.add(
-            Tab(
-              child: Chip(
-                avatar: Text(key, style: EmojiConfig.emojiTextStyle),
-                label: Text('${value.length}'),
-              ),
-            ),
-          );
-        });
-        reactionTabs.insert(
-          0,
-          Tab(
-            child: Chip(
-              label: Text('${L10n.of(context).all} $total'),
-            ),
-          ),
-        );
-        tabBarController = TabController(
-          length: reactionTabs.length,
-          vsync: this,
-        );
-      });
-    }
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(15),
-        ),
-      ),
-      isDismissible: true,
-      builder: (BuildContext context) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Flexible(
-              child: TabBar(
-                isScrollable: true,
-                padding: const EdgeInsets.all(24),
-                controller: tabBarController,
-                overlayColor:
-                    MaterialStateProperty.all<Color>(Colors.transparent),
-                indicator: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(12)),
-                ),
-                indicatorSize: TabBarIndicatorSize.tab,
-                labelColor: Colors.white,
-                unselectedLabelColor: Colors.white,
-                dividerColor: Colors.transparent,
-                tabs: reactionTabs,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Flexible(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14),
-                child: TabBarView(
-                  viewportFraction: 1.0,
-                  controller: tabBarController,
-                  children: [
-                    _ReactionListing(
-                      roomId: roomId,
-                      users: allUsers,
-                      usersMap: reactionsByUsers,
-                    ),
-                    for (var key in keys)
-                      _ReactionListing(
-                        roomId: roomId,
-                        users: usersByReaction[key]!,
-                        usersMap: reactionsByUsers,
-                      ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    ).whenComplete(() {
-      if (mounted) {
-        setState(() => reactionTabs.clear());
-      }
-    });
   }
 }
 
@@ -529,25 +312,27 @@ class _OriginalMessageBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (message.repliedMessage is types.TextMessage) {
-      final w = message.repliedMessage!.metadata!['messageLength'] * 38.5;
+    final repliedMessage = message.repliedMessage;
+    if (repliedMessage == null) return const SizedBox();
+    if (repliedMessage is types.TextMessage) {
+      final w = repliedMessage.metadata!['messageLength'] * 38.5;
       return TextMessageBuilder(
         convo: convo,
         message: message.repliedMessage as types.TextMessage,
         messageWidth: w.toInt(),
         isReply: true,
       );
-    } else if (message.repliedMessage is types.ImageMessage) {
-      final imageMsg = message.repliedMessage as types.ImageMessage;
+    }
+    if (repliedMessage is types.ImageMessage) {
       return Row(
         children: [
           Container(
             constraints: const BoxConstraints(maxHeight: 50),
             margin: const EdgeInsets.all(12),
             child: ImageMessageBuilder(
-              convo: convo,
-              message: imageMsg,
-              messageWidth: imageMsg.size.toInt(),
+              roomId: convo.getRoomIdStr(),
+              message: repliedMessage,
+              messageWidth: repliedMessage.size.toInt(),
               isReplyContent: true,
             ),
           ),
@@ -557,52 +342,22 @@ class _OriginalMessageBuilder extends ConsumerWidget {
           ),
         ],
       );
-    } else if (message.repliedMessage is types.FileMessage) {
+    }
+    if (repliedMessage is types.FileMessage) {
       return Padding(
         padding: const EdgeInsets.all(12),
         child: Text(
-          message.repliedMessage!.metadata?['content'],
+          repliedMessage.metadata!['content'],
           style: Theme.of(context).textTheme.bodySmall,
         ),
       );
-    } else if (message.repliedMessage is types.CustomMessage) {
+    }
+    if (repliedMessage is types.CustomMessage) {
       return CustomMessageBuilder(
-        message: message.repliedMessage as types.CustomMessage,
+        message: repliedMessage,
         messageWidth: 100,
       );
-    } else {
-      return const SizedBox();
     }
-  }
-}
-
-class _ReactionListing extends StatelessWidget {
-  final String roomId;
-  final List<String> users;
-  final Map<String, List<String>> usersMap; // UserId -> List of Emoji
-
-  const _ReactionListing({
-    required this.roomId,
-    required this.users,
-    required this.usersMap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.separated(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      shrinkWrap: true,
-      itemCount: users.length,
-      itemBuilder: (BuildContext context, int index) {
-        return EmojiReactionItem(
-          roomId: roomId,
-          userId: users[index],
-          emojis: usersMap[users[index]]!,
-        );
-      },
-      separatorBuilder: (BuildContext context, int index) {
-        return const SizedBox(height: 12);
-      },
-    );
+    return const SizedBox();
   }
 }

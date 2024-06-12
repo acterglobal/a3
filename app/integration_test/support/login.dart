@@ -1,13 +1,17 @@
 import 'package:acter/common/models/keys.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/home/data/keys.dart';
+import 'package:acter/features/onboarding/pages/link_email_page.dart';
 import 'package:acter/features/onboarding/pages/register_page.dart';
+import 'package:acter/features/onboarding/pages/save_username_page.dart';
+import 'package:acter/features/onboarding/pages/upload_avatar_page.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:uuid/uuid.dart';
 import './appstart.dart';
+import 'util.dart';
 
 const defaultRegistrationToken = String.fromEnvironment(
   'REGISTRATION_TOKEN',
@@ -82,6 +86,27 @@ extension ActerLogin on ConvenientTest {
     Finder submitBtn = find.byKey(RegisterPage.submitBtn);
     await tester.ensureVisible(submitBtn);
     await submitBtn.tap();
+
+    Finder copyUsernameBtn = find.byKey(SaveUsernamePage.copyUsernameBtn);
+    await tester.ensureVisible(copyUsernameBtn);
+    await copyUsernameBtn.tap();
+
+    Finder continueBtn = find.byKey(SaveUsernamePage.continueBtn);
+    await tester.ensureVisible(continueBtn);
+    await continueBtn.tap();
+
+    Finder email = find.byKey(LinkEmailPage.emailField);
+    await email.should(findsOneWidget);
+    await email.enterTextWithoutReplace('acter@example.org');
+
+    Finder linkEmailBtn = find.byKey(LinkEmailPage.linkEmailBtn);
+    await tester.ensureVisible(linkEmailBtn);
+    await linkEmailBtn.tap();
+
+    Finder skipBtn = find.byKey(UploadAvatarPage.skipBtn);
+    await tester.ensureVisible(skipBtn);
+    await skipBtn.tap();
+
     // we should see a main navigation, either at the side (desktop) or the bottom (mobile/tablet)
     await find.byKey(Keys.mainNav).should(findsOneWidget);
   }
@@ -89,21 +114,12 @@ extension ActerLogin on ConvenientTest {
   Future<void> logout() async {
     // ensure we do actually have access to the main nav.
     await find.byKey(Keys.mainNav).should(findsOneWidget);
-    final quickJumpKey = find.byKey(MainNavKeys.quickJump);
-    await quickJumpKey.should(findsOneWidget);
-    await quickJumpKey.tap();
-
-    final settingsKey = find.byKey(QuickJumpKeys.settings);
-    await settingsKey.should(findsOneWidget);
-    await settingsKey.tap();
-
-    final logoutKey = find.byKey(SettingsMenu.logoutAccount);
-    await logoutKey.should(findsOneWidget);
-    await logoutKey.tap();
-
-    final confirmKey = find.byKey(LogoutDialogKeys.confirm);
-    await confirmKey.should(findsOneWidget);
-    await confirmKey.tap();
+    await navigateTo([
+      MainNavKeys.quickJump,
+      QuickJumpKeys.settings,
+      SettingsMenu.logoutAccount,
+      LogoutDialogKeys.confirm,
+    ]);
 
     // we should see a main navigation, either at the side (desktop) or the bottom (mobile/tablet)
     await find.byKey(Keys.mainNav).should(findsNothing);

@@ -3,6 +3,8 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
@@ -10,6 +12,7 @@ import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/space/providers/notifiers/space_hierarchy_notifier.dart';
 import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
+import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -110,13 +113,22 @@ class SpaceChatsPage extends ConsumerWidget {
         subtitle: L10n.of(context).getConversationGoingToStart,
         image: 'assets/images/empty_chat.svg',
         primaryButton: canCreateSpace
-            ? ElevatedButton(
+            ? ActerPrimaryActionButton(
                 onPressed: () => context.pushNamed(
                   Routes.createChat.name,
                   queryParameters: {'spaceId': spaceIdOrAlias},
                   extra: 1,
                 ),
                 child: Text(L10n.of(context).createSpaceChat),
+              )
+            : null,
+        secondaryButton: canCreateSpace
+            ? ActerInlineTextButton(
+                onPressed: () => context.pushNamed(
+                  Routes.linkChat.name,
+                  pathParameters: {'spaceId': spaceIdOrAlias},
+                ),
+                child: Text(L10n.of(context).linkToChat),
               )
             : null,
       ),
@@ -135,10 +147,7 @@ class SpaceChatsPage extends ConsumerWidget {
             child: ConvoCard(
               room: rooms[index],
               showParent: false,
-              onTap: () => context.goNamed(
-                Routes.chatroom.name,
-                pathParameters: {'roomId': rooms[index].getRoomIdStr()},
-              ),
+              onTap: () => goToChat(context, rooms[index].getRoomIdStr()),
             ),
           ),
         );
@@ -175,7 +184,10 @@ class SpaceChatsPage extends ConsumerWidget {
           RiverPagedBuilder<Next?, SpaceHierarchyRoomInfo>.autoDispose(
         firstPageKey: const Next(isStart: true),
         provider: provider,
-        itemBuilder: (context, item, index) => ConvoHierarchyCard(space: item),
+        itemBuilder: (context, item, index) => ConvoHierarchyCard(
+          parentId: spaceIdOrAlias,
+          roomInfo: item,
+        ),
         noItemsFoundIndicatorBuilder: (context, controller) =>
             _renderEmpty(context, ref),
         pagedBuilder: (controller, builder) => PagedSliverList(

@@ -327,7 +327,7 @@ impl<'a> Mock<'a> {
                 })
                 .await?
                 else {
-                    bail!("Odo couldn't be found in Ops");
+                    bail!("Odo couldn't be found in Ops")
                 };
                 let mut draft = odo_ops.task_list_draft()?;
 

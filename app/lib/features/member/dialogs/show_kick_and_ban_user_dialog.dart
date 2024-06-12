@@ -1,3 +1,4 @@
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -33,26 +34,34 @@ Future<void> showKickAndBanUserDialog(
             ],
           ),
         ),
+        actionsAlignment: MainAxisAlignment.spaceEvenly,
         actions: <Widget>[
-          TextButton(
+          OutlinedButton(
             onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
             child: Text(L10n.of(context).no),
           ),
-          TextButton(
+          ActerPrimaryActionButton(
             onPressed: () async {
               EasyLoading.show(status: L10n.of(context).kickAndBanProgress);
               try {
                 final maybeReason = reason.text.isNotEmpty ? reason.text : null;
                 await member.kick(maybeReason);
                 await member.ban(maybeReason);
-                // ignore: use_build_context_synchronously
-                EasyLoading.showToast(L10n.of(context).kickAndBanSuccess);
-                if (context.mounted) {
-                  Navigator.of(context, rootNavigator: true).pop();
+                if (!context.mounted) {
+                  EasyLoading.dismiss();
+                  return;
                 }
+                EasyLoading.showToast(L10n.of(context).kickAndBanSuccess);
+                Navigator.of(context, rootNavigator: true).pop();
               } catch (error) {
-                // ignore: use_build_context_synchronously
-                EasyLoading.showError(L10n.of(context).kickAndBanFailed(error));
+                if (!context.mounted) {
+                  EasyLoading.dismiss();
+                  return;
+                }
+                EasyLoading.showError(
+                  L10n.of(context).kickAndBanFailed(error),
+                  duration: const Duration(seconds: 3),
+                );
               }
             },
             child: Text(L10n.of(context).yes),

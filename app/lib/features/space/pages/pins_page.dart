@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
@@ -75,7 +76,7 @@ class SpacePinsPage extends ConsumerWidget {
                       subtitle: L10n.of(context).noPinsAvailableDescription,
                       image: 'assets/images/empty_pin.svg',
                       primaryButton: canAdd
-                          ? ElevatedButton(
+                          ? ActerPrimaryActionButton(
                               onPressed: () => context.pushNamed(
                                 Routes.actionAddPin.name,
                                 queryParameters: {'spaceId': spaceIdOrAlias},

@@ -61,7 +61,8 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
                       ),
                     ),
                     PopupMenuItem(
-                      onTap: () => context.pushNamed(Routes.joinSpace.name),
+                      onTap: () =>
+                          context.pushNamed(Routes.searchPublicDirectory.name),
                       child: Row(
                         children: <Widget>[
                           Text(L10n.of(context).joinSpace),
@@ -87,7 +88,10 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
                 final space = spaces[index];
                 final roomId = space.getRoomIdStr();
                 return SpaceCard(
-                  onTap: () => context.go('/$roomId'),
+                  onTap: () => context.pushNamed(
+                    Routes.space.name,
+                    pathParameters: {'spaceId': roomId},
+                  ),
                   key: Key('space-list-item-$roomId'),
                   space: space,
                 );

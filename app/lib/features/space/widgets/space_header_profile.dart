@@ -3,6 +3,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_info.dart';
 import 'package:acter/features/space/widgets/member_avatar.dart';
+import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,39 +29,32 @@ class SpaceHeaderProfile extends ConsumerWidget {
           child: Row(
             children: <Widget>[
               ActerAvatar(
-                mode: DisplayMode.Space,
-                avatarInfo: AvatarInfo(
-                  uniqueId: spaceId,
-                  displayName: spaceProfile.profile.displayName,
-                  avatar: spaceProfile.profile.getAvatarImage(),
+                options: AvatarOptions(
+                  AvatarInfo(
+                    uniqueId: spaceId,
+                    displayName: spaceProfile.profile.displayName,
+                    avatar: spaceProfile.profile.getAvatarImage(),
+                  ),
+                  parentBadges: canonicalParent.valueOrNull != null
+                      ? [
+                          AvatarInfo(
+                            uniqueId: canonicalParent.valueOrNull!.space
+                                .getRoomIdStr(),
+                            displayName: canonicalParent
+                                .valueOrNull!.profile.displayName,
+                            avatar: canonicalParent.valueOrNull!.profile
+                                .getAvatarImage(),
+                          ),
+                        ]
+                      : [],
+                  size: 80,
+                  badgesSize: 30,
                 ),
-                avatarsInfo: canonicalParent.valueOrNull != null
-                    ? [
-                        AvatarInfo(
-                          uniqueId:
-                              canonicalParent.valueOrNull!.space.getRoomIdStr(),
-                          displayName:
-                              canonicalParent.valueOrNull!.profile.displayName,
-                          avatar: canonicalParent.valueOrNull!.profile
-                              .getAvatarImage(),
-                        ),
-                      ]
-                    : [],
-                onAvatarTap: () => context.pushNamed(
-                  Routes.space.name,
-                  pathParameters: {
-                    'spaceId': spaceId,
-                  },
+                onAvatarTap: () => goToSpace(context, spaceId),
+                onParentBadgesTap: () => goToSpace(
+                  context,
+                  canonicalParent.valueOrNull!.space.getRoomIdStr(),
                 ),
-                onParentBadgeTap: () => context.pushNamed(
-                  Routes.space.name,
-                  pathParameters: {
-                    'spaceId':
-                        canonicalParent.valueOrNull!.space.getRoomIdStr(),
-                  },
-                ),
-                badgeSize: 30,
-                size: 80,
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,7 +80,7 @@ class SpaceHeaderProfile extends ConsumerWidget {
       error: (error, stack) => Text(
         L10n.of(context).loadingFailed(error),
       ),
-      loading: () => Text(L10n.of(context).loading),
+      loading: () => Skeletonizer(child: Text(L10n.of(context).loading)),
     );
   }
 

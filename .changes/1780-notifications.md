@@ -1,0 +1,1 @@
+- Notifications were not always properly activated upon first registration, this is now fixed. You might be prompted to allow notifications (once) upon a fresh start of the app if you had run into this problem before (without knowing).

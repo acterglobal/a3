@@ -44,6 +44,10 @@ impl Task {
         &self.meta.room_id
     }
 
+    pub fn sender(&self) -> &UserId {
+        &self.meta.sender
+    }
+
     pub fn is_done(&self) -> bool {
         self.inner
             .progress_percent
@@ -113,6 +117,9 @@ impl ActerModel for Task {
     fn event_id(&self) -> &EventId {
         &self.meta.event_id
     }
+    fn room_id(&self) -> &RoomId {
+        &self.meta.room_id
+    }
 
     fn capabilities(&self) -> &[Capability] {
         &[
@@ -177,6 +184,9 @@ impl ActerModel for TaskUpdate {
 
     fn event_id(&self) -> &EventId {
         &self.meta.event_id
+    }
+    fn room_id(&self) -> &RoomId {
+        &self.meta.room_id
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<String>> {
@@ -243,6 +253,9 @@ impl ActerModel for TaskSelfAssign {
     fn event_id(&self) -> &EventId {
         &self.meta.event_id
     }
+    fn room_id(&self) -> &RoomId {
+        &self.meta.room_id
+    }
 
     async fn execute(self, store: &Store) -> Result<Vec<String>> {
         default_model_execute(store, self.into()).await
@@ -298,6 +311,9 @@ impl ActerModel for TaskSelfUnassign {
 
     fn event_id(&self) -> &EventId {
         &self.meta.event_id
+    }
+    fn room_id(&self) -> &RoomId {
+        &self.meta.room_id
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<String>> {

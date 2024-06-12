@@ -2,32 +2,26 @@ use acter_core::models::{self, ActerModel, AnyActerModel};
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::room::Room;
-use ruma_common::{OwnedEventId, OwnedTransactionId, OwnedUserId};
-use ruma_events::MessageLikeEventType;
+use ruma_common::{OwnedEventId, OwnedTransactionId, OwnedUserId, UserId};
+use ruma_events::{reaction::ReactionEvent, MessageLikeEventType};
 use std::ops::Deref;
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
-use tracing::trace;
 
 use super::{client::Client, RUNTIME};
 
 impl Client {
     pub async fn wait_for_reaction(&self, key: String, timeout: Option<u8>) -> Result<Reaction> {
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::Reaction(reaction) =
-                    client.wait_for(key.clone(), timeout).await?
+                let AnyActerModel::Reaction(reaction) = me.wait_for(key.clone(), timeout).await?
                 else {
                     bail!("{key} is not a reaction");
                 };
-                let room = client
-                    .core
-                    .client()
-                    .get_room(&reaction.meta.room_id)
-                    .context("Room not found")?;
+                let room = me.room_by_id_typed(&reaction.meta.room_id)?;
                 Ok(Reaction {
-                    client: client.clone(),
+                    client: me.clone(),
                     room,
                     inner: reaction,
                 })
@@ -113,24 +107,18 @@ impl ReactionManager {
 
     pub async fn send_like(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let client = room.client();
-        let my_id = client.user_id().context("User not found")?.to_owned();
+        let my_id = self.client.user_id()?;
         let event = self.inner.construct_like_event();
 
         RUNTIME
             .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Couldn't find me among room members")?;
-                if !member.can_send_message(MessageLikeEventType::Reaction) {
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::Reaction)
+                    .await?;
+                if !permitted {
                     bail!("No permission to send reaction in this room");
                 }
-
-                trace!("before sending like");
                 let response = room.send(event).await?;
-
-                trace!("after sending like");
                 Ok(response.event_id)
             })
             .await?
@@ -138,24 +126,18 @@ impl ReactionManager {
 
     pub async fn send_reaction(&self, key: String) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let client = room.client();
-        let my_id = client.user_id().context("User not found")?.to_owned();
+        let my_id = self.client.user_id()?;
         let event = self.inner.construct_reaction_event(key);
 
         RUNTIME
             .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Couldn't find me among room members")?;
-                if !member.can_send_message(MessageLikeEventType::Reaction) {
-                    bail!("No permission to send message in this room");
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::Reaction)
+                    .await?;
+                if !permitted {
+                    bail!("No permission to send reaction in this room");
                 }
-
-                trace!("before sending reaction");
                 let response = room.send(event).await?;
-
-                trace!("after sending reaction");
                 Ok(response.event_id)
             })
             .await?
@@ -167,19 +149,63 @@ impl ReactionManager {
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
         let room = self.room.clone();
+        let my_id = self.client.user_id()?;
         let stats = self.inner.stats();
         let Some(event_id) = stats.user_likes.last().cloned() else {
-            bail!("User hasn't liked");
+            bail!("User hasn't liked")
         };
-
         let txn_id = txn_id.map(OwnedTransactionId::from);
 
         RUNTIME
             .spawn(async move {
-                trace!("before redacting like");
+                let evt = room.event(&event_id).await?;
+                let event_content = evt.event.deserialize_as::<ReactionEvent>()?;
+                let permitted = if event_content.sender() == my_id {
+                    room.can_user_redact_own(&my_id).await?
+                } else {
+                    room.can_user_redact_other(&my_id).await?
+                };
+                if !permitted {
+                    bail!("No permission to redact this reaction");
+                }
                 let response = room.redact(&event_id, reason.as_deref(), txn_id).await?;
-                trace!("after redacting like");
                 Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn redact_reaction(
+        &self,
+        sender_id: String,
+        key: String,
+        reason: Option<String>,
+        txn_id: Option<String>,
+    ) -> Result<OwnedEventId> {
+        let room = self.room.clone();
+        let my_id = self.client.user_id()?;
+        let sender_id = UserId::parse(sender_id)?;
+        let inner = self.inner.clone();
+        let txn_id = txn_id.map(OwnedTransactionId::from);
+
+        RUNTIME
+            .spawn(async move {
+                let permitted = if sender_id == my_id {
+                    room.can_user_redact_own(&my_id).await?
+                } else {
+                    room.can_user_redact_other(&my_id).await?
+                };
+                if !permitted {
+                    bail!("No permission to redact this reaction");
+                }
+                for (user_id, reaction) in inner.reaction_entries().await? {
+                    if user_id == sender_id && reaction.relates_to.key == key {
+                        let response = room
+                            .redact(reaction.event_id(), reason.as_deref(), txn_id)
+                            .await?;
+                        return Ok(response.event_id);
+                    }
+                }
+                bail!("User hasn't reacted")
             })
             .await?
     }

@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
+import 'package:acter/common/widgets/download_button.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -15,6 +17,7 @@ class VideoDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final canShare = !isDesktop;
     return Dialog(
       insetPadding: EdgeInsets.zero,
       child: Container(
@@ -30,14 +33,18 @@ class VideoDialog extends StatelessWidget {
                   child: Text(
                     title,
                     style: Theme.of(context).textTheme.titleSmall,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                IconButton(
-                  onPressed: () {
-                    Share.shareXFiles([XFile(videoFile.path)]);
-                  },
-                  icon: const Icon(Icons.share),
-                ),
+                if (canShare)
+                  IconButton(
+                    onPressed: () {
+                      Share.shareXFiles([XFile(videoFile.path)]);
+                    },
+                    icon: const Icon(Icons.share),
+                  ),
+                DownloadButton(file: videoFile),
                 IconButton(
                   onPressed: () => Navigator.pop(context),
                   icon: const Icon(Icons.close),
@@ -45,9 +52,7 @@ class VideoDialog extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 15),
-            Expanded(
-              child: Center(child: ActerVideoPlayer(videoFile: videoFile)),
-            ),
+            Expanded(child: ActerVideoPlayer(videoFile: videoFile)),
           ],
         ),
       ),

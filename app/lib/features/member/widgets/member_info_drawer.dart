@@ -1,10 +1,9 @@
-import 'package:acter/common/widgets/room/room_avatar_builder.dart';
-import 'package:acter/features/member/dialogs/show_block_user_dialog.dart';
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/toolkit/menu_item_widget.dart';
+import 'package:acter/common/widgets/room/room_avatar_builder.dart';
+import 'package:acter/features/member/dialogs/show_block_user_dialog.dart';
 import 'package:acter/features/member/dialogs/show_change_power_level_dialog.dart';
 import 'package:acter/features/member/dialogs/show_kick_and_ban_user_dialog.dart';
 import 'package:acter/features/member/dialogs/show_kick_user_dialog.dart';
@@ -17,19 +16,22 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class _MemberInfoDrawerInner extends ConsumerWidget {
   final Member member;
   final ProfileData profile;
   final String memberId;
+  final bool isShowActions;
+
   const _MemberInfoDrawerInner({
     required this.memberId,
     required this.member,
     required this.profile,
+    required this.isShowActions,
   });
 
   Future<void> changePowerLevel(BuildContext context, WidgetRef ref) async {
@@ -37,27 +39,33 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
     final userId = member.userId().toString();
     final myMembership = await ref.read(roomMembershipProvider(roomId).future);
     if (!context.mounted) return;
-    final newPowerLevel =
-        await showChangePowerLevelDialog(context, member, (myMembership?.powerLevel() ?? 0));
-    if (newPowerLevel != null) {
-      // We are doing as expected, but the lints triggers.
-      EasyLoading.show(
-      // ignore: use_build_context_synchronously
-        status: L10n.of(context).updatingPowerLevelOf(userId),
-      );
-      try {
-        final room = await ref.read(maybeRoomProvider(roomId).future);
-        await room?.updatePowerLevel(userId, newPowerLevel);
+
+    final newPowerLevel = await showChangePowerLevelDialog(
+      context,
+      member,
+      myMembership?.powerLevel() ?? 0,
+    );
+    if (newPowerLevel == null) return;
+
+    if (!context.mounted) return;
+    EasyLoading.show(status: L10n.of(context).updatingPowerLevelOf(userId));
+    try {
+      final room = await ref.read(maybeRoomProvider(roomId).future);
+      await room?.updatePowerLevel(userId, newPowerLevel);
+      if (!context.mounted) {
         EasyLoading.dismiss();
-      // ignore: use_build_context_synchronously
-        EasyLoading.showToast(L10n.of(context).powerLevelUpdateSubmitted);
-      } catch (e) {
-        EasyLoading.showError(
-          // ignore: use_build_context_synchronously
-          L10n.of(context).failedToChangePowerLevel(e),
-          duration: const Duration(seconds: 3),
-        );
+        return;
       }
+      EasyLoading.showToast(L10n.of(context).powerLevelUpdateSubmitted);
+    } catch (e) {
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToChangePowerLevel(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 
@@ -90,23 +98,20 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
       return [
         Center(child: Text(L10n.of(context).itsYou)),
         const SizedBox(height: 30),
-      ..._roomMenu(context, ref),
+        if (isShowActions) ..._roomMenu(context, ref),
       ];
     }
 
     return [
       MessageUserButton(member: member),
       const SizedBox(height: 30),
-      (member.isIgnored())
+      member.isIgnored()
           ? MenuItemWidget(
               iconData: Atlas.block_thin,
               title: L10n.of(context).unblockUser,
               withMenu: false,
               onTap: () async {
                 await showUnblockUserDialog(context, member);
-                if (context.mounted) {
-                  context.pop();
-                }
               },
             )
           : MenuItemWidget(
@@ -115,12 +120,9 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
               withMenu: false,
               onTap: () async {
                 await showBlockUserDialog(context, member);
-                if (context.mounted) {
-                  context.pop();
-                }
               },
             ),
-      ..._roomMenu(context, ref),
+      if (isShowActions) ..._roomMenu(context, ref),
     ];
   }
 
@@ -147,7 +149,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
         child: ListTile(
           leading: const Icon(Atlas.shield_star_win_thin),
           title: Text(L10n.of(context).powerLevel),
-          trailing: Text('${member.powerLevel()}'),
+          trailing: Text(member.powerLevel().toString()),
           onTap: onTap,
         ),
       );
@@ -249,10 +251,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
     );
   }
 
-  Widget _buildAvatarUI(
-    BuildContext context,
-    ProfileData memberProfile,
-  ) {
+  Widget _buildAvatarUI(BuildContext context, ProfileData memberProfile) {
     return Center(
       child: Container(
         decoration: BoxDecoration(
@@ -263,13 +262,14 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
           ),
         ),
         child: ActerAvatar(
-          mode: DisplayMode.DM,
-          avatarInfo: AvatarInfo(
-            uniqueId: memberId,
-            avatar: memberProfile.getAvatarImage(),
-            displayName: memberProfile.displayName,
+          options: AvatarOptions.DM(
+            AvatarInfo(
+              uniqueId: memberId,
+              avatar: memberProfile.getAvatarImage(),
+              displayName: memberProfile.displayName,
+            ),
+            size: 50,
           ),
-          size: 50,
         ),
       ),
     );
@@ -285,15 +285,8 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
     return GestureDetector(
       onTap: () async {
         context.pop(); // close the drawer
-        Clipboard.setData(
-          ClipboardData(
-            text: memberId,
-          ),
-        );
-        customMsgSnackbar(
-          context,
-          L10n.of(context).usernameCopiedToClipboard,
-        );
+        Clipboard.setData(ClipboardData(text: memberId));
+        EasyLoading.showToast(L10n.of(context).usernameCopiedToClipboard);
       },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -310,10 +303,13 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
 class MemberInfoDrawer extends ConsumerWidget {
   final String roomId;
   final String memberId;
+  final bool isShowActions;
+
   const MemberInfoDrawer({
     super.key,
     required this.memberId,
     required this.roomId,
+    required this.isShowActions,
   });
 
   @override
@@ -325,6 +321,7 @@ class MemberInfoDrawer extends ConsumerWidget {
             member: data.member,
             profile: data.profile,
             memberId: memberId,
+            isShowActions: isShowActions,
           ),
           error: (e, s) => Padding(
             padding: const EdgeInsets.all(20.0),

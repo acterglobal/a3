@@ -1,18 +1,14 @@
 import 'dart:async';
 
 import 'package:acter/common/models/profile_data.dart';
-import 'package:acter/common/providers/notifiers/network_notifier.dart';
 import 'package:acter/common/providers/notifiers/notification_settings_notifier.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
-// Network/Connectivity Providers
-final networkAwareProvider =
-    StateNotifierProvider<NetworkStateNotifier, NetworkStatus>(
-  (ref) => NetworkStateNotifier(),
-);
+final _log = Logger('a3::common::providers');
 
 // Loading Providers
 final loadingProvider = StateProvider<bool>((ref) => false);
@@ -84,3 +80,14 @@ final emailAddressesProvider = FutureProvider((ref) async {
   }
   return EmailAddresses(confirmed, unconfirmed);
 });
+
+final canRedactProvider = FutureProvider.autoDispose.family<bool, dynamic>(
+  ((ref, arg) async {
+    try {
+      return await arg.canRedact();
+    } catch (error) {
+      _log.severe('Fetching canRedact failed for $arg', error);
+      return false;
+    }
+  }),
+);

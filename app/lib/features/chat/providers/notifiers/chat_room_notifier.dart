@@ -3,10 +3,14 @@ import 'dart:convert';
 
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:riverpod/riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::chat::room_notifier');
 
 class PostProcessItem {
   final types.Message message;
@@ -31,26 +35,45 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   Future<void> _init() async {
     try {
-      timeline = convo.timelineStream();
+      timeline = ref.read(timelineStreamProvider(convo));
       _listener = timeline.messagesStream(); // keep it resident in memory
-      _poller = _listener.listen(_handleDiff);
+      _poller = _listener.listen(handleDiff);
       ref.onDispose(() => _poller.cancel());
       do {
-        await loadMore();
-        await Future.delayed(const Duration(milliseconds: 100), () => null);
-      } while (state.hasMore && state.messages.length < 10);
-    } catch (e) {
-      final err = 'Some error occurred loading room ${e.toString()}';
+        await loadMore(failOnError: true);
+        await Future.delayed(const Duration(milliseconds: 200), () => null);
+      } while (state.hasMore &&
+          ref.read(renderableChatMessagesProvider(convo)).length < 10);
+    } catch (error) {
+      _log.severe('Error loading more messages', error);
       state = state.copyWith(
-        loading: ChatRoomLoadingState.error(err),
+        loading: ChatRoomLoadingState.error(error.toString()),
       );
     }
   }
 
-  Future<void> loadMore() async {
-    final hasMore = await timeline.paginateBackwards(20);
-    // wait for diffRx to be finished
-    state = state.copyWith(hasMore: hasMore);
+  Future<void> loadMore({bool failOnError = false}) async {
+    if (state.hasMore && !state.loading.isLoading) {
+      try {
+        state = state.copyWith(
+          loading: const ChatRoomLoadingState.loading(),
+        );
+        final hasMore = !await timeline.paginateBackwards(20);
+        // wait for diffRx to be finished
+        state = state.copyWith(
+          hasMore: hasMore,
+          loading: const ChatRoomLoadingState.loaded(),
+        );
+      } catch (error) {
+        _log.severe('Error loading more messages', error);
+        state = state.copyWith(
+          loading: ChatRoomLoadingState.error(error.toString()),
+        );
+        if (failOnError) {
+          rethrow;
+        }
+      }
+    }
   }
 
   List<types.Message> messagesCopy() =>
@@ -96,7 +119,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   void resetMessages() => state = state.copyWith(messages: []);
 
   // get the repliedTo field from metadata
-  String? _getRepliedTo(types.Message message) {
+  String? getRepliedTo(types.Message message) {
     final metadata = message.metadata;
     if (metadata == null) {
       return null;
@@ -108,14 +131,14 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 
   // parses `RoomMessage` event to `types.Message` and updates messages list
-  Future<void> _handleDiff(RoomMessageDiff diff) async {
+  Future<void> handleDiff(RoomMessageDiff diff) async {
     List<PostProcessItem> postProcessing = [];
     switch (diff.action()) {
       case 'Append':
         List<RoomMessage> messages = diff.values()!.toList();
         List<types.Message> messagesToAdd = [];
         for (final m in messages) {
-          final message = _parseMessage(m);
+          final message = parseMessage(m);
           messagesToAdd.add(message);
           postProcessing.add(PostProcessItem(m, message));
         }
@@ -128,14 +151,14 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       case 'Set': // used to update UnableToDecrypt message
         RoomMessage m = diff.value()!;
         final index = diff.index()!;
-        final message = _parseMessage(m);
+        final message = parseMessage(m);
         replaceMessageAt(index, message);
         postProcessing.add(PostProcessItem(m, message));
         break;
       case 'Insert':
         RoomMessage m = diff.value()!;
         final index = diff.index()!;
-        final message = _parseMessage(m);
+        final message = parseMessage(m);
         insertMessage(index, message);
         postProcessing.add(PostProcessItem(m, message));
         break;
@@ -145,7 +168,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         break;
       case 'PushBack':
         RoomMessage m = diff.value()!;
-        final message = _parseMessage(m);
+        final message = parseMessage(m);
         final newList = messagesCopy();
         newList.add(message);
         setMessages(newList);
@@ -153,7 +176,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         break;
       case 'PushFront':
         RoomMessage m = diff.value()!;
-        final message = _parseMessage(m);
+        final message = parseMessage(m);
         insertMessage(0, message);
         postProcessing.add(PostProcessItem(m, message));
         break;
@@ -174,7 +197,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         List<RoomMessage> messages = diff.values()!.toList();
         List<types.Message> newList = [];
         for (final m in messages) {
-          final message = _parseMessage(m);
+          final message = parseMessage(m);
           newList.add(message);
           postProcessing.add(PostProcessItem(m, message));
         }
@@ -197,20 +220,20 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       for (final p in postProcessing) {
         final message = p.message;
         final m = p.event;
-        final repliedTo = _getRepliedTo(message);
+        final repliedTo = getRepliedTo(message);
         if (repliedTo != null) {
-          await _fetchOriginalContent(repliedTo, message.id);
+          await fetchOriginalContent(repliedTo, message.id);
         }
         RoomEventItem? eventItem = m.eventItem();
         if (eventItem != null) {
-          await _fetchMediaBinary(eventItem.msgType(), message.id);
+          await fetchMediaBinary(eventItem.msgType(), message.id);
         }
       }
     }
   }
 
   // fetch original content media for reply msg, i.e. text/image/file etc.
-  Future<void> _fetchOriginalContent(String originalId, String replyId) async {
+  Future<void> fetchOriginalContent(String originalId, String replyId) async {
     final roomMsg = await timeline.getMessage(originalId);
 
     // reply is allowed for only EventItem not VirtualItem
@@ -375,18 +398,27 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 
   // maps [RoomMessage] to [types.Message].
-  types.Message _parseMessage(RoomMessage message) {
+  types.Message parseMessage(RoomMessage message) {
     RoomVirtualItem? virtualItem = message.virtualItem();
     if (virtualItem != null) {
-      // should not return null, before we can keep track of index in diff receiver
-      return types.UnsupportedMessage(
-        author: const types.User(id: 'virtual'),
-        id: UniqueKey().toString(),
-        metadata: {
-          'itemType': 'virtual',
-          'eventType': virtualItem.eventType(),
-        },
-      );
+      switch (virtualItem.eventType()) {
+        case 'ReadMarker':
+          return const types.SystemMessage(
+            metadata: {'type': '_read_marker'},
+            id: 'read-marker',
+            text: 'read-until-here',
+          );
+        // should not return null, before we can keep track of index in diff receiver
+        default:
+          return types.UnsupportedMessage(
+            author: const types.User(id: 'virtual'),
+            id: UniqueKey().toString(),
+            metadata: {
+              'itemType': 'virtual',
+              'eventType': virtualItem.eventType(),
+            },
+          );
+      }
     }
 
     // If not virtual item, it should be event item
@@ -445,6 +477,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           author: author,
           createdAt: createdAt,
           id: eventId,
+          remoteId: eventItem.uniqueId(),
           metadata: {
             'itemType': 'event',
             'eventType': eventType,
@@ -474,6 +507,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           metadata['repliedTo'] = inReplyTo;
         }
         return types.CustomMessage(
+          remoteId: eventItem.uniqueId(),
           author: author,
           createdAt: createdAt,
           id: eventId,
@@ -490,6 +524,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           metadata['repliedTo'] = inReplyTo;
         }
         return types.CustomMessage(
+          remoteId: eventItem.uniqueId(),
           author: author,
           createdAt: createdAt,
           id: eventId,
@@ -504,6 +539,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             author: author,
             createdAt: createdAt,
             id: eventId,
+            remoteId: eventItem.uniqueId(),
             metadata: {
               'itemType': 'event',
               'eventType': eventType,
@@ -546,6 +582,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               return types.AudioMessage(
                 author: author,
                 createdAt: createdAt,
+                remoteId: eventItem.uniqueId(),
                 duration: Duration(seconds: msgContent.duration() ?? 0),
                 id: eventId,
                 metadata: metadata,
@@ -578,6 +615,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               metadata['enlargeEmoji'] = isOnlyEmojis(body);
               return types.TextMessage(
                 author: author,
+                remoteId: eventItem.uniqueId(),
                 createdAt: createdAt,
                 id: eventId,
                 metadata: metadata,
@@ -603,6 +641,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               }
               return types.FileMessage(
                 author: author,
+                remoteId: eventItem.uniqueId(),
                 createdAt: createdAt,
                 id: eventId,
                 metadata: metadata,
@@ -631,6 +670,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               }
               return types.ImageMessage(
                 author: author,
+                remoteId: eventItem.uniqueId(),
                 createdAt: createdAt,
                 height: msgContent.height()?.toDouble(),
                 id: eventId,
@@ -686,6 +726,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               }
               return types.CustomMessage(
                 author: author,
+                remoteId: eventItem.uniqueId(),
                 createdAt: createdAt,
                 id: eventId,
                 metadata: metadata,
@@ -699,6 +740,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               String body = msgContent.body(); // always exists
               return types.TextMessage(
                 author: author,
+                remoteId: eventItem.uniqueId(),
                 createdAt: createdAt,
                 id: eventId,
                 text: formattedBody ?? body,
@@ -721,6 +763,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               String body = msgContent.body(); // always exists
               return types.TextMessage(
                 author: author,
+                remoteId: eventItem.uniqueId(),
                 createdAt: createdAt,
                 id: eventId,
                 text: formattedBody ?? body,
@@ -758,6 +801,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               metadata['enlargeEmoji'] = isOnlyEmojis(body);
               return types.TextMessage(
                 author: author,
+                remoteId: eventItem.uniqueId(),
                 createdAt: createdAt,
                 id: eventId,
                 metadata: metadata,
@@ -784,6 +828,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               }
               return types.VideoMessage(
                 author: author,
+                remoteId: eventItem.uniqueId(),
                 createdAt: createdAt,
                 id: eventId,
                 metadata: metadata,
@@ -838,6 +883,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           }
           return types.CustomMessage(
             author: author,
+            remoteId: eventItem.uniqueId(),
             createdAt: createdAt,
             id: eventId,
             metadata: metadata,
@@ -850,6 +896,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           String body = msgContent.body();
           return types.CustomMessage(
             author: author,
+            remoteId: eventItem.uniqueId(),
             createdAt: createdAt,
             id: eventId,
             metadata: {
@@ -868,6 +915,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     }
     return types.UnsupportedMessage(
       author: const types.User(id: 'virtual'),
+      remoteId: eventItem.uniqueId(),
       id: UniqueKey().toString(),
       metadata: const {
         'itemType': 'virtual',
@@ -876,7 +924,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 
   // fetch event media binary for message.
-  Future<void> _fetchMediaBinary(String? msgType, String eventId) async {
+  Future<void> fetchMediaBinary(String? msgType, String eventId) async {
     switch (msgType) {
       case 'm.audio':
       case 'm.video':
@@ -895,9 +943,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   // Pagination Control
   Future<void> handleEndReached() async {
-    if (state.hasMore) {
-      await loadMore();
-    }
+    await loadMore();
   }
 
   // preview message link

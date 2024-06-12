@@ -1,3 +1,4 @@
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
@@ -8,9 +9,14 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class CreateCommentWidget extends ConsumerStatefulWidget {
   final CommentsManager manager;
+  final void Function() onClose;
   static const commentField = Key('create-comment-input-field');
 
-  const CreateCommentWidget({super.key, required this.manager});
+  const CreateCommentWidget({
+    super.key,
+    required this.manager,
+    required this.onClose,
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -19,19 +25,16 @@ class CreateCommentWidget extends ConsumerStatefulWidget {
 
 class _CreateCommentWidgetState extends ConsumerState<CreateCommentWidget> {
   EditorState textEditorState = EditorState.blank();
-  bool opened = false;
 
   @override
   Widget build(BuildContext context) {
-    if (!opened) {
-      return Center(
-        child: OutlinedButton.icon(
-          onPressed: () => setState(() => opened = true),
-          icon: const Icon(Icons.add_comment_outlined),
-          label: Text(L10n.of(context).comment),
-        ),
-      );
-    }
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 12),
+      child: commentInputUI(),
+    );
+  }
+
+  Widget commentInputUI() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -60,18 +63,23 @@ class _CreateCommentWidgetState extends ConsumerState<CreateCommentWidget> {
             },
           ),
         ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            OutlinedButton(
-              onPressed: () => setState(() => opened = false),
-              child: Text(L10n.of(context).cancel),
-            ),
-            OutlinedButton(
-              onPressed: onSubmit,
-              child: Text(L10n.of(context).submit),
-            ),
-          ],
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              const Spacer(),
+              OutlinedButton(
+                onPressed: widget.onClose,
+                child: Text(L10n.of(context).cancel),
+              ),
+              const SizedBox(width: 22),
+              ActerPrimaryActionButton(
+                onPressed: onSubmit,
+                child: Text(L10n.of(context).submit),
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -84,15 +92,25 @@ class _CreateCommentWidgetState extends ConsumerState<CreateCommentWidget> {
       EasyLoading.showToast(L10n.of(context).youNeedToEnterAComment);
       return;
     }
+    EasyLoading.show(status: L10n.of(context).submittingComment);
     try {
-      EasyLoading.show(status: L10n.of(context).submittingComment);
       final draft = widget.manager.commentDraft();
       draft.contentFormatted(plainDescription, htmlBodyDescription);
       await draft.send();
-      if (!mounted) return;
+      if (!mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showToast(L10n.of(context).commentSubmitted);
     } catch (e) {
-      EasyLoading.showToast('${L10n.of(context).errorSubmittingComment}: $e');
+      if (!mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).errorSubmittingComment(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 }

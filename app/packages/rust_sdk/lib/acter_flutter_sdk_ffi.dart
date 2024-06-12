@@ -666,12 +666,11 @@ class Api {
     return tmp1;
   }
 
-  /// Allow flutter to call logging on rust side
-  void writeLog(
-    String text,
+  bool wouldLog(
+    String target,
     String level,
   ) {
-    final tmp0 = text;
+    final tmp0 = target;
     final tmp4 = level;
     var tmp1 = 0;
     var tmp2 = 0;
@@ -695,7 +694,7 @@ class Api {
     tmp5_1.setAll(0, tmp4_0);
     tmp5 = tmp5_0.address;
     tmp7 = tmp6;
-    final tmp8 = _writeLog(
+    final tmp8 = _wouldLog(
       tmp1,
       tmp2,
       tmp3,
@@ -703,22 +702,125 @@ class Api {
       tmp6,
       tmp7,
     );
-    final tmp10 = tmp8.arg0;
-    final tmp11 = tmp8.arg1;
-    final tmp12 = tmp8.arg2;
-    final tmp13 = tmp8.arg3;
-    if (tmp10 == 0) {
-      debugAllocation("handle error", tmp11, tmp12);
-      final ffi.Pointer<ffi.Uint8> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-      final tmp10_0 =
-          utf8.decode(tmp11_0.asTypedList(tmp12), allowMalformed: true);
-      if (tmp12 > 0) {
-        final ffi.Pointer<ffi.Void> tmp11_0;
-        tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-        this.__deallocate(tmp11_0, tmp13, 1);
-      }
-      throw tmp10_0;
+    final tmp10 = tmp8;
+    final tmp9 = tmp10 > 0;
+    return tmp9;
+  }
+
+  /// Log the entry to the rust logging
+  void writeLog(
+    String target,
+    String level,
+    String message,
+    String? file,
+    int? line,
+    String? modulePath,
+  ) {
+    final tmp0 = target;
+    final tmp4 = level;
+    final tmp8 = message;
+    final tmp12 = file;
+    final tmp18 = line;
+    final tmp22 = modulePath;
+    var tmp1 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp9 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp13 = 0;
+    var tmp15 = 0;
+    var tmp16 = 0;
+    var tmp17 = 0;
+    var tmp19 = 0;
+    var tmp21 = 0;
+    var tmp23 = 0;
+    var tmp25 = 0;
+    var tmp26 = 0;
+    var tmp27 = 0;
+    final tmp0_0 = utf8.encode(tmp0);
+    tmp2 = tmp0_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
+    final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
+    tmp1_1.setAll(0, tmp0_0);
+    tmp1 = tmp1_0.address;
+    tmp3 = tmp2;
+    final tmp4_0 = utf8.encode(tmp4);
+    tmp6 = tmp4_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp5_0 = this.__allocate(tmp6 * 1, 1);
+    final Uint8List tmp5_1 = tmp5_0.asTypedList(tmp6);
+    tmp5_1.setAll(0, tmp4_0);
+    tmp5 = tmp5_0.address;
+    tmp7 = tmp6;
+    final tmp8_0 = utf8.encode(tmp8);
+    tmp10 = tmp8_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp9_0 = this.__allocate(tmp10 * 1, 1);
+    final Uint8List tmp9_1 = tmp9_0.asTypedList(tmp10);
+    tmp9_1.setAll(0, tmp8_0);
+    tmp9 = tmp9_0.address;
+    tmp11 = tmp10;
+    if (tmp12 == null) {
+      tmp13 = 0;
+    } else {
+      tmp13 = 1;
+      final tmp14 = tmp12;
+      final tmp14_0 = utf8.encode(tmp14);
+      tmp16 = tmp14_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp15_0 = this.__allocate(tmp16 * 1, 1);
+      final Uint8List tmp15_1 = tmp15_0.asTypedList(tmp16);
+      tmp15_1.setAll(0, tmp14_0);
+      tmp15 = tmp15_0.address;
+      tmp17 = tmp16;
     }
+    if (tmp18 == null) {
+      tmp19 = 0;
+    } else {
+      tmp19 = 1;
+      final tmp20 = tmp18;
+      tmp21 = tmp20;
+    }
+    if (tmp22 == null) {
+      tmp23 = 0;
+    } else {
+      tmp23 = 1;
+      final tmp24 = tmp22;
+      final tmp24_0 = utf8.encode(tmp24);
+      tmp26 = tmp24_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp25_0 = this.__allocate(tmp26 * 1, 1);
+      final Uint8List tmp25_1 = tmp25_0.asTypedList(tmp26);
+      tmp25_1.setAll(0, tmp24_0);
+      tmp25 = tmp25_0.address;
+      tmp27 = tmp26;
+    }
+    _writeLog(
+      tmp1,
+      tmp2,
+      tmp3,
+      tmp5,
+      tmp6,
+      tmp7,
+      tmp9,
+      tmp10,
+      tmp11,
+      tmp13,
+      tmp15,
+      tmp16,
+      tmp17,
+      tmp19,
+      tmp21,
+      tmp23,
+      tmp25,
+      tmp26,
+      tmp27,
+    );
     return;
   }
 
@@ -2312,6 +2414,50 @@ class Api {
     return tmp7;
   }
 
+  bool? __newsEntryCanRedactFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _newsEntryCanRedactFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   ReactionManager? __newsEntryReactionsFuturePoll(
     int boxed,
     int postCobject,
@@ -2682,6 +2828,50 @@ class Api {
     return tmp7;
   }
 
+  bool? __acterPinCanRedactFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _acterPinCanRedactFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   CommentsManager? __acterPinCommentsFuturePoll(
     int boxed,
     int postCobject,
@@ -3009,6 +3199,100 @@ class Api {
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp14 = FfiListFfiString._(this, tmp13_1);
     final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  CommentsManager? __calendarEventCommentsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _calendarEventCommentsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_CommentsManager");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = CommentsManager._(this, tmp13_1);
+    return tmp7;
+  }
+
+  AttachmentsManager? __calendarEventAttachmentsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _calendarEventAttachmentsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_AttachmentsManager");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = AttachmentsManager._(this, tmp13_1);
     return tmp7;
   }
 
@@ -3497,6 +3781,53 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     final tmp6 = _reactionManagerRedactLikeFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __reactionManagerRedactReactionFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _reactionManagerRedactReactionFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -4653,6 +4984,50 @@ class Api {
     return tmp7;
   }
 
+  bool? __timelineStreamMarkAsReadFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _timelineStreamMarkAsReadFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   bool? __timelineStreamToggleReactionFuturePoll(
     int boxed,
     int postCobject,
@@ -4894,6 +5269,53 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     final tmp6 = _convoRemoveAvatarFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __convoSetNameFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _convoSetNameFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -5303,7 +5725,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __convoSetFavoriteFuturePoll(
+  bool? __convoSetBookmarkedFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -5317,7 +5739,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _convoSetFavoriteFuturePoll(
+    final tmp6 = _convoSetBookmarkedFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -6573,6 +6995,50 @@ class Api {
     return tmp7;
   }
 
+  bool? __taskCanRedactFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _taskCanRedactFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   CommentsManager? __taskCommentsFuturePoll(
     int boxed,
     int postCobject,
@@ -6617,6 +7083,53 @@ class Api {
     final tmp13_1 = _Box(this, tmp13_0, "drop_box_CommentsManager");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp7 = CommentsManager._(this, tmp13_1);
+    return tmp7;
+  }
+
+  AttachmentsManager? __taskAttachmentsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _taskAttachmentsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_AttachmentsManager");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = AttachmentsManager._(this, tmp13_1);
     return tmp7;
   }
 
@@ -6853,6 +7366,144 @@ class Api {
     final tmp13_1 = _Box(this, tmp13_0, "drop_box_TaskList");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp7 = TaskList._(this, tmp13_1);
+    return tmp7;
+  }
+
+  bool? __taskListCanRedactFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _taskListCanRedactFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  CommentsManager? __taskListCommentsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _taskListCommentsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_CommentsManager");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = CommentsManager._(this, tmp13_1);
+    return tmp7;
+  }
+
+  AttachmentsManager? __taskListAttachmentsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _taskListAttachmentsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_AttachmentsManager");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = AttachmentsManager._(this, tmp13_1);
     return tmp7;
   }
 
@@ -7503,6 +8154,50 @@ class Api {
     final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  bool? __spaceSetBookmarkedFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceSetBookmarkedFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
     return tmp7;
   }
 
@@ -8762,6 +9457,50 @@ class Api {
     return tmp7;
   }
 
+  bool? __acterUserAppSettingsBuilderSendFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _acterUserAppSettingsBuilderSendFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   OptionString? __accountDisplayNameFuturePoll(
     int boxed,
     int postCobject,
@@ -9083,6 +9822,53 @@ class Api {
     return tmp7;
   }
 
+  ActerUserAppSettings? __accountActerAppSettingsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _accountActerAppSettingsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_ActerUserAppSettings");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = ActerUserAppSettings._(this, tmp13_1);
+    return tmp7;
+  }
+
   FfiListFfiString? __threePidManagerConfirmedEmailAddressesFuturePoll(
     int boxed,
     int postCobject,
@@ -9355,6 +10141,53 @@ class Api {
     return tmp7;
   }
 
+  OptionBuffer? __publicSearchResultItemGetAvatarFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _publicSearchResultItemGetAvatarFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = OptionBuffer._(this, tmp13_1);
+    return tmp7;
+  }
+
   FfiBufferUint8? __notificationSenderImageFuturePoll(
     int boxed,
     int postCobject,
@@ -9620,6 +10453,50 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     final tmp6 = _clientDeactivateFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  bool? __clientChangePasswordFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientChangePasswordFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -10069,53 +10946,6 @@ class Api {
     return tmp7;
   }
 
-  PublicSearchResult? __clientPublicSpacesFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _clientPublicSpacesFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_PublicSearchResult");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = PublicSearchResult._(this, tmp13_1);
-    return tmp7;
-  }
-
   Space? __clientSpaceFuturePoll(
     int boxed,
     int postCobject,
@@ -10304,6 +11134,53 @@ class Api {
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp14 = FfiListUserProfile._(this, tmp13_1);
     final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  PublicSearchResult? __clientSearchPublicRoomFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientSearchPublicRoomFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_PublicSearchResult");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = PublicSearchResult._(this, tmp13_1);
     return tmp7;
   }
 
@@ -10621,6 +11498,50 @@ class Api {
     final tmp13_1 = _Box(this, tmp13_0, "drop_box_RoomId");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp7 = RoomId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  bool? __clientWaitForRoomFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientWaitForRoomFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
     return tmp7;
   }
 
@@ -12269,6 +13190,53 @@ class Api {
     return tmp7;
   }
 
+  SuperInviteInfo? __superInvitesInfoFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _superInvitesInfoFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_SuperInviteInfo");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = SuperInviteInfo._(this, tmp13_1);
+    return tmp7;
+  }
+
   FfiListVerificationEmoji? __verificationEventGetEmojisFuturePoll(
     int boxed,
     int postCobject,
@@ -13117,6 +14085,218 @@ class Api {
     return tmp7;
   }
 
+  String? __backupManagerEnableFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _backupManagerEnableFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    if (tmp14 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
+    List<int> tmp13_buf = [];
+    final tmp13_precast = tmp13_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp14; i++) {
+      int char = tmp13_precast.elementAt(i).value;
+      tmp13_buf.add(char);
+    }
+    final tmp7 = utf8.decode(tmp13_buf, allowMalformed: true);
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
+    }
+    return tmp7;
+  }
+
+  String? __backupManagerResetFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _backupManagerResetFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    if (tmp14 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
+    List<int> tmp13_buf = [];
+    final tmp13_precast = tmp13_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp14; i++) {
+      int char = tmp13_precast.elementAt(i).value;
+      tmp13_buf.add(char);
+    }
+    final tmp7 = utf8.decode(tmp13_buf, allowMalformed: true);
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
+    }
+    return tmp7;
+  }
+
+  bool? __backupManagerDisableFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _backupManagerDisableFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  bool? __backupManagerRecoverFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _backupManagerRecoverFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   bool? __acterPinSubscribeStreamStreamPoll(
     int boxed,
     int postCobject,
@@ -13202,6 +14382,39 @@ class Api {
     tmp5 = tmp4;
     tmp7 = tmp6;
     final tmp8 = _reactionManagerSubscribeStreamStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final tmp9 = tmp11 > 0;
+    return tmp9;
+  }
+
+  bool? __roomSubscribeToUpdatesStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _roomSubscribeToUpdatesStreamPoll(
       tmp1,
       tmp3,
       tmp5,
@@ -13370,6 +14583,39 @@ class Api {
     tmp5 = tmp4;
     tmp7 = tmp6;
     final tmp8 = _taskListSubscribeStreamStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final tmp9 = tmp11 > 0;
+    return tmp9;
+  }
+
+  bool? __accountSubscribeAppSettingsStreamStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _accountSubscribeAppSettingsStreamStreamPoll(
       tmp1,
       tmp3,
       tmp5,
@@ -13685,7 +14931,7 @@ class Api {
     return tmp9;
   }
 
-  TypingEvent? __clientTypingEventRxStreamPoll(
+  TypingEvent? __clientSubscribeToTypingEventStreamStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -13703,7 +14949,7 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     tmp7 = tmp6;
-    final tmp8 = _clientTypingEventRxStreamPoll(
+    final tmp8 = _clientSubscribeToTypingEventStreamStreamPoll(
       tmp1,
       tmp3,
       tmp5,
@@ -13856,6 +15102,57 @@ class Api {
     return tmp9;
   }
 
+  String? __backupManagerStateStreamStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _backupManagerStateStreamStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    final tmp12 = tmp8.arg2;
+    final tmp13 = tmp8.arg3;
+    if (tmp10 == 0) {
+      return null;
+    }
+    if (tmp12 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp11_ptr = ffi.Pointer.fromAddress(tmp11);
+    List<int> tmp11_buf = [];
+    final tmp11_precast = tmp11_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp12; i++) {
+      int char = tmp11_precast.elementAt(i).value;
+      tmp11_buf.add(char);
+    }
+    final tmp9 = utf8.decode(tmp11_buf, allowMalformed: true);
+    if (tmp13 > 0) {
+      final ffi.Pointer<ffi.Void> tmp11_0;
+      tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+      this.__deallocate(tmp11_0, tmp13 * 1, 1);
+    }
+    return tmp9;
+  }
+
   late final _initLoggingPtr = _lookup<
       ffi.NativeFunction<
           _InitLoggingReturn Function(
@@ -13898,19 +15195,65 @@ class Api {
 
   late final _rotateLogFile =
       _rotateLogFilePtr.asFunction<_RotateLogFileReturn Function()>();
-  late final _writeLogPtr = _lookup<
+  late final _wouldLogPtr = _lookup<
       ffi.NativeFunction<
-          _WriteLogReturn Function(
+          ffi.Uint8 Function(
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__would_log");
+
+  late final _wouldLog = _wouldLogPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _writeLogPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Uint32,
+            ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
           )>>("__write_log");
 
   late final _writeLog = _writeLogPtr.asFunction<
-      _WriteLogReturn Function(
+      void Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
         int,
         int,
         int,
@@ -14954,16 +16297,6 @@ class Api {
           int Function(
             int,
           )>();
-  late final _typingEventRoomIdPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-          )>>("__TypingEvent_room_id");
-
-  late final _typingEventRoomId = _typingEventRoomIdPtr.asFunction<
-      int Function(
-        int,
-      )>();
   late final _typingEventUserIdsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -15254,6 +16587,16 @@ class Api {
           )>>("__NewsEntry_event_id");
 
   late final _newsEntryEventId = _newsEntryEventIdPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _newsEntryCanRedactPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__NewsEntry_can_redact");
+
+  late final _newsEntryCanRedact = _newsEntryCanRedactPtr.asFunction<
       int Function(
         int,
       )>();
@@ -15644,6 +16987,16 @@ class Api {
       int Function(
         int,
       )>();
+  late final _acterPinCanRedactPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__ActerPin_can_redact");
+
+  late final _acterPinCanRedact = _acterPinCanRedactPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _acterPinCommentsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -15953,6 +17306,76 @@ class Api {
           int Function(
             int,
           )>();
+  late final _calendarEventCommentsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__CalendarEvent_comments");
+
+  late final _calendarEventComments = _calendarEventCommentsPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _calendarEventAttachmentsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__CalendarEvent_attachments");
+
+  late final _calendarEventAttachments =
+      _calendarEventAttachmentsPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _calendarEventIcalForSharingPtr = _lookup<
+      ffi.NativeFunction<
+          _CalendarEventIcalForSharingReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__CalendarEvent_ical_for_sharing");
+
+  late final _calendarEventIcalForSharing =
+      _calendarEventIcalForSharingPtr.asFunction<
+          _CalendarEventIcalForSharingReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _calendarEventPhysicalLocationsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__CalendarEvent_physical_locations");
+
+  late final _calendarEventPhysicalLocations =
+      _calendarEventPhysicalLocationsPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _calendarEventVirtualLocationsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__CalendarEvent_virtual_locations");
+
+  late final _calendarEventVirtualLocations =
+      _calendarEventVirtualLocationsPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _calendarEventLocationsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__CalendarEvent_locations");
+
+  late final _calendarEventLocations = _calendarEventLocationsPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _calendarEventUpdateBuilderTitlePtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -16122,6 +17545,17 @@ class Api {
             int,
             int,
             int,
+            int,
+          )>();
+  late final _calendarEventUpdateBuilderUnsetLocationsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+          )>>("__CalendarEventUpdateBuilder_unset_locations");
+
+  late final _calendarEventUpdateBuilderUnsetLocations =
+      _calendarEventUpdateBuilderUnsetLocationsPtr.asFunction<
+          void Function(
             int,
           )>();
   late final _calendarEventUpdateBuilderSendPtr = _lookup<
@@ -16316,6 +17750,98 @@ class Api {
             int,
             int,
           )>();
+  late final _calendarEventDraftPhysicalLocationPtr = _lookup<
+      ffi.NativeFunction<
+          _CalendarEventDraftPhysicalLocationReturn Function(
+            ffi.Int64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__CalendarEventDraft_physical_location");
+
+  late final _calendarEventDraftPhysicalLocation =
+      _calendarEventDraftPhysicalLocationPtr.asFunction<
+          _CalendarEventDraftPhysicalLocationReturn Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _calendarEventDraftVirtualLocationPtr = _lookup<
+      ffi.NativeFunction<
+          _CalendarEventDraftVirtualLocationReturn Function(
+            ffi.Int64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__CalendarEventDraft_virtual_location");
+
+  late final _calendarEventDraftVirtualLocation =
+      _calendarEventDraftVirtualLocationPtr.asFunction<
+          _CalendarEventDraftVirtualLocationReturn Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
   late final _calendarEventDraftSendPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -16324,6 +17850,59 @@ class Api {
 
   late final _calendarEventDraftSend = _calendarEventDraftSendPtr.asFunction<
       int Function(
+        int,
+      )>();
+  late final _eventLocationInfoLocationTypePtr = _lookup<
+      ffi.NativeFunction<
+          _EventLocationInfoLocationTypeReturn Function(
+            ffi.Int64,
+          )>>("__EventLocationInfo_location_type");
+
+  late final _eventLocationInfoLocationType =
+      _eventLocationInfoLocationTypePtr.asFunction<
+          _EventLocationInfoLocationTypeReturn Function(
+            int,
+          )>();
+  late final _eventLocationInfoNamePtr = _lookup<
+      ffi.NativeFunction<
+          _EventLocationInfoNameReturn Function(
+            ffi.Int64,
+          )>>("__EventLocationInfo_name");
+
+  late final _eventLocationInfoName = _eventLocationInfoNamePtr.asFunction<
+      _EventLocationInfoNameReturn Function(
+        int,
+      )>();
+  late final _eventLocationInfoDescriptionPtr = _lookup<
+      ffi.NativeFunction<
+          _EventLocationInfoDescriptionReturn Function(
+            ffi.Int64,
+          )>>("__EventLocationInfo_description");
+
+  late final _eventLocationInfoDescription =
+      _eventLocationInfoDescriptionPtr.asFunction<
+          _EventLocationInfoDescriptionReturn Function(
+            int,
+          )>();
+  late final _eventLocationInfoCoordinatesPtr = _lookup<
+      ffi.NativeFunction<
+          _EventLocationInfoCoordinatesReturn Function(
+            ffi.Int64,
+          )>>("__EventLocationInfo_coordinates");
+
+  late final _eventLocationInfoCoordinates =
+      _eventLocationInfoCoordinatesPtr.asFunction<
+          _EventLocationInfoCoordinatesReturn Function(
+            int,
+          )>();
+  late final _eventLocationInfoUriPtr = _lookup<
+      ffi.NativeFunction<
+          _EventLocationInfoUriReturn Function(
+            ffi.Int64,
+          )>>("__EventLocationInfo_uri");
+
+  late final _eventLocationInfoUri = _eventLocationInfoUriPtr.asFunction<
+      _EventLocationInfoUriReturn Function(
         int,
       )>();
   late final _rsvpManagerHasRsvpEntriesPtr = _lookup<
@@ -16590,6 +18169,45 @@ class Api {
   late final _reactionManagerRedactLike =
       _reactionManagerRedactLikePtr.asFunction<
           int Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _reactionManagerRedactReactionPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__ReactionManager_redact_reaction");
+
+  late final _reactionManagerRedactReaction =
+      _reactionManagerRedactReactionPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
             int,
             int,
             int,
@@ -17140,6 +18758,16 @@ class Api {
       _RoomRoomIdStrReturn Function(
         int,
       )>();
+  late final _roomSubscribeToUpdatesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Room_subscribe_to_updates");
+
+  late final _roomSubscribeToUpdates = _roomSubscribeToUpdatesPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _roomIsSpacePtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint8 Function(
@@ -17484,110 +19112,138 @@ class Api {
       _SpaceDiffValueReturn Function(
         int,
       )>();
-  late final _msgContentDraftSizePtr = _lookup<
+  late final _msgDraftAddMentionPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int64 Function(
+          _MsgDraftAddMentionReturn Function(
+            ffi.Int64,
             ffi.Int64,
             ffi.Uint64,
-          )>>("__MsgContentDraft_size");
+            ffi.Uint64,
+          )>>("__MsgDraft_add_mention");
 
-  late final _msgContentDraftSize = _msgContentDraftSizePtr.asFunction<
-      int Function(
-        int,
-        int,
-      )>();
-  late final _msgContentDraftWidthPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Uint64,
-          )>>("__MsgContentDraft_width");
-
-  late final _msgContentDraftWidth = _msgContentDraftWidthPtr.asFunction<
-      int Function(
-        int,
-        int,
-      )>();
-  late final _msgContentDraftHeightPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Uint64,
-          )>>("__MsgContentDraft_height");
-
-  late final _msgContentDraftHeight = _msgContentDraftHeightPtr.asFunction<
-      int Function(
-        int,
-        int,
-      )>();
-  late final _msgContentDraftDurationPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Uint64,
-          )>>("__MsgContentDraft_duration");
-
-  late final _msgContentDraftDuration = _msgContentDraftDurationPtr.asFunction<
-      int Function(
-        int,
-        int,
-      )>();
-  late final _msgContentDraftBlurhashPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__MsgContentDraft_blurhash");
-
-  late final _msgContentDraftBlurhash = _msgContentDraftBlurhashPtr.asFunction<
-      int Function(
+  late final _msgDraftAddMention = _msgDraftAddMentionPtr.asFunction<
+      _MsgDraftAddMentionReturn Function(
         int,
         int,
         int,
         int,
       )>();
-  late final _msgContentDraftFilenamePtr = _lookup<
+  late final _msgDraftAddRoomMentionPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int64 Function(
+          _MsgDraftAddRoomMentionReturn Function(
             ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__MsgContentDraft_filename");
+            ffi.Uint8,
+          )>>("__MsgDraft_add_room_mention");
 
-  late final _msgContentDraftFilename = _msgContentDraftFilenamePtr.asFunction<
-      int Function(
-        int,
-        int,
+  late final _msgDraftAddRoomMention = _msgDraftAddRoomMentionPtr.asFunction<
+      _MsgDraftAddRoomMentionReturn Function(
         int,
         int,
       )>();
-  late final _msgContentDraftGeoUriPtr = _lookup<
+  late final _msgDraftSizePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint64,
+          )>>("__MsgDraft_size");
+
+  late final _msgDraftSize = _msgDraftSizePtr.asFunction<
+      int Function(
+        int,
+        int,
+      )>();
+  late final _msgDraftWidthPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint64,
+          )>>("__MsgDraft_width");
+
+  late final _msgDraftWidth = _msgDraftWidthPtr.asFunction<
+      int Function(
+        int,
+        int,
+      )>();
+  late final _msgDraftHeightPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint64,
+          )>>("__MsgDraft_height");
+
+  late final _msgDraftHeight = _msgDraftHeightPtr.asFunction<
+      int Function(
+        int,
+        int,
+      )>();
+  late final _msgDraftDurationPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint64,
+          )>>("__MsgDraft_duration");
+
+  late final _msgDraftDuration = _msgDraftDurationPtr.asFunction<
+      int Function(
+        int,
+        int,
+      )>();
+  late final _msgDraftBlurhashPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-          )>>("__MsgContentDraft_geo_uri");
+          )>>("__MsgDraft_blurhash");
 
-  late final _msgContentDraftGeoUri = _msgContentDraftGeoUriPtr.asFunction<
+  late final _msgDraftBlurhash = _msgDraftBlurhashPtr.asFunction<
       int Function(
         int,
         int,
         int,
         int,
       )>();
-  late final _msgContentDraftIntoNewsSlideDraftPtr = _lookup<
+  late final _msgDraftFilenamePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__MsgContentDraft_into_news_slide_draft");
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__MsgDraft_filename");
 
-  late final _msgContentDraftIntoNewsSlideDraft =
-      _msgContentDraftIntoNewsSlideDraftPtr.asFunction<
+  late final _msgDraftFilename = _msgDraftFilenamePtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _msgDraftGeoUriPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__MsgDraft_geo_uri");
+
+  late final _msgDraftGeoUri = _msgDraftGeoUriPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _msgDraftIntoNewsSlideDraftPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__MsgDraft_into_news_slide_draft");
+
+  late final _msgDraftIntoNewsSlideDraft =
+      _msgDraftIntoNewsSlideDraftPtr.asFunction<
           int Function(
             int,
           )>();
@@ -17747,6 +19403,19 @@ class Api {
             int,
             int,
           )>();
+  late final _timelineStreamMarkAsReadPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint8,
+          )>>("__TimelineStream_mark_as_read");
+
+  late final _timelineStreamMarkAsRead =
+      _timelineStreamMarkAsReadPtr.asFunction<
+          int Function(
+            int,
+            int,
+          )>();
   late final _timelineStreamToggleReactionPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -17859,6 +19528,22 @@ class Api {
       _ConvoTopicReturn Function(
         int,
       )>();
+  late final _convoSetNamePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__Convo_set_name");
+
+  late final _convoSetName = _convoSetNamePtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
   late final _convoSetTopicPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -17928,6 +19613,37 @@ class Api {
           )>>("__Convo_timeline_stream");
 
   late final _convoTimelineStream = _convoTimelineStreamPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _convoNumUnreadNotificationCountPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint64 Function(
+            ffi.Int64,
+          )>>("__Convo_num_unread_notification_count");
+
+  late final _convoNumUnreadNotificationCount =
+      _convoNumUnreadNotificationCountPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _convoNumUnreadMessagesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint64 Function(
+            ffi.Int64,
+          )>>("__Convo_num_unread_messages");
+
+  late final _convoNumUnreadMessages = _convoNumUnreadMessagesPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _convoNumUnreadMentionsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint64 Function(
+            ffi.Int64,
+          )>>("__Convo_num_unread_mentions");
+
+  late final _convoNumUnreadMentions = _convoNumUnreadMentionsPtr.asFunction<
       int Function(
         int,
       )>();
@@ -18033,24 +19749,24 @@ class Api {
       int Function(
         int,
       )>();
-  late final _convoIsFavoritePtr = _lookup<
+  late final _convoIsBookmarkedPtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint8 Function(
             ffi.Int64,
-          )>>("__Convo_is_favorite");
+          )>>("__Convo_is_bookmarked");
 
-  late final _convoIsFavorite = _convoIsFavoritePtr.asFunction<
+  late final _convoIsBookmarked = _convoIsBookmarkedPtr.asFunction<
       int Function(
         int,
       )>();
-  late final _convoSetFavoritePtr = _lookup<
+  late final _convoSetBookmarkedPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
             ffi.Uint8,
-          )>>("__Convo_set_favorite");
+          )>>("__Convo_set_bookmarked");
 
-  late final _convoSetFavorite = _convoSetFavoritePtr.asFunction<
+  late final _convoSetBookmarked = _convoSetBookmarkedPtr.asFunction<
       int Function(
         int,
         int,
@@ -18412,6 +20128,17 @@ class Api {
       int Function(
         int,
       )>();
+  late final _commentsManagerRoomIdStrPtr = _lookup<
+      ffi.NativeFunction<
+          _CommentsManagerRoomIdStrReturn Function(
+            ffi.Int64,
+          )>>("__CommentsManager_room_id_str");
+
+  late final _commentsManagerRoomIdStr =
+      _commentsManagerRoomIdStrPtr.asFunction<
+          _CommentsManagerRoomIdStrReturn Function(
+            int,
+          )>();
   late final _commentsManagerHasCommentsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint8 Function(
@@ -18570,6 +20297,28 @@ class Api {
         int,
         int,
       )>();
+  late final _attachmentsManagerRoomIdStrPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentsManagerRoomIdStrReturn Function(
+            ffi.Int64,
+          )>>("__AttachmentsManager_room_id_str");
+
+  late final _attachmentsManagerRoomIdStr =
+      _attachmentsManagerRoomIdStrPtr.asFunction<
+          _AttachmentsManagerRoomIdStrReturn Function(
+            int,
+          )>();
+  late final _attachmentsManagerCanEditAttachmentsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__AttachmentsManager_can_edit_attachments");
+
+  late final _attachmentsManagerCanEditAttachments =
+      _attachmentsManagerCanEditAttachmentsPtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _attachmentsManagerAttachmentsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -18901,6 +20650,16 @@ class Api {
       int Function(
         int,
       )>();
+  late final _taskCanRedactPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Task_can_redact");
+
+  late final _taskCanRedact = _taskCanRedactPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _taskCommentsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -18908,6 +20667,16 @@ class Api {
           )>>("__Task_comments");
 
   late final _taskComments = _taskCommentsPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _taskAttachmentsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Task_attachments");
+
+  late final _taskAttachments = _taskAttachmentsPtr.asFunction<
       int Function(
         int,
       )>();
@@ -19755,6 +21524,16 @@ class Api {
       int Function(
         int,
       )>();
+  late final _taskListCanRedactPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__TaskList_can_redact");
+
+  late final _taskListCanRedact = _taskListCanRedactPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _taskListSpacePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -19773,6 +21552,26 @@ class Api {
 
   late final _taskListSpaceIdStr = _taskListSpaceIdStrPtr.asFunction<
       _TaskListSpaceIdStrReturn Function(
+        int,
+      )>();
+  late final _taskListCommentsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__TaskList_comments");
+
+  late final _taskListComments = _taskListCommentsPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _taskListAttachmentsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__TaskList_attachments");
+
+  late final _taskListAttachments = _taskListAttachmentsPtr.asFunction<
+      int Function(
         int,
       )>();
   late final _taskListDraftNamePtr = _lookup<
@@ -20910,6 +22709,28 @@ class Api {
         int,
         int,
       )>();
+  late final _spaceIsBookmarkedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__Space_is_bookmarked");
+
+  late final _spaceIsBookmarked = _spaceIsBookmarkedPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _spaceSetBookmarkedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint8,
+          )>>("__Space_set_bookmarked");
+
+  late final _spaceSetBookmarked = _spaceSetBookmarkedPtr.asFunction<
+      int Function(
+        int,
+        int,
+      )>();
   late final _spaceActiveMembersIdsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -21437,6 +23258,80 @@ class Api {
         int,
         int,
       )>();
+  late final _acterUserAppSettingsAutoDownloadChatPtr = _lookup<
+      ffi.NativeFunction<
+          _ActerUserAppSettingsAutoDownloadChatReturn Function(
+            ffi.Int64,
+          )>>("__ActerUserAppSettings_auto_download_chat");
+
+  late final _acterUserAppSettingsAutoDownloadChat =
+      _acterUserAppSettingsAutoDownloadChatPtr.asFunction<
+          _ActerUserAppSettingsAutoDownloadChatReturn Function(
+            int,
+          )>();
+  late final _acterUserAppSettingsTypingNoticePtr = _lookup<
+      ffi.NativeFunction<
+          _ActerUserAppSettingsTypingNoticeReturn Function(
+            ffi.Int64,
+          )>>("__ActerUserAppSettings_typing_notice");
+
+  late final _acterUserAppSettingsTypingNotice =
+      _acterUserAppSettingsTypingNoticePtr.asFunction<
+          _ActerUserAppSettingsTypingNoticeReturn Function(
+            int,
+          )>();
+  late final _acterUserAppSettingsUpdateBuilderPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__ActerUserAppSettings_update_builder");
+
+  late final _acterUserAppSettingsUpdateBuilder =
+      _acterUserAppSettingsUpdateBuilderPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _acterUserAppSettingsBuilderAutoDownloadChatPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__ActerUserAppSettingsBuilder_auto_download_chat");
+
+  late final _acterUserAppSettingsBuilderAutoDownloadChat =
+      _acterUserAppSettingsBuilderAutoDownloadChatPtr.asFunction<
+          void Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _acterUserAppSettingsBuilderTypingNoticePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Uint8,
+          )>>("__ActerUserAppSettingsBuilder_typing_notice");
+
+  late final _acterUserAppSettingsBuilderTypingNotice =
+      _acterUserAppSettingsBuilderTypingNoticePtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
+  late final _acterUserAppSettingsBuilderSendPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__ActerUserAppSettingsBuilder_send");
+
+  late final _acterUserAppSettingsBuilderSend =
+      _acterUserAppSettingsBuilderSendPtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _accountUserIdPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -21545,6 +23440,27 @@ class Api {
         int,
         int,
       )>();
+  late final _accountActerAppSettingsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Account_acter_app_settings");
+
+  late final _accountActerAppSettings = _accountActerAppSettingsPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _accountSubscribeAppSettingsStreamPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Account_subscribe_app_settings_stream");
+
+  late final _accountSubscribeAppSettingsStream =
+      _accountSubscribeAppSettingsStreamPtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _threePidManagerConfirmedEmailAddressesPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -21791,6 +23707,32 @@ class Api {
   late final _publicSearchResultItemRoomTypeStr =
       _publicSearchResultItemRoomTypeStrPtr.asFunction<
           _PublicSearchResultItemRoomTypeStrReturn Function(
+            int,
+          )>();
+  late final _publicSearchResultItemHasAvatarPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__PublicSearchResultItem_has_avatar");
+
+  late final _publicSearchResultItemHasAvatar =
+      _publicSearchResultItemHasAvatarPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _publicSearchResultItemGetAvatarPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint8,
+            ffi.Int64,
+          )>>("__PublicSearchResultItem_get_avatar");
+
+  late final _publicSearchResultItemGetAvatar =
+      _publicSearchResultItemGetAvatarPtr.asFunction<
+          int Function(
+            int,
+            int,
             int,
           )>();
   late final _publicSearchResultNextBatchPtr = _lookup<
@@ -22403,6 +24345,28 @@ class Api {
         int,
         int,
       )>();
+  late final _clientChangePasswordPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__Client_change_password");
+
+  late final _clientChangePassword = _clientChangePasswordPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+      )>();
   late final _clientStartSyncPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -22669,40 +24633,6 @@ class Api {
         int,
         int,
       )>();
-  late final _clientPublicSpacesPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__Client_public_spaces");
-
-  late final _clientPublicSpaces = _clientPublicSpacesPtr.asFunction<
-      int Function(
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-      )>();
   late final _clientSpacePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -22767,6 +24697,48 @@ class Api {
 
   late final _clientSearchUsers = _clientSearchUsersPtr.asFunction<
       int Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _clientSearchPublicRoomPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__Client_search_public_room");
+
+  late final _clientSearchPublicRoom = _clientSearchPublicRoomPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
         int,
         int,
         int,
@@ -22891,16 +24863,23 @@ class Api {
           _ClientDeviceChangedEventRxReturn Function(
             int,
           )>();
-  late final _clientTypingEventRxPtr = _lookup<
+  late final _clientSubscribeToTypingEventStreamPtr = _lookup<
       ffi.NativeFunction<
-          _ClientTypingEventRxReturn Function(
+          ffi.Int64 Function(
             ffi.Int64,
-          )>>("__Client_typing_event_rx");
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__Client_subscribe_to_typing_event_stream");
 
-  late final _clientTypingEventRx = _clientTypingEventRxPtr.asFunction<
-      _ClientTypingEventRxReturn Function(
-        int,
-      )>();
+  late final _clientSubscribeToTypingEventStream =
+      _clientSubscribeToTypingEventStreamPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
   late final _clientReceiptEventRxPtr = _lookup<
       ffi.NativeFunction<
           _ClientReceiptEventRxReturn Function(
@@ -22946,6 +24925,26 @@ class Api {
 
   late final _clientSubscribeStream = _clientSubscribeStreamPtr.asFunction<
       int Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _clientWaitForRoomPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Uint8,
+          )>>("__Client_wait_for_room");
+
+  late final _clientWaitForRoom = _clientWaitForRoomPtr.asFunction<
+      int Function(
+        int,
+        int,
         int,
         int,
         int,
@@ -23586,6 +25585,16 @@ class Api {
         int,
         int,
       )>();
+  late final _clientBackupManagerPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Client_backup_manager");
+
+  late final _clientBackupManager = _clientBackupManagerPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _notificationSettingsChangesStreamPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -23816,6 +25825,87 @@ class Api {
         int,
         int,
       )>();
+  late final _superInvitesInfoPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__SuperInvites_info");
+
+  late final _superInvitesInfo = _superInvitesInfoPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _superInviteInfoCreateDmPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__SuperInviteInfo_create_dm");
+
+  late final _superInviteInfoCreateDm = _superInviteInfoCreateDmPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _superInviteInfoHasRedeemedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__SuperInviteInfo_has_redeemed");
+
+  late final _superInviteInfoHasRedeemed =
+      _superInviteInfoHasRedeemedPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _superInviteInfoRoomsCountPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint32 Function(
+            ffi.Int64,
+          )>>("__SuperInviteInfo_rooms_count");
+
+  late final _superInviteInfoRoomsCount =
+      _superInviteInfoRoomsCountPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _superInviteInfoInviterUserIdStrPtr = _lookup<
+      ffi.NativeFunction<
+          _SuperInviteInfoInviterUserIdStrReturn Function(
+            ffi.Int64,
+          )>>("__SuperInviteInfo_inviter_user_id_str");
+
+  late final _superInviteInfoInviterUserIdStr =
+      _superInviteInfoInviterUserIdStrPtr.asFunction<
+          _SuperInviteInfoInviterUserIdStrReturn Function(
+            int,
+          )>();
+  late final _superInviteInfoInviterDisplayNameStrPtr = _lookup<
+      ffi.NativeFunction<
+          _SuperInviteInfoInviterDisplayNameStrReturn Function(
+            ffi.Int64,
+          )>>("__SuperInviteInfo_inviter_display_name_str");
+
+  late final _superInviteInfoInviterDisplayNameStr =
+      _superInviteInfoInviterDisplayNameStrPtr.asFunction<
+          _SuperInviteInfoInviterDisplayNameStrReturn Function(
+            int,
+          )>();
+  late final _superInviteInfoInviterAvatarUrlStrPtr = _lookup<
+      ffi.NativeFunction<
+          _SuperInviteInfoInviterAvatarUrlStrReturn Function(
+            ffi.Int64,
+          )>>("__SuperInviteInfo_inviter_avatar_url_str");
+
+  late final _superInviteInfoInviterAvatarUrlStr =
+      _superInviteInfoInviterAvatarUrlStrPtr.asFunction<
+          _SuperInviteInfoInviterAvatarUrlStrReturn Function(
+            int,
+          )>();
   late final _superInviteTokenTokenPtr = _lookup<
       ffi.NativeFunction<
           _SuperInviteTokenTokenReturn Function(
@@ -24336,6 +26426,73 @@ class Api {
       int Function(
         int,
       )>();
+  late final _backupManagerEnablePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__BackupManager_enable");
+
+  late final _backupManagerEnable = _backupManagerEnablePtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _backupManagerResetPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__BackupManager_reset");
+
+  late final _backupManagerReset = _backupManagerResetPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _backupManagerDisablePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__BackupManager_disable");
+
+  late final _backupManagerDisable = _backupManagerDisablePtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _backupManagerStateStrPtr = _lookup<
+      ffi.NativeFunction<
+          _BackupManagerStateStrReturn Function(
+            ffi.Int64,
+          )>>("__BackupManager_state_str");
+
+  late final _backupManagerStateStr = _backupManagerStateStrPtr.asFunction<
+      _BackupManagerStateStrReturn Function(
+        int,
+      )>();
+  late final _backupManagerStateStreamPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__BackupManager_state_stream");
+
+  late final _backupManagerStateStream =
+      _backupManagerStateStreamPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _backupManagerRecoverPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__BackupManager_recover");
+
+  late final _backupManagerRecover = _backupManagerRecoverPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
   late final _loginNewClientFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _LoginNewClientFuturePollReturn Function(
@@ -24470,6 +26627,21 @@ class Api {
             int,
             int,
           )>();
+  late final _newsEntryCanRedactFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _NewsEntryCanRedactFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__NewsEntry_can_redact_future_poll");
+
+  late final _newsEntryCanRedactFuturePoll =
+      _newsEntryCanRedactFuturePollPtr.asFunction<
+          _NewsEntryCanRedactFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _newsEntryReactionsFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _NewsEntryReactionsFuturePollReturn Function(
@@ -24589,6 +26761,21 @@ class Api {
             int,
             int,
           )>();
+  late final _acterPinCanRedactFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ActerPinCanRedactFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__ActerPin_can_redact_future_poll");
+
+  late final _acterPinCanRedactFuturePoll =
+      _acterPinCanRedactFuturePollPtr.asFunction<
+          _ActerPinCanRedactFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _acterPinCommentsFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ActerPinCommentsFuturePollReturn Function(
@@ -24690,6 +26877,36 @@ class Api {
   late final _calendarEventParticipantsFuturePoll =
       _calendarEventParticipantsFuturePollPtr.asFunction<
           _CalendarEventParticipantsFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _calendarEventCommentsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _CalendarEventCommentsFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__CalendarEvent_comments_future_poll");
+
+  late final _calendarEventCommentsFuturePoll =
+      _calendarEventCommentsFuturePollPtr.asFunction<
+          _CalendarEventCommentsFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _calendarEventAttachmentsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _CalendarEventAttachmentsFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__CalendarEvent_attachments_future_poll");
+
+  late final _calendarEventAttachmentsFuturePoll =
+      _calendarEventAttachmentsFuturePollPtr.asFunction<
+          _CalendarEventAttachmentsFuturePollReturn Function(
             int,
             int,
             int,
@@ -24854,6 +27071,21 @@ class Api {
   late final _reactionManagerRedactLikeFuturePoll =
       _reactionManagerRedactLikeFuturePollPtr.asFunction<
           _ReactionManagerRedactLikeFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _reactionManagerRedactReactionFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ReactionManagerRedactReactionFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__ReactionManager_redact_reaction_future_poll");
+
+  late final _reactionManagerRedactReactionFuturePoll =
+      _reactionManagerRedactReactionFuturePollPtr.asFunction<
+          _ReactionManagerRedactReactionFuturePollReturn Function(
             int,
             int,
             int,
@@ -25215,6 +27447,21 @@ class Api {
             int,
             int,
           )>();
+  late final _timelineStreamMarkAsReadFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _TimelineStreamMarkAsReadFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__TimelineStream_mark_as_read_future_poll");
+
+  late final _timelineStreamMarkAsReadFuturePoll =
+      _timelineStreamMarkAsReadFuturePollPtr.asFunction<
+          _TimelineStreamMarkAsReadFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _timelineStreamToggleReactionFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _TimelineStreamToggleReactionFuturePollReturn Function(
@@ -25305,6 +27552,20 @@ class Api {
             int,
             int,
           )>();
+  late final _convoSetNameFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ConvoSetNameFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Convo_set_name_future_poll");
+
+  late final _convoSetNameFuturePoll = _convoSetNameFuturePollPtr.asFunction<
+      _ConvoSetNameFuturePollReturn Function(
+        int,
+        int,
+        int,
+      )>();
   late final _convoSetTopicFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ConvoSetTopicFuturePollReturn Function(
@@ -25424,17 +27685,17 @@ class Api {
             int,
             int,
           )>();
-  late final _convoSetFavoriteFuturePollPtr = _lookup<
+  late final _convoSetBookmarkedFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConvoSetFavoriteFuturePollReturn Function(
+          _ConvoSetBookmarkedFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__Convo_set_favorite_future_poll");
+          )>>("__Convo_set_bookmarked_future_poll");
 
-  late final _convoSetFavoriteFuturePoll =
-      _convoSetFavoriteFuturePollPtr.asFunction<
-          _ConvoSetFavoriteFuturePollReturn Function(
+  late final _convoSetBookmarkedFuturePoll =
+      _convoSetBookmarkedFuturePollPtr.asFunction<
+          _ConvoSetBookmarkedFuturePollReturn Function(
             int,
             int,
             int,
@@ -25826,6 +28087,20 @@ class Api {
         int,
         int,
       )>();
+  late final _taskCanRedactFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskCanRedactFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Task_can_redact_future_poll");
+
+  late final _taskCanRedactFuturePoll = _taskCanRedactFuturePollPtr.asFunction<
+      _TaskCanRedactFuturePollReturn Function(
+        int,
+        int,
+        int,
+      )>();
   late final _taskCommentsFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _TaskCommentsFuturePollReturn Function(
@@ -25840,6 +28115,21 @@ class Api {
         int,
         int,
       )>();
+  late final _taskAttachmentsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskAttachmentsFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Task_attachments_future_poll");
+
+  late final _taskAttachmentsFuturePoll =
+      _taskAttachmentsFuturePollPtr.asFunction<
+          _TaskAttachmentsFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _taskUpdateBuilderSendFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _TaskUpdateBuilderSendFuturePollReturn Function(
@@ -25908,6 +28198,51 @@ class Api {
   late final _taskListRefreshFuturePoll =
       _taskListRefreshFuturePollPtr.asFunction<
           _TaskListRefreshFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _taskListCanRedactFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskListCanRedactFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__TaskList_can_redact_future_poll");
+
+  late final _taskListCanRedactFuturePoll =
+      _taskListCanRedactFuturePollPtr.asFunction<
+          _TaskListCanRedactFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _taskListCommentsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskListCommentsFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__TaskList_comments_future_poll");
+
+  late final _taskListCommentsFuturePoll =
+      _taskListCommentsFuturePollPtr.asFunction<
+          _TaskListCommentsFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _taskListAttachmentsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskListAttachmentsFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__TaskList_attachments_future_poll");
+
+  late final _taskListAttachmentsFuturePoll =
+      _taskListAttachmentsFuturePollPtr.asFunction<
+          _TaskListAttachmentsFuturePollReturn Function(
             int,
             int,
             int,
@@ -26120,6 +28455,21 @@ class Api {
         int,
         int,
       )>();
+  late final _spaceSetBookmarkedFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceSetBookmarkedFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Space_set_bookmarked_future_poll");
+
+  late final _spaceSetBookmarkedFuturePoll =
+      _spaceSetBookmarkedFuturePollPtr.asFunction<
+          _SpaceSetBookmarkedFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _spaceActiveMembersIdsFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _SpaceActiveMembersIdsFuturePollReturn Function(
@@ -26517,6 +28867,21 @@ class Api {
         int,
         int,
       )>();
+  late final _acterUserAppSettingsBuilderSendFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ActerUserAppSettingsBuilderSendFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__ActerUserAppSettingsBuilder_send_future_poll");
+
+  late final _acterUserAppSettingsBuilderSendFuturePoll =
+      _acterUserAppSettingsBuilderSendFuturePollPtr.asFunction<
+          _ActerUserAppSettingsBuilderSendFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _accountDisplayNameFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _AccountDisplayNameFuturePollReturn Function(
@@ -26621,6 +28986,21 @@ class Api {
             int,
             int,
           )>();
+  late final _accountActerAppSettingsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _AccountActerAppSettingsFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Account_acter_app_settings_future_poll");
+
+  late final _accountActerAppSettingsFuturePoll =
+      _accountActerAppSettingsFuturePollPtr.asFunction<
+          _AccountActerAppSettingsFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _threePidManagerConfirmedEmailAddressesFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ThreePidManagerConfirmedEmailAddressesFuturePollReturn Function(
@@ -26711,6 +29091,21 @@ class Api {
             int,
             int,
           )>();
+  late final _publicSearchResultItemGetAvatarFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _PublicSearchResultItemGetAvatarFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__PublicSearchResultItem_get_avatar_future_poll");
+
+  late final _publicSearchResultItemGetAvatarFuturePoll =
+      _publicSearchResultItemGetAvatarFuturePollPtr.asFunction<
+          _PublicSearchResultItemGetAvatarFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _notificationSenderImageFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _NotificationSenderImageFuturePollReturn Function(
@@ -26796,6 +29191,21 @@ class Api {
   late final _clientDeactivateFuturePoll =
       _clientDeactivateFuturePollPtr.asFunction<
           _ClientDeactivateFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _clientChangePasswordFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientChangePasswordFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Client_change_password_future_poll");
+
+  late final _clientChangePasswordFuturePoll =
+      _clientChangePasswordFuturePollPtr.asFunction<
+          _ClientChangePasswordFuturePollReturn Function(
             int,
             int,
             int,
@@ -26932,21 +29342,6 @@ class Api {
             int,
             int,
           )>();
-  late final _clientPublicSpacesFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientPublicSpacesFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Client_public_spaces_future_poll");
-
-  late final _clientPublicSpacesFuturePoll =
-      _clientPublicSpacesFuturePollPtr.asFunction<
-          _ClientPublicSpacesFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
   late final _clientSpaceFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ClientSpaceFuturePollReturn Function(
@@ -27002,6 +29397,21 @@ class Api {
   late final _clientSearchUsersFuturePoll =
       _clientSearchUsersFuturePollPtr.asFunction<
           _ClientSearchUsersFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _clientSearchPublicRoomFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientSearchPublicRoomFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Client_search_public_room_future_poll");
+
+  late final _clientSearchPublicRoomFuturePoll =
+      _clientSearchPublicRoomFuturePollPtr.asFunction<
+          _ClientSearchPublicRoomFuturePollReturn Function(
             int,
             int,
             int,
@@ -27106,6 +29516,21 @@ class Api {
   late final _clientCreateActerSpaceFuturePoll =
       _clientCreateActerSpaceFuturePollPtr.asFunction<
           _ClientCreateActerSpaceFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _clientWaitForRoomFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientWaitForRoomFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Client_wait_for_room_future_poll");
+
+  late final _clientWaitForRoomFuturePoll =
+      _clientWaitForRoomFuturePollPtr.asFunction<
+          _ClientWaitForRoomFuturePollReturn Function(
             int,
             int,
             int,
@@ -27642,6 +30067,21 @@ class Api {
             int,
             int,
           )>();
+  late final _superInvitesInfoFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SuperInvitesInfoFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__SuperInvites_info_future_poll");
+
+  late final _superInvitesInfoFuturePoll =
+      _superInvitesInfoFuturePollPtr.asFunction<
+          _SuperInvitesInfoFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _verificationEventGetEmojisFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _VerificationEventGetEmojisFuturePollReturn Function(
@@ -27912,6 +30352,66 @@ class Api {
                 int,
                 int,
               )>();
+  late final _backupManagerEnableFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _BackupManagerEnableFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__BackupManager_enable_future_poll");
+
+  late final _backupManagerEnableFuturePoll =
+      _backupManagerEnableFuturePollPtr.asFunction<
+          _BackupManagerEnableFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _backupManagerResetFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _BackupManagerResetFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__BackupManager_reset_future_poll");
+
+  late final _backupManagerResetFuturePoll =
+      _backupManagerResetFuturePollPtr.asFunction<
+          _BackupManagerResetFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _backupManagerDisableFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _BackupManagerDisableFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__BackupManager_disable_future_poll");
+
+  late final _backupManagerDisableFuturePoll =
+      _backupManagerDisableFuturePollPtr.asFunction<
+          _BackupManagerDisableFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _backupManagerRecoverFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _BackupManagerRecoverFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__BackupManager_recover_future_poll");
+
+  late final _backupManagerRecoverFuturePoll =
+      _backupManagerRecoverFuturePollPtr.asFunction<
+          _BackupManagerRecoverFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _acterPinSubscribeStreamStreamPollPtr = _lookup<
       ffi.NativeFunction<
           _ActerPinSubscribeStreamStreamPollReturn Function(
@@ -27958,6 +30458,23 @@ class Api {
   late final _reactionManagerSubscribeStreamStreamPoll =
       _reactionManagerSubscribeStreamStreamPollPtr.asFunction<
           _ReactionManagerSubscribeStreamStreamPollReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _roomSubscribeToUpdatesStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomSubscribeToUpdatesStreamPollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Room_subscribe_to_updates_stream_poll");
+
+  late final _roomSubscribeToUpdatesStreamPoll =
+      _roomSubscribeToUpdatesStreamPollPtr.asFunction<
+          _RoomSubscribeToUpdatesStreamPollReturn Function(
             int,
             int,
             int,
@@ -28043,6 +30560,23 @@ class Api {
   late final _taskListSubscribeStreamStreamPoll =
       _taskListSubscribeStreamStreamPollPtr.asFunction<
           _TaskListSubscribeStreamStreamPollReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _accountSubscribeAppSettingsStreamStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _AccountSubscribeAppSettingsStreamStreamPollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Account_subscribe_app_settings_stream_stream_poll");
+
+  late final _accountSubscribeAppSettingsStreamStreamPoll =
+      _accountSubscribeAppSettingsStreamStreamPollPtr.asFunction<
+          _AccountSubscribeAppSettingsStreamStreamPollReturn Function(
             int,
             int,
             int,
@@ -28184,18 +30718,18 @@ class Api {
             int,
             int,
           )>();
-  late final _clientTypingEventRxStreamPollPtr = _lookup<
+  late final _clientSubscribeToTypingEventStreamStreamPollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientTypingEventRxStreamPollReturn Function(
+          _ClientSubscribeToTypingEventStreamStreamPollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__Client_typing_event_rx_stream_poll");
+          )>>("__Client_subscribe_to_typing_event_stream_stream_poll");
 
-  late final _clientTypingEventRxStreamPoll =
-      _clientTypingEventRxStreamPollPtr.asFunction<
-          _ClientTypingEventRxStreamPollReturn Function(
+  late final _clientSubscribeToTypingEventStreamStreamPoll =
+      _clientSubscribeToTypingEventStreamStreamPollPtr.asFunction<
+          _ClientSubscribeToTypingEventStreamStreamPollReturn Function(
             int,
             int,
             int,
@@ -28264,6 +30798,23 @@ class Api {
   late final _notificationSettingsChangesStreamStreamPoll =
       _notificationSettingsChangesStreamStreamPollPtr.asFunction<
           _NotificationSettingsChangesStreamStreamPollReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _backupManagerStateStreamStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _BackupManagerStateStreamStreamPollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__BackupManager_state_stream_stream_poll");
+
+  late final _backupManagerStateStreamStreamPoll =
+      _backupManagerStateStreamStreamPollPtr.asFunction<
+          _BackupManagerStateStreamStreamPollReturn Function(
             int,
             int,
             int,
@@ -28563,6 +31114,57 @@ class Api {
 
   late final _ffiListDeviceRecordInsert =
       _ffiListDeviceRecordInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListEventLocationInfo createFfiListEventLocationInfo() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListEventLocationInfoCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListEventLocationInfo");
+    return FfiListEventLocationInfo._(this, list_box);
+  }
+
+  late final _ffiListEventLocationInfoCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListEventLocationInfoCreate");
+
+  late final _ffiListEventLocationInfoCreate =
+      _ffiListEventLocationInfoCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListEventLocationInfoLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListEventLocationInfoLen");
+
+  late final _ffiListEventLocationInfoLen =
+      _ffiListEventLocationInfoLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListEventLocationInfoElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListEventLocationInfoElementAt");
+
+  late final _ffiListEventLocationInfoElementAt =
+      _ffiListEventLocationInfoElementAtPtr
+          .asFunction<int Function(int, int)>();
+
+  late final _ffiListEventLocationInfoRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListEventLocationInfoRemove");
+
+  late final _ffiListEventLocationInfoRemove =
+      _ffiListEventLocationInfoRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListEventLocationInfoAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListEventLocationInfoAdd");
+
+  late final _ffiListEventLocationInfoAdd =
+      _ffiListEventLocationInfoAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListEventLocationInfoInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
+              ffi.IntPtr)>>("__FfiListEventLocationInfoInsert");
+
+  late final _ffiListEventLocationInfoInsert =
+      _ffiListEventLocationInfoInsertPtr
+          .asFunction<void Function(int, int, int)>();
   FfiListFfiString createFfiListFfiString() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListFfiStringCreate());
@@ -31136,27 +33738,12 @@ class ReceiptRecord {
   }
 }
 
-/// Deliver typing event from rust to flutter
+/// Deliver typing event from rust
 class TypingEvent {
   final Api _api;
   final _Box _box;
 
   TypingEvent._(this._api, this._box);
-
-  /// Get transaction id or flow id
-  RoomId roomId() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._typingEventRoomId(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_RoomId");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = RoomId._(_api, tmp3_1);
-    return tmp2;
-  }
 
   /// Get list of user id
   FfiListUserId userIds() {
@@ -31919,6 +34506,21 @@ class NewsEntry {
     return tmp2;
   }
 
+  /// whether or not this user can redact this item
+  Future<bool> canRedact() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsEntryCanRedact(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__NewsEntry_can_redact_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__newsEntryCanRedactFuturePoll);
+    return tmp2;
+  }
+
   /// get the reaction manager
   Future<ReactionManager> reactions() {
     var tmp0 = 0;
@@ -32642,6 +35244,21 @@ class ActerPin {
     return tmp2;
   }
 
+  /// whether or not this user can redact this item
+  Future<bool> canRedact() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterPinCanRedact(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__ActerPin_can_redact_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__acterPinCanRedactFuturePoll);
+    return tmp2;
+  }
+
   /// get the comments manager for this pin
   Future<CommentsManager> comments() {
     var tmp0 = 0;
@@ -33152,6 +35769,131 @@ class CalendarEvent {
     return tmp2;
   }
 
+  /// get the comments manager
+  Future<CommentsManager> comments() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._calendarEventComments(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__CalendarEvent_comments_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__calendarEventCommentsFuturePoll);
+    return tmp2;
+  }
+
+  /// get the attachments manager
+  Future<AttachmentsManager> attachments() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._calendarEventAttachments(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__CalendarEvent_attachments_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__calendarEventAttachmentsFuturePoll);
+    return tmp2;
+  }
+
+  /// Generate a iCal as a String for sharing with others
+  bool icalForSharing(
+    String fileName,
+  ) {
+    final tmp1 = fileName;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._calendarEventIcalForSharing(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 =
+          utf8.decode(tmp8_0.asTypedList(tmp9), allowMalformed: true);
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    final tmp6 = tmp11 > 0;
+    return tmp6;
+  }
+
+  /// get the physical location(s) details
+  FfiListEventLocationInfo physicalLocations() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._calendarEventPhysicalLocations(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListEventLocationInfo");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListEventLocationInfo._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// get the virtual location(s) details
+  FfiListEventLocationInfo virtualLocations() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._calendarEventVirtualLocations(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListEventLocationInfo");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListEventLocationInfo._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// get all location details
+  FfiListEventLocationInfo locations() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._calendarEventLocations(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListEventLocationInfo");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListEventLocationInfo._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -33548,6 +36290,15 @@ class CalendarEventUpdateBuilder {
       }
       throw tmp11_0;
     }
+    return;
+  }
+
+  void unsetLocations() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._calendarEventUpdateBuilderUnsetLocations(
+      tmp0,
+    );
     return;
   }
 
@@ -33976,6 +36727,268 @@ class CalendarEventDraft {
     return;
   }
 
+  /// set the physical location details for this calendar event
+  void physicalLocation(
+    String? name,
+    String? description,
+    String? descriptionHtml,
+    String? coordinates,
+    String? uri,
+  ) {
+    final tmp1 = name;
+    final tmp7 = description;
+    final tmp13 = descriptionHtml;
+    final tmp19 = coordinates;
+    final tmp25 = uri;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    var tmp5 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp17 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    var tmp23 = 0;
+    var tmp24 = 0;
+    var tmp26 = 0;
+    var tmp28 = 0;
+    var tmp29 = 0;
+    var tmp30 = 0;
+    tmp0 = _box.borrow();
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      final tmp3_0 = utf8.encode(tmp3);
+      tmp5 = tmp3_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = _api.__allocate(tmp5 * 1, 1);
+      final Uint8List tmp4_1 = tmp4_0.asTypedList(tmp5);
+      tmp4_1.setAll(0, tmp3_0);
+      tmp4 = tmp4_0.address;
+      tmp6 = tmp5;
+    }
+    if (tmp7 == null) {
+      tmp8 = 0;
+    } else {
+      tmp8 = 1;
+      final tmp9 = tmp7;
+      final tmp9_0 = utf8.encode(tmp9);
+      tmp11 = tmp9_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+      final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+      tmp10_1.setAll(0, tmp9_0);
+      tmp10 = tmp10_0.address;
+      tmp12 = tmp11;
+    }
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      final tmp15_0 = utf8.encode(tmp15);
+      tmp17 = tmp15_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
+      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
+      tmp16_1.setAll(0, tmp15_0);
+      tmp16 = tmp16_0.address;
+      tmp18 = tmp17;
+    }
+    if (tmp19 == null) {
+      tmp20 = 0;
+    } else {
+      tmp20 = 1;
+      final tmp21 = tmp19;
+      final tmp21_0 = utf8.encode(tmp21);
+      tmp23 = tmp21_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp22_0 = _api.__allocate(tmp23 * 1, 1);
+      final Uint8List tmp22_1 = tmp22_0.asTypedList(tmp23);
+      tmp22_1.setAll(0, tmp21_0);
+      tmp22 = tmp22_0.address;
+      tmp24 = tmp23;
+    }
+    if (tmp25 == null) {
+      tmp26 = 0;
+    } else {
+      tmp26 = 1;
+      final tmp27 = tmp25;
+      final tmp27_0 = utf8.encode(tmp27);
+      tmp29 = tmp27_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp28_0 = _api.__allocate(tmp29 * 1, 1);
+      final Uint8List tmp28_1 = tmp28_0.asTypedList(tmp29);
+      tmp28_1.setAll(0, tmp27_0);
+      tmp28 = tmp28_0.address;
+      tmp30 = tmp29;
+    }
+    final tmp31 = _api._calendarEventDraftPhysicalLocation(
+      tmp0,
+      tmp2,
+      tmp4,
+      tmp5,
+      tmp6,
+      tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+      tmp14,
+      tmp16,
+      tmp17,
+      tmp18,
+      tmp20,
+      tmp22,
+      tmp23,
+      tmp24,
+      tmp26,
+      tmp28,
+      tmp29,
+      tmp30,
+    );
+    final tmp33 = tmp31.arg0;
+    final tmp34 = tmp31.arg1;
+    final tmp35 = tmp31.arg2;
+    final tmp36 = tmp31.arg3;
+    if (tmp33 == 0) {
+      debugAllocation("handle error", tmp34, tmp35);
+      final ffi.Pointer<ffi.Uint8> tmp34_0 = ffi.Pointer.fromAddress(tmp34);
+      final tmp33_0 =
+          utf8.decode(tmp34_0.asTypedList(tmp35), allowMalformed: true);
+      if (tmp35 > 0) {
+        final ffi.Pointer<ffi.Void> tmp34_0;
+        tmp34_0 = ffi.Pointer.fromAddress(tmp34);
+        _api.__deallocate(tmp34_0, tmp36, 1);
+      }
+      throw tmp33_0;
+    }
+    return;
+  }
+
+  /// set the virtual location details for this calendar event
+  void virtualLocation(
+    String? name,
+    String? description,
+    String? descriptionHtml,
+    String uri,
+  ) {
+    final tmp1 = name;
+    final tmp7 = description;
+    final tmp13 = descriptionHtml;
+    final tmp19 = uri;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    var tmp5 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp17 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp21 = 0;
+    var tmp22 = 0;
+    tmp0 = _box.borrow();
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      final tmp3_0 = utf8.encode(tmp3);
+      tmp5 = tmp3_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = _api.__allocate(tmp5 * 1, 1);
+      final Uint8List tmp4_1 = tmp4_0.asTypedList(tmp5);
+      tmp4_1.setAll(0, tmp3_0);
+      tmp4 = tmp4_0.address;
+      tmp6 = tmp5;
+    }
+    if (tmp7 == null) {
+      tmp8 = 0;
+    } else {
+      tmp8 = 1;
+      final tmp9 = tmp7;
+      final tmp9_0 = utf8.encode(tmp9);
+      tmp11 = tmp9_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+      final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+      tmp10_1.setAll(0, tmp9_0);
+      tmp10 = tmp10_0.address;
+      tmp12 = tmp11;
+    }
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      final tmp15_0 = utf8.encode(tmp15);
+      tmp17 = tmp15_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
+      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
+      tmp16_1.setAll(0, tmp15_0);
+      tmp16 = tmp16_0.address;
+      tmp18 = tmp17;
+    }
+    final tmp19_0 = utf8.encode(tmp19);
+    tmp21 = tmp19_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp20_0 = _api.__allocate(tmp21 * 1, 1);
+    final Uint8List tmp20_1 = tmp20_0.asTypedList(tmp21);
+    tmp20_1.setAll(0, tmp19_0);
+    tmp20 = tmp20_0.address;
+    tmp22 = tmp21;
+    final tmp23 = _api._calendarEventDraftVirtualLocation(
+      tmp0,
+      tmp2,
+      tmp4,
+      tmp5,
+      tmp6,
+      tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+      tmp14,
+      tmp16,
+      tmp17,
+      tmp18,
+      tmp20,
+      tmp21,
+      tmp22,
+    );
+    final tmp25 = tmp23.arg0;
+    final tmp26 = tmp23.arg1;
+    final tmp27 = tmp23.arg2;
+    final tmp28 = tmp23.arg3;
+    if (tmp25 == 0) {
+      debugAllocation("handle error", tmp26, tmp27);
+      final ffi.Pointer<ffi.Uint8> tmp26_0 = ffi.Pointer.fromAddress(tmp26);
+      final tmp25_0 =
+          utf8.decode(tmp26_0.asTypedList(tmp27), allowMalformed: true);
+      if (tmp27 > 0) {
+        final ffi.Pointer<ffi.Void> tmp26_0;
+        tmp26_0 = ffi.Pointer.fromAddress(tmp26);
+        _api.__deallocate(tmp26_0, tmp28, 1);
+      }
+      throw tmp25_0;
+    }
+    return;
+  }
+
   /// create this calendar event
   Future<EventId> send() {
     var tmp0 = 0;
@@ -33988,6 +37001,169 @@ class CalendarEventDraft {
     final tmp3_1 = _Box(_api, tmp3_0, "__CalendarEventDraft_send_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__calendarEventDraftSendFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class EventLocationInfo {
+  final Api _api;
+  final _Box _box;
+
+  EventLocationInfo._(this._api, this._box);
+
+  /// either of `Physical` or `Virtual`
+  String locationType() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._eventLocationInfoLocationType(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// get the name of location
+  String? name() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._eventLocationInfoName(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// get the location description
+  TextMessageContent? description() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._eventLocationInfoDescription(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_TextMessageContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = TextMessageContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// geo uri for the location
+  String? coordinates() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._eventLocationInfoCoordinates(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// an online link for the location
+  String? uri() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._eventLocationInfoUri(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
     return tmp2;
   }
 
@@ -34502,6 +37678,104 @@ class ReactionManager {
     final tmp14 =
         _nativeFuture(tmp15_1, _api.__reactionManagerRedactLikeFuturePoll);
     return tmp14;
+  }
+
+  /// remove the reaction using symbol key
+  Future<EventId> redactReaction(
+    String senderId,
+    String key,
+    String? reason,
+    String? txnId,
+  ) {
+    final tmp1 = senderId;
+    final tmp5 = key;
+    final tmp9 = reason;
+    final tmp15 = txnId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp12 = 0;
+    var tmp13 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    var tmp19 = 0;
+    var tmp20 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    if (tmp9 == null) {
+      tmp10 = 0;
+    } else {
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      final tmp11_0 = utf8.encode(tmp11);
+      tmp13 = tmp11_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
+      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
+      tmp12_1.setAll(0, tmp11_0);
+      tmp12 = tmp12_0.address;
+      tmp14 = tmp13;
+    }
+    if (tmp15 == null) {
+      tmp16 = 0;
+    } else {
+      tmp16 = 1;
+      final tmp17 = tmp15;
+      final tmp17_0 = utf8.encode(tmp17);
+      tmp19 = tmp17_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp18_0 = _api.__allocate(tmp19 * 1, 1);
+      final Uint8List tmp18_1 = tmp18_0.asTypedList(tmp19);
+      tmp18_1.setAll(0, tmp17_0);
+      tmp18 = tmp18_0.address;
+      tmp20 = tmp19;
+    }
+    final tmp21 = _api._reactionManagerRedactReaction(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp12,
+      tmp13,
+      tmp14,
+      tmp16,
+      tmp18,
+      tmp19,
+      tmp20,
+    );
+    final tmp23 = tmp21;
+    final ffi.Pointer<ffi.Void> tmp23_0 = ffi.Pointer.fromAddress(tmp23);
+    final tmp23_1 =
+        _Box(_api, tmp23_0, "__ReactionManager_redact_reaction_future_drop");
+    tmp23_1._finalizer = _api._registerFinalizer(tmp23_1);
+    final tmp22 =
+        _nativeFuture(tmp23_1, _api.__reactionManagerRedactReactionFuturePoll);
+    return tmp22;
   }
 
   /// get informed about changes to this manager
@@ -35821,6 +39095,22 @@ class Room {
     return tmp2;
   }
 
+  /// Whether new updates have been received for this room
+  Stream<bool> subscribeToUpdates() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomSubscribeToUpdates(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__Room_subscribe_to_updates_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeStream(tmp3_1, _api.__roomSubscribeToUpdatesStreamPoll);
+    return tmp2;
+  }
+
   /// whether this is a Space
   bool isSpace() {
     var tmp0 = 0;
@@ -36502,14 +39792,99 @@ class SpaceDiff {
   }
 }
 
-class MsgContentDraft {
+class MsgDraft {
   final Api _api;
   final _Box _box;
 
-  MsgContentDraft._(this._api, this._box);
+  MsgDraft._(this._api, this._box);
+
+  /// add a user mention
+  MsgDraft addMention(
+    String userId,
+  ) {
+    final tmp1 = userId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._msgDraftAddMention(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 =
+          utf8.decode(tmp8_0.asTypedList(tmp9), allowMalformed: true);
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = MsgDraft._(_api, tmp11_1);
+    return tmp6;
+  }
+
+  /// whether to mention the entire room
+  MsgDraft addRoomMention(
+    bool mention,
+  ) {
+    final tmp1 = mention;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    final tmp3 = _api._msgDraftAddRoomMention(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3.arg0;
+    final tmp6 = tmp3.arg1;
+    final tmp7 = tmp3.arg2;
+    final tmp8 = tmp3.arg3;
+    final tmp9 = tmp3.arg4;
+    if (tmp5 == 0) {
+      debugAllocation("handle error", tmp6, tmp7);
+      final ffi.Pointer<ffi.Uint8> tmp6_0 = ffi.Pointer.fromAddress(tmp6);
+      final tmp5_0 =
+          utf8.decode(tmp6_0.asTypedList(tmp7), allowMalformed: true);
+      if (tmp7 > 0) {
+        final ffi.Pointer<ffi.Void> tmp6_0;
+        tmp6_0 = ffi.Pointer.fromAddress(tmp6);
+        _api.__deallocate(tmp6_0, tmp8, 1);
+      }
+      throw tmp5_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+    final tmp9_1 = _Box(_api, tmp9_0, "drop_box_MsgDraft");
+    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
+    final tmp4 = MsgDraft._(_api, tmp9_1);
+    return tmp4;
+  }
 
   /// available for only image/audio/video/file
-  MsgContentDraft size(
+  MsgDraft size(
     int value,
   ) {
     final tmp1 = value;
@@ -36517,20 +39892,20 @@ class MsgContentDraft {
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1;
-    final tmp3 = _api._msgContentDraftSize(
+    final tmp3 = _api._msgDraftSize(
       tmp0,
       tmp2,
     );
     final tmp5 = tmp3;
     final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_MsgContentDraft");
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_MsgDraft");
     tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 = MsgContentDraft._(_api, tmp5_1);
+    final tmp4 = MsgDraft._(_api, tmp5_1);
     return tmp4;
   }
 
   /// available for only image/video
-  MsgContentDraft width(
+  MsgDraft width(
     int value,
   ) {
     final tmp1 = value;
@@ -36538,20 +39913,20 @@ class MsgContentDraft {
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1;
-    final tmp3 = _api._msgContentDraftWidth(
+    final tmp3 = _api._msgDraftWidth(
       tmp0,
       tmp2,
     );
     final tmp5 = tmp3;
     final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_MsgContentDraft");
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_MsgDraft");
     tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 = MsgContentDraft._(_api, tmp5_1);
+    final tmp4 = MsgDraft._(_api, tmp5_1);
     return tmp4;
   }
 
   /// available for only image/video
-  MsgContentDraft height(
+  MsgDraft height(
     int value,
   ) {
     final tmp1 = value;
@@ -36559,20 +39934,20 @@ class MsgContentDraft {
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1;
-    final tmp3 = _api._msgContentDraftHeight(
+    final tmp3 = _api._msgDraftHeight(
       tmp0,
       tmp2,
     );
     final tmp5 = tmp3;
     final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_MsgContentDraft");
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_MsgDraft");
     tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 = MsgContentDraft._(_api, tmp5_1);
+    final tmp4 = MsgDraft._(_api, tmp5_1);
     return tmp4;
   }
 
   /// available for only audio/video
-  MsgContentDraft duration(
+  MsgDraft duration(
     int value,
   ) {
     final tmp1 = value;
@@ -36580,20 +39955,20 @@ class MsgContentDraft {
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1;
-    final tmp3 = _api._msgContentDraftDuration(
+    final tmp3 = _api._msgDraftDuration(
       tmp0,
       tmp2,
     );
     final tmp5 = tmp3;
     final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_MsgContentDraft");
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_MsgDraft");
     tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 = MsgContentDraft._(_api, tmp5_1);
+    final tmp4 = MsgDraft._(_api, tmp5_1);
     return tmp4;
   }
 
   /// available for only image/video
-  MsgContentDraft blurhash(
+  MsgDraft blurhash(
     String value,
   ) {
     final tmp1 = value;
@@ -36610,7 +39985,7 @@ class MsgContentDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._msgContentDraftBlurhash(
+    final tmp5 = _api._msgDraftBlurhash(
       tmp0,
       tmp2,
       tmp3,
@@ -36618,14 +39993,14 @@ class MsgContentDraft {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgContentDraft");
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgDraft");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = MsgContentDraft._(_api, tmp7_1);
+    final tmp6 = MsgDraft._(_api, tmp7_1);
     return tmp6;
   }
 
   /// available for only file
-  MsgContentDraft filename(
+  MsgDraft filename(
     String value,
   ) {
     final tmp1 = value;
@@ -36642,7 +40017,7 @@ class MsgContentDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._msgContentDraftFilename(
+    final tmp5 = _api._msgDraftFilename(
       tmp0,
       tmp2,
       tmp3,
@@ -36650,14 +40025,14 @@ class MsgContentDraft {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgContentDraft");
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgDraft");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = MsgContentDraft._(_api, tmp7_1);
+    final tmp6 = MsgDraft._(_api, tmp7_1);
     return tmp6;
   }
 
   /// available for only location
-  MsgContentDraft geoUri(
+  MsgDraft geoUri(
     String value,
   ) {
     final tmp1 = value;
@@ -36674,7 +40049,7 @@ class MsgContentDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._msgContentDraftGeoUri(
+    final tmp5 = _api._msgDraftGeoUri(
       tmp0,
       tmp2,
       tmp3,
@@ -36682,16 +40057,16 @@ class MsgContentDraft {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgContentDraft");
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgDraft");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = MsgContentDraft._(_api, tmp7_1);
+    final tmp6 = MsgDraft._(_api, tmp7_1);
     return tmp6;
   }
 
   NewsSlideDraft intoNewsSlideDraft() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._msgContentDraftIntoNewsSlideDraft(
+    final tmp1 = _api._msgDraftIntoNewsSlideDraft(
       tmp0,
     );
     final tmp3 = tmp1;
@@ -36766,7 +40141,7 @@ class TimelineStream {
     return tmp6;
   }
 
-  /// Get the next count messages backwards, and return whether it has more items
+  /// Get the next count messages backwards, and return whether it reached the end
   Future<bool> paginateBackwards(
     int count,
   ) {
@@ -36791,7 +40166,7 @@ class TimelineStream {
 
   /// send message using draft
   Future<bool> sendMessage(
-    MsgContentDraft draft,
+    MsgDraft draft,
   ) {
     final tmp1 = draft;
     var tmp0 = 0;
@@ -36815,7 +40190,7 @@ class TimelineStream {
   /// modify message using draft
   Future<bool> editMessage(
     String eventId,
-    MsgContentDraft draft,
+    MsgDraft draft,
   ) {
     final tmp1 = eventId;
     final tmp5 = draft;
@@ -36854,7 +40229,7 @@ class TimelineStream {
   /// send reply to event
   Future<bool> replyMessage(
     String eventId,
-    MsgContentDraft draft,
+    MsgDraft draft,
   ) {
     final tmp1 = eventId;
     final tmp5 = draft;
@@ -37049,6 +40424,32 @@ class TimelineStream {
     final tmp20 = _nativeFuture(
         tmp21_1, _api.__timelineStreamSendMultipleReceiptsFuturePoll);
     return tmp20;
+  }
+
+  /// Mark this room as read.
+  /// user_triggered indicate whether that was issued by the user actively
+  /// (e.g. by pushing a button) or implicitly upon smart read tracking
+  /// Returns a boolean indicating if we sent the request or not.
+  Future<bool> markAsRead(
+    bool userTriggered,
+  ) {
+    final tmp1 = userTriggered;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    final tmp3 = _api._timelineStreamMarkAsRead(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 =
+        _Box(_api, tmp5_0, "__TimelineStream_mark_as_read_future_drop");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 =
+        _nativeFuture(tmp5_1, _api.__timelineStreamMarkAsReadFuturePoll);
+    return tmp4;
   }
 
   /// send reaction to event
@@ -37293,6 +40694,38 @@ class Convo {
     return tmp2;
   }
 
+  /// set the name of the chat
+  Future<EventId> setName(
+    String name,
+  ) {
+    final tmp1 = name;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._convoSetName(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__Convo_set_name_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__convoSetNameFuturePoll);
+    return tmp6;
+  }
+
   /// set description / topic of the room
   Future<EventId> setTopic(
     String topic,
@@ -37414,6 +40847,42 @@ class Convo {
     final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TimelineStream");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = TimelineStream._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// how many unread notifications for this chat
+  int numUnreadNotificationCount() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoNumUnreadNotificationCount(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// how many unread messages for this chat
+  int numUnreadMessages() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoNumUnreadMessages(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// how many unread mentions for this chat
+  int numUnreadMentions() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoNumUnreadMentions(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
     return tmp2;
   }
 
@@ -37624,11 +41093,11 @@ class Convo {
     return tmp2;
   }
 
-  /// is this a favorite chat
-  bool isFavorite() {
+  /// is this a bookmarked chat
+  bool isBookmarked() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._convoIsFavorite(
+    final tmp1 = _api._convoIsBookmarked(
       tmp0,
     );
     final tmp3 = tmp1;
@@ -37636,24 +41105,24 @@ class Convo {
     return tmp2;
   }
 
-  /// set this a favorite chat
-  Future<bool> setFavorite(
-    bool isFavorite,
+  /// set this a bookmarked chat
+  Future<bool> setBookmarked(
+    bool isBookmarked,
   ) {
-    final tmp1 = isFavorite;
+    final tmp1 = isBookmarked;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1 ? 1 : 0;
-    final tmp3 = _api._convoSetFavorite(
+    final tmp3 = _api._convoSetBookmarked(
       tmp0,
       tmp2,
     );
     final tmp5 = tmp3;
     final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 = _Box(_api, tmp5_0, "__Convo_set_favorite_future_drop");
+    final tmp5_1 = _Box(_api, tmp5_0, "__Convo_set_bookmarked_future_drop");
     tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 = _nativeFuture(tmp5_1, _api.__convoSetFavoriteFuturePoll);
+    final tmp4 = _nativeFuture(tmp5_1, _api.__convoSetBookmarkedFuturePoll);
     return tmp4;
   }
 
@@ -38115,6 +41584,8 @@ class Convo {
 
   /// redact an event from this room
   /// reason - The reason for the event being reported (optional).
+  /// it's the callers job to ensure the person has the privileges to
+  /// redact that content.
   Future<EventId> redactContent(
     String eventId,
     String? reason,
@@ -38373,6 +41844,36 @@ class CommentsManager {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 =
         _nativeFuture(tmp3_1, _api.__commentsManagerCommentsFuturePoll);
+    return tmp2;
+  }
+
+  /// String representation of the room id this comments manager is in
+  String roomIdStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._commentsManagerRoomIdStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
     return tmp2;
   }
 
@@ -38719,6 +42220,49 @@ class AttachmentsManager {
 
   AttachmentsManager._(this._api, this._box);
 
+  /// the room this attachments manager lives in
+  String roomIdStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentsManagerRoomIdStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Whether or not the current user can post, edit and delete
+  /// attachments in this manager
+  bool canEditAttachments() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentsManagerCanEditAttachments(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
   /// Get the list of attachments (in arrival order)
   Future<FfiListAttachment> attachments() {
     var tmp0 = 0;
@@ -38762,7 +42306,7 @@ class AttachmentsManager {
 
   /// create news slide for image msg
   Future<AttachmentDraft> contentDraft(
-    MsgContentDraft baseDraft,
+    MsgDraft baseDraft,
   ) {
     final tmp1 = baseDraft;
     var tmp0 = 0;
@@ -39396,6 +42940,21 @@ class Task {
     return tmp2;
   }
 
+  /// whether or not this user can redact this item
+  Future<bool> canRedact() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskCanRedact(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Task_can_redact_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__taskCanRedactFuturePoll);
+    return tmp2;
+  }
+
   /// get the comments manager for this task
   Future<CommentsManager> comments() {
     var tmp0 = 0;
@@ -39408,6 +42967,21 @@ class Task {
     final tmp3_1 = _Box(_api, tmp3_0, "__Task_comments_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__taskCommentsFuturePoll);
+    return tmp2;
+  }
+
+  /// get the attachments manager
+  Future<AttachmentsManager> attachments() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskAttachments(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Task_attachments_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__taskAttachmentsFuturePoll);
     return tmp2;
   }
 
@@ -40722,6 +44296,21 @@ class TaskList {
     return tmp2;
   }
 
+  /// whether or not this user can redact this item
+  Future<bool> canRedact() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskListCanRedact(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__TaskList_can_redact_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__taskListCanRedactFuturePoll);
+    return tmp2;
+  }
+
   /// the space this TaskList belongs to
   Space space() {
     var tmp0 = 0;
@@ -40764,6 +44353,36 @@ class TaskList {
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
       _api.__deallocate(tmp3_0, tmp5 * 1, 1);
     }
+    return tmp2;
+  }
+
+  /// get the comments manager
+  Future<CommentsManager> comments() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskListComments(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__TaskList_comments_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__taskListCommentsFuturePoll);
+    return tmp2;
+  }
+
+  /// get the attachments manager
+  Future<AttachmentsManager> attachments() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskListAttachments(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__TaskList_attachments_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__taskListAttachmentsFuturePoll);
     return tmp2;
   }
 
@@ -42830,6 +46449,39 @@ class Space {
     return tmp6;
   }
 
+  /// is this a bookmarked space
+  bool isBookmarked() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceIsBookmarked(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// set this a bookmarked space
+  Future<bool> setBookmarked(
+    bool isBookmarked,
+  ) {
+    final tmp1 = isBookmarked;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    final tmp3 = _api._spaceSetBookmarked(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "__Space_set_bookmarked_future_drop");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(tmp5_1, _api.__spaceSetBookmarkedFuturePoll);
+    return tmp4;
+  }
+
   /// the members currently in the space
   Future<FfiListFfiString> activeMembersIds() {
     var tmp0 = 0;
@@ -43527,6 +47179,8 @@ class Space {
 
   /// redact an event from this room
   /// reason - The reason for the event being reported (optional).
+  /// it's the callers job to ensure the person has the privileges to
+  /// redact that content.
   Future<EventId> redactContent(
     String eventId,
     String? reason,
@@ -43893,6 +47547,156 @@ class Member {
   }
 }
 
+class ActerUserAppSettings {
+  final Api _api;
+  final _Box _box;
+
+  ActerUserAppSettings._(this._api, this._box);
+
+  /// either of 'always', 'never' or 'wifiOnly'
+  String? autoDownloadChat() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterUserAppSettingsAutoDownloadChat(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// whether to allow sending typing notice of users
+  bool? typingNotice() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterUserAppSettingsTypingNotice(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4 > 0;
+    return tmp2;
+  }
+
+  /// update the builder with the current settings
+  /// if you intend to change anything
+  ActerUserAppSettingsBuilder updateBuilder() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterUserAppSettingsUpdateBuilder(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_ActerUserAppSettingsBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = ActerUserAppSettingsBuilder._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class ActerUserAppSettingsBuilder {
+  final Api _api;
+  final _Box _box;
+
+  ActerUserAppSettingsBuilder._(this._api, this._box);
+
+  /// either of 'always', 'never' or 'wifiOnly'
+  void autoDownloadChat(
+    String value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._acterUserAppSettingsBuilderAutoDownloadChat(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// whether to allow sending typing notice of users
+  void typingNotice(
+    bool value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    _api._acterUserAppSettingsBuilderTypingNotice(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  /// submit this updated version
+  Future<bool> send() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterUserAppSettingsBuilderSend(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__ActerUserAppSettingsBuilder_send_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__acterUserAppSettingsBuilderSendFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 class Account {
   final Api _api;
   final _Box _box;
@@ -44102,6 +47906,40 @@ class Account {
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp6 = _nativeFuture(tmp7_1, _api.__accountUnignoreUserFuturePoll);
     return tmp6;
+  }
+
+  /// the current app settings
+  Future<ActerUserAppSettings> acterAppSettings() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._accountActerAppSettings(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__Account_acter_app_settings_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__accountActerAppSettingsFuturePoll);
+    return tmp2;
+  }
+
+  /// listen to updates to the app settings
+  Stream<bool> subscribeAppSettingsStream() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._accountSubscribeAppSettingsStream(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(
+        _api, tmp3_0, "__Account_subscribe_app_settings_stream_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeStream(
+        tmp3_1, _api.__accountSubscribeAppSettingsStreamStreamPoll);
+    return tmp2;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -44650,6 +48488,51 @@ class PublicSearchResultItem {
       _api.__deallocate(tmp3_0, tmp5 * 1, 1);
     }
     return tmp2;
+  }
+
+  /// whether to have avatar
+  bool hasAvatar() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._publicSearchResultItemHasAvatar(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// get the binary data of avatar
+  /// if thumb size is given, avatar thumbnail is returned
+  /// if thumb size is not given, avatar file is returned
+  Future<OptionBuffer> getAvatar(
+    ThumbnailSize? thumbSize,
+  ) {
+    final tmp1 = thumbSize;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      tmp4 = tmp3._box.move();
+    }
+    final tmp5 = _api._publicSearchResultItemGetAvatar(
+      tmp0,
+      tmp2,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 =
+        _Box(_api, tmp7_0, "__PublicSearchResultItem_get_avatar_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 =
+        _nativeFuture(tmp7_1, _api.__publicSearchResultItemGetAvatarFuturePoll);
+    return tmp6;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -45993,6 +49876,54 @@ class Client {
     return tmp6;
   }
 
+  /// change password
+  Future<bool> changePassword(
+    String oldVal,
+    String newVal,
+  ) {
+    final tmp1 = oldVal;
+    final tmp5 = newVal;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._clientChangePassword(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "__Client_change_password_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = _nativeFuture(tmp11_1, _api.__clientChangePasswordFuturePoll);
+    return tmp10;
+  }
+
   /// start the sync
   SyncState startSync() {
     var tmp0 = 0;
@@ -46537,94 +50468,6 @@ class Client {
     return tmp12;
   }
 
-  /// search the public directory for spaces
-  Future<PublicSearchResult> publicSpaces(
-    String? searchTerm,
-    String? server,
-    String? since,
-  ) {
-    final tmp1 = searchTerm;
-    final tmp7 = server;
-    final tmp13 = since;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp4 = 0;
-    var tmp5 = 0;
-    var tmp6 = 0;
-    var tmp8 = 0;
-    var tmp10 = 0;
-    var tmp11 = 0;
-    var tmp12 = 0;
-    var tmp14 = 0;
-    var tmp16 = 0;
-    var tmp17 = 0;
-    var tmp18 = 0;
-    tmp0 = _box.borrow();
-    if (tmp1 == null) {
-      tmp2 = 0;
-    } else {
-      tmp2 = 1;
-      final tmp3 = tmp1;
-      final tmp3_0 = utf8.encode(tmp3);
-      tmp5 = tmp3_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp4_0 = _api.__allocate(tmp5 * 1, 1);
-      final Uint8List tmp4_1 = tmp4_0.asTypedList(tmp5);
-      tmp4_1.setAll(0, tmp3_0);
-      tmp4 = tmp4_0.address;
-      tmp6 = tmp5;
-    }
-    if (tmp7 == null) {
-      tmp8 = 0;
-    } else {
-      tmp8 = 1;
-      final tmp9 = tmp7;
-      final tmp9_0 = utf8.encode(tmp9);
-      tmp11 = tmp9_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
-      final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
-      tmp10_1.setAll(0, tmp9_0);
-      tmp10 = tmp10_0.address;
-      tmp12 = tmp11;
-    }
-    if (tmp13 == null) {
-      tmp14 = 0;
-    } else {
-      tmp14 = 1;
-      final tmp15 = tmp13;
-      final tmp15_0 = utf8.encode(tmp15);
-      tmp17 = tmp15_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
-      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
-      tmp16_1.setAll(0, tmp15_0);
-      tmp16 = tmp16_0.address;
-      tmp18 = tmp17;
-    }
-    final tmp19 = _api._clientPublicSpaces(
-      tmp0,
-      tmp2,
-      tmp4,
-      tmp5,
-      tmp6,
-      tmp8,
-      tmp10,
-      tmp11,
-      tmp12,
-      tmp14,
-      tmp16,
-      tmp17,
-      tmp18,
-    );
-    final tmp21 = tmp19;
-    final ffi.Pointer<ffi.Void> tmp21_0 = ffi.Pointer.fromAddress(tmp21);
-    final tmp21_1 = _Box(_api, tmp21_0, "__Client_public_spaces_future_drop");
-    tmp21_1._finalizer = _api._registerFinalizer(tmp21_1);
-    final tmp20 = _nativeFuture(tmp21_1, _api.__clientPublicSpacesFuturePoll);
-    return tmp20;
-  }
-
   /// Get the space that user belongs to
   Future<Space> space(
     String roomIdOrAlias,
@@ -46751,6 +50594,120 @@ class Client {
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp6 = _nativeFuture(tmp7_1, _api.__clientSearchUsersFuturePoll);
     return tmp6;
+  }
+
+  /// search the public directory for rooms
+  Future<PublicSearchResult> searchPublicRoom(
+    String? searchTerm,
+    String? server,
+    String? roomFilter,
+    String? since,
+  ) {
+    final tmp1 = searchTerm;
+    final tmp7 = server;
+    final tmp13 = roomFilter;
+    final tmp19 = since;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    var tmp5 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp17 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    var tmp23 = 0;
+    var tmp24 = 0;
+    tmp0 = _box.borrow();
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      final tmp3_0 = utf8.encode(tmp3);
+      tmp5 = tmp3_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = _api.__allocate(tmp5 * 1, 1);
+      final Uint8List tmp4_1 = tmp4_0.asTypedList(tmp5);
+      tmp4_1.setAll(0, tmp3_0);
+      tmp4 = tmp4_0.address;
+      tmp6 = tmp5;
+    }
+    if (tmp7 == null) {
+      tmp8 = 0;
+    } else {
+      tmp8 = 1;
+      final tmp9 = tmp7;
+      final tmp9_0 = utf8.encode(tmp9);
+      tmp11 = tmp9_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+      final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+      tmp10_1.setAll(0, tmp9_0);
+      tmp10 = tmp10_0.address;
+      tmp12 = tmp11;
+    }
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      final tmp15_0 = utf8.encode(tmp15);
+      tmp17 = tmp15_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
+      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
+      tmp16_1.setAll(0, tmp15_0);
+      tmp16 = tmp16_0.address;
+      tmp18 = tmp17;
+    }
+    if (tmp19 == null) {
+      tmp20 = 0;
+    } else {
+      tmp20 = 1;
+      final tmp21 = tmp19;
+      final tmp21_0 = utf8.encode(tmp21);
+      tmp23 = tmp21_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp22_0 = _api.__allocate(tmp23 * 1, 1);
+      final Uint8List tmp22_1 = tmp22_0.asTypedList(tmp23);
+      tmp22_1.setAll(0, tmp21_0);
+      tmp22 = tmp22_0.address;
+      tmp24 = tmp23;
+    }
+    final tmp25 = _api._clientSearchPublicRoom(
+      tmp0,
+      tmp2,
+      tmp4,
+      tmp5,
+      tmp6,
+      tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+      tmp14,
+      tmp16,
+      tmp17,
+      tmp18,
+      tmp20,
+      tmp22,
+      tmp23,
+      tmp24,
+    );
+    final tmp27 = tmp25;
+    final ffi.Pointer<ffi.Void> tmp27_0 = ffi.Pointer.fromAddress(tmp27);
+    final tmp27_1 =
+        _Box(_api, tmp27_0, "__Client_search_public_room_future_drop");
+    tmp27_1._finalizer = _api._registerFinalizer(tmp27_1);
+    final tmp26 =
+        _nativeFuture(tmp27_1, _api.__clientSearchPublicRoomFuturePoll);
+    return tmp26;
   }
 
   /// Whether the user already verified the device
@@ -46981,22 +50938,37 @@ class Client {
   }
 
   /// Return the typing event receiver
-  Stream<TypingEvent>? typingEventRx() {
+  Stream<TypingEvent> subscribeToTypingEventStream(
+    String roomId,
+  ) {
+    final tmp1 = roomId;
     var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._clientTypingEventRx(
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._clientSubscribeToTypingEventStream(
       tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
     );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "__Client_typing_event_rx_stream_drop");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = _nativeStream(tmp4_1, _api.__clientTypingEventRxStreamPoll);
-    return tmp2;
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(
+        _api, tmp7_0, "__Client_subscribe_to_typing_event_stream_stream_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeStream(
+        tmp7_1, _api.__clientSubscribeToTypingEventStreamStreamPoll);
+    return tmp6;
   }
 
   /// Return the receipt event receiver
@@ -47091,6 +51063,51 @@ class Client {
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp6 = _nativeStream(tmp7_1, _api.__clientSubscribeStreamStreamPoll);
     return tmp6;
+  }
+
+  /// Find the room or wait until it becomes available
+  Future<bool> waitForRoom(
+    String key,
+    int? timeout,
+  ) {
+    final tmp1 = key;
+    final tmp5 = timeout;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    if (tmp5 == null) {
+      tmp6 = 0;
+    } else {
+      tmp6 = 1;
+      final tmp7 = tmp5;
+      tmp8 = tmp7;
+    }
+    final tmp9 = _api._clientWaitForRoom(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "__Client_wait_for_room_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = _nativeFuture(tmp11_1, _api.__clientWaitForRoomFuturePoll);
+    return tmp10;
   }
 
   /// Fetch the Comment or use its event_id to wait for it to come down the wire
@@ -48093,7 +52110,7 @@ class Client {
   }
 
   /// make draft to send text plain msg
-  MsgContentDraft textPlainDraft(
+  MsgDraft textPlainDraft(
     String body,
   ) {
     final tmp1 = body;
@@ -48118,14 +52135,14 @@ class Client {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgContentDraft");
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgDraft");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = MsgContentDraft._(_api, tmp7_1);
+    final tmp6 = MsgDraft._(_api, tmp7_1);
     return tmp6;
   }
 
   /// make draft to send text markdown msg
-  MsgContentDraft textMarkdownDraft(
+  MsgDraft textMarkdownDraft(
     String body,
   ) {
     final tmp1 = body;
@@ -48150,14 +52167,14 @@ class Client {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgContentDraft");
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgDraft");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = MsgContentDraft._(_api, tmp7_1);
+    final tmp6 = MsgDraft._(_api, tmp7_1);
     return tmp6;
   }
 
   /// make draft to send html marked up msg
-  MsgContentDraft textHtmlDraft(
+  MsgDraft textHtmlDraft(
     String html,
     String plain,
   ) {
@@ -48198,14 +52215,14 @@ class Client {
     );
     final tmp11 = tmp9;
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgContentDraft");
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgDraft");
     tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp10 = MsgContentDraft._(_api, tmp11_1);
+    final tmp10 = MsgDraft._(_api, tmp11_1);
     return tmp10;
   }
 
   /// make draft to send image msg
-  MsgContentDraft imageDraft(
+  MsgDraft imageDraft(
     String source,
     String mimetype,
   ) {
@@ -48246,14 +52263,14 @@ class Client {
     );
     final tmp11 = tmp9;
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgContentDraft");
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgDraft");
     tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp10 = MsgContentDraft._(_api, tmp11_1);
+    final tmp10 = MsgDraft._(_api, tmp11_1);
     return tmp10;
   }
 
   /// make draft to send audio msg
-  MsgContentDraft audioDraft(
+  MsgDraft audioDraft(
     String source,
     String mimetype,
   ) {
@@ -48294,14 +52311,14 @@ class Client {
     );
     final tmp11 = tmp9;
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgContentDraft");
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgDraft");
     tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp10 = MsgContentDraft._(_api, tmp11_1);
+    final tmp10 = MsgDraft._(_api, tmp11_1);
     return tmp10;
   }
 
   /// make draft to send video msg
-  MsgContentDraft videoDraft(
+  MsgDraft videoDraft(
     String source,
     String mimetype,
   ) {
@@ -48342,14 +52359,14 @@ class Client {
     );
     final tmp11 = tmp9;
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgContentDraft");
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgDraft");
     tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp10 = MsgContentDraft._(_api, tmp11_1);
+    final tmp10 = MsgDraft._(_api, tmp11_1);
     return tmp10;
   }
 
   /// make draft to send file msg
-  MsgContentDraft fileDraft(
+  MsgDraft fileDraft(
     String source,
     String mimetype,
   ) {
@@ -48390,14 +52407,14 @@ class Client {
     );
     final tmp11 = tmp9;
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgContentDraft");
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgDraft");
     tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp10 = MsgContentDraft._(_api, tmp11_1);
+    final tmp10 = MsgDraft._(_api, tmp11_1);
     return tmp10;
   }
 
   /// make draft to send location msg
-  MsgContentDraft locationDraft(
+  MsgDraft locationDraft(
     String body,
     String source,
   ) {
@@ -48438,10 +52455,25 @@ class Client {
     );
     final tmp11 = tmp9;
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgContentDraft");
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgDraft");
     tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp10 = MsgContentDraft._(_api, tmp11_1);
+    final tmp10 = MsgDraft._(_api, tmp11_1);
     return tmp10;
+  }
+
+  /// get access to the backup manager
+  BackupManager backupManager() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientBackupManager(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_BackupManager");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = BackupManager._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -48909,6 +52941,184 @@ class SuperInvites {
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp6 = _nativeFuture(tmp7_1, _api.__superInvitesRedeemFuturePoll);
     return tmp6;
+  }
+
+  /// get the token info
+  Future<SuperInviteInfo> info(
+    String token,
+  ) {
+    final tmp1 = token;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._superInvitesInfo(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__SuperInvites_info_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__superInvitesInfoFuturePoll);
+    return tmp6;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class SuperInviteInfo {
+  final Api _api;
+  final _Box _box;
+
+  SuperInviteInfo._(this._api, this._box);
+
+  /// whether or not this token will create a DM with the new user
+  bool createDm() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._superInviteInfoCreateDm(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// whether or not this token has been redeemed by the caller
+  bool hasRedeemed() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._superInviteInfoHasRedeemed(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// the number of rooms that will be added - includes DM if created
+  int roomsCount() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._superInviteInfoRoomsCount(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// the UserId of the inviter
+  String inviterUserIdStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._superInviteInfoInviterUserIdStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// the display_name of the inviter if known
+  String? inviterDisplayNameStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._superInviteInfoInviterDisplayNameStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// the Avatar URl of the inviter if known
+  String? inviterAvatarUrlStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._superInviteInfoInviterAvatarUrlStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -49984,6 +54194,143 @@ class DeviceRecord {
   }
 }
 
+/// Manage Encryption Backups
+class BackupManager {
+  final Api _api;
+  final _Box _box;
+
+  BackupManager._(this._api, this._box);
+
+  /// Create a new backup version, encrypted with a new backup recovery key.
+  Future<String> enable() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._backupManagerEnable(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__BackupManager_enable_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__backupManagerEnableFuturePoll);
+    return tmp2;
+  }
+
+  /// Reset the existing backup version, encrypted with a new backup recovery key.
+  Future<String> reset() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._backupManagerReset(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__BackupManager_reset_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__backupManagerResetFuturePoll);
+    return tmp2;
+  }
+
+  /// Disable and delete the currently active backup.
+  Future<bool> disable() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._backupManagerDisable(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__BackupManager_disable_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__backupManagerDisableFuturePoll);
+    return tmp2;
+  }
+
+  /// Current state as a string
+  String stateStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._backupManagerStateStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// state as a string via a stream. Issues the current state immediately
+  Stream<String> stateStream() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._backupManagerStateStream(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__BackupManager_state_stream_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeStream(tmp3_1, _api.__backupManagerStateStreamStreamPoll);
+    return tmp2;
+  }
+
+  /// Open the existing secret store using the given key and import the keys
+  Future<bool> recover(
+    String secret,
+  ) {
+    final tmp1 = secret;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._backupManagerRecover(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__BackupManager_recover_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__backupManagerRecoverFuturePoll);
+    return tmp6;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 enum RsvpStatusTag {
   Yes,
   Maybe,
@@ -50174,6 +54521,7 @@ enum MemberPermissionTag {
   CanUpgradeToActerSpace,
   CanSetName,
   CanUpdateAvatar,
+  CanUpdateJoinRule,
   CanSetTopic,
   CanLinkSpaces,
   CanUpdatePowerLevels,
@@ -50260,22 +54608,26 @@ class MemberPermission {
 
         break;
       case 17:
-        this._tag = MemberPermissionTag.CanSetTopic;
+        this._tag = MemberPermissionTag.CanUpdateJoinRule;
 
         break;
       case 18:
-        this._tag = MemberPermissionTag.CanLinkSpaces;
+        this._tag = MemberPermissionTag.CanSetTopic;
 
         break;
       case 19:
-        this._tag = MemberPermissionTag.CanUpdatePowerLevels;
+        this._tag = MemberPermissionTag.CanLinkSpaces;
 
         break;
       case 20:
-        this._tag = MemberPermissionTag.CanSetParentSpace;
+        this._tag = MemberPermissionTag.CanUpdatePowerLevels;
 
         break;
       case 21:
+        this._tag = MemberPermissionTag.CanSetParentSpace;
+
+        break;
+      case 22:
         this._tag = MemberPermissionTag.CanChangeAppSettings;
 
         break;
@@ -50331,17 +54683,6 @@ class _RotateLogFileReturn extends ffi.Struct {
   external int arg5;
   @ffi.Uint64()
   external int arg6;
-}
-
-class _WriteLogReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
 }
 
 class _ParseMarkdownReturn extends ffi.Struct {
@@ -50911,6 +55252,19 @@ class _CalendarEventUpdateBuilderReturn extends ffi.Struct {
   external int arg4;
 }
 
+class _CalendarEventIcalForSharingReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint8()
+  external int arg4;
+}
+
 class _CalendarEventUpdateBuilderUtcStartFromRfc3339Return extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -51033,6 +55387,77 @@ class _CalendarEventDraftUtcEndFromRfc2822Return extends ffi.Struct {
 }
 
 class _CalendarEventDraftUtcEndFromFormatReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _CalendarEventDraftPhysicalLocationReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _CalendarEventDraftVirtualLocationReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _EventLocationInfoLocationTypeReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _EventLocationInfoNameReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _EventLocationInfoDescriptionReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _EventLocationInfoCoordinatesReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _EventLocationInfoUriReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -51451,6 +55876,32 @@ class _SpaceDiffValueReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _MsgDraftAddMentionReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Int64()
+  external int arg4;
+}
+
+class _MsgDraftAddRoomMentionReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Int64()
+  external int arg4;
+}
+
 class _ConvoTopicReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -51487,6 +55938,15 @@ class _ConvoRoomTypeReturn extends ffi.Struct {
   external int arg2;
 }
 
+class _CommentsManagerRoomIdStrReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
 class _AttachmentSenderReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -51515,6 +55975,15 @@ class _AttachmentRoomIdStrReturn extends ffi.Struct {
 }
 
 class _AttachmentTypeStrReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _AttachmentsManagerRoomIdStrReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -52096,6 +56565,24 @@ class _MemberMembershipStatusStrReturn extends ffi.Struct {
   external int arg2;
 }
 
+class _ActerUserAppSettingsAutoDownloadChatReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _ActerUserAppSettingsTypingNoticeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+}
+
 class _PublicSearchResultItemNameReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -52452,13 +56939,6 @@ class _ClientDeviceChangedEventRxReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _ClientTypingEventRxReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
 class _ClientReceiptEventRxReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -52509,6 +56989,37 @@ class _InvitationSenderProfileReturn extends ffi.Struct {
   external int arg0;
   @ffi.Int64()
   external int arg1;
+}
+
+class _SuperInviteInfoInviterUserIdStrReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _SuperInviteInfoInviterDisplayNameStrReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _SuperInviteInfoInviterAvatarUrlStrReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
 }
 
 class _SuperInviteTokenTokenReturn extends ffi.Struct {
@@ -52594,6 +57105,15 @@ class _DeviceRecordLastSeenTsReturn extends ffi.Struct {
   external int arg0;
   @ffi.Uint64()
   external int arg1;
+}
+
+class _BackupManagerStateStrReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
 }
 
 class _LoginNewClientFuturePollReturn extends ffi.Struct {
@@ -52731,6 +57251,21 @@ class _NewsSlideSourceBinaryFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _NewsEntryCanRedactFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
 class _NewsEntryReactionsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -52851,6 +57386,21 @@ class _ActerPinRefreshFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ActerPinCanRedactFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
 class _ActerPinCommentsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -52942,6 +57492,36 @@ class _CalendarEventRespondedByMeFuturePollReturn extends ffi.Struct {
 }
 
 class _CalendarEventParticipantsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _CalendarEventCommentsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _CalendarEventAttachmentsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -53107,6 +57687,21 @@ class _ReactionManagerSendReactionFuturePollReturn extends ffi.Struct {
 }
 
 class _ReactionManagerRedactLikeFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ReactionManagerRedactReactionFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -53485,6 +58080,21 @@ class _TimelineStreamSendMultipleReceiptsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _TimelineStreamMarkAsReadFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
 class _TimelineStreamToggleReactionFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -53561,6 +58171,21 @@ class _ConvoUploadAvatarFuturePollReturn extends ffi.Struct {
 }
 
 class _ConvoRemoveAvatarFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ConvoSetNameFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -53695,7 +58320,7 @@ class _ConvoMediaBinaryFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConvoSetFavoriteFuturePollReturn extends ffi.Struct {
+class _ConvoSetBookmarkedFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -54104,7 +58729,37 @@ class _TaskRefreshFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _TaskCanRedactFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
 class _TaskCommentsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _TaskAttachmentsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -54180,6 +58835,51 @@ class _TaskListTaskFuturePollReturn extends ffi.Struct {
 }
 
 class _TaskListRefreshFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _TaskListCanRedactFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _TaskListCommentsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _TaskListAttachmentsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -54397,6 +59097,21 @@ class _SpaceSetNameFuturePollReturn extends ffi.Struct {
   @ffi.Uint64()
   external int arg4;
   @ffi.Int64()
+  external int arg5;
+}
+
+class _SpaceSetBookmarkedFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
   external int arg5;
 }
 
@@ -54809,6 +59524,21 @@ class _MemberUnbanFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ActerUserAppSettingsBuilderSendFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
 class _AccountDisplayNameFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -54914,6 +59644,21 @@ class _AccountUnignoreUserFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _AccountActerAppSettingsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _ThreePidManagerConfirmedEmailAddressesFuturePollReturn
     extends ffi.Struct {
   @ffi.Uint8()
@@ -55006,6 +59751,21 @@ class _ThreePidManagerRemoveEmailAddressFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _PublicSearchResultItemGetAvatarFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _NotificationSenderImageFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -55086,6 +59846,21 @@ class _PusherDeleteFuturePollReturn extends ffi.Struct {
 }
 
 class _ClientDeactivateFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _ClientChangePasswordFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -55231,21 +60006,6 @@ class _ClientJoinConvoFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ClientPublicSpacesFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
 class _ClientSpaceFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -55292,6 +60052,21 @@ class _ClientSuggestedUsersToInviteFuturePollReturn extends ffi.Struct {
 }
 
 class _ClientSearchUsersFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ClientSearchPublicRoomFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -55408,6 +60183,21 @@ class _ClientCreateActerSpaceFuturePollReturn extends ffi.Struct {
   @ffi.Uint64()
   external int arg4;
   @ffi.Int64()
+  external int arg5;
+}
+
+class _ClientWaitForRoomFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
   external int arg5;
 }
 
@@ -55944,6 +60734,21 @@ class _SuperInvitesRedeemFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _SuperInvitesInfoFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _VerificationEventGetEmojisFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -56231,6 +61036,74 @@ class _DeviceNewEventRequestVerificationToDeviceWithMethodsFuturePollReturn
   external int arg7;
 }
 
+class _BackupManagerEnableFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+  @ffi.Uint64()
+  external int arg6;
+  @ffi.Uint64()
+  external int arg7;
+}
+
+class _BackupManagerResetFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+  @ffi.Uint64()
+  external int arg6;
+  @ffi.Uint64()
+  external int arg7;
+}
+
+class _BackupManagerDisableFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _BackupManagerRecoverFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
 class _ActerPinSubscribeStreamStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -56246,6 +61119,13 @@ class _RsvpManagerSubscribeStreamStreamPollReturn extends ffi.Struct {
 }
 
 class _ReactionManagerSubscribeStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+}
+
+class _RoomSubscribeToUpdatesStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -56281,6 +61161,13 @@ class _TaskSubscribeStreamStreamPollReturn extends ffi.Struct {
 }
 
 class _TaskListSubscribeStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+}
+
+class _AccountSubscribeAppSettingsStreamStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -56347,7 +61234,7 @@ class _ClientDeviceChangedEventRxStreamPollReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _ClientTypingEventRxStreamPollReturn extends ffi.Struct {
+class _ClientSubscribeToTypingEventStreamStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -56380,6 +61267,17 @@ class _NotificationSettingsChangesStreamStreamPollReturn extends ffi.Struct {
   external int arg0;
   @ffi.Uint8()
   external int arg1;
+}
+
+class _BackupManagerStateStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
 }
 
 class FfiListActerPin extends Iterable<ActerPin>
@@ -56734,6 +61632,68 @@ class FfiListDeviceRecord extends Iterable<DeviceRecord>
   /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, DeviceRecord element) {
     _api._ffiListDeviceRecordInsert(
+        _box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListEventLocationInfo extends Iterable<EventLocationInfo>
+    implements CustomIterable<EventLocationInfo> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListEventLocationInfo._(this._api, this._box);
+
+  @override
+  Iterator<EventLocationInfo> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListEventLocationInfoLen(_box.borrow());
+  }
+
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  EventLocationInfo elementAt(int index) {
+    final address =
+        _api._ffiListEventLocationInfoElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return EventLocationInfo._(_api, reference);
+  }
+
+  EventLocationInfo operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  EventLocationInfo remove(int index) {
+    final address = _api._ffiListEventLocationInfoRemove(_box.borrow(), index);
+    final reference = _Box(
+        _api, ffi.Pointer.fromAddress(address), "drop_box_EventLocationInfo");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return EventLocationInfo._(_api, reference);
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void add(EventLocationInfo element) {
+    _api._ffiListEventLocationInfoAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, EventLocationInfo element) {
+    _api._ffiListEventLocationInfoInsert(
         _box.borrow(), index, element._box.borrow());
     element._box.move();
   }

@@ -3,10 +3,12 @@ import 'dart:math';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
+import 'package:acter/router/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class ChatsCard extends ConsumerWidget {
   final String spaceId;
@@ -30,7 +32,9 @@ class ChatsCard extends ConsumerWidget {
             error: (error, stack) => Text(
               L10n.of(context).loadingChatsFailed(error),
             ),
-            loading: () => Text(L10n.of(context).loading),
+            loading: () => Skeletonizer(
+              child: Text(L10n.of(context).loading),
+            ),
             data: (chats) {
               if (chats.isEmpty) {
                 return Text(
@@ -47,12 +51,8 @@ class ChatsCard extends ConsumerWidget {
                     itemBuilder: (context, index) => ConvoCard(
                       room: chats[index],
                       showParent: false,
-                      onTap: () => context.goNamed(
-                        Routes.chatroom.name,
-                        pathParameters: {
-                          'roomId': chats[index].getRoomIdStr(),
-                        },
-                      ),
+                      onTap: () =>
+                          goToChat(context, chats[index].getRoomIdStr()),
                     ),
                   ),
                   chats.length > 3
@@ -65,7 +65,9 @@ class ChatsCard extends ConsumerWidget {
                                 pathParameters: {'spaceId': spaceId},
                               );
                             },
-                            child: Text(L10n.of(context).seeAllMyChats(chats.length)),
+                            child: Text(
+                              L10n.of(context).seeAllMyChats(chats.length),
+                            ),
                           ),
                         )
                       : const SizedBox.shrink(),

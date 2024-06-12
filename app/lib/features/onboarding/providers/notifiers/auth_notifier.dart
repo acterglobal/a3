@@ -19,8 +19,6 @@ class AuthStateNotifier extends StateNotifier<bool> {
     await ActerSdk.nuke();
     ref.invalidate(spacesProvider);
 
-    // We are doing as expected, but the lints triggers.
-    // ignore: use_build_context_synchronously
     if (context.mounted) {
       context.goNamed(Routes.main.name);
     }
@@ -69,11 +67,6 @@ class AuthStateNotifier extends StateNotifier<bool> {
       final client = await sdk.register(username, password, displayName, token);
       ref.read(clientProvider.notifier).state = client;
       state = false;
-      // We are doing as expected, but the lints triggers.
-      // ignore: use_build_context_synchronously
-      if (context.mounted) {
-        context.goNamed(Routes.main.name);
-      }
       return null;
     } catch (e) {
       state = false;
@@ -88,15 +81,11 @@ class AuthStateNotifier extends StateNotifier<bool> {
       _log.info('Still has clients, dropping back to other');
       ref.read(clientProvider.notifier).state = sdk.currentClient;
       ref.invalidate(spacesProvider);
-      // We are doing as expected, but the lints triggers.
-      // ignore: use_build_context_synchronously
       if (context.mounted) {
         context.goNamed(Routes.main.name);
       }
     } else {
       _log.warning('No clients left, redir to onboarding');
-      // We are doing as expected, but the lints triggers.
-      // ignore: use_build_context_synchronously
       if (context.mounted) {
         context.goNamed(Routes.main.name);
       }

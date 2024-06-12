@@ -5,10 +5,11 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/chat/convo_with_profile_card.dart';
 import 'package:acter/common/widgets/chat/loading_convo_card.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -114,27 +115,8 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
               },
               menuChildren: [
                 MenuItemButton(
+                  onPressed: onUnmute,
                   child: Text(L10n.of(context).unmute),
-                  onPressed: () async {
-                    final room =
-                        await ref.read(maybeRoomProvider(roomId).future);
-                    if (room == null) {
-                      if (!mounted) return;
-                      EasyLoading.showError(L10n.of(context).roomNotFound);
-                      return;
-                    }
-                    await room.unmute();
-                    if (!mounted) return;
-                    EasyLoading.showSuccess(
-                      L10n.of(context).notificationsUnmuted,
-                    );
-                    await Future.delayed(const Duration(seconds: 1), () {
-                      // FIXME: we want to refresh the view but don't know
-                      //        when the event was confirmed form sync :(
-                      // let's hope that a second delay is reasonable enough
-                      ref.invalidate(maybeRoomProvider(roomId));
-                    });
-                  },
                 ),
               ],
             ),
@@ -145,6 +127,28 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
 
   Future<void> getActiveMembers() async {
     activeMembers = (await widget.room.activeMembers()).toList();
+  }
+
+  Future<void> onUnmute() async {
+    String roomId = widget.room.getRoomIdStr();
+    final room = await ref.read(maybeRoomProvider(roomId).future);
+    if (room == null) {
+      if (!mounted) return;
+      EasyLoading.showError(
+        L10n.of(context).roomNotFound,
+        duration: const Duration(seconds: 3),
+      );
+      return;
+    }
+    await room.unmute();
+    if (!mounted) return;
+    EasyLoading.showToast(L10n.of(context).notificationsUnmuted);
+    await Future.delayed(const Duration(seconds: 1), () {
+      // FIXME: we want to refresh the view but don't know
+      //        when the event was confirmed form sync :(
+      // let's hope that a second delay is reasonable enough
+      ref.invalidate(maybeRoomProvider(roomId));
+    });
   }
 }
 
@@ -159,6 +163,12 @@ class _SubtitleWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final userIds =
+        ref.watch(chatTypingEventProvider(room.getRoomIdStr())).valueOrNull;
+    if (userIds != null && userIds.isNotEmpty) {
+      return renderTypingState(context, userIds, ref);
+    }
+
     RoomEventItem? eventItem = latestMessage.eventItem();
     if (eventItem == null) {
       return const SizedBox.shrink();
@@ -440,15 +450,37 @@ class _SubtitleWidget extends ConsumerWidget {
     return const SizedBox.shrink();
   }
 
-  String getUserPlural(List<types.User> authors) {
-    if (authors.isEmpty) {
-      return '';
-    } else if (authors.length == 1) {
-      return '${authors[0].firstName} is typing...';
-    } else if (authors.length == 2) {
-      return '${authors[0].firstName} and ${authors[1].firstName} is typing...';
+  Widget renderTypingState(
+    BuildContext context,
+    List<User> userIds,
+    WidgetRef ref,
+  ) {
+    final textStyle = Theme.of(context).textTheme.bodySmall!;
+    if (userIds.length == 1) {
+      final userName = simplifyUserId(userIds[0].id.toString());
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Text(L10n.of(context).typingUser1(userName!), style: textStyle),
+      );
+    } else if (userIds.length == 2) {
+      final u1 = simplifyUserId(userIds[0].id.toString());
+      final u2 = simplifyUserId(userIds[1].id.toString());
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Text(
+          L10n.of(context).typingUser2(u1!, u2!),
+          style: textStyle,
+        ),
+      );
     } else {
-      return '${authors[0].firstName} and ${authors.length - 1} others typing...';
+      final u1 = simplifyUserId(userIds[0].id.toString());
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Text(
+          L10n.of(context).typingUser3(u1!, {userIds.length - 1}),
+          style: textStyle,
+        ),
+      );
     }
   }
 }

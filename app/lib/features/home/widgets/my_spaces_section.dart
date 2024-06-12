@@ -1,8 +1,13 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
+
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/tutorial_dialogs/space_overview_tutorials/create_or_join_space_tutorials.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter/features/home/data/keys.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -15,77 +20,143 @@ class MySpacesSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final bookmarkedSpaces = ref.watch(bookmarkedSpacesProvider);
     final spaces = ref.watch(spacesProvider);
+    if (bookmarkedSpaces.isNotEmpty) {
+      return _RenderSpacesSection(
+        spaces: bookmarkedSpaces,
+        limit: bookmarkedSpaces.length,
+        showAll: true,
+        showAllCounter: spaces.length,
+        title: Row(
+          children: [
+            const Icon(Icons.bookmark_outline),
+            Text(
+              L10n.of(context).bookmarkedSpaces,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          ],
+        ),
+      );
+    }
+
+    // fallback
+    if (spaces.isEmpty) {
+      return const _NoSpacesWidget();
+    }
 
     int spacesLimit =
         (limit != null && spaces.length > limit!) ? limit! : spaces.length;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        InkWell(
-          key: DashboardKeys.widgetMySpacesHeader,
-          onTap: () => context.pushNamed(Routes.spaces.name),
-          child: Text(
-            L10n.of(context).mySpaces,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
+    return _RenderSpacesSection(
+      spaces: spaces,
+      limit: spacesLimit,
+      showAll: spacesLimit != spaces.length,
+      showActions: spacesLimit == spaces.length,
+      showAllCounter: spaces.length,
+      title: InkWell(
+        key: DashboardKeys.widgetMySpacesHeader,
+        onTap: () => context.pushNamed(Routes.spaces.name),
+        child: Text(
+          L10n.of(context).mySpaces,
+          style: Theme.of(context).textTheme.titleMedium,
         ),
-        spaces.isEmpty
-            ? const _NoSpacesWidget()
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: spacesLimit,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      return SpaceCard(space: spaces[index]);
-                    },
+      ),
+    );
+  }
+}
+
+class _RenderSpacesSection extends ConsumerWidget {
+  final int limit;
+  final List<Space> spaces;
+  final Widget title;
+  final bool showAll;
+  final bool showActions;
+  final int showAllCounter;
+
+  const _RenderSpacesSection({
+    required this.spaces,
+    required this.limit,
+    required this.title,
+    this.showActions = false,
+    this.showAll = false,
+    this.showAllCounter = 0,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        title,
+        ListView.builder(
+          shrinkWrap: true,
+          itemCount: limit,
+          physics: const NeverScrollableScrollPhysics(),
+          itemBuilder: (context, index) {
+            return SpaceCard(space: spaces[index]);
+          },
+        ),
+        if (showAll)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: ActerInlineTextButton(
+                  onPressed: () {
+                    context.pushNamed(Routes.spaces.name);
+                  },
+                  child: Text(
+                    L10n.of(context).seeAllMySpaces(showAllCounter),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    child: spacesLimit != spaces.length
-                        ? OutlinedButton(
-                            onPressed: () {
-                              context.pushNamed(Routes.spaces.name);
-                            },
-                            child: Text(
-                              L10n.of(context).seeAllMySpaces(spaces.length),
-                            ),
-                          )
-                        : Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              OutlinedButton(
-                                onPressed: () =>
-                                    context.pushNamed(Routes.createSpace.name),
-                                child: Text(L10n.of(context).createSpace),
-                              ),
-                              const SizedBox(height: 10),
-                              ElevatedButton(
-                                onPressed: () =>
-                                    context.pushNamed(Routes.joinSpace.name),
-                                child: Text(L10n.of(context).joinSpace),
-                              ),
-                            ],
-                          ),
-                  ),
-                ],
+                ),
               ),
+            ],
+          ),
+        if (showActions)
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                OutlinedButton(
+                  onPressed: () => context.pushNamed(Routes.createSpace.name),
+                  child: Text(L10n.of(context).createSpace),
+                ),
+                const SizedBox(height: 10),
+                ActerPrimaryActionButton(
+                  onPressed: () => context.pushNamed(
+                    Routes.searchPublicDirectory.name,
+                  ),
+                  child: Text(L10n.of(context).joinSpace),
+                ),
+              ],
+            ),
+          ),
       ],
     );
   }
 }
 
-class _NoSpacesWidget extends ConsumerWidget {
+class _NoSpacesWidget extends ConsumerStatefulWidget {
   const _NoSpacesWidget();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _NoSpacesWidgetState();
+}
+
+class _NoSpacesWidgetState extends ConsumerState<_NoSpacesWidget> {
+  @override
+  void initState() {
+    super.initState();
+    if (!isDesktop) createOrJoinSpaceTutorials(context: context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
         const SizedBox(height: 15),
@@ -126,46 +197,20 @@ class _NoSpacesWidget extends ConsumerWidget {
         ),
         SizedBox(height: MediaQuery.of(context).size.height * 0.15),
         Center(
-          child: ElevatedButton(
+          child: OutlinedButton.icon(
+            key: createNewSpaceKey,
+            icon: const Icon(Icons.chevron_right_outlined),
             onPressed: () => context.pushNamed(Routes.createSpace.name),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.neutral6,
-              foregroundColor: Theme.of(context).colorScheme.neutral,
-              textStyle: Theme.of(context).textTheme.bodyLarge,
-              fixedSize: const Size(311, 61),
-              shape: RoundedRectangleBorder(
-                side: BorderSide.none,
-                borderRadius: BorderRadius.circular(6),
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(L10n.of(context).createNewSpace),
-                const SizedBox(width: 10),
-                const Icon(Icons.chevron_right_outlined),
-              ],
-            ),
+            label: Text(L10n.of(context).createNewSpace),
           ),
         ),
         const SizedBox(height: 36),
         Center(
-          child: ElevatedButton(
+          child: ActerPrimaryActionButton(
+            key: joinExistingSpaceKey,
             onPressed: () {
-              context.pushNamed(Routes.joinSpace.name);
+              context.pushNamed(Routes.searchPublicDirectory.name);
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.transparent,
-              foregroundColor: Theme.of(context).colorScheme.neutral6,
-              textStyle: Theme.of(context).textTheme.bodyLarge,
-              fixedSize: const Size(311, 61),
-              shape: RoundedRectangleBorder(
-                side: BorderSide(
-                  color: Theme.of(context).colorScheme.neutral6,
-                ),
-                borderRadius: BorderRadius.circular(6),
-              ),
-            ),
             child: Text(L10n.of(context).joinExistingSpace),
           ),
         ),

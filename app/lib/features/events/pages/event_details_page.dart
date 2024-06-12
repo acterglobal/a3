@@ -1,19 +1,26 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/report_content.dart';
+import 'package:acter/features/attachments/widgets/attachment_section.dart';
+import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/events/model/keys.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/events/widgets/participants_list.dart';
 import 'package:acter/features/events/widgets/skeletons/event_details_skeleton_widget.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
+import 'package:acter/features/space/widgets/member_avatar.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,6 +28,9 @@ import 'package:go_router/go_router.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:logging/logging.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:path/path.dart' show join;
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 final _log = Logger('a3::event::details');
 
@@ -73,7 +83,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     return SliverAppBar(
       expandedHeight: 200.0,
       pinned: true,
-      actions: [_buildActionMenu(calendarEvent)],
+      actions: [
+        _buildShareAction(calendarEvent),
+        _buildActionMenu(calendarEvent),
+      ],
       flexibleSpace: Container(
         padding: const EdgeInsets.only(top: 20),
         decoration: const BoxDecoration(gradient: primaryGradient),
@@ -87,6 +100,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   Widget _buildActionMenu(CalendarEvent event) {
     //Get membership details
     final spaceId = event.roomIdStr();
+    final canRedact = ref.watch(canRedactProvider(event));
     final membership = ref.watch(roomMembershipProvider(spaceId));
 
     //Create event actions
@@ -114,47 +128,47 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           ),
         );
       }
+    }
 
-      //Delete Event Action
-      if (member.canString('CanRedactOwn') &&
-          member.userId().toString() == event.sender().toString()) {
-        final roomId = event.roomIdStr();
-        actions.addAll([
-          PopupMenuItem(
-            key: EventsKeys.eventDeleteBtn,
-            onTap: () => showAdaptiveDialog(
-              context: context,
-              builder: (context) => RedactContentWidget(
-                removeBtnKey: EventsKeys.eventRemoveBtn,
-                title: L10n.of(context).removeThisPost,
-                eventId: event.eventId().toString(),
-                onSuccess: () {
-                  ref.invalidate(calendarEventProvider);
-                  if (context.mounted) {
-                    context.goNamed(
-                      Routes.spaceEvents.name,
-                      pathParameters: {'spaceId': roomId},
-                    );
-                  }
-                },
-                senderId: event.sender().toString(),
-                roomId: roomId,
-                isSpace: true,
-              ),
-            ),
-            child: Row(
-              children: <Widget>[
-                Icon(
-                  Atlas.trash_can_thin,
-                  color: Theme.of(context).colorScheme.error,
-                ),
-                const SizedBox(width: 10),
-                Text(L10n.of(context).eventRemove),
-              ],
+    //Delete Event Action
+    if (canRedact.valueOrNull == true) {
+      final roomId = event.roomIdStr();
+      actions.addAll([
+        PopupMenuItem(
+          key: EventsKeys.eventDeleteBtn,
+          onTap: () => showAdaptiveDialog(
+            context: context,
+            builder: (context) => RedactContentWidget(
+              removeBtnKey: EventsKeys.eventRemoveBtn,
+              title: L10n.of(context).removeThisPost,
+              eventId: event.eventId().toString(),
+              onSuccess: () {
+                ref.invalidate(calendarEventProvider);
+                if (context.canPop()) context.pop();
+                if (context.mounted) {
+                  context.goNamed(
+                    Routes.spaceEvents.name,
+                    pathParameters: {'spaceId': roomId},
+                  );
+                }
+              },
+              senderId: event.sender().toString(),
+              roomId: roomId,
+              isSpace: true,
             ),
           ),
-        ]);
-      }
+          child: Row(
+            children: <Widget>[
+              Icon(
+                Atlas.trash_can_thin,
+                color: Theme.of(context).colorScheme.error,
+              ),
+              const SizedBox(width: 10),
+              Text(L10n.of(context).eventRemove),
+            ],
+          ),
+        ),
+      ]);
     }
 
     //Report Event Action
@@ -204,6 +218,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           _buildEventDataSet(calendarEvent),
           const SizedBox(height: 10),
           _buildEventDescription(calendarEvent),
+          const SizedBox(height: 40),
+          AttachmentSectionWidget(manager: calendarEvent.attachments()),
+          const SizedBox(height: 40),
+          CommentsSection(manager: calendarEvent.comments()),
           const SizedBox(height: 40),
         ],
       ),
@@ -265,11 +283,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   Future<void> onRsvp(RsvpStatusTag status, WidgetRef ref) async {
+    EasyLoading.show(status: L10n.of(context).updatingRSVP);
     try {
-      EasyLoading.show(
-        status: L10n.of(context).updatingRSVP,
-        dismissOnTap: false,
-      );
       final event =
           await ref.read(calendarEventProvider(widget.calendarId).future);
       final rsvpManager = await event.rsvps();
@@ -290,12 +305,16 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       // refresh cache
       final client = ref.read(alwaysClientProvider);
       await client.waitForRsvp(rsvpId.toString(), null);
+      EasyLoading.dismiss();
       // refresh UI of this page & outer page
       ref.invalidate(myRsvpStatusProvider(widget.calendarId));
     } catch (e, s) {
       _log.severe('Error =>', e, s);
-    } finally {
-      EasyLoading.dismiss();
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(e.toString(), duration: const Duration(seconds: 3));
     }
   }
 
@@ -323,7 +342,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     );
 
     return Container(
-      color: Theme.of(context).colorScheme.background,
+      color: Theme.of(context).colorScheme.surface,
       padding: const EdgeInsets.symmetric(vertical: 15.0),
       child: Row(
         children: [
@@ -353,6 +372,59 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         ],
       ),
     );
+  }
+
+  Widget _buildShareAction(CalendarEvent calendarEvent) {
+    return PopupMenuButton(
+      icon: const Icon(Icons.share),
+      itemBuilder: (ctx) => [
+        PopupMenuItem(
+          onTap: () => onShareEvent(calendarEvent),
+          child: Row(
+            children: <Widget>[
+              const Icon(Icons.share),
+              const SizedBox(width: 10),
+              Text(L10n.of(context).shareIcal),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> onShareEvent(CalendarEvent event) async {
+    try {
+      final filename = event.title().replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_');
+
+      if (isDesktop) {
+        String? outputFile = await FilePicker.platform.saveFile(
+          dialogTitle: 'Please select where to store the file',
+          fileName: '$filename.ics',
+        );
+
+        if (outputFile != null) {
+          // User canceled the picker
+          event.icalForSharing(outputFile);
+          EasyLoading.showToast('File saved to $outputFile');
+        }
+        return;
+      }
+
+      final tempDir = await getTemporaryDirectory();
+      final icalPath = join(tempDir.path, '$filename.ics');
+      event.icalForSharing(icalPath);
+
+      await Share.shareXFiles([
+        XFile(
+          icalPath,
+          mimeType: 'text/calendar',
+        ),
+      ]);
+    } catch (error, stack) {
+      _log.severe('Creating iCal Share Event failed:', error, stack);
+      // ignore: use_build_context_synchronously
+      EasyLoading.showError(L10n.of(context).shareFailed(error));
+    }
   }
 
   Widget _buildEventRsvpActionItem({
@@ -433,41 +505,66 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           return Text(L10n.of(context).noParticipantsGoing);
         }
 
-        List<Widget> avtarList = [];
-        for (final participantId in eventParticipantsList) {
-          final memberInfo = ref.watch(
-            roomMemberProvider((roomId: roomId, userId: participantId)),
-          );
-          var participant = memberInfo.when(
-            data: (data) {
-              final profileData = data.profile;
-              return ActerAvatar(
-                mode: DisplayMode.DM,
-                avatarInfo: AvatarInfo(
-                  uniqueId: roomId,
-                  displayName: profileData.displayName ?? roomId,
-                  avatar: profileData.getAvatarImage(),
-                ),
-                size: 18,
-              );
-            },
-            error: (err, stackTrace) => fallbackAvatar(roomId),
-            loading: () => fallbackAvatar(roomId),
-          );
-          avtarList.add(
-            Padding(padding: const EdgeInsets.all(5.0), child: participant),
-          );
+        final membersCount = eventParticipantsList.length;
+        List<String> firstFiveEventParticipantsList = eventParticipantsList;
+        if (membersCount > 5) {
+          firstFiveEventParticipantsList =
+              firstFiveEventParticipantsList.sublist(0, 5);
         }
 
-        return Wrap(children: avtarList);
+        return GestureDetector(
+          onTap: () => showAllParticipantListDialog(roomId),
+          child: Wrap(
+            direction: Axis.horizontal,
+            spacing: -10,
+            children: [
+              ...firstFiveEventParticipantsList.map(
+                (a) => MemberAvatar(
+                  memberId: a,
+                  roomId: roomId,
+                ),
+              ),
+              if (membersCount > 5)
+                CircleAvatar(
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Text(
+                      '+${membersCount - 5}',
+                      textAlign: TextAlign.center,
+                      textScaler: const TextScaler.linear(0.8),
+                      style: Theme.of(context).textTheme.labelLarge,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void showAllParticipantListDialog(String roomId) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
+      useSafeArea: true,
+      builder: (_) {
+        return FractionallySizedBox(
+          heightFactor: 1,
+          child: ParticipantsList(
+            roomId: roomId,
+            participants: eventParticipantsList.value,
+          ),
+        );
       },
     );
   }
 
   ActerAvatar fallbackAvatar(String roomId) {
     return ActerAvatar(
-      mode: DisplayMode.Space,
-      avatarInfo: AvatarInfo(uniqueId: roomId),
+      options: AvatarOptions(AvatarInfo(uniqueId: roomId)),
     );
   }
 

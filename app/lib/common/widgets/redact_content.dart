@@ -1,15 +1,18 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
+
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logging/logging.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
 
 final _log = Logger('a3::common::redact');
 
@@ -78,7 +81,7 @@ class RedactContentWidget extends ConsumerWidget {
           onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
           child: Text(L10n.of(context).close),
         ),
-        ElevatedButton(
+        ActerPrimaryActionButton(
           key: removeBtnKey,
           onPressed: onRemove ??
               () => redactContent(context, ref, reasonController.text),
@@ -89,13 +92,7 @@ class RedactContentWidget extends ConsumerWidget {
   }
 
   void redactContent(BuildContext ctx, WidgetRef ref, String reason) async {
-    showAdaptiveDialog(
-      context: (ctx),
-      builder: (ctx) => DefaultDialog(
-        title: Text(L10n.of(ctx).removingContent),
-        isLoader: true,
-      ),
-    );
+    EasyLoading.show(status: L10n.of(ctx).removingContent);
     try {
       if (isSpace) {
         final space = await ref.read(spaceProvider(roomId).future);
@@ -113,30 +110,24 @@ class RedactContentWidget extends ConsumerWidget {
         );
       }
 
-      if (ctx.mounted) {
-        Navigator.of(ctx, rootNavigator: true).pop();
-        Navigator.of(ctx, rootNavigator: true).pop(true);
-        customMsgSnackbar(ctx, L10n.of(ctx).contentSuccessfullyRemoved);
-        if (onSuccess != null) {
-          onSuccess!();
-        }
+      if (!ctx.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showToast(L10n.of(ctx).contentSuccessfullyRemoved);
+      if (ctx.canPop()) ctx.pop();
+      if (onSuccess != null) {
+        onSuccess!();
       }
     } catch (e) {
-      if (ctx.mounted) {
-        Navigator.of(ctx, rootNavigator: true).pop();
-        showAdaptiveDialog(
-          context: ctx,
-          builder: (ctx) => DefaultDialog(
-            title: Text('${L10n.of(ctx).redactionFailed} $e'),
-            actions: <Widget>[
-              OutlinedButton(
-                onPressed: () => Navigator.of(ctx, rootNavigator: true).pop(),
-                child: Text(L10n.of(ctx).close),
-              ),
-            ],
-          ),
-        );
+      if (!ctx.mounted) {
+        EasyLoading.dismiss();
+        return;
       }
+      EasyLoading.showError(
+        '${L10n.of(ctx).redactionFailed} $e',
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 }

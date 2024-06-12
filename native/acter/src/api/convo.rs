@@ -2,11 +2,8 @@ use acter_core::{statics::default_acter_convo_states, Error};
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use futures::stream::{Stream, StreamExt};
-use matrix_sdk::{executor::JoinHandle, RoomMemberships};
-use matrix_sdk_ui::{
-    timeline::{PaginationOptions, RoomExt},
-    Timeline,
-};
+use matrix_sdk::{executor::JoinHandle, sync::RoomUpdate, RoomMemberships};
+use matrix_sdk_ui::{timeline::RoomExt, Timeline};
 use ruma::assign;
 use ruma_client_api::room::{create_room, Visibility};
 use ruma_common::{
@@ -28,6 +25,7 @@ use std::{
     sync::{Arc, RwLock},
 };
 use tokio_retry::{strategy::FixedInterval, Retry};
+use tokio_stream::wrappers::BroadcastStream;
 use tracing::{error, info, trace, warn};
 
 use crate::TimelineStream;
@@ -127,7 +125,11 @@ impl Convo {
         let has_latest_msg = latest_message_content.is_some();
         let latest_message = Arc::new(RwLock::new(latest_message_content));
 
-        let user_id = client.user_id().expect("User must be logged in").to_owned();
+        let user_id = client
+            .deref()
+            .user_id()
+            .expect("User must be logged in")
+            .to_owned();
         let latest_msg_room = inner.clone();
         let latest_msg_client = client.clone();
         let last_msg_tl = timeline.clone();
@@ -152,8 +154,7 @@ impl Convo {
             }
             if (!event_found && !has_latest_msg) {
                 // let's trigger a back pagination in hope that helps us...
-                let options = PaginationOptions::until_num_items(20, 10);
-                if let Err(error) = last_msg_tl.paginate_backwards(options).await {
+                if let Err(error) = last_msg_tl.paginate_backwards(10).await {
                     error!(?error, room_id=?latest_msg_room.room_id(), "backpagination failed");
                 }
             }
@@ -200,7 +201,18 @@ impl Convo {
     }
 
     pub fn timeline_stream(&self) -> TimelineStream {
-        TimelineStream::new(self.inner.room.clone(), self.timeline.clone())
+        TimelineStream::new(self.inner.clone(), self.timeline.clone())
+    }
+
+    pub fn num_unread_notification_count(&self) -> u64 {
+        self.inner.unread_notification_counts().notification_count
+    }
+    pub fn num_unread_messages(&self) -> u64 {
+        self.inner.num_unread_messages()
+    }
+
+    pub fn num_unread_mentions(&self) -> u64 {
+        self.inner.unread_notification_counts().highlight_count
     }
 
     pub fn latest_message_ts(&self) -> u64 {
@@ -229,15 +241,15 @@ impl Convo {
         self.inner.room.direct_targets_length() > 0
     }
 
-    pub fn is_favorite(&self) -> bool {
+    pub fn is_bookmarked(&self) -> bool {
         self.inner.room.is_favourite()
     }
 
-    pub async fn set_favorite(&self, is_favorite: bool) -> Result<bool> {
+    pub async fn set_bookmarked(&self, is_bookmarked: bool) -> Result<bool> {
         let room = self.inner.room.clone();
         Ok(RUNTIME
             .spawn(async move {
-                room.set_is_favourite(is_favorite, None)
+                room.set_is_favourite(is_bookmarked, None)
                     .await
                     .map(|()| true)
             })
@@ -460,7 +472,9 @@ impl Client {
             .await?;
         Ok(Convo::new(self.clone(), room).await)
     }
-    pub async fn convo_by_alias_typed(&self, room_alias: OwnedRoomAliasId) -> Result<Convo> {
+
+    // ***_typed fn accepts rust-typed input, not string-based one
+    async fn convo_by_alias_typed(&self, room_alias: OwnedRoomAliasId) -> Result<Convo> {
         let convo = self
             .convos
             .read()
@@ -529,7 +543,8 @@ impl Client {
             .any(|s| *s.room_id() == room_id)
     }
 
-    pub async fn convo_typed(&self, room_id: &OwnedRoomId) -> Option<Convo> {
+    // ***_typed fn accepts rust-typed input, not string-based one
+    pub(crate) async fn convo_typed(&self, room_id: &RoomId) -> Option<Convo> {
         self.convos
             .read()
             .await

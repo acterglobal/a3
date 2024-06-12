@@ -5,7 +5,6 @@ import 'package:acter/features/tasks/providers/tasklists.dart';
 import 'package:acter/features/tasks/providers/tasks.dart';
 import 'package:acter/features/tasks/widgets/due_chip.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,12 +16,14 @@ class TaskEntry extends ConsumerWidget {
   final Task task;
   final bool showBreadCrumb;
   final Function()? onDone;
+  final Function()? onTap;
 
   const TaskEntry({
     super.key,
     required this.task,
     this.showBreadCrumb = false,
     this.onDone,
+    this.onTap,
   });
 
   @override
@@ -40,28 +41,29 @@ class TaskEntry extends ConsumerWidget {
     }
     extraInfo.add(
       Consumer(
-        builder: (context, ref, child) =>
-            ref.watch(taskCommentsProvider(task)).when(
-                  data: (commentsManager) {
-                    if (!commentsManager.hasComments()) {
-                      return const SizedBox.shrink();
-                    }
-                    return Padding(
-                      padding: const EdgeInsets.only(left: 3),
-                      child: Wrap(
-                        children: [
-                          const Icon(Atlas.comment_thin),
-                          Text(
-                            commentsManager.commentsCount().toString(),
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                        ],
+        builder: (context, ref, child) => ref
+            .watch(taskCommentsProvider(task))
+            .when(
+              data: (commentsManager) {
+                if (!commentsManager.hasComments()) {
+                  return const SizedBox.shrink();
+                }
+                return Padding(
+                  padding: const EdgeInsets.only(left: 3),
+                  child: Wrap(
+                    children: [
+                      const Icon(Atlas.comment_thin),
+                      Text(
+                        commentsManager.commentsCount().toString(),
+                        style: Theme.of(context).textTheme.bodySmall,
                       ),
-                    );
-                  },
-                  error: (e, s) => Text(L10n.of(context).loadingCommentsFailed(e)),
-                  loading: () => const SizedBox.shrink(),
-                ),
+                    ],
+                  ),
+                );
+              },
+              error: (e, s) => Text(L10n.of(context).loadingCommentsFailed(e)),
+              loading: () => const SizedBox.shrink(),
+            ),
       ),
     );
 
@@ -84,7 +86,9 @@ class TaskEntry extends ConsumerWidget {
           child: Padding(
             padding: const EdgeInsets.only(right: 10),
             child: Icon(
-              isDone ? Atlas.check_circle_thin : Icons.radio_button_off_outlined,
+              isDone
+                  ? Atlas.check_circle_thin
+                  : Icons.radio_button_off_outlined,
             ),
           ),
           onTap: () async {
@@ -109,7 +113,6 @@ class TaskEntry extends ConsumerWidget {
                 style: isDone
                     ? Theme.of(context).textTheme.bodySmall!.copyWith(
                           fontWeight: FontWeight.w100,
-                          color: AppTheme.brandColorScheme.neutral5,
                         )
                     : Theme.of(context).textTheme.bodyMedium!,
               ),
@@ -118,6 +121,7 @@ class TaskEntry extends ConsumerWidget {
             ],
           ),
           onTap: () {
+            onTap?.call();
             context.pushNamed(
               Routes.task.name,
               pathParameters: {
@@ -137,7 +141,8 @@ class TaskEntry extends ConsumerWidget {
                   const TasksIcon(size: 19),
                   ref.watch(taskListProvider(task.taskListIdStr())).when(
                         data: (tl) => Text(tl.name()),
-                        error: (e, s) => Text(L10n.of(context).loadingFailed(e)),
+                        error: (e, s) =>
+                            Text(L10n.of(context).loadingFailed(e)),
                         loading: () => Skeletonizer(
                           child: Text(L10n.of(context).loading),
                         ),

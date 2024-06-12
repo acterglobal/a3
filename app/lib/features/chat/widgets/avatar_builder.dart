@@ -36,13 +36,14 @@ class AvatarBuilder extends ConsumerWidget {
                 memberId: userId,
               );
             },
-            mode: DisplayMode.DM,
-            avatarInfo: AvatarInfo(
-              uniqueId: userId,
-              displayName: profile.displayName ?? userId,
-              avatar: profile.getAvatarImage(),
+            options: AvatarOptions.DM(
+              AvatarInfo(
+                uniqueId: userId,
+                displayName: profile.displayName ?? userId,
+                avatar: profile.getAvatarImage(),
+              ),
+              size: 14,
             ),
-            size: 14,
           ),
         );
       },
@@ -51,9 +52,10 @@ class AvatarBuilder extends ConsumerWidget {
         return Padding(
           padding: const EdgeInsets.only(right: 10),
           child: ActerAvatar(
-            mode: DisplayMode.DM,
-            avatarInfo: AvatarInfo(uniqueId: userId, displayName: userId),
-            size: 14,
+            options: AvatarOptions.DM(
+              AvatarInfo(uniqueId: userId, displayName: userId),
+              size: 14,
+            ),
           ),
         );
       },
@@ -61,9 +63,10 @@ class AvatarBuilder extends ConsumerWidget {
         child: Padding(
           padding: const EdgeInsets.only(right: 10),
           child: ActerAvatar(
-            mode: DisplayMode.DM,
-            avatarInfo: AvatarInfo(uniqueId: userId, displayName: userId),
-            size: 14,
+            options: AvatarOptions.DM(
+              AvatarInfo(uniqueId: userId, displayName: userId),
+              size: 14,
+            ),
           ),
         ),
       ),

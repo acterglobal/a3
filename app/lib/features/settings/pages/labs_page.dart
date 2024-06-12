@@ -23,9 +23,20 @@ class SettingsLabsPage extends ConsumerWidget {
         body: SettingsList(
           sections: [
             SettingsSection(
-              title: Text(L10n.of(context).notifications),
-              tiles: const [
-                LabsNotificationsSettingsTile(),
+              title: Text(L10n.of(context).labsAppFeatures),
+              tiles: [
+                const LabsNotificationsSettingsTile(),
+                SettingsTile.switchTile(
+                  title: Text(L10n.of(context).encryptionBackupKeyBackup),
+                  description: Text(L10n.of(context).sharedCalendarAndEvents),
+                  initialValue:
+                      ref.watch(isActiveProvider(LabsFeature.encryptionBackup)),
+                  onToggle: (newVal) => updateFeatureState(
+                    ref,
+                    LabsFeature.encryptionBackup,
+                    newVal,
+                  ),
+                ),
               ],
             ),
             SettingsSection(
@@ -40,16 +51,21 @@ class SettingsLabsPage extends ConsumerWidget {
                 ),
               ],
             ),
+            SettingsSection(title: Text(L10n.of(context).chat), tiles: [
+              SettingsTile.switchTile(
+                title: Text(L10n.of(context).unreadMarkerFeatureTitle),
+                description: Text(
+                  L10n.of(context).unreadMarkerFeatureDescription,
+                ),
+                initialValue:
+                    ref.watch(isActiveProvider(LabsFeature.chatUnread)),
+                onToggle: (newVal) =>
+                    updateFeatureState(ref, LabsFeature.chatUnread, newVal),
+              ),
+            ],),
             SettingsSection(
               title: Text(L10n.of(context).apps),
               tiles: [
-                SettingsTile.switchTile(
-                  title: Text(L10n.of(context).events),
-                  description: Text(L10n.of(context).sharedCalendarAndEvents),
-                  initialValue: ref.watch(isActiveProvider(LabsFeature.events)),
-                  onToggle: (newVal) =>
-                      updateFeatureState(ref, LabsFeature.events, newVal),
-                ),
                 SettingsTile.switchTile(
                   key: tasksLabSwitch,
                   title: Text(L10n.of(context).tasks),

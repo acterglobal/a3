@@ -1,12 +1,13 @@
-import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/providers/network_provider.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
+
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
-import 'package:acter/features/settings/super_invites/providers/super_invites_providers.dart';
+import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/gestures.dart';
@@ -53,11 +54,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
   final usernamePattern = RegExp(r'^[a-z0-9._=\-/]+$');
 
-  Future<void> handleSubmit() async {
+  Future<void> handleSubmit(BuildContext context) async {
     if (!formKey.currentState!.validate()) return;
-    final network = ref.read(networkAwareProvider);
-    if (!inCI && network == NetworkStatus.Off) {
-      showNoInternetNotification();
+    if (!inCI && !ref.read(hasNetworkProvider)) {
+      showNoInternetNotification(context);
       return;
     }
     final authNotifier = ref.read(authStateProvider.notifier);
@@ -68,12 +68,19 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       token.text,
       context,
     );
-    if (errorMsg != null) {
-      EasyLoading.showError(errorMsg);
+    if (context.mounted && errorMsg != null) {
+      EasyLoading.showError(errorMsg, duration: const Duration(seconds: 3));
+      return;
     }
     if (token.text.isNotEmpty) {
       final superInvites = ref.read(superInvitesProvider);
       tryRedeem(superInvites, token.text);
+    }
+    if (context.mounted) {
+      context.goNamed(
+        Routes.saveUsername.name,
+        queryParameters: {'username': username.text},
+      );
     }
   }
 
@@ -145,7 +152,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         Text(
           L10n.of(context).createProfile,
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: greenColor,
+                color: Theme.of(context).colorScheme.textHighlight,
               ),
         ),
         const SizedBox(height: 4),
@@ -170,7 +177,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             hintText: L10n.of(context).hintMessageDisplayName,
           ),
           style: Theme.of(context).textTheme.labelLarge,
-          cursorColor: Theme.of(context).colorScheme.tertiary2,
           validator: (val) {
             if (val == null || val.trim().isEmpty) {
               return L10n.of(context).missingName;
@@ -273,25 +279,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
               ),
             ),
             IconButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text(L10n.of(context).inviteCode),
-                      content: Text(L10n.of(context).inviteCodeInfo),
-                      actions: <Widget>[
-                        TextButton(
-                          child: Text(L10n.of(context).ok),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
+              onPressed: showInviteCodeDialog,
               icon: const Icon(Atlas.question_chat, size: 20),
             ),
           ],
@@ -317,6 +305,64 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           },
         ),
       ],
+    );
+  }
+
+  void showInviteCodeDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(L10n.of(context).inviteCode),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(L10n.of(context).inviteCodeInfo),
+              const SizedBox(height: 10),
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.neutral,
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20.0,
+                  vertical: 10.0,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'tryacter',
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
+                    IconButton(
+                      onPressed: () async {
+                        context.pop(); // close the drawer
+                        EasyLoading.showToast(
+                          L10n.of(context).inviteCopiedToClipboard,
+                          toastPosition: EasyLoadingToastPosition.bottom,
+                        );
+                        await Clipboard.setData(
+                          const ClipboardData(text: 'tryacter'),
+                        );
+                      },
+                      icon: const Icon(Icons.copy, size: 20),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            OutlinedButton(
+              child: Text(L10n.of(context).ok),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -360,9 +406,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     final authState = ref.watch(authStateProvider);
     return authState
         ? const Center(child: CircularProgressIndicator())
-        : ElevatedButton(
+        : ActerPrimaryActionButton(
             key: RegisterPage.submitBtn,
-            onPressed: handleSubmit,
+            onPressed: () => handleSubmit(context),
             child: Text(
               L10n.of(context).createProfile,
               style: Theme.of(context).textTheme.bodyMedium,
@@ -378,7 +424,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           L10n.of(context).haveProfile,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
-        TextButton(
+        ActerInlineTextButton(
           key: Keys.loginBtn,
           onPressed: () => context.goNamed(Routes.authLogin.name),
           child: Text(

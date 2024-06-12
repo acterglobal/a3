@@ -1,7 +1,6 @@
-import 'package:acter/common/providers/attachment_providers.dart';
+import 'package:acter/features/attachments/providers/attachment_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/attachments/attachment_item.dart';
+import 'package:acter/features/attachments/widgets/attachment_item.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -102,20 +101,15 @@ class _PinListItemConsumerState extends ConsumerState<PinListItem> {
 
   // handler for gesture interaction on pin
   Future<void> onTap(BuildContext context) async {
-    final bool isLink = widget.pin.isLink();
-    if (isLink) {
-      final target = widget.pin.url()!;
-      await openLink(target, context);
-    } else {
       await openItem(context);
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     final isLink = widget.pin.isLink();
     final spaceId = widget.pin.roomIdStr();
-    final asyncManager = ref.watch(pinAttachmentManagerProvider(widget.pin));
+    final asyncManager =
+        ref.watch(attachmentsManagerProvider(widget.pin.attachments()));
     final attachmentsWidget = [];
 
     if (asyncManager.valueOrNull != null) {
@@ -140,7 +134,6 @@ class _PinListItemConsumerState extends ConsumerState<PinListItem> {
     return InkWell(
       key: Key(widget.pin.eventIdStr()),
       onTap: () => onTap(context),
-      onLongPress: () => openItem(context),
       child: Card(
         child: Padding(
           padding: const EdgeInsets.all(8.0),

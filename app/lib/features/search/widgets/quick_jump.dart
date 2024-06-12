@@ -1,9 +1,8 @@
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/icons/tasks_icon.dart';
+import 'package:acter/features/public_room_search/widgets/maybe_direct_room_action_widget.dart';
 import 'package:acter/features/search/model/keys.dart';
-import 'package:acter/features/search/model/util.dart';
 import 'package:acter/features/search/providers/search.dart';
 import 'package:acter/features/search/widgets/pins_builder.dart';
 import 'package:acter/features/search/widgets/quick_actions_builder.dart';
@@ -13,16 +12,22 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:go_router/go_router.dart';
 
-class QuickJump extends ConsumerWidget {
-  final NavigateTo navigateTo;
+class QuickJump extends ConsumerStatefulWidget {
   final bool expand;
 
   const QuickJump({
     super.key,
     this.expand = false,
-    required this.navigateTo,
   });
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _QuickJumpState();
+}
+
+class _QuickJumpState extends ConsumerState<QuickJump> {
+  final searchTextController = TextEditingController();
 
   List<Widget> primaryButtons(BuildContext context, WidgetRef ref) {
     final provider = ref.watch(featuresProvider);
@@ -50,7 +55,7 @@ class QuickJump extends ConsumerWidget {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
                 ),
               ),
-              onPressed: () => navigateTo(Routes.myProfile),
+              onPressed: () => routeTo(Routes.myProfile),
             ),
             IconButton(
               key: QuickJumpKeys.settings,
@@ -67,43 +72,35 @@ class QuickJump extends ConsumerWidget {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
                 ),
               ),
-              onPressed: () => navigateTo(Routes.settings),
+              onPressed: () => routeTo(Routes.settings),
             ),
-            isActive(LabsFeature.pins)
-                ? IconButton(
-                    key: QuickJumpKeys.pins,
-                    style: IconButton.styleFrom(
-                      side: BorderSide(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withOpacity(0.12),
-                      ),
-                    ),
-                    onPressed: () => navigateTo(Routes.pins),
-                    icon: const Padding(
-                      padding: EdgeInsets.all(5),
-                      child: Icon(Atlas.pin_thin, size: 24),
-                    ),
-                  )
-                : null,
-            isActive(LabsFeature.events)
-                ? IconButton(
-                    style: IconButton.styleFrom(
-                      side: BorderSide(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withOpacity(0.12),
-                      ),
-                    ),
-                    onPressed: () => navigateTo(Routes.calendarEvents),
-                    icon: const Padding(
-                      padding: EdgeInsets.all(5),
-                      child: Icon(Atlas.calendar_dots_thin, size: 24),
-                    ),
-                  )
-                : null,
+            IconButton(
+              key: QuickJumpKeys.pins,
+              style: IconButton.styleFrom(
+                side: BorderSide(
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
+                ),
+              ),
+              onPressed: () => routeTo(Routes.pins),
+              icon: const Padding(
+                padding: EdgeInsets.all(5),
+                child: Icon(Atlas.pin_thin, size: 24),
+              ),
+            ),
+            IconButton(
+              style: IconButton.styleFrom(
+                side: BorderSide(
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
+                ),
+              ),
+              onPressed: () => routeTo(Routes.calendarEvents),
+              icon: const Padding(
+                padding: EdgeInsets.all(5),
+                child: Icon(Atlas.calendar_dots_thin, size: 24),
+              ),
+            ),
             isActive(LabsFeature.tasks)
                 ? IconButton(
                     key: QuickJumpKeys.tasks,
@@ -115,7 +112,7 @@ class QuickJump extends ConsumerWidget {
                             .withOpacity(0.12),
                       ),
                     ),
-                    onPressed: () => navigateTo(Routes.tasks),
+                    onPressed: () => routeTo(Routes.tasks),
 
                     // this is slightly differently sized and padded to look the same as the others
                     icon: const TasksIcon(),
@@ -128,7 +125,7 @@ class QuickJump extends ConsumerWidget {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
                 ),
               ),
-              onPressed: () => navigateTo(Routes.chat),
+              onPressed: () => routeTo(Routes.chat),
               icon: const Padding(
                 padding: EdgeInsets.all(5),
                 child: Icon(
@@ -144,7 +141,7 @@ class QuickJump extends ConsumerWidget {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
                 ),
               ),
-              onPressed: () => navigateTo(Routes.activities),
+              onPressed: () => routeTo(Routes.activities),
               icon: const Padding(
                 padding: EdgeInsets.all(5),
                 child: Icon(Atlas.audio_wave_thin, size: 24),
@@ -156,28 +153,36 @@ class QuickJump extends ConsumerWidget {
     ];
   }
 
+  void routeTo(Routes route) {
+    if (context.canPop()) context.pop();
+    context.pushNamed(route.name);
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final searchValue = ref.watch(searchValueProvider);
     final h = MediaQuery.of(context).size.height;
 
+    final hasSearchTerm = searchValue.isNotEmpty;
+
     List<Widget> body = [
-      SpacesBuilder(navigateTo: navigateTo),
-      PinsBuilder(navigateTo: navigateTo),
+      MaybeDirectRoomActionWidget(searchVal: searchValue),
+      const SpacesBuilder(),
+      const PinsBuilder(),
     ];
-    if (searchValue.isEmpty) {
+    if (!hasSearchTerm) {
       body.add(
         const Divider(indent: 24, endIndent: 24),
       );
       body.addAll(primaryButtons(context, ref));
-      if (expand) {
+      if (widget.expand) {
         body.add(const Spacer());
       } else {
         body.add(
           const Divider(indent: 24, endIndent: 24),
         );
       }
-      body.add(QuickActionsBuilder(navigateTo: navigateTo));
+      body.add(const QuickActionsBuilder());
     }
 
     return Scaffold(
@@ -194,17 +199,26 @@ class QuickJump extends ConsumerWidget {
                     horizontal: 10,
                     vertical: 15,
                   ),
-                  child: TextField(
-                    autofocus: true,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(
-                        Atlas.magnifying_glass_thin,
-                        color: Theme.of(context).colorScheme.neutral6,
-                        size: 18,
-                      ),
-                      hintText: L10n.of(context).jumpTo,
+                  child: SearchBar(
+                    controller: searchTextController,
+                    leading: const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Icon(Atlas.magnifying_glass),
                     ),
-                    onChanged: (String value) async {
+                    hintText: L10n.of(context).jumpTo,
+                    trailing: hasSearchTerm
+                        ? [
+                            InkWell(
+                              onTap: () {
+                                searchTextController.clear();
+                                ref.read(searchValueProvider.notifier).state =
+                                    '';
+                              },
+                              child: const Icon(Icons.clear),
+                            ),
+                          ]
+                        : null,
+                    onChanged: (value) {
                       ref.read(searchValueProvider.notifier).state = value;
                     },
                   ),

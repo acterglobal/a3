@@ -1,8 +1,10 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
-import 'package:acter/common/widgets/attachments/attachment_section.dart';
+import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/report_content.dart';
+import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/pin_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -18,7 +20,6 @@ class PinPage extends ConsumerWidget {
   static const actionMenuKey = Key('pin-action-menu');
   static const editBtnKey = Key('pin-edit-btn');
   static const titleFieldKey = Key('edit-pin-title-field');
-  static const pinAttachmentsKey = Key('pin-attachments');
 
   final String pinId;
 
@@ -37,6 +38,7 @@ class PinPage extends ConsumerWidget {
     final spaceId = pin.roomIdStr();
     List<PopupMenuEntry<String>> actions = [];
     final pinEditNotifier = ref.watch(pinEditProvider(pin).notifier);
+    final canRedact = ref.watch(canRedactProvider(pin));
     final membership = ref.watch(roomMembershipProvider(spaceId));
     if (membership.valueOrNull != null) {
       final memb = membership.requireValue!;
@@ -56,8 +58,7 @@ class PinPage extends ConsumerWidget {
         );
       }
 
-      if (memb.canString('CanRedactOwn') &&
-          memb.userId().toString() == pin.sender().toString()) {
+      if (canRedact.valueOrNull == true) {
         final roomId = pin.roomIdStr();
         actions.add(
           PopupMenuItem<String>(
@@ -116,9 +117,7 @@ class PinPage extends ConsumerWidget {
         title: L10n.of(context).removeThisPin,
         eventId: pin.eventIdStr(),
         onSuccess: () {
-          if (context.mounted && context.canPop()) {
-            context.pop();
-          }
+          if (context.canPop()) context.pop();
         },
         senderId: pin.sender().toString(),
         roomId: roomId,
@@ -178,7 +177,9 @@ class PinPage extends ConsumerWidget {
                 children: <Widget>[
                   PinItem(acterPin),
                   const SizedBox(height: 20),
-                  _buildAttachmentBody(acterPin),
+                  AttachmentSectionWidget(manager: acterPin.attachments()),
+                  const SizedBox(height: 20),
+                  CommentsSection(manager: acterPin.comments()),
                 ],
               ),
               error: (err, st) => Text(L10n.of(context).errorLoadingPin(err)),
@@ -189,48 +190,6 @@ class PinPage extends ConsumerWidget {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildAttachmentBody(ActerPin pin) {
-    var canPostAttachment = false;
-    var canRedact = false;
-
-    return Consumer(
-      builder: (context, ref, child) {
-        final spaceId = pin.roomIdStr();
-        final asyncManager = ref.watch(pinAttachmentManagerProvider(pin));
-        final membership = ref.watch(roomMembershipProvider(spaceId));
-        if (membership.valueOrNull != null) {
-          final memb = membership.requireValue!;
-          if (memb.canString('CanPostPin')) {
-            canPostAttachment = true;
-          }
-          if (memb.canString('CanRedactOwn') &&
-              memb.userId().toString() == pin.sender().toString()) {
-            canRedact = true;
-          }
-        }
-
-        return asyncManager.when(
-          data: (manager) {
-            return AttachmentSectionWidget(
-              key: PinPage.pinAttachmentsKey,
-              attachmentManager: manager,
-              canPostAttachment: canPostAttachment,
-              canRedact: canRedact,
-            );
-          },
-          error: (err, st) =>
-              Text(L10n.of(context).errorLoadingAttachments(err)),
-          loading: () => const Skeletonizer(
-            child: SizedBox(
-              height: 100,
-              width: 100,
-            ),
-          ),
-        );
-      },
     );
   }
 

@@ -2,7 +2,6 @@ import 'package:acter/common/models/types.dart';
 import 'package:acter/common/widgets/image_dialog.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -13,11 +12,11 @@ class ImageMessageBuilder extends ConsumerWidget {
   final types.ImageMessage message;
   final int messageWidth;
   final bool isReplyContent;
-  final Convo convo;
+  final String roomId;
 
   const ImageMessageBuilder({
     super.key,
-    required this.convo,
+    required this.roomId,
     required this.message,
     required this.messageWidth,
     this.isReplyContent = false,
@@ -25,7 +24,6 @@ class ImageMessageBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final roomId = convo.getRoomIdStr();
     final ChatMessageInfo messageInfo = (messageId: message.id, roomId: roomId);
     final mediaState = ref.watch(mediaChatStateProvider(messageInfo));
     if (mediaState.mediaChatLoadingState.isLoading ||
@@ -87,7 +85,7 @@ class ImageMessageBuilder extends ConsumerWidget {
             const SizedBox(height: 8),
             Container(
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.background,
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(8),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -132,38 +130,42 @@ class ImageMessageBuilder extends ConsumerWidget {
             : BorderRadius.circular(15),
         child: ConstrainedBox(
           constraints: BoxConstraints(
-            maxHeight: isReplyContent ? size.height * 0.2 : size.height * 0.3,
-            maxWidth: isReplyContent ? size.width * 0.2 : size.width * 0.3,
+            maxWidth: isReplyContent ? size.height * 0.2 : 300,
+            maxHeight: isReplyContent ? size.width * 0.2 : 300,
           ),
-          child: Image.file(
-            mediaState.mediaFile!,
-            frameBuilder: (
-              BuildContext context,
-              Widget child,
-              int? frame,
-              bool wasSynchronouslyLoaded,
-            ) {
-              if (wasSynchronouslyLoaded) {
-                return child;
-              }
-              return AnimatedOpacity(
-                opacity: frame == null ? 0 : 1,
-                duration: const Duration(seconds: 1),
-                curve: Curves.easeOut,
-                child: child,
-              );
-            },
-            errorBuilder: (
-              BuildContext context,
-              Object url,
-              StackTrace? error,
-            ) {
-              return Text(L10n.of(context).couldNotLoadImage(error.toString()));
-            },
-            fit: BoxFit.cover,
-          ),
+          child: imageFileView(context, mediaState),
         ),
       ),
+    );
+  }
+
+  Widget imageFileView(BuildContext context, MediaChatState mediaState) {
+    return Image.file(
+      mediaState.mediaFile!,
+      frameBuilder: (
+        BuildContext context,
+        Widget child,
+        int? frame,
+        bool wasSynchronouslyLoaded,
+      ) {
+        if (wasSynchronouslyLoaded) {
+          return child;
+        }
+        return AnimatedOpacity(
+          opacity: frame == null ? 0 : 1,
+          duration: const Duration(seconds: 1),
+          curve: Curves.easeOut,
+          child: child,
+        );
+      },
+      errorBuilder: (
+        BuildContext context,
+        Object url,
+        StackTrace? error,
+      ) {
+        return Text(L10n.of(context).couldNotLoadImage(error.toString()));
+      },
+      fit: BoxFit.cover,
     );
   }
 }

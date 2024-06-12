@@ -1,8 +1,12 @@
 import 'dart:convert';
 
+import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
+
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/bug_report/const.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -33,6 +37,8 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
 
   @override
   Widget build(BuildContext context) {
+    final deviceId =
+        ref.watch(alwaysClientProvider.select((a) => a.deviceId().toString()));
     return WithSidebar(
       sidebar: const SettingsPage(),
       child: Scaffold(
@@ -122,6 +128,21 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                         ),
                         value:
                             Text('${sha1.convert(utf8.encode(rageshakeUrl))}'),
+                      ),
+                isDevBuild
+                    ? SettingsTile(
+                        title: Text(
+                          L10n.of(context).deviceId,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        value: Text(deviceId),
+                      )
+                    : SettingsTile(
+                        title: Text(
+                          L10n.of(context).deviceIdDigest,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        value: Text('${sha1.convert(utf8.encode(deviceId))}'),
                       ),
                 SettingsTile(
                   title: Text(
@@ -231,11 +252,9 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
               ),
             ],
           ),
+          actionsAlignment: MainAxisAlignment.spaceEvenly,
           actions: <Widget>[
-            TextButton(
-              style: ButtonStyle(
-                foregroundColor: MaterialStateProperty.all(Colors.red),
-              ),
+            ActerDangerActionButton(
               onPressed: () async {
                 await setSetting(logKey, null);
                 if (context.mounted) Navigator.pop(context);
@@ -248,7 +267,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                 Navigator.pop(context);
               },
             ),
-            ElevatedButton(
+            ActerPrimaryActionButton(
               child: Text(L10n.of(context).save),
               onPressed: () async {
                 await setSetting(logKey, textFieldController.text);

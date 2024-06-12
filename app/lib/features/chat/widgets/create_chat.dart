@@ -1,6 +1,9 @@
 import 'dart:io';
+
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/widgets/user_builder.dart';
+import 'package:acter/features/invite_members/providers/invite_providers.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:acter/common/dialogs/invite_to_room_dialog.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
@@ -19,7 +22,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::chat::create_chat');
 
 /// Room title
 final _titleProvider = StateProvider.autoDispose<String>((ref) => '');
@@ -153,14 +159,19 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
         ref.invalidate(spaceRelationsOverviewProvider(parentId));
       }
       final convo = await client.convoWithRetry(roomIdStr, 120);
-      EasyLoading.dismiss();
-      if (!mounted) return null;
-      EasyLoading.showSuccess(L10n.of(context).chatRoomCreated);
+      if (!mounted) {
+        EasyLoading.dismiss();
+        return null;
+      }
+      EasyLoading.showToast(L10n.of(context).chatRoomCreated);
       return convo;
     } catch (e) {
-      EasyLoading.dismiss();
+      if (!mounted) {
+        EasyLoading.dismiss();
+        return null;
+      }
       EasyLoading.showError(
-        '${L10n.of(context).errorCreatingChat} $e',
+        L10n.of(context).errorCreatingChat(e),
         duration: const Duration(seconds: 3),
       );
       return null;
@@ -255,9 +266,9 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
           direction: Axis.horizontal,
           spacing: 5.0,
           runSpacing: 5.0,
-          children: List.generate(
-            selectedUsers.length,
-            (index) => Container(
+          children: List.generate(selectedUsers.length, (index) {
+            final profile = selectedUsers[index];
+            return Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(30),
@@ -267,21 +278,21 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
               ),
               child: Consumer(
                 builder: (context, ref, child) {
-                  final avatarProv =
-                      ref.watch(userAvatarProvider(selectedUsers[index]));
-                  final displayName = selectedUsers[index].getDisplayName();
-                  final userId = selectedUsers[index].userId().toString();
+                  final avatarProv = ref.watch(userAvatarProvider(profile));
+                  final displayName = profile.getDisplayName();
+                  final userId = profile.userId().toString();
                   return Row(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       ActerAvatar(
-                        mode: DisplayMode.DM,
-                        avatarInfo: AvatarInfo(
-                          uniqueId: userId,
-                          displayName: displayName ?? userId,
-                          avatar: avatarProv.valueOrNull,
+                        options: AvatarOptions.DM(
+                          AvatarInfo(
+                            uniqueId: userId,
+                            displayName: displayName ?? userId,
+                            avatar: avatarProv.valueOrNull,
+                          ),
+                          size: 14,
                         ),
-                        size: 14,
                       ),
                       const SizedBox(width: 5),
                       Text(
@@ -295,14 +306,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                       ),
                       const SizedBox(width: 10),
                       InkWell(
-                        onTap: () => ref
-                            .read(createChatSelectedUsersProvider.notifier)
-                            .update(
-                              (state) => [
-                                for (int j = 0; j < state.length; j++)
-                                  if (j != index) state[j],
-                              ],
-                            ),
+                        onTap: () => onUserRemove(index),
                         child: Icon(
                           Icons.close_outlined,
                           size: 18,
@@ -313,8 +317,8 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                   );
                 },
               ),
-            ),
-          ),
+            );
+          }),
         ),
       ),
     );
@@ -329,54 +333,14 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.ease,
               )
-          : () async {
-              if (selectedUsers.length > 1) {
-                final userIds =
-                    selectedUsers.map((u) => u.userId().toString()).toList();
-                final convo = await widget.onCreateConvo(null, null, userIds);
-                if (context.mounted && convo != null) {
-                  Navigator.of(context).pop();
-                  context.pushNamed(
-                    Routes.chatroom.name,
-                    pathParameters: {'roomId': convo.getRoomIdStr()},
-                  );
-                }
-              } else {
-                final othersUserId = selectedUsers[0].userId().toString();
-                final client = ref.read(alwaysClientProvider);
-                String? id = checkUserDMExists(
-                  othersUserId,
-                  client,
-                );
-                if (id != null) {
-                  Navigator.of(context).pop();
-                  context.pushNamed(
-                    Routes.chatroom.name,
-                    pathParameters: {'roomId': id},
-                  );
-                } else {
-                  final convo = await widget.onCreateConvo(
-                    null,
-                    null,
-                    [othersUserId],
-                  );
-                  if (context.mounted && convo != null) {
-                    Navigator.of(context).pop();
-                    context.pushNamed(
-                      Routes.chatroom.name,
-                      pathParameters: {'roomId': convo.getRoomIdStr()},
-                    );
-                  }
-                }
-              }
-            },
+          : () => onPrimaryAction(selectedUsers),
       contentPadding: const EdgeInsets.only(left: 0),
       leading: selectedUsers.isEmpty
           ? ActerAvatar(
-              mode: DisplayMode.GroupChat,
-              avatarInfo: const AvatarInfo(uniqueId: '#'),
-              size: 48,
-              tooltip: TooltipStyle.None,
+              options: const AvatarOptions(
+                AvatarInfo(uniqueId: '#', tooltip: TooltipStyle.None),
+                size: 48,
+              ),
             )
           : selectedUsers.length > 1
               ? CircleAvatar(
@@ -388,15 +352,16 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                   ),
                 )
               : ActerAvatar(
-                  mode: DisplayMode.DM,
-                  avatarInfo: AvatarInfo(
-                    uniqueId: selectedUsers[0].userId().toString(),
-                    displayName: selectedUsers[0].getDisplayName(),
-                    avatar: ref
-                        .watch(userAvatarProvider(selectedUsers[0]))
-                        .valueOrNull,
+                  options: AvatarOptions.DM(
+                    AvatarInfo(
+                      uniqueId: selectedUsers[0].userId().toString(),
+                      displayName: selectedUsers[0].getDisplayName(),
+                      avatar: ref
+                          .watch(userAvatarProvider(selectedUsers[0]))
+                          .valueOrNull,
+                    ),
+                    size: 20,
                   ),
-                  size: 20,
                 ),
       title: Text(
         _makeTitle(ref),
@@ -451,8 +416,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                       onUp: _onUp,
                     ),
                   ),
-            error: (e, st) =>
-                Text(L10n.of(context).errorLoadingUsers(e)),
+            error: (e, st) => Text(L10n.of(context).errorLoadingUsers(e)),
             loading: () => const Center(
               heightFactor: 5,
               child: CircularProgressIndicator(),
@@ -461,6 +425,76 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
         ],
       ),
     );
+  }
+
+  void onUserRemove(int index) {
+    ref.read(createChatSelectedUsersProvider.notifier).update((state) {
+      final result = List<ffi.UserProfile>.from(state);
+      result.removeAt(index);
+      return result;
+    });
+  }
+
+  Future<void> onPrimaryAction(List<ffi.UserProfile> selectedUsers) async {
+    if (selectedUsers.isEmpty) {
+      widget.controller.animateToPage(
+        1,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.ease,
+      );
+      return;
+    }
+
+    EasyLoading.show(status: L10n.of(context).creatingChat);
+    try {
+      if (selectedUsers.length > 1) {
+        final userIds =
+            selectedUsers.map((u) => u.userId().toString()).toList();
+        final convo = await widget.onCreateConvo(null, null, userIds);
+        EasyLoading.dismiss();
+        if (!mounted) return;
+        Navigator.of(context).pop();
+        if (convo == null) return;
+        context.pushNamed(
+          Routes.chatroom.name,
+          pathParameters: {'roomId': convo.getRoomIdStr()},
+        );
+        return;
+      }
+
+      final othersUserId = selectedUsers[0].userId().toString();
+      final client = ref.read(alwaysClientProvider);
+      String? id = checkUserDMExists(othersUserId, client);
+      if (id != null) {
+        EasyLoading.dismiss();
+        Navigator.of(context).pop();
+        context.pushNamed(
+          Routes.chatroom.name,
+          pathParameters: {'roomId': id},
+        );
+        return;
+      }
+
+      final convo = await widget.onCreateConvo(null, null, [othersUserId]);
+      EasyLoading.dismiss();
+      if (!mounted) return;
+      Navigator.of(context).pop();
+      if (convo == null) return;
+      context.pushNamed(
+        Routes.chatroom.name,
+        pathParameters: {'roomId': convo.getRoomIdStr()},
+      );
+    } catch (e, st) {
+      _log.severe("Couldn't create chat", e, st);
+      if (!mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToCreateChat(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 }
 
@@ -617,31 +651,9 @@ class _CreateRoomFormWidgetConsumerState
                 child: Text(L10n.of(context).cancel),
               ),
               const SizedBox(width: 10),
-              ElevatedButton(
+              ActerPrimaryActionButton(
                 key: CreateChatPage.submiteKey,
-                onPressed: titleInput.trim().isEmpty
-                    ? null
-                    : () async {
-                        if (isSpaceRoom && currentParentSpace == null) {
-                          EasyLoading.showError(
-                            L10n.of(context).parentSpaceMustBeSelected,
-                            duration: const Duration(seconds: 2),
-                          );
-                          return;
-                        }
-                        final convo = await widget.onCreateConvo(
-                          titleInput,
-                          _descriptionController.text.trim(),
-                          [],
-                        );
-                        if (context.mounted && convo != null) {
-                          Navigator.pop(context);
-                          context.pushNamed(
-                            Routes.chatroom.name,
-                            pathParameters: {'roomId': convo.getRoomIdStr()},
-                          );
-                        }
-                      },
+                onPressed: () => _handleSubmit(titleInput, currentParentSpace),
                 child: Text(L10n.of(context).create),
               ),
             ],
@@ -668,6 +680,44 @@ class _CreateRoomFormWidgetConsumerState
       // user cancelled the picker
     }
   }
+
+  Future<void> _handleSubmit(
+    String titleInput,
+    String? currentParentSpace,
+  ) async {
+    String title = titleInput.trim();
+    if (title.isEmpty) return;
+    if (isSpaceRoom && currentParentSpace == null) {
+      EasyLoading.showError(
+        L10n.of(context).parentSpaceMustBeSelected,
+        duration: const Duration(seconds: 2),
+      );
+      return;
+    }
+    EasyLoading.show(status: L10n.of(context).creatingChat);
+    try {
+      final description = _descriptionController.text.trim();
+      final convo = await widget.onCreateConvo(title, description, []);
+      EasyLoading.dismiss();
+      if (mounted && convo != null) {
+        Navigator.pop(context);
+        context.pushNamed(
+          Routes.chatroom.name,
+          pathParameters: {'roomId': convo.getRoomIdStr()},
+        );
+      }
+    } catch (e, st) {
+      _log.severe("Couldn't create chat", e, st);
+      if (!mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToCreateChat(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
+  }
 }
 
 // Searched User tile UI widget
@@ -683,15 +733,7 @@ class _UserWidget extends ConsumerWidget {
     final displayName = profile.getDisplayName();
     final userId = profile.userId().toString();
     return ListTile(
-      onTap: () {
-        final users = ref.read(createChatSelectedUsersProvider);
-        if (!users.contains(profile)) {
-          ref
-              .read(createChatSelectedUsersProvider.notifier)
-              .update((state) => [...state, profile]);
-        }
-        onUp();
-      },
+      onTap: () => onUserAdd(ref),
       title: Text(
         displayName ?? userId,
         style: Theme.of(context).textTheme.bodyMedium,
@@ -707,24 +749,35 @@ class _UserWidget extends ConsumerWidget {
       leading: avatarProv.when(
         data: (data) {
           return ActerAvatar(
-            mode: DisplayMode.DM,
-            avatarInfo: AvatarInfo(
-              uniqueId: userId,
-              displayName: displayName,
-              avatar: data,
+            options: AvatarOptions.DM(
+              AvatarInfo(
+                uniqueId: userId,
+                displayName: displayName,
+                avatar: data,
+              ),
+              size: 18,
             ),
-            size: 18,
           );
         },
         error: (e, st) => Text(L10n.of(context).errorLoadingAvatar(e)),
         loading: () => Skeletonizer(
           child: ActerAvatar(
-            mode: DisplayMode.DM,
-            avatarInfo: AvatarInfo(uniqueId: userId),
-            size: 18,
+            options: AvatarOptions.DM(
+              AvatarInfo(uniqueId: userId),
+              size: 18,
+            ),
           ),
         ),
       ),
     );
+  }
+
+  void onUserAdd(WidgetRef ref) {
+    final users = ref.read(createChatSelectedUsersProvider);
+    if (!users.contains(profile)) {
+      final notifier = ref.read(createChatSelectedUsersProvider.notifier);
+      notifier.update((state) => [...state, profile]);
+    }
+    onUp();
   }
 }

@@ -1,12 +1,12 @@
 use acter_core::{
     events::comments::CommentBuilder,
-    models::{self, ActerModel, AnyActerModel},
+    models::{self, can_redact, ActerModel, AnyActerModel},
 };
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
 use ruma_common::{OwnedEventId, OwnedUserId};
-use ruma_events::room::message::TextMessageEventContent;
+use ruma_events::{room::message::TextMessageEventContent, MessageLikeEventType};
 use std::ops::Deref;
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
@@ -24,11 +24,7 @@ impl Client {
                 else {
                     bail!("{key} is not a comment");
                 };
-                let room = me
-                    .core
-                    .client()
-                    .get_room(&comment.meta.room_id)
-                    .context("Room not found")?;
+                let room = me.room_by_id_typed(&comment.meta.room_id)?;
                 Ok(Comment {
                     client: me.clone(),
                     room,
@@ -67,6 +63,15 @@ impl Comment {
             room: self.room.clone(),
             inner: self.inner.reply_builder(),
         })
+    }
+
+    pub async fn can_redact(&self) -> Result<bool> {
+        let sender = self.sender().to_owned();
+        let room = self.room.clone();
+
+        RUNTIME
+            .spawn(async move { Ok(can_redact(&room, &sender).await?) })
+            .await?
     }
 
     pub fn sender(&self) -> OwnedUserId {
@@ -116,11 +121,19 @@ impl CommentDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
+        let my_id = self.client.user_id()?;
         let inner = self.inner.build()?;
+
         RUNTIME
             .spawn(async move {
-                let resp = room.send(inner).await?;
-                Ok(resp.event_id)
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(inner).await?;
+                Ok(response.event_id)
             })
             .await?
     }
@@ -146,6 +159,10 @@ impl CommentsManager {
             .await?
     }
 
+    pub fn room_id_str(&self) -> String {
+        self.room.room_id().to_string()
+    }
+
     pub fn stats(&self) -> models::CommentsStats {
         self.inner.stats().clone()
     }
@@ -153,7 +170,7 @@ impl CommentsManager {
     pub async fn reload(&self) -> Result<CommentsManager> {
         let client = self.client.clone();
         let room = self.room.clone();
-        let event_id = self.inner.event_id().clone();
+        let event_id = self.inner.event_id().to_owned();
         CommentsManager::new(client, room, event_id).await
     }
 

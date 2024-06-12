@@ -289,16 +289,17 @@ impl CoreClient {
             };
 
             let target = ev.state_key();
-            let target_type = if let Some(parent) = self.client().get_room(target) {
-                if !parent.is_space() {
-                    RelationTargetType::ChatRoom
-                } else if is_acter_space(&parent).await {
-                    RelationTargetType::ActerSpace
-                } else {
-                    RelationTargetType::Space
+            let target_type = match self.client().get_room(target) {
+                Some(parent) => {
+                    if !parent.is_space() {
+                        RelationTargetType::ChatRoom
+                    } else if is_acter_space(&parent).await {
+                        RelationTargetType::ActerSpace
+                    } else {
+                        RelationTargetType::Space
+                    }
                 }
-            } else {
-                RelationTargetType::Unknown
+                None => RelationTargetType::Unknown,
             };
 
             let me = SpaceRelation {
@@ -346,16 +347,17 @@ impl CoreClient {
             };
 
             let target = ev.state_key();
-            let target_type = if let Some(child) = self.client().get_room(target) {
-                if !child.is_space() {
-                    RelationTargetType::ChatRoom
-                } else if is_acter_space(&child).await {
-                    RelationTargetType::ActerSpace
-                } else {
-                    RelationTargetType::Space
+            let target_type = match self.client().get_room(target) {
+                Some(child) => {
+                    if !child.is_space() {
+                        RelationTargetType::ChatRoom
+                    } else if is_acter_space(&child).await {
+                        RelationTargetType::ActerSpace
+                    } else {
+                        RelationTargetType::Space
+                    }
                 }
-            } else {
-                RelationTargetType::Unknown
+                None => RelationTargetType::Unknown,
             };
 
             let order = original

@@ -37,7 +37,6 @@ url = "https://github.com/acterglobal/a3"
         "#;
 
 #[tokio::test]
-#[ignore = "test failed in github runner, it works well in local synapse :("]
 async fn template_creates_space() -> Result<()> {
     let _ = env_logger::try_init();
     let (user, _sync_state, _engine) =
@@ -49,14 +48,14 @@ async fn template_creates_space() -> Result<()> {
     Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
-            if client.pins().await?.is_empty() {
-                bail!("no pins found");
-            } else {
-                Ok(())
+            if client.pins().await?.len() != 2 || client.task_lists().await?.len() != 1 {
+                bail!("not all pins and task lists found");
             }
+            Ok(())
         }
     })
     .await?;
+
     assert_eq!(user.pins().await?.len(), 2);
     assert_eq!(user.task_lists().await?.len(), 1);
 

@@ -1,4 +1,6 @@
+use crate::{OptionBuffer, ThumbnailSize};
 use anyhow::Result;
+use matrix_sdk::media::MediaRequest;
 use ruma::assign;
 use ruma_client_api::directory::get_public_rooms_filtered;
 use ruma_common::{
@@ -6,11 +8,13 @@ use ruma_common::{
     room::RoomType,
     OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, ServerName,
 };
+use ruma_events::room::MediaSource;
 
 use super::{client::Client, RUNTIME};
 
 pub struct PublicSearchResultItem {
     chunk: PublicRoomsChunk,
+    client: Client,
 }
 
 impl PublicSearchResultItem {
@@ -58,6 +62,29 @@ impl PublicSearchResultItem {
         self.chunk.avatar_url.as_ref().map(|a| a.to_string())
     }
 
+    pub fn has_avatar(&self) -> bool {
+        self.chunk.avatar_url.is_some()
+    }
+
+    pub async fn get_avatar(&self, thumb_size: Option<Box<ThumbnailSize>>) -> Result<OptionBuffer> {
+        let Some(url) = self.chunk.avatar_url.clone() else {
+            return Ok(OptionBuffer::new(None));
+        };
+
+        let client = self.client.clone();
+        let format = ThumbnailSize::parse_into_media_format(thumb_size);
+        RUNTIME
+            .spawn(async move {
+                let request = MediaRequest {
+                    source: MediaSource::Plain(url),
+                    format,
+                };
+                let buf = client.media().get_media_content(&request, true).await?;
+                Ok(OptionBuffer::new(Some(buf)))
+            })
+            .await?
+    }
+
     pub fn join_rule(&self) -> PublicRoomJoinRule {
         self.chunk.join_rule.clone()
     }
@@ -76,6 +103,7 @@ impl PublicSearchResultItem {
 
     pub fn room_type_str(&self) -> String {
         match self.chunk.room_type {
+            None => "Chat".to_owned(),
             Some(RoomType::Space) => "Space".to_owned(),
             Some(RoomType::_Custom(_)) => "Custom".to_string(),
             _ => "unknown".to_owned(),
@@ -85,6 +113,7 @@ impl PublicSearchResultItem {
 
 pub struct PublicSearchResult {
     resp: get_public_rooms_filtered::v3::Response,
+    client: Client,
 }
 
 impl PublicSearchResult {
@@ -106,8 +135,27 @@ impl PublicSearchResult {
             .iter()
             .map(|chunk| PublicSearchResultItem {
                 chunk: chunk.clone(),
+                client: self.client.clone(),
             })
             .collect()
+    }
+}
+
+// public API
+impl Client {
+    pub async fn search_public_room(
+        &self,
+        search_term: Option<String>,
+        server: Option<String>,
+        filter_only: Option<String>,
+        since: Option<String>,
+    ) -> Result<PublicSearchResult> {
+        let filter = filter_only.and_then(|s| match s.to_lowercase().as_str() {
+            "spaces" => Some(RoomTypeFilter::Space),
+            "chats" => Some(RoomTypeFilter::Default),
+            _ => None,
+        });
+        self.search_public(search_term, server, since, filter).await
     }
 }
 
@@ -120,7 +168,7 @@ impl Client {
         since: Option<String>,
         filter_only: Option<RoomTypeFilter>,
     ) -> Result<PublicSearchResult> {
-        let c = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
                 let mut filter = Filter::new();
@@ -142,8 +190,8 @@ impl Client {
                     server,
                     room_network,
                 });
-                let resp = c.public_rooms_filtered(request).await?;
-                Ok(PublicSearchResult { resp })
+                let resp = me.core.client().public_rooms_filtered(request).await?;
+                Ok(PublicSearchResult { resp, client: me })
             })
             .await?
     }

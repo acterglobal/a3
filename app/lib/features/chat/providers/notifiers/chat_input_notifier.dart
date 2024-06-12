@@ -1,72 +1,109 @@
+import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
+import 'package:html/parser.dart';
 import 'package:riverpod/riverpod.dart';
 
 class ChatInputNotifier extends StateNotifier<ChatInputState> {
   ChatInputNotifier() : super(const ChatInputState());
 
-  void showEditView(bool value) => state = state.copyWith(showEditView: value);
-
-  void showReplyView(bool value) =>
-      state = state.copyWith(showReplyView: value);
-
-  void showSendBtn(bool value) => state = state.copyWith(sendBtnVisible: value);
-
-  void showEditButton(bool value) =>
-      state = state.copyWith(editBtnVisible: value);
-
-  void toggleAttachment(bool value) =>
-      state = state.copyWith(attachmentVisible: value);
-
-  void emojiRowVisible(bool value) =>
-      state = state.copyWith(emojiRowVisible: value);
-
   void emojiPickerVisible(bool value) =>
       state = state.copyWith(emojiPickerVisible: value);
 
-  void setReplyWidget(Widget? child) {
-    if (mounted) {
-      state = state.copyWith(replyWidget: child);
-    }
-  }
-
-  void setEditWidget(Widget? child) {
-    if (mounted) {
-      state = state.copyWith(editWidget: child);
-    }
-  }
-
   void addMention(String displayName, String authorId) {
-    final mentionReplacements = Map.of(state.mentionReplacements);
-    mentionReplacements['@$displayName'] =
-        '[$displayName](https://matrix.to/#/$authorId)';
-    state = state.copyWith(mentionReplacements: mentionReplacements);
+    final mentions = Map.of(state.mentions);
+    mentions[displayName] = authorId;
+    state = state.copyWith(mentions: mentions);
   }
 
-  void setRepliedToMessage(Message? message) {
-    state = state.copyWith(repliedToMessage: message);
+  void setReplyToMessage(Message message) {
+    state = state.copyWith(
+      selectedMessage: message,
+      selectedMessageState: SelectedMessageState.replyTo,
+    );
   }
 
-  void setEditMessage(Message? message) {
-    state = state.copyWith(editMessage: message);
+  void updateMessage(String value) {
+    state = state.copyWith(message: value);
   }
 
-  void setCurrentMessageId(String? messageId) {
-    state = state.copyWith(currentMessageId: messageId);
+  void setEditMessage(Message message) {
+    final Map<String, String> mentions = {};
+    String messageBodyText = '';
+
+    if (message is TextMessage) {
+      // Parse String Data to HTML document
+      final document = parse(message.text);
+
+      if (document.body != null) {
+        // Get message data
+        String msg = message.text.trim();
+
+        // Get list of 'A Tags' values
+        final aTagElementList = document.getElementsByTagName('a');
+
+        for (final aTagElement in aTagElementList) {
+          final userMentionMessageData =
+              parseUserMentionMessage(msg, aTagElement);
+          msg = userMentionMessageData.parsedMessage;
+
+          // Update mentions data
+          mentions[userMentionMessageData.displayName] =
+              userMentionMessageData.userName;
+        }
+
+        // Parse data
+        final messageDocument = parse(msg);
+        messageBodyText = messageDocument.body?.text ?? '';
+      }
+    }
+    state = state.copyWith(
+      selectedMessage: message,
+      selectedMessageState: SelectedMessageState.edit,
+      mentions: mentions,
+      message: messageBodyText,
+    );
   }
 
-  void prepareSending() {
-    state = state.copyWith(sendBtnVisible: false, allowEdit: false);
+  void setActionsMessage(Message message) {
+    state = state.copyWith(
+      selectedMessage: message,
+      selectedMessageState: SelectedMessageState.actions,
+    );
+  }
+
+  void unsetActions() {
+    if (state.selectedMessageState == SelectedMessageState.actions) {
+      state = state.copyWith(
+        selectedMessage: null,
+        selectedMessageState: SelectedMessageState.none,
+      );
+    }
+  }
+
+  void unsetSelectedMessage() {
+    state = state.copyWith(
+      selectedMessage: null,
+      selectedMessageState: SelectedMessageState.none,
+    );
+  }
+
+  void startSending() {
+    state = state.copyWith(sendingState: SendingState.sending);
   }
 
   void sendingFailed() {
     // reset the state;
-    state = state.copyWith(sendBtnVisible: true, allowEdit: true);
+    state = state.copyWith(sendingState: SendingState.preparing);
   }
 
   void messageSent() {
     // reset the state;
-    state = const ChatInputState();
+    state = state.copyWith(
+      sendingState: SendingState.preparing,
+      selectedMessage: null,
+      selectedMessageState: SelectedMessageState.none,
+      mentions: {},
+    );
   }
 }

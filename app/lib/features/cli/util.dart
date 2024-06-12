@@ -1,20 +1,17 @@
 import 'dart:io';
 
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 final backupFormatFinder = RegExp(r'_backup_[0-9-_T.+]+$');
 
 class AppInfo {
   final String appDocPath;
-  final SharedPreferences preferences;
   final List<String> sessions;
   final List<FileSystemEntity> logFiles;
   final List<String> accounts;
 
   const AppInfo(
     this.appDocPath,
-    this.preferences,
     this.sessions,
     this.logFiles,
     this.accounts,
@@ -22,8 +19,7 @@ class AppInfo {
 
   static Future<AppInfo> make() async {
     String appDocPath = await appDir();
-    SharedPreferences pref = await sharedPrefs();
-    List<String> sessions = (pref.getStringList(defaultSessionKey) ?? []);
+    List<String> sessions = await ActerSdk.sessionKeys() ?? [];
 
     // directory
     final dir = Directory(appDocPath);
@@ -57,6 +53,6 @@ class AppInfo {
           .changed
           .compareTo(FileStat.statSync(a.path).changed),
     );
-    return AppInfo(appDocPath, pref, sessions, logFiles, accounts);
+    return AppInfo(appDocPath, sessions, logFiles, accounts);
   }
 }

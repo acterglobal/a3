@@ -1,10 +1,18 @@
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/invite_members/pages/invite_indicidual_users.dart';
+import 'package:acter/features/invite_members/pages/invite_page.dart';
 import 'package:acter/features/events/pages/create_edit_event_page.dart';
 import 'package:acter/features/events/pages/events_page.dart';
 import 'package:acter/features/events/pages/event_details_page.dart';
 import 'package:acter/features/home/pages/dashboard.dart';
+import 'package:acter/features/invite_members/pages/invite_pending.dart';
+import 'package:acter/features/invite_members/pages/invite_space_members.dart';
+import 'package:acter/features/invite_members/pages/share_invite_code.dart';
 import 'package:acter/features/pins/pages/pin_page.dart';
 import 'package:acter/features/pins/pages/pins_page.dart';
+import 'package:acter/features/settings/pages/backup_page.dart';
+import 'package:acter/features/settings/pages/change_password.dart';
+import 'package:acter/features/settings/pages/chat_settings_page.dart';
 import 'package:acter/features/settings/pages/language_select_page.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/profile/pages/my_profile_page.dart';
@@ -15,19 +23,21 @@ import 'package:acter/features/settings/pages/labs_page.dart';
 import 'package:acter/features/settings/pages/licenses_page.dart';
 import 'package:acter/features/settings/pages/notifications_page.dart';
 import 'package:acter/features/settings/pages/sessions_page.dart';
-import 'package:acter/features/settings/super_invites/pages/super_invites.dart';
+import 'package:acter/features/space/settings/pages/visibility_accessibility_page.dart';
+import 'package:acter/features/super_invites/pages/super_invites.dart';
 import 'package:acter/features/space/pages/chats_page.dart';
 import 'package:acter/features/space/pages/events_page.dart';
 import 'package:acter/features/space/pages/members_page.dart';
 import 'package:acter/features/space/pages/overview_page.dart';
 import 'package:acter/features/space/pages/pins_page.dart';
-import 'package:acter/features/space/pages/related_spaces_page.dart';
+import 'package:acter/features/space/pages/sub_spaces_page.dart';
 import 'package:acter/features/space/pages/tasks_page.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
 import 'package:acter/features/space/settings/pages/index_page.dart';
 import 'package:acter/features/space/settings/pages/notification_configuration_page.dart';
-import 'package:acter/features/spaces/pages/join_space.dart';
+import 'package:acter/features/public_room_search/pages/search_public_directory.dart';
+import 'package:acter/features/spaces/pages/create_space_page.dart';
 import 'package:acter/features/spaces/pages/spaces_page.dart';
 import 'package:acter/features/tasks/pages/task_list_page.dart';
 import 'package:acter/features/tasks/pages/task_page.dart';
@@ -87,6 +97,17 @@ List<RouteBase> makeHomeShellRoutes(ref) {
       },
     ),
     GoRoute(
+      name: Routes.settingsChat.name,
+      path: Routes.settingsChat.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: const ChatSettingsPage(),
+        );
+      },
+    ),
+    GoRoute(
       name: Routes.settingNotifications.name,
       path: Routes.settingNotifications.route,
       redirect: authGuardRedirect,
@@ -142,6 +163,17 @@ List<RouteBase> makeHomeShellRoutes(ref) {
       },
     ),
     GoRoute(
+      name: Routes.settingBackup.name,
+      path: Routes.settingBackup.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: const BackupPage(),
+        );
+      },
+    ),
+    GoRoute(
       name: Routes.settingLanguage.name,
       path: Routes.settingLanguage.route,
       redirect: authGuardRedirect,
@@ -174,7 +206,17 @@ List<RouteBase> makeHomeShellRoutes(ref) {
         );
       },
     ),
-
+    GoRoute(
+      name: Routes.changePassword.name,
+      path: Routes.changePassword.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: const ChangePasswordPage(),
+        );
+      },
+    ),
     GoRoute(
       name: Routes.spaceRelatedSpaces.name,
       path: Routes.spaceRelatedSpaces.route,
@@ -183,7 +225,7 @@ List<RouteBase> makeHomeShellRoutes(ref) {
         tabKeyNotifier.switchTo(const Key('spaces'));
         return NoTransitionPage(
           key: state.pageKey,
-          child: RelatedSpacesPage(
+          child: SubSpacesPage(
             spaceIdOrAlias: state.pathParameters['spaceId']!,
           ),
         );
@@ -274,13 +316,15 @@ List<RouteBase> makeHomeShellRoutes(ref) {
       },
     ),
     GoRoute(
-      name: Routes.joinSpace.name,
-      path: Routes.joinSpace.route,
+      name: Routes.searchPublicDirectory.name,
+      path: Routes.searchPublicDirectory.route,
       redirect: authGuardRedirect,
       pageBuilder: (context, state) {
         return NoTransitionPage(
           key: state.pageKey,
-          child: const JoinSpacePage(),
+          child: SearchPublicDirectory(
+            query: state.uri.queryParameters['query'],
+          ),
         );
       },
     ),
@@ -318,6 +362,19 @@ List<RouteBase> makeHomeShellRoutes(ref) {
           key: state.pageKey,
           child: SpaceAppsSettingsPage(
             spaceId: state.pathParameters['spaceId']!,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.spaceSettingsVisibility.name,
+      path: Routes.spaceSettingsVisibility.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: VisibilityAccessibilityPage(
+            roomId: state.pathParameters['spaceId']!,
           ),
         );
       },
@@ -439,6 +496,85 @@ List<RouteBase> makeHomeShellRoutes(ref) {
           key: state.pageKey,
           child: EventDetailPage(
             calendarId: state.pathParameters['calendarId']!,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.createSpace.name,
+      path: Routes.createSpace.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: CreateSpacePage(
+            initialParentsSpaceId: state.uri.queryParameters['parentSpaceId'],
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.spaceInvite.name,
+      path: Routes.spaceInvite.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: InvitePage(
+            roomId: state.pathParameters['spaceId']!,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.inviteIndividual.name,
+      path: Routes.inviteIndividual.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: InviteIndividualUsers(
+            roomId: state.uri.queryParameters['roomId']!,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.inviteSpaceMembers.name,
+      path: Routes.inviteSpaceMembers.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: InviteSpaceMembers(
+            roomId: state.uri.queryParameters['roomId']!,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.shareInviteCode.name,
+      path: Routes.shareInviteCode.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: ShareInviteCode(
+            inviteCode: state.uri.queryParameters['inviteCode']!,
+            roomId: state.uri.queryParameters['roomId']!,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.invitePending.name,
+      path: Routes.invitePending.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: InvitePending(
+            roomId: state.uri.queryParameters['roomId']!,
           ),
         );
       },

@@ -1,4 +1,5 @@
 import 'package:acter/common/animations/like_animation.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -43,7 +44,7 @@ class _NewsWidgetState extends ConsumerState<NewsWidget> {
               title: L10n.of(context).youHaveNoUpdates,
               subtitle: L10n.of(context).createPostsAndEngageWithinSpace,
               image: 'assets/images/empty_updates.svg',
-              primaryButton: ElevatedButton(
+              primaryButton: ActerPrimaryActionButton(
                 onPressed: () => context.pushNamed(Routes.actionAddUpdate.name),
                 child: Text(L10n.of(context).createNewUpdate),
               ),

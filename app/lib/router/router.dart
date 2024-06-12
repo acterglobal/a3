@@ -1,4 +1,4 @@
-import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/pages/not_found.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
@@ -110,6 +110,8 @@ final GlobalKey<NavigatorState> rootNavKey = GlobalKey<NavigatorState>(
   debugLabel: 'root',
 );
 
+final homeShellKey = GlobalKey(debugLabel: 'home-shell');
+
 final GlobalKey<NavigatorState> homeTabNavKey = GlobalKey<NavigatorState>(
   debugLabel: 'homeTabNavKey',
 );
@@ -136,15 +138,14 @@ List<RouteBase> makeRoutes(Ref ref) {
         GoRouterState state,
         StatefulNavigationShell navigationShell,
       ) {
-        return HomeShell(navigationShell: navigationShell);
+        return HomeShell(key: homeShellKey, navigationShell: navigationShell);
       },
-      branches:
-          isDesktop ? desktopShellBranches(ref) : mobileShellBranches(ref),
+      branches: shellBranches(ref),
     ),
   ];
 }
 
-List<StatefulShellBranch> mobileShellBranches(Ref ref) {
+List<StatefulShellBranch> shellBranches(Ref ref) {
   return [
     StatefulShellBranch(
       navigatorKey: homeTabNavKey,
@@ -169,23 +170,12 @@ List<StatefulShellBranch> mobileShellBranches(Ref ref) {
   ];
 }
 
-List<StatefulShellBranch> desktopShellBranches(Ref ref) {
-  return [
-    StatefulShellBranch(
-      navigatorKey: searchTabNavKey,
-      routes: makeSearchShellRoutes(ref),
-    ),
-    StatefulShellBranch(
-      navigatorKey: homeTabNavKey,
-      routes: makeHomeShellRoutes(ref),
-    ),
-    StatefulShellBranch(
-      navigatorKey: chatTabNavKey,
-      routes: makeChatShellRoutes(ref),
-    ),
-    StatefulShellBranch(
-      navigatorKey: activitiesTabNavKey,
-      routes: makeActivitiesShellRoutes(ref),
-    ),
-  ];
+GoRouter makeRouter(Ref ref) {
+  return GoRouter(
+    errorBuilder: (context, state) => NotFoundPage(routerState: state),
+    navigatorKey: rootNavKey,
+    initialLocation: '/',
+    debugLogDiagnostics: true,
+    routes: makeRoutes(ref),
+  );
 }

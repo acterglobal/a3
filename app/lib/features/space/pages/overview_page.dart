@@ -5,12 +5,14 @@ import 'package:acter/features/space/widgets/chats_card.dart';
 import 'package:acter/features/space/widgets/events_card.dart';
 import 'package:acter/features/space/widgets/links_card.dart';
 import 'package:acter/features/space/widgets/non_acter_space_card.dart';
-import 'package:acter/features/space/widgets/related_spaces_card.dart';
+import 'package:acter/features/space/widgets/related_spaces/recommended_spaces.dart';
+import 'package:acter/features/space/widgets/related_spaces/sub_spaces_card.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class ActerSpaceChecker extends ConsumerWidget {
   final Widget child;
@@ -30,8 +32,9 @@ class ActerSpaceChecker extends ConsumerWidget {
     final expCheck = expectation ?? (a) => a != null;
     return appSettings.when(
       data: (data) => expCheck(data) ? child : const SizedBox.shrink(),
-      error: (error, stackTrace) => Text(L10n.of(context).failedToLoadSpace(error)),
-      loading: () => const SizedBox.shrink(),
+      error: (error, stackTrace) =>
+          Text(L10n.of(context).failedToLoadSpace(error)),
+      loading: () => Skeletonizer.zone(child: child),
     );
   }
 }
@@ -46,40 +49,32 @@ class SpaceOverview extends ConsumerWidget {
     // get platform of context.
     return DecoratedBox(
       decoration: const BoxDecoration(gradient: primaryGradient),
-      child: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
-          ),
-          SliverToBoxAdapter(
-            child: AboutCard(spaceId: spaceIdOrAlias),
-          ),
-          SliverToBoxAdapter(
-            child: ActerSpaceChecker(
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
+            AboutCard(spaceId: spaceIdOrAlias),
+            ActerSpaceChecker(
               spaceId: spaceIdOrAlias,
               expectation: (a) => a == null,
               child: NonActerSpaceCard(spaceId: spaceIdOrAlias),
             ),
-          ),
-          SliverToBoxAdapter(
-            child: ActerSpaceChecker(
+            ActerSpaceChecker(
               spaceId: spaceIdOrAlias,
               expectation: (a) => a?.events().active() ?? false,
               child: EventsCard(spaceId: spaceIdOrAlias),
             ),
-          ),
-          SliverToBoxAdapter(
-            child: ActerSpaceChecker(
+            ActerSpaceChecker(
               spaceId: spaceIdOrAlias,
               expectation: (a) => a?.pins().active() ?? false,
               child: LinksCard(spaceId: spaceIdOrAlias),
             ),
-          ),
-          SliverToBoxAdapter(
-            child: ChatsCard(spaceId: spaceIdOrAlias),
-          ),
-          RelatedSpacesCard(spaceId: spaceIdOrAlias),
-        ],
+            ChatsCard(spaceId: spaceIdOrAlias),
+            SubSpacesCard(spaceId: spaceIdOrAlias),
+            RecommendedSpaceCard(spaceId: spaceIdOrAlias),
+          ],
+        ),
       ),
     );
   }

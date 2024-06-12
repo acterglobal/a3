@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
-import 'package:acter/common/widgets/default_dialog.dart';
+
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/profile/widgets/skeletons/my_profile_skeletons_widget.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
@@ -52,12 +52,13 @@ class _ChangeDisplayNameState extends State<ChangeDisplayName> {
           ],
         ),
       ),
+      actionsAlignment: MainAxisAlignment.spaceEvenly,
       actions: <Widget>[
-        TextButton(
+        OutlinedButton(
           onPressed: () => Navigator.pop(context, null),
           child: Text(L10n.of(context).cancel),
         ),
-        TextButton(
+        ActerPrimaryActionButton(
           onPressed: () {
             if (!_formKey.currentState!.validate()) return;
             final currentUserName = account.profile.displayName;
@@ -93,26 +94,18 @@ class MyProfilePage extends StatelessWidget {
       builder: (BuildContext context) => ChangeDisplayName(account: profile),
     );
 
-    if (newText != null && context.mounted) {
-      showAdaptiveDialog(
-        context: context,
-        builder: (context) => DefaultDialog(
-          title: Text(
-            L10n.of(context).updatingDisplayName,
-            style: Theme.of(context).textTheme.titleSmall,
-          ),
-          isLoader: true,
-        ),
-      );
-      await profile.account.setDisplayName(newText);
-      ref.invalidate(accountProfileProvider);
+    if (!context.mounted) return;
+    if (newText == null) return;
 
-      if (!context.mounted) {
-        return;
-      }
-      Navigator.of(context, rootNavigator: true).pop();
-      customMsgSnackbar(context, L10n.of(context).displayNameUpdateSubmitted);
+    EasyLoading.show(status: L10n.of(context).updatingDisplayName);
+    await profile.account.setDisplayName(newText);
+    ref.invalidate(accountProfileProvider);
+
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return;
     }
+    EasyLoading.showToast(L10n.of(context).displayNameUpdateSubmitted);
   }
 
   Future<void> updateAvatar(
@@ -124,9 +117,9 @@ class MyProfilePage extends StatelessWidget {
       dialogTitle: L10n.of(context).uploadAvatar,
       type: FileType.image,
     );
-    if (result != null && context.mounted) {
+    if (!context.mounted) return;
+    if (result != null) {
       EasyLoading.show(status: L10n.of(context).updatingProfileImage);
-
       final file = result.files.first;
       await profile.account.uploadAvatar(file.path!);
       ref.invalidate(accountProfileProvider);
@@ -190,15 +183,7 @@ class MyProfilePage extends StatelessWidget {
                       title: L10n.of(context).username,
                       subTitle: userId,
                       trailingIcon: Atlas.pages,
-                      onPressed: () {
-                        Clipboard.setData(
-                          ClipboardData(text: userId),
-                        );
-                        customMsgSnackbar(
-                          context,
-                          L10n.of(context).usernameCopiedToClipboard,
-                        );
-                      },
+                      onPressed: () => _onCopy(userId, context),
                     ),
                     const SizedBox(height: 25),
                   ],
@@ -228,13 +213,14 @@ class MyProfilePage extends StatelessWidget {
           child: Stack(
             children: [
               ActerAvatar(
-                mode: DisplayMode.DM,
-                avatarInfo: AvatarInfo(
-                  uniqueId: data.account.userId().toString(),
-                  avatar: data.profile.getAvatarImage(),
-                  displayName: data.profile.displayName,
+                options: AvatarOptions.DM(
+                  AvatarInfo(
+                    uniqueId: data.account.userId().toString(),
+                    avatar: data.profile.getAvatarImage(),
+                    displayName: data.profile.displayName,
+                  ),
+                  size: 50,
                 ),
-                size: 50,
               ),
               Positioned.fill(
                 child: Align(
@@ -249,10 +235,7 @@ class MyProfilePage extends StatelessWidget {
                       ),
                       color: Theme.of(context).colorScheme.surface,
                     ),
-                    child: const Icon(
-                      Icons.edit,
-                      size: 16,
-                    ),
+                    child: const Icon(Icons.edit, size: 16),
                   ),
                 ),
               ),
@@ -291,5 +274,10 @@ class MyProfilePage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _onCopy(String userId, BuildContext context) {
+    Clipboard.setData(ClipboardData(text: userId));
+    EasyLoading.showToast(L10n.of(context).usernameCopiedToClipboard);
   }
 }

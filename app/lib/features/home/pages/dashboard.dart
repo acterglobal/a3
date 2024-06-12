@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
+
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -35,9 +37,7 @@ class Dashboard extends ConsumerWidget {
       children.add(const MyTasksSection(limit: 5));
     }
 
-    if (isActive(LabsFeature.events)) {
-      children.add(const MyEventsSection(limit: 5));
-    }
+    children.add(const MyEventsSection(limit: 5));
 
     if (children.isEmpty) {
       children.add(const SliverToBoxAdapter(child: MySpacesSection()));
@@ -69,12 +69,13 @@ class Dashboard extends ConsumerWidget {
           title: L10n.of(context).youAreNotAMemberOfAnySpaceYet,
           subtitle: L10n.of(context).createOrJoinSpaceDescription,
           image: 'assets/images/empty_home.svg',
-          primaryButton: ElevatedButton(
+          primaryButton: ActerPrimaryActionButton(
             onPressed: () => context.pushNamed(Routes.createSpace.name),
             child: Text(L10n.of(context).createNewSpace),
           ),
           secondaryButton: OutlinedButton(
-            onPressed: () => context.pushNamed(Routes.joinSpace.name),
+            onPressed: () =>
+                context.pushNamed(Routes.searchPublicDirectory.name),
             child: Text(L10n.of(context).joinExistingSpace),
           ),
         ),
@@ -96,9 +97,10 @@ class Dashboard extends ConsumerWidget {
                     replacement: InkWell(
                       onTap: () => context.pushNamed(Routes.authLogin.name),
                       child: ActerAvatar(
-                        mode: DisplayMode.DM,
-                        avatarInfo: AvatarInfo(
-                          uniqueId: UniqueKey().toString(),
+                        options: AvatarOptions.DM(
+                          AvatarInfo(
+                            uniqueId: UniqueKey().toString(),
+                          ),
                         ),
                       ),
                     ),

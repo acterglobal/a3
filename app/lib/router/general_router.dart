@@ -1,4 +1,3 @@
-import 'package:acter/common/dialogs/invite_to_room_dialog.dart';
 import 'package:acter/common/pages/fatal_fail.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -12,15 +11,16 @@ import 'package:acter/features/onboarding/pages/forgot_password.dart';
 import 'package:acter/features/onboarding/pages/intro_page.dart';
 import 'package:acter/features/onboarding/pages/intro_profile.dart';
 import 'package:acter/features/onboarding/pages/login_page.dart';
+import 'package:acter/features/onboarding/pages/link_email_page.dart';
 import 'package:acter/features/onboarding/pages/register_page.dart';
+import 'package:acter/features/onboarding/pages/save_username_page.dart';
 import 'package:acter/features/onboarding/pages/start_page.dart';
+import 'package:acter/features/onboarding/pages/upload_avatar_page.dart';
 import 'package:acter/features/pins/pages/create_pin_page.dart';
 import 'package:acter/features/search/pages/quick_jump.dart';
-import 'package:acter/features/settings/super_invites/pages/create.dart';
+import 'package:acter/features/super_invites/pages/create.dart';
 import 'package:acter/features/space/sheets/edit_space_sheet.dart';
 import 'package:acter/features/space/sheets/link_room_sheet.dart';
-import 'package:acter/features/spaces/sheets/create_space_sheet.dart';
-import 'package:acter/features/tasks/dialogs/create_task_list_sheet.dart';
 import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/cupertino.dart';
@@ -70,6 +70,25 @@ List<RouteBase> makeGeneralRoutes() {
       name: Routes.authRegister.name,
       path: Routes.authRegister.route,
       builder: (context, state) => const RegisterPage(),
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.saveUsername.name,
+      path: Routes.saveUsername.route,
+      builder: (context, state) =>
+          SaveUsernamePage(username: state.uri.queryParameters['username']!),
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.linkEmail.name,
+      path: Routes.linkEmail.route,
+      builder: (context, state) => LinkEmailPage(),
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.uploadAvatar.name,
+      path: Routes.uploadAvatar.route,
+      builder: (context, state) => UploadAvatarPage(),
     ),
     GoRoute(
       parentNavigatorKey: rootNavKey,
@@ -144,30 +163,6 @@ List<RouteBase> makeGeneralRoutes() {
     ),
     GoRoute(
       parentNavigatorKey: rootNavKey,
-      name: Routes.actionAddTaskList.name,
-      path: Routes.actionAddTaskList.route,
-      pageBuilder: (context, state) {
-        return SideSheetPage(
-          key: state.pageKey,
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return SlideTransition(
-              position: Tween(
-                begin: const Offset(1, 0),
-                end: const Offset(0, 0),
-              ).animate(
-                animation,
-              ),
-              child: child,
-            );
-          },
-          child: CreateTaskListSheet(
-            initialSelectedSpace: state.uri.queryParameters['spaceId'],
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      parentNavigatorKey: rootNavKey,
       name: Routes.actionCreateSuperInvite.name,
       path: Routes.actionCreateSuperInvite.route,
       pageBuilder: (context, state) {
@@ -186,30 +181,6 @@ List<RouteBase> makeGeneralRoutes() {
           },
           child: CreateSuperInviteTokenPage(
             token: state.extra != null ? state.extra as SuperInviteToken : null,
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      parentNavigatorKey: rootNavKey,
-      name: Routes.createSpace.name,
-      path: Routes.createSpace.route,
-      pageBuilder: (context, state) {
-        return SideSheetPage(
-          key: state.pageKey,
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return SlideTransition(
-              position: Tween(
-                begin: const Offset(1, 0),
-                end: const Offset(0, 0),
-              ).animate(
-                animation,
-              ),
-              child: child,
-            );
-          },
-          child: CreateSpacePage(
-            initialParentsSpaceId: state.uri.queryParameters['parentSpaceId'],
           ),
         );
       },
@@ -325,26 +296,6 @@ List<RouteBase> makeGeneralRoutes() {
           child: EditSpacePage(spaceId: state.uri.queryParameters['spaceId']),
         );
       },
-    ),
-    GoRoute(
-      parentNavigatorKey: rootNavKey,
-      name: Routes.spaceInvite.name,
-      path: Routes.spaceInvite.route,
-      pageBuilder: (context, state) => DialogPage(
-        builder: (BuildContext ctx) => InviteToRoomDialog(
-          roomId: state.pathParameters['spaceId']!,
-        ),
-      ),
-    ),
-    GoRoute(
-      parentNavigatorKey: rootNavKey,
-      name: Routes.chatInvite.name,
-      path: Routes.chatInvite.route,
-      pageBuilder: (context, state) => DialogPage(
-        builder: (BuildContext ctx) => InviteToRoomDialog(
-          roomId: state.pathParameters['chatId']!,
-        ),
-      ),
     ),
     GoRoute(
       parentNavigatorKey: rootNavKey,

@@ -1,12 +1,38 @@
 use acter::{
-    matrix_sdk::config::StoreConfig, ruma_common::OwnedRoomId, testing::ensure_user, Client,
+    matrix_sdk::config::StoreConfig, ruma_common::OwnedRoomId, testing::ensure_user, Client, Convo,
     CreateConvoSettingsBuilder, CreateSpaceSettingsBuilder, SyncState,
 };
 use acter_core::templates::Engine;
 use anyhow::Result;
 use futures::{pin_mut, stream::StreamExt};
-use tracing::trace;
+use tokio_retry::{
+    strategy::{jitter, FibonacciBackoff},
+    Retry,
+};
+use tracing::{info, trace};
 use uuid::Uuid;
+
+pub async fn wait_for_convo_joined(client: Client, convo_id: OwnedRoomId) -> Result<Convo> {
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    Retry::spawn(retry_strategy, move || {
+        let client = client.clone();
+        let convo_id_str = convo_id.to_string();
+        async move { client.convo(convo_id_str).await }
+    })
+    .await
+}
+
+pub async fn accept_all_invites(client: Client) -> Result<Vec<OwnedRoomId>> {
+    let user_id = client.user_id()?;
+    let mut rooms = vec![];
+    for invited in client.invited_rooms().iter() {
+        let room_id = invited.room_id();
+        info!(" - {user_id} accepting invite to {room_id}",);
+        rooms.push(room_id.to_owned());
+        invited.join().await?;
+    }
+    Ok(rooms)
+}
 
 pub async fn random_user_with_random_space(prefix: &str) -> Result<(Client, OwnedRoomId)> {
     let uuid = Uuid::new_v4().to_string();

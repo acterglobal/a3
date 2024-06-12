@@ -1,11 +1,11 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:dart_date/dart_date.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:intl/intl.dart';
 
 class DueChip extends StatefulWidget {
   final Task task;
@@ -75,13 +75,14 @@ class _DueChipState extends State<DueChip> {
         color: Theme.of(context).colorScheme.taskOverdueFG,
       );
     }
+    final dateText =
+        DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(dueDate!);
 
     return Chip(
       visualDensity: widget.visualDensity,
       label: Text(
         // FIXME: tooltip to show the full date?
-        label ??
-            '${L10n.of(context).due}: ${DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(dueDate!)}',
+        label ?? L10n.of(context).due(dateText),
         style: widget.task.isDone() ? null : dueTheme,
       ),
     );
@@ -92,9 +93,8 @@ class _DueChipState extends State<DueChip> {
       context: context,
       initialDate: dueDate,
     ); // FIXME: add unsetting support
-    if (newDue == null || !mounted) {
-      return;
-    }
+    if (!context.mounted) return;
+    if (newDue == null) return;
     EasyLoading.show(status: L10n.of(context).updatingDue);
     try {
       final updater = widget.task.updateBuilder();
@@ -110,14 +110,20 @@ class _DueChipState extends State<DueChip> {
         updater.unsetUtcDueTimeOfDay();
       }
       await updater.send();
-      if(!mounted) return;
-      EasyLoading.showToast(
-        L10n.of(context).dueSuccess,
-        toastPosition: EasyLoadingToastPosition.bottom,
-      );
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showToast(L10n.of(context).dueSuccess);
     } catch (e) {
-      if(!mounted) return;
-      EasyLoading.showError(L10n.of(context).updatingDueFailed(e));
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).updatingDueFailed(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 }

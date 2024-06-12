@@ -2,9 +2,9 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:settings_ui/settings_ui.dart';
 
 final _log = Logger('a3::room::notification_settings_tile');
@@ -61,34 +61,8 @@ class _NotificationSettingsTile extends ConsumerWidget {
       trailing: PopupMenuButton<String>(
         initialValue: curNotifStatus,
         // Callback that sets the selected popup menu item.
-        onSelected: (String newMode) async {
-          _log.info('new value: $newMode');
-          final room = await ref.read(maybeRoomProvider(roomId).future);
-          if (room == null) {
-            if (!context.mounted) return;
-            EasyLoading.showError(
-              L10n.of(context).roomNotFound,
-            );
-            return;
-          }
-          EasyLoading.showProgress(0);
-          // '' is a special case resetting to default.
-          if (await room.setNotificationMode(
-            newMode == '' ? null : newMode,
-          )) {
-            if (!context.mounted) return;
-            EasyLoading.showSuccess(
-              L10n.of(context).notificationStatusSubmitted,
-            );
-            await Future.delayed(const Duration(seconds: 1), () {
-              // FIXME: we want to refresh the view but don't know
-              //        when the event was confirmed form sync :(
-              // let's hope that a second delay is reasonable enough
-              ref.invalidate(maybeRoomProvider(roomId));
-            });
-          }
-        },
-        itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+        onSelected: (newMode) => onMenuSelected(context, ref, newMode),
+        itemBuilder: (BuildContext context) => [
           PopupMenuItem<String>(
             value: 'all',
             child: notificationSettingItemUI(
@@ -145,10 +119,65 @@ class _NotificationSettingsTile extends ConsumerWidget {
           ? Icon(
               Atlas.check_circle,
               size: 18,
-              color: Theme.of(context).colorScheme.onBackground,
+              color: Theme.of(context).colorScheme.onSurface,
             )
           : null,
     );
+  }
+
+  Future<void> onMenuSelected(
+    BuildContext context,
+    WidgetRef ref,
+    String newMode,
+  ) async {
+    _log.info('new value: $newMode');
+    EasyLoading.show(status: L10n.of(context).changingNotificationMode);
+    try {
+      final room = await ref.read(maybeRoomProvider(roomId).future);
+      if (room == null) {
+        if (!context.mounted) {
+          EasyLoading.dismiss();
+          return;
+        }
+        EasyLoading.showError(
+          L10n.of(context).roomNotFound,
+          duration: const Duration(seconds: 3),
+        );
+        return;
+      }
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      // '' is a special case resetting to default.
+      final res =
+          await room.setNotificationMode(newMode == '' ? null : newMode);
+      if (!res) {
+        EasyLoading.dismiss();
+        return;
+      }
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showToast(L10n.of(context).notificationStatusSubmitted);
+      await Future.delayed(const Duration(seconds: 1), () {
+        // FIXME: we want to refresh the view but don't know
+        //        when the event was confirmed form sync :(
+        // let's hope that a second delay is reasonable enough
+        ref.invalidate(maybeRoomProvider(roomId));
+      });
+    } catch (e, st) {
+      _log.severe('Failed to change notification mode', e, st);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToChangeNotificationMode(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 }
 

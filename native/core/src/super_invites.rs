@@ -1,3 +1,4 @@
+use ruma::{OwnedMxcUri, OwnedUserId};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -6,6 +7,21 @@ pub struct Token {
     pub create_dm: bool,
     pub accepted_count: u32,
     pub rooms: Vec<String>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct TokenOwner {
+    pub user_id: OwnedUserId,
+    pub display_name: Option<String>,
+    pub avatar_url: Option<OwnedMxcUri>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct TokenInfo {
+    pub rooms_count: u32,
+    pub create_dm: bool,
+    pub has_redeemed: bool,
+    pub inviter: TokenOwner,
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
@@ -207,6 +223,43 @@ pub mod api {
         #[response]
         pub struct Response {
             pub rooms: Vec<String>,
+        }
+    }
+
+    pub mod info {
+
+        use ruma_common::{
+            api::{request, response, Metadata},
+            metadata,
+        };
+
+        use super::super::TokenInfo;
+
+        const METADATA: Metadata = metadata! {
+            method: GET,
+            rate_limited: false,
+            authentication: AccessToken,
+            history: {
+                unstable => "/_synapse/client/super_invites/info",
+            }
+        };
+
+        #[request]
+        pub struct Request {
+            #[ruma_api(query)]
+            pub token: String,
+        }
+
+        impl Request {
+            pub fn new(token: String) -> Self {
+                Request { token }
+            }
+        }
+
+        #[response]
+        pub struct Response {
+            #[serde(flatten)]
+            pub info: TokenInfo,
         }
     }
 }

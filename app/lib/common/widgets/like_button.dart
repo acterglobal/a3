@@ -145,14 +145,13 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
                         heartSize.value * 30,
                       ),
                       icon: widget.isLiked
-                          ? const Icon(
+                          ? Icon(
                               Atlas.heart,
                               fill: 1.0,
-                              color: Colors.red,
+                              color: Theme.of(context).colorScheme.error,
                             )
                           : const Icon(
                               Atlas.heart,
-                              color: Colors.white,
                             ),
                       color: widget.isLiked
                           ? Theme.of(context).colorScheme.tertiary

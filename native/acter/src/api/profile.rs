@@ -139,7 +139,7 @@ impl RoomProfile {
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
-                let result = room.display_name().await?;
+                let result = room.computed_display_name().await?;
                 match result {
                     DisplayName::Named(name) => Ok(OptionString::new(Some(name))),
                     DisplayName::Aliased(name) => Ok(OptionString::new(Some(name))),

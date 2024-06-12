@@ -18,11 +18,12 @@ class _MemberListInnerSkeleton extends StatelessWidget {
     return ListTile(
       leading: Skeletonizer(
         child: ActerAvatar(
-          mode: DisplayMode.DM,
-          avatarInfo: AvatarInfo(
-            uniqueId: L10n.of(context).noIdGiven,
+          options: AvatarOptions.DM(
+            AvatarInfo(
+              uniqueId: L10n.of(context).noIdGiven,
+            ),
+            size: 18,
           ),
-          size: 18,
         ),
       ),
       title: Skeletonizer(
@@ -50,12 +51,14 @@ class MemberListEntry extends ConsumerWidget {
   final String memberId;
   final String roomId;
   final Member? myMembership;
+  final bool isShowActions;
 
   const MemberListEntry({
     super.key,
     required this.memberId,
     required this.roomId,
     this.myMembership,
+    this.isShowActions = true,
   });
 
   @override
@@ -68,6 +71,7 @@ class MemberListEntry extends ConsumerWidget {
         roomId: roomId,
         member: data.member,
         profile: data.profile,
+        isShowActions: isShowActions,
       ),
       error: (e, s) => Text(L10n.of(context).errorLoadingProfile(e)),
       loading: () => const _MemberListInnerSkeleton(),
@@ -80,12 +84,14 @@ class _MemberListEntryInner extends ConsumerWidget {
   final ProfileData profile;
   final String userId;
   final String roomId;
+  final bool isShowActions;
 
   const _MemberListEntryInner({
     required this.userId,
     required this.member,
     required this.profile,
     required this.roomId,
+    this.isShowActions = true,
   });
 
   @override
@@ -111,17 +117,19 @@ class _MemberListEntryInner extends ConsumerWidget {
             context: context,
             roomId: roomId,
             memberId: userId,
+            isShowActions: isShowActions,
           );
         }
       },
       leading: ActerAvatar(
-        mode: DisplayMode.DM,
-        avatarInfo: AvatarInfo(
-          uniqueId: userId,
-          displayName: profile.displayName,
-          avatar: profile.getAvatarImage(),
+        options: AvatarOptions.DM(
+          AvatarInfo(
+            uniqueId: userId,
+            displayName: profile.displayName,
+            avatar: profile.getAvatarImage(),
+          ),
+          size: 18,
         ),
-        size: 18,
       ),
       title: Text(
         profile.displayName ?? userId,

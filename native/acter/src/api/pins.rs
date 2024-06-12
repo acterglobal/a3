@@ -3,14 +3,14 @@ use acter_core::{
         pins::{self, PinBuilder},
         Icon,
     },
-    models::{self, ActerModel, AnyActerModel},
+    models::{self, can_redact, ActerModel, AnyActerModel},
     statics::KEYS,
 };
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
 use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};
-use ruma_events::room::message::TextMessageEventContent;
+use ruma_events::{room::message::TextMessageEventContent, MessageLikeEventType};
 use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
@@ -25,20 +25,15 @@ use super::{client::Client, spaces::Space, RUNTIME};
 
 impl Client {
     pub async fn wait_for_pin(&self, key: String, timeout: Option<u8>) -> Result<Pin> {
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::Pin(content) = client.wait_for(key.clone(), timeout).await?
-                else {
+                let AnyActerModel::Pin(content) = me.wait_for(key.clone(), timeout).await? else {
                     bail!("{key} is not a pin");
                 };
-                let room = client
-                    .core
-                    .client()
-                    .get_room(content.room_id())
-                    .context("Room not found")?;
+                let room = me.room_by_id_typed(content.room_id())?;
                 Ok(Pin {
-                    client: client.clone(),
+                    client: me.clone(),
                     room,
                     content,
                 })
@@ -49,10 +44,11 @@ impl Client {
     pub async fn pins(&self) -> Result<Vec<Pin>> {
         let mut pins = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                for mdl in client.store().get_list(KEYS::PINS).await? {
+                let client = me.core.client();
+                for mdl in me.store().get_list(KEYS::PINS).await? {
                     if let AnyActerModel::Pin(t) = mdl {
                         let room_id = t.room_id().to_owned();
                         let room = match rooms_map.entry(room_id) {
@@ -68,7 +64,7 @@ impl Client {
                             }
                         };
                         pins.push(Pin {
-                            client: client.clone(),
+                            client: me.clone(),
                             room,
                             content: t,
                         })
@@ -82,15 +78,15 @@ impl Client {
     }
 
     pub async fn pin(&self, pin_id: String) -> Result<Pin> {
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::Pin(t) = client.store().get(&pin_id).await? else {
+                let AnyActerModel::Pin(t) = me.store().get(&pin_id).await? else {
                     bail!("Ping not found");
                 };
-                let room = client.get_room(t.room_id()).context("Room not found")?;
+                let room = me.room_by_id_typed(t.room_id())?;
                 Ok(Pin {
-                    client,
+                    client: me,
                     room,
                     content: t,
                 })
@@ -101,10 +97,11 @@ impl Client {
     pub async fn pinned_links(&self) -> Result<Vec<Pin>> {
         let mut pins = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
-        let client = self.clone();
+        let me = self.clone();
         RUNTIME
             .spawn(async move {
-                for mdl in client.store().get_list(KEYS::PINS).await? {
+                let client = me.core.client();
+                for mdl in me.store().get_list(KEYS::PINS).await? {
                     if let AnyActerModel::Pin(pin) = mdl {
                         if !pin.is_link() {
                             continue;
@@ -123,7 +120,7 @@ impl Client {
                             }
                         };
                         pins.push(Pin {
-                            client: client.clone(),
+                            client: me.clone(),
                             room,
                             content: pin,
                         })
@@ -283,6 +280,15 @@ impl Pin {
             .await?
     }
 
+    pub async fn can_redact(&self) -> Result<bool> {
+        let sender = self.content.sender().to_owned();
+        let room = self.room.clone();
+
+        RUNTIME
+            .spawn(async move { Ok(can_redact(&room, &sender).await?) })
+            .await?
+    }
+
     fn is_joined(&self) -> bool {
         matches!(self.room.state(), RoomState::Joined)
     }
@@ -370,11 +376,19 @@ impl PinDraft {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
+        let my_id = self.client.user_id()?;
         let content = self.content.build()?;
+
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content).await?;
-                Ok(resp.event_id)
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(content).await?;
+                Ok(response.event_id)
             })
             .await?
     }
@@ -444,11 +458,19 @@ impl PinUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
+        let my_id = self.client.user_id()?;
         let content = self.content.build()?;
+
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content).await?;
-                Ok(resp.event_id)
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(content).await?;
+                Ok(response.event_id)
             })
             .await?
     }

@@ -1,0 +1,59 @@
+    <release version="1.24.3506" date="2024-05-06">
+        <url type="details">https://github.com/acterglobal/a3/releases/tag/v1.24.3506</url>
+        <description>
+# Changes since v1.24.3502 
+- The search of the public directory has been completely rewritten with an improved UI, better interactive items and cleaner overall flow. Several other publicly known servers have been allowing you to easily select and search them without having to know the exact address, and you can search spaces and chat rooms within the same widget now.
+- You can now add any room uri in the quick jump as well and directly join from there
+- When what you are looking for is not found in the quick jump, searching the public directory for that term is offered right away, making it easier to find existing rooms
+- Support for parsing `matrix://`-URI has been added to the public search and quick jump search
+
+- [fix]: Space and Chats invitation now properly shows invite/join state of user relative to room upon searching via public directory/direct invite.
+
+- [new]: You can now update chat profile details (Name, Topic & Avatar) for chats you are admin of
+- The app is now available in Polish. It will be autoselected if this is your system language and you didn't pick any language via the settings before. You can change your preferred language in your Profile settings.
+
+        </description>
+    </release>
+    <release version="1.24.3425" date="2024-04-25">
+        <url type="details">https://github.com/acterglobal/a3/releases/tag/v1.24.3425</url>
+        <description>
+# Changes since release-latest 
+- [feat.]: More interactivity comes with Attachments, now image and video attachments are enabled to be viewed in full screen while other files can be shared natively.
+- [fix]: Attachments selection is also now shown on the desktop, allowing you to choose specific file types for upload.
+
+- [feat.] Chat now shows typing notifications to inform you who's been typing. This setting is enabled by default but can be turned off in App Settings -> Chat Settings.
+
+- Several smaller fixes around the Chat input: it's now properly resetting the edit/reply-to message, marks the right message for editing (your own), shows the editable content and has better icons for the different swipe-actions
+
+- You can now share any Event as an iCalendar item with the outside world.
+
+        </description>
+    </release>
+
+    <release version="1.24.3411" date="2024-04-11">
+        <url type="details">https://github.com/acterglobal/a3/releases/tag/v1.24.3402</url>
+        <description>
+        # Changes since 1.24.3405
+- [feat.]: More interactivity comes with Attachments, now image and video attachments are enabled to be viewed in full screen while other files can be shared natively.
+- [fix]: Attachments selection is also now shown on the desktop, allowing you to choose specific file types for upload.
+- Comments & Attachments are available for Tasks, TaskLists and Events
+- The comments lab feature is now on by default. You can still turn it if it bothers you
+        </description>
+    </release>
+    <release version="1.24.3405" date="2024-04-05">
+        <url type="details">https://github.com/acterglobal/a3/releases/tag/v1.24.3405</url>
+        <description>
+        # Changes since v1.24.2328 
+        - [Enhancement] : UI-UX enhancements on user onboarding flow
+        - new labs feature: Pins have comments now (if you activate the labs)
+
+        - You can now delete attachments from pin with the help of minus icon (showing, if having necessary permissions) on attachment item.
+
+        - You can now kick (and ban) any user from a space or chat through the recently introduced member-info-drawer (by clicking on the user avatar almost everywhere).
+
+        - [Enhancement] : Now user can toggle password visibility on login and register account screens
+        - [Enhancement] : UI-UX enhancements on user onboarding flow
+        </description>
+    </release>
+  </releases>
+<component>

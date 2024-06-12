@@ -1,7 +1,6 @@
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor.dart';
-import 'package:acter/features/comments/models.dart';
-import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show ActerPin;
@@ -58,35 +57,27 @@ class _PinItemState extends ConsumerState<PinItem> {
     final pin = widget.pin;
     final spaceId = pin.roomIdStr();
     final isLink = pin.isLink();
-    final comments = pin.comments();
 
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Form(
-        key: _formkey,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              alignment: Alignment.topLeft,
-              margin: const EdgeInsets.all(8),
-              child: SpaceChip(spaceId: spaceId),
-            ),
-            if (isLink) _buildPinLink(),
-            _PinDescriptionWidget(
-              pin: pin,
-              descriptionController: _descriptionController,
-              linkController: _linkController,
-              formkey: _formkey,
-            ),
-            const SizedBox(height: 20),
-            CommentsSection(
-              manager: comments,
-              newCommentLocation: NewCommentLocation.after,
-            ),
-          ],
-        ),
+    return Form(
+      key: _formkey,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            alignment: Alignment.topLeft,
+            margin: const EdgeInsets.all(8),
+            child: SpaceChip(spaceId: spaceId),
+          ),
+          if (isLink) _buildPinLink(),
+          _PinDescriptionWidget(
+            pin: pin,
+            descriptionController: _descriptionController,
+            linkController: _linkController,
+            formkey: _formkey,
+          ),
+        ],
       ),
     );
   }
@@ -160,6 +151,7 @@ class _PinDescriptionWidgetConsumerState
     final pinEditNotifier = ref.watch(pinEditProvider(widget.pin).notifier);
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Container(
           margin: const EdgeInsets.symmetric(vertical: 8),
@@ -170,26 +162,25 @@ class _PinDescriptionWidgetConsumerState
                 : null,
             borderRadius: BorderRadius.circular(12),
           ),
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height * 0.4,
-          ),
-          child: HtmlEditor(
-            key: PinItem.descriptionFieldKey,
-            editable: pinEdit.editMode,
-            editorState: textEditorState,
-            footer: const SizedBox(),
-            onChanged: (body, html) {
-              if (body.trim().isNotEmpty) {
-                final document = html != null
-                    ? ActerDocumentHelpers.fromHtml(html)
-                    : ActerDocumentHelpers.fromMarkdown(body);
-                textEditorState = EditorState(document: document);
-              } else {
-                textEditorState = EditorState(
-                  document: ActerDocumentHelpers.fromMarkdown(body),
-                );
-              }
-            },
+          child: IntrinsicHeight(
+            child: HtmlEditor(
+              key: PinItem.descriptionFieldKey,
+              editable: pinEdit.editMode,
+              editorState: textEditorState,
+              shrinkWrap: true,
+              onChanged: (body, html) {
+                if (body.trim().isNotEmpty) {
+                  final document = html != null
+                      ? ActerDocumentHelpers.fromHtml(html)
+                      : ActerDocumentHelpers.fromMarkdown(body);
+                  textEditorState = EditorState(document: document);
+                } else {
+                  textEditorState = EditorState(
+                    document: ActerDocumentHelpers.fromMarkdown(body),
+                  );
+                }
+              },
+            ),
           ),
         ),
         _ActionButtonsWidget(
@@ -246,7 +237,7 @@ class _ActionButtonsWidget extends ConsumerWidget {
             child: Text(L10n.of(context).cancel),
           ),
           const SizedBox(width: 5),
-          ElevatedButton(
+          ActerPrimaryActionButton(
             key: PinItem.saveBtnKey,
             onPressed: onSave,
             child: Text(L10n.of(context).save),

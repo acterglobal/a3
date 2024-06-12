@@ -1,18 +1,25 @@
-use anyhow::{Context, Result};
-use matrix_sdk::{media::MediaRequest, Account as SdkAccount, Client as SdkClient};
+use acter_core::events::settings::{
+    ActerUserAppSettingsContent, ActerUserAppSettingsContentBuilder, APP_USER_SETTINGS,
+};
+use anyhow::{bail, Context, Result};
+use futures::StreamExt;
+use matrix_sdk::{media::MediaRequest, Account as SdkAccount};
 use ruma_common::{OwnedMxcUri, OwnedUserId, UserId};
 use ruma_events::{ignored_user_list::IgnoredUserListEventContent, room::MediaSource};
 use std::{ops::Deref, path::PathBuf};
+use tokio::sync::broadcast::Receiver;
+use tokio_stream::{wrappers::BroadcastStream, Stream};
 
 use super::{
     common::{OptionBuffer, OptionString, ThumbnailSize},
     RUNTIME,
 };
+use crate::{ActerUserAppSettings, Client};
 
 #[derive(Clone, Debug)]
 pub struct Account {
     account: SdkAccount,
-    client: SdkClient,
+    client: Client,
     user_id: OwnedUserId,
 }
 
@@ -24,7 +31,7 @@ impl Deref for Account {
 }
 
 impl Account {
-    pub fn new(account: SdkAccount, user_id: OwnedUserId, client: SdkClient) -> Self {
+    pub fn new(account: SdkAccount, user_id: OwnedUserId, client: Client) -> Self {
         Account {
             account,
             client,
@@ -47,9 +54,14 @@ impl Account {
     }
 
     pub async fn set_display_name(&self, new_name: String) -> Result<bool> {
+        let client = self.client.deref().clone();
         let account = self.account.clone();
         RUNTIME
             .spawn(async move {
+                let capabilities = client.get_capabilities().await?;
+                if !capabilities.set_displayname.enabled {
+                    bail!("This client cannot change display name");
+                }
                 let name = if new_name.is_empty() {
                     None
                 } else {
@@ -63,7 +75,7 @@ impl Account {
 
     pub async fn avatar(&self, thumb_size: Option<Box<ThumbnailSize>>) -> Result<OptionBuffer> {
         let account = self.account.clone();
-        let client = self.client.clone();
+        let client = self.client.deref().clone();
         RUNTIME
             .spawn(async move {
                 let source = match account.get_cached_avatar_url().await? {
@@ -83,10 +95,15 @@ impl Account {
     }
 
     pub async fn upload_avatar(&self, uri: String) -> Result<OwnedMxcUri> {
+        let client = self.client.deref().clone();
         let account = self.account.clone();
         let path = PathBuf::from(uri);
         RUNTIME
             .spawn(async move {
+                let capabilities = client.get_capabilities().await?;
+                if !capabilities.set_avatar_url.enabled {
+                    bail!("This client cannot change avatar url");
+                }
                 let guess = mime_guess::from_path(path.clone());
                 let content_type = guess.first().context("don't know mime type")?;
                 let data = std::fs::read(path)?;
@@ -133,5 +150,32 @@ impl Account {
                 Ok(content.ignored_users.keys().cloned().collect())
             })
             .await?
+    }
+
+    pub async fn acter_app_settings(&self) -> Result<ActerUserAppSettings> {
+        let account = self.account.clone();
+
+        RUNTIME
+            .spawn(async move {
+                let inner = if let Some(raw) = account
+                    .account_data::<ActerUserAppSettingsContent>()
+                    .await?
+                {
+                    raw.deserialize()?
+                } else {
+                    ActerUserAppSettingsContent::default()
+                };
+
+                Ok(ActerUserAppSettings::new(account, inner))
+            })
+            .await?
+    }
+
+    pub fn subscribe_app_settings_stream(&self) -> impl Stream<Item = bool> {
+        BroadcastStream::new(self.subscribe()).map(|_| true)
+    }
+
+    pub fn subscribe(&self) -> Receiver<()> {
+        self.client.subscribe(APP_USER_SETTINGS.to_string())
     }
 }

@@ -21,6 +21,7 @@ lazy_static! {
 mod account;
 mod attachments;
 mod auth;
+mod backup;
 mod calendar_events;
 mod client;
 mod comments;
@@ -57,8 +58,8 @@ pub use uniffi_api::*;
 pub use account::Account;
 pub use acter_core::{
     events::{
-        news::NewsContent, Colorize, ColorizeBuilder, ObjRef, ObjRefBuilder, RefDetails,
-        RefDetailsBuilder, UtcDateTime,
+        calendar::EventLocationInfo, news::NewsContent, Colorize, ColorizeBuilder, ObjRef,
+        ObjRefBuilder, RefDetails, RefDetailsBuilder, UtcDateTime,
     },
     models::{ActerModel, Tag, TextMessageContent},
 };
@@ -72,6 +73,7 @@ pub use auth::{
     login_new_client_under_config, login_with_token_under_config, make_client_config,
     register_under_config, register_with_token_under_config, sanitize_user,
 };
+pub use backup::BackupManager;
 pub use calendar_events::{CalendarEvent, CalendarEventDraft, CalendarEventUpdateBuilder};
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};
@@ -103,16 +105,18 @@ pub use room::{
 pub use rsvp::{Rsvp, RsvpDraft, RsvpManager, RsvpStatus};
 pub use search::{PublicSearchResult, PublicSearchResultItem};
 pub use settings::{
-    ActerAppSettings, ActerAppSettingsBuilder, EventsSettings, NewsSettings, PinsSettings,
-    RoomPowerLevels, SimpleSettingWithTurnOff, SimpleSettingWithTurnOffBuilder, TasksSettings,
-    TasksSettingsBuilder,
+    ActerAppSettings, ActerAppSettingsBuilder, ActerUserAppSettings, ActerUserAppSettingsBuilder,
+    EventsSettings, NewsSettings, PinsSettings, RoomPowerLevels, SimpleSettingWithTurnOff,
+    SimpleSettingWithTurnOffBuilder, TasksSettings, TasksSettingsBuilder,
 };
 pub use spaces::{
     new_space_settings_builder, CreateSpaceSettings, CreateSpaceSettingsBuilder,
     RelationTargetType, Space, SpaceDiff,
 };
-pub use stream::{MsgContentDraft, RoomMessageDiff, TimelineStream};
-pub use super_invites::{SuperInviteToken, SuperInvites, SuperInvitesTokenUpdateBuilder};
+pub use stream::{MsgDraft, RoomMessageDiff, TimelineStream};
+pub use super_invites::{
+    SuperInviteInfo, SuperInviteToken, SuperInvites, SuperInvitesTokenUpdateBuilder,
+};
 pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,
 };
@@ -141,15 +145,5 @@ mod api {
         }
     }
 }
-
-fn init_logging(log_dir: String, filter: String) -> Result<()> {
-    platform::init_logging(log_dir, filter)
-}
-
-fn rotate_log_file() -> Result<String> {
-    platform::rotate_log_file()
-}
-
-fn write_log(text: String, level: String) -> Result<()> {
-    platform::write_log(text, level)
-}
+// reexport
+pub use platform::{init_logging, rotate_log_file, would_log, write_log};

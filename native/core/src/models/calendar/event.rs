@@ -19,6 +19,7 @@ use crate::{
     },
     Result,
 };
+use icalendar::{Component, Event as iCalEvent, EventLike};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct CalendarEvent {
@@ -66,6 +67,24 @@ impl CalendarEvent {
     pub fn show_without_time(&self) -> bool {
         self.inner.show_without_time
     }
+
+    pub fn as_ical_event(&self) -> iCalEvent {
+        let mut cal_e_builder = iCalEvent::new();
+
+        cal_e_builder
+            .summary(&self.inner.title)
+            .starts(self.inner.utc_start)
+            .ends(self.inner.utc_end)
+            .class(icalendar::Class::Private);
+        if let Some(msg) = &self.inner.description {
+            if let Some(formatted) = &msg.formatted {
+                return cal_e_builder.description(&formatted.body).done();
+            } else {
+                return cal_e_builder.description(&msg.body).done();
+            }
+        }
+        cal_e_builder.done()
+    }
 }
 
 impl ActerModel for CalendarEvent {
@@ -79,9 +98,16 @@ impl ActerModel for CalendarEvent {
     fn event_id(&self) -> &EventId {
         &self.meta.event_id
     }
+    fn room_id(&self) -> &RoomId {
+        &self.meta.room_id
+    }
 
     fn capabilities(&self) -> &[Capability] {
-        &[Capability::Commentable, Capability::Reactable]
+        &[
+            Capability::Commentable,
+            Capability::Reactable,
+            Capability::Attachmentable,
+        ]
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<String>> {
@@ -140,6 +166,9 @@ impl ActerModel for CalendarEventUpdate {
 
     fn event_id(&self) -> &EventId {
         &self.meta.event_id
+    }
+    fn room_id(&self) -> &RoomId {
+        &self.meta.room_id
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<String>> {

@@ -11,6 +11,10 @@ extension MediaChatLoadingStateGetters on MediaChatLoadingState {
 
 @freezed
 class MediaChatLoadingState with _$MediaChatLoadingState {
+  /// Not Yet Started
+  const factory MediaChatLoadingState.notYetStarted() =
+      _MediaChatLoadingStateNotYetStarted;
+
   ///Loading
   const factory MediaChatLoadingState.loading() = _MediaChatLoadingStateLoading;
 
@@ -18,14 +22,17 @@ class MediaChatLoadingState with _$MediaChatLoadingState {
   const factory MediaChatLoadingState.loaded() = _MediaChatLoadingStateLoaded;
 
   ///Error
-  const factory MediaChatLoadingState.error([String? error]) = _MediaChatLoadingStateError;
+  const factory MediaChatLoadingState.error([String? error]) =
+      _MediaChatLoadingStateError;
 }
 
 @freezed
 class MediaChatState with _$MediaChatState {
   const factory MediaChatState({
-    @Default(MediaChatLoadingState.loading()) MediaChatLoadingState mediaChatLoadingState,
+    @Default(MediaChatLoadingState.loading())
+    MediaChatLoadingState mediaChatLoadingState,
     File? mediaFile,
+    File? videoThumbnailFile,
     @Default(false) bool isDownloading,
   }) = _MediaChatState;
 }

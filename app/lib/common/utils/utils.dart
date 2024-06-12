@@ -3,11 +3,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
-
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
@@ -16,6 +17,21 @@ import 'package:logging/logging.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 final _log = Logger('a3::common::util');
+
+final aliasedHttpRegexp =
+    RegExp(r'https://matrix.to/#/(?<alias>#.+):(?<server>.+)');
+
+final idAliasRegexp = RegExp(
+  r'matrix:r/(?<id>[^?]+)(\?via=(?<server_name>[^&]+))?(&via=(?<server_name2>[^&]+))?(&via=(?<server_name3>[^&]+))?',
+);
+
+final idHttpRegexp = RegExp(
+  r'https://matrix.to/#/!(?<id>[^?]+)(\?via=(?<server_name>[^&]+))?(&via=(?<server_name2>[^&]+))?(&via=(?<server_name3>[^&]+))?',
+);
+
+final idMatrixRegexp = RegExp(
+  r'matrix:roomid/(?<id>[^?]+)(\?via=(?<server_name>[^&]+))?(&via=(?<server_name2>[^&]+))?(&via=(?<server_name3>[^&]+))?',
+);
 
 /// Get provider right from the context no matter where we are
 extension Context on BuildContext {
@@ -124,6 +140,10 @@ String eventDateFormat(DateTime dateTime) {
   return DateFormat('MMM dd, yyyy').format(dateTime);
 }
 
+String taskDueDateFormat(DateTime dateTime) {
+  return DateFormat('dd/MM/yyyy').format(dateTime);
+}
+
 Future<bool> openLink(String target, BuildContext context) async {
   final Uri? url = Uri.tryParse(target);
   if (url == null || !url.hasAuthority) {
@@ -134,6 +154,19 @@ Future<bool> openLink(String target, BuildContext context) async {
   } else {
     _log.info('Opening external URL: $url');
     return await launchUrl(url);
+  }
+}
+
+Future<void> shareTextToWhatsApp(BuildContext context,
+    {required String text,}) async {
+  final url = 'whatsapp://send?text=$text';
+  final encodedUri = Uri.parse(url);
+  if (await canLaunchUrl(encodedUri)) {
+    await launchUrl(encodedUri);
+  } else {
+    _log.warning('WhatsApp not available');
+    if (!context.mounted) return;
+    EasyLoading.showError(L10n.of(context).appUnavailable);
   }
 }
 
@@ -272,29 +305,31 @@ List<String> asDartStringList(FfiListFfiString data) {
 }
 
 // ignore: constant_identifier_names
-enum NetworkStatus { NotDetermined, On, Off }
-
-// ignore: constant_identifier_names
 enum RoomVisibility { Public, Private, SpaceVisible }
 
 enum LabsFeature {
   // apps in general
   tasks,
-  events,
   notes,
-  pins,
   cobudget,
   polls,
   discussions,
   comments,
 
+  // specific features
+  chatUnread,
+
+  // not a lab anymore but needs to stay for backwards compat
+  events,
+  pins,
+
   // searchOptions
+  encryptionBackup,
   showNotifications, // FIXME: old name for desktop notifications
   mobilePushNotifications;
 
   static List<LabsFeature> get defaults => [
-        LabsFeature.events,
-        LabsFeature.pins,
+        LabsFeature.comments,
         LabsFeature.mobilePushNotifications,
       ];
 }

@@ -176,14 +176,14 @@ const aOptions = AndroidOptions(
   preferencesKeyPrefix: isDevBuild ? 'dev.flutter' : null,
 );
 const iOptions = IOSOptions(
-  synchronizable: true,
+  synchronizable: false,
   accessibility: KeychainAccessibility
       .first_unlock, // must have been unlocked since reboot
   groupId:
       appleKeychainAppGroupName, // to allow the background process to access the same store
 );
 const mOptions = MacOsOptions(
-  synchronizable: true,
+  synchronizable: false,
   accessibility: KeychainAccessibility
       .first_unlock, // must have been unlocked since reboot
   groupId:
@@ -283,15 +283,9 @@ class ActerSdk {
     await prefs.remove('$_sessionKey::currentClientIdx');
   }
 
-  Future<void> _restore() async {
-    if (_clients.isNotEmpty) {
-      _log.warning('double restore. ignore');
-      return;
-    }
-    String appDocPath = await appDir();
-    String appCachePath = await appCacheDir();
+  static Future<List<String>?> sessionKeys() async {
     int delayedCounter = 0;
-    while (!await storage.isCupertinoProtectedDataAvailable()) {
+    while ((await storage.isCupertinoProtectedDataAvailable()) == false) {
       if (delayedCounter > 10) {
         _log.severe('Secure Store: not available after 10 seconds');
         throw 'Secure Store: not available';
@@ -308,31 +302,66 @@ class ActerSdk {
       await storage.read(key: _sessionKey);
     }
     _log.info('Secure Store: attempting to check if $_sessionKey exists');
-    final sessionsStr = await storage.read(key: _sessionKey);
+    String? sessionsStr;
+    try {
+      sessionsStr = await storage.read(key: _sessionKey);
+    } on PlatformException catch (error, stack) {
+      if (error.code == '-25300') {
+        _log.severe('Ignoring read failure for missing key $_sessionKey');
+      } else {
+        _log.severe(
+          'Ignoring read failure of session key $_sessionKey',
+          error,
+          stack,
+        );
+      }
+    } catch (error, stack) {
+      _log.severe(
+        'Ignoring read failure of session key $_sessionKey',
+        error,
+        stack,
+      );
+    }
 
     if (sessionsStr == null) {
       _log.info('Secure Store: session key not found, checking for migration');
-      // not yet set. let's see if we maybe want to migrate instead:
-      await _maybeMigrateFromPrefs(appDocPath, appCachePath);
-      return;
+      return null;
     }
 
     _log.info('Secure Store: decoding sessions');
     final List<dynamic> sessionKeys = json.decode(sessionsStr);
     _log.info('Secure Store: decoding sessions: ${sessionKeys.length} found');
-    for (final deviceId in sessionKeys) {
-      _log.info('Secure Store[$deviceId]: attempting to read session');
-      final token = await storage.read(key: deviceId as String);
-      if (token != null) {
-        _log.info('Secure Store[$deviceId]: token found');
-        ffi.Client client =
-            await _api.loginWithToken(appDocPath, appCachePath, token);
-        _log.info('Secure Store[$deviceId]: login successful');
-        _clients.add(client);
-      } else {
-        _log.severe(
-          'Secure Store[$deviceId]: not found. despite in session list',
-        );
+    return sessionKeys.map((e) => e as String).toList();
+  }
+
+  Future<void> _restore() async {
+    if (_clients.isNotEmpty) {
+      _log.warning('double restore. ignore');
+      return;
+    }
+    String appDocPath = await appDir();
+    String appCachePath = await appCacheDir();
+    List<String>? deviceIds = await sessionKeys();
+    if (deviceIds == null) {
+      // not yet set. let's see if we maybe want to migrate instead:
+      await _maybeMigrateFromPrefs(appDocPath, appCachePath);
+      deviceIds = await sessionKeys();
+    }
+    if (deviceIds != null && deviceIds.isNotEmpty) {
+      for (final deviceId in deviceIds) {
+        _log.info('Secure Store[$deviceId]: attempting to read session');
+        final token = await storage.read(key: deviceId);
+        if (token != null) {
+          _log.info('Secure Store[$deviceId]: token found');
+          ffi.Client client =
+              await _api.loginWithToken(appDocPath, appCachePath, token);
+          _log.info('Secure Store[$deviceId]: login successful');
+          _clients.add(client);
+        } else {
+          _log.severe(
+            'Secure Store[$deviceId]: not found. despite in session list',
+          );
+        }
       }
     }
     final key = await storage.read(key: '$_sessionKey::currentClientIdx');

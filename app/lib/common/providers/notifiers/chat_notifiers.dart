@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:acter/common/notifications/notifications.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/widgets.dart';
@@ -19,9 +20,11 @@ class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, Convo> {
     _listener = client.subscribeStream(convoId); // keep it resident in memory
     _poller = _listener.listen(
       (e) async {
-        state = await AsyncValue.guard(() async => await client.convo(convoId));
+        final newConvo = await client.convo(convoId);
+        state = AsyncValue.data(newConvo);
       },
       onError: (e, stack) {
+        state = AsyncValue.error(e, stack);
         _log.severe('stream errored.', e, stack);
       },
       onDone: () {
@@ -157,6 +160,9 @@ class SelectedChatIdNotifier extends Notifier<String?> {
   }
 
   void select(String? input) {
+    if (input != null) {
+      removeNotificationsForRoom(input);
+    }
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
       state = input;
     });

@@ -1,6 +1,7 @@
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/chat/providers/create_chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -21,12 +22,7 @@ class MessageUserButton extends ConsumerWidget {
           icon: const Icon(Atlas.chats_thin),
           onPressed: () async {
             context.pop();
-            context.pushNamed(
-              Routes.chatroom.name,
-              pathParameters: {
-                'roomId': dmId,
-              },
-            );
+            goToChat(context, dmId);
           },
           label: const Text('Message'),
         ),

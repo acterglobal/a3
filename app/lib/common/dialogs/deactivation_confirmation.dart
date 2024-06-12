@@ -1,8 +1,9 @@
 import 'package:acter/common/providers/sdk_provider.dart';
-import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
+
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -15,6 +16,7 @@ const deactivatePasswordField = Key('deactivate-password-field');
 // Ref can be used to read any provider which are declared.
 void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
   TextEditingController passwordController = TextEditingController();
+  final theme = Theme.of(context).colorScheme;
   showDialog(
     context: context,
     builder: (BuildContext ctx) {
@@ -22,7 +24,7 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
         title: Text(
           L10n.of(context).deactivateAccount,
           style: TextStyle(
-            color: AppTheme.brandColorScheme.error,
+            color: theme.error,
             fontSize: 26,
           ),
         ),
@@ -33,15 +35,17 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
               Expanded(
                 child: SingleChildScrollView(
                   child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    color: Theme.of(context).colorScheme.background,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    color: Theme.of(context).colorScheme.surface,
                     child: Column(
                       children: [
                         Text(
                           L10n.of(context).deactivateAccountTitle,
                           style: TextStyle(
-                            color: AppTheme.brandColorScheme.error,
+                            color: theme.error,
                             fontSize: 20,
                           ),
                         ),
@@ -56,7 +60,7 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
                 child: Text(
                   L10n.of(context).deactivateAccountPasswordTitle,
                   style: TextStyle(
-                    color: AppTheme.brandColorScheme.error,
+                    color: theme.error,
                     fontSize: 20,
                   ),
                 ),
@@ -76,73 +80,55 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
           ),
         ),
         actions: <Widget>[
-          TextButton(
+          OutlinedButton(
             key: deactivateCancelBtn,
             onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
             child: Text(L10n.of(context).cancel),
           ),
-          TextButton(
+          ActerDangerActionButton(
             key: deactivateConfirmBtn,
-            onPressed: () async {
-              showAdaptiveDialog(
-                barrierDismissible: false,
-                context: context,
-                builder: (context) => DefaultDialog(
-                  title: Text(
-                    L10n.of(context).deactivatingYourAccount,
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  isLoader: true,
-                ),
-              );
-              final sdk = await ref.read(sdkProvider.future);
-              try {
-                if (!await sdk.deactivateAndDestroyCurrentClient(
-                  passwordController.text,
-                )) {
-                  if (!context.mounted) return;
-                  throw L10n.of(context).deactivationAndRemovingFailed;
-                }
-                // ignore: use_build_context_synchronously
-                if (!context.mounted) {
-                  return;
-                }
-                // remove pop up
-                Navigator.of(context, rootNavigator: true).pop();
-                // remove ourselves
-                Navigator.of(context, rootNavigator: true).pop();
-                context.goNamed(Routes.main.name);
-              } catch (err) {
-                // We are doing as expected, but the lints triggers.
-                // ignore: use_build_context_synchronously
-                if (!context.mounted) {
-                  return;
-                }
-
-                showAdaptiveDialog(
-                  context: context,
-                  builder: (context) => DefaultDialog(
-                    title: Text(
-                      '${L10n.of(context).deactivatingFailed}: \n $err"',
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                    actions: <Widget>[
-                      ElevatedButton(
-                        onPressed: () =>
-                            Navigator.of(context, rootNavigator: true).pop(),
-                        child: Text(L10n.of(context).close),
-                      ),
-                    ],
-                  ),
-                );
-              }
-            },
-            child: Text(
-              L10n.of(context).deactivate,
+            onPressed: () async => _onConfirm(
+              context,
+              ref,
+              passwordController.text,
             ),
+            child: Text(L10n.of(context).deactivate),
           ),
         ],
       );
     },
   );
+}
+
+Future<void> _onConfirm(
+  BuildContext context,
+  WidgetRef ref,
+  String password,
+) async {
+  EasyLoading.show(status: L10n.of(context).deactivatingYourAccount);
+  final sdk = await ref.read(sdkProvider.future);
+  try {
+    final result = await sdk.deactivateAndDestroyCurrentClient(password);
+    if (!result) {
+      if (context.mounted) {
+        EasyLoading.showError(
+          L10n.of(context).deactivationAndRemovingFailed,
+          duration: const Duration(seconds: 3),
+        );
+      }
+      return;
+    }
+    EasyLoading.dismiss();
+    if (!context.mounted) return;
+    context.goNamed(Routes.main.name);
+  } catch (err) {
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return;
+    }
+    EasyLoading.showError(
+      L10n.of(context).deactivatingFailed(err),
+      duration: const Duration(seconds: 3),
+    );
+  }
 }

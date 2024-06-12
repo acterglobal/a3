@@ -1,8 +1,9 @@
-import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/providers/network_provider.dart';
+import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
 import 'package:acter/features/onboarding/widgets/logo_widget.dart';
@@ -97,7 +98,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           style: Theme.of(context)
               .textTheme
               .headlineMedium
-              ?.copyWith(color: greenColor),
+              ?.copyWith(color: Theme.of(context).colorScheme.textHighlight),
         ),
         const SizedBox(height: 10),
         Padding(
@@ -178,7 +179,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final authState = ref.watch(authStateProvider);
     return authState
         ? const Center(child: CircularProgressIndicator())
-        : ElevatedButton(
+        : ActerPrimaryActionButton(
             key: LoginPageKeys.submitBtn,
             onPressed: () => handleSubmit(context),
             child: Text(
@@ -191,7 +192,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Widget _buildForgotPassword(BuildContext context) {
     return Align(
       alignment: Alignment.centerRight,
-      child: TextButton(
+      child: ActerInlineTextButton(
         key: LoginPageKeys.forgotPassBtn,
         onPressed: () => context.pushNamed(Routes.forgotPassword.name),
         child: Text(
@@ -207,7 +208,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       children: [
         Text(L10n.of(context).noProfile),
         const SizedBox(width: 2),
-        TextButton(
+        ActerInlineTextButton(
           key: LoginPageKeys.signUpBtn,
           onPressed: () => context.goNamed(Routes.authRegister.name),
           child: Text(
@@ -220,9 +221,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   Future<void> handleSubmit(BuildContext context) async {
     if (!formKey.currentState!.validate()) return;
-    final network = ref.read(networkAwareProvider);
-    if (!inCI && network == NetworkStatus.Off) {
-      showNoInternetNotification();
+    if (!inCI && !ref.read(hasNetworkProvider)) {
+      showNoInternetNotification(context);
       return;
     }
     final authNotifier = ref.read(authStateProvider.notifier);
@@ -231,14 +231,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       password.text,
     );
 
-    // We are doing as expected, but the lints triggers.
-    // ignore: use_build_context_synchronously
     if (!context.mounted) return;
     if (loginSuccess == null) {
       // no message means, login was successful.
       context.goNamed(Routes.main.name);
     } else {
-      EasyLoading.showError(loginSuccess);
+      EasyLoading.showError(
+        loginSuccess,
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 }

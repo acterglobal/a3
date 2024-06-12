@@ -2,12 +2,13 @@ import 'dart:math';
 
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/skeletons/event_list_skeleton_widget.dart';
-import 'package:acter/features/events/widgets/events_item.dart';
+import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,7 +22,8 @@ class SpaceEventsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final spaceEvents = ref.watch(spaceEventsProvider(spaceIdOrAlias));
+    final upcoming = ref.watch(spaceUpcomingEventsProvider(spaceIdOrAlias));
+    final past = ref.watch(spacePastEventsProvider(spaceIdOrAlias));
     return DecoratedBox(
       decoration: const BoxDecoration(gradient: primaryGradient),
       child: CustomScrollView(
@@ -29,9 +31,9 @@ class SpaceEventsPage extends ConsumerWidget {
           SliverToBoxAdapter(
             child: SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
           ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            sliver: SliverToBoxAdapter(
               child: Row(
                 children: [
                   Text(
@@ -51,7 +53,16 @@ class SpaceEventsPage extends ConsumerWidget {
               ),
             ),
           ),
-          spaceEvents.when(
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            sliver: SliverToBoxAdapter(
+              child: Text(
+                L10n.of(context).upcoming,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+          ),
+          upcoming.when(
             data: (events) {
               final widthCount =
                   (MediaQuery.of(context).size.width ~/ 300).toInt();
@@ -70,7 +81,74 @@ class SpaceEventsPage extends ConsumerWidget {
                           L10n.of(context).createEventAndBringYourCommunity,
                       image: 'assets/images/empty_event.svg',
                       primaryButton: canCreateEvent
-                          ? ElevatedButton(
+                          ? ActerPrimaryActionButton(
+                              onPressed: () => context.pushNamed(
+                                Routes.createEvent.name,
+                                queryParameters: {'spaceId': spaceIdOrAlias},
+                              ),
+                              child: Text(L10n.of(context).eventCreate),
+                            )
+                          : null,
+                    ),
+                  ),
+                );
+              }
+              return SliverGrid.builder(
+                itemCount: events.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: max(1, min(widthCount, minCount)),
+                  childAspectRatio: 4.0,
+                  mainAxisExtent: 120,
+                ),
+                itemBuilder: (context, index) =>
+                    EventItem(event: events[index]),
+              );
+            },
+            error: (error, stackTrace) => SliverToBoxAdapter(
+              child: Center(
+                child: Text(L10n.of(context).failedToLoadEventsDueTo(error)),
+              ),
+            ),
+            loading: () => const SliverToBoxAdapter(
+              child: Center(child: EventListSkeleton()),
+            ),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+            sliver: SliverToBoxAdapter(
+              child: Text(
+                L10n.of(context).past,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+          ),
+          past.when(
+            data: (events) {
+              final widthCount =
+                  (MediaQuery.of(context).size.width ~/ 300).toInt();
+              const int minCount = 3;
+              if (events.isEmpty) {
+                return SliverToBoxAdapter(
+                  child: Center(
+                    child: Text(L10n.of(context).thereIsNothingScheduledYet),
+                  ),
+                );
+              }
+              if (events.isEmpty) {
+                final membership =
+                    ref.watch(roomMembershipProvider(spaceIdOrAlias));
+                bool canCreateEvent =
+                    membership.requireValue!.canString('CanPostEvent');
+                return SliverToBoxAdapter(
+                  child: Center(
+                    heightFactor: 1,
+                    child: EmptyState(
+                      title: L10n.of(context).noEventsPlannedYet,
+                      subtitle:
+                          L10n.of(context).createEventAndBringYourCommunity,
+                      image: 'assets/images/empty_event.svg',
+                      primaryButton: canCreateEvent
+                          ? ActerPrimaryActionButton(
                               onPressed: () => context.pushNamed(
                                 Routes.createEvent.name,
                                 queryParameters: {'spaceId': spaceIdOrAlias},

@@ -1,12 +1,15 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 final _log = Logger('a3::common::report');
 
@@ -95,7 +98,7 @@ class ReportContentWidget extends ConsumerWidget {
           onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
           child: Text(L10n.of(context).close),
         ),
-        ElevatedButton(
+        ActerPrimaryActionButton(
           onPressed: () => reportContent(context, ref, textController.text),
           child: Text(L10n.of(context).report),
         ),
@@ -106,13 +109,7 @@ class ReportContentWidget extends ConsumerWidget {
   void reportContent(BuildContext ctx, WidgetRef ref, String reason) async {
     bool res = false;
     final ignoreFlag = ref.read(_ignoreUserProvider);
-    showAdaptiveDialog(
-      context: (ctx),
-      builder: (ctx) => DefaultDialog(
-        title: Text(L10n.of(ctx).sendingReport),
-        isLoader: true,
-      ),
-    );
+    EasyLoading.show(status: L10n.of(ctx).sendingReport);
     try {
       if (isSpace) {
         final space = await ref.read(spaceProvider(roomId).future);
@@ -134,55 +131,27 @@ class ReportContentWidget extends ConsumerWidget {
         }
       }
 
-      if (res) {
-        if (ctx.mounted) {
-          Navigator.of(ctx, rootNavigator: true).pop();
-          showAdaptiveDialog(
-            context: ctx,
-            builder: (ctx) => DefaultDialog(
-              title: Text(L10n.of(ctx).reportSent),
-              actions: <Widget>[
-                OutlinedButton(
-                  onPressed: () => Navigator.of(ctx, rootNavigator: true).pop(),
-                  child: Text(L10n.of(ctx).close),
-                ),
-              ],
-            ),
-          );
-        }
-      } else {
-        if (ctx.mounted) {
-          Navigator.of(ctx, rootNavigator: true).pop();
-          showAdaptiveDialog(
-            context: ctx,
-            builder: (ctx) => DefaultDialog(
-              title: Text(L10n.of(ctx).reportSendingFailed),
-              actions: <Widget>[
-                OutlinedButton(
-                  onPressed: () => Navigator.of(ctx, rootNavigator: true).pop(),
-                  child: Text(L10n.of(ctx).close),
-                ),
-              ],
-            ),
-          );
-        }
+      if (!ctx.mounted) {
+        EasyLoading.dismiss();
+        return;
       }
-    } catch (e) {
-      if (ctx.mounted) {
-        Navigator.of(ctx, rootNavigator: true).pop();
-        showAdaptiveDialog(
-          context: ctx,
-          builder: (ctx) => DefaultDialog(
-            title: Text(L10n.of(ctx).reportSendingFailedDueTo(e)),
-            actions: <Widget>[
-              OutlinedButton(
-                onPressed: () => Navigator.of(ctx, rootNavigator: true).pop(),
-                child: Text(L10n.of(ctx).close),
-              ),
-            ],
-          ),
+      if (res) {
+        EasyLoading.showToast(L10n.of(ctx).reportSent);
+      } else {
+        EasyLoading.showError(
+          L10n.of(ctx).reportSendingFailed,
+          duration: const Duration(seconds: 3),
         );
       }
+    } catch (e) {
+      if (!ctx.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(ctx).reportSendingFailedDueTo(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 }

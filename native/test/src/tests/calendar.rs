@@ -49,9 +49,8 @@ async fn calendar_smoketest() -> Result<()> {
         async move {
             if client.calendar_events().await?.len() != 3 {
                 bail!("not all calendar_events found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;
@@ -79,9 +78,8 @@ async fn edit_calendar_event() -> Result<()> {
         async move {
             if client.calendar_events().await?.len() != 3 {
                 bail!("not all calendar_events found");
-            } else {
-                Ok(())
             }
+            Ok(())
         }
     })
     .await?;

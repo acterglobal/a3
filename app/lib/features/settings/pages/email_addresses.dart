@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
+
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
@@ -24,9 +25,7 @@ class _AddEmailAddrState extends State<AddEmailAddr> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(
-        L10n.of(context).pleaseProvideEmailAddressToAdd,
-      ),
+      title: Text(L10n.of(context).pleaseProvideEmailAddressToAdd),
       // The token-reset path is just the process by which control over that email address is confirmed.
       content: Form(
         key: _formKey,
@@ -51,7 +50,7 @@ class _AddEmailAddrState extends State<AddEmailAddr> {
           onPressed: () => Navigator.pop(context, null),
           child: Text(L10n.of(context).cancel),
         ),
-        ElevatedButton(
+        ActerPrimaryActionButton(
           onPressed: () => onSubmit(context),
           child: Text(L10n.of(context).submit),
         ),
@@ -61,7 +60,10 @@ class _AddEmailAddrState extends State<AddEmailAddr> {
 
   void onSubmit(BuildContext context) {
     if (!_formKey.currentState!.validate()) {
-      customMsgSnackbar(context, L10n.of(context).emailOrPasswordSeemsNotValid);
+      EasyLoading.showError(
+        L10n.of(context).emailOrPasswordSeemsNotValid,
+        duration: const Duration(seconds: 3),
+      );
       return;
     }
     Navigator.pop(context, newEmailAddress.text);
@@ -87,9 +89,7 @@ class EmailAddressesPage extends ConsumerWidget {
               onPressed: () {
                 ref.invalidate(emailAddressesProvider);
               },
-              icon: const Icon(
-                Atlas.refresh_account_arrows_thin,
-              ),
+              icon: const Icon(Atlas.refresh_account_arrows_thin),
             ),
             IconButton(
               onPressed: () => addEmailAddress(context, ref),
@@ -103,9 +103,7 @@ class EmailAddressesPage extends ConsumerWidget {
           data: (addresses) => buildAddresses(context, addresses),
           error: (error, stack) {
             return Center(
-              child: Text(
-                L10n.of(context).errorLoadingEmailAddresses(error),
-              ),
+              child: Text(L10n.of(context).errorLoadingEmailAddresses(error)),
             );
           },
           loading: () => const Center(
@@ -228,12 +226,17 @@ class EmailAddressesPage extends ConsumerWidget {
       try {
         await manager.requestTokenViaEmail(newValue);
         ref.invalidate(emailAddressesProvider);
-        if (!context.mounted) return;
-        EasyLoading.showSuccess(
-          L10n.of(context).pleaseCheckYourInbox,
-        );
+        if (!context.mounted) {
+          EasyLoading.dismiss();
+          return;
+        }
+        EasyLoading.showToast(L10n.of(context).pleaseCheckYourInbox);
       } catch (e) {
-        EasyLoading.showSuccess(
+        if (!context.mounted) {
+          EasyLoading.dismiss();
+          return;
+        }
+        EasyLoading.showError(
           L10n.of(context).failedToSubmitEmail(e),
           duration: const Duration(seconds: 3),
         );

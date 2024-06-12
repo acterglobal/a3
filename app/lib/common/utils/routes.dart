@@ -1,7 +1,6 @@
 enum Routes {
   // primary & quickjump actions
   // actionAddTask('/actions/addTask'),
-  actionAddTaskList('/actions/addTaskList'),
   actionAddPin('/actions/addPin'),
   actionAddEvent('/actions/addEvent'),
   actionCreateSuperInvite('/actions/createSuperInvite'),
@@ -13,6 +12,9 @@ enum Routes {
   authLogin('/login'),
   forgotPassword('/forgotPassword'),
   authRegister('/register'),
+  saveUsername('/saveUsername'),
+  linkEmail('/linkEmail'),
+  uploadAvatar('/uploadAvatar'),
 
   // --- profile
   myProfile('/profile'),
@@ -27,12 +29,16 @@ enum Routes {
   updates('/updates'),
   actionAddUpdate('/actions/addUpdate'),
 
+  // --- search
+  searchPublicDirectory('/search/public'),
+
   // --- chat
   chat('/chat'),
   // show as dialog
   createChat('/chat/create'),
   chatroom('/chat/:roomId([!#][^/]+)'), // !roomId, #roomName
   chatProfile('/chat/:roomId([!#][^/]+)/profile'),
+  chatSettingsVisibility('/chat/:roomId([!#][^/]+)/access'),
   chatInvite('/:roomId([!#][^/]+)/invite'),
 
   // --- tasks
@@ -40,9 +46,14 @@ enum Routes {
   task('/tasks/:taskListId([^/]+)/:taskId([^/]+)'),
   taskList('/tasks/:taskListId([^/]+)'),
 
+  // --- Invite
+  inviteIndividual('/inviteIndividual'),
+  shareInviteCode('/shareInviteCode'),
+  inviteSpaceMembers('/inviteSpaceMembers'),
+  invitePending('/invitePending'),
+
   // -- spaces
   spaces('/spaces'),
-  joinSpace('/spaces/join'),
   createSpace('/spaces/create'),
   linkSubspace('/:spaceId([!#][^/]+)/linkSubspace'),
   linkChat('/:spaceId([!#][^/]+)/linkChat'),
@@ -59,6 +70,7 @@ enum Routes {
   // -- space Settings
   spaceSettings('/:spaceId([!#][^/]+)/settings'),
   spaceSettingsApps('/:spaceId([!#][^/]+)/settings/app'),
+  spaceSettingsVisibility('/:spaceId([!#][^/]+)/settings/access'),
   spaceSettingsNotifications('/:spaceId([!#][^/]+)/settings/notifications'),
 
   // -- pins
@@ -74,10 +86,13 @@ enum Routes {
   // -- settings
   settings('/settings'),
   settingsLabs('/settings/labs'),
+  settingsChat('/settings/chat'),
   settingSessions('/settings/sessions'),
+  settingBackup('/settings/backup'),
   settingLanguage('/settings/language'),
   settingNotifications('/settings/notifications'),
   blockedUsers('/settings/blockedUsers'),
+  changePassword('/settings/changePassword'),
   emailAddresses('/settings/emailAddresses'),
   info('/info'),
   licenses('/info/licenses'),

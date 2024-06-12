@@ -1,12 +1,13 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/default_bottom_sheet.dart';
 import 'package:acter/common/widgets/like_button.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
+import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:atlas_icons/atlas_icons.dart';
@@ -35,7 +36,7 @@ class NewsSideBar extends ConsumerWidget {
     final userId = ref.watch(myUserIdStrProvider);
     final isLikedByMe = ref.watch(likedByMeProvider(news));
     final likesCount = ref.watch(totalLikesForNewsProvider(news));
-    final space = ref.watch(briefSpaceItemWithMembershipProvider(roomId));
+    final space = ref.watch(briefSpaceItemProvider(roomId));
     final style = Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 13);
 
     return Column(
@@ -46,7 +47,7 @@ class NewsSideBar extends ConsumerWidget {
           isLiked: isLikedByMe.valueOrNull ?? false,
           likeCount: likesCount.valueOrNull ?? 0,
           style: style,
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.textColor,
           index: index,
           onTap: () async {
             final manager = await ref.read(newsReactionsProvider(news).future);
@@ -70,7 +71,6 @@ class NewsSideBar extends ConsumerWidget {
                   news: news,
                   userId: userId,
                   roomId: roomId,
-                  membership: space.membership!,
                 ),
               ),
             ),
@@ -89,36 +89,34 @@ class NewsSideBar extends ConsumerWidget {
         const SizedBox(height: 10),
         space.when(
           data: (space) => ActerAvatar(
-            mode: DisplayMode.Space,
-            avatarInfo: AvatarInfo(
-              uniqueId: roomId,
-              displayName: space.spaceProfileData.displayName,
-              avatar: space.spaceProfileData.getAvatarImage(),
+            options: AvatarOptions(
+              AvatarInfo(
+                uniqueId: roomId,
+                displayName: space.spaceProfileData.displayName,
+                avatar: space.spaceProfileData.getAvatarImage(),
+              ),
+              size: 42,
             ),
-            size: 42,
-            onAvatarTap: () {
-              context.pushNamed(
-                Routes.space.name,
-                pathParameters: {'spaceId': roomId},
-              );
-            },
+            onAvatarTap: () => goToSpace(context, roomId),
           ),
           error: (e, st) {
             _log.severe('Error loading space', e, st);
             return ActerAvatar(
-              mode: DisplayMode.Space,
-              avatarInfo: AvatarInfo(
-                uniqueId: roomId,
-                displayName: roomId,
+              options: AvatarOptions(
+                AvatarInfo(
+                  uniqueId: roomId,
+                  displayName: roomId,
+                ),
+                size: 42,
               ),
-              size: 42,
             );
           },
           loading: () => Skeletonizer(
             child: ActerAvatar(
-              mode: DisplayMode.Space,
-              avatarInfo: AvatarInfo(uniqueId: roomId),
-              size: 42,
+              options: AvatarOptions(
+                AvatarInfo(uniqueId: roomId),
+                size: 42,
+              ),
             ),
           ),
         ),
@@ -155,26 +153,48 @@ class ActionBox extends ConsumerWidget {
   final String userId;
   final ffi.NewsEntry news;
   final String roomId;
-  final ffi.Member membership;
 
   const ActionBox({
     super.key,
     required this.news,
     required this.userId,
     required this.roomId,
-    required this.membership,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final senderId = news.sender().toString();
+    final canRedact = ref.watch(canRedactProvider(news));
     final isAuthor = senderId == userId;
     List<Widget> actions = [
       Text(L10n.of(context).actions),
       const Divider(),
     ];
 
-    if (!isAuthor) {
+    if (canRedact.valueOrNull == true) {
+      actions.add(
+        TextButton.icon(
+          key: NewsUpdateKeys.newsSidebarActionRemoveBtn,
+          onPressed: () => showAdaptiveDialog(
+            context: context,
+            builder: (context) => RedactContentWidget(
+              title: L10n.of(context).removeThisPost,
+              eventId: news.eventId().toString(),
+              onSuccess: () {
+                if (context.canPop()) context.pop();
+                ref.invalidate(newsListProvider);
+              },
+              senderId: senderId,
+              roomId: roomId,
+              isSpace: true,
+              removeBtnKey: NewsUpdateKeys.removeButton,
+            ),
+          ),
+          icon: const Icon(Atlas.trash_thin),
+          label: Text(L10n.of(context).remove),
+        ),
+      );
+    } else if (!isAuthor) {
       actions.add(
         TextButton.icon(
           key: NewsUpdateKeys.newsSidebarActionReportBtn,
@@ -191,31 +211,6 @@ class ActionBox extends ConsumerWidget {
           ),
           icon: const Icon(Atlas.exclamation_chat_thin),
           label: Text(L10n.of(context).reportThis),
-        ),
-      );
-    }
-
-    if (isAuthor && membership.canString('CanRedactOwn')) {
-      actions.add(
-        TextButton.icon(
-          key: NewsUpdateKeys.newsSidebarActionRemoveBtn,
-          onPressed: () => showAdaptiveDialog(
-            context: context,
-            builder: (context) => RedactContentWidget(
-              title: L10n.of(context).removeThisPost,
-              eventId: news.eventId().toString(),
-              onSuccess: () {
-                context.pop();
-                ref.invalidate(newsListProvider);
-              },
-              senderId: senderId,
-              roomId: roomId,
-              isSpace: true,
-              removeBtnKey: NewsUpdateKeys.removeButton,
-            ),
-          ),
-          icon: const Icon(Atlas.trash_thin),
-          label: Text(L10n.of(context).remove),
         ),
       );
     }
