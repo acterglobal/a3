@@ -33,10 +33,12 @@ const defaultServerName = String.fromEnvironment(
   defaultValue: 'm-1.acter.global',
 );
 
-const defaultLogSetting = String.fromEnvironment(
-  rustLogKey,
-  defaultValue: 'acter=debug,a3::sdk=info,a3=warn,warn',
-);
+final defaultLogSetting = Platform.environment.containsKey(rustLogKey)
+    ? Platform.environment[rustLogKey]
+    : const String.fromEnvironment(
+        rustLogKey,
+        defaultValue: 'acter=debug,a3::sdk=info,a3=warn,warn',
+      );
 
 const defaultSessionKey = String.fromEnvironment(
   'DEFAULT_ACTER_SESSION',
@@ -329,9 +331,18 @@ class ActerSdk {
     }
 
     _log.info('Secure Store: decoding sessions');
-    final List<dynamic> sessionKeys = json.decode(sessionsStr);
-    _log.info('Secure Store: decoding sessions: ${sessionKeys.length} found');
-    return sessionKeys.map((e) => e as String).toList();
+    try {
+      final List<dynamic> sessionKeys = json.decode(sessionsStr);
+      _log.info('Secure Store: decoding sessions: ${sessionKeys.length} found');
+      return sessionKeys.map((e) => e as String).toList();
+    } catch (error, stack) {
+      _log.severe(
+        "Parsing sessions keys '$sessionKeys' failed.",
+        error,
+        stack,
+      );
+      return [];
+    }
   }
 
   Future<void> _restore() async {
@@ -352,11 +363,19 @@ class ActerSdk {
         _log.info('Secure Store[$deviceId]: attempting to read session');
         final token = await storage.read(key: deviceId);
         if (token != null) {
-          _log.info('Secure Store[$deviceId]: token found');
-          ffi.Client client =
-              await _api.loginWithToken(appDocPath, appCachePath, token);
-          _log.info('Secure Store[$deviceId]: login successful');
-          _clients.add(client);
+          try {
+            _log.info('Secure Store[$deviceId]: token found');
+            ffi.Client client =
+                await _api.loginWithToken(appDocPath, appCachePath, token);
+            _log.info('Secure Store[$deviceId]: login successful');
+            _clients.add(client);
+          } catch (error, stack) {
+            _log.severe(
+              'Failed to restore session of $deviceId. Skipping.',
+              error,
+              stack,
+            );
+          }
         } else {
           _log.severe(
             'Secure Store[$deviceId]: not found. despite in session list',
@@ -366,6 +385,9 @@ class ActerSdk {
     }
     final key = await storage.read(key: '$_sessionKey::currentClientIdx');
     _index = int.tryParse(key ?? '0') ?? 0;
+    if (_clients.length < _index) {
+      _index = 0;
+    }
     _log.info('loading configuration from $appDocPath');
     _log.info('restored ${_clients.length} clients');
   }
@@ -564,7 +586,12 @@ class ActerSdk {
 
   static Future<ActerSdk> _restoredInstanceInner() async {
     final instance = await _unrestoredInstance;
-    await instance._restore();
+    try {
+      await instance._restore();
+    } catch (error, stack) {
+      _log.severe('Error restoring client. Continuing fresh.', error, stack);
+      print('Error restoring client. Continuing fresh. $error $stack');
+    }
     return instance;
   }
 
