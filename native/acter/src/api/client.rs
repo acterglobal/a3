@@ -137,7 +137,7 @@ impl Client {
             ?path,
             "tasked to get source binary and store to file"
         );
-        if (!path.exists()) {
+        if !path.exists() {
             // only download if the temp isn't already there.
             let target_path = path.clone();
             RUNTIME

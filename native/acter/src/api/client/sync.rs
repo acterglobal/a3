@@ -390,7 +390,7 @@ fn remove_from_chat(target: &mut RwLockWriteGuard<ObservableVector<Convo>>, r_id
 // we expect chat to always stay sorted.
 fn insert_to_chat(target: &mut RwLockWriteGuard<ObservableVector<Convo>>, convo: Convo) {
     let msg_ts = convo.latest_message_ts();
-    if (msg_ts > 0) {
+    if msg_ts > 0 {
         if let Some(idx) = target.iter().position(|s| s.latest_message_ts() < msg_ts) {
             target.insert(idx, convo);
             return;
@@ -522,12 +522,12 @@ impl Client {
                     .chain(response.rooms.invite.keys())
                     .collect::<Vec<_>>();
 
-                if (!changed_rooms.is_empty()) {
+                if !changed_rooms.is_empty() {
                     trace!(?changed_rooms, "changed rooms");
                     me.refresh_rooms(changed_rooms).await;
                 }
 
-                if (!response.account_data.is_empty()) {
+                if !response.account_data.is_empty() {
                     info!("account data found!");
                     // account data has been updated, inform the listeners
                     let keys = response
@@ -535,7 +535,7 @@ impl Client {
                         .iter()
                         .filter_map(|raw| raw.get_field::<String>("type").ok().flatten())
                         .collect::<Vec<String>>();
-                    if (!keys.is_empty()) {
+                    if !keys.is_empty() {
                         info!("account data keys: {keys:?}");
                         me.executor().notify(keys);
                     }

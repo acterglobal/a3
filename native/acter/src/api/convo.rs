@@ -151,7 +151,7 @@ impl Convo {
                     break;
                 }
             }
-            if (!event_found && !has_latest_msg) {
+            if !event_found && !has_latest_msg {
                 // let's trigger a back pagination in hope that helps us...
                 if let Err(error) = last_msg_tl.paginate_backwards(10).await {
                     error!(?error, room_id=?latest_msg_room.room_id(), "backpagination failed");
