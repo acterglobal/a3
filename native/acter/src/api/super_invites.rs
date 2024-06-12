@@ -97,6 +97,7 @@ impl SuperInvitesTokenUpdateBuilder {
             token: CreateToken::default(),
         }
     }
+
     pub fn token(&mut self, token: String) {
         self.token.token = Some(token);
     }

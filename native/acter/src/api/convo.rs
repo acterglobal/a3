@@ -329,6 +329,7 @@ pub struct CreateConvoSettings {
 
     // #[builder(default = "Visibility::Private")]
     // visibility: Visibility,
+
     #[builder(default = "Vec::new()")]
     invites: Vec<OwnedUserId>,
 
