@@ -34,7 +34,7 @@ const defaultServerName = String.fromEnvironment(
 );
 
 final defaultLogSetting = Platform.environment.containsKey(rustLogKey)
-    ? Platform.environment[rustLogKey]
+    ? Platform.environment[rustLogKey] as String
     : const String.fromEnvironment(
         rustLogKey,
         defaultValue: 'acter=debug,a3::sdk=info,a3=warn,warn',
