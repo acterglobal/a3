@@ -1,15 +1,12 @@
-use futures::{Stream, StreamExt, TryStreamExt};
+use anyhow::Result;
+use futures::{Stream, StreamExt};
 use matrix_sdk::encryption::{
-    backups::{BackupState, Backups},
     recovery::RecoveryState,
     Encryption,
 };
-use tokio_stream::wrappers::errors::BroadcastStreamRecvError;
-use tokio_stream::wrappers::BroadcastStream;
+use tracing::warn;
 
 use crate::{Client, RUNTIME};
-use anyhow::Result;
-use tracing::warn;
 
 fn state_to_string(state: &RecoveryState) -> String {
     match state {

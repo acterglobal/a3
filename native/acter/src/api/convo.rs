@@ -2,7 +2,7 @@ use acter_core::{statics::default_acter_convo_states, Error};
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use futures::stream::{Stream, StreamExt};
-use matrix_sdk::{executor::JoinHandle, sync::RoomUpdate, RoomMemberships};
+use matrix_sdk::{executor::JoinHandle, RoomMemberships};
 use matrix_sdk_ui::{timeline::RoomExt, Timeline};
 use ruma::assign;
 use ruma_client_api::room::{create_room, Visibility};
@@ -25,7 +25,6 @@ use std::{
     sync::{Arc, RwLock},
 };
 use tokio_retry::{strategy::FixedInterval, Retry};
-use tokio_stream::wrappers::BroadcastStream;
 use tracing::{error, info, trace, warn};
 
 use crate::TimelineStream;

@@ -7,22 +7,19 @@ use futures::stream::StreamExt;
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     room::Room,
-    Client as SdkClient, RoomState,
+    RoomState,
 };
 use ruma_common::{EventId, OwnedEventId, OwnedTransactionId};
 use ruma_events::{
-    room::message::{
-        AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
-        LocationMessageEventContent, RoomMessageEvent, VideoMessageEventContent,
-    },
+    room::message::RoomMessageEvent,
     MessageLikeEventType,
 };
 use std::{io::Write, ops::Deref, path::PathBuf, str::FromStr};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::Stream;
-use tracing::{trace, warn};
+use tracing::warn;
 
-use super::{api::FfiBuffer, client::Client, common::ThumbnailSize, RUNTIME};
+use super::{client::Client, common::ThumbnailSize, RUNTIME};
 use crate::{MsgContent, MsgDraft, OptionString};
 
 impl Client {

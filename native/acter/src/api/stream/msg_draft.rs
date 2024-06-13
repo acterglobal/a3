@@ -1,35 +1,21 @@
-use anyhow::{bail, Context, Result};
+use anyhow::Result;
 use core::time::Duration;
-use futures::stream::{Stream, StreamExt};
-use matrix_sdk::{
-    attachment::{
-        AttachmentConfig, AttachmentInfo, BaseAudioInfo, BaseFileInfo, BaseImageInfo, BaseVideoInfo,
-    },
-    room::{Receipts, Room},
-    Client as SdkClient, RoomState,
-};
-use matrix_sdk_ui::timeline::Timeline;
+use matrix_sdk::room::Room;
 use ruma::{assign, UInt};
-use ruma_client_api::{receipt::create_receipt, sync::sync_events::v3::Rooms};
-use ruma_common::{EventId, OwnedEventId, OwnedTransactionId, UserId};
+use ruma_common::UserId;
 use ruma_events::{
-    receipt::ReceiptThread,
-    relation::Annotation,
     room::{
         message::{
-            AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent, ForwardThread,
+            AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
             ImageMessageEventContent, LocationInfo, LocationMessageEventContent, MessageType,
-            RoomMessageEvent, RoomMessageEventContent, RoomMessageEventContentWithoutRelation,
-            VideoInfo, VideoMessageEventContent,
+            RoomMessageEventContentWithoutRelation, VideoInfo, VideoMessageEventContent,
         },
         ImageInfo,
     },
-    Mentions, MessageLikeEventType,
+    Mentions,
 };
-use std::{ops::Deref, path::PathBuf, sync::Arc};
+use std::path::PathBuf;
 use tracing::{info, warn};
-
-use crate::{Client, RoomMessage, RUNTIME};
 
 #[derive(Clone, Debug)]
 pub(crate) enum MsgContentDraft {

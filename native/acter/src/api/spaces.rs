@@ -31,7 +31,7 @@ use matrix_sdk::{
 use matrix_sdk_ui::timeline::RoomExt;
 use ruma_client_api::state::send_state_event;
 use ruma_common::{
-    directory::RoomTypeFilter, serde::Raw, OwnedRoomAliasId, OwnedRoomId, RoomAliasId, RoomId,
+    serde::Raw, OwnedRoomAliasId, OwnedRoomId, RoomAliasId, RoomId,
     RoomOrAliasId, ServerName,
 };
 use ruma_events::{
@@ -46,7 +46,7 @@ use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::{error, trace, warn};
 
-use crate::{Client, PublicSearchResult, Room, TimelineStream, RUNTIME};
+use crate::{Client, Room, TimelineStream, RUNTIME};
 
 use super::utils::{remap_for_diff, ApiVectorDiff};
 

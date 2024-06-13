@@ -1,4 +1,3 @@
-use crate::{OptionBuffer, ThumbnailSize};
 use anyhow::Result;
 use matrix_sdk::media::MediaRequest;
 use ruma::assign;
@@ -11,6 +10,8 @@ use ruma_common::{
 use ruma_events::room::MediaSource;
 
 use super::{client::Client, RUNTIME};
+
+use crate::{OptionBuffer, ThumbnailSize};
 
 pub struct PublicSearchResultItem {
     chunk: PublicRoomsChunk,
