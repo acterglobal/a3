@@ -73,6 +73,7 @@ jobs:
             target: android
             os: ubuntu-latest
             cargo_make_setup: setup-android
+            java_version: "17"
             cargo_make_args: android-arm
             with_ndk_version: r25
             flutter_build_args: "build apk --target-platform android-arm64"
@@ -184,6 +185,13 @@ jobs:
         if: matrix.with_ndk_version
         with:
           ndk-version: ${{ matrix.with_ndk_version }}
+
+      - uses: actions/setup-java@v4
+        if: matrix.java_version
+        with:
+          java-version: ${{ matrix.java_version }}
+          distribution: 'temurin'
+          cache: 'gradle'
 
       - name: Install cargo-make
         if: steps.cache-cargo.outputs.cache-hit != 'true'
