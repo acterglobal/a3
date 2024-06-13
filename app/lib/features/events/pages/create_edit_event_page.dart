@@ -481,9 +481,6 @@ class CreateEditEventPageConsumerState
 
       EasyLoading.dismiss();
 
-      // ref.invalidate(calendarEventProvider(eventId.toString())); // edit page
-      // ref.invalidate(spaceEventsProvider(spaceId)); // events page in space
-
       if (mounted) {
         context.pop();
         context.pushNamed(
@@ -537,10 +534,6 @@ class CreateEditEventPageConsumerState
       _log.info('Calendar Event updated $eventId');
 
       EasyLoading.dismiss();
-
-      // ref.invalidate(calendarEventProvider(eventId.toString())); // edit page
-      // final spaceId = calendarEvent.roomIdStr();
-      // ref.invalidate(spaceEventsProvider(spaceId)); // events page in space
 
       if (mounted) context.pop();
     } catch (e, st) {
