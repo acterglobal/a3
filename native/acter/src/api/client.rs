@@ -21,17 +21,9 @@ use ruma_common::{
     OwnedServerName, OwnedUserId, RoomAliasId, RoomId, RoomOrAliasId, UserId,
 };
 use ruma_events::room::MediaSource;
-use std::{
-    io::Write,
-    ops::Deref,
-    path::PathBuf,
-    sync::Arc,
-};
+use std::{io::Write, ops::Deref, path::PathBuf, sync::Arc};
 use tokio::{
-    sync::{
-        broadcast::Receiver,
-        RwLock,
-    },
+    sync::{broadcast::Receiver, RwLock},
     time,
 };
 use tokio_stream::wrappers::BroadcastStream;

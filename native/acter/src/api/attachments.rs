@@ -10,10 +10,7 @@ use matrix_sdk::{
     RoomState,
 };
 use ruma_common::{EventId, OwnedEventId, OwnedTransactionId};
-use ruma_events::{
-    room::message::RoomMessageEvent,
-    MessageLikeEventType,
-};
+use ruma_events::{room::message::RoomMessageEvent, MessageLikeEventType};
 use std::{io::Write, ops::Deref, path::PathBuf, str::FromStr};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::Stream;

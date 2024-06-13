@@ -1,9 +1,6 @@
 use anyhow::{bail, Context, Result};
 use futures::stream::{Stream, StreamExt};
-use matrix_sdk::{
-    room::Receipts,
-    RoomState,
-};
+use matrix_sdk::{room::Receipts, RoomState};
 use matrix_sdk_ui::timeline::Timeline;
 use ruma::assign;
 use ruma_client_api::receipt::create_receipt;
@@ -12,12 +9,7 @@ use ruma_events::{
     receipt::ReceiptThread,
     relation::Annotation,
     room::{
-        message::{
-            AudioInfo, FileInfo, ForwardThread,
-            LocationInfo,
-            RoomMessageEvent,
-            VideoInfo,
-        },
+        message::{AudioInfo, FileInfo, ForwardThread, LocationInfo, RoomMessageEvent, VideoInfo},
         ImageInfo,
     },
     MessageLikeEventType,
