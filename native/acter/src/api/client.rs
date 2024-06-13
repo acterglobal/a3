@@ -9,44 +9,25 @@ use derive_builder::Builder;
 use eyeball_im::{ObservableVector, Vector};
 use futures::{
     future::join_all,
-    pin_mut,
     stream::{Stream, StreamExt},
 };
-use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
 use matrix_sdk::{
-    config::SyncSettings, event_handler::EventHandlerHandle, media::MediaRequest,
-    room::Room as SdkRoom, Client as SdkClient, LoopCtrl, RoomState, RumaApiError,
-};
-use matrix_sdk_base::media::UniqueKey;
-use ruma_client_api::{
-    error::{ErrorBody, ErrorKind},
-    Error,
+    media::{MediaRequest, UniqueKey},
+    room::Room as SdkRoom,
+    Client as SdkClient, RoomState,
 };
 use ruma_common::{
     device_id, IdParseError, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId,
     OwnedServerName, OwnedUserId, RoomAliasId, RoomId, RoomOrAliasId, UserId,
 };
 use ruma_events::room::MediaSource;
-use std::{
-    collections::{BTreeMap, HashMap},
-    io::Write,
-    ops::Deref,
-    path::PathBuf,
-    sync::{
-        atomic::{AtomicBool, Ordering},
-        Arc,
-    },
-};
+use std::{io::Write, ops::Deref, path::PathBuf, sync::Arc};
 use tokio::{
-    sync::{
-        broadcast::{channel, Receiver},
-        Mutex, RwLock, RwLockWriteGuard,
-    },
-    task::JoinHandle,
+    sync::{broadcast::Receiver, RwLock},
     time,
 };
 use tokio_stream::wrappers::BroadcastStream;
-use tracing::{error, info, trace, warn};
+use tracing::{error, trace};
 
 use crate::{Account, Convo, OptionString, Room, Space, ThumbnailSize, RUNTIME};
 
@@ -137,7 +118,7 @@ impl Client {
             ?path,
             "tasked to get source binary and store to file"
         );
-        if (!path.exists()) {
+        if !path.exists() {
             // only download if the temp isn't already there.
             let target_path = path.clone();
             RUNTIME

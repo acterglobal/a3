@@ -1,5 +1,5 @@
 use acter_core::models::{self, ActerModel, AnyActerModel};
-use anyhow::{bail, Context, Result};
+use anyhow::{bail, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::room::Room;
 use ruma_common::{OwnedEventId, OwnedTransactionId, OwnedUserId, UserId};

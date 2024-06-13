@@ -564,6 +564,7 @@ impl NotificationSettings {
             inner: Arc::new(inner),
         }
     }
+
     pub fn changes_stream(&self) -> impl Stream<Item = bool> {
         BroadcastStream::new(self.inner.subscribe_to_changes()).map(|_| true)
     }
@@ -609,6 +610,7 @@ impl NotificationSettings {
             })
             .await?
     }
+
     pub async fn global_content_setting(&self, content_key: String) -> Result<bool> {
         let inner = self.inner.clone();
         Ok(RUNTIME
@@ -619,6 +621,7 @@ impl NotificationSettings {
             })
             .await??)
     }
+
     pub async fn set_global_content_setting(
         &self,
         content_key: String,
