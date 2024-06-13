@@ -4,7 +4,7 @@ use acter_core::{
     models::{self, ActerModel, AnyActerModel},
     statics::KEYS,
 };
-use anyhow::{bail, Context, Result};
+use anyhow::{bail, Result};
 use core::time::Duration;
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
