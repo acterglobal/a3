@@ -120,19 +120,6 @@ impl Space {
                 },
             ),
 
-
-            self.room.add_event_handler(
-                |ev: SyncTaskListEvent,
-                 room: SdkRoom,
-                 Ctx(executor): Ctx<Executor>| async move {
-                    let room_id = room.room_id().to_owned();
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                        if let Err(error) = executor.handle(AnyActerModel::TaskList(t.into())).await {
-                            error!(?error, "execution failed");
-                        }
-                    }
-                },
-            ),
             // Task
             self.room.add_event_handler(
                 |ev: SyncTaskListEvent,
@@ -174,6 +161,18 @@ impl Space {
                 },
             ),
             self.room.add_event_handler(
+                |ev: SyncTaskUpdateEvent,
+                 room: SdkRoom,
+                 Ctx(executor): Ctx<Executor>| async move {
+                    let room_id = room.room_id().to_owned();
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
+                        if let Err(error) = executor.handle(AnyActerModel::TaskUpdate(t.into())).await {
+                            error!(?error, "execution failed");
+                        }
+                    }
+                },
+            ),
+            self.room.add_event_handler(
                 |ev: SyncTaskSelfAssignEvent,
                  room: SdkRoom,
                  Ctx(executor): Ctx<Executor>| async move {
@@ -192,18 +191,6 @@ impl Space {
                     let room_id = room.room_id().to_owned();
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
                         if let Err(error) = executor.handle(AnyActerModel::TaskSelfUnassign(t.into())).await {
-                            error!(?error, "execution failed");
-                        }
-                    }
-                },
-            ),
-            self.room.add_event_handler(
-                |ev: SyncTaskUpdateEvent,
-                 room: SdkRoom,
-                 Ctx(executor): Ctx<Executor>| async move {
-                    let room_id = room.room_id().to_owned();
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                        if let Err(error) = executor.handle(AnyActerModel::TaskUpdate(t.into())).await {
                             error!(?error, "execution failed");
                         }
                     }
