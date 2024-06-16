@@ -49,6 +49,7 @@ mod typing;
 mod utils;
 mod verification;
 
+mod labels;
 #[cfg(feature = "uniffi")]
 mod uniffi_api;
 
@@ -58,7 +59,7 @@ pub use uniffi_api::*;
 pub use account::Account;
 pub use acter_core::{
     events::{
-        calendar::EventLocationInfo, news::NewsContent, Colorize, ColorizeBuilder, ObjRef,
+        calendar::EventLocationInfo, news::NewsContent, Colorize, ColorizeBuilder, Icon, ObjRef,
         ObjRefBuilder, RefDetails, RefDetailsBuilder, UtcDateTime,
     },
     models::{ActerModel, Tag, TextMessageContent},
@@ -89,6 +90,7 @@ pub use convo::{
 pub use core::time::Duration as EfkDuration;
 pub use device::{DeviceChangedEvent, DeviceNewEvent};
 pub use invitation::Invitation;
+pub use labels::Label;
 pub use message::{EventSendState, RoomEventItem, RoomMessage, RoomVirtualItem};
 pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide, NewsSlideDraft};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};

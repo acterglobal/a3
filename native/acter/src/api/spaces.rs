@@ -15,6 +15,7 @@ use acter_core::{
             SyncTaskEvent, SyncTaskListEvent, SyncTaskListUpdateEvent, SyncTaskSelfAssignEvent,
             SyncTaskSelfUnassignEvent, SyncTaskUpdateEvent,
         },
+        LabelDetails, LabelsStateEvent, LabelsStateEventContent,
     },
     executor::Executor,
     models::{AnyActerModel, EventMeta},
@@ -24,7 +25,9 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::{
-    deserialized_responses::SyncOrStrippedState,
+    deserialized_responses::{
+        AnySyncOrStrippedState, RawAnySyncOrStrippedState, SyncOrStrippedState,
+    },
     event_handler::{Ctx, EventHandlerHandle},
     room::{Messages, MessagesOptions, Room as SdkRoom},
 };
@@ -37,15 +40,15 @@ use ruma_events::{
     reaction::SyncReactionEvent,
     room::redaction::{RoomRedactionEvent, SyncRoomRedactionEvent},
     space::child::SpaceChildEventContent,
-    AnyStateEventContent, MessageLikeEvent, MessageLikeEventType, StateEventType,
+    AnyStateEventContent, MessageLikeEvent, MessageLikeEventType, StateEventType, SyncStateEvent,
 };
 use serde::{Deserialize, Serialize};
 use std::{ops::Deref, sync::Arc};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
-use tracing::{error, trace, warn};
+use tracing::{error, info, trace, warn};
 
-use crate::{Client, Room, TimelineStream, RUNTIME};
+use crate::{Client, Label, Room, TimelineStream, RUNTIME};
 
 use super::utils::{remap_for_diff, ApiVectorDiff};
 
@@ -545,6 +548,47 @@ impl Space {
                     .map(|()| true)
             })
             .await??)
+    }
+
+    pub async fn labels(&self, label_type: String) -> Vec<Label> {
+        let room = self.inner.room.clone();
+        let label_t = label_type.clone();
+        match RUNTIME
+            .spawn(async move {
+                let Some(labels_raw) = room
+                    .get_state_event_static_for_key::<LabelsStateEventContent, String>(&label_t)
+                    .await?
+                else {
+                    return anyhow::Ok(vec![]);
+                };
+                let SyncOrStrippedState::Sync(SyncStateEvent::Original(labels_state)) =
+                    labels_raw.deserialize()?
+                else {
+                    warn!(?labels_raw, label_t, "Not available");
+                    return anyhow::Ok(vec![]);
+                };
+
+                anyhow::Ok(
+                    labels_state
+                        .content
+                        .labels
+                        .into_iter()
+                        .map(Label::new)
+                        .collect(),
+                )
+            })
+            .await
+        {
+            Ok(Ok(e)) => e,
+            Ok(Err(error)) => {
+                error!(?error, label_type, "Parsing label event failed");
+                vec![]
+            }
+            Err(error) => {
+                error!(?error, "Join Error");
+                vec![]
+            }
+        }
     }
 
     pub async fn set_acter_space_states(&self) -> Result<bool> {

@@ -2,7 +2,7 @@ use super::color::Color;
 use ruma_events::room::ImageInfo;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
-use strum::Display;
+use strum::{Display, EnumString};
 
 #[derive(Clone, Debug, Display, Deserialize, Serialize, Default)]
 #[serde(rename_all = "kebab-case")]
@@ -90,8 +90,9 @@ impl ColorizeBuilder {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize, EnumString, Display)]
 #[serde(rename_all = "kebab-case")]
+#[strum(serialize_all = "kebab-case")]
 pub enum BrandLogo {
     Discord,
     Email,
@@ -127,8 +128,9 @@ pub enum BrandLogo {
     // FIXME: support for others?
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize, EnumString, Display)]
 #[serde(rename_all = "kebab-case")]
+#[strum(serialize_all = "kebab-case")]
 pub enum ActerIcon {
     // subset of https://phosphoricons.com
     Acorn,
@@ -172,4 +174,23 @@ pub enum Icon {
     BrandLogo { icon: BrandLogo },
     ActerIcon { icon: ActerIcon },
     Image(ImageInfo),
+}
+
+impl Icon {
+    pub fn icon_type_str(&self) -> String {
+        match self {
+            Icon::Emoji { .. } => "emoji".to_owned(),
+            Icon::BrandLogo { .. } => "brand-logo".to_owned(),
+            Icon::ActerIcon { .. } => "acter-icon".to_owned(),
+            Icon::Image(_) => "image".to_owned(),
+        }
+    }
+    pub fn icon_str(&self) -> String {
+        match self {
+            Icon::Emoji { key } => key.clone(),
+            Icon::BrandLogo { icon } => icon.to_string(),
+            Icon::ActerIcon { icon } => icon.to_string(),
+            Icon::Image(_) => "image".to_owned(),
+        }
+    }
 }

@@ -8,7 +8,10 @@ mod object_reference;
 mod rendering;
 
 pub use color::Color;
-pub use labels::Labels;
+pub use labels::{
+    LabelDetails, LabelDetailsBuilder, LabelDetailsBuilderError, Labels, LabelsStateEvent,
+    LabelsStateEventContent,
+};
 pub use object_reference::{
     CalendarEventAction, ObjRef, ObjRefBuilder, RefDetails, RefDetailsBuilder, TaskAction,
     TaskListAction,

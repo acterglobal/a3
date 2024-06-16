@@ -1,3 +1,4 @@
+use derive_builder::Builder;
 use ruma_events::{EventContent, PossiblyRedactedStateEventContent, StateEventType};
 use ruma_macros::EventContent;
 use serde::{
@@ -31,26 +32,26 @@ impl PossiblyRedactedStateEventContent for PossiblyRedactedLabelsStateEventConte
 #[ruma_event(type = "global.acter.labels", kind = State, state_key_type = String, custom_possibly_redacted)]
 pub struct LabelsStateEventContent {
     #[serde(flatten)]
-    details: Vec<LabelDetails>,
+    pub labels: Vec<LabelDetails>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Builder)]
 pub struct LabelDetails {
-    id: String,
-    title: String,
+    pub id: String,
+    pub title: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    icon: Option<Icon>,
+    pub icon: Option<Icon>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    colorize: Option<Colorize>,
+    pub colorize: Option<Colorize>,
 }
 
 #[derive(Debug, PartialEq, Eq, Default, Clone)]
 pub struct Labels {
-    msgtype: Option<String>,
-    category: Option<String>,
-    tags: Vec<String>,
-    sections: Vec<String>,
-    others: Vec<String>,
+    pub msgtype: Option<String>,
+    pub category: Option<String>,
+    pub tags: Vec<String>,
+    pub sections: Vec<String>,
+    pub others: Vec<String>,
 }
 
 impl Serialize for Labels {

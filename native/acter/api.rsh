@@ -1947,10 +1947,46 @@ object ActerAppSettingsBuilder {
 //  ##    ## ##        ##     ## ##    ## ##       
 //   ######  ##        ##     ##  ######  ######## 
 
+/// Referencing a user selected icon
+object Icon {
+    /// which type of icon this is: brand-logo/acter-icon/emoji/image 
+    fn icon_type_str() -> string;
+    /// string representation according to `type`
+    fn icon_str() -> string;
+}
+
+/// Details of a Label
+object Label {
+    /// internal id or slug of this label
+    fn id() -> string;
+    /// visible string
+    fn title() -> string;
+    /// the icon configured if any
+    fn icon() -> Option<Icon>;
+}
+//    /// get this as a mutable update builder
+//    fn builder() -> LabelBuilder;
+//}
+
+// object LabelBuilder {
+//    /// set the id of this label
+//    fn id(id: string);
+//    /// set the title of this label
+//    fn title(title: Option<string>);
+//    /// set the icon
+//    fn icon(type: string, content: string );
+//    ///
+//    fn build() -> Label;
+//}
 
 object Space {
     /// get the room profile that contains avatar and display name
     fn get_profile() -> RoomProfile;
+
+    /// get the labels of a specific 
+    fn labels(lable_type: string) -> Future<Vec<Label>>;
+
+    // fn update_labels() 
 
     /// get the room profile that contains avatar and display name
     fn space_relations() -> Future<Result<SpaceRelations>>;

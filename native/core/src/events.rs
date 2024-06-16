@@ -12,8 +12,9 @@ pub mod three_pid;
 
 pub use common::{
     BelongsTo, BrandLogo, CalendarEventAction, Color, Colorize, ColorizeBuilder, Date, Icon,
-    Labels, ObjRef, ObjRefBuilder, Position, RefDetails, RefDetailsBuilder, Reference, References,
-    TaskAction, TaskListAction, Update, UtcDateTime,
+    LabelDetails, LabelDetailsBuilder, LabelDetailsBuilderError, Labels, LabelsStateEvent,
+    LabelsStateEventContent, ObjRef, ObjRefBuilder, Position, RefDetails, RefDetailsBuilder,
+    Reference, References, TaskAction, TaskListAction, Update, UtcDateTime,
 };
 use ruma_common::exports::{serde::de::Error as SerdeDeError, serde_json as smart_serde_json};
 use ruma_events::{
