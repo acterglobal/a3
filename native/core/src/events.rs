@@ -6,11 +6,12 @@ pub mod news;
 pub mod pins;
 pub mod rsvp;
 pub mod settings;
+mod spaces;
 pub mod tasks;
 pub mod three_pid;
 
 pub use common::{
-    BelongsTo, BrandIcon, CalendarEventAction, Color, Colorize, ColorizeBuilder, Date, Icon,
+    BelongsTo, BrandLogo, CalendarEventAction, Color, Colorize, ColorizeBuilder, Date, Icon,
     Labels, ObjRef, ObjRefBuilder, Position, RefDetails, RefDetailsBuilder, Reference, References,
     TaskAction, TaskListAction, Update, UtcDateTime,
 };

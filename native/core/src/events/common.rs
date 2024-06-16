@@ -13,7 +13,7 @@ pub use object_reference::{
     CalendarEventAction, ObjRef, ObjRefBuilder, RefDetails, RefDetailsBuilder, TaskAction,
     TaskListAction,
 };
-pub use rendering::{BrandIcon, Colorize, ColorizeBuilder, Icon, Position};
+pub use rendering::{BrandLogo, Colorize, ColorizeBuilder, Icon, Position};
 
 /// Default UTC DateTime Object
 pub type UtcDateTime = DateTime<Utc>;

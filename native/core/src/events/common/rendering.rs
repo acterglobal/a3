@@ -91,29 +91,85 @@ impl ColorizeBuilder {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(rename_all = "lowercase")]
-pub enum BrandIcon {
-    Matrix,
-    Twitter,
-    Facebook,
+#[serde(rename_all = "kebab-case")]
+pub enum BrandLogo {
+    Discord,
     Email,
-    Youtube,
-    Whatsapp,
-    Reddit,
-    Skype,
-    Zoom,
+    Facebook,
+    Ferdiverse,
+    Figma,
+    Github,
+    Gitlab,
+    Googledrive,
+    Googleplay,
+    Instagram,
     Jitsi,
+    Linkedin,
+    Matrix,
+    Mastodon,
+    Medium,
+    Meta,
+    Notion,
+    Reddit,
+    Slack,
+    Skype,
+    Snapchat,
+    #[serde(alias = "stackoverflow", alias = "stack-overflow")]
+    StackOverflow,
     Telegram,
-    GoogleDrive,
+    Twitter,
+    Whatsapp,
+    Wechat,
+    Youtube,
+    X,
+    Zoom,
+    Custom(String),
+    // FIXME: support for others?
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum ActerIcon {
+    // subset of https://phosphoricons.com
+    Acorn,
+    Alien,
+    Ambulance,
+    Anchor,
+    Archive,
+    Armchair,
+    Axe,
+    Backpack,
+    Balloon,
+    Binoculars,
+    Bird,
+    Fire,
+    Flower,
+    FlowerLotus,
+    FlowerTulip,
+    GameController,
+    Ghost,
+    Globe,
+    Guitar,
+    Heart,
+    HeartBeat,
+    Home,
+    Island,
+    Lego,
+    LegoSmile,
+    Megaphone,
+    Newspaper,
+    Rocket,
+    RocketLaunch,
     Custom(String),
     // FIXME: support for others?
 }
 
 /// Customize the color scheme
 #[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(tag = "type")]
+#[serde(tag = "type", rename_all = "kebab-case")]
 pub enum Icon {
     Emoji { key: String },
-    BrandIcon { icon: BrandIcon },
+    BrandLogo { icon: BrandLogo },
+    ActerIcon { icon: ActerIcon },
     Image(ImageInfo),
 }

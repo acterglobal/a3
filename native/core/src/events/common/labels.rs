@@ -1,13 +1,54 @@
+use ruma_events::{EventContent, PossiblyRedactedStateEventContent, StateEventType};
+use ruma_macros::EventContent;
 use serde::{
-    de::{Deserialize, Deserializer, SeqAccess, Visitor},
-    ser::{Serialize, SerializeSeq, Serializer},
+    de::{Deserializer, SeqAccess, Visitor},
+    ser::{SerializeSeq, Serializer},
+    Deserialize, Serialize,
 };
 
-#[derive(Debug, PartialEq, Eq, Default)]
+use super::{Colorize, Icon};
+
+/// The possibly redacted form of [`LabelsEventContent`].
+///
+/// This type is used when it's not obvious whether the content is redacted or not.
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[allow(clippy::exhaustive_structs)]
+pub struct PossiblyRedactedLabelsStateEventContent();
+
+impl EventContent for PossiblyRedactedLabelsStateEventContent {
+    type EventType = StateEventType;
+
+    fn event_type(&self) -> Self::EventType {
+        "global.acter.labels".into()
+    }
+}
+
+impl PossiblyRedactedStateEventContent for PossiblyRedactedLabelsStateEventContent {
+    type StateKey = String;
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, EventContent)]
+#[ruma_event(type = "global.acter.labels", kind = State, state_key_type = String, custom_possibly_redacted)]
+pub struct LabelsStateEventContent {
+    #[serde(flatten)]
+    details: Vec<LabelDetails>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct LabelDetails {
+    id: String,
+    title: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    icon: Option<Icon>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    colorize: Option<Colorize>,
+}
+
+#[derive(Debug, PartialEq, Eq, Default, Clone)]
 pub struct Labels {
     msgtype: Option<String>,
+    category: Option<String>,
     tags: Vec<String>,
-    categories: Vec<String>,
     sections: Vec<String>,
     others: Vec<String>,
 }
@@ -17,17 +58,19 @@ impl Serialize for Labels {
     where
         S: Serializer,
     {
-        let len = if self.msgtype.is_some() { 0 } else { 1 }
+        let len = if self.msgtype.is_some() { 1 } else { 0 }
             + self.tags.len()
-            + self.categories.len()
+            + if self.category.is_some() { 1 } else { 0 }
             + self.others.len();
         let mut seq = serializer.serialize_seq(Some(len))?;
         if let Some(ref msg) = self.msgtype {
             seq.serialize_element(&format!("m.type:{msg:}"))?;
         }
+        if let Some(ref cat) = self.category {
+            seq.serialize_element(&format!("m.cat:{cat:}"))?;
+        }
         for (prefix, entries) in [
             ("m.tag", self.tags.iter()),
-            ("m.cat", self.categories.iter()),
             ("m.section", self.sections.iter()),
         ] {
             for e in entries {
@@ -60,9 +103,9 @@ impl<'de> Visitor<'de> for LabelsVisitor {
                 match prefix {
                     // first has priority
                     "m.type" if me.msgtype.is_none() => me.msgtype = Some(res.to_string()),
+                    "m.cat" if me.category.is_none() => me.category = Some(res.to_string()),
                     "m.tag" => me.tags.push(res.to_string()),
                     "m.section" => me.sections.push(res.to_string()),
-                    "m.cat" => me.categories.push(res.to_string()),
                     _ => me.others.push(key),
                 }
             } else {
@@ -89,12 +132,12 @@ mod test {
     fn smoketest() -> Result<(), serde_json::Error> {
         let labels = Labels {
             msgtype: Some("m.message".to_string()),
+            category: Some("animals".to_string()),
             tags: vec![
                 "dog".to_string(),
                 "animal".to_string(),
                 "carnivor".to_string(),
             ],
-            categories: vec!["animals".to_string()],
             sections: vec!["work".to_string()],
             others: vec!["whatever".to_string(), "with:other:test".to_string()],
         };
@@ -110,14 +153,18 @@ mod test {
     fn first_type_has_priority() -> Result<(), serde_json::Error> {
         let labels = Labels {
             msgtype: Some("m.message".to_string()),
+            category: Some("animals".to_string()),
             tags: vec![
                 "dog".to_string(),
                 "animal".to_string(),
                 "carnivor".to_string(),
             ],
-            categories: vec!["animals".to_string()],
             sections: vec!["work".to_string()],
-            others: vec!["m.type:whatever".to_string(), "with:other:test".to_string()],
+            others: vec![
+                "m.type:whatever".to_string(), // relegated to "other"
+                "m.cat:bad".to_string(),       // relegated to "other"
+                "with:other:test".to_string(),
+            ],
         };
         let ser = serde_json::to_string(&labels)?;
         println!("Serialized: {ser:}");
