@@ -38,4 +38,4 @@ services:
     links:
       - synapse
     entrypoint: "/bin/bash -c"
-    command: '"register_new_matrix_user -u admin -p admin -a -c /data/homeserver.yaml http://synapse:8008"'
+    command: '"register_new_matrix_user -u admin -p admin -a -c /data/homeserver.yaml http://synapse:8118"'

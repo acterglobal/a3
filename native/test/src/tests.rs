@@ -2,6 +2,7 @@ mod auth;
 mod calendar;
 mod formatted_body;
 mod invitation;
+mod labeled_subspaces;
 mod msg_edit;
 mod news;
 mod onboarding;
