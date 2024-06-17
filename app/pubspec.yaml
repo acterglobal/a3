@@ -165,11 +165,6 @@ dependency_overrides:
       path: flutter_secure_storage_platform_interface
       ref: develop
 
-  omni_datetime_picker:
-    git:
-      url: https://github.com/acterglobal/OmniDateTimePicker
-    # path: ../../OmniDateTimePicker
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
