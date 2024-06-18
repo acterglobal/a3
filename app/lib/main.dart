@@ -18,6 +18,8 @@ import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player_media_kit/video_player_media_kit.dart';
 
+import 'package:firebase_core/firebase_core.dart';
+
 void main(List<String> args) async {
   if (args.isNotEmpty) {
     await cliMain(args);
