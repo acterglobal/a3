@@ -63,7 +63,7 @@ List<RouteBase> makeGeneralRoutes() {
       parentNavigatorKey: rootNavKey,
       name: Routes.forgotPassword.name,
       path: Routes.forgotPassword.route,
-      builder: (context, state) => ForgotPassword(),
+      builder: (context, state) => const ForgotPassword(),
     ),
     GoRoute(
       parentNavigatorKey: rootNavKey,

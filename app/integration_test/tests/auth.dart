@@ -2,6 +2,7 @@ import 'package:acter/common/dialogs/deactivation_confirmation.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/activities/pages/activities_page.dart';
 import 'package:acter/features/home/data/keys.dart';
+import 'package:acter/features/onboarding/pages/forgot_password.dart';
 import 'package:acter/features/profile/pages/my_profile_page.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/settings/widgets/settings_menu.dart';
@@ -91,11 +92,66 @@ void authTests() {
       print("MailHog URL missing, can't test mail stuff");
     }
     final userId = await t.freshAccount();
+    final emailAddr = '$userId@example.org';
 
-    final resp = await t.clickLinkInLatestEmail("$userId@example.org");
-    // print(resp);
+    await t.clickLinkInLatestEmail(
+      emailAddr,
+      contains: 'Validate your email',
+    );
 
+    await t.confirmEmailAdd(emailAddr, t.passwordFor(userId));
     await t.logout();
-    await t.login(userId);
+
+    await t.navigateTo([
+      Keys.exploreBtn,
+      Keys.skipBtn,
+      Keys.loginBtn,
+      LoginPageKeys.forgotPassBtn,
+    ]);
+
+    // enter email
+
+    final emailField = find.byKey(ForgotPassword.emailFieldKey);
+    await emailField.should(findsOneWidget);
+    await emailField.enterTextWithoutReplace(emailAddr);
+
+    final submit = find.byKey(ForgotPassword.submitKey);
+    await t.tester.ensureVisible(submit);
+    await submit.should(findsOneWidget);
+    await submit.tap();
+
+    await t.clickLinkInLatestEmail(
+      emailAddr,
+      contains: 'Password reset',
+      asPost: true, // this is the final click
+    );
+
+    final passwordField = find.byKey(ForgotPassword.passwordKey);
+    await passwordField.should(findsOneWidget);
+    await passwordField.enterTextWithoutReplace('newPasswordFor$userId');
+
+    await t.tester.ensureVisible(submit);
+    await submit.should(findsOneWidget);
+    await submit.tap();
+
+    // forwards us to the login, let's try it
+
+    Finder user = find.byKey(LoginPageKeys.usernameField);
+    await user.should(findsOneWidget);
+
+    await user.enterTextWithoutReplace(userId);
+
+    Finder password = find.byKey(LoginPageKeys.passwordField);
+    await password.should(findsOneWidget);
+
+    await password.enterTextWithoutReplace('newPasswordFor$userId');
+
+    Finder submitBtn = find.byKey(LoginPageKeys.submitBtn);
+    await t.tester.ensureVisible(submitBtn);
+    await submitBtn.should(findsOneWidget);
+    await submitBtn.tap();
+
+    // we should see a main navigation, either at the side (desktop) or the bottom (mobile/tablet)
+    await find.byKey(Keys.mainNav).should(findsOneWidget);
   });
 }

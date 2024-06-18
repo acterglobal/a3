@@ -57,6 +57,7 @@ class EmailAddressCard extends ConsumerWidget {
                 child: Wrap(
                   children: [
                     IconButton(
+                      key: Key('$emailAddress-already-confirmed-btn'),
                       onPressed: () => alreadyConfirmedAddress(context, ref),
                       icon: const Icon(Atlas.envelope_check_thin),
                     ),
@@ -230,6 +231,8 @@ class EmailConfirm {
 }
 
 class PasswordConfirm extends StatefulWidget {
+  static Key passwordConfirmTxt = const Key('password-confirm-txt');
+  static Key passwordConfirmBtn = const Key('password-confirm-btn');
   const PasswordConfirm({super.key});
 
   @override
@@ -254,6 +257,7 @@ class _PasswordConfirmState extends State<PasswordConfirm> {
             Padding(
               padding: const EdgeInsets.all(5),
               child: TextFormField(
+                key: PasswordConfirm.passwordConfirmTxt,
                 controller: newPassword,
                 decoration: InputDecoration(
                   hintText: L10n.of(context).yourPassword,
@@ -278,6 +282,7 @@ class _PasswordConfirmState extends State<PasswordConfirm> {
           child: Text(L10n.of(context).cancel),
         ),
         ActerPrimaryActionButton(
+          key: PasswordConfirm.passwordConfirmBtn,
           onPressed: () => onSubmit(context),
           child: Text(L10n.of(context).submit),
         ),
