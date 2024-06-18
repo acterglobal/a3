@@ -71,7 +71,11 @@ class _CreateUpdateTaskListConsumerState
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 20),
-              const Divider(indent: 150,endIndent: 150,thickness: 2,),
+              const Divider(
+                indent: 150,
+                endIndent: 150,
+                thickness: 2,
+              ),
               const SizedBox(height: 20),
               Text(
                 L10n.of(context).createNewTaskList,
