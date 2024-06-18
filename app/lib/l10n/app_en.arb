@@ -2209,5 +2209,6 @@
   "removeMyself": "Remove Myself",
   "updateTask": "Update Task",
   "updatingTask": "Updating Task",
-  "updatingTaskFailed": "Updating Task failed {error}"
+  "updatingTaskFailed": "Updating Task failed {error}",
+  "editTitle": "Edit Title"
 }
