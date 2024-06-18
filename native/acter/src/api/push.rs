@@ -23,7 +23,10 @@ use ruma_client_api::{
         Pusher as RumaPusher, PusherIds, PusherInit, PusherKind, RuleScope,
     },
 };
-use ruma_common::{EventId, OwnedMxcUri, OwnedRoomId, RoomId};
+use ruma_common::{
+    push::{RuleKind, Ruleset},
+    EventId, OwnedMxcUri, OwnedRoomId, RoomId,
+};
 use ruma_events::{
     room::{message::MessageType, MediaSource},
     AnySyncMessageLikeEvent, AnySyncTimelineEvent, MessageLikeEvent, SyncMessageLikeEvent,
@@ -541,7 +544,7 @@ impl Client {
             .await?
     }
 
-    pub async fn push_rules(&self) -> Result<ruma::push::Ruleset> {
+    pub async fn push_rules(&self) -> Result<Ruleset> {
         let client = self.core.client().clone();
         RUNTIME
             .spawn(async move {
@@ -616,7 +619,7 @@ impl NotificationSettings {
         Ok(RUNTIME
             .spawn(async move {
                 inner
-                    .is_push_rule_enabled(ruma_common::push::RuleKind::Underride, content_key)
+                    .is_push_rule_enabled(RuleKind::Underride, content_key)
                     .await
             })
             .await??)
@@ -631,11 +634,7 @@ impl NotificationSettings {
         RUNTIME
             .spawn(async move {
                 inner
-                    .set_push_rule_enabled(
-                        ruma_common::push::RuleKind::Underride,
-                        content_key,
-                        enabled,
-                    )
+                    .set_push_rule_enabled(RuleKind::Underride, content_key, enabled)
                     .await?;
                 Ok(enabled)
             })

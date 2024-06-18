@@ -2715,7 +2715,6 @@ object Client {
 }
 
 object NotificationSettings {
-
     /// get informed about changes to the notification settings
     fn changes_stream() -> Stream<bool>;
 
@@ -2724,7 +2723,6 @@ object NotificationSettings {
 
     /// set default RoomNotificationMode for this combination
     fn set_default_notification_mode(is_encrypted: bool, is_one_on_one: bool, mode: string) -> Future<Result<bool>>;
-    
 
     /// app settings
     fn global_content_setting(app_key: string) -> Future<Result<bool>>;
