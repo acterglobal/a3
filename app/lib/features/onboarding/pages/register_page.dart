@@ -332,7 +332,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'tryacter',
+                      'organize',
                       style: Theme.of(context).textTheme.headlineMedium,
                     ),
                     IconButton(
@@ -343,7 +343,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           toastPosition: EasyLoadingToastPosition.bottom,
                         );
                         await Clipboard.setData(
-                          const ClipboardData(text: 'tryacter'),
+                          const ClipboardData(text: 'organize'),
                         );
                       },
                       icon: const Icon(Icons.copy, size: 20),
