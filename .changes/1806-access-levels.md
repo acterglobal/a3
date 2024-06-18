@@ -1,2 +1,0 @@
-- You can now configure the rules to join a space or chat room, including making it public and limiting it to a set of spaces, whose members can join directly.
-- Indicator in the Space header shows who can access that space

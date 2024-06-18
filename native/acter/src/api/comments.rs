@@ -2,7 +2,7 @@ use acter_core::{
     events::comments::CommentBuilder,
     models::{self, can_redact, ActerModel, AnyActerModel},
 };
-use anyhow::{bail, Context, Result};
+use anyhow::{bail, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
 use ruma_common::{OwnedEventId, OwnedUserId};

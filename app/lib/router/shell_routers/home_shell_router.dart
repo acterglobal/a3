@@ -31,7 +31,7 @@ import 'package:acter/features/space/pages/members_page.dart';
 import 'package:acter/features/space/pages/overview_page.dart';
 import 'package:acter/features/space/pages/pins_page.dart';
 import 'package:acter/features/space/pages/sub_spaces_page.dart';
-import 'package:acter/features/space/pages/tasks_page.dart';
+import 'package:acter/features/space/pages/space_tasks_page.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
 import 'package:acter/features/space/settings/pages/index_page.dart';
@@ -39,8 +39,8 @@ import 'package:acter/features/space/settings/pages/notification_configuration_p
 import 'package:acter/features/public_room_search/pages/search_public_directory.dart';
 import 'package:acter/features/spaces/pages/create_space_page.dart';
 import 'package:acter/features/spaces/pages/spaces_page.dart';
-import 'package:acter/features/tasks/pages/task_list_page.dart';
-import 'package:acter/features/tasks/pages/task_page.dart';
+import 'package:acter/features/tasks/pages/task_item_detail_page.dart';
+import 'package:acter/features/tasks/pages/task_list_details_page.dart';
 import 'package:acter/features/tasks/pages/tasks_page.dart';
 import 'package:acter/router/router.dart';
 import 'package:flutter/cupertino.dart';
@@ -399,18 +399,18 @@ List<RouteBase> makeHomeShellRoutes(ref) {
       pageBuilder: (context, state) {
         return NoTransitionPage(
           key: state.pageKey,
-          child: const TasksPage(),
+          child: TasksPage(),
         );
       },
     ),
     GoRoute(
-      name: Routes.task.name,
-      path: Routes.task.route,
+      name: Routes.taskItemDetails.name,
+      path: Routes.taskItemDetails.route,
       redirect: authGuardRedirect,
       pageBuilder: (context, state) {
         return NoTransitionPage(
           key: state.pageKey,
-          child: TaskPage(
+          child: TaskItemDetailPage(
             taskListId: state.pathParameters['taskListId']!,
             taskId: state.pathParameters['taskId']!,
           ),
@@ -418,13 +418,13 @@ List<RouteBase> makeHomeShellRoutes(ref) {
       },
     ),
     GoRoute(
-      name: Routes.taskList.name,
-      path: Routes.taskList.route,
+      name: Routes.taskListDetails.name,
+      path: Routes.taskListDetails.route,
       redirect: authGuardRedirect,
       pageBuilder: (context, state) {
         return NoTransitionPage(
           key: state.pageKey,
-          child: TaskListPage(
+          child: TaskListDetailPage(
             taskListId: state.pathParameters['taskListId']!,
           ),
         );

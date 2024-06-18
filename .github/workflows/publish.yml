@@ -79,6 +79,7 @@ jobs:
             cargo_make_setup: setup-android
             cargo_make_args: android
             with_ndk_version: r25
+            java_version: "17"
             flutter_build_args: "build appbundle --split-debug-info=debug_symbols"
             artifact_prefix: acter-android
             artifact_path:  app/build/app/outputs/bundle/release/
@@ -89,6 +90,7 @@ jobs:
             cargo_make_setup: setup-android
             cargo_make_args: android
             with_ndk_version: r25
+            java_version: "17"
             flutter_build_args: "build apk --split-per-abi --split-debug-info=debug_symbols"
             artifact_prefix: acter-android
             artifact_path:  app/build/app/outputs/apk/release/
@@ -203,6 +205,13 @@ jobs:
         with:
           ndk-version: ${{ matrix.with_ndk_version }}
 
+      - uses: actions/setup-java@v4
+        if: matrix.java_version
+        with:
+          java-version: ${{ matrix.java_version }}
+          distribution: 'temurin'
+          cache: 'gradle'
+
       - name: Install cargo-make
         if: steps.cache-cargo.outputs.cache-hit != 'true'
         uses: davidB/rust-cargo-make@v1
@@ -210,7 +219,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         name: Set up flutter
         with:
-          flutter-version: '3.19'
+          flutter-version: '3.22'
           channel: 'stable'
 
       - name: Flutter info
@@ -899,7 +908,7 @@ jobs:
 
       - name: Release
         id: create_release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           # publish this full release now
           draft: true

@@ -613,6 +613,9 @@ object CalendarEvent {
     /// get the user id list who have responded with `Yes` on this event
     fn participants() -> Future<Result<Vec<string>>>;
 
+    /// whether or not this user can redact this item
+    fn can_redact() -> Future<Result<bool>>;
+
     /// get the comments manager
     fn comments() -> Future<Result<CommentsManager>>;
 
@@ -1378,6 +1381,9 @@ object Comment {
     fn msg_content() -> MsgContent;
     /// create a draft builder to reply to this comment
     fn reply_builder() -> CommentDraft;
+
+    /// whether or not this user can redact this item
+    fn can_redact() -> Future<Result<bool>>;
 }
 
 /// Reference to the comments section of a particular item
@@ -1444,6 +1450,9 @@ object Attachment {
     /// get the path that media (image/audio/video/file) was saved
     /// return None when never downloaded
     fn media_path(is_thumb: bool) -> Future<Result<OptionString>>;
+
+    /// whether or not this user can redact this item
+    fn can_redact() -> Future<Result<bool>>;
 }
 
 /// Reference to the attachments section of a particular item

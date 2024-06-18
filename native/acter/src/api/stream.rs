@@ -1,32 +1,20 @@
 use anyhow::{bail, Context, Result};
-use core::time::Duration;
 use futures::stream::{Stream, StreamExt};
-use matrix_sdk::{
-    attachment::{
-        AttachmentConfig, AttachmentInfo, BaseAudioInfo, BaseFileInfo, BaseImageInfo, BaseVideoInfo,
-    },
-    room::{Receipts, Room as SdkRoom},
-    Client as SdkClient, RoomState,
-};
+use matrix_sdk::{room::Receipts, RoomState};
 use matrix_sdk_ui::timeline::Timeline;
-use ruma::{assign, UInt};
-use ruma_client_api::{receipt::create_receipt, sync::sync_events::v3::Rooms};
+use ruma::assign;
+use ruma_client_api::receipt::create_receipt;
 use ruma_common::{EventId, OwnedEventId, OwnedTransactionId};
 use ruma_events::{
     receipt::ReceiptThread,
     relation::Annotation,
     room::{
-        message::{
-            AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent, ForwardThread,
-            ImageMessageEventContent, LocationInfo, LocationMessageEventContent, MessageType,
-            RoomMessageEvent, RoomMessageEventContent, RoomMessageEventContentWithoutRelation,
-            VideoInfo, VideoMessageEventContent,
-        },
+        message::{AudioInfo, FileInfo, ForwardThread, LocationInfo, RoomMessageEvent, VideoInfo},
         ImageInfo,
     },
-    Mentions, MessageLikeEventType,
+    MessageLikeEventType,
 };
-use std::{ops::Deref, path::PathBuf, sync::Arc};
+use std::{ops::Deref, sync::Arc};
 use tracing::info;
 
 use crate::{Client, Room, RoomMessage, RUNTIME};

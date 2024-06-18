@@ -1,11 +1,11 @@
 use acter_core::events::settings::{ActerUserAppSettingsContent, APP_USER_SETTINGS};
 use anyhow::{bail, Context, Result};
-use futures::StreamExt;
+use futures::stream::StreamExt;
 use matrix_sdk::{media::MediaRequest, Account as SdkAccount};
 use ruma::{assign, uint};
 use ruma_client_api::{
     account::request_3pid_management_token_via_email,
-    uiaa::{AuthData, EmailIdentity, Password, ThirdpartyIdCredentials},
+    uiaa::{AuthData, Password},
 };
 use ruma_common::{
     thirdparty::Medium, ClientSecret, MilliSecondsSinceUnixEpoch, OwnedClientSecret, OwnedMxcUri,
@@ -15,7 +15,6 @@ use ruma_events::{ignored_user_list::IgnoredUserListEventContent, room::MediaSou
 use std::{ops::Deref, path::PathBuf};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
-use tracing::info;
 
 use super::{
     common::{clearify_error, OptionBuffer, OptionString, ThumbnailSize},

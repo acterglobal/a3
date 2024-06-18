@@ -1,8 +1,7 @@
 use acter_core::spaces::is_acter_space;
-use anyhow::{Context, Result};
-use base64ct::{Base64UrlUnpadded, Encoding};
+use anyhow::Result;
 use core::time::Duration;
-use eyeball_im::{ObservableVector, Vector};
+use eyeball_im::ObservableVector;
 use futures::{
     future::join_all,
     pin_mut,
@@ -10,20 +9,18 @@ use futures::{
 };
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
 use matrix_sdk::{
-    config::SyncSettings, event_handler::EventHandlerHandle, media::MediaRequest,
-    room::Room as SdkRoom, LoopCtrl, RoomState, RumaApiError,
+    config::SyncSettings, event_handler::EventHandlerHandle, room::Room as SdkRoom, RoomState,
+    RumaApiError,
 };
-use matrix_sdk_base::media::UniqueKey;
 use ruma_client_api::{
     error::{ErrorBody, ErrorKind},
     Error,
 };
-use ruma_common::{OwnedRoomId, RoomId};
+use ruma_common::OwnedRoomId;
 use std::{
     collections::{BTreeMap, HashMap},
     io::Write,
     ops::Deref,
-    path::PathBuf,
     sync::{
         atomic::{AtomicBool, Ordering},
         Arc,
@@ -32,23 +29,16 @@ use std::{
 use tokio::{
     sync::{
         broadcast::{channel, Receiver},
-        Mutex, RwLock, RwLockWriteGuard,
+        Mutex, RwLockWriteGuard,
     },
     task::JoinHandle,
-    time,
 };
 use tokio_stream::wrappers::BroadcastStream;
 use tracing::{error, info, trace, warn};
 
-use crate::{Account, Convo, OptionString, Room, Space, ThumbnailSize, RUNTIME};
+use crate::{Convo, Room, Space, RUNTIME};
 
-use super::{
-    super::{
-        api::FfiBuffer, device::DeviceController, invitation::InvitationController,
-        receipt::ReceiptController, typing::TypingController, verification::VerificationController,
-    },
-    Client,
-};
+use super::Client;
 
 #[derive(Clone, Debug, Default)]
 pub struct HistoryLoadState {
@@ -390,7 +380,7 @@ fn remove_from_chat(target: &mut RwLockWriteGuard<ObservableVector<Convo>>, r_id
 // we expect chat to always stay sorted.
 fn insert_to_chat(target: &mut RwLockWriteGuard<ObservableVector<Convo>>, convo: Convo) {
     let msg_ts = convo.latest_message_ts();
-    if (msg_ts > 0) {
+    if msg_ts > 0 {
         if let Some(idx) = target.iter().position(|s| s.latest_message_ts() < msg_ts) {
             target.insert(idx, convo);
             return;
@@ -522,12 +512,12 @@ impl Client {
                     .chain(response.rooms.invite.keys())
                     .collect::<Vec<_>>();
 
-                if (!changed_rooms.is_empty()) {
+                if !changed_rooms.is_empty() {
                     trace!(?changed_rooms, "changed rooms");
                     me.refresh_rooms(changed_rooms).await;
                 }
 
-                if (!response.account_data.is_empty()) {
+                if !response.account_data.is_empty() {
                     info!("account data found!");
                     // account data has been updated, inform the listeners
                     let keys = response
@@ -535,7 +525,7 @@ impl Client {
                         .iter()
                         .filter_map(|raw| raw.get_field::<String>("type").ok().flatten())
                         .collect::<Vec<String>>();
-                    if (!keys.is_empty()) {
+                    if !keys.is_empty() {
                         info!("account data keys: {keys:?}");
                         me.executor().notify(keys);
                     }
