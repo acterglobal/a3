@@ -194,7 +194,7 @@ class TaskItemDetailPage extends ConsumerWidget {
   }
 
   Future<void> duePickerAction(BuildContext context, Task task) async {
-    final newDue = await DuePicker.showPicker(
+    final newDue = await showDuePicker(
       context: context,
       initialDate: task.dueDate() != null
           ? DateTime.parse(task.dueDate()!)
