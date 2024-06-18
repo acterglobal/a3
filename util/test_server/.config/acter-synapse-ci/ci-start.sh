@@ -10,31 +10,11 @@ echo """
 email:
   smtp_host: mailhog
   smtp_port: 1025
-  smtp_user: \"test1\"
-  smtp_pass: \"test\"
   force_tls: false
   require_transport_security: false
   enable_tls: false
   notif_from: \"Your Friendly %(app)s homeserver <noreply@acter.global>\"
-  app_name: Acter
-  enable_notifs: true
-  notif_for_new_users: false
-  client_base_url: \"http://localhost/riot\"
-  validation_token_lifetime: 15m
-  invite_client_location: https://app.element.io
   can_verify_email: true
-
-  subjects:
-    message_from_person_in_room: \"[%(app)s] You have a message on %(app)s from %(person)s in the %(room)s room...\"
-    message_from_person: \"[%(app)s] You have a message on %(app)s from %(person)s...\"
-    messages_from_person: \"[%(app)s] You have messages on %(app)s from %(person)s...\"
-    messages_in_room: \"[%(app)s] You have messages on %(app)s in the %(room)s room...\"
-    messages_in_room_and_others: \"[%(app)s] You have messages on %(app)s in the %(room)s room and others...\"
-    messages_from_person_and_others: \"[%(app)s] You have messages on %(app)s from %(person)s and others...\"
-    invite_from_person_to_room: \"[%(app)s] %(person)s has invited you to join the %(room)s room on %(app)s...\"
-    invite_from_person: \"[%(app)s] %(person)s has invited you to chat on %(app)s...\"
-    password_reset: \"[%(server_name)s] Password reset\"
-    email_validation: \"[%(server_name)s] Validate your email\"
 
 allow_guest_access: true
 enable_registration_without_verification: true
