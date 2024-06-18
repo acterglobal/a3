@@ -1,3 +1,4 @@
+import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
@@ -7,7 +8,7 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/base_body_widget.dart';
 import 'package:acter/common/widgets/chat/edit_room_description_sheet.dart';
-import 'package:acter/common/widgets/chat/edit_room_name_sheet.dart';
+import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/visibility/visibility_chip.dart';
@@ -49,18 +50,37 @@ class RoomProfilePage extends ConsumerStatefulWidget {
 class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
   @override
   Widget build(BuildContext context) {
+    final convoProfile =
+        ref.watch(chatProfileDataProviderById(widget.roomId)).valueOrNull;
+    final membership =
+        ref.watch(roomMembershipProvider(widget.roomId)).valueOrNull;
+
     return BaseBody(
       padding: EdgeInsets.zero,
       child: Column(
         children: [
-          _buildAppBar(context),
-          Expanded(child: _buildBody(context)),
+          _buildAppBar(context, convoProfile, membership),
+          Expanded(child: _buildBody(context, convoProfile, membership)),
         ],
       ),
     );
   }
 
-  AppBar _buildAppBar(BuildContext context) {
+  AppBar _buildAppBar(
+    BuildContext context,
+    ProfileData? convoProfile,
+    Member? membership,
+  ) {
+    List<PopupMenuItem> menuListItems = [];
+    if (membership?.canString('CanSetName') == true) {
+      menuListItems.add(
+        PopupMenuItem(
+          onTap: () => showEditNameBottomSheet(convoProfile),
+          child: Text(L10n.of(context).editName),
+        ),
+      );
+    }
+
     return AppBar(
       // custom x-circle when we are in widescreen mode;
       leading: widget.inSidebar
@@ -71,18 +91,27 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
           : null,
       backgroundColor: Colors.transparent,
       elevation: 0.0,
+      actions: [
+        if (menuListItems.isNotEmpty)
+          PopupMenuButton(
+            icon: const Icon(Icons.more_vert),
+            itemBuilder: (context) => menuListItems,
+          ),
+      ],
     );
   }
 
-  Widget _buildBody(BuildContext context) {
-    final membership =
-        ref.watch(roomMembershipProvider(widget.roomId)).valueOrNull;
+  Widget _buildBody(
+    BuildContext context,
+    ProfileData? convoProfile,
+    Member? membership,
+  ) {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10.0),
         child: Column(
           children: [
-            _header(context, membership),
+            _header(context, convoProfile, membership),
             const SizedBox(height: 16),
             _description(context, membership),
             const SizedBox(height: 16),
@@ -95,9 +124,11 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     );
   }
 
-  Widget _header(BuildContext context, Member? membership) {
-    final convoProfile = ref.watch(chatProfileDataProviderById(widget.roomId));
-
+  Widget _header(
+    BuildContext context,
+    ProfileData? convoProfile,
+    Member? membership,
+  ) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -112,42 +143,52 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
             onPressed: () => _updateAvatar(),
             child: Text(L10n.of(context).changeAvatar),
           ),
-        convoProfile.when(
-          data: (profile) => Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                profile.displayName ?? widget.roomId,
-                softWrap: true,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              if (membership?.canString('CanSetName') == true)
-                IconButton(
-                  onPressed: () => showEditRoomNameBottomSheet(
-                    context: context,
-                    name: profile.displayName ?? '',
-                    roomId: widget.roomId,
-                  ),
-                  icon: Icon(
-                    Icons.edit,
-                    color: Theme.of(context).colorScheme.neutral5,
-                  ),
-                ),
-            ],
-          ),
-          error: (err, stackTrace) {
-            _log.severe('Error loading convo profile', err, stackTrace);
-            return Text(
-              widget.roomId,
-              overflow: TextOverflow.clip,
-              style: Theme.of(context).textTheme.titleSmall,
-            );
+        GestureDetector(
+          onTap: () {
+            if (membership?.canString('CanSetName') == true) {
+              showEditNameBottomSheet(convoProfile);
+            }
           },
-          loading: () => Skeletonizer(child: Text(widget.roomId)),
+          child: Text(
+            convoProfile?.displayName ?? widget.roomId,
+            softWrap: true,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
         ),
       ],
     );
+  }
+
+  void showEditNameBottomSheet(ProfileData? convoProfile) {
+    showEditTitleBottomSheet(
+      context: context,
+      bottomSheetTitle: L10n.of(context).editName,
+      titleValue: convoProfile?.displayName ?? '',
+      onSave: (newName) {
+        if (newName == (convoProfile?.displayName ?? '').trim()) {
+          context.pop();
+          return; // no changes to submit
+        }
+        _editName(newName);
+      },
+    );
+  }
+
+  Future<void> _editName(String newName) async {
+    try {
+      EasyLoading.show(status: L10n.of(context).updateName);
+      final convo = await ref.read(chatProvider(widget.roomId).future);
+      await convo.setName(newName.trim());
+      EasyLoading.dismiss();
+      if (!mounted) return;
+      context.pop();
+    } catch (e, st) {
+      _log.severe('Failed to edit chat name', e, st);
+      EasyLoading.dismiss();
+      if (!mounted) return;
+      EasyLoading.showError(L10n.of(context).updateNameFailed(e));
+    }
   }
 
   Future<void> _updateAvatar() async {
