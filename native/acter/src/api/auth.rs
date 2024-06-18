@@ -545,34 +545,38 @@ pub async fn reset_password(
     client_secret: String,
     new_val: String,
 ) -> Result<bool> {
-    let http_client = ReqClientBuilder::new().build()?;
-    let homeserver_url = Url::parse(&default_homeserver_url)?;
-    let submit_url = homeserver_url.join("/_matrix/client/v3/account/password")?;
+    RUNTIME
+        .spawn(async move {
+            let http_client = ReqClientBuilder::new().build()?;
+            let homeserver_url = Url::parse(&default_homeserver_url)?;
+            let submit_url = homeserver_url.join("/_matrix/client/v3/account/password")?;
 
-    let body = serde_json::json!({
-        "new_password": new_val,
-        "logout_devices": false,
-        "auth": { // [ref] https://spec.matrix.org/v1.10/client-server-api/#email-based-identity--homeserver
-            "type": "m.login.email.identity".to_owned(),
-            "threepid_creds": {
-                "sid": sid,
-                "client_secret": client_secret
+            let body = serde_json::json!({
+                "new_password": new_val,
+                "logout_devices": false,
+                "auth": { // [ref] https://spec.matrix.org/v1.10/client-server-api/#email-based-identity--homeserver
+                    "type": "m.login.email.identity".to_owned(),
+                    "threepid_creds": {
+                        "sid": sid,
+                        "client_secret": client_secret
+                    }
+                }
+            });
+
+            let resp = http_client
+                .post(submit_url.to_string())
+                .body(body.to_string())
+                .send()
+                .await?;
+
+            info!("reset_password: {:?}", resp);
+
+            if resp.status() != StatusCode::OK {
+                let text = resp.text().await?;
+                bail!("reset_password failed: {}", text);
             }
-        }
-    });
 
-    let resp = http_client
-        .post(submit_url.to_string())
-        .body(body.to_string())
-        .send()
-        .await?;
-
-    info!("reset_password: {:?}", resp);
-
-    if resp.status() != StatusCode::OK {
-        let text = resp.text().await?;
-        bail!("reset_password failed: {}", text);
-    }
-
-    Ok(true)
+            Ok(true)
+        })
+        .await?
 }
