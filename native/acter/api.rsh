@@ -1085,6 +1085,21 @@ object Room {
     /// update the power levels of specified member
     fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;
 
+    /// Change the avatar of the room
+    fn upload_avatar(uri: string) -> Future<Result<MxcUri>>;
+
+    /// Remove the avatar of the room
+    fn remove_avatar() -> Future<Result<EventId>>;
+
+    /// what is the description / topic
+    fn topic() -> Option<string>;
+
+    /// set description / topic of the room
+    fn set_topic(topic: string) -> Future<Result<EventId>>;
+
+    /// set name of the room
+    fn set_name(name: string) -> Future<Result<EventId>>;
+
 }
 
 
