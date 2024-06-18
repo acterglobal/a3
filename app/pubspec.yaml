@@ -187,6 +187,7 @@ dev_dependencies:
   msix: ^3.7.0
   # mockito: ^5.4.2
   uuid: ^4.0.0
+  enough_mail: ^2.1.6
 
 icons_launcher:
   image_path: "assets/icon/logo.png"

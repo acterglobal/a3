@@ -8,6 +8,7 @@ import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../support/login.dart';
+import '../support/mail.dart';
 import '../support/setup.dart';
 import '../support/util.dart';
 
@@ -84,5 +85,17 @@ void authTests() {
     final displayName = find.byKey(MyProfilePage.displayNameKey);
     await displayName.should(findsOneWidget);
     await find.text(testName).should(findsOneWidget);
+  });
+  acterTestWidget('password reset', (t) async {
+    if (!t.hasMailSupport()) {
+      print("MailHog URL missing, can't test mail stuff");
+    }
+    final userId = await t.freshAccount();
+
+    final resp = await t.clickLinkInLatestEmail("$userId@example.org");
+    // print(resp);
+
+    await t.logout();
+    await t.login(userId);
   });
 }
