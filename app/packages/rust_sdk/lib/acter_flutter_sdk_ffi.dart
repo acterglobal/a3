@@ -14846,6 +14846,43 @@ class Api {
     return tmp9;
   }
 
+  FfiListFfiString? __syncStatePushCustomRoomsRxStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _syncStatePushCustomRoomsRxStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_FfiListFfiString");
+    tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
+    final tmp12 = FfiListFfiString._(this, tmp11_1);
+    final tmp9 = tmp12;
+    return tmp9;
+  }
+
   ConvoDiff? __clientConvosStreamStreamPoll(
     int boxed,
     int postCobject,
@@ -23761,6 +23798,17 @@ class Api {
       void Function(
         int,
       )>();
+  late final _syncStatePushCustomRoomsRxPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__SyncState_push_custom_rooms_rx");
+
+  late final _syncStatePushCustomRoomsRx =
+      _syncStatePushCustomRoomsRxPtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _publicSearchResultItemNamePtr = _lookup<
       ffi.NativeFunction<
           _PublicSearchResultItemNameReturn Function(
@@ -30818,6 +30866,23 @@ class Api {
   late final _syncStateSyncErrorRxStreamPoll =
       _syncStateSyncErrorRxStreamPollPtr.asFunction<
           _SyncStateSyncErrorRxStreamPollReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _syncStatePushCustomRoomsRxStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _SyncStatePushCustomRoomsRxStreamPollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__SyncState_push_custom_rooms_rx_stream_poll");
+
+  late final _syncStatePushCustomRoomsRxStreamPoll =
+      _syncStatePushCustomRoomsRxStreamPollPtr.asFunction<
+          _SyncStatePushCustomRoomsRxStreamPollReturn Function(
             int,
             int,
             int,
@@ -48478,6 +48543,23 @@ class SyncState {
     return;
   }
 
+  /// Get event handler of change in list of rooms that have the conditional push rule
+  Stream<FfiListFfiString> pushCustomRoomsRx() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._syncStatePushCustomRoomsRx(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__SyncState_push_custom_rooms_rx_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeStream(tmp3_1, _api.__syncStatePushCustomRoomsRxStreamPoll);
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -61487,6 +61569,13 @@ class _SyncStateSyncErrorRxStreamPollReturn extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
+}
+
+class _SyncStatePushCustomRoomsRxStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
 }
 
 class _ClientConvosStreamStreamPollReturn extends ffi.Struct {
