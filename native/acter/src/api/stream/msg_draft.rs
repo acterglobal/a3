@@ -222,7 +222,7 @@ impl MsgDraft {
             inner,
             mut mentions,
         } = self.clone();
-        let user_id = UserId::parse(&user_id)?;
+        let user_id = UserId::parse(user_id)?;
         mentions.user_ids.insert(user_id);
         Ok(MsgDraft { inner, mentions })
     }
