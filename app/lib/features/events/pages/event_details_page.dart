@@ -4,6 +4,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/report_content.dart';
@@ -101,16 +102,15 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     //Get membership details
     final spaceId = event.roomIdStr();
     final canRedact = ref.watch(canRedactProvider(event));
-    final membership = ref.watch(roomMembershipProvider(spaceId));
+    final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
+    final canPostEvent = membership?.canString('CanPostEvent') == true;
 
     //Create event actions
     List<PopupMenuEntry> actions = [];
 
-    if (membership.valueOrNull != null) {
-      final member = membership.requireValue!;
-
+    if (membership != null) {
       //Edit Event Action
-      if (member.canString('CanPostEvent')) {
+      if (canPostEvent) {
         actions.add(
           PopupMenuItem(
             key: EventsKeys.eventEditBtn,
@@ -231,6 +231,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   Widget _buildEventBasicDetails(CalendarEvent calendarEvent) {
     final month = getMonthFromDate(calendarEvent.utcStart());
     final day = getDayFromDate(calendarEvent.utcStart());
+    final membership = ref
+        .watch(roomMembershipProvider(calendarEvent.roomIdStr()))
+        .valueOrNull;
+    final canPostEvent = membership?.canString('CanPostEvent') == true;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -251,11 +255,18 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  calendarEvent.title(),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleMedium,
+                GestureDetector(
+                  onTap: () {
+                    if (canPostEvent) {
+                      showEditEventTitleBottomSheet(calendarEvent.title());
+                    }
+                  },
+                  child: Text(
+                    calendarEvent.title(),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                 ),
                 SpaceChip(spaceId: calendarEvent.roomIdStr()),
                 const SizedBox(height: 5),
@@ -280,6 +291,38 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         ],
       ),
     );
+  }
+
+  void showEditEventTitleBottomSheet(String titleValue) {
+    showEditTitleBottomSheet(
+      context: context,
+      titleValue: titleValue,
+      onSave: (newName) {
+        _editEventTitle(newName);
+      },
+    );
+  }
+
+  Future<void> _editEventTitle(String newName) async {
+    try {
+      EasyLoading.show(status: L10n.of(context).updateName);
+      // We always have calendar object at this stage.
+      final calendarEvent =
+          await ref.read(calendarEventProvider(widget.calendarId).future);
+      final updateBuilder = calendarEvent.updateBuilder();
+      updateBuilder.title(newName);
+      final eventId = await updateBuilder.send();
+      _log.info('Calendar Event Title Updated $eventId');
+
+      EasyLoading.dismiss();
+      if (!mounted) return;
+      context.pop();
+    } catch (e, st) {
+      _log.severe('Failed to edit event name', e, st);
+      EasyLoading.dismiss();
+      if (!mounted) return;
+      EasyLoading.showError(L10n.of(context).updateNameFailed(e));
+    }
   }
 
   Future<void> onRsvp(RsvpStatusTag status, WidgetRef ref) async {

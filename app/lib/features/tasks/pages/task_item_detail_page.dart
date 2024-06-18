@@ -4,6 +4,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/tasks/providers/tasklists.dart';
@@ -52,9 +53,17 @@ class TaskItemDetailPage extends ConsumerWidget {
     final taskList = ref.watch(taskListProvider(taskListId));
     return AppBar(
       title: task.when(
-        data: (d) => Text(
-          d.title(),
-          style: Theme.of(context).textTheme.titleMedium,
+        data: (d) => GestureDetector(
+          onTap: () => showEditTaskItemNameBottomSheet(
+            context: context,
+            ref: ref,
+            task: d,
+            titleValue: d.title(),
+          ),
+          child: Text(
+            d.title(),
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
         ),
         error: (e, s) => Text(L10n.of(context).failedToLoad(e)),
         loading: () => Text(L10n.of(context).loading),
@@ -323,5 +332,37 @@ class TaskItemDetailPage extends ConsumerWidget {
         duration: const Duration(seconds: 3),
       );
     }
+  }
+
+  void showEditTaskItemNameBottomSheet({
+    required BuildContext context,
+    required String titleValue,
+    required Task task,
+    required WidgetRef ref,
+  }) {
+    showEditTitleBottomSheet(
+      context: context,
+      bottomSheetTitle: L10n.of(context).editName,
+      titleValue: titleValue,
+      onSave: (newName) async {
+        EasyLoading.show(status: L10n.of(context).updatingTask);
+        final updater = task.updateBuilder();
+        updater.title(newName);
+        try {
+          await updater.send();
+          ref.invalidate(spaceTasksListsProvider);
+          EasyLoading.dismiss();
+          if (!context.mounted) return;
+          context.pop();
+        } catch (e) {
+          EasyLoading.dismiss();
+          if (!context.mounted) return;
+          EasyLoading.showError(
+            L10n.of(context).updatingTaskFailed(e),
+            duration: const Duration(seconds: 3),
+          );
+        }
+      },
+    );
   }
 }

@@ -1,11 +1,14 @@
+import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/tasks/providers/tasklists.dart';
 import 'package:acter/features/tasks/widgets/task_items_list_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class TaskListDetailPage extends ConsumerStatefulWidget {
   static const pageKey = Key('task-list-details-page');
@@ -36,10 +39,18 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
     final taskList = ref.watch(taskListProvider(widget.taskListId));
     return AppBar(
       title: taskList.when(
-        data: (d) => Text(
-          key: TaskListDetailPage.taskListTitleKey,
-          d.name(),
-          style: Theme.of(context).textTheme.titleMedium,
+        data: (d) => GestureDetector(
+          onTap: () => showEditTaskListNameBottomSheet(
+            context: context,
+            ref: ref,
+            taskList: d,
+            titleValue: d.name(),
+          ),
+          child: Text(
+            key: TaskListDetailPage.taskListTitleKey,
+            d.name(),
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
         ),
         error: (e, s) => Text(L10n.of(context).failedToLoad(e)),
         loading: () => Text(L10n.of(context).loading),
@@ -140,6 +151,38 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
           },
         ),
       ],
+    );
+  }
+
+  void showEditTaskListNameBottomSheet({
+    required BuildContext context,
+    required String titleValue,
+    required TaskList taskList,
+    required WidgetRef ref,
+  }) {
+    showEditTitleBottomSheet(
+      context: context,
+      bottomSheetTitle: L10n.of(context).editName,
+      titleValue: titleValue,
+      onSave: (newName) async {
+        EasyLoading.show(status: L10n.of(context).updatingTask);
+        final updater = taskList.updateBuilder();
+        updater.name(newName);
+        try {
+          await updater.send();
+          ref.invalidate(spaceTasksListsProvider);
+          EasyLoading.dismiss();
+          if (!context.mounted) return;
+          context.pop();
+        } catch (e) {
+          EasyLoading.dismiss();
+          if (!context.mounted) return;
+          EasyLoading.showError(
+            L10n.of(context).updatingTaskFailed(e),
+            duration: const Duration(seconds: 3),
+          );
+        }
+      },
     );
   }
 }
