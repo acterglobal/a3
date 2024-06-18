@@ -177,11 +177,6 @@ class SpaceHeaderProfile extends ConsumerWidget {
       bottomSheetTitle: L10n.of(context).editName,
       titleValue: titleValue,
       onSave: (newName) async {
-        if (newName == titleValue.trim()) {
-          context.pop();
-          return; // no changes to submit
-        }
-
         try {
           EasyLoading.show(status: L10n.of(context).updateName);
           final space = await ref.read(spaceProvider(spaceId).future);

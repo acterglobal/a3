@@ -239,10 +239,6 @@ class PinPage extends ConsumerWidget {
       bottomSheetTitle: L10n.of(context).editName,
       titleValue: titleValue,
       onSave: (newTitle) async {
-        if (newTitle == titleValue.trim()) {
-          context.pop();
-          return; // no changes to submit
-        }
         pinEditNotifier.setTitle(newTitle);
         await pinEditNotifier.editTitle(context);
       },

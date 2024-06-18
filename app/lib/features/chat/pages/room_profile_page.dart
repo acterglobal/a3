@@ -165,13 +165,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
       context: context,
       bottomSheetTitle: L10n.of(context).editName,
       titleValue: convoProfile?.displayName ?? '',
-      onSave: (newName) {
-        if (newName == (convoProfile?.displayName ?? '').trim()) {
-          context.pop();
-          return; // no changes to submit
-        }
-        _editName(newName);
-      },
+      onSave: (newName) => _editName(newName),
     );
   }
 
