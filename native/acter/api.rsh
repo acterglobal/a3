@@ -35,6 +35,15 @@ fn guest_client(base_path: string, media_cache_base_path: string, default_homese
 /// Create a new client from the registration token
 fn register_with_token(base_path: string, media_cache_base_path: string, username: string, password: string, registration_token: string, default_homeserver_name: string, default_homeserver_url: string, device_name: string) -> Future<Result<Client>>;
 
+/// Request the registration token via email
+fn request_registration_token_via_email(base_path: string, media_cache_base_path: string, username: string, default_homeserver_name: string, default_homeserver_url: string, email: string) -> Future<Result<RegistrationTokenViaEmailResponse>>;
+
+/// Request the password change token via email
+fn request_password_change_email_token(default_homeserver_url: string, email: string) -> Future<Result<PasswordChangeEmailTokenResponse>>;
+
+/// Finish password reset without login
+fn reset_password(default_homeserver_url: string, sid: string, client_secret: string, new_val: string) -> Future<Result<bool>>;
+
 /// destroy the local data of a session
 fn destroy_local_data(base_path: string, media_cache_base_path: Option<string>, username: string, default_homeserver_name: string) -> Future<Result<bool>>;
 
@@ -346,6 +355,17 @@ object RoomId {
 
 object UserId {
     fn to_string() -> string;
+}
+
+object RegistrationTokenViaEmailResponse {
+    fn sid() -> string;
+    fn submit_url() -> Option<string>;
+}
+
+object PasswordChangeEmailTokenResponse {
+    fn client_secret() -> string;
+    fn sid() -> string;
+    fn submit_url() -> Option<string>;
 }
 
 
@@ -2241,6 +2261,13 @@ object Account {
 
     /// listen to updates to the app settings
     fn subscribe_app_settings_stream() -> Stream<bool>;
+
+    // deactivate the account. This can not be reversed. The username will
+    // be blocked from any future usage, all personal data will be removed.
+    fn deactivate(password: string) -> Future<Result<bool>>;
+
+    /// change password
+    fn change_password(old_val: string, new_val: string) -> Future<Result<bool>>;
 }
 
 object ThreePidManager {
@@ -2465,16 +2492,6 @@ object CreateSpaceSettings {}
 
 /// Main entry point for `acter`.
 object Client {
-
-    // deactivate the account. This can not be reversed. The username will
-    // be blocked from any future usage, all personal data will be removed.
-    fn deactivate(password: string) -> Future<Result<bool>>;
-
-    /// change password
-    fn change_password(old_val: string, new_val: string) -> Future<Result<bool>>;
-
-    // Special
-
     /// start the sync
     fn start_sync() -> SyncState;
 
