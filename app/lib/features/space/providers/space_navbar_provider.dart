@@ -1,5 +1,7 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,8 +31,10 @@ class TabEntry {
 
 final tabsProvider =
     FutureProvider.family<List<TabEntry>, String>((ref, spaceId) async {
+  final features = ref.watch(featuresProvider);
   final space = await ref.watch(maybeSpaceProvider(spaceId).future);
 
+  bool isActive(f) => features.isActive(f);
   List<TabEntry> tabs = [
     TabEntry(
       key: TabEntry.overview,
@@ -59,7 +63,7 @@ final tabsProvider =
       );
     }
 
-    if (appSettings.tasks().active()) {
+    if (isActive(LabsFeature.tasks) && appSettings.tasks().active()) {
       tabs.add(
         TabEntry(
           key: TabEntry.tasks,

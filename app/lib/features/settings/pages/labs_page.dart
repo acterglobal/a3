@@ -67,6 +67,16 @@ class SettingsLabsPage extends ConsumerWidget {
               title: Text(L10n.of(context).apps),
               tiles: [
                 SettingsTile.switchTile(
+                  key: tasksLabSwitch,
+                  title: Text(L10n.of(context).tasks),
+                  description: Text(
+                    L10n.of(context).manageTasksListsAndToDosTogether,
+                  ),
+                  initialValue: ref.watch(isActiveProvider(LabsFeature.tasks)),
+                  onToggle: (newVal) =>
+                      updateFeatureState(ref, LabsFeature.tasks, newVal),
+                ),
+                SettingsTile.switchTile(
                   title: const Text('Comments'),
                   description: const Text('Commenting on space objects'),
                   initialValue:
