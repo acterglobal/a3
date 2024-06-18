@@ -16,8 +16,7 @@ use ruma_client_api::{
     error::{ErrorBody, ErrorKind},
     Error,
 };
-use ruma_common::{push::PushCondition, OwnedRoomId};
-use ruma_events::AnyGlobalAccountDataEvent;
+use ruma_common::OwnedRoomId;
 use std::{
     collections::{BTreeMap, HashMap},
     io::Write,
@@ -134,15 +133,10 @@ pub struct SyncState {
     sync_error: Arc<Receiver<SyncError>>,
     history_loading: Mutable<HistoryLoadState>,
     room_handles: RoomHandlers,
-    push_custom_rooms_rx: Arc<Receiver<Vec<String>>>,
 }
 
 impl SyncState {
-    pub fn new(
-        first_synced_rx: Receiver<bool>,
-        sync_error: Receiver<SyncError>,
-        push_custom_rooms_rx: Receiver<Vec<String>>,
-    ) -> Self {
+    pub fn new(first_synced_rx: Receiver<bool>, sync_error: Receiver<SyncError>) -> Self {
         Self {
             first_synced_rx: Arc::new(first_synced_rx),
             sync_error: Arc::new(sync_error),
@@ -150,7 +144,6 @@ impl SyncState {
             first_sync_task: Default::default(),
             handle: Default::default(),
             room_handles: Default::default(),
-            push_custom_rooms_rx: Arc::new(push_custom_rooms_rx),
         }
     }
 
@@ -194,10 +187,6 @@ impl SyncState {
         if let Some(handle) = self.handle.replace(None) {
             handle.abort();
         }
-    }
-
-    pub fn push_custom_rooms_rx(&self) -> impl Stream<Item = Vec<String>> {
-        BroadcastStream::new(self.push_custom_rooms_rx.resubscribe()).map(|o| o.unwrap_or_default())
     }
 }
 
@@ -431,11 +420,8 @@ impl Client {
         let (sync_error_tx, sync_error_rx) = channel(1);
         let sync_error_arc = Arc::new(sync_error_tx);
 
-        let (push_custom_rooms_tx, push_custom_rooms_rx) = channel(1);
-        let push_custom_rooms_arc = Arc::new(push_custom_rooms_tx);
-
         let initial = Arc::new(AtomicBool::from(true));
-        let sync_state = SyncState::new(first_synced_rx, sync_error_rx, push_custom_rooms_rx);
+        let sync_state = SyncState::new(first_synced_rx, sync_error_rx);
         let history_loading = sync_state.history_loading.clone();
         let first_sync_task = sync_state.first_sync_task.clone();
         let room_handles = sync_state.room_handles.clone();
@@ -524,7 +510,7 @@ impl Client {
                     .keys()
                     .chain(response.rooms.leave.keys())
                     .chain(response.rooms.invite.keys())
-                    .collect::<Vec<&OwnedRoomId>>();
+                    .collect::<Vec<_>>();
 
                 if !changed_rooms.is_empty() {
                     trace!(?changed_rooms, "changed rooms");
@@ -542,59 +528,6 @@ impl Client {
                     if !keys.is_empty() {
                         info!("account data keys: {keys:?}");
                         me.executor().notify(keys);
-                    }
-                    for raw_event in response.account_data.iter() {
-                        match raw_event.deserialize() {
-                            Ok(AnyGlobalAccountDataEvent::Direct(evt)) => {
-                                info!("account data direct: {:?}", evt.clone());
-                                for (k, v) in evt.content.iter() {}
-                            }
-                            Ok(AnyGlobalAccountDataEvent::IdentityServer(evt)) => {
-                                info!("account data identity server: {:?}", evt.clone());
-                            }
-                            Ok(AnyGlobalAccountDataEvent::IgnoredUserList(evt)) => {
-                                info!("account data ignored user list: {:?}", evt.clone());
-                                for (k, v) in evt.content.ignored_users.iter() {}
-                            }
-                            Ok(AnyGlobalAccountDataEvent::PushRules(evt)) => {
-                                info!("account data push rules: {:?}", evt.clone());
-                                let mut push_custom_rooms = vec![];
-                                for rule in evt.content.global.override_.into_iter() {
-                                    let found = rule.conditions.iter().any(|c| {
-                                        if let PushCondition::EventMatch { key, pattern } = c {
-                                            if key == "room_id" {
-                                                return true;
-                                            }
-                                        }
-                                        false
-                                    });
-                                    if found {
-                                        info!("room id of push rule: {}", &rule.rule_id);
-                                        info!("default of push rule: {}", &rule.default);
-                                        info!("enabled of push rule: {}", &rule.enabled);
-                                        push_custom_rooms.push(rule.rule_id);
-                                    }
-                                }
-                                push_custom_rooms_arc.send(push_custom_rooms);
-                            }
-                            Ok(AnyGlobalAccountDataEvent::SecretStorageDefaultKey(evt)) => {
-                                info!("account data secret storage default key: {:?}", evt.clone());
-                            }
-                            Ok(AnyGlobalAccountDataEvent::SecretStorageKey(evt)) => {
-                                info!("account data secret storage key: {:?}", evt.clone());
-                            }
-                            Ok(AnyGlobalAccountDataEvent::_Custom(evt)) => {
-                                info!("account data custom: {:?}", evt.clone());
-                            }
-                            Ok(_) => {
-                                info!("account data unknown");
-                            }
-                            Err(e) => {
-                                let event_type =
-                                    raw_event.get_field::<String>("type").ok().flatten();
-                                warn!(event_type, "Failed to deserialize account data: {e}");
-                            }
-                        }
                     }
                 }
 

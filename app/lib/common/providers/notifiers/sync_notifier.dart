@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:acter/common/models/sync_state/sync_state.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:riverpod/riverpod.dart';
 
@@ -17,8 +16,6 @@ class SyncNotifier extends StateNotifier<SyncState> {
   late StreamSubscription<bool> _syncPoller;
   late Stream<String> _errorListener;
   late StreamSubscription<String> _errorPoller;
-  late Stream<ffi.FfiListFfiString> _pushCustomListener;
-  late StreamSubscription<ffi.FfiListFfiString> _pushCustomPoller;
   Timer? _retryTimer;
 
   SyncNotifier(this.client, this.ref)
@@ -88,14 +85,5 @@ class SyncNotifier extends StateNotifier<SyncState> {
       }
     });
     ref.onDispose(() => _errorPoller.cancel());
-
-    _pushCustomListener = syncState.pushCustomRoomsRx();
-    _pushCustomPoller = _pushCustomListener.listen((roomIds) {
-      if (mounted) {
-        // ignore: unused_local_variable
-        for (var roomId in asDartStringList(roomIds)) {}
-      }
-    });
-    ref.onDispose(() => _pushCustomPoller.cancel());
   }
 }

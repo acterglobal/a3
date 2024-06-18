@@ -2273,9 +2273,6 @@ object SyncState {
 
     /// stop the sync loop
     fn cancel();
-
-    /// Get event handler of change in list of rooms that have the conditional push rule
-    fn push_custom_rooms_rx() -> Stream<Vec<string>>;
 }
 
 
