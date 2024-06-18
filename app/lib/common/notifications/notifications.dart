@@ -22,6 +22,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:push/push.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:acter/config/firebase_options.dart';
 
 final _log = Logger('a3::notifications');
 
@@ -118,6 +120,11 @@ Future<void> initializeNotifications() async {
     return; // nothing for us to do here.
   }
 
+  if (Platform.isAndroid) {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  }
   final NotificationAppLaunchDetails? notificationAppLaunchDetails = !kIsWeb &&
           Platform.isLinux
       ? null

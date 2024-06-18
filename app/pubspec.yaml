@@ -106,7 +106,7 @@ dependencies:
       url: https://github.com/acterglobal/riverpod_infinite_scroll.git
   infinite_scroll_pagination: ^4.0.0
   convert: ^3.1.1
-  push: ^2.1.0
+  push: ^2.3.0
   logging: ^1.2.0
   args: ^2.4.2
   breadcrumbs: ^0.1.0
@@ -127,6 +127,7 @@ dependencies:
   flutter_typeahead: ^5.2.0
   zoom_hover_pinch_image: ^1.0.3
   dotted_border: ^2.1.0
+  firebase_core: ^3.1.0
 
 # FIXME keep until a new version has been published
 dependency_overrides:
