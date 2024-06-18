@@ -165,11 +165,11 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
       context: context,
       bottomSheetTitle: L10n.of(context).editName,
       titleValue: convoProfile?.displayName ?? '',
-      onSave: (newName) => _editName(newName),
+      onSave: (newName) => _saveName(newName),
     );
   }
 
-  Future<void> _editName(String newName) async {
+  Future<void> _saveName(String newName) async {
     try {
       EasyLoading.show(status: L10n.of(context).updateName);
       final convo = await ref.read(chatProvider(widget.roomId).future);

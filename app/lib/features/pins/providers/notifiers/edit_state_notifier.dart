@@ -1,10 +1,7 @@
 import 'package:acter/features/pins/models/pin_edit_state/pin_edit_state.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show ActerPin;
-import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:go_router/go_router.dart';
 import 'package:riverpod/riverpod.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class PinEditNotifier extends StateNotifier<PinEditState> {
   final ActerPin pin;
@@ -43,22 +40,6 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
   void setHtml(String? html) => state = state.copyWith(html: html);
 
   void setEditMode(bool editMode) => state = state.copyWith(editMode: editMode);
-
-  Future<void> editTitle(BuildContext context) async {
-    try {
-      EasyLoading.show(status: L10n.of(context).updateName);
-      final updateBuilder = pin.updateBuilder();
-      updateBuilder.title(state.title);
-      await updateBuilder.send();
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
-      context.pop();
-    } catch (e) {
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
-      EasyLoading.showError(L10n.of(context).updateNameFailed(e));
-    }
-  }
 
   // FIXME: move it to UI widget in order to implement l10n
   Future<void> onSave() async {

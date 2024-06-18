@@ -12,6 +12,7 @@ import 'package:acter/features/pins/widgets/pin_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -215,6 +216,7 @@ class PinPage extends ConsumerWidget {
               showEditPinTitleBottomSheet(
                 context: context,
                 titleValue: pin.title(),
+                pin: pin,
                 pinEditNotifier: pinEditNotifier,
               );
             }
@@ -232,6 +234,7 @@ class PinPage extends ConsumerWidget {
   void showEditPinTitleBottomSheet({
     required BuildContext context,
     required String titleValue,
+    required ActerPin pin,
     required PinEditNotifier pinEditNotifier,
   }) {
     showEditTitleBottomSheet(
@@ -240,8 +243,28 @@ class PinPage extends ConsumerWidget {
       titleValue: titleValue,
       onSave: (newTitle) async {
         pinEditNotifier.setTitle(newTitle);
-        await pinEditNotifier.editTitle(context);
+        savePinTitle(context, pin, newTitle);
       },
     );
+  }
+
+  Future<void> savePinTitle(
+    BuildContext context,
+    ActerPin pin,
+    String newTitle,
+  ) async {
+    try {
+      EasyLoading.show(status: L10n.of(context).updateName);
+      final updateBuilder = pin.updateBuilder();
+      updateBuilder.title(newTitle);
+      await updateBuilder.send();
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
+      context.pop();
+    } catch (e) {
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
+      EasyLoading.showError(L10n.of(context).updateNameFailed(e));
+    }
   }
 }
