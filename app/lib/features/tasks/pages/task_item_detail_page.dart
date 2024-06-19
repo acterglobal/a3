@@ -53,32 +53,27 @@ class TaskItemDetailPage extends ConsumerWidget {
     WidgetRef ref,
     AsyncValue<Task> task,
   ) {
-    final taskList = ref.watch(taskListProvider(taskListId));
-    return AppBar(
-      title: task.when(
-        data: (d) => GestureDetector(
+    return task.when(
+      data: (data) => AppBar(
+        title: GestureDetector(
           onTap: () => showEditTaskItemNameBottomSheet(
             context: context,
             ref: ref,
-            task: d,
-            titleValue: d.title(),
+            task: data,
+            titleValue: data.title(),
           ),
           child: Text(
-            d.title(),
+            data.title(),
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
-        error: (e, s) => Text(L10n.of(context).failedToLoad(e)),
-        loading: () => Text(L10n.of(context).loading),
-      ),
-      actions: [
-        if (task != null)
+        actions: [
           PopupMenuButton(
             icon: const Icon(Icons.more_vert),
             itemBuilder: (context) {
               return [
                 PopupMenuItem(
-                  onTap: () => showEditDescriptionSheet(context, ref, task),
+                  onTap: () => showEditDescriptionSheet(context, ref, data),
                   child: Text(
                     L10n.of(context).editDescription,
                     style: Theme.of(context).textTheme.bodyMedium,
@@ -87,7 +82,10 @@ class TaskItemDetailPage extends ConsumerWidget {
               ];
             },
           ),
-      ],
+        ],
+      ),
+      error: (e, s) => AppBar(title: Text(L10n.of(context).failedToLoad(e))),
+      loading: () => AppBar(title: Text(L10n.of(context).loading)),
     );
   }
 

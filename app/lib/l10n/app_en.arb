@@ -2223,5 +2223,7 @@
   "updateTask": "Update Task",
   "updatingTask": "Updating Task",
   "updatingTaskFailed": "Updating Task failed {error}",
-  "editTitle": "Edit Title"
+  "editTitle": "Edit Title",
+  "updatingDescription": "Updating Description",
+  "errorUpdatingDescription": "Error updating description: {error}"
 }

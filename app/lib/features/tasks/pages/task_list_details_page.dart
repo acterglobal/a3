@@ -15,7 +15,6 @@ import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::tasks::task_list_details_page');
-import 'package:go_router/go_router.dart';
 
 class TaskListDetailPage extends ConsumerStatefulWidget {
   static const pageKey = Key('task-list-details-page');
@@ -44,9 +43,10 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
 
   AppBar _buildAppbar() {
     final taskList = ref.watch(taskListProvider(widget.taskListId));
-    return AppBar(
-      title: taskList.when(
-        data: (d) => GestureDetector(
+
+    return taskList.when(
+      data: (d) => AppBar(
+        title: GestureDetector(
           onTap: () => showEditTaskListNameBottomSheet(
             context: context,
             ref: ref,
@@ -59,17 +59,13 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
-        error: (e, s) => Text(L10n.of(context).failedToLoad(e)),
-        loading: () => Text(L10n.of(context).loading),
-      ),
-      actions: [
-        if (taskList != null)
+        actions: [
           PopupMenuButton(
             icon: const Icon(Icons.more_vert),
             itemBuilder: (context) {
               return [
                 PopupMenuItem(
-                  onTap: () => showEditDescriptionSheet(taskList),
+                  onTap: () => showEditDescriptionSheet(d),
                   child: Text(
                     L10n.of(context).editDescription,
                     style: Theme.of(context).textTheme.bodyMedium,
@@ -78,7 +74,12 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
               ];
             },
           ),
-      ],
+        ],
+      ),
+      error: (e, s) => AppBar(title: Text(L10n.of(context).failedToLoad(e))),
+      loading: () => AppBar(
+        title: Text(L10n.of(context).loading),
+      ),
     );
   }
 
