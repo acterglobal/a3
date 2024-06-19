@@ -5,6 +5,9 @@ import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
+import 'package:acter/common/widgets/edit_html_description_sheet.dart';
+import 'package:acter/common/widgets/html_editor.dart';
+import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/tasks/providers/tasklists.dart';
@@ -69,18 +72,21 @@ class TaskItemDetailPage extends ConsumerWidget {
         loading: () => Text(L10n.of(context).loading),
       ),
       actions: [
-        TextButton(
-          onPressed: () => editTask(
-            context,
-            ref,
-            taskList.valueOrNull,
-            task.valueOrNull,
+        if (task != null)
+          PopupMenuButton(
+            icon: const Icon(Icons.more_vert),
+            itemBuilder: (context) {
+              return [
+                PopupMenuItem(
+                  onTap: () => showEditDescriptionSheet(context, ref, task),
+                  child: Text(
+                    L10n.of(context).editDescription,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+              ];
+            },
           ),
-          child: Text(
-            L10n.of(context).edit,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-        ),
       ],
     );
   }
@@ -120,7 +126,7 @@ class TaskItemDetailPage extends ConsumerWidget {
         child: Column(
           children: [
             const SizedBox(height: 10),
-            _widgetDescription(context, task),
+            _widgetDescription(context, task, ref),
             _widgetListName(context, ref),
             _widgetTaskDate(context, task),
             _widgetTaskAssignment(context, task, ref),
@@ -135,21 +141,79 @@ class TaskItemDetailPage extends ConsumerWidget {
     );
   }
 
-  Widget _widgetDescription(BuildContext context, Task task) {
+  Widget _widgetDescription(BuildContext context, Task task, WidgetRef ref) {
     if (task.description() == null) return const SizedBox.shrink();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          task.description()!.body(),
-          style: Theme.of(context).textTheme.labelLarge,
+        GestureDetector(
+          onTap: () {
+            showEditDescriptionSheet(context, ref, task);
+          },
+          child: task.description()!.formattedBody() != null
+              ? RenderHtml(
+                  text: task.description()!.formattedBody()!,
+                  defaultTextStyle: Theme.of(context).textTheme.labelLarge,
+                )
+              : Text(
+                  task.description()!.body(),
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
         ),
         const SizedBox(height: 10),
         const Divider(indent: 10, endIndent: 18),
         const SizedBox(height: 10),
       ],
     );
+  }
+
+  void showEditDescriptionSheet(
+    BuildContext context,
+    WidgetRef ref,
+    Task task,
+  ) {
+    showEditHtmlDescriptionBottomSheet(
+      context: context,
+      descriptionHtmlValue: task.description()?.formattedBody(),
+      descriptionMarkdownValue: task.description()?.body(),
+      onSave: (newDescription) {
+        final htmlBodyDescription = newDescription.intoHtml();
+        final plainDescription = newDescription.intoMarkdown();
+        _saveDescription(
+          context,
+          ref,
+          task,
+          htmlBodyDescription,
+          plainDescription,
+        );
+      },
+    );
+  }
+
+  Future<void> _saveDescription(
+    BuildContext context,
+    WidgetRef ref,
+    Task task,
+    String htmlBodyDescription,
+    String plainDescription,
+  ) async {
+    EasyLoading.show(status: L10n.of(context).updatingDescription);
+    try {
+      final updater = task.updateBuilder();
+      updater.descriptionHtml(plainDescription, htmlBodyDescription);
+      await updater.send();
+      EasyLoading.dismiss();
+      if (context.mounted) context.pop();
+    } catch (e, st) {
+      _log.severe('Failed to update event description', e, st);
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
+      EasyLoading.showError(
+        L10n.of(context).errorUpdatingDescription(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 
   Widget _widgetListName(
