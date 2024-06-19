@@ -96,6 +96,7 @@ pub struct TaskListUpdateEventContent {
     #[serde(rename = "m.relates_to")]
     pub task_list: Update,
 
+    #[builder(default)]
     #[serde(
         default,
         skip_serializing_if = "Option::is_none",
