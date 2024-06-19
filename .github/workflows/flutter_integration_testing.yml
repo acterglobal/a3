@@ -411,7 +411,7 @@ jobs:
           script: echo "Generated AVD snapshot for caching."
 
       - name: Run integration tests on android
-        uses: reactivecircus/android-emulator-runner@v3
+        uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 28
           arch: x86_64
