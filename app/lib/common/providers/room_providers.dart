@@ -179,38 +179,30 @@ final canonicalParentsProvider = FutureProvider.autoDispose
     if (relations == null) {
       return parentList;
     }
-    final parent = relations.mainParent();
-    final otherParents = relations.otherParents().toList();
 
-    if (parent != null) {
+    // Collect all parents: mainParent and otherParents
+    final allParents = [];
+    final mainParent = relations.mainParent();
+    if (mainParent != null) {
+      allParents.add(mainParent);
+    }
+    allParents.addAll(relations.otherParents());
+
+    for (final parent in allParents) {
       final parentSpace = await ref
           .watch(maybeSpaceProvider(parent.roomId().toString()).future);
       if (parentSpace == null) {
-        return parentList;
+        continue;
       }
       final profile =
           await ref.watch(spaceProfileDataProvider(parentSpace).future);
       final SpaceWithProfileData data = (space: parentSpace, profile: profile);
       parentList.add(data);
-
-      if (otherParents.isNotEmpty) {
-        for (final parent in otherParents) {
-          final space = await ref
-              .watch(maybeSpaceProvider(parent.roomId.toString()).future);
-          if (space == null) {
-            break;
-          }
-          final profile =
-              await ref.watch(spaceProfileDataProvider(space).future);
-          final SpaceWithProfileData data = (space: space, profile: profile);
-          parentList.add(data);
-        }
-      }
     }
 
     return parentList;
   } catch (e) {
-    _log.warning('Failed to load canonical parents for $roomId');
+    _log.warning('Failed to load canonical parents for $roomId: $e');
     return [];
   }
 });
