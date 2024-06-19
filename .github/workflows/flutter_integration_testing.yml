@@ -260,7 +260,7 @@ jobs:
       - name: Build Native
         run: cargo make --profile release ios-sim
  
-      - uses: futureware-tech/simulator-action@v1
+      - uses: futureware-tech/simulator-action@v3
         with:
           model: 'iPhone 14'
 
