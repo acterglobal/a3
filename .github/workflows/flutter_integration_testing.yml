@@ -323,7 +323,7 @@ jobs:
         with:
           path: |
             ~/.cargo
-          key: ubuntu-latest-cargo-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
+          key: macos-latest-cargo-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
 
       - uses: actions/setup-java@v2
         with:
