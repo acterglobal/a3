@@ -58,7 +58,7 @@ jobs:
         run: |
           sudo apt-get update -y
           sudo apt-get install -y libgtk-3-dev libx11-dev pkg-config cmake ninja-build libblkid-dev liblzma-dev
-          sudo apt install -y dbus-x11 network-manager upower
+          sudo apt install -y dbus-x11 network-manager upower mpv
 
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
