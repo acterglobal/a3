@@ -301,6 +301,148 @@ jobs:
           rm ~/Library/MobileDevice/Provisioning\ Profiles/*
           rm .github/assets/git-crypt-key
 
+  flutter-android-ubuntu:
+    runs-on: ubuntu-latest
+    name: Android on Ubuntu
+    needs:
+     - run_checker
+    if: ${{ github.ref == 'refs/heads/main' || needs.run_checker.outputs.should_run_android != 'false' || needs.run_checker.outputs.should_run_emulator != 'false' || needs.run_checker.outputs.should_run_all != 'false' }}
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install supported toolchain
+        id: rust_toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Cache Cargo
+        id: cache-cargo
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo
+          key: ubuntu-latest-cargo-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
+
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - uses: Swatinem/rust-cache@v1
+
+      - name: Install cargo-make
+        if: steps.cache-cargo.outputs.cache-hit != 'true'
+        uses: davidB/rust-cargo-make@v1
+
+      - name: Rust Android Setup
+        run: cargo make setup-android
+
+      - uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r25
+
+      - uses: subosito/flutter-action@v2
+        name: Set up flutter
+        with:
+          flutter-version: '3.22'
+          channel: 'stable'
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+
+      - uses: michaelkaye/setup-matrix-synapse@main
+        with:
+          uploadLogs: true
+          httpPort: 8118
+          disableRateLimiting: true
+          customModules: synapse_super_invites
+          customConfig: |
+            modules:
+              - module: "synapse_super_invites.SynapseSuperInvites"
+                config:
+                  sql_url: "sqlite://"
+                  generate_registration_token: true
+
+      - name: Install & Run MailHog
+        run: |
+          wget -q https://github.com/mailhog/MailHog/releases/download/v1.0.1/MailHog_linux_amd64
+          sudo chmod +x MailHog_linux_amd64
+          ./MailHog_linux_amd64 &
+
+      - name: Build Native
+        run: cargo make android-dev
+
+      - name: Flutter setup
+        working-directory: app
+        run: flutter pub get
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Gradle cache
+        uses: gradle/actions/setup-gradle@v3
+        
+      - name: AVD cache
+        uses: actions/cache@v4
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-${{ matrix.api-level }}
+
+      - name: create AVD and generate snapshot for caching
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 28
+          arch: x86_64
+          profile: Nexus 6
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: false
+          script: echo "Generated AVD snapshot for caching."
+
+      - name: Run integration tests on android
+        uses: reactivecircus/android-emulator-runner@v3
+        with:
+          api-level: 28
+          arch: x86_64
+          profile: Nexus 6
+          force-avd-creation: false
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          script: .github/scripts/flutter-integration-tests.sh
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: android-on-ubuntu-convtest-report
+          path: /tmp/ConvenientTest/
+
+      # file an error if this failed on `main` post-merge
+      - name: Report issue
+        if: ${{ github.ref == 'refs/heads/main' && failure() }}
+        uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TITLE: "Android integration tests failed on main"
+          FAILED_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job }}
+          ARTIFACT_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        with:
+          assignees: gnunicorn
+          filename: .github/templates/failure-report-template.md.tmpl
+          update_existing: true
+
+
   flutter-android:
     runs-on: macos-latest
     name: Android
