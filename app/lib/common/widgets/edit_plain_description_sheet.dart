@@ -13,7 +13,6 @@ void showEditPlainDescriptionBottomSheet({
     useSafeArea: true,
     context: context,
     isDismissible: true,
-    constraints: const BoxConstraints(maxHeight: 500),
     builder: (context) {
       return EditPlainDescriptionSheet(
         descriptionValue: descriptionValue,
@@ -54,7 +53,6 @@ class _EditPlainDescriptionSheetState extends State<EditPlainDescriptionSheet> {
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           children: [
-            const SizedBox(height: 20),
             Text(L10n.of(context).editDescription),
             const SizedBox(height: 20),
             TextFormField(
@@ -93,6 +91,7 @@ class _EditPlainDescriptionSheetState extends State<EditPlainDescriptionSheet> {
                 ),
               ],
             ),
+            const SizedBox(height: 20),
           ],
         ),
       ),

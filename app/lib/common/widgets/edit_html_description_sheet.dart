@@ -1,3 +1,4 @@
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
@@ -18,7 +19,7 @@ void showEditHtmlDescriptionBottomSheet({
     useSafeArea: true,
     context: context,
     isDismissible: true,
-    constraints: const BoxConstraints(maxHeight: 400),
+    constraints: const BoxConstraints(maxHeight: 450),
     isScrollControlled: true,
     builder: (context) {
       return EditHtmlDescriptionSheet(
@@ -71,16 +72,14 @@ class _EditHtmlDescriptionSheetState
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      constraints: const BoxConstraints(maxWidth: 500),
       child: Column(
         children: [
-          const SizedBox(height: 20),
           Text(widget.bottomSheetTitle ?? L10n.of(context).editDescription),
           const SizedBox(height: 20),
           Container(
             height: 200,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.secondaryContainer,
+              border: Border.all(color: brandColor),
               borderRadius: BorderRadius.circular(10.0),
             ),
             child: HtmlEditor(
@@ -122,6 +121,7 @@ class _EditHtmlDescriptionSheetState
               ),
             ],
           ),
+          const SizedBox(height: 20),
         ],
       ),
     );
