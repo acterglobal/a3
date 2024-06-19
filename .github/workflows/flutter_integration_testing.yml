@@ -317,6 +317,12 @@ jobs:
         with:
           toolchain: stable
 
+      - uses: jlumbroso/free-disk-space@main
+        name: Free Disk Space (Ubuntu)
+        with:
+          tool-cache: true
+          android: false
+
       - name: Cache Cargo
         id: cache-cargo
         uses: actions/cache@v2
@@ -413,11 +419,11 @@ jobs:
       - name: Run integration tests on android
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 28
+          api-level: 29
           arch: x86_64
           profile: Nexus 6
           force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          # emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           script: .github/scripts/flutter-integration-tests.sh
 
