@@ -262,7 +262,7 @@ jobs:
 
       - uses: futureware-tech/simulator-action@v1
         with:
-          model: 'iPhone 12'
+          model: 'iPhone 14'
 
       - name: Flutter setup
         working-directory: app
