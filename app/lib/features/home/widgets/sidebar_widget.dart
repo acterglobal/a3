@@ -300,7 +300,7 @@ class SidebarWidget extends ConsumerWidget {
 
       var parents = List<AvatarInfo>.empty(growable: true);
       if (canonicalParents.valueOrNull != null) {
-        final parentsValue = canonicalParents.requireValue!;
+        final parentsValue = canonicalParents.requireValue;
         for (final p in parentsValue) {
           final roomId = p.space.getRoomIdStr();
           final displayName = p.profile.displayName ?? roomId;

@@ -193,19 +193,19 @@ final canonicalParentsProvider = FutureProvider.autoDispose
       final SpaceWithProfileData data = (space: parentSpace, profile: profile);
       parentList.add(data);
 
-      // if (otherParents.isNotEmpty) {
-      //   for (final parent in otherParents) {
-      //     final space = await ref
-      //         .watch(maybeSpaceProvider(parent.roomId.toString()).future);
-      //     if (space == null) {
-      //       break;
-      //     }
-      //     final profile =
-      //         await ref.watch(spaceProfileDataProvider(space).future);
-      //     final SpaceWithProfileData data = (space: space, profile: profile);
-      //     parentList.add(data);
-      //   }
-      // }
+      if (otherParents.isNotEmpty) {
+        for (final parent in otherParents) {
+          final space = await ref
+              .watch(maybeSpaceProvider(parent.roomId.toString()).future);
+          if (space == null) {
+            break;
+          }
+          final profile =
+              await ref.watch(spaceProfileDataProvider(space).future);
+          final SpaceWithProfileData data = (space: space, profile: profile);
+          parentList.add(data);
+        }
+      }
     }
 
     return parentList;

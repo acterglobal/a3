@@ -27,10 +27,10 @@ class SpaceHeaderProfile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profileData = ref.watch(spaceProfileDataForSpaceIdProvider(spaceId));
     final canonicalParents = ref.watch(canonicalParentsProvider(spaceId));
+    final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
     List<AvatarInfo> parentBadges = List.empty(growable: true);
     if (canonicalParents.valueOrNull != null) {
       var parents = canonicalParents.requireValue;
-      debugPrint('$parents');
       if (parents.isNotEmpty) {
         parentBadges.addAll(
           parents.map((e) {

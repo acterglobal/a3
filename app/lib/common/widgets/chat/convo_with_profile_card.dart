@@ -82,7 +82,8 @@ class ConvoWithProfileCard extends ConsumerWidget {
     final unreadCounters =
         ref.watch(unreadCountersProvider(roomId)).valueOrNull;
 
-    final child = avatar ?? RoomAvatar(roomId: roomId, showParent: showParent);
+    final child =
+        avatar ?? RoomAvatar(roomId: roomId, showParents: showParents);
     if (unreadCounters == null) {
       return child;
     }

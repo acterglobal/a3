@@ -64,22 +64,9 @@ class SpaceSettingsMenu extends ConsumerWidget {
                         displayName: spaceProfile.profile.displayName,
                         avatar: spaceProfile.profile.getAvatarImage(),
                       ),
-                      parentBadges: canonicalParent.valueOrNull != null
-                          ? [
-                              AvatarInfo(
-                                uniqueId: canonicalParent.valueOrNull!.space
-                                    .getRoomIdStr(),
-                                displayName: canonicalParent
-                                    .valueOrNull!.profile.displayName,
-                                avatar: canonicalParent.valueOrNull!.profile
-                                    .getAvatarImage(),
-                              ),
-                            ]
-                          : [],
+                      parentBadges: parentBadges,
                       badgesSize: 18,
                     ),
-                    parentBadges: parentBadges,
-                    badgesSize: 18,
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 15),
