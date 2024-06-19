@@ -97,7 +97,7 @@ extension ActerLogin on ConvenientTest {
 
     Finder email = find.byKey(LinkEmailPage.emailField);
     await email.should(findsOneWidget);
-    await email.enterTextWithoutReplace('acter@example.org');
+    await email.enterTextWithoutReplace('$username@example.org');
 
     Finder linkEmailBtn = find.byKey(LinkEmailPage.linkEmailBtn);
     await tester.ensureVisible(linkEmailBtn);
