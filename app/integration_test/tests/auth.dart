@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:acter/common/dialogs/deactivation_confirmation.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/activities/pages/activities_page.dart';
