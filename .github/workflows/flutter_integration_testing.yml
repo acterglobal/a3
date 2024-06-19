@@ -317,12 +317,6 @@ jobs:
         with:
           toolchain: stable
 
-      - uses: jlumbroso/free-disk-space@main
-        name: Free Disk Space (Ubuntu)
-        with:
-          tool-cache: true
-          android: false
-
       - name: Cache Cargo
         id: cache-cargo
         uses: actions/cache@v2
