@@ -1,7 +1,7 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/home/providers/task_providers.dart';
-import 'package:acter/features/tasks/widgets/task_entry.dart';
+import 'package:acter/features/tasks/widgets/task_item.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -65,11 +65,17 @@ class MyTasksSection extends ConsumerWidget {
                 : Column(
                     children: tasks
                         .map(
-                          (task) => TaskEntry(
-                            task: task,
-                            showBreadCrumb: true,
-                            onDone: () => EasyLoading.showToast(
-                              L10n.of(context).markedAsDone,
+                          (task) => Card(
+                            margin: const EdgeInsets.symmetric(vertical: 3),
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: TaskItem(
+                                task: task,
+                                showBreadCrumb: true,
+                                onDone: () => EasyLoading.showToast(
+                                  L10n.of(context).markedAsDone,
+                                ),
+                              ),
                             ),
                           ),
                         )

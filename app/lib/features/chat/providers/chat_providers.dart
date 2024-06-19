@@ -3,6 +3,7 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/network_provider.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
@@ -14,9 +15,9 @@ import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/providers/app_settings_provider.dart';
+import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:riverpod/riverpod.dart';
 
@@ -26,8 +27,7 @@ final autoDownloadMediaProvider =
   final userSettings = await ref.read(userAppSettingsProvider.future);
   final globalAutoDownload = (userSettings.autoDownloadChat() ?? 'always');
   if (globalAutoDownload == 'wifiOnly') {
-    final con = await ref.watch(networkConnectivityProvider.future);
-    return con == ConnectivityResult.wifi;
+    return ref.watch(hasWifiNetworkProvider);
   }
 
   return globalAutoDownload == 'always';
@@ -72,6 +72,17 @@ final renderableChatMessagesProvider =
       .toList()
       .reversed
       .toList();
+});
+
+final latestTrackableMessageId =
+    StateProvider.autoDispose.family<String?, Convo>((ref, convo) {
+  return ref.watch(
+    chatStateProvider(convo).select(
+      (value) =>
+          // find the last remote item we can use for tracking
+          value.messages.lastOrNull?.remoteId,
+    ),
+  );
 });
 
 final chatMessagesProvider =
@@ -203,4 +214,51 @@ final chatTypingEventProvider = StreamProvider.autoDispose
         )
         .toList();
   }
+});
+
+// unread notifications, unread mentions, unread messages
+typedef UnreadCounters = (int, int, int);
+
+final unreadCountersProvider = FutureProvider.autoDispose
+    .family<UnreadCounters, String>((ref, roomId) async {
+  final convo = await ref.watch(
+    convoProvider(await ref.watch(chatProvider(roomId).future)).future,
+  );
+  if (convo == null) {
+    return (0, 0, 0);
+  }
+  final ret = (
+    convo.numUnreadNotificationCount(),
+    convo.numUnreadMentions(),
+    convo.numUnreadMessages()
+  );
+  return ret;
+});
+
+final hasUnreadChatsProvider = FutureProvider.autoDispose((ref) async {
+  if (!ref.watch(isActiveProvider(LabsFeature.chatUnread))) {
+    // feature not active
+
+    return UrgencyBadge.none;
+  }
+  final chats = ref.watch(chatsProvider);
+  if (chats.isEmpty) {
+    return UrgencyBadge.none;
+  }
+  UrgencyBadge currentBadge = UrgencyBadge.none;
+
+  for (final chat in chats) {
+    // this is highly inefficient
+    final unreadCounter =
+        await ref.watch(unreadCountersProvider(chat.getRoomIdStr()).future);
+    if (unreadCounter.$1 > 0) {
+      // mentions, we just blurb
+      return UrgencyBadge.important;
+    }
+    if (unreadCounter.$2 > 0) {
+      //
+      currentBadge = UrgencyBadge.unread;
+    }
+  }
+  return currentBadge;
 });

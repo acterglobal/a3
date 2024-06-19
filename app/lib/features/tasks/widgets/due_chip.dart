@@ -89,7 +89,7 @@ class _DueChipState extends State<DueChip> {
   }
 
   Future<void> duePickerAction(BuildContext context) async {
-    final newDue = await DuePicker.showPicker(
+    final newDue = await showDuePicker(
       context: context,
       initialDate: dueDate,
     ); // FIXME: add unsetting support

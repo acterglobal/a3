@@ -19,7 +19,7 @@ backup=()
 options=()
 install=
 changelog=
-source=("https://github.com/acterglobal/a3/releases/download/nightly-${pkgver}/acter-nightly-linux-x64-${pkgver}.tar.bz2")
+source=("https://github.com/acterglobal/a3/releases/download/nightly-%{{TAG}}%/acter-nightly-linux-x64-%{{TAG}}%.tar.bz2")
 noextract=()
 md5sums=("%{{LINUX_MD5}}%")
 validpgpkeys=()
@@ -33,7 +33,7 @@ package() {
   install -dm644 "${pkgdir}/usr/share/licenses/${pkgname}"
 
   mv ./global.acter.a3.desktop "${pkgdir}/usr/share/applications"
-  mv ./acter-logo.png "${pkgdir}/usr/share/icons/acter/"
+  mv ./logo.png "${pkgdir}/usr/share/icons/acter/"
   mv ./LICENSE* "${pkgdir}/usr/share/licenses/${pkgname}/"
   # mv ./global.acter.a3.appdata.xml "${pkgdir}/usr/share/appdata/acter.appdata.xml"
   cp -ra ./data ./lib ./acter "${pkgdir}/usr/share/${pkgname}"

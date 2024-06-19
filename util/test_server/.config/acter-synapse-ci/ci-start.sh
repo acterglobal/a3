@@ -7,6 +7,15 @@ echo " ====== Generating config  ====== "
 echo " ====== Patching for local fixes  ====== "
 echo """
 
+email:
+  smtp_host: mailhog
+  smtp_port: 1025
+  force_tls: false
+  require_transport_security: false
+  enable_tls: false
+  notif_from: \"Your Friendly %(app)s homeserver <noreply@acter.global>\"
+  can_verify_email: true
+
 allow_guest_access: true
 enable_registration_without_verification: true
 enable_registration: true
@@ -56,7 +65,7 @@ rc_invites:
     burst_count: 1000
 
 modules:
-  - module: "synapse_super_invites.SynapseSuperInvites"
+  - module: \"synapse_super_invites.SynapseSuperInvites\"
     config:
       sql_url: sqlite:///data/super_invites.db
       generate_registration_token: true

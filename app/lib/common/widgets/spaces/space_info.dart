@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/visibility/visibility_chip.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +33,8 @@ class SpaceInfo extends ConsumerWidget {
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
+            VisibilityChip(roomId: spaceId),
+            const SizedBox(width: 5),
             acterSpaceInfoUI(context, ref, space),
             encryptedInfoUI(context, ref, space),
             joinRuleUI(context, space),

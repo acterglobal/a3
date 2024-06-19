@@ -3,6 +3,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
@@ -119,6 +120,15 @@ class SpaceChatsPage extends ConsumerWidget {
                   extra: 1,
                 ),
                 child: Text(L10n.of(context).createSpaceChat),
+              )
+            : null,
+        secondaryButton: canCreateSpace
+            ? ActerInlineTextButton(
+                onPressed: () => context.pushNamed(
+                  Routes.linkChat.name,
+                  pathParameters: {'spaceId': spaceIdOrAlias},
+                ),
+                child: Text(L10n.of(context).linkToChat),
               )
             : null,
       ),

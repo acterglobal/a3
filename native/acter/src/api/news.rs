@@ -3,25 +3,17 @@ use acter_core::{
         news::{self, FallbackNewsContent, NewsContent, NewsEntryBuilder, NewsSlideBuilder},
         Colorize, ColorizeBuilder, ObjRef,
     },
-    models::{self, ActerModel, AnyActerModel, ReactionManager},
+    models::{self, can_redact, ActerModel, AnyActerModel, ReactionManager},
     statics::KEYS,
 };
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
 use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};
-use ruma_events::{
-    room::message::{
-        AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
-        LocationMessageEventContent, MessageType, TextMessageEventContent,
-        VideoMessageEventContent,
-    },
-    MessageLikeEventType,
-};
+use ruma_events::{room::message::MessageType, MessageLikeEventType};
 use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
-    path::PathBuf,
 };
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
@@ -34,7 +26,6 @@ use super::{
     client::Client,
     common::{MsgContent, ThumbnailSize},
     spaces::Space,
-    stream::msg_draft::MsgContentDraft,
     RUNTIME,
 };
 
@@ -411,6 +402,15 @@ impl NewsEntry {
                 };
                 NewsEntry::new(client, room, content).await
             })
+            .await?
+    }
+
+    pub async fn can_redact(&self) -> Result<bool> {
+        let sender = self.content.sender().to_owned();
+        let room = self.room.clone();
+
+        RUNTIME
+            .spawn(async move { Ok(can_redact(&room, &sender).await?) })
             .await?
     }
 

@@ -74,7 +74,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
                           horizontal: 5.0,
                         ),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.background,
+                          color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(5),
                           border: ref
                                       .watch(newsStateProvider)

@@ -1,7 +1,10 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/report_content.dart';
@@ -18,6 +21,7 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -97,16 +101,16 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   Widget _buildActionMenu(CalendarEvent event) {
     //Get membership details
     final spaceId = event.roomIdStr();
-    final membership = ref.watch(roomMembershipProvider(spaceId));
+    final canRedact = ref.watch(canRedactProvider(event));
+    final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
+    final canPostEvent = membership?.canString('CanPostEvent') == true;
 
     //Create event actions
     List<PopupMenuEntry> actions = [];
 
-    if (membership.valueOrNull != null) {
-      final member = membership.requireValue!;
-
+    if (membership != null) {
       //Edit Event Action
-      if (member.canString('CanPostEvent')) {
+      if (canPostEvent) {
         actions.add(
           PopupMenuItem(
             key: EventsKeys.eventEditBtn,
@@ -124,47 +128,47 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           ),
         );
       }
+    }
 
-      //Delete Event Action
-      if (member.canString('CanRedactOwn') &&
-          member.userId().toString() == event.sender().toString()) {
-        final roomId = event.roomIdStr();
-        actions.addAll([
-          PopupMenuItem(
-            key: EventsKeys.eventDeleteBtn,
-            onTap: () => showAdaptiveDialog(
-              context: context,
-              builder: (context) => RedactContentWidget(
-                removeBtnKey: EventsKeys.eventRemoveBtn,
-                title: L10n.of(context).removeThisPost,
-                eventId: event.eventId().toString(),
-                onSuccess: () {
-                  ref.invalidate(calendarEventProvider);
-                  if (context.mounted) {
-                    context.goNamed(
-                      Routes.spaceEvents.name,
-                      pathParameters: {'spaceId': roomId},
-                    );
-                  }
-                },
-                senderId: event.sender().toString(),
-                roomId: roomId,
-                isSpace: true,
-              ),
-            ),
-            child: Row(
-              children: <Widget>[
-                Icon(
-                  Atlas.trash_can_thin,
-                  color: Theme.of(context).colorScheme.error,
-                ),
-                const SizedBox(width: 10),
-                Text(L10n.of(context).eventRemove),
-              ],
+    //Delete Event Action
+    if (canRedact.valueOrNull == true) {
+      final roomId = event.roomIdStr();
+      actions.addAll([
+        PopupMenuItem(
+          key: EventsKeys.eventDeleteBtn,
+          onTap: () => showAdaptiveDialog(
+            context: context,
+            builder: (context) => RedactContentWidget(
+              removeBtnKey: EventsKeys.eventRemoveBtn,
+              title: L10n.of(context).removeThisPost,
+              eventId: event.eventId().toString(),
+              onSuccess: () {
+                ref.invalidate(calendarEventProvider);
+                if (context.canPop()) context.pop();
+                if (context.mounted) {
+                  context.goNamed(
+                    Routes.spaceEvents.name,
+                    pathParameters: {'spaceId': roomId},
+                  );
+                }
+              },
+              senderId: event.sender().toString(),
+              roomId: roomId,
+              isSpace: true,
             ),
           ),
-        ]);
-      }
+          child: Row(
+            children: <Widget>[
+              Icon(
+                Atlas.trash_can_thin,
+                color: Theme.of(context).colorScheme.error,
+              ),
+              const SizedBox(width: 10),
+              Text(L10n.of(context).eventRemove),
+            ],
+          ),
+        ),
+      ]);
     }
 
     //Report Event Action
@@ -227,6 +231,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   Widget _buildEventBasicDetails(CalendarEvent calendarEvent) {
     final month = getMonthFromDate(calendarEvent.utcStart());
     final day = getDayFromDate(calendarEvent.utcStart());
+    final membership = ref
+        .watch(roomMembershipProvider(calendarEvent.roomIdStr()))
+        .valueOrNull;
+    final canPostEvent = membership?.canString('CanPostEvent') == true;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -247,11 +255,18 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  calendarEvent.title(),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleMedium,
+                GestureDetector(
+                  onTap: () {
+                    if (canPostEvent) {
+                      showEditEventTitleBottomSheet(calendarEvent.title());
+                    }
+                  },
+                  child: Text(
+                    calendarEvent.title(),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                 ),
                 SpaceChip(spaceId: calendarEvent.roomIdStr()),
                 const SizedBox(height: 5),
@@ -276,6 +291,38 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         ],
       ),
     );
+  }
+
+  void showEditEventTitleBottomSheet(String titleValue) {
+    showEditTitleBottomSheet(
+      context: context,
+      titleValue: titleValue,
+      onSave: (newName) {
+        _editEventTitle(newName);
+      },
+    );
+  }
+
+  Future<void> _editEventTitle(String newName) async {
+    try {
+      EasyLoading.show(status: L10n.of(context).updateName);
+      // We always have calendar object at this stage.
+      final calendarEvent =
+          await ref.read(calendarEventProvider(widget.calendarId).future);
+      final updateBuilder = calendarEvent.updateBuilder();
+      updateBuilder.title(newName);
+      final eventId = await updateBuilder.send();
+      _log.info('Calendar Event Title Updated $eventId');
+
+      EasyLoading.dismiss();
+      if (!mounted) return;
+      context.pop();
+    } catch (e, st) {
+      _log.severe('Failed to edit event name', e, st);
+      EasyLoading.dismiss();
+      if (!mounted) return;
+      EasyLoading.showError(L10n.of(context).updateNameFailed(e));
+    }
   }
 
   Future<void> onRsvp(RsvpStatusTag status, WidgetRef ref) async {
@@ -338,7 +385,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     );
 
     return Container(
-      color: Theme.of(context).colorScheme.background,
+      color: Theme.of(context).colorScheme.surface,
       padding: const EdgeInsets.symmetric(vertical: 15.0),
       child: Row(
         children: [
@@ -390,8 +437,23 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
 
   Future<void> onShareEvent(CalendarEvent event) async {
     try {
-      final tempDir = await getTemporaryDirectory();
       final filename = event.title().replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_');
+
+      if (isDesktop) {
+        String? outputFile = await FilePicker.platform.saveFile(
+          dialogTitle: 'Please select where to store the file',
+          fileName: '$filename.ics',
+        );
+
+        if (outputFile != null) {
+          // User canceled the picker
+          event.icalForSharing(outputFile);
+          EasyLoading.showToast('File saved to $outputFile');
+        }
+        return;
+      }
+
+      final tempDir = await getTemporaryDirectory();
       final icalPath = join(tempDir.path, '$filename.ics');
       event.icalForSharing(icalPath);
 

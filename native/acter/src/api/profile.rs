@@ -4,9 +4,8 @@ use matrix_sdk::{
     room::RoomMember,
     Client, DisplayName, Room,
 };
-use ruma::OwnedRoomId;
 use ruma_client_api::user_directory::search_users;
-use ruma_common::OwnedUserId;
+use ruma_common::{OwnedRoomId, OwnedUserId};
 use ruma_events::room::MediaSource;
 
 use super::{

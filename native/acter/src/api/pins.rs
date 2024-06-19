@@ -3,10 +3,10 @@ use acter_core::{
         pins::{self, PinBuilder},
         Icon,
     },
-    models::{self, ActerModel, AnyActerModel},
+    models::{self, can_redact, ActerModel, AnyActerModel},
     statics::KEYS,
 };
-use anyhow::{bail, Context, Result};
+use anyhow::{bail, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
 use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};
@@ -277,6 +277,15 @@ impl Pin {
                     content,
                 })
             })
+            .await?
+    }
+
+    pub async fn can_redact(&self) -> Result<bool> {
+        let sender = self.content.sender().to_owned();
+        let room = self.room.clone();
+
+        RUNTIME
+            .spawn(async move { Ok(can_redact(&room, &sender).await?) })
             .await?
     }
 

@@ -1,8 +1,7 @@
 use acter_core::spaces::is_acter_space;
-use anyhow::{Context, Result};
-use base64ct::{Base64UrlUnpadded, Encoding};
+use anyhow::Result;
 use core::time::Duration;
-use eyeball_im::{ObservableVector, Vector};
+use eyeball_im::ObservableVector;
 use futures::{
     future::join_all,
     pin_mut,
@@ -10,20 +9,18 @@ use futures::{
 };
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
 use matrix_sdk::{
-    config::SyncSettings, event_handler::EventHandlerHandle, media::MediaRequest,
-    room::Room as SdkRoom, LoopCtrl, RoomState, RumaApiError,
+    config::SyncSettings, event_handler::EventHandlerHandle, room::Room as SdkRoom, RoomState,
+    RumaApiError,
 };
-use matrix_sdk_base::media::UniqueKey;
 use ruma_client_api::{
     error::{ErrorBody, ErrorKind},
     Error,
 };
-use ruma_common::{OwnedRoomId, RoomId};
+use ruma_common::OwnedRoomId;
 use std::{
     collections::{BTreeMap, HashMap},
     io::Write,
     ops::Deref,
-    path::PathBuf,
     sync::{
         atomic::{AtomicBool, Ordering},
         Arc,
@@ -32,23 +29,16 @@ use std::{
 use tokio::{
     sync::{
         broadcast::{channel, Receiver},
-        Mutex, RwLock, RwLockWriteGuard,
+        Mutex, RwLockWriteGuard,
     },
     task::JoinHandle,
-    time,
 };
 use tokio_stream::wrappers::BroadcastStream;
 use tracing::{error, info, trace, warn};
 
-use crate::{Account, Convo, OptionString, Room, Space, ThumbnailSize, RUNTIME};
+use crate::{Convo, Room, Space, RUNTIME};
 
-use super::{
-    super::{
-        api::FfiBuffer, device::DeviceController, invitation::InvitationController,
-        receipt::ReceiptController, typing::TypingController, verification::VerificationController,
-    },
-    Client,
-};
+use super::Client;
 
 #[derive(Clone, Debug, Default)]
 pub struct HistoryLoadState {
@@ -390,7 +380,7 @@ fn remove_from_chat(target: &mut RwLockWriteGuard<ObservableVector<Convo>>, r_id
 // we expect chat to always stay sorted.
 fn insert_to_chat(target: &mut RwLockWriteGuard<ObservableVector<Convo>>, convo: Convo) {
     let msg_ts = convo.latest_message_ts();
-    if (msg_ts > 0) {
+    if msg_ts > 0 {
         if let Some(idx) = target.iter().position(|s| s.latest_message_ts() < msg_ts) {
             target.insert(idx, convo);
             return;
@@ -430,7 +420,7 @@ impl Client {
         let (sync_error_tx, sync_error_rx) = channel(1);
         let sync_error_arc = Arc::new(sync_error_tx);
 
-        let initial_arc = Arc::new(AtomicBool::from(true));
+        let initial = Arc::new(AtomicBool::from(true));
         let sync_state = SyncState::new(first_synced_rx, sync_error_rx);
         let history_loading = sync_state.history_loading.clone();
         let first_sync_task = sync_state.first_sync_task.clone();
@@ -438,142 +428,129 @@ impl Client {
 
         let handle = RUNTIME.spawn(async move {
             info!("spawning sync callback");
-            let client = client.clone();
-            let state = state.clone();
-
-            let mut invitation_controller = invitation_controller.clone();
-            let mut device_controller = device_controller.clone();
-
-            let history_loading = history_loading.clone();
-            let first_sync_task = first_sync_task.clone();
-            let room_handles = room_handles.clone();
 
             // keep the sync timeout below the actual connection timeout to ensure we receive it
-            // back before the server timeout occured
-            let sync_settings = SyncSettings::new().timeout(Duration::from_secs(25));
+            // back before the server timeout occurred
+
+            let mut sync_stream = Box::pin(
+                client
+                    .sync_stream(SyncSettings::new().timeout(Duration::from_secs(25)))
+                    .await,
+            );
+
             // fetch the events that received when offline
-            client
-                .clone()
-                .sync_with_result_callback(sync_settings, |result| async {
-                    info!("received sync callback");
-                    let client = client.clone();
-                    let me = me.clone();
-                    let executor = executor.clone();
-                    let state = state.clone();
+            while let Some(result) = sync_stream.next().await {
+                info!("received sync callback");
 
-                    let mut invitation_controller = invitation_controller.clone();
-                    let mut device_controller = device_controller.clone();
-
-                    let first_synced_arc = first_synced_arc.clone();
-                    let sync_error_arc = sync_error_arc.clone();
-                    let history_loading = history_loading.clone();
-                    let initial = initial_arc.clone();
-
-                    let response = match result {
-                        Ok(response) => response,
-                        Err(err) => {
-                            if let Some(RumaApiError::ClientApi(e)) = err.as_ruma_api_error() {
-                                error!(?e, "Client error");
-                                sync_error_arc.send(e.into());
-                                return Ok(LoopCtrl::Break);
-                            }
-                            error!(?err, "Other error, continuing");
-                            return Ok(LoopCtrl::Continue);
+                let response = match result {
+                    Ok(response) => response,
+                    Err(err) => {
+                        if let Some(RumaApiError::ClientApi(e)) = err.as_ruma_api_error() {
+                            error!(?e, "Client error");
+                            sync_error_arc.send(e.into());
+                            return;
                         }
+                        error!(?err, "Other error, continuing");
+                        continue;
+                    }
+                };
+
+                trace!(target: "acter::sync_response::full", "sync response: {:#?}", response);
+
+                if initial.compare_exchange(true, false, Ordering::Relaxed, Ordering::Relaxed)
+                    == Ok(true)
+                {
+                    info!("received first sync");
+                    trace!(user_id=?client.user_id(), "initial synced");
+                    invitation_controller.load_invitations().await;
+
+                    initial.store(false, Ordering::SeqCst);
+
+                    info!("issuing first sync update");
+                    first_synced_arc.send(true);
+                    if let Ok(mut w) = state.try_write() {
+                        w.has_first_synced = true;
                     };
-                    trace!(target: "acter::sync_response::full", "sync response: {:#?}", response);
-
-                    if initial.compare_exchange(true, false, Ordering::Relaxed, Ordering::Relaxed)
-                        == Ok(true)
-                    {
-                        info!("received first sync");
-                        trace!(user_id=?client.user_id(), "initial synced");
-                        invitation_controller.load_invitations().await;
-
-                        initial.store(false, Ordering::SeqCst);
-
-                        info!("issuing first sync update");
-                        first_synced_arc.send(true);
-                        if let Ok(mut w) = state.try_write() {
-                            w.has_first_synced = true;
+                    // background and keep the handle around.
+                    me.refresh_history_on_start(
+                        first_sync_task.clone(),
+                        history_loading.clone(),
+                        room_handles.clone(),
+                    );
+                } else {
+                    // see if we have new spaces to catch up upon
+                    let mut new_spaces = Vec::new();
+                    for room_id in response.rooms.join.keys() {
+                        if history_loading.lock_mut().knows_room(room_id) {
+                            // we are already loading this room
+                            continue;
+                        }
+                        let Some(full_room) = me.get_room(room_id) else {
+                            error!("room not found. how can that be?");
+                            continue;
                         };
-                        // background and keep the handle around.
-                        me.refresh_history_on_start(
-                            first_sync_task.clone(),
+                        if is_acter_space(&full_room).await {
+                            new_spaces.push(full_room);
+                        }
+                    }
+
+                    if !new_spaces.is_empty() {
+                        me.refresh_history_on_way(
                             history_loading.clone(),
                             room_handles.clone(),
-                        );
-                    } else {
-                        // see if we have new spaces to catch up upon
-                        let mut new_spaces = Vec::new();
-                        for room_id in response.rooms.join.keys() {
-                            if history_loading.lock_mut().knows_room(room_id) {
-                                // we are already loading this room
-                                continue;
-                            }
-                            let Some(full_room) = me.get_room(room_id) else {
-                                error!("room not found. how can that be?");
-                                continue;
-                            };
-                            if is_acter_space(&full_room).await {
-                                new_spaces.push(full_room);
-                            }
-                        }
-
-                        if !new_spaces.is_empty() {
-                            me.refresh_history_on_way(
-                                history_loading.clone(),
-                                room_handles.clone(),
-                                new_spaces,
-                            )
-                            .await;
-                        }
+                            new_spaces,
+                        )
+                        .await;
                     }
+                }
 
-                    let mut changed_rooms = response
-                        .rooms
-                        .join
-                        .keys()
-                        .chain(response.rooms.leave.keys())
-                        .chain(response.rooms.invite.keys())
-                        .collect::<Vec<_>>();
+                let mut changed_rooms = response
+                    .rooms
+                    .join
+                    .keys()
+                    .chain(response.rooms.leave.keys())
+                    .chain(response.rooms.invite.keys())
+                    .collect::<Vec<_>>();
 
-                    if (!changed_rooms.is_empty()) {
-                        trace!(?changed_rooms, "changed rooms");
-                        me.refresh_rooms(changed_rooms).await;
+                if !changed_rooms.is_empty() {
+                    trace!(?changed_rooms, "changed rooms");
+                    me.refresh_rooms(changed_rooms).await;
+                }
+
+                if !response.account_data.is_empty() {
+                    info!("account data found!");
+                    // account data has been updated, inform the listeners
+                    let keys = response
+                        .account_data
+                        .iter()
+                        .filter_map(|raw| raw.get_field::<String>("type").ok().flatten())
+                        .collect::<Vec<String>>();
+                    if !keys.is_empty() {
+                        info!("account data keys: {keys:?}");
+                        me.executor().notify(keys);
                     }
+                }
 
-                    if (!response.account_data.is_empty()) {
-                        info!("account data found!");
-                        // account data has been updated, inform the listeners
-                        let keys = response
-                            .account_data
-                            .iter()
-                            .filter_map(|raw| raw.get_field::<String>("type").ok().flatten())
-                            .collect::<Vec<String>>();
-                        if (!keys.is_empty()) {
-                            info!("account data keys: {keys:?}");
-                            me.executor().notify(keys);
-                        }
+                if let Ok(mut w) = state.try_write() {
+                    if w.should_stop_syncing {
+                        w.is_syncing = false;
+                        trace!("Stopping syncing upon user request");
+                        return;
                     }
+                }
+                if let Ok(mut w) = state.try_write() {
+                    if !w.is_syncing {
+                        w.is_syncing = true;
+                    }
+                }
 
-                    if let Ok(mut w) = state.try_write() {
-                        if w.should_stop_syncing {
-                            w.is_syncing = false;
-                            trace!("Stopping syncing upon user request");
-                            return Ok(LoopCtrl::Break);
-                        }
-                    }
-                    if let Ok(mut w) = state.try_write() {
-                        if !w.is_syncing {
-                            w.is_syncing = true;
-                        }
-                    }
+                trace!("ready for the next round");
+            }
+            trace!("sync stopped");
 
-                    trace!("ready for the next round");
-                    Ok(LoopCtrl::Continue)
-                })
-                .await;
+            if let Ok(mut w) = state.try_write() {
+                w.is_syncing = false;
+            };
         });
         sync_state.handle.set(Some(handle));
         sync_state

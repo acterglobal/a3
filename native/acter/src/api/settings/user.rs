@@ -2,8 +2,8 @@ pub use acter_core::events::settings::{
     ActerUserAppSettingsContent, ActerUserAppSettingsContentBuilder, AppChatSettings, AutoDownload,
 };
 use anyhow::Result;
-use core::ops::Deref;
 use matrix_sdk::Account;
+use std::ops::Deref;
 
 use crate::RUNTIME;
 
@@ -30,6 +30,7 @@ impl ActerUserAppSettings {
     pub fn new(account: Account, inner: ActerUserAppSettingsContent) -> Self {
         ActerUserAppSettings { account, inner }
     }
+
     pub fn auto_download_chat(&self) -> Option<String> {
         self.inner
             .chat

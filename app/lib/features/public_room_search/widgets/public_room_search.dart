@@ -49,7 +49,7 @@ class __SearchFieldState extends ConsumerState<_SearchField> {
   Widget build(BuildContext context) {
     final hasSearchTerm = ref.watch(searchFilterProvider).searchTerm != null;
     return SearchBar(
-      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
         const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(16),
@@ -137,7 +137,7 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
               _SearchField(initialQuery: widget.initialQuery),
               Container(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.background,
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(16),
                     bottomRight: Radius.circular(16),

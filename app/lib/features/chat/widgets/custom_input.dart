@@ -88,7 +88,7 @@ class CustomChatInput extends ConsumerWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 15),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.background,
+            color: Theme.of(context).colorScheme.surface,
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -201,7 +201,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 15),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.background,
+              color: Theme.of(context).colorScheme.surface,
             ),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -596,7 +596,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         ),
         const SizedBox(width: 5),
         Text(
-          L10n.of(context).replyTo('${toBeginningOfSentenceCase(authorId)}'),
+          L10n.of(context).replyTo(toBeginningOfSentenceCase(authorId)),
           style: const TextStyle(color: Colors.grey, fontSize: 12),
         ),
         const Spacer(),
@@ -845,7 +845,7 @@ class _TextInputWidget extends ConsumerWidget {
           suggestionListWidth: width >= 770 ? width * 0.6 : width * 0.8,
           onMentionAdd: (roomMember) => onMentionAdd(roomMember, ref),
           suggestionListDecoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.background,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(6),
           ),
           onChanged: (String value) async {
@@ -905,7 +905,7 @@ class _TextInputWidget extends ConsumerWidget {
               borderSide: BorderSide(
                 width: 0.5,
                 style: BorderStyle.solid,
-                color: Theme.of(context).colorScheme.onBackground,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             hintText: isEncrypted

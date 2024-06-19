@@ -1,11 +1,11 @@
 use anyhow::Result;
 
-use crate::utils::random_user_with_random_space;
+use crate::utils::random_user;
 
 #[tokio::test]
 async fn acter_default_push_rules() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _room_id) = random_user_with_random_space("acter_push_rules").await?;
+    let user = random_user("acter_push_rules").await?;
 
     user.install_default_acter_push_rules().await?;
     let push_rules = user.push_rules().await?;

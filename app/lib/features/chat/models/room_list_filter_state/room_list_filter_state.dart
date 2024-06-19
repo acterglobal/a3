@@ -17,7 +17,7 @@ Future<bool> roomListFilterStateAppliesToRoom(
       }
       break;
     case FilterSelection.favorites:
-      if (!convo.isFavorite()) {
+      if (!convo.isBookmarked()) {
         return false;
       }
       break;

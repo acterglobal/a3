@@ -65,6 +65,12 @@ jobs:
         with:
           python-version: 3.8
 
+      - name: Install & Run MailHog
+        run: |
+          wget -q https://github.com/mailhog/MailHog/releases/download/v1.0.1/MailHog_linux_amd64
+          sudo chmod +x MailHog_linux_amd64
+          ./MailHog_linux_amd64 &
+
       - uses: michaelkaye/setup-matrix-synapse@main
         with:
           installer: poetry
@@ -73,6 +79,15 @@ jobs:
           disableRateLimiting: true
           customModules: synapse_super_invites
           customConfig: |
+            email:
+              smtp_host: localhost
+              smtp_port: 1025
+              force_tls: false
+              require_transport_security: false
+              enable_tls: false
+              notif_from: "Your Friendly %(app)s homeserver <noreply@example.org>"
+              can_verify_email: true
+
             modules:
               - module: "synapse_super_invites.SynapseSuperInvites"
                 config:
@@ -146,7 +161,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         name: Set up flutter
         with:
-          flutter-version: '3.19'
+          flutter-version: '3.22'
           channel: 'stable'
 
       - uses: actions/setup-python@v4
@@ -298,7 +313,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         name: Set up flutter
         with:
-          flutter-version: '3.19'
+          flutter-version: '3.22'
           channel: 'stable'
 
       - uses: actions/setup-python@v4
@@ -400,7 +415,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         name: Set up flutter
         with:
-          flutter-version: '3.19'
+          flutter-version: '3.22'
           channel: 'stable'
 
       - uses: actions/setup-python@v4

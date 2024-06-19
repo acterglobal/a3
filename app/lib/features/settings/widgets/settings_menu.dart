@@ -18,6 +18,7 @@ class SettingsMenu extends ConsumerWidget {
   static Key deactivateAccount = const Key('settings-auth-deactivate-account');
   static Key logoutAccount = const Key('settings-auth-logout-account');
   static Key superInvitations = const Key('settings-super-invitations');
+  static Key emailAddresses = const Key('settings-emailAddresses');
   static Key chat = const Key('settings-chat');
   static Key labs = const Key('settings-labs');
 
@@ -69,6 +70,7 @@ class SettingsMenu extends ConsumerWidget {
                   : context.pushNamed(Routes.settingNotifications.name),
             ),
             MenuItemWidget(
+              innerKey: SettingsMenu.emailAddresses,
               iconData: Atlas.envelope_paper_email_thin,
               iconColor: routedColor(context, ref, Routes.emailAddresses),
               title: L10n.of(context).emailAddresses,
@@ -140,6 +142,22 @@ class SettingsMenu extends ConsumerWidget {
               onTap: () => shouldGoNotNamed
                   ? context.goNamed(Routes.blockedUsers.name)
                   : context.pushNamed(Routes.blockedUsers.name),
+            ),
+            MenuItemWidget(
+              iconData: Atlas.passcode,
+              iconColor: routedColor(context, ref, Routes.changePassword),
+              title: L10n.of(context).changePassword,
+              subTitle: L10n.of(context).changePasswordDescription,
+              titleStyles: TextStyle(
+                color: routedColor(
+                  context,
+                  ref,
+                  Routes.changePassword,
+                ),
+              ),
+              onTap: () => shouldGoNotNamed
+                  ? context.goNamed(Routes.changePassword.name)
+                  : context.pushNamed(Routes.changePassword.name),
             ),
           ],
         ),

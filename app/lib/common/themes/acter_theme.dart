@@ -41,9 +41,9 @@ class ActerTheme {
     iconTheme: const IconThemeData(color: Colors.white),
     cardTheme: cardTheme,
     searchBarTheme: SearchBarThemeData(
-      backgroundColor: MaterialStateProperty.all(darkBlueColor),
-      elevation: MaterialStateProperty.all(0),
-      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+      backgroundColor: WidgetStateProperty.all(darkBlueColor),
+      elevation: WidgetStateProperty.all(0),
+      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     ),

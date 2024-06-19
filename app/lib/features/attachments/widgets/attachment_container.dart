@@ -13,7 +13,7 @@ class AttachmentContainer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final containerColor = Theme.of(context).colorScheme.background;
+    final containerColor = Theme.of(context).colorScheme.surface;
     final borderColor = Theme.of(context).colorScheme.primary;
     final containerTextStyle = Theme.of(context).textTheme.bodySmall;
     return Container(

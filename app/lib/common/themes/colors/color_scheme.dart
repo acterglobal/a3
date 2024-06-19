@@ -43,8 +43,8 @@ var colorScheme = ColorScheme.dark(
   onPrimaryContainer: whiteColor,
   secondaryContainer: blackColor,
   onSecondaryContainer: whiteColor,
-  background: darkBlueColor,
-  onBackground: whiteColor,
-  surface: lightBlueColor,
-  onSurface: whiteBlueColor,
+  surface: darkBlueColor,
+  onSurface: whiteColor,
+  surfaceContainerHighest: lightBlueColor,
+  onSurfaceVariant: whiteBlueColor,
 );

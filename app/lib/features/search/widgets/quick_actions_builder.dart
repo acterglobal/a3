@@ -5,6 +5,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
+import 'package:acter/features/tasks/sheets/create_update_task_list.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -91,8 +92,7 @@ class QuickActionsBuilder extends ConsumerWidget {
           canPostTaskList
               ? OutlinedButton.icon(
                   key: QuickJumpKeys.createTaskListAction,
-                  onPressed: () =>
-                      context.pushNamed(Routes.actionAddTaskList.name),
+                  onPressed: () => showCreateUpdateTaskListBottomSheet(context),
                   icon: const Icon(Atlas.plus_circle_thin, size: 18),
                   label: Text(
                     L10n.of(context).taskList,

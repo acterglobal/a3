@@ -1,14 +1,18 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
+import 'package:acter/features/pins/providers/notifiers/edit_state_notifier.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/pin_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -37,10 +41,10 @@ class PinPage extends ConsumerWidget {
     final spaceId = pin.roomIdStr();
     List<PopupMenuEntry<String>> actions = [];
     final pinEditNotifier = ref.watch(pinEditProvider(pin).notifier);
-    final membership = ref.watch(roomMembershipProvider(spaceId));
-    if (membership.valueOrNull != null) {
-      final memb = membership.requireValue!;
-      if (memb.canString('CanPostPin')) {
+    final canRedact = ref.watch(canRedactProvider(pin));
+    final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
+    if (membership != null) {
+      if (membership.canString('CanPostPin')) {
         actions.add(
           PopupMenuItem<String>(
             key: PinPage.editBtnKey,
@@ -56,8 +60,7 @@ class PinPage extends ConsumerWidget {
         );
       }
 
-      if (memb.canString('CanRedactOwn') &&
-          memb.userId().toString() == pin.sender().toString()) {
+      if (canRedact.valueOrNull == true) {
         final roomId = pin.roomIdStr();
         actions.add(
           PopupMenuItem<String>(
@@ -116,9 +119,7 @@ class PinPage extends ConsumerWidget {
         title: L10n.of(context).removeThisPin,
         eventId: pin.eventIdStr(),
         onSuccess: () {
-          if (context.mounted && context.canPop()) {
-            context.pop();
-          }
+          if (context.canPop()) context.pop();
         },
         senderId: pin.sender().toString(),
         roomId: roomId,
@@ -197,20 +198,73 @@ class PinPage extends ConsumerWidget {
   // pin title builder
   Widget _buildTitle(BuildContext context, WidgetRef ref, ActerPin pin) {
     final pinEdit = ref.watch(pinEditProvider(pin));
-    final pinEditNotifer = ref.watch(pinEditProvider(pin).notifier);
+    final pinEditNotifier = ref.watch(pinEditProvider(pin).notifier);
     return Visibility(
       visible: !pinEdit.editMode,
       replacement: TextFormField(
         key: PinPage.titleFieldKey,
         initialValue: pin.title(),
         style: Theme.of(context).textTheme.titleLarge,
-        onChanged: (val) => pinEditNotifer.setTitle(val),
+        onChanged: (val) => pinEditNotifier.setTitle(val),
       ),
-      child: Text(
-        pin.title(),
-        overflow: TextOverflow.ellipsis,
-        style: Theme.of(context).textTheme.titleLarge,
+      child: GestureDetector(
+        onTap: () {
+          final membership =
+              ref.watch(roomMembershipProvider(pin.roomIdStr())).valueOrNull;
+          if (membership != null) {
+            if (membership.canString('CanPostPin')) {
+              showEditPinTitleBottomSheet(
+                context: context,
+                titleValue: pin.title(),
+                pin: pin,
+                pinEditNotifier: pinEditNotifier,
+              );
+            }
+          }
+        },
+        child: Text(
+          pin.title(),
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
       ),
     );
+  }
+
+  void showEditPinTitleBottomSheet({
+    required BuildContext context,
+    required String titleValue,
+    required ActerPin pin,
+    required PinEditNotifier pinEditNotifier,
+  }) {
+    showEditTitleBottomSheet(
+      context: context,
+      bottomSheetTitle: L10n.of(context).editName,
+      titleValue: titleValue,
+      onSave: (newTitle) async {
+        pinEditNotifier.setTitle(newTitle);
+        savePinTitle(context, pin, newTitle);
+      },
+    );
+  }
+
+  Future<void> savePinTitle(
+    BuildContext context,
+    ActerPin pin,
+    String newTitle,
+  ) async {
+    try {
+      EasyLoading.show(status: L10n.of(context).updateName);
+      final updateBuilder = pin.updateBuilder();
+      updateBuilder.title(newTitle);
+      await updateBuilder.send();
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
+      context.pop();
+    } catch (e) {
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
+      EasyLoading.showError(L10n.of(context).updateNameFailed(e));
+    }
   }
 }

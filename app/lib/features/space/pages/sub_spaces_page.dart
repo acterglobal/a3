@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
@@ -150,6 +151,15 @@ class SubSpacesPage extends ConsumerWidget {
                   },
                 ),
                 child: Text(L10n.of(context).createNewSpace),
+              )
+            : null,
+        secondaryButton: canLinkSpace
+            ? ActerInlineTextButton(
+                onPressed: () => context.pushNamed(
+                  Routes.linkSubspace.name,
+                  pathParameters: {'spaceId': spaceIdOrAlias},
+                ),
+                child: Text(L10n.of(context).linkExistingSpace),
               )
             : null,
       ),

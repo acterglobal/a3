@@ -3,7 +3,7 @@ use acter_core::{
         tasks::{self, Priority, TaskBuilder, TaskListBuilder},
         Color,
     },
-    models::{self, ActerModel, AnyActerModel, TaskStats},
+    models::{self, can_redact, ActerModel, AnyActerModel, TaskStats},
     statics::KEYS,
 };
 use anyhow::{bail, Context, Result};
@@ -391,6 +391,15 @@ impl TaskList {
             .await?
     }
 
+    pub async fn can_redact(&self) -> Result<bool> {
+        let sender = self.content.sender().to_owned();
+        let room = self.room.clone();
+
+        RUNTIME
+            .spawn(async move { Ok(can_redact(&room, &sender).await?) })
+            .await?
+    }
+
     pub fn subscribe_stream(&self) -> impl Stream<Item = bool> {
         BroadcastStream::new(self.subscribe()).map(|_| true)
     }
@@ -617,6 +626,15 @@ impl Task {
                     content,
                 })
             })
+            .await?
+    }
+
+    pub async fn can_redact(&self) -> Result<bool> {
+        let sender = self.content.sender().to_owned();
+        let room = self.room.clone();
+
+        RUNTIME
+            .spawn(async move { Ok(can_redact(&room, &sender).await?) })
             .await?
     }
 

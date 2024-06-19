@@ -150,7 +150,7 @@ impl Convo {
                     break;
                 }
             }
-            if (!event_found && !has_latest_msg) {
+            if !event_found && !has_latest_msg {
                 // let's trigger a back pagination in hope that helps us...
                 if let Err(error) = last_msg_tl.paginate_backwards(10).await {
                     error!(?error, room_id=?latest_msg_room.room_id(), "backpagination failed");
@@ -202,6 +202,17 @@ impl Convo {
         TimelineStream::new(self.inner.clone(), self.timeline.clone())
     }
 
+    pub fn num_unread_notification_count(&self) -> u64 {
+        self.inner.unread_notification_counts().notification_count
+    }
+    pub fn num_unread_messages(&self) -> u64 {
+        self.inner.num_unread_messages()
+    }
+
+    pub fn num_unread_mentions(&self) -> u64 {
+        self.inner.unread_notification_counts().highlight_count
+    }
+
     pub fn latest_message_ts(&self) -> u64 {
         self.latest_message
             .read()
@@ -228,15 +239,15 @@ impl Convo {
         self.inner.room.direct_targets_length() > 0
     }
 
-    pub fn is_favorite(&self) -> bool {
+    pub fn is_bookmarked(&self) -> bool {
         self.inner.room.is_favourite()
     }
 
-    pub async fn set_favorite(&self, is_favorite: bool) -> Result<bool> {
+    pub async fn set_bookmarked(&self, is_bookmarked: bool) -> Result<bool> {
         let room = self.inner.room.clone();
         Ok(RUNTIME
             .spawn(async move {
-                room.set_is_favourite(is_favorite, None)
+                room.set_is_favourite(is_bookmarked, None)
                     .await
                     .map(|()| true)
             })
@@ -317,6 +328,7 @@ pub struct CreateConvoSettings {
 
     // #[builder(default = "Visibility::Private")]
     // visibility: Visibility,
+    //
     #[builder(default = "Vec::new()")]
     invites: Vec<OwnedUserId>,
 
