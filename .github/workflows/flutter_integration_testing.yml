@@ -258,8 +258,8 @@ jobs:
           ./MailHog_linux_amd64 &
 
       - name: Build Native
-        run: cargo make ios-sim
-
+        run: cargo make --profile release ios-sim
+ 
       - uses: futureware-tech/simulator-action@v1
         with:
           model: 'iPhone 14'
@@ -312,19 +312,34 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Install supported toolchain
+        id: rust_toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly
-          override: true
+          toolchain: stable
+
+      - uses: jlumbroso/free-disk-space@main
+        name: Free Disk Space (Ubuntu)
+        with:
+          tool-cache: true
+          android: false
+
+      - name: Cache Cargo
+        id: cache-cargo
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo
+          key: ubuntu-latest-cargo-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
 
       - uses: actions/setup-java@v2
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: '17'
 
       - uses: Swatinem/rust-cache@v1
 
       - name: Install cargo-make
+        if: steps.cache-cargo.outputs.cache-hit != 'true'
         uses: davidB/rust-cargo-make@v1
 
       - name: Rust Android Setup
