@@ -1,9 +1,7 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
-
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -129,9 +127,8 @@ class EmailAddressCard extends ConsumerWidget {
           ),
           ActerPrimaryActionButton(
             onPressed: () async {
-              final client = ref.read(alwaysClientProvider);
-              final manager = client.threePidManager();
-              await manager.removeEmailAddress(emailAddress);
+              final account = ref.read(accountProvider);
+              await account.removeEmailAddress(emailAddress);
               ref.invalidate(emailAddressesProvider);
 
               if (!context.mounted) return;
@@ -148,8 +145,7 @@ class EmailAddressCard extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) async {
-    final client = ref.read(alwaysClientProvider);
-    final manager = client.threePidManager();
+    final account = ref.read(accountProvider);
     final newValue = await showDialog<String>(
       context: context,
       builder: (BuildContext context) => const PasswordConfirm(),
@@ -158,7 +154,7 @@ class EmailAddressCard extends ConsumerWidget {
     if (newValue == null) return;
     EasyLoading.show(status: L10n.of(context).tryingToConfirmToken);
     try {
-      await manager.tryConfirmEmailStatus(emailAddress, newValue);
+      await account.tryConfirmEmailStatus(emailAddress, newValue);
       ref.invalidate(emailAddressesProvider);
       if (!context.mounted) {
         EasyLoading.dismiss();
@@ -181,8 +177,7 @@ class EmailAddressCard extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) async {
-    final client = ref.read(alwaysClientProvider);
-    final manager = client.threePidManager();
+    final account = ref.read(accountProvider);
     final newValue = await showDialog<EmailConfirm>(
       context: context,
       builder: (BuildContext context) => const TokenConfirm(),
@@ -191,7 +186,7 @@ class EmailAddressCard extends ConsumerWidget {
     if (newValue == null) return;
     EasyLoading.show(status: L10n.of(context).tryingToConfirmToken);
     try {
-      final result = await manager.submitTokenFromEmail(
+      final result = await account.submitTokenFromEmail(
         emailAddress,
         newValue.token,
         newValue.password,

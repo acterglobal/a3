@@ -1,7 +1,7 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/validation_utils.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -100,11 +100,10 @@ class LinkEmailPage extends ConsumerWidget {
 
   Future<void> linkEmail(BuildContext context, WidgetRef ref) async {
     if (!formKey.currentState!.validate()) return;
-    final client = ref.read(alwaysClientProvider);
-    final manager = client.threePidManager();
+    final account = ref.read(accountProvider);
     EasyLoading.show(status: L10n.of(context).linkingEmailAddress);
     try {
-      await manager.requestTokenViaEmail(emailController.text.trim());
+      await account.requestTokenViaEmail(emailController.text.trim());
       if (!context.mounted) return;
       EasyLoading.showSuccess(L10n.of(context).pleaseCheckYourInbox);
       isLinked.value = true;

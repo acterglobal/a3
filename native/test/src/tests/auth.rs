@@ -302,7 +302,7 @@ async fn can_reset_password_via_email_with_login() -> Result<()> {
     let old_pswd = default_user_password(username);
     let account = client.account()?;
     let email = format!("{username}@example.org");
-    let resp = account.request_3pid_email_token(email.clone()).await?;
+    let resp = account.request_token_via_email(email.clone()).await?;
     let client_secret = resp.client_secret();
     let sid = resp.sid();
 
@@ -376,7 +376,7 @@ async fn can_reset_password_via_email_without_login() -> Result<()> {
     let email = format!("{username}@example.org");
     let old_pswd = default_user_password(username);
     let account = client.account()?;
-    let resp = account.request_3pid_email_token(email.clone()).await?;
+    let resp = account.request_token_via_email(email.clone()).await?;
     let client_secret = resp.client_secret();
     let sid = resp.sid();
 

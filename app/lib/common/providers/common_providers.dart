@@ -66,12 +66,9 @@ class EmailAddresses {
 }
 
 final emailAddressesProvider = FutureProvider((ref) async {
-  final client = ref.watch(alwaysClientProvider);
-  final threePidManager = client.threePidManager();
-  final confirmed =
-      asDartStringList(await threePidManager.confirmedEmailAddresses());
-  final requested =
-      asDartStringList(await threePidManager.requestedEmailAddresses());
+  final account = ref.watch(accountProvider);
+  final confirmed = asDartStringList(await account.confirmedEmailAddresses());
+  final requested = asDartStringList(await account.requestedEmailAddresses());
   final List<String> unconfirmed = [];
   for (var i = 0; i < requested.length; i++) {
     if (!confirmed.contains(requested[i])) {

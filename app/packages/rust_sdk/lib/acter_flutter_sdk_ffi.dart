@@ -10465,7 +10465,7 @@ class Api {
     return tmp7;
   }
 
-  FfiListFfiString? __threePidManagerConfirmedEmailAddressesFuturePoll(
+  FfiListFfiString? __accountConfirmedEmailAddressesFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -10479,7 +10479,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _threePidManagerConfirmedEmailAddressesFuturePoll(
+    final tmp6 = _accountConfirmedEmailAddressesFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -10513,7 +10513,7 @@ class Api {
     return tmp7;
   }
 
-  FfiListFfiString? __threePidManagerRequestedEmailAddressesFuturePoll(
+  FfiListFfiString? __accountRequestedEmailAddressesFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -10527,7 +10527,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _threePidManagerRequestedEmailAddressesFuturePoll(
+    final tmp6 = _accountRequestedEmailAddressesFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -10561,7 +10561,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __threePidManagerRequestTokenViaEmailFuturePoll(
+  ThreePidEmailTokenResponse? __accountRequestTokenViaEmailFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -10575,7 +10575,54 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _threePidManagerRequestTokenViaEmailFuturePoll(
+    final tmp6 = _accountRequestTokenViaEmailFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_ThreePidEmailTokenResponse");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = ThreePidEmailTokenResponse._(this, tmp13_1);
+    return tmp7;
+  }
+
+  bool? __accountAdd3pidFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _accountAdd3pidFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -10605,7 +10652,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __threePidManagerSubmitTokenFromEmailFuturePoll(
+  bool? __accountDelete3pidEmailFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -10619,7 +10666,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _threePidManagerSubmitTokenFromEmailFuturePoll(
+    final tmp6 = _accountDelete3pidEmailFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -10649,7 +10696,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __threePidManagerTryConfirmEmailStatusFuturePoll(
+  FfiListThreePid? __accountGet3pidsFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -10663,7 +10710,55 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _threePidManagerTryConfirmEmailStatusFuturePoll(
+    final tmp6 = _accountGet3pidsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListThreePid");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListThreePid._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  bool? __accountTryConfirmEmailStatusFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _accountTryConfirmEmailStatusFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -10693,7 +10788,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __threePidManagerRemoveEmailAddressFuturePoll(
+  bool? __accountSubmitTokenFromEmailFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -10707,7 +10802,51 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _threePidManagerRemoveEmailAddressFuturePoll(
+    final tmp6 = _accountSubmitTokenFromEmailFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  bool? __accountRemoveEmailAddressFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _accountRemoveEmailAddressFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -24190,75 +24329,46 @@ class Api {
         int,
         int,
       )>();
-  late final _threePidManagerConfirmedEmailAddressesPtr = _lookup<
+  late final _accountConfirmedEmailAddressesPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__ThreePidManager_confirmed_email_addresses");
+          )>>("__Account_confirmed_email_addresses");
 
-  late final _threePidManagerConfirmedEmailAddresses =
-      _threePidManagerConfirmedEmailAddressesPtr.asFunction<
+  late final _accountConfirmedEmailAddresses =
+      _accountConfirmedEmailAddressesPtr.asFunction<
           int Function(
             int,
           )>();
-  late final _threePidManagerRequestedEmailAddressesPtr = _lookup<
+  late final _accountRequestedEmailAddressesPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__ThreePidManager_requested_email_addresses");
+          )>>("__Account_requested_email_addresses");
 
-  late final _threePidManagerRequestedEmailAddresses =
-      _threePidManagerRequestedEmailAddressesPtr.asFunction<
+  late final _accountRequestedEmailAddresses =
+      _accountRequestedEmailAddressesPtr.asFunction<
           int Function(
             int,
           )>();
-  late final _threePidManagerRequestTokenViaEmailPtr = _lookup<
+  late final _accountRequestTokenViaEmailPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-          )>>("__ThreePidManager_request_token_via_email");
+          )>>("__Account_request_token_via_email");
 
-  late final _threePidManagerRequestTokenViaEmail =
-      _threePidManagerRequestTokenViaEmailPtr.asFunction<
+  late final _accountRequestTokenViaEmail =
+      _accountRequestTokenViaEmailPtr.asFunction<
           int Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
-  late final _threePidManagerSubmitTokenFromEmailPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__ThreePidManager_submit_token_from_email");
-
-  late final _threePidManagerSubmitTokenFromEmail =
-      _threePidManagerSubmitTokenFromEmailPtr.asFunction<
-          int Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
             int,
             int,
             int,
             int,
           )>();
-  late final _threePidManagerTryConfirmEmailStatusPtr = _lookup<
+  late final _accountAdd3pidPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
@@ -24268,10 +24378,70 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-          )>>("__ThreePidManager_try_confirm_email_status");
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__Account_add_3pid");
 
-  late final _threePidManagerTryConfirmEmailStatus =
-      _threePidManagerTryConfirmEmailStatusPtr.asFunction<
+  late final _accountAdd3pid = _accountAdd3pidPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _accountDelete3pidEmailPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__Account_delete_3pid_email");
+
+  late final _accountDelete3pidEmail = _accountDelete3pidEmailPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _accountGet3pidsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__Account_get_3pids");
+
+  late final _accountGet3pids = _accountGet3pidsPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _accountTryConfirmEmailStatusPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__Account_try_confirm_email_status");
+
+  late final _accountTryConfirmEmailStatus =
+      _accountTryConfirmEmailStatusPtr.asFunction<
           int Function(
             int,
             int,
@@ -24281,21 +24451,123 @@ class Api {
             int,
             int,
           )>();
-  late final _threePidManagerRemoveEmailAddressPtr = _lookup<
+  late final _accountSubmitTokenFromEmailPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-          )>>("__ThreePidManager_remove_email_address");
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__Account_submit_token_from_email");
 
-  late final _threePidManagerRemoveEmailAddress =
-      _threePidManagerRemoveEmailAddressPtr.asFunction<
+  late final _accountSubmitTokenFromEmail =
+      _accountSubmitTokenFromEmailPtr.asFunction<
           int Function(
             int,
             int,
             int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _accountRemoveEmailAddressPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__Account_remove_email_address");
+
+  late final _accountRemoveEmailAddress =
+      _accountRemoveEmailAddressPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _threePidAddressPtr = _lookup<
+      ffi.NativeFunction<
+          _ThreePidAddressReturn Function(
+            ffi.Int64,
+          )>>("__ThreePid_address");
+
+  late final _threePidAddress = _threePidAddressPtr.asFunction<
+      _ThreePidAddressReturn Function(
+        int,
+      )>();
+  late final _threePidMediumPtr = _lookup<
+      ffi.NativeFunction<
+          _ThreePidMediumReturn Function(
+            ffi.Int64,
+          )>>("__ThreePid_medium");
+
+  late final _threePidMedium = _threePidMediumPtr.asFunction<
+      _ThreePidMediumReturn Function(
+        int,
+      )>();
+  late final _threePidAddedAtPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint64 Function(
+            ffi.Int64,
+          )>>("__ThreePid_added_at");
+
+  late final _threePidAddedAt = _threePidAddedAtPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _threePidValidatedAtPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint64 Function(
+            ffi.Int64,
+          )>>("__ThreePid_validated_at");
+
+  late final _threePidValidatedAt = _threePidValidatedAtPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _threePidEmailTokenResponseSidPtr = _lookup<
+      ffi.NativeFunction<
+          _ThreePidEmailTokenResponseSidReturn Function(
+            ffi.Int64,
+          )>>("__ThreePidEmailTokenResponse_sid");
+
+  late final _threePidEmailTokenResponseSid =
+      _threePidEmailTokenResponseSidPtr.asFunction<
+          _ThreePidEmailTokenResponseSidReturn Function(
+            int,
+          )>();
+  late final _threePidEmailTokenResponseSubmitUrlPtr = _lookup<
+      ffi.NativeFunction<
+          _ThreePidEmailTokenResponseSubmitUrlReturn Function(
+            ffi.Int64,
+          )>>("__ThreePidEmailTokenResponse_submit_url");
+
+  late final _threePidEmailTokenResponseSubmitUrl =
+      _threePidEmailTokenResponseSubmitUrlPtr.asFunction<
+          _ThreePidEmailTokenResponseSubmitUrlReturn Function(
+            int,
+          )>();
+  late final _threePidEmailTokenResponseClientSecretPtr = _lookup<
+      ffi.NativeFunction<
+          _ThreePidEmailTokenResponseClientSecretReturn Function(
+            ffi.Int64,
+          )>>("__ThreePidEmailTokenResponse_client_secret");
+
+  late final _threePidEmailTokenResponseClientSecret =
+      _threePidEmailTokenResponseClientSecretPtr.asFunction<
+          _ThreePidEmailTokenResponseClientSecretReturn Function(
             int,
           )>();
   late final _syncStateFirstSyncedRxPtr = _lookup<
@@ -26067,16 +26339,6 @@ class Api {
       int Function(
         int,
         int,
-        int,
-      )>();
-  late final _clientThreePidManagerPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientThreePidManagerReturn Function(
-            ffi.Int64,
-          )>>("__Client_three_pid_manager");
-
-  late final _clientThreePidManager = _clientThreePidManagerPtr.asFunction<
-      _ClientThreePidManagerReturn Function(
         int,
       )>();
   late final _clientSuperInvitesPtr = _lookup<
@@ -29811,92 +30073,137 @@ class Api {
             int,
             int,
           )>();
-  late final _threePidManagerConfirmedEmailAddressesFuturePollPtr = _lookup<
+  late final _accountConfirmedEmailAddressesFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ThreePidManagerConfirmedEmailAddressesFuturePollReturn Function(
+          _AccountConfirmedEmailAddressesFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__ThreePidManager_confirmed_email_addresses_future_poll");
+          )>>("__Account_confirmed_email_addresses_future_poll");
 
-  late final _threePidManagerConfirmedEmailAddressesFuturePoll =
-      _threePidManagerConfirmedEmailAddressesFuturePollPtr.asFunction<
-          _ThreePidManagerConfirmedEmailAddressesFuturePollReturn Function(
+  late final _accountConfirmedEmailAddressesFuturePoll =
+      _accountConfirmedEmailAddressesFuturePollPtr.asFunction<
+          _AccountConfirmedEmailAddressesFuturePollReturn Function(
             int,
             int,
             int,
           )>();
-  late final _threePidManagerRequestedEmailAddressesFuturePollPtr = _lookup<
+  late final _accountRequestedEmailAddressesFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ThreePidManagerRequestedEmailAddressesFuturePollReturn Function(
+          _AccountRequestedEmailAddressesFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__ThreePidManager_requested_email_addresses_future_poll");
+          )>>("__Account_requested_email_addresses_future_poll");
 
-  late final _threePidManagerRequestedEmailAddressesFuturePoll =
-      _threePidManagerRequestedEmailAddressesFuturePollPtr.asFunction<
-          _ThreePidManagerRequestedEmailAddressesFuturePollReturn Function(
+  late final _accountRequestedEmailAddressesFuturePoll =
+      _accountRequestedEmailAddressesFuturePollPtr.asFunction<
+          _AccountRequestedEmailAddressesFuturePollReturn Function(
             int,
             int,
             int,
           )>();
-  late final _threePidManagerRequestTokenViaEmailFuturePollPtr = _lookup<
+  late final _accountRequestTokenViaEmailFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ThreePidManagerRequestTokenViaEmailFuturePollReturn Function(
+          _AccountRequestTokenViaEmailFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__ThreePidManager_request_token_via_email_future_poll");
+          )>>("__Account_request_token_via_email_future_poll");
 
-  late final _threePidManagerRequestTokenViaEmailFuturePoll =
-      _threePidManagerRequestTokenViaEmailFuturePollPtr.asFunction<
-          _ThreePidManagerRequestTokenViaEmailFuturePollReturn Function(
+  late final _accountRequestTokenViaEmailFuturePoll =
+      _accountRequestTokenViaEmailFuturePollPtr.asFunction<
+          _AccountRequestTokenViaEmailFuturePollReturn Function(
             int,
             int,
             int,
           )>();
-  late final _threePidManagerSubmitTokenFromEmailFuturePollPtr = _lookup<
+  late final _accountAdd3pidFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ThreePidManagerSubmitTokenFromEmailFuturePollReturn Function(
+          _AccountAdd3pidFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__ThreePidManager_submit_token_from_email_future_poll");
+          )>>("__Account_add_3pid_future_poll");
 
-  late final _threePidManagerSubmitTokenFromEmailFuturePoll =
-      _threePidManagerSubmitTokenFromEmailFuturePollPtr.asFunction<
-          _ThreePidManagerSubmitTokenFromEmailFuturePollReturn Function(
+  late final _accountAdd3pidFuturePoll =
+      _accountAdd3pidFuturePollPtr.asFunction<
+          _AccountAdd3pidFuturePollReturn Function(
             int,
             int,
             int,
           )>();
-  late final _threePidManagerTryConfirmEmailStatusFuturePollPtr = _lookup<
+  late final _accountDelete3pidEmailFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ThreePidManagerTryConfirmEmailStatusFuturePollReturn Function(
+          _AccountDelete3pidEmailFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__ThreePidManager_try_confirm_email_status_future_poll");
+          )>>("__Account_delete_3pid_email_future_poll");
 
-  late final _threePidManagerTryConfirmEmailStatusFuturePoll =
-      _threePidManagerTryConfirmEmailStatusFuturePollPtr.asFunction<
-          _ThreePidManagerTryConfirmEmailStatusFuturePollReturn Function(
+  late final _accountDelete3pidEmailFuturePoll =
+      _accountDelete3pidEmailFuturePollPtr.asFunction<
+          _AccountDelete3pidEmailFuturePollReturn Function(
             int,
             int,
             int,
           )>();
-  late final _threePidManagerRemoveEmailAddressFuturePollPtr = _lookup<
+  late final _accountGet3pidsFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ThreePidManagerRemoveEmailAddressFuturePollReturn Function(
+          _AccountGet3pidsFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__ThreePidManager_remove_email_address_future_poll");
+          )>>("__Account_get_3pids_future_poll");
 
-  late final _threePidManagerRemoveEmailAddressFuturePoll =
-      _threePidManagerRemoveEmailAddressFuturePollPtr.asFunction<
-          _ThreePidManagerRemoveEmailAddressFuturePollReturn Function(
+  late final _accountGet3pidsFuturePoll =
+      _accountGet3pidsFuturePollPtr.asFunction<
+          _AccountGet3pidsFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _accountTryConfirmEmailStatusFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _AccountTryConfirmEmailStatusFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Account_try_confirm_email_status_future_poll");
+
+  late final _accountTryConfirmEmailStatusFuturePoll =
+      _accountTryConfirmEmailStatusFuturePollPtr.asFunction<
+          _AccountTryConfirmEmailStatusFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _accountSubmitTokenFromEmailFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _AccountSubmitTokenFromEmailFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Account_submit_token_from_email_future_poll");
+
+  late final _accountSubmitTokenFromEmailFuturePoll =
+      _accountSubmitTokenFromEmailFuturePollPtr.asFunction<
+          _AccountSubmitTokenFromEmailFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _accountRemoveEmailAddressFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _AccountRemoveEmailAddressFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Account_remove_email_address_future_poll");
+
+  late final _accountRemoveEmailAddressFuturePoll =
+      _accountRemoveEmailAddressFuturePollPtr.asFunction<
+          _AccountRemoveEmailAddressFuturePollReturn Function(
             int,
             int,
             int,
@@ -32933,6 +33240,55 @@ class Api {
 
   late final _ffiListTaskListInsert =
       _ffiListTaskListInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListThreePid createFfiListThreePid() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListThreePidCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListThreePid");
+    return FfiListThreePid._(this, list_box);
+  }
+
+  late final _ffiListThreePidCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListThreePidCreate");
+
+  late final _ffiListThreePidCreate =
+      _ffiListThreePidCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListThreePidLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListThreePidLen");
+
+  late final _ffiListThreePidLen =
+      _ffiListThreePidLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListThreePidElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListThreePidElementAt");
+
+  late final _ffiListThreePidElementAt =
+      _ffiListThreePidElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListThreePidRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListThreePidRemove");
+
+  late final _ffiListThreePidRemove =
+      _ffiListThreePidRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListThreePidAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListThreePidAdd");
+
+  late final _ffiListThreePidAdd =
+      _ffiListThreePidAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListThreePidInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListThreePidInsert");
+
+  late final _ffiListThreePidInsert =
+      _ffiListThreePidInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListUserId createFfiListUserId() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListUserIdCreate());
@@ -49025,32 +49381,20 @@ class Account {
     return tmp10;
   }
 
-  /// Manually drops the object and unregisters the FinalizableHandle.
-  void drop() {
-    _box.drop();
-  }
-}
-
-class ThreePidManager {
-  final Api _api;
-  final _Box _box;
-
-  ThreePidManager._(this._api, this._box);
-
   /// get email addresses from third party identifier
   Future<FfiListFfiString> confirmedEmailAddresses() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._threePidManagerConfirmedEmailAddresses(
+    final tmp1 = _api._accountConfirmedEmailAddresses(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0,
-        "__ThreePidManager_confirmed_email_addresses_future_drop");
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__Account_confirmed_email_addresses_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(
-        tmp3_1, _api.__threePidManagerConfirmedEmailAddressesFuturePoll);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__accountConfirmedEmailAddressesFuturePoll);
     return tmp2;
   }
 
@@ -49058,22 +49402,22 @@ class ThreePidManager {
   Future<FfiListFfiString> requestedEmailAddresses() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._threePidManagerRequestedEmailAddresses(
+    final tmp1 = _api._accountRequestedEmailAddresses(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0,
-        "__ThreePidManager_requested_email_addresses_future_drop");
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__Account_requested_email_addresses_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(
-        tmp3_1, _api.__threePidManagerRequestedEmailAddressesFuturePoll);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__accountRequestedEmailAddressesFuturePoll);
     return tmp2;
   }
 
   /// Requests token via email and add email address to third party identifier.
   /// If password is not enough complex, homeserver may reject this request.
-  Future<bool> requestTokenViaEmail(
+  Future<ThreePidEmailTokenResponse> requestTokenViaEmail(
     String emailAddress,
   ) {
     final tmp1 = emailAddress;
@@ -49090,7 +49434,7 @@ class ThreePidManager {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._threePidManagerRequestTokenViaEmail(
+    final tmp5 = _api._accountRequestTokenViaEmail(
       tmp0,
       tmp2,
       tmp3,
@@ -49098,12 +49442,192 @@ class ThreePidManager {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(
-        _api, tmp7_0, "__ThreePidManager_request_token_via_email_future_drop");
+    final tmp7_1 =
+        _Box(_api, tmp7_0, "__Account_request_token_via_email_future_drop");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(
-        tmp7_1, _api.__threePidManagerRequestTokenViaEmailFuturePoll);
+    final tmp6 =
+        _nativeFuture(tmp7_1, _api.__accountRequestTokenViaEmailFuturePoll);
     return tmp6;
+  }
+
+  /// add 3pid on the homeserver for this account
+  /// this 3pid may be used by the homeserver to authenticate the user during sensitive operations.
+  Future<bool> add3pid(
+    String clientSecret,
+    String sid,
+    String password,
+  ) {
+    final tmp1 = clientSecret;
+    final tmp5 = sid;
+    final tmp9 = password;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    final tmp13 = _api._accountAdd3pid(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+    );
+    final tmp15 = tmp13;
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 = _Box(_api, tmp15_0, "__Account_add_3pid_future_drop");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp14 = _nativeFuture(tmp15_1, _api.__accountAdd3pidFuturePoll);
+    return tmp14;
+  }
+
+  /// delete 3pid from the homeserver for this account
+  Future<bool> delete3pidEmail(
+    String address,
+  ) {
+    final tmp1 = address;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._accountDelete3pidEmail(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 =
+        _Box(_api, tmp7_0, "__Account_delete_3pid_email_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__accountDelete3pidEmailFuturePoll);
+    return tmp6;
+  }
+
+  /// get the registered 3pid on the homeserver for this account
+  Future<FfiListThreePid> get3pids(
+    String address,
+  ) {
+    final tmp1 = address;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._accountGet3pids(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__Account_get_3pids_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__accountGet3pidsFuturePoll);
+    return tmp6;
+  }
+
+  /// Submit token to finish email register
+  Future<bool> tryConfirmEmailStatus(
+    String emailAddress,
+    String password,
+  ) {
+    final tmp1 = emailAddress;
+    final tmp5 = password;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._accountTryConfirmEmailStatus(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 =
+        _Box(_api, tmp11_0, "__Account_try_confirm_email_status_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 =
+        _nativeFuture(tmp11_1, _api.__accountTryConfirmEmailStatusFuturePoll);
+    return tmp10;
   }
 
   /// Submit token to finish email register
@@ -49150,7 +49674,7 @@ class ThreePidManager {
     tmp10_1.setAll(0, tmp9_0);
     tmp10 = tmp10_0.address;
     tmp12 = tmp11;
-    final tmp13 = _api._threePidManagerSubmitTokenFromEmail(
+    final tmp13 = _api._accountSubmitTokenFromEmail(
       tmp0,
       tmp2,
       tmp3,
@@ -49164,62 +49688,12 @@ class ThreePidManager {
     );
     final tmp15 = tmp13;
     final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
-    final tmp15_1 = _Box(
-        _api, tmp15_0, "__ThreePidManager_submit_token_from_email_future_drop");
+    final tmp15_1 =
+        _Box(_api, tmp15_0, "__Account_submit_token_from_email_future_drop");
     tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
-    final tmp14 = _nativeFuture(
-        tmp15_1, _api.__threePidManagerSubmitTokenFromEmailFuturePoll);
+    final tmp14 =
+        _nativeFuture(tmp15_1, _api.__accountSubmitTokenFromEmailFuturePoll);
     return tmp14;
-  }
-
-  /// Submit token to finish email register
-  Future<bool> tryConfirmEmailStatus(
-    String emailAddress,
-    String password,
-  ) {
-    final tmp1 = emailAddress;
-    final tmp5 = password;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    var tmp6 = 0;
-    var tmp7 = 0;
-    var tmp8 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5_0 = utf8.encode(tmp5);
-    tmp7 = tmp5_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
-    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
-    tmp6_1.setAll(0, tmp5_0);
-    tmp6 = tmp6_0.address;
-    tmp8 = tmp7;
-    final tmp9 = _api._threePidManagerTryConfirmEmailStatus(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-      tmp6,
-      tmp7,
-      tmp8,
-    );
-    final tmp11 = tmp9;
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0,
-        "__ThreePidManager_try_confirm_email_status_future_drop");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp10 = _nativeFuture(
-        tmp11_1, _api.__threePidManagerTryConfirmEmailStatusFuturePoll);
-    return tmp10;
   }
 
   /// Remove email address from confirmed list or unconfirmed list
@@ -49240,7 +49714,7 @@ class ThreePidManager {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._threePidManagerRemoveEmailAddress(
+    final tmp5 = _api._accountRemoveEmailAddress(
       tmp0,
       tmp2,
       tmp3,
@@ -49248,12 +49722,215 @@ class ThreePidManager {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(
-        _api, tmp7_0, "__ThreePidManager_remove_email_address_future_drop");
+    final tmp7_1 =
+        _Box(_api, tmp7_0, "__Account_remove_email_address_future_drop");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(
-        tmp7_1, _api.__threePidManagerRemoveEmailAddressFuturePoll);
+    final tmp6 =
+        _nativeFuture(tmp7_1, _api.__accountRemoveEmailAddressFuturePoll);
     return tmp6;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class ThreePid {
+  final Api _api;
+  final _Box _box;
+
+  ThreePid._(this._api, this._box);
+
+  /// get address of 3pid
+  String address() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._threePidAddress(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// get medium of 3pid
+  /// one of [email, msisdn]
+  String medium() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._threePidMedium(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// get time when the homeserver associated the third party identifier with the user
+  int addedAt() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._threePidAddedAt(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// get time when the identifier was validated by the identity server
+  int validatedAt() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._threePidValidatedAt(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class ThreePidEmailTokenResponse {
+  final Api _api;
+  final _Box _box;
+
+  ThreePidEmailTokenResponse._(this._api, this._box);
+
+  /// get session id
+  String sid() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._threePidEmailTokenResponseSid(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// get submit url
+  String? submitUrl() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._threePidEmailTokenResponseSubmitUrl(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// get client secret
+  String clientSecret() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._threePidEmailTokenResponseClientSecret(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -53027,37 +53704,6 @@ class Client {
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp6 = _nativeFuture(tmp7_1, _api.__clientMyPastEventsFuturePoll);
     return tmp6;
-  }
-
-  /// get intermediate info of login (via email and phone) from account data
-  ThreePidManager threePidManager() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._clientThreePidManager(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    final tmp7 = tmp1.arg4;
-    if (tmp3 == 0) {
-      debugAllocation("handle error", tmp4, tmp5);
-      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      final tmp3_0 =
-          utf8.decode(tmp4_0.asTypedList(tmp5), allowMalformed: true);
-      if (tmp5 > 0) {
-        final ffi.Pointer<ffi.Void> tmp4_0;
-        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-        _api.__deallocate(tmp4_0, tmp6, 1);
-      }
-      throw tmp3_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_ThreePidManager");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp2 = ThreePidManager._(_api, tmp7_1);
-    return tmp2;
   }
 
   /// super invites interface
@@ -57636,6 +58282,53 @@ class _ActerUserAppSettingsTypingNoticeReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _ThreePidAddressReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _ThreePidMediumReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _ThreePidEmailTokenResponseSidReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _ThreePidEmailTokenResponseSubmitUrlReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _ThreePidEmailTokenResponseClientSecretReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
 class _PublicSearchResultItemNameReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -57997,19 +58690,6 @@ class _ClientReceiptEventRxReturn extends ffi.Struct {
   external int arg0;
   @ffi.Int64()
   external int arg1;
-}
-
-class _ClientThreePidManagerReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Int64()
-  external int arg4;
 }
 
 class _InvitationOriginServerTsReturn extends ffi.Struct {
@@ -60832,8 +61512,7 @@ class _AccountChangePasswordFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ThreePidManagerConfirmedEmailAddressesFuturePollReturn
-    extends ffi.Struct {
+class _AccountConfirmedEmailAddressesFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -60848,8 +61527,7 @@ class _ThreePidManagerConfirmedEmailAddressesFuturePollReturn
   external int arg5;
 }
 
-class _ThreePidManagerRequestedEmailAddressesFuturePollReturn
-    extends ffi.Struct {
+class _AccountRequestedEmailAddressesFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -60864,7 +61542,22 @@ class _ThreePidManagerRequestedEmailAddressesFuturePollReturn
   external int arg5;
 }
 
-class _ThreePidManagerRequestTokenViaEmailFuturePollReturn extends ffi.Struct {
+class _AccountRequestTokenViaEmailFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _AccountAdd3pidFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -60879,7 +61572,7 @@ class _ThreePidManagerRequestTokenViaEmailFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ThreePidManagerSubmitTokenFromEmailFuturePollReturn extends ffi.Struct {
+class _AccountDelete3pidEmailFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -60894,7 +61587,22 @@ class _ThreePidManagerSubmitTokenFromEmailFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ThreePidManagerTryConfirmEmailStatusFuturePollReturn extends ffi.Struct {
+class _AccountGet3pidsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _AccountTryConfirmEmailStatusFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -60909,7 +61617,22 @@ class _ThreePidManagerTryConfirmEmailStatusFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ThreePidManagerRemoveEmailAddressFuturePollReturn extends ffi.Struct {
+class _AccountSubmitTokenFromEmailFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _AccountRemoveEmailAddressFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -64046,6 +64769,66 @@ class FfiListTaskList extends Iterable<TaskList>
   /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, TaskList element) {
     _api._ffiListTaskListInsert(_box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListThreePid extends Iterable<ThreePid>
+    implements CustomIterable<ThreePid> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListThreePid._(this._api, this._box);
+
+  @override
+  Iterator<ThreePid> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListThreePidLen(_box.borrow());
+  }
+
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  ThreePid elementAt(int index) {
+    final address = _api._ffiListThreePidElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return ThreePid._(_api, reference);
+  }
+
+  ThreePid operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  ThreePid remove(int index) {
+    final address = _api._ffiListThreePidRemove(_box.borrow(), index);
+    final reference =
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_ThreePid");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return ThreePid._(_api, reference);
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void add(ThreePid element) {
+    _api._ffiListThreePidAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, ThreePid element) {
+    _api._ffiListThreePidInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
   }
 

@@ -2268,9 +2268,7 @@ object Account {
 
     /// change password
     fn change_password(old_val: string, new_val: string) -> Future<Result<bool>>;
-}
 
-object ThreePidManager {
     /// get email addresses from third party identifier
     fn confirmed_email_addresses() -> Future<Result<Vec<string>>>;
 
@@ -2279,16 +2277,52 @@ object ThreePidManager {
 
     /// Requests token via email and add email address to third party identifier.
     /// If password is not enough complex, homeserver may reject this request.
-    fn request_token_via_email(email_address: string) -> Future<Result<bool>>;
+    fn request_token_via_email(email_address: string) -> Future<Result<ThreePidEmailTokenResponse>>;
 
-    /// Submit token to finish email register
-    fn submit_token_from_email(email_address: string, token: string, password: string) -> Future<Result<bool>>;
+    /// add 3pid on the homeserver for this account
+    /// this 3pid may be used by the homeserver to authenticate the user during sensitive operations.
+    fn add_3pid(client_secret: string, sid: string, password: string) -> Future<Result<bool>>;
+
+    /// delete 3pid from the homeserver for this account
+    fn delete_3pid_email(address: string) -> Future<Result<bool>>;
+
+    /// get the registered 3pid on the homeserver for this account
+    fn get_3pids(address: string) -> Future<Result<Vec<ThreePid>>>;
 
     /// Submit token to finish email register
     fn try_confirm_email_status(email_address: string, password: string) -> Future<Result<bool>>;
 
+    /// Submit token to finish email register
+    fn submit_token_from_email(email_address: string, token: string, password: string) -> Future<Result<bool>>;
+
     /// Remove email address from confirmed list or unconfirmed list
     fn remove_email_address(email_address: string) -> Future<Result<bool>>;
+}
+
+object ThreePid {
+    /// get address of 3pid
+    fn address() -> string;
+
+    /// get medium of 3pid
+    /// one of [email, msisdn]
+    fn medium() -> string;
+
+    /// get time when the homeserver associated the third party identifier with the user
+    fn added_at() -> u64;
+
+    /// get time when the identifier was validated by the identity server
+    fn validated_at() -> u64;
+}
+
+object ThreePidEmailTokenResponse {
+    /// get session id
+    fn sid() -> string;
+
+    /// get submit url
+    fn submit_url() -> Option<string>;
+
+    /// get client secret
+    fn client_secret() -> string;
 }
 
 object SyncState {
@@ -2690,9 +2724,6 @@ object Client {
 
     /// get only past events that I responded as rsvp
     fn my_past_events(secs_from_now: Option<u32>) -> Future<Result<Vec<CalendarEvent>>>;
-
-    /// get intermediate info of login (via email and phone) from account data
-    fn three_pid_manager() -> Result<ThreePidManager>;
 
     /// super invites interface
     fn super_invites() -> SuperInvites;

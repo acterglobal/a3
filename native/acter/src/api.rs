@@ -44,7 +44,6 @@ mod spaces;
 mod stream;
 mod super_invites;
 mod tasks;
-mod three_pid;
 mod typing;
 mod utils;
 mod verification;
@@ -55,7 +54,7 @@ mod uniffi_api;
 #[cfg(feature = "uniffi")]
 pub use uniffi_api::*;
 
-pub use account::Account;
+pub use account::{Account, ThreePid, ThreePidEmailTokenResponse};
 pub use acter_core::{
     events::{
         calendar::EventLocationInfo, news::NewsContent, Colorize, ColorizeBuilder, ObjRef,
@@ -121,7 +120,6 @@ pub use super_invites::{
 pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,
 };
-pub use three_pid::ThreePidManager;
 pub use typing::TypingEvent;
 pub use utils::parse_markdown;
 pub use verification::{SessionManager, VerificationEmoji, VerificationEvent};
