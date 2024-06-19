@@ -132,7 +132,7 @@ jobs:
               --dart-define MAILHOG_URL=http://localhost:8025 \
               --dart-define RAGESHAKE_LISTING_URL=http://localhost:9110/api/listing \
               --dart-define DEFAULT_HOMESERVER_URL=http://localhost:8118 \
-              --dart-define DEFAULT_HOMESERVER_NAME=localhost
+              --dart-define DEFAULT_HOMESERVER_NAME=localhost \
               &
           subscript_pid=$!
 
