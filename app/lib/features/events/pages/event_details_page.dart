@@ -5,7 +5,6 @@ import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
-import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/render_html.dart';
@@ -651,9 +650,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       context: context,
       descriptionHtmlValue: formattedText,
       descriptionMarkdownValue: bodyText,
-      onSave: (newDescription) {
-        final htmlBodyDescription = newDescription.intoHtml();
-        final plainDescription = newDescription.intoMarkdown();
+      onSave: (htmlBodyDescription, plainDescription) {
         _saveDescription(htmlBodyDescription, plainDescription);
       },
     );

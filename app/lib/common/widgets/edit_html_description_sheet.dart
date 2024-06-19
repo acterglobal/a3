@@ -12,7 +12,7 @@ void showEditHtmlDescriptionBottomSheet({
   String? bottomSheetTitle,
   String? descriptionHtmlValue,
   String? descriptionMarkdownValue,
-  required Function(EditorState) onSave,
+  required Function(String, String) onSave,
 }) {
   showModalBottomSheet(
     showDragHandle: true,
@@ -36,7 +36,7 @@ class EditHtmlDescriptionSheet extends ConsumerStatefulWidget {
   final String? bottomSheetTitle;
   final String? descriptionHtmlValue;
   final String? descriptionMarkdownValue;
-  final Function(EditorState) onSave;
+  final Function(String, String) onSave;
 
   const EditHtmlDescriptionSheet({
     super.key,
@@ -86,12 +86,6 @@ class _EditHtmlDescriptionSheetState
               editorState: textEditorState,
               editable: true,
               autoFocus: true,
-              onChanged: (body, html) {
-                final document = html != null
-                    ? ActerDocumentHelpers.fromHtml(html)
-                    : ActerDocumentHelpers.fromMarkdown(body);
-                textEditorState = EditorState(document: document);
-              },
             ),
           ),
           const SizedBox(height: 20),
@@ -113,9 +107,7 @@ class _EditHtmlDescriptionSheetState
                     context.pop();
                     return;
                   }
-
-                  // Need to update change of tile
-                  widget.onSave(textEditorState);
+                  widget.onSave(htmlBodyDescription, plainDescription);
                 },
                 child: Text(L10n.of(context).save),
               ),

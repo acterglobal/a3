@@ -1,5 +1,4 @@
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
-import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
@@ -108,7 +107,9 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   }
 
   Widget _widgetDescription(TaskList taskListData) {
-    if (taskListData.description() == null) return const SizedBox.shrink();
+    final description = taskListData.description();
+    if (description == null) return const SizedBox.shrink();
+    final formattedBody = description.formattedBody();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,13 +118,13 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
           onTap: () {
             showEditDescriptionSheet(taskListData);
           },
-          child: taskListData.description()!.formattedBody() != null
+          child: formattedBody != null
               ? RenderHtml(
-                  text: taskListData.description()!.formattedBody()!,
+                  text: formattedBody,
                   defaultTextStyle: Theme.of(context).textTheme.labelLarge,
                 )
               : Text(
-                  taskListData.description()!.body(),
+                  description.body(),
                   style: Theme.of(context).textTheme.labelLarge,
                 ),
         ),
@@ -139,9 +140,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
       context: context,
       descriptionHtmlValue: taskListData.description()?.formattedBody(),
       descriptionMarkdownValue: taskListData.description()?.body(),
-      onSave: (newDescription) {
-        final htmlBodyDescription = newDescription.intoHtml();
-        final plainDescription = newDescription.intoMarkdown();
+      onSave: (htmlBodyDescription, plainDescription) {
         _saveDescription(taskListData, htmlBodyDescription, plainDescription);
       },
     );

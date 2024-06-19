@@ -227,27 +227,22 @@ class _PinDescriptionWidgetConsumerState
       context: context,
       descriptionHtmlValue: textEditorState.intoHtml(),
       descriptionMarkdownValue: textEditorState.intoMarkdown(),
-      onSave: (newDescriptionState) async {
-        pinEditNotifier.setHtml(newDescriptionState.intoHtml());
-        pinEditNotifier.setMarkdown(newDescriptionState.intoMarkdown());
-        _saveDescription(context, pinEdit, pinEditNotifier);
-        textEditorState = newDescriptionState;
+      onSave: (htmlBodyDescription, plainDescription) async {
+        _saveDescription(context, htmlBodyDescription, plainDescription);
       },
     );
   }
 
   Future<void> _saveDescription(
     BuildContext context,
-    PinEditState pinEdit,
-    PinEditNotifier pinEditNotifier,
+    String htmlBodyDescription,
+    String plainDescription,
   ) async {
     try {
       EasyLoading.show(status: L10n.of(context).updatingDescription);
-      final updateBuilder = pinEditNotifier.pin.updateBuilder();
-      updateBuilder.contentMarkdown(pinEdit.markdown);
-      if (pinEdit.html != null) {
-        updateBuilder.contentHtml(pinEdit.markdown, pinEdit.html!);
-      }
+      final updateBuilder = widget.pin.updateBuilder();
+      updateBuilder.contentText(plainDescription);
+      updateBuilder.contentHtml(plainDescription, htmlBodyDescription);
       await updateBuilder.send();
       EasyLoading.dismiss();
       if (!context.mounted) return;
