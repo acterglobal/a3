@@ -66,7 +66,7 @@ impl Account {
             .spawn(async move {
                 let capabilities = client.get_capabilities().await?;
                 if !capabilities.set_displayname.enabled {
-                    bail!("This client cannot change display name");
+                    bail!("Server doesn't support change of display name");
                 }
                 let name = if new_name.is_empty() {
                     None
@@ -108,7 +108,7 @@ impl Account {
             .spawn(async move {
                 let capabilities = client.get_capabilities().await?;
                 if !capabilities.set_avatar_url.enabled {
-                    bail!("This client cannot change avatar url");
+                    bail!("Server doesn't support change of avatar url");
                 }
                 let guess = mime_guess::from_path(path.clone());
                 let content_type = guess.first().context("don't know mime type")?;

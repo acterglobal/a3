@@ -65,7 +65,7 @@ impl ThreePidManager {
             .spawn(async move {
                 let capabilities = client.get_capabilities().await?;
                 if !capabilities.thirdparty_id_changes.enabled {
-                    bail!("This client cannot change third party identity");
+                    bail!("Server doesn't support change of third party identity");
                 }
                 let response = account
                     .request_3pid_email_token(&secret, &email_address, uint!(0))
@@ -111,7 +111,7 @@ impl ThreePidManager {
             .spawn(async move {
                 let capabilities = client.get_capabilities().await?;
                 if !capabilities.thirdparty_id_changes.enabled {
-                    bail!("This client cannot change third party identity");
+                    bail!("Server doesn't support change of third party identity");
                 }
                 let content = account
                     .account_data::<ThreePidContent>()
@@ -164,7 +164,7 @@ impl ThreePidManager {
             .spawn(async move {
                 let capabilities = client.get_capabilities().await?;
                 if !capabilities.thirdparty_id_changes.enabled {
-                    bail!("This client cannot change third party identity");
+                    bail!("Server doesn't support change of third party identity");
                 }
                 let content = account
                     .account_data::<ThreePidContent>()
@@ -231,7 +231,7 @@ impl ThreePidManager {
             .spawn(async move {
                 let capabilities = client.get_capabilities().await?;
                 if !capabilities.thirdparty_id_changes.enabled {
-                    bail!("This client cannot change third party identity");
+                    bail!("Server doesn't support change of third party identity");
                 }
                 // find it among the confirmed email addresses
                 let response = account.get_3pids().await?;
