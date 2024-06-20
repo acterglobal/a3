@@ -221,7 +221,7 @@ class EmailAddressesPage extends ConsumerWidget {
     if (newValue != null && context.mounted) {
       EasyLoading.show(status: L10n.of(context).addingEmailAddress);
       try {
-        await account.requestTokenViaEmail(newValue);
+        await account.request3pidManagementTokenViaEmail(newValue);
         ref.invalidate(emailAddressesProvider);
         if (!context.mounted) {
           EasyLoading.dismiss();

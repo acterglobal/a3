@@ -39,7 +39,7 @@ fn register_with_token(base_path: string, media_cache_base_path: string, usernam
 fn request_registration_token_via_email(base_path: string, media_cache_base_path: string, username: string, default_homeserver_name: string, default_homeserver_url: string, email: string) -> Future<Result<RegistrationTokenViaEmailResponse>>;
 
 /// Request the password change token via email
-fn request_password_change_email_token(default_homeserver_url: string, email: string) -> Future<Result<PasswordChangeEmailTokenResponse>>;
+fn request_password_change_token_via_email(default_homeserver_url: string, email: string) -> Future<Result<PasswordChangeEmailTokenResponse>>;
 
 /// Finish password reset without login
 fn reset_password(default_homeserver_url: string, sid: string, client_secret: string, new_val: string) -> Future<Result<bool>>;
@@ -2304,14 +2304,14 @@ object Account {
 
     /// Requests token via email and add email address to third party identifier.
     /// If password is not enough complex, homeserver may reject this request.
-    fn request_token_via_email(email_address: string) -> Future<Result<ThreePidEmailTokenResponse>>;
+    fn request_3pid_management_token_via_email(email_address: string) -> Future<Result<ThreePidEmailTokenResponse>>;
 
     /// add 3pid on the homeserver for this account
     /// this 3pid may be used by the homeserver to authenticate the user during sensitive operations.
     fn add_3pid(client_secret: string, sid: string, password: string) -> Future<Result<bool>>;
 
     /// delete 3pid from the homeserver for this account
-    fn delete_3pid_email(address: string) -> Future<Result<bool>>;
+    fn delete_3pid_as_email(address: string) -> Future<Result<bool>>;
 
     /// get the registered 3pid on the homeserver for this account
     fn get_3pids(address: string) -> Future<Result<Vec<ThreePid>>>;

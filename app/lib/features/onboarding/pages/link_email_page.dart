@@ -103,7 +103,8 @@ class LinkEmailPage extends ConsumerWidget {
     final account = ref.read(accountProvider);
     EasyLoading.show(status: L10n.of(context).linkingEmailAddress);
     try {
-      await account.requestTokenViaEmail(emailController.text.trim());
+      final emailAddr = emailController.text.trim();
+      await account.request3pidManagementTokenViaEmail(emailAddr);
       if (!context.mounted) return;
       EasyLoading.showSuccess(L10n.of(context).pleaseCheckYourInbox);
       isLinked.value = true;

@@ -104,7 +104,7 @@ impl Account {
             .await?
     }
 
-    pub async fn request_token_via_email(
+    pub async fn request_3pid_management_token_via_email(
         &self,
         email: String,
     ) -> Result<ThreePidEmailTokenResponse> {
@@ -190,7 +190,7 @@ impl Account {
             .await?
     }
 
-    pub async fn delete_3pid_email(&self, address: String) -> Result<bool> {
+    pub async fn delete_3pid_as_email(&self, address: String) -> Result<bool> {
         let client = self.client.deref().clone();
         let account = self.account.clone();
 

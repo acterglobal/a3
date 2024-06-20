@@ -156,7 +156,7 @@ class _AskForEmail extends StatelessWidget {
     final lang = L10n.of(context);
     EasyLoading.show(status: lang.sendingEmail);
     try {
-      final resp = await sdk.api.requestPasswordChangeEmailToken(
+      final resp = await sdk.api.requestPasswordChangeTokenViaEmail(
         defaultServerUrl,
         emailController.text.trim(),
       );

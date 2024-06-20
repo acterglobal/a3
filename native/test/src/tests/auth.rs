@@ -1,7 +1,7 @@
 use acter::{
     api::{
         guest_client, login_new_client, login_new_client_under_config,
-        login_with_token_under_config, make_client_config, request_password_change_email_token,
+        login_with_token_under_config, make_client_config, request_password_change_token_via_email,
         request_registration_token_via_email, reset_password,
     },
     matrix_sdk::reqwest::{Client as ReqClient, Response as ReqResponse},
@@ -302,7 +302,9 @@ async fn can_reset_password_via_email_with_login() -> Result<()> {
     let old_pswd = default_user_password(username);
     let account = client.account()?;
     let email = format!("{username}@example.org");
-    let resp = account.request_token_via_email(email.clone()).await?;
+    let resp = account
+        .request_3pid_management_token_via_email(email.clone())
+        .await?;
     let client_secret = resp.client_secret();
     let sid = resp.sid();
 
@@ -316,7 +318,7 @@ async fn can_reset_password_via_email_with_login() -> Result<()> {
     let homeserver_url = option_env!("DEFAULT_HOMESERVER_URL").unwrap_or("http://localhost:8118");
 
     let resp =
-        request_password_change_email_token(homeserver_url.to_owned(), email.clone()).await?; // here m.login.email.identity is started
+        request_password_change_token_via_email(homeserver_url.to_owned(), email.clone()).await?; // here m.login.email.identity is started
 
     info!("password change token via email - sid: {}", resp.sid());
     info!(
@@ -376,7 +378,9 @@ async fn can_reset_password_via_email_without_login() -> Result<()> {
     let email = format!("{username}@example.org");
     let old_pswd = default_user_password(username);
     let account = client.account()?;
-    let resp = account.request_token_via_email(email.clone()).await?;
+    let resp = account
+        .request_3pid_management_token_via_email(email.clone())
+        .await?;
     let client_secret = resp.client_secret();
     let sid = resp.sid();
 
@@ -393,7 +397,7 @@ async fn can_reset_password_via_email_without_login() -> Result<()> {
     let homeserver_url = option_env!("DEFAULT_HOMESERVER_URL").unwrap_or("http://localhost:8118");
 
     let resp =
-        request_password_change_email_token(homeserver_url.to_owned(), email.clone()).await?; // here m.login.email.identity is started
+        request_password_change_token_via_email(homeserver_url.to_owned(), email.clone()).await?; // here m.login.email.identity is started
 
     info!("password change token via email - sid: {}", resp.sid());
     info!(

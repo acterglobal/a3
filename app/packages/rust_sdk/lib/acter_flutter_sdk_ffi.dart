@@ -1372,7 +1372,7 @@ class Api {
   }
 
   /// Request the password change token via email
-  Future<PasswordChangeEmailTokenResponse> requestPasswordChangeEmailToken(
+  Future<PasswordChangeEmailTokenResponse> requestPasswordChangeTokenViaEmail(
     String defaultHomeserverUrl,
     String email,
   ) {
@@ -1400,7 +1400,7 @@ class Api {
     tmp5_1.setAll(0, tmp4_0);
     tmp5 = tmp5_0.address;
     tmp7 = tmp6;
-    final tmp8 = _requestPasswordChangeEmailToken(
+    final tmp8 = _requestPasswordChangeTokenViaEmail(
       tmp1,
       tmp2,
       tmp3,
@@ -1411,10 +1411,10 @@ class Api {
     final tmp10 = tmp8;
     final ffi.Pointer<ffi.Void> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
     final tmp10_1 = _Box(
-        this, tmp10_0, "__request_password_change_email_token_future_drop");
+        this, tmp10_0, "__request_password_change_token_via_email_future_drop");
     tmp10_1._finalizer = this._registerFinalizer(tmp10_1);
     final tmp9 = _nativeFuture(
-        tmp10_1, this.__requestPasswordChangeEmailTokenFuturePoll);
+        tmp10_1, this.__requestPasswordChangeTokenViaEmailFuturePoll);
     return tmp9;
   }
 
@@ -2465,7 +2465,8 @@ class Api {
     return tmp7;
   }
 
-  PasswordChangeEmailTokenResponse? __requestPasswordChangeEmailTokenFuturePoll(
+  PasswordChangeEmailTokenResponse?
+      __requestPasswordChangeTokenViaEmailFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2479,7 +2480,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _requestPasswordChangeEmailTokenFuturePoll(
+    final tmp6 = _requestPasswordChangeTokenViaEmailFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -10749,7 +10750,8 @@ class Api {
     return tmp7;
   }
 
-  ThreePidEmailTokenResponse? __accountRequestTokenViaEmailFuturePoll(
+  ThreePidEmailTokenResponse?
+      __accountRequest3pidManagementTokenViaEmailFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -10763,7 +10765,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _accountRequestTokenViaEmailFuturePoll(
+    final tmp6 = _accountRequest3pidManagementTokenViaEmailFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -10840,7 +10842,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __accountDelete3pidEmailFuturePoll(
+  bool? __accountDelete3pidAsEmailFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -10854,7 +10856,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _accountDelete3pidEmailFuturePoll(
+    final tmp6 = _accountDelete3pidAsEmailFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -16315,7 +16317,7 @@ class Api {
             int,
             int,
           )>();
-  late final _requestPasswordChangeEmailTokenPtr = _lookup<
+  late final _requestPasswordChangeTokenViaEmailPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
@@ -16324,10 +16326,10 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-          )>>("__request_password_change_email_token");
+          )>>("__request_password_change_token_via_email");
 
-  late final _requestPasswordChangeEmailToken =
-      _requestPasswordChangeEmailTokenPtr.asFunction<
+  late final _requestPasswordChangeTokenViaEmail =
+      _requestPasswordChangeTokenViaEmailPtr.asFunction<
           int Function(
             int,
             int,
@@ -24699,17 +24701,17 @@ class Api {
           int Function(
             int,
           )>();
-  late final _accountRequestTokenViaEmailPtr = _lookup<
+  late final _accountRequest3pidManagementTokenViaEmailPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-          )>>("__Account_request_token_via_email");
+          )>>("__Account_request_3pid_management_token_via_email");
 
-  late final _accountRequestTokenViaEmail =
-      _accountRequestTokenViaEmailPtr.asFunction<
+  late final _accountRequest3pidManagementTokenViaEmail =
+      _accountRequest3pidManagementTokenViaEmailPtr.asFunction<
           int Function(
             int,
             int,
@@ -24744,22 +24746,23 @@ class Api {
         int,
         int,
       )>();
-  late final _accountDelete3pidEmailPtr = _lookup<
+  late final _accountDelete3pidAsEmailPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-          )>>("__Account_delete_3pid_email");
+          )>>("__Account_delete_3pid_as_email");
 
-  late final _accountDelete3pidEmail = _accountDelete3pidEmailPtr.asFunction<
-      int Function(
-        int,
-        int,
-        int,
-        int,
-      )>();
+  late final _accountDelete3pidAsEmail =
+      _accountDelete3pidAsEmailPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
   late final _accountGet3pidsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -27868,17 +27871,17 @@ class Api {
             int,
             int,
           )>();
-  late final _requestPasswordChangeEmailTokenFuturePollPtr = _lookup<
+  late final _requestPasswordChangeTokenViaEmailFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _RequestPasswordChangeEmailTokenFuturePollReturn Function(
+          _RequestPasswordChangeTokenViaEmailFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__request_password_change_email_token_future_poll");
+          )>>("__request_password_change_token_via_email_future_poll");
 
-  late final _requestPasswordChangeEmailTokenFuturePoll =
-      _requestPasswordChangeEmailTokenFuturePollPtr.asFunction<
-          _RequestPasswordChangeEmailTokenFuturePollReturn Function(
+  late final _requestPasswordChangeTokenViaEmailFuturePoll =
+      _requestPasswordChangeTokenViaEmailFuturePollPtr.asFunction<
+          _RequestPasswordChangeTokenViaEmailFuturePollReturn Function(
             int,
             int,
             int,
@@ -30509,17 +30512,17 @@ class Api {
             int,
             int,
           )>();
-  late final _accountRequestTokenViaEmailFuturePollPtr = _lookup<
+  late final _accountRequest3pidManagementTokenViaEmailFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _AccountRequestTokenViaEmailFuturePollReturn Function(
+          _AccountRequest3pidManagementTokenViaEmailFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__Account_request_token_via_email_future_poll");
+          )>>("__Account_request_3pid_management_token_via_email_future_poll");
 
-  late final _accountRequestTokenViaEmailFuturePoll =
-      _accountRequestTokenViaEmailFuturePollPtr.asFunction<
-          _AccountRequestTokenViaEmailFuturePollReturn Function(
+  late final _accountRequest3pidManagementTokenViaEmailFuturePoll =
+      _accountRequest3pidManagementTokenViaEmailFuturePollPtr.asFunction<
+          _AccountRequest3pidManagementTokenViaEmailFuturePollReturn Function(
             int,
             int,
             int,
@@ -30539,17 +30542,17 @@ class Api {
             int,
             int,
           )>();
-  late final _accountDelete3pidEmailFuturePollPtr = _lookup<
+  late final _accountDelete3pidAsEmailFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _AccountDelete3pidEmailFuturePollReturn Function(
+          _AccountDelete3pidAsEmailFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__Account_delete_3pid_email_future_poll");
+          )>>("__Account_delete_3pid_as_email_future_poll");
 
-  late final _accountDelete3pidEmailFuturePoll =
-      _accountDelete3pidEmailFuturePollPtr.asFunction<
-          _AccountDelete3pidEmailFuturePollReturn Function(
+  late final _accountDelete3pidAsEmailFuturePoll =
+      _accountDelete3pidAsEmailFuturePollPtr.asFunction<
+          _AccountDelete3pidAsEmailFuturePollReturn Function(
             int,
             int,
             int,
@@ -50140,7 +50143,7 @@ class Account {
 
   /// Requests token via email and add email address to third party identifier.
   /// If password is not enough complex, homeserver may reject this request.
-  Future<ThreePidEmailTokenResponse> requestTokenViaEmail(
+  Future<ThreePidEmailTokenResponse> request3pidManagementTokenViaEmail(
     String emailAddress,
   ) {
     final tmp1 = emailAddress;
@@ -50157,7 +50160,7 @@ class Account {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._accountRequestTokenViaEmail(
+    final tmp5 = _api._accountRequest3pidManagementTokenViaEmail(
       tmp0,
       tmp2,
       tmp3,
@@ -50165,11 +50168,11 @@ class Account {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 =
-        _Box(_api, tmp7_0, "__Account_request_token_via_email_future_drop");
+    final tmp7_1 = _Box(_api, tmp7_0,
+        "__Account_request_3pid_management_token_via_email_future_drop");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 =
-        _nativeFuture(tmp7_1, _api.__accountRequestTokenViaEmailFuturePoll);
+    final tmp6 = _nativeFuture(
+        tmp7_1, _api.__accountRequest3pidManagementTokenViaEmailFuturePoll);
     return tmp6;
   }
 
@@ -50239,7 +50242,7 @@ class Account {
   }
 
   /// delete 3pid from the homeserver for this account
-  Future<bool> delete3pidEmail(
+  Future<bool> delete3pidAsEmail(
     String address,
   ) {
     final tmp1 = address;
@@ -50256,7 +50259,7 @@ class Account {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._accountDelete3pidEmail(
+    final tmp5 = _api._accountDelete3pidAsEmail(
       tmp0,
       tmp2,
       tmp3,
@@ -50265,9 +50268,10 @@ class Account {
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
     final tmp7_1 =
-        _Box(_api, tmp7_0, "__Account_delete_3pid_email_future_drop");
+        _Box(_api, tmp7_0, "__Account_delete_3pid_as_email_future_drop");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(tmp7_1, _api.__accountDelete3pidEmailFuturePoll);
+    final tmp6 =
+        _nativeFuture(tmp7_1, _api.__accountDelete3pidAsEmailFuturePoll);
     return tmp6;
   }
 
@@ -59658,7 +59662,7 @@ class _RequestRegistrationTokenViaEmailFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _RequestPasswordChangeEmailTokenFuturePollReturn extends ffi.Struct {
+class _RequestPasswordChangeTokenViaEmailFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -62336,7 +62340,8 @@ class _AccountRequestedEmailAddressesFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _AccountRequestTokenViaEmailFuturePollReturn extends ffi.Struct {
+class _AccountRequest3pidManagementTokenViaEmailFuturePollReturn
+    extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -62366,7 +62371,7 @@ class _AccountAdd3pidFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _AccountDelete3pidEmailFuturePollReturn extends ffi.Struct {
+class _AccountDelete3pidAsEmailFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
