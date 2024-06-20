@@ -207,25 +207,27 @@ class PinPage extends ConsumerWidget {
         style: Theme.of(context).textTheme.titleLarge,
         onChanged: (val) => pinEditNotifier.setTitle(val),
       ),
-      child: GestureDetector(
-        onTap: () {
-          final membership =
-              ref.watch(roomMembershipProvider(pin.roomIdStr())).valueOrNull;
-          if (membership != null) {
-            if (membership.canString('CanPostPin')) {
-              showEditPinTitleBottomSheet(
-                context: context,
-                titleValue: pin.title(),
-                pin: pin,
-                pinEditNotifier: pinEditNotifier,
-              );
+      child: SelectionArea(
+        child: GestureDetector(
+          onTap: () {
+            final membership =
+                ref.watch(roomMembershipProvider(pin.roomIdStr())).valueOrNull;
+            if (membership != null) {
+              if (membership.canString('CanPostPin')) {
+                showEditPinTitleBottomSheet(
+                  context: context,
+                  titleValue: pin.title(),
+                  pin: pin,
+                  pinEditNotifier: pinEditNotifier,
+                );
+              }
             }
-          }
-        },
-        child: Text(
-          pin.title(),
-          overflow: TextOverflow.ellipsis,
-          style: Theme.of(context).textTheme.titleLarge,
+          },
+          child: Text(
+            pin.title(),
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
         ),
       ),
     );

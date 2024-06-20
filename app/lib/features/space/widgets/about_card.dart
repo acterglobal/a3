@@ -37,20 +37,22 @@ class AboutCard extends ConsumerWidget {
             space.when(
               data: (space) {
                 final topic = space.topic();
-                return GestureDetector(
-                  onTap: () async {
-                    if (await editDescriptionPermissionCheck(ref) &&
-                        context.mounted) {
-                      showEditDescriptionBottomSheet(
-                        context: context,
-                        space: space,
-                        descriptionValue: topic ?? '',
-                      );
-                    }
-                  },
-                  child: Text(
-                    topic ?? L10n.of(context).noTopicFound,
-                    style: Theme.of(context).textTheme.bodySmall,
+                return SelectionArea(
+                  child: GestureDetector(
+                    onTap: () async {
+                      if (await editDescriptionPermissionCheck(ref) &&
+                          context.mounted) {
+                        showEditDescriptionBottomSheet(
+                          context: context,
+                          space: space,
+                          descriptionValue: topic ?? '',
+                        );
+                      }
+                    },
+                    child: Text(
+                      topic ?? L10n.of(context).noTopicFound,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
                   ),
                 );
               },

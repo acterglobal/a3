@@ -256,17 +256,19 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                GestureDetector(
-                  onTap: () {
-                    if (canPostEvent) {
-                      showEditEventTitleBottomSheet(calendarEvent.title());
-                    }
-                  },
-                  child: Text(
-                    calendarEvent.title(),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleMedium,
+                SelectionArea(
+                  child: GestureDetector(
+                    onTap: () {
+                      if (canPostEvent) {
+                        showEditEventTitleBottomSheet(calendarEvent.title());
+                      }
+                    },
+                    child: Text(
+                      calendarEvent.title(),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                   ),
                 ),
                 SpaceChip(spaceId: calendarEvent.roomIdStr()),
@@ -628,17 +630,19 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             style: Theme.of(context).textTheme.titleSmall,
           ),
           const SizedBox(height: 10),
-          GestureDetector(
-            onTap: () => showEditDescriptionSheet(formattedText, bodyText),
-            child: formattedText != null
-                ? RenderHtml(
-                    text: formattedText,
-                    defaultTextStyle: Theme.of(context).textTheme.labelMedium,
-                  )
-                : Text(
-                    bodyText,
-                    style: Theme.of(context).textTheme.labelMedium,
-                  ),
+          SelectionArea(
+            child: GestureDetector(
+              onTap: () => showEditDescriptionSheet(formattedText, bodyText),
+              child: formattedText != null
+                  ? RenderHtml(
+                      text: formattedText,
+                      defaultTextStyle: Theme.of(context).textTheme.labelMedium,
+                    )
+                  : Text(
+                      bodyText,
+                      style: Theme.of(context).textTheme.labelMedium,
+                    ),
+            ),
           ),
         ],
       ),
