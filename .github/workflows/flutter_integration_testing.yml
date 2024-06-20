@@ -122,6 +122,7 @@ jobs:
           xvfb_pid=$!
           flutter run integration_test/main_test.dart  \
               -d linux \
+              --hot \
               --host-vmservice-port 9753 \
               --disable-service-auth-codes \
               --dart-define CI=true \
