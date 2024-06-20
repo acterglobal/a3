@@ -261,6 +261,8 @@ jobs:
         run: cargo make --profile release ios-sim
  
       - uses: futureware-tech/simulator-action@v3
+        id: ios_simulator
+        timeout-minutes: 30
         with:
           model: 'iPhone 14'
 
@@ -271,6 +273,7 @@ jobs:
           flutter build ipa
 
       - name: Run flutter integration tests
+        timeout-minutes: 30
         run: .github/scripts/flutter-integration-tests.sh
 
       - name: Upload artifacts
@@ -418,6 +421,7 @@ jobs:
 
       - name: Run integration tests on android
         uses: reactivecircus/android-emulator-runner@v2
+        timeout-minutes: 30
         with:
           api-level: 29
           arch: x86_64
