@@ -18,7 +18,7 @@ class SettingsMenu extends ConsumerWidget {
   static Key deactivateAccount = const Key('settings-auth-deactivate-account');
   static Key logoutAccount = const Key('settings-auth-logout-account');
   static Key superInvitations = const Key('settings-super-invitations');
-  static Key emailAddresses = const Key('settings-emailAddresses');
+  static Key emailAddresses = const Key('settings-email-addresses');
   static Key chat = const Key('settings-chat');
   static Key labs = const Key('settings-labs');
 

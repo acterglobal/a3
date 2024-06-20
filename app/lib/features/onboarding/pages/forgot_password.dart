@@ -19,6 +19,7 @@ class ForgotPassword extends ConsumerStatefulWidget {
   static Key passwordKey = const Key('pw-reset-password-field');
   static Key emailFieldKey = const Key('pw-reset-email-field');
   static Key submitKey = const Key('pw-reset-submit-btn');
+
   const ForgotPassword({super.key});
 
   @override
