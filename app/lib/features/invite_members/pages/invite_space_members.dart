@@ -74,8 +74,12 @@ class _InviteSpaceMembersConsumerState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(L10n.of(context).parentSpace),
-        for (var parent in parentSpaces)
+        Text(
+          parentSpaces.length > 1
+              ? L10n.of(context).parentSpaces
+              : L10n.of(context).parentSpace,
+        ),
+        for (final parent in parentSpaces)
           SpaceMemberInviteCard(
             space: parent.space,
             isSelected: selectedSpaces.contains(parent.space),

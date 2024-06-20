@@ -852,6 +852,7 @@
   "@overview": {},
   "parentSpace": "Parent Space",
   "@parentSpace": {},
+  "parentSpaces": "Parent Spaces",
   "parentSpaceMustBeSelected": "Parent Space must be selected",
   "@parentSpaceMustBeSelected": {},
   "parents": "Parents",
