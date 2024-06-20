@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/common/widgets/redact_content.dart';
@@ -58,6 +59,27 @@ class PinPage extends ConsumerWidget {
             ),
           ),
         );
+
+        actions.add(
+          PopupMenuItem<String>(
+            key: PinPage.editBtnKey,
+            onTap: () {
+              showEditDescriptionSheet(
+                context,
+                pin.content()?.formattedBody(),
+                pin.content()?.body(),
+                pin,
+              );
+            },
+            child: Row(
+              children: <Widget>[
+                const Icon(Atlas.pencil_box_thin),
+                const SizedBox(width: 10),
+                Text(L10n.of(context).editDescription),
+              ],
+            ),
+          ),
+        );
       }
 
       if (canRedact.valueOrNull == true) {
@@ -105,6 +127,49 @@ class PinPage extends ConsumerWidget {
       icon: const Icon(Atlas.dots_vertical_thin),
       itemBuilder: (ctx) => actions,
     );
+  }
+
+  void showEditDescriptionSheet(
+    context,
+    htmlBodyDescription,
+    plainDescription,
+    ActerPin pin,
+  ) {
+    showEditHtmlDescriptionBottomSheet(
+      context: context,
+      descriptionHtmlValue: htmlBodyDescription,
+      descriptionMarkdownValue: plainDescription,
+      onSave: (htmlBodyDescription, plainDescription) async {
+        _saveDescription(
+          context,
+          htmlBodyDescription,
+          plainDescription,
+          pin,
+        );
+      },
+    );
+  }
+
+  Future<void> _saveDescription(
+    BuildContext context,
+    String htmlBodyDescription,
+    String plainDescription,
+    ActerPin pin,
+  ) async {
+    try {
+      EasyLoading.show(status: L10n.of(context).updatingDescription);
+      final updateBuilder = pin.updateBuilder();
+      updateBuilder.contentText(plainDescription);
+      updateBuilder.contentHtml(plainDescription, htmlBodyDescription);
+      await updateBuilder.send();
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
+      context.pop();
+    } catch (e) {
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
+      EasyLoading.showError(L10n.of(context).updateNameFailed(e));
+    }
   }
 
   // redact pin dialog
