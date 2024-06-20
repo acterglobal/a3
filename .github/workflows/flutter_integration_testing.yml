@@ -270,7 +270,6 @@ jobs:
         working-directory: app
         run: |
           flutter pub get
-          flutter build ipa
 
       - name: Run flutter integration tests
         timeout-minutes: 30
