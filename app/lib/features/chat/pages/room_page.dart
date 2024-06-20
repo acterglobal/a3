@@ -15,6 +15,7 @@ import 'package:acter/features/chat/widgets/custom_message_builder.dart';
 import 'package:acter/features/chat/widgets/file_message_builder.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
 import 'package:acter/features/chat/widgets/messages/encrypted_info.dart';
+import 'package:acter/features/chat/widgets/messages/invite.dart';
 import 'package:acter/features/chat/widgets/messages/topic.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
@@ -275,6 +276,10 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
     types.SystemMessage message,
   ) {
     return switch (message.metadata?['type']) {
+      '_invite' => InviteSystemMessageWidget(
+          message: message,
+          roomId: widget.convo.getRoomIdStr(),
+        ),
       '_topic' => TopicSystemMessageWidget(
           message: message,
           roomId: widget.convo.getRoomIdStr(),
