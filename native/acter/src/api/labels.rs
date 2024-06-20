@@ -29,3 +29,20 @@ impl Label {
             .to_owned()
     }
 }
+
+#[derive(Default)]
+pub struct LabelsBuilder {
+    pub inner: Vec<LabelDetails>,
+}
+impl LabelsBuilder {
+    pub fn add_label(&mut self, id: String, title: String, icon: Option<Box<Icon>>) {
+        self.inner.push(
+            LabelDetailsBuilder::default()
+                .id(id)
+                .title(title)
+                .icon(icon.map(|i| *i))
+                .build()
+                .expect("Label input is complete"),
+        );
+    }
+}

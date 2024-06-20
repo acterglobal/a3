@@ -1964,29 +1964,21 @@ object Label {
     /// the icon configured if any
     fn icon() -> Option<Icon>;
 }
-//    /// get this as a mutable update builder
-//    fn builder() -> LabelBuilder;
-//}
 
-// object LabelBuilder {
-//    /// set the id of this label
-//    fn id(id: string);
-//    /// set the title of this label
-//    fn title(title: Option<string>);
-//    /// set the icon
-//    fn icon(type: string, content: string );
-//    ///
-//    fn build() -> Label;
-//}
+// To generate the list of labels
+object LabelsBuilder {
+    fn add_label(id: string, title: string, icon: Option<Icon>);
+}
 
 object Space {
     /// get the room profile that contains avatar and display name
     fn get_profile() -> RoomProfile;
 
     /// get the labels of a specific 
-    fn labels(lable_type: string) -> Future<Vec<Label>>;
+    fn labels(label_type: string) -> Future<Vec<Label>>;
 
-    // fn update_labels() 
+    /// set the labels for the given label_type
+    fn set_labels(label_type: string, builder: LabelsBuilder) ->  Future<Result<string>>;
 
     /// get the room profile that contains avatar and display name
     fn space_relations() -> Future<Result<SpaceRelations>>;

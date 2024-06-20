@@ -31,16 +31,24 @@ impl PossiblyRedactedStateEventContent for PossiblyRedactedLabelsStateEventConte
 #[derive(Debug, Serialize, Deserialize, Clone, EventContent)]
 #[ruma_event(type = "global.acter.labels", kind = State, state_key_type = String, custom_possibly_redacted)]
 pub struct LabelsStateEventContent {
-    #[serde(flatten)]
+    /// The ordered list of LabelDetails
     pub labels: Vec<LabelDetails>,
+}
+
+impl LabelsStateEventContent {
+    pub fn new(labels: Vec<LabelDetails>) -> Self {
+        LabelsStateEventContent { labels }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Builder)]
 pub struct LabelDetails {
     pub id: String,
     pub title: String,
+    #[builder(default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub icon: Option<Icon>,
+    #[builder(default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub colorize: Option<Colorize>,
 }

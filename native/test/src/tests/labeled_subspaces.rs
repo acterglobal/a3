@@ -1,4 +1,4 @@
-use acter::new_space_settings_builder;
+use acter::{api::LabelsBuilder, new_space_settings_builder};
 use anyhow::{bail, Result};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
@@ -94,5 +94,52 @@ async fn labels_end_to_end() -> Result<()> {
     let space = user.space(space_id.to_string()).await?;
     let labels = space.labels("spaces.cats".to_owned()).await;
     assert!(labels.is_empty());
+
+    let labels = space.labels("chat.cats".to_owned()).await;
+    assert!(labels.is_empty());
+
+    let mut new_labels = LabelsBuilder::default();
+    new_labels.add_label("campaigns".to_owned(), "Campaigns".to_owned(), None);
+    new_labels.add_label("teams".to_owned(), "Teams".to_owned(), None);
+    new_labels.add_label(
+        "working-groups".to_owned(),
+        "Working Groups".to_owned(),
+        None,
+    );
+
+    space
+        .set_labels("spaces.cats".to_owned(), Box::new(new_labels))
+        .await?;
+
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    let labels = Retry::spawn(retry_strategy.clone(), || async {
+        let labels = space.labels("spaces.cats".to_owned()).await;
+        if labels.len() != 3 {
+            bail!("Labels not yet found");
+        }
+        Ok(labels)
+    })
+    .await?;
+
+    let mut labels_iter = labels.into_iter();
+
+    let campaigns = labels_iter.next().unwrap();
+    assert_eq!(campaigns.id(), "campaigns".to_owned());
+    assert_eq!(campaigns.title(), "Campaigns".to_owned());
+    assert!(campaigns.icon().is_none());
+
+    let teams = labels_iter.next().unwrap();
+    assert_eq!(teams.id(), "teams".to_owned());
+    assert_eq!(teams.title(), "Teams".to_owned());
+    assert!(teams.icon().is_none());
+
+    let working_groups = labels_iter.next().unwrap();
+    assert_eq!(working_groups.id(), "working-groups".to_owned());
+    assert_eq!(working_groups.title(), "Working Groups".to_owned());
+    assert!(working_groups.icon().is_none());
+
+    let labels = space.labels("chat.cats".to_owned()).await;
+    assert!(labels.is_empty());
+
     Ok(())
 }

@@ -40,7 +40,8 @@ use ruma_events::{
     reaction::SyncReactionEvent,
     room::redaction::{RoomRedactionEvent, SyncRoomRedactionEvent},
     space::child::SpaceChildEventContent,
-    AnyStateEventContent, MessageLikeEvent, MessageLikeEventType, StateEventType, SyncStateEvent,
+    AnyStateEventContent, EventContent, MessageLikeEvent, MessageLikeEventType, StateEventType,
+    SyncStateEvent,
 };
 use serde::{Deserialize, Serialize};
 use std::{ops::Deref, sync::Arc};
@@ -50,7 +51,10 @@ use tracing::{error, info, trace, warn};
 
 use crate::{Client, Label, Room, TimelineStream, RUNTIME};
 
-use super::utils::{remap_for_diff, ApiVectorDiff};
+use super::{
+    labels::LabelsBuilder,
+    utils::{remap_for_diff, ApiVectorDiff},
+};
 
 #[derive(Debug, Clone)]
 pub struct Space {
@@ -553,7 +557,7 @@ impl Space {
     pub async fn labels(&self, label_type: String) -> Vec<Label> {
         let room = self.inner.room.clone();
         let label_t = label_type.clone();
-        match RUNTIME
+        let res = RUNTIME
             .spawn(async move {
                 let Some(labels_raw) = room
                     .get_state_event_static_for_key::<LabelsStateEventContent, String>(&label_t)
@@ -577,8 +581,9 @@ impl Space {
                         .collect(),
                 )
             })
-            .await
-        {
+            .await;
+
+        match res {
             Ok(Ok(e)) => e,
             Ok(Err(error)) => {
                 error!(?error, label_type, "Parsing label event failed");
@@ -589,6 +594,36 @@ impl Space {
                 vec![]
             }
         }
+    }
+
+    pub async fn set_labels(
+        &self,
+        label_type: String,
+        builder: Box<LabelsBuilder>,
+    ) -> Result<String> {
+        if !self.inner.is_joined() {
+            bail!("Unable to update a space you aren't part of");
+        }
+        let room = self.inner.room.clone();
+        let my_id = self.client.user_id()?;
+        let client = self.client.clone();
+        let LabelsBuilder { inner } = *builder;
+
+        RUNTIME
+            .spawn(async move {
+                let state_event = LabelsStateEventContent::new(inner);
+                let permitted = room
+                    .can_user_send_state(&my_id, state_event.event_type())
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change labels of this room");
+                }
+                let response = room
+                    .send_state_event_for_key(&label_type, state_event)
+                    .await?;
+                Ok(response.event_id.to_string())
+            })
+            .await?
     }
 
     pub async fn set_acter_space_states(&self) -> Result<bool> {

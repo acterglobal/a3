@@ -90,7 +90,7 @@ pub use convo::{
 pub use core::time::Duration as EfkDuration;
 pub use device::{DeviceChangedEvent, DeviceNewEvent};
 pub use invitation::Invitation;
-pub use labels::Label;
+pub use labels::{Label, LabelsBuilder};
 pub use message::{EventSendState, RoomEventItem, RoomMessage, RoomVirtualItem};
 pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide, NewsSlideDraft};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
