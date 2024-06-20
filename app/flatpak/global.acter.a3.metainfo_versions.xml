@@ -1,3 +1,11 @@
+    <release version="1.24.3620" date="2024-06-20">
+        <url type="details">https://github.com/acterglobal/a3/releases/tag/v1.24.3620</url>
+        <description>
+# Changes since release-latest 
+- You can now reset your password just with your email address, if you previously confirmed your email address connected to that account.
+
+        </description>
+    </release>
     <release version="1.24.3613" date="2024-06-13">
         <url type="details">https://github.com/acterglobal/a3/releases/tag/v1.24.3613</url>
         <description>
