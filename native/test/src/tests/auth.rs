@@ -460,7 +460,7 @@ async fn get_emails_of(email_addr: String) -> Result<MessageList> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let mailhog_cl = mailhog.clone();
     let params_cl = params.clone();
-    Ok(Retry::spawn(retry_strategy, move || {
+    Retry::spawn(retry_strategy, move || {
         let mailhog = mailhog_cl.clone();
         let params = params_cl.clone();
         async move {
@@ -471,7 +471,7 @@ async fn get_emails_of(email_addr: String) -> Result<MessageList> {
             Ok(msg_list)
         }
     })
-    .await?)
+    .await
 }
 
 async fn confirm_email_msg(email_addr: String, dir: &str) -> Result<ReqResponse> {

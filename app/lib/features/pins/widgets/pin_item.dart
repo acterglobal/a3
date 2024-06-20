@@ -1,14 +1,19 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
+import 'package:acter/features/pins/models/pin_edit_state/pin_edit_state.dart';
+import 'package:acter/features/pins/providers/notifiers/edit_state_notifier.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show ActerPin;
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:go_router/go_router.dart';
 
 class PinItem extends ConsumerStatefulWidget {
   static const linkFieldKey = Key('edit-pin-link-field');
@@ -150,65 +155,103 @@ class _PinDescriptionWidgetConsumerState
     final pinEdit = ref.watch(pinEditProvider(widget.pin));
     final pinEditNotifier = ref.watch(pinEditProvider(widget.pin).notifier);
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Container(
-          margin: const EdgeInsets.symmetric(vertical: 8),
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: pinEdit.editMode
-                ? Theme.of(context).colorScheme.primaryContainer
-                : null,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: IntrinsicHeight(
-            child: HtmlEditor(
-              key: PinItem.descriptionFieldKey,
-              editable: pinEdit.editMode,
-              editorState: textEditorState,
-              shrinkWrap: true,
-              onChanged: (body, html) {
-                if (body.trim().isNotEmpty) {
-                  final document = html != null
-                      ? ActerDocumentHelpers.fromHtml(html)
-                      : ActerDocumentHelpers.fromMarkdown(body);
-                  textEditorState = EditorState(document: document);
-                } else {
-                  textEditorState = EditorState(
-                    document: ActerDocumentHelpers.fromMarkdown(body),
-                  );
-                }
-              },
+    return GestureDetector(
+      onTap: () => showEditDescriptionSheet(pinEdit, pinEditNotifier),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 8),
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: pinEdit.editMode
+                  ? Theme.of(context).colorScheme.primaryContainer
+                  : null,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IntrinsicHeight(
+              child: HtmlEditor(
+                key: PinItem.descriptionFieldKey,
+                editable: pinEdit.editMode,
+                editorState: textEditorState,
+                shrinkWrap: true,
+                onChanged: (body, html) {
+                  if (body.trim().isNotEmpty) {
+                    final document = html != null
+                        ? ActerDocumentHelpers.fromHtml(html)
+                        : ActerDocumentHelpers.fromMarkdown(body);
+                    textEditorState = EditorState(document: document);
+                  } else {
+                    textEditorState = EditorState(
+                      document: ActerDocumentHelpers.fromMarkdown(body),
+                    );
+                  }
+                },
+              ),
             ),
           ),
-        ),
-        _ActionButtonsWidget(
-          pin: widget.pin,
-          onCancel: () {
-            final content = widget.pin.content();
-            if (content != null) {
-              textEditorState = EditorState(
-                document: ActerDocumentHelpers.fromMsgContent(content),
-              );
-            } else {
-              textEditorState = EditorState.blank();
-            }
-            pinEditNotifier.setEditMode(false);
-          },
-          onSave: () async {
-            if (!widget.formkey.currentState!.validate()) return;
-            pinEditNotifier.setEditMode(false);
-            final htmlText = textEditorState.intoHtml();
-            final plainText = textEditorState.intoMarkdown();
-            pinEditNotifier.setHtml(htmlText);
-            pinEditNotifier.setMarkdown(plainText);
-            pinEditNotifier.setLink(widget.linkController.text);
-            await pinEditNotifier.onSave();
-          },
-        ),
-      ],
+          _ActionButtonsWidget(
+            pin: widget.pin,
+            onCancel: () {
+              final content = widget.pin.content();
+              if (content != null) {
+                textEditorState = EditorState(
+                  document: ActerDocumentHelpers.fromMsgContent(content),
+                );
+              } else {
+                textEditorState = EditorState.blank();
+              }
+              pinEditNotifier.setEditMode(false);
+            },
+            onSave: () async {
+              if (!widget.formkey.currentState!.validate()) return;
+              pinEditNotifier.setEditMode(false);
+              final htmlText = textEditorState.intoHtml();
+              final plainText = textEditorState.intoMarkdown();
+              pinEditNotifier.setHtml(htmlText);
+              pinEditNotifier.setMarkdown(plainText);
+              pinEditNotifier.setLink(widget.linkController.text);
+              await pinEditNotifier.onSave();
+            },
+          ),
+        ],
+      ),
     );
+  }
+
+  void showEditDescriptionSheet(
+    PinEditState pinEdit,
+    PinEditNotifier pinEditNotifier,
+  ) {
+    showEditHtmlDescriptionBottomSheet(
+      context: context,
+      descriptionHtmlValue: textEditorState.intoHtml(),
+      descriptionMarkdownValue: textEditorState.intoMarkdown(),
+      onSave: (htmlBodyDescription, plainDescription) async {
+        _saveDescription(context, htmlBodyDescription, plainDescription);
+      },
+    );
+  }
+
+  Future<void> _saveDescription(
+    BuildContext context,
+    String htmlBodyDescription,
+    String plainDescription,
+  ) async {
+    try {
+      EasyLoading.show(status: L10n.of(context).updatingDescription);
+      final updateBuilder = widget.pin.updateBuilder();
+      updateBuilder.contentText(plainDescription);
+      updateBuilder.contentHtml(plainDescription, htmlBodyDescription);
+      await updateBuilder.send();
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
+      context.pop();
+    } catch (e) {
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
+      EasyLoading.showError(L10n.of(context).updateNameFailed(e));
+    }
   }
 }
 

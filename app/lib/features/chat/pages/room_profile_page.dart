@@ -8,9 +8,9 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/base_body_widget.dart';
 import 'package:acter/common/widgets/chat/edit_room_description_sheet.dart';
+import 'package:acter/common/widgets/edit_plain_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
-import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/visibility/visibility_chip.dart';
 import 'package:acter/features/chat/widgets/member_list.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
@@ -54,13 +54,21 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         ref.watch(chatProfileDataProviderById(widget.roomId)).valueOrNull;
     final membership =
         ref.watch(roomMembershipProvider(widget.roomId)).valueOrNull;
+    final convo = ref.watch(chatProvider(widget.roomId)).valueOrNull;
 
     return BaseBody(
       padding: EdgeInsets.zero,
       child: Column(
         children: [
-          _buildAppBar(context, convoProfile, membership),
-          Expanded(child: _buildBody(context, convoProfile, membership)),
+          _buildAppBar(context, convoProfile, membership, convo),
+          Expanded(
+            child: _buildBody(
+              context,
+              convoProfile,
+              membership,
+              convo,
+            ),
+          ),
         ],
       ),
     );
@@ -70,6 +78,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     BuildContext context,
     ProfileData? convoProfile,
     Member? membership,
+    Convo? convo,
   ) {
     List<PopupMenuItem> menuListItems = [];
     if (membership?.canString('CanSetName') == true) {
@@ -77,6 +86,20 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         PopupMenuItem(
           onTap: () => showEditNameBottomSheet(convoProfile),
           child: Text(L10n.of(context).editName),
+        ),
+      );
+    }
+    if (membership?.canString('CanSetTopic') == true) {
+      menuListItems.add(
+        PopupMenuItem(
+          onTap: () {
+            showEditDescriptionBottomSheet(
+              context: context,
+              convo: convo,
+              descriptionValue: convo?.topic() ?? '',
+            );
+          },
+          child: Text(L10n.of(context).editDescription),
         ),
       );
     }
@@ -105,6 +128,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     BuildContext context,
     ProfileData? convoProfile,
     Member? membership,
+    Convo? convo,
   ) {
     return SingleChildScrollView(
       child: Padding(
@@ -112,9 +136,8 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         child: Column(
           children: [
             _header(context, convoProfile, membership),
-            const SizedBox(height: 16),
-            _description(context, membership),
-            const SizedBox(height: 16),
+            _description(context, membership, convo),
+            const SizedBox(height: 24),
             _actions(context),
             const SizedBox(height: 20),
             _optionsBody(context),
@@ -205,32 +228,24 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     }
   }
 
-  Widget _description(BuildContext context, Member? membership) {
-    final convo = ref.watch(chatProvider(widget.roomId));
-
-    return convo.when(
-      data: (data) => Row(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: RenderHtml(
-                text: data.topic() ?? '',
-                defaultTextStyle: Theme.of(context).textTheme.bodySmall,
-              ),
-            ),
-          ),
-          if (membership?.canString('CanSetTopic') == true)
-            addDescriptionButton(data),
-        ],
+  Widget _description(BuildContext context, Member? membership, Convo? convo) {
+    return GestureDetector(
+      onTap: () {
+        if (membership?.canString('CanSetTopic') == true) {
+          showEditDescriptionBottomSheet(
+            context: context,
+            convo: convo,
+            descriptionValue: convo?.topic() ?? '',
+          );
+        }
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Text(
+          convo?.topic() ?? '',
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
       ),
-      loading: () => Skeletonizer(
-        child: Text(L10n.of(context).loading),
-      ),
-      error: (e, s) => Text(L10n.of(context).error(e)),
     );
   }
 
@@ -562,5 +577,29 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         duration: const Duration(seconds: 3),
       );
     }
+  }
+
+  void showEditDescriptionBottomSheet({
+    required BuildContext context,
+    required Convo? convo,
+    required String descriptionValue,
+  }) {
+    showEditPlainDescriptionBottomSheet(
+      context: context,
+      descriptionValue: descriptionValue,
+      onSave: (newDescription) async {
+        try {
+          EasyLoading.show(status: L10n.of(context).updateDescription);
+          await convo?.setTopic(newDescription);
+          EasyLoading.dismiss();
+          if (!context.mounted) return;
+          context.pop();
+        } catch (e) {
+          EasyLoading.dismiss();
+          if (!context.mounted) return;
+          EasyLoading.showError(L10n.of(context).updateDescriptionFailed(e));
+        }
+      },
+    );
   }
 }

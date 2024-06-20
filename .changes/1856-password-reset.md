@@ -1,0 +1,1 @@
+- You can now reset your password just with your email address, if you previously confirmed your email address connected to that account.
