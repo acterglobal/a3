@@ -51,7 +51,7 @@ jobs:
   #   if: ${{ github.ref == 'refs/heads/main' || needs.run_checker.outputs.should_run_all != 'false' || needs.run_checker.outputs.should_run_desktop != 'false' }}
 
   #   steps:
-  #     - uses: actions/checkout@v2
+  #     - uses: actions/checkout@v4
 
   #     - name: Install extra deps
   #       run: |
@@ -173,7 +173,7 @@ jobs:
   #   if: ${{ github.ref == 'refs/heads/main' || needs.run_checker.outputs.should_run_ios != 'false' || needs.run_checker.outputs.should_run_emulator != 'false' || needs.run_checker.outputs.should_run_all != 'false' }}
   #   continue-on-error: true
   #   steps:
-  #     - uses: actions/checkout@v2
+  #     - uses: actions/checkout@v4
 
   #     - name: Install supported toolchain
   #       uses: actions-rs/toolchain@v1
@@ -303,19 +303,83 @@ jobs:
   #         rm ~/Library/MobileDevice/Provisioning\ Profiles/*
   #         rm .github/assets/git-crypt-key
 
+  android-build:
+    # added to build the android only once and then cache it for the actual tests runs
+    runs-on: ubuntu-latest
+    name: Android build
+    if: ${{ github.ref == 'refs/heads/main' || needs.run_checker.outputs.should_run_android != 'false' || needs.run_checker.outputs.should_run_emulator != 'false' || needs.run_checker.outputs.should_run_all != 'false' }}
+    needs:
+     - run_checker
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install supported toolchain
+        id: rust_toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      - uses: jlumbroso/free-disk-space@main
+        name: Free Disk Space (Ubuntu)
+        with:
+          tool-cache: true
+          android: false
+
+      - uses: subosito/flutter-action@v2
+        name: Set up flutter
+        with:
+          flutter-version: '3.22'
+          channel: 'stable'
+
+      - name: Cache Cargo
+        id: cache-cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo
+          key: ubuntu-latest-cargo-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
+
+      - name: Cache Rust
+        uses: actions/cache@v4
+        with:
+          path: |
+            target
+          key: ubuntu-latest-android-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
+
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install cargo-make
+        if: steps.cache-cargo.outputs.cache-hit != 'true'
+        uses: davidB/rust-cargo-make@v1
+
+      - name: Rust Android Setup
+        run: cargo make setup-android
+
+      - uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r25
+
+      - name: Build Native
+        run: cargo make android-dev
+
+
   android:
     runs-on: ubuntu-latest
     name: Android
     needs:
-     - run_checker
-    if: ${{ github.ref == 'refs/heads/main' || needs.run_checker.outputs.should_run_android != 'false' || needs.run_checker.outputs.should_run_emulator != 'false' || needs.run_checker.outputs.should_run_all != 'false' }}
+     - android-build
     continue-on-error: true
     strategy:
       matrix:
         tests: ["Auth", "Updates", "Events", "Subspace", "SuperInvites", "Tasks", "Pins", "Attachments"] # "Bug Reporting", disabled as it needs a rageshake server
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Install supported toolchain
         id: rust_toolchain
@@ -331,18 +395,23 @@ jobs:
 
       - name: Cache Cargo
         id: cache-cargo
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cargo
           key: ubuntu-latest-cargo-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
 
+      - name: Cache Rust
+        uses: actions/cache@v4
+        with:
+          path: |
+            target
+          key: ubuntu-latest-android-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
+
       - uses: actions/setup-java@v2
         with:
           distribution: 'temurin'
           java-version: '17'
-
-      - uses: Swatinem/rust-cache@v1
 
       - name: Install cargo-make
         if: steps.cache-cargo.outputs.cache-hit != 'true'
@@ -464,7 +533,7 @@ jobs:
   #   if: ${{ github.ref == 'refs/heads/main' || needs.run_checker.outputs.should_run_android != 'false' || needs.run_checker.outputs.should_run_emulator != 'false' || needs.run_checker.outputs.should_run_all != 'false' }}
   #   continue-on-error: true
   #   steps:
-  #     - uses: actions/checkout@v2
+  #     - uses: actions/checkout@v4
 
   #     - name: Install supported toolchain
   #       id: rust_toolchain
@@ -474,7 +543,7 @@ jobs:
 
   #     - name: Cache Cargo
   #       id: cache-cargo
-  #       uses: actions/cache@v2
+  #       uses: actions/cache@v4
   #       with:
   #         path: |
   #           ~/.cargo
