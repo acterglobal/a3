@@ -54,16 +54,18 @@ class TaskItemDetailPage extends ConsumerWidget {
   ) {
     return task.when(
       data: (data) => AppBar(
-        title: GestureDetector(
-          onTap: () => showEditTaskItemNameBottomSheet(
-            context: context,
-            ref: ref,
-            task: data,
-            titleValue: data.title(),
-          ),
-          child: Text(
-            data.title(),
-            style: Theme.of(context).textTheme.titleMedium,
+        title: SelectionArea(
+          child: GestureDetector(
+            onTap: () => showEditTaskItemNameBottomSheet(
+              context: context,
+              ref: ref,
+              task: data,
+              titleValue: data.title(),
+            ),
+            child: Text(
+              data.title(),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
           ),
         ),
         actions: [
@@ -146,19 +148,21 @@ class TaskItemDetailPage extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        GestureDetector(
-          onTap: () {
-            showEditDescriptionSheet(context, ref, task);
-          },
-          child: formattedBody != null
-              ? RenderHtml(
-                  text: formattedBody,
-                  defaultTextStyle: Theme.of(context).textTheme.labelLarge,
-                )
-              : Text(
-                  description.body(),
-                  style: Theme.of(context).textTheme.labelLarge,
-                ),
+        SelectionArea(
+          child: GestureDetector(
+            onTap: () {
+              showEditDescriptionSheet(context, ref, task);
+            },
+            child: formattedBody != null
+                ? RenderHtml(
+                    text: formattedBody,
+                    defaultTextStyle: Theme.of(context).textTheme.labelLarge,
+                  )
+                : Text(
+                    description.body(),
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
+          ),
         ),
         const SizedBox(height: 10),
         const Divider(indent: 10, endIndent: 18),

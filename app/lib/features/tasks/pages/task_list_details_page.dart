@@ -45,17 +45,19 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
 
     return taskList.when(
       data: (d) => AppBar(
-        title: GestureDetector(
-          onTap: () => showEditTaskListNameBottomSheet(
-            context: context,
-            ref: ref,
-            taskList: d,
-            titleValue: d.name(),
-          ),
-          child: Text(
-            key: TaskListDetailPage.taskListTitleKey,
-            d.name(),
-            style: Theme.of(context).textTheme.titleMedium,
+        title: SelectionArea(
+          child: GestureDetector(
+            onTap: () => showEditTaskListNameBottomSheet(
+              context: context,
+              ref: ref,
+              taskList: d,
+              titleValue: d.name(),
+            ),
+            child: Text(
+              key: TaskListDetailPage.taskListTitleKey,
+              d.name(),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
           ),
         ),
         actions: [
@@ -114,19 +116,21 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        GestureDetector(
-          onTap: () {
-            showEditDescriptionSheet(taskListData);
-          },
-          child: formattedBody != null
-              ? RenderHtml(
-                  text: formattedBody,
-                  defaultTextStyle: Theme.of(context).textTheme.labelLarge,
-                )
-              : Text(
-                  description.body(),
-                  style: Theme.of(context).textTheme.labelLarge,
-                ),
+        SelectionArea(
+          child: GestureDetector(
+            onTap: () {
+              showEditDescriptionSheet(taskListData);
+            },
+            child: formattedBody != null
+                ? RenderHtml(
+                    text: formattedBody,
+                    defaultTextStyle: Theme.of(context).textTheme.labelLarge,
+                  )
+                : Text(
+                    description.body(),
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
+          ),
         ),
         const SizedBox(height: 10),
         const Divider(indent: 10, endIndent: 18),
