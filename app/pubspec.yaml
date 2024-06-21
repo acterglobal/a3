@@ -61,7 +61,7 @@ dependencies:
   table_calendar: ^3.0.9
   omni_datetime_picker: ^1.0.9
   flutter_easyloading: ^3.0.5
-  appflowy_editor: ^2.4.0
+  appflowy_editor: ^3.0.0
 
   # Code Generation
   flutter_localizations:

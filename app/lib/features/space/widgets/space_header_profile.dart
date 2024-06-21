@@ -65,22 +65,24 @@ class SpaceHeaderProfile extends ConsumerWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  GestureDetector(
-                    onTap: () {
-                      if (membership?.canString('CanSetName') == true) {
-                        showEditSpaceNameBottomSheet(
-                          context: context,
-                          titleValue: spaceProfile.profile.displayName ?? '',
-                          spaceId: spaceId,
-                          ref: ref,
-                        );
-                      }
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Text(
-                        spaceProfile.profile.displayName ?? spaceId,
-                        style: Theme.of(context).textTheme.titleMedium,
+                  SelectionArea(
+                    child: GestureDetector(
+                      onTap: () {
+                        if (membership?.canString('CanSetName') == true) {
+                          showEditSpaceNameBottomSheet(
+                            context: context,
+                            titleValue: spaceProfile.profile.displayName ?? '',
+                            spaceId: spaceId,
+                            ref: ref,
+                          );
+                        }
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: Text(
+                          spaceProfile.profile.displayName ?? spaceId,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
                       ),
                     ),
                   ),

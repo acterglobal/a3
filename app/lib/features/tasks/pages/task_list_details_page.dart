@@ -1,4 +1,8 @@
+import 'package:acter/common/widgets/edit_html_description_sheet.dart';
+import 'package:acter/common/widgets/redact_content.dart';
+import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
+import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/tasks/providers/tasklists.dart';
@@ -9,6 +13,9 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::tasks::task_list_details_page');
 
 class TaskListDetailPage extends ConsumerStatefulWidget {
   static const pageKey = Key('task-list-details-page');
@@ -37,23 +44,88 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
 
   AppBar _buildAppbar() {
     final taskList = ref.watch(taskListProvider(widget.taskListId));
-    return AppBar(
-      title: taskList.when(
-        data: (d) => GestureDetector(
-          onTap: () => showEditTaskListNameBottomSheet(
-            context: context,
-            ref: ref,
-            taskList: d,
-            titleValue: d.name(),
-          ),
-          child: Text(
-            key: TaskListDetailPage.taskListTitleKey,
-            d.name(),
-            style: Theme.of(context).textTheme.titleMedium,
+
+    return taskList.when(
+      data: (d) => AppBar(
+        title: SelectionArea(
+          child: GestureDetector(
+            onTap: () => showEditTaskListNameBottomSheet(
+              context: context,
+              ref: ref,
+              taskList: d,
+              titleValue: d.name(),
+            ),
+            child: Text(
+              key: TaskListDetailPage.taskListTitleKey,
+              d.name(),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
           ),
         ),
-        error: (e, s) => Text(L10n.of(context).failedToLoad(e)),
-        loading: () => Text(L10n.of(context).loading),
+        actions: [
+          PopupMenuButton(
+            icon: const Icon(Icons.more_vert),
+            itemBuilder: (context) {
+              return [
+                PopupMenuItem(
+                  onTap: () => showEditDescriptionSheet(d),
+                  child: Text(
+                    L10n.of(context).editDescription,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+                PopupMenuItem(
+                  onTap: () => showRedactDialog(taskList: d),
+                  child: Text(
+                    L10n.of(context).delete,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+                PopupMenuItem(
+                  onTap: () => showReportDialog(d),
+                  child: Text(
+                    L10n.of(context).report,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+              ];
+            },
+          ),
+        ],
+      ),
+      error: (e, s) => AppBar(title: Text(L10n.of(context).failedToLoad(e))),
+      loading: () => AppBar(
+        title: Text(L10n.of(context).loading),
+      ),
+    );
+  }
+
+  // Redact Task List Dialog
+  void showRedactDialog({required TaskList taskList}) {
+    showAdaptiveDialog(
+      context: context,
+      builder: (context) => RedactContentWidget(
+        title: L10n.of(context).deleteTaskList,
+        onSuccess: () => Navigator.of(context, rootNavigator: true).pop(),
+        eventId: taskList.eventIdStr(),
+        senderId: taskList.role() ?? '',
+        roomId: taskList.spaceIdStr(),
+        isSpace: true,
+      ),
+    );
+  }
+
+  // Report Task List Dialog
+  void showReportDialog(TaskList taskList) {
+    showAdaptiveDialog(
+      context: context,
+      builder: (ctx) => ReportContentWidget(
+        title: L10n.of(context).reportTaskList,
+        description: L10n.of(context).reportThisContent,
+        eventId: taskList.eventIdStr(),
+        senderId: taskList.role() ?? '',
+        roomId: taskList.spaceIdStr(),
+        isSpace: true,
       ),
     );
   }
@@ -83,20 +155,68 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   }
 
   Widget _widgetDescription(TaskList taskListData) {
-    if (taskListData.description() == null) return const SizedBox.shrink();
+    final description = taskListData.description();
+    if (description == null) return const SizedBox.shrink();
+    final formattedBody = description.formattedBody();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          taskListData.description()!.body(),
-          style: Theme.of(context).textTheme.labelMedium,
+        SelectionArea(
+          child: GestureDetector(
+            onTap: () {
+              showEditDescriptionSheet(taskListData);
+            },
+            child: formattedBody != null
+                ? RenderHtml(
+                    text: formattedBody,
+                    defaultTextStyle: Theme.of(context).textTheme.labelLarge,
+                  )
+                : Text(
+                    description.body(),
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
+          ),
         ),
         const SizedBox(height: 10),
         const Divider(indent: 10, endIndent: 18),
         const SizedBox(height: 10),
       ],
     );
+  }
+
+  void showEditDescriptionSheet(TaskList taskListData) {
+    showEditHtmlDescriptionBottomSheet(
+      context: context,
+      descriptionHtmlValue: taskListData.description()?.formattedBody(),
+      descriptionMarkdownValue: taskListData.description()?.body(),
+      onSave: (htmlBodyDescription, plainDescription) {
+        _saveDescription(taskListData, htmlBodyDescription, plainDescription);
+      },
+    );
+  }
+
+  Future<void> _saveDescription(
+    TaskList taskListData,
+    String htmlBodyDescription,
+    String plainDescription,
+  ) async {
+    EasyLoading.show(status: L10n.of(context).updatingDescription);
+    try {
+      final updater = taskListData.updateBuilder();
+      updater.descriptionHtml(plainDescription, htmlBodyDescription);
+      await updater.send();
+      EasyLoading.dismiss();
+      if (mounted) context.pop();
+    } catch (e, st) {
+      _log.severe('Failed to update event description', e, st);
+      EasyLoading.dismiss();
+      if (!mounted) return;
+      EasyLoading.showError(
+        L10n.of(context).errorUpdatingDescription(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 
   Widget _widgetTasksList(TaskList taskListData) {

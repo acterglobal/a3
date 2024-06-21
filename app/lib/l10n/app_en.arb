@@ -2223,5 +2223,13 @@
   "updateTask": "Update Task",
   "updatingTask": "Updating Task",
   "updatingTaskFailed": "Updating Task failed {error}",
-  "editTitle": "Edit Title"
+  "editTitle": "Edit Title",
+  "updatingDescription": "Updating Description",
+  "errorUpdatingDescription": "Error updating description: {error}",
+  "editLink": "Edit Link",
+  "updatingLinking": "Updating link",
+  "deleteTaskList": "Delete Task List",
+  "deleteTaskItem": "Delete Task Item",
+  "reportTaskList": "Report Task List",
+  "reportTaskItem": "Report Task Item"
 }

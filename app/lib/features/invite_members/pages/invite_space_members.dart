@@ -160,7 +160,7 @@ class _InviteSpaceMembersConsumerState
     );
 
     try {
-      final currentSpace = ref.read(spaceProvider(widget.roomId)).valueOrNull;
+      final room = ref.read(maybeRoomProvider(widget.roomId)).valueOrNull;
       final invited =
           ref.read(spaceInvitedMembersProvider(widget.roomId)).valueOrNull ??
               [];
@@ -173,8 +173,8 @@ class _InviteSpaceMembersConsumerState
           final memberUserId = member.userId().toString();
           final isInvited = invited.contains(member);
           final isJoined = joined.contains(memberUserId);
-          if (currentSpace != null && !isInvited && !isJoined) {
-            await currentSpace.inviteUser(memberUserId);
+          if (room != null && !isInvited && !isJoined) {
+            await room.inviteUser(memberUserId);
             inviteCount++;
           }
         }

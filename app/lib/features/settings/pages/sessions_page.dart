@@ -1,3 +1,4 @@
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/settings/providers/session_providers.dart';
@@ -22,6 +23,19 @@ class SessionsPage extends ConsumerWidget {
           elevation: 0.0,
           title: Text(L10n.of(context).sessions),
           centerTitle: true,
+          actions: [
+            IconButton(
+              icon: Icon(
+                Atlas.arrows_rotating_right_thin,
+                color: Theme.of(context).colorScheme.neutral5,
+              ),
+              iconSize: 28,
+              color: Theme.of(context).colorScheme.surface,
+              onPressed: () async {
+                ref.invalidate(allSessionsProvider);
+              },
+            ),
+          ],
         ),
         body: allSessions.when(
           data: (sessions) => buildSessions(context, sessions),

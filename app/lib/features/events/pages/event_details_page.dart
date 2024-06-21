@@ -4,6 +4,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/render_html.dart';
@@ -255,17 +256,19 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                GestureDetector(
-                  onTap: () {
-                    if (canPostEvent) {
-                      showEditEventTitleBottomSheet(calendarEvent.title());
-                    }
-                  },
-                  child: Text(
-                    calendarEvent.title(),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleMedium,
+                SelectionArea(
+                  child: GestureDetector(
+                    onTap: () {
+                      if (canPostEvent) {
+                        showEditEventTitleBottomSheet(calendarEvent.title());
+                      }
+                    },
+                    child: Text(
+                      calendarEvent.title(),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                   ),
                 ),
                 SpaceChip(spaceId: calendarEvent.roomIdStr()),
@@ -627,18 +630,59 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             style: Theme.of(context).textTheme.titleSmall,
           ),
           const SizedBox(height: 10),
-          if (formattedText != null)
-            RenderHtml(
-              text: formattedText,
-              defaultTextStyle: Theme.of(context).textTheme.labelMedium,
-            )
-          else
-            Text(
-              bodyText,
-              style: Theme.of(context).textTheme.labelMedium,
+          SelectionArea(
+            child: GestureDetector(
+              onTap: () => showEditDescriptionSheet(formattedText, bodyText),
+              child: formattedText != null
+                  ? RenderHtml(
+                      text: formattedText,
+                      defaultTextStyle: Theme.of(context).textTheme.labelMedium,
+                    )
+                  : Text(
+                      bodyText,
+                      style: Theme.of(context).textTheme.labelMedium,
+                    ),
             ),
+          ),
         ],
       ),
     );
+  }
+
+  void showEditDescriptionSheet(String? formattedText, String? bodyText) {
+    showEditHtmlDescriptionBottomSheet(
+      context: context,
+      descriptionHtmlValue: formattedText,
+      descriptionMarkdownValue: bodyText,
+      onSave: (htmlBodyDescription, plainDescription) {
+        _saveDescription(htmlBodyDescription, plainDescription);
+      },
+    );
+  }
+
+  Future<void> _saveDescription(
+    String htmlBodyDescription,
+    String plainDescription,
+  ) async {
+    EasyLoading.show(status: L10n.of(context).updatingDescription);
+    try {
+      // We always have calendar object at this stage.
+      final calendarEvent =
+          await ref.read(calendarEventProvider(widget.calendarId).future);
+
+      final updateBuilder = calendarEvent.updateBuilder();
+      updateBuilder.descriptionHtml(plainDescription, htmlBodyDescription);
+      await updateBuilder.send();
+      EasyLoading.dismiss();
+      if (mounted) context.pop();
+    } catch (e, st) {
+      _log.severe('Failed to update event description', e, st);
+      EasyLoading.dismiss();
+      if (!mounted) return;
+      EasyLoading.showError(
+        L10n.of(context).errorUpdatingDescription(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 }
