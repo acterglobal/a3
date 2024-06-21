@@ -42,15 +42,7 @@ class _NewsItemState extends ConsumerState<NewsItem> {
     final roomId = widget.news.roomId().toString();
     final space = ref.watch(briefSpaceItemProvider(roomId));
     final slides = widget.news.slides().toList();
-    final color = slides[currentSlideIndex.value].colors();
-    final bgColor = convertColor(
-      color?.background(),
-      Theme.of(context).colorScheme.surface,
-    );
-    final fgColor = convertColor(
-      color?.color(),
-      Theme.of(context).colorScheme.onPrimary,
-    );
+
 
     return Stack(
       children: [
@@ -62,6 +54,8 @@ class _NewsItemState extends ConsumerState<NewsItem> {
           },
           itemBuilder: (context, idx) {
             final slideType = slides[idx].typeStr();
+            final bgColor = getBackgroundColor(slides[idx]);
+            final fgColor = getForegroundColor(slides[idx]);
             switch (slideType) {
               case 'image':
                 return ImageSlide(
@@ -150,6 +144,21 @@ class _NewsItemState extends ConsumerState<NewsItem> {
           ),
         ),
       ],
+    );
+  }
+
+  Color getBackgroundColor(NewsSlide newsSlide){
+    final color = newsSlide.colors();
+    return convertColor(
+      color?.background(),
+      Theme.of(context).colorScheme.surface,
+    );
+  }
+  Color getForegroundColor(NewsSlide newsSlide){
+    final color = newsSlide.colors();
+    return convertColor(
+      color?.color(),
+      Theme.of(context).colorScheme.onPrimary,
     );
   }
 
