@@ -2,18 +2,18 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
+import 'package:acter/common/widgets/edit_link_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
-import 'package:acter/features/pins/providers/notifiers/edit_state_notifier.dart';
+import 'package:acter/features/pins/Utils/pins_utils.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/pin_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -49,14 +49,18 @@ class PinPage extends ConsumerWidget {
         actions.add(
           PopupMenuItem<String>(
             key: PinPage.editBtnKey,
-            onTap: () => pinEditNotifier.setEditMode(true),
-            child: Row(
-              children: <Widget>[
-                const Icon(Atlas.pencil_box_thin),
-                const SizedBox(width: 10),
-                Text(L10n.of(context).editPin),
-              ],
-            ),
+            onTap: () {
+              showEditTitleBottomSheet(
+                context: context,
+                bottomSheetTitle: L10n.of(context).editName,
+                titleValue: pin.title(),
+                onSave: (newTitle) async {
+                  pinEditNotifier.setTitle(newTitle);
+                  savePinTitle(context, pin, newTitle);
+                },
+              );
+            },
+            child: Text(L10n.of(context).editTitle),
           ),
         );
 
@@ -64,20 +68,39 @@ class PinPage extends ConsumerWidget {
           PopupMenuItem<String>(
             key: PinPage.editBtnKey,
             onTap: () {
-              showEditDescriptionSheet(
-                context,
-                pin.content()?.formattedBody(),
-                pin.content()?.body(),
-                pin,
+              showEditLinkBottomSheet(
+                context: context,
+                bottomSheetTitle: L10n.of(context).editLink,
+                linkValue: pin.url() ?? '',
+                onSave: (newLink) async {
+                  pinEditNotifier.setLink(newLink);
+                  savePinLink(context, pin, newLink);
+                },
               );
             },
-            child: Row(
-              children: <Widget>[
-                const Icon(Atlas.pencil_box_thin),
-                const SizedBox(width: 10),
-                Text(L10n.of(context).editDescription),
-              ],
-            ),
+            child: Text(L10n.of(context).editLink),
+          ),
+        );
+
+        actions.add(
+          PopupMenuItem<String>(
+            key: PinPage.editBtnKey,
+            onTap: () {
+              showEditHtmlDescriptionBottomSheet(
+                context: context,
+                descriptionHtmlValue: pin.content()?.formattedBody(),
+                descriptionMarkdownValue: pin.content()?.body(),
+                onSave: (htmlBodyDescription, plainDescription) async {
+                  saveDescription(
+                    context,
+                    htmlBodyDescription,
+                    plainDescription,
+                    pin,
+                  );
+                },
+              );
+            },
+            child: Text(L10n.of(context).editDescription),
           ),
         );
       }
@@ -91,15 +114,9 @@ class PinPage extends ConsumerWidget {
               pin: pin,
               roomId: roomId,
             ),
-            child: Row(
-              children: <Widget>[
-                Icon(
-                  Atlas.trash_can_thin,
-                  color: Theme.of(context).colorScheme.error,
-                ),
-                const SizedBox(width: 10),
-                Text(L10n.of(context).removePin),
-              ],
+            child: Text(
+              L10n.of(context).removePin,
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
           ),
         );
@@ -127,49 +144,6 @@ class PinPage extends ConsumerWidget {
       icon: const Icon(Atlas.dots_vertical_thin),
       itemBuilder: (ctx) => actions,
     );
-  }
-
-  void showEditDescriptionSheet(
-    context,
-    htmlBodyDescription,
-    plainDescription,
-    ActerPin pin,
-  ) {
-    showEditHtmlDescriptionBottomSheet(
-      context: context,
-      descriptionHtmlValue: htmlBodyDescription,
-      descriptionMarkdownValue: plainDescription,
-      onSave: (htmlBodyDescription, plainDescription) async {
-        _saveDescription(
-          context,
-          htmlBodyDescription,
-          plainDescription,
-          pin,
-        );
-      },
-    );
-  }
-
-  Future<void> _saveDescription(
-    BuildContext context,
-    String htmlBodyDescription,
-    String plainDescription,
-    ActerPin pin,
-  ) async {
-    try {
-      EasyLoading.show(status: L10n.of(context).updatingDescription);
-      final updateBuilder = pin.updateBuilder();
-      updateBuilder.contentText(plainDescription);
-      updateBuilder.contentHtml(plainDescription, htmlBodyDescription);
-      await updateBuilder.send();
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
-      context.pop();
-    } catch (e) {
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
-      EasyLoading.showError(L10n.of(context).updateNameFailed(e));
-    }
   }
 
   // redact pin dialog
@@ -279,11 +253,14 @@ class PinPage extends ConsumerWidget {
                 ref.watch(roomMembershipProvider(pin.roomIdStr())).valueOrNull;
             if (membership != null) {
               if (membership.canString('CanPostPin')) {
-                showEditPinTitleBottomSheet(
+                showEditTitleBottomSheet(
                   context: context,
+                  bottomSheetTitle: L10n.of(context).editName,
                   titleValue: pin.title(),
-                  pin: pin,
-                  pinEditNotifier: pinEditNotifier,
+                  onSave: (newTitle) async {
+                    pinEditNotifier.setTitle(newTitle);
+                    savePinTitle(context, pin, newTitle);
+                  },
                 );
               }
             }
@@ -296,42 +273,5 @@ class PinPage extends ConsumerWidget {
         ),
       ),
     );
-  }
-
-  void showEditPinTitleBottomSheet({
-    required BuildContext context,
-    required String titleValue,
-    required ActerPin pin,
-    required PinEditNotifier pinEditNotifier,
-  }) {
-    showEditTitleBottomSheet(
-      context: context,
-      bottomSheetTitle: L10n.of(context).editName,
-      titleValue: titleValue,
-      onSave: (newTitle) async {
-        pinEditNotifier.setTitle(newTitle);
-        savePinTitle(context, pin, newTitle);
-      },
-    );
-  }
-
-  Future<void> savePinTitle(
-    BuildContext context,
-    ActerPin pin,
-    String newTitle,
-  ) async {
-    try {
-      EasyLoading.show(status: L10n.of(context).updateName);
-      final updateBuilder = pin.updateBuilder();
-      updateBuilder.title(newTitle);
-      await updateBuilder.send();
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
-      context.pop();
-    } catch (e) {
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
-      EasyLoading.showError(L10n.of(context).updateNameFailed(e));
-    }
   }
 }

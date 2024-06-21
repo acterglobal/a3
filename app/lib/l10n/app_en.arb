@@ -2225,5 +2225,7 @@
   "updatingTaskFailed": "Updating Task failed {error}",
   "editTitle": "Edit Title",
   "updatingDescription": "Updating Description",
-  "errorUpdatingDescription": "Error updating description: {error}"
+  "errorUpdatingDescription": "Error updating description: {error}",
+  "editLink": "Edit Link",
+  "updatingLinking": "Updating link"
 }
