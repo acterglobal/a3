@@ -6,12 +6,13 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
+import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/render_html.dart';
+import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/tasks/providers/tasklists.dart';
 import 'package:acter/features/tasks/providers/tasks.dart';
-import 'package:acter/features/tasks/sheets/create_update_task_item.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
 import 'package:acter/features/tasks/widgets/skeleton/task_item_detail_page_skeleton.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -54,16 +55,18 @@ class TaskItemDetailPage extends ConsumerWidget {
   ) {
     return task.when(
       data: (data) => AppBar(
-        title: GestureDetector(
-          onTap: () => showEditTaskItemNameBottomSheet(
-            context: context,
-            ref: ref,
-            task: data,
-            titleValue: data.title(),
-          ),
-          child: Text(
-            data.title(),
-            style: Theme.of(context).textTheme.titleMedium,
+        title: SelectionArea(
+          child: GestureDetector(
+            onTap: () => showEditTaskItemNameBottomSheet(
+              context: context,
+              ref: ref,
+              task: data,
+              titleValue: data.title(),
+            ),
+            child: Text(
+              data.title(),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
           ),
         ),
         actions: [
@@ -78,6 +81,21 @@ class TaskItemDetailPage extends ConsumerWidget {
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
+                PopupMenuItem(
+                  onTap: () =>
+                      showRedactDialog(context: context, ref: ref, task: data),
+                  child: Text(
+                    L10n.of(context).delete,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+                PopupMenuItem(
+                  onTap: () => showReportDialog(context: context, task: data),
+                  child: Text(
+                    L10n.of(context).report,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
               ];
             },
           ),
@@ -88,20 +106,45 @@ class TaskItemDetailPage extends ConsumerWidget {
     );
   }
 
-  Future<void> editTask(
-    BuildContext context,
-    WidgetRef ref,
-    TaskList? taskList,
-    Task? task,
-  ) async {
-    if (taskList != null && task != null) {
-      showCreateUpdateTaskItemBottomSheet(
-        context,
-        taskList: taskList,
-        taskName: task.title(),
-        task: task,
-      );
-    }
+  // Redact Task Item Dialog
+  void showRedactDialog({
+    required BuildContext context,
+    required WidgetRef ref,
+    required Task task,
+  }) {
+    showAdaptiveDialog(
+      context: context,
+      builder: (context) => RedactContentWidget(
+        title: L10n.of(context).deleteTaskItem,
+        onSuccess: () {
+          ref.invalidate(tasksProvider);
+          ref.invalidate(taskListProvider);
+          Navigator.of(context, rootNavigator: true).pop();
+        },
+        eventId: task.eventIdStr(),
+        senderId: task.authorStr(),
+        roomId: task.roomIdStr(),
+        isSpace: true,
+      ),
+    );
+  }
+
+  // Report Task Item Dialog
+  void showReportDialog({
+    required BuildContext context,
+    required Task task,
+  }) {
+    showAdaptiveDialog(
+      context: context,
+      builder: (ctx) => ReportContentWidget(
+        title: L10n.of(context).reportTaskItem,
+        description: L10n.of(context).reportThisContent,
+        eventId: task.eventIdStr(),
+        senderId: task.authorStr(),
+        roomId: task.roomIdStr(),
+        isSpace: true,
+      ),
+    );
   }
 
   Widget _buildBody(
@@ -146,19 +189,21 @@ class TaskItemDetailPage extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        GestureDetector(
-          onTap: () {
-            showEditDescriptionSheet(context, ref, task);
-          },
-          child: formattedBody != null
-              ? RenderHtml(
-                  text: formattedBody,
-                  defaultTextStyle: Theme.of(context).textTheme.labelLarge,
-                )
-              : Text(
-                  description.body(),
-                  style: Theme.of(context).textTheme.labelLarge,
-                ),
+        SelectionArea(
+          child: GestureDetector(
+            onTap: () {
+              showEditDescriptionSheet(context, ref, task);
+            },
+            child: formattedBody != null
+                ? RenderHtml(
+                    text: formattedBody,
+                    defaultTextStyle: Theme.of(context).textTheme.labelLarge,
+                  )
+                : Text(
+                    description.body(),
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
+          ),
         ),
         const SizedBox(height: 10),
         const Divider(indent: 10, endIndent: 18),

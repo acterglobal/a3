@@ -165,17 +165,19 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
             onPressed: () => _updateAvatar(),
             child: Text(L10n.of(context).changeAvatar),
           ),
-        GestureDetector(
-          onTap: () {
-            if (membership?.canString('CanSetName') == true) {
-              showEditNameBottomSheet(convoProfile);
-            }
-          },
-          child: Text(
-            convoProfile?.displayName ?? widget.roomId,
-            softWrap: true,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.titleMedium,
+        SelectionArea(
+          child: GestureDetector(
+            onTap: () {
+              if (membership?.canString('CanSetName') == true) {
+                showEditNameBottomSheet(convoProfile);
+              }
+            },
+            child: Text(
+              convoProfile?.displayName ?? widget.roomId,
+              softWrap: true,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
           ),
         ),
       ],
@@ -228,21 +230,23 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
   }
 
   Widget _description(BuildContext context, Member? membership, Convo? convo) {
-    return GestureDetector(
-      onTap: () {
-        if (membership?.canString('CanSetTopic') == true) {
-          showEditDescriptionBottomSheet(
-            context: context,
-            convo: convo,
-            descriptionValue: convo?.topic() ?? '',
-          );
-        }
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Text(
-          convo?.topic() ?? '',
-          style: Theme.of(context).textTheme.bodySmall,
+    return SelectionArea(
+      child: GestureDetector(
+        onTap: () {
+          if (membership?.canString('CanSetTopic') == true) {
+            showEditDescriptionBottomSheet(
+              context: context,
+              convo: convo,
+              descriptionValue: convo?.topic() ?? '',
+            );
+          }
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Text(
+            convo?.topic() ?? '',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
         ),
       ),
     );

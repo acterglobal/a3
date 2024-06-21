@@ -28,6 +28,17 @@ class SuperInvitesPage extends ConsumerWidget {
           centerTitle: true,
           actions: [
             IconButton(
+              icon: Icon(
+                Atlas.arrows_rotating_right_thin,
+                color: Theme.of(context).colorScheme.neutral5,
+              ),
+              iconSize: 28,
+              color: Theme.of(context).colorScheme.surface,
+              onPressed: () async {
+                ref.invalidate(superInvitesTokensProvider);
+              },
+            ),
+            IconButton(
               key: createNewToken,
               icon: Icon(
                 Atlas.plus_circle_thin,

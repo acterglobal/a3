@@ -137,6 +137,7 @@ class ReportContentWidget extends ConsumerWidget {
       }
       if (res) {
         EasyLoading.showToast(L10n.of(ctx).reportSent);
+        Navigator.of(ctx, rootNavigator: true).pop();
       } else {
         EasyLoading.showError(
           L10n.of(ctx).reportSendingFailed,

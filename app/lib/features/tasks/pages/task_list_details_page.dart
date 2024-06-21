@@ -1,6 +1,8 @@
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
+import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/render_html.dart';
+import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/tasks/providers/tasklists.dart';
@@ -45,17 +47,19 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
 
     return taskList.when(
       data: (d) => AppBar(
-        title: GestureDetector(
-          onTap: () => showEditTaskListNameBottomSheet(
-            context: context,
-            ref: ref,
-            taskList: d,
-            titleValue: d.name(),
-          ),
-          child: Text(
-            key: TaskListDetailPage.taskListTitleKey,
-            d.name(),
-            style: Theme.of(context).textTheme.titleMedium,
+        title: SelectionArea(
+          child: GestureDetector(
+            onTap: () => showEditTaskListNameBottomSheet(
+              context: context,
+              ref: ref,
+              taskList: d,
+              titleValue: d.name(),
+            ),
+            child: Text(
+              key: TaskListDetailPage.taskListTitleKey,
+              d.name(),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
           ),
         ),
         actions: [
@@ -70,6 +74,20 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
+                PopupMenuItem(
+                  onTap: () => showRedactDialog(taskList: d),
+                  child: Text(
+                    L10n.of(context).delete,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+                PopupMenuItem(
+                  onTap: () => showReportDialog(d),
+                  child: Text(
+                    L10n.of(context).report,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
               ];
             },
           ),
@@ -78,6 +96,36 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
       error: (e, s) => AppBar(title: Text(L10n.of(context).failedToLoad(e))),
       loading: () => AppBar(
         title: Text(L10n.of(context).loading),
+      ),
+    );
+  }
+
+  // Redact Task List Dialog
+  void showRedactDialog({required TaskList taskList}) {
+    showAdaptiveDialog(
+      context: context,
+      builder: (context) => RedactContentWidget(
+        title: L10n.of(context).deleteTaskList,
+        onSuccess: () => Navigator.of(context, rootNavigator: true).pop(),
+        eventId: taskList.eventIdStr(),
+        senderId: taskList.role() ?? '',
+        roomId: taskList.spaceIdStr(),
+        isSpace: true,
+      ),
+    );
+  }
+
+  // Report Task List Dialog
+  void showReportDialog(TaskList taskList) {
+    showAdaptiveDialog(
+      context: context,
+      builder: (ctx) => ReportContentWidget(
+        title: L10n.of(context).reportTaskList,
+        description: L10n.of(context).reportThisContent,
+        eventId: taskList.eventIdStr(),
+        senderId: taskList.role() ?? '',
+        roomId: taskList.spaceIdStr(),
+        isSpace: true,
       ),
     );
   }
@@ -114,19 +162,21 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        GestureDetector(
-          onTap: () {
-            showEditDescriptionSheet(taskListData);
-          },
-          child: formattedBody != null
-              ? RenderHtml(
-                  text: formattedBody,
-                  defaultTextStyle: Theme.of(context).textTheme.labelLarge,
-                )
-              : Text(
-                  description.body(),
-                  style: Theme.of(context).textTheme.labelLarge,
-                ),
+        SelectionArea(
+          child: GestureDetector(
+            onTap: () {
+              showEditDescriptionSheet(taskListData);
+            },
+            child: formattedBody != null
+                ? RenderHtml(
+                    text: formattedBody,
+                    defaultTextStyle: Theme.of(context).textTheme.labelLarge,
+                  )
+                : Text(
+                    description.body(),
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
+          ),
         ),
         const SizedBox(height: 10),
         const Divider(indent: 10, endIndent: 18),

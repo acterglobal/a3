@@ -1,0 +1,2 @@
+- [new] You can now report any Task item and Task List
+- [new] You can now delete any Task item and Task List

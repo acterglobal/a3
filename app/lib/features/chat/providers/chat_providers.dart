@@ -89,6 +89,16 @@ final chatMessagesProvider =
     StateProvider.autoDispose.family<List<Message>, Convo>((ref, convo) {
   final moreMessages = [];
   if (ref.watch(chatStateProvider(convo).select((value) => !value.hasMore))) {
+    moreMessages.add(
+      const types.SystemMessage(
+        id: 'chat-invite',
+        text: 'invite',
+        metadata: {
+          'type': '_invite',
+        },
+      ),
+    );
+
     // we have reached the end, show topic
     final topic = ref.watch(chatTopic(convo)).valueOrNull;
     if (topic != null) {
@@ -102,6 +112,7 @@ final chatMessagesProvider =
         ),
       );
     }
+
     // and encryption information block
     if (ref.watch(chatIsEncrypted(convo)).valueOrNull == true) {
       moreMessages.add(
