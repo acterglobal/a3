@@ -436,6 +436,14 @@ jobs:
           disableRateLimiting: true
           customModules: synapse_super_invites
           customConfig: |
+            email:
+              smtp_host: localhost
+              smtp_port: 1025
+              force_tls: false
+              require_transport_security: false
+              enable_tls: false
+              notif_from: "Your Friendly %(app)s homeserver <noreply@example.org>"
+              can_verify_email: true
             modules:
               - module: "synapse_super_invites.SynapseSuperInvites"
                 config:
