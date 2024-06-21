@@ -1,0 +1,1 @@
+- Now shows unconfirmed emails on Activities screen to nudge you to confirm them
