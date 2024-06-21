@@ -33,13 +33,15 @@ dependencies:
   flutter_portal: ^1.1.4
   convenient_test_manager:
     git:
-      url: https://github.com/fzyzcjy/flutter_convenient_test/
+      url: https://github.com/gnunicorn/flutter_convenient_test/
+      branch: ben-cli-limit-tests
       path: packages/convenient_test_manager
 
 dependency_overrides: 
   convenient_test_manager_dart:
     git:
-      url: https://github.com/fzyzcjy/flutter_convenient_test/
+      url: https://github.com/gnunicorn/flutter_convenient_test/
+      branch: ben-cli-limit-tests
       path: packages/convenient_test_manager_dart
 
 dev_dependencies:

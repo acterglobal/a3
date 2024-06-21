@@ -303,13 +303,17 @@ jobs:
   #         rm ~/Library/MobileDevice/Provisioning\ Profiles/*
   #         rm .github/assets/git-crypt-key
 
-  flutter-android:
+  android:
     runs-on: ubuntu-latest
-    name: Android on Ubuntu
+    name: Android
     needs:
      - run_checker
     if: ${{ github.ref == 'refs/heads/main' || needs.run_checker.outputs.should_run_android != 'false' || needs.run_checker.outputs.should_run_emulator != 'false' || needs.run_checker.outputs.should_run_all != 'false' }}
     continue-on-error: true
+    strategy:
+      matrix:
+        tests: ["Auth", "Updates", "Events", "Subspace", "SuperInvites", "Tasks", "Pins", "Attachments"] # "Bug Reporting", disabled as it needs a rageshake server
+
     steps:
       - uses: actions/checkout@v2
 
@@ -404,7 +408,7 @@ jobs:
           path: |
             ~/.android/avd/*
             ~/.android/adb*
-          key: avd-${{ matrix.api-level }}
+          key: avd-29
 
       # - name: create AVD and generate snapshot for caching
       #   if: steps.avd-cache.outputs.cache-hit != 'true'
@@ -428,13 +432,13 @@ jobs:
           force-avd-creation: false
           # emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: .github/scripts/flutter-integration-tests.sh
+          script: .github/scripts/flutter-integration-tests.sh --run-only "${{matrix.tests}}"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v1
         if: failure()
         with:
-          name: android-on-ubuntu-convtest-report
+          name: android-on-ubuntu-convtest-report-${{matrix.tests}}
           path: /tmp/ConvenientTest/
 
       # file an error if this failed on `main` post-merge

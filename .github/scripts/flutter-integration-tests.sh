@@ -17,7 +17,7 @@ flutter run integration_test/main_test.dart  \
 subscript_pid=$!
 
 # actual manager runner
-dart run convenient_test_manager_dart --enable-report-saver
+dart run convenient_test_manager_dart --enable-report-saver "$@"
 exit_status=$?
 kill "$subscript_pid"
 exit $exit_status
