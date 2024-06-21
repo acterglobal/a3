@@ -62,24 +62,21 @@ class MyTasksSection extends ConsumerWidget {
                       ],
                     ),
                   )
-                : Column(
-                    children: tasks
-                        .map(
-                          (task) => Card(
-                            margin: const EdgeInsets.symmetric(vertical: 3),
-                            child: Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: TaskItem(
-                                task: task,
-                                showBreadCrumb: true,
-                                onDone: () => EasyLoading.showToast(
-                                  L10n.of(context).markedAsDone,
-                                ),
-                              ),
-                            ),
-                          ),
-                        )
-                        .toList(),
+                : ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    separatorBuilder: (context, index) =>
+                        const Divider(color: Colors.white24, indent: 30),
+                    itemCount: tasks.length,
+                    itemBuilder: (context, index) {
+                      return TaskItem(
+                        task: tasks[index],
+                        showBreadCrumb: true,
+                        onDone: () => EasyLoading.showToast(
+                          L10n.of(context).markedAsDone,
+                        ),
+                      );
+                    },
                   ),
             error: (error, stack) =>
                 Text(L10n.of(context).loadingTasksFailed(error)),
