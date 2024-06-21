@@ -238,6 +238,7 @@ final parentsProvider = FutureProvider.autoDispose
   }
 });
 
+/// get the [AvatarInfo] list of the parent avatars.
 final parentAvatarInfosProvider = FutureProvider.autoDispose
     .family<List<AvatarInfo>?, String>((ref, roomId) async {
   try {
