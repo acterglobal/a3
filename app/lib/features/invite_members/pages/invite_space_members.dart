@@ -24,7 +24,7 @@ class InviteSpaceMembers extends ConsumerStatefulWidget {
 
 class _InviteSpaceMembersConsumerState
     extends ConsumerState<InviteSpaceMembers> {
-  List<Space> selectedSpaces = [];
+  List<String> selectedSpaces = [];
 
   @override
   Widget build(BuildContext context) {
@@ -64,9 +64,10 @@ class _InviteSpaceMembersConsumerState
   }
 
   Widget _buildParentSpaces() {
-    final parentSpaces = ref.watch(parentsProvider(widget.roomId)).valueOrNull;
+    final parentSpaceIds =
+        ref.watch(parentIdsProvider(widget.roomId)).valueOrNull;
 
-    if (parentSpaces == null && parentSpaces!.isEmpty) {
+    if (parentSpaceIds == null && parentSpaceIds!.isEmpty) {
       return const SizedBox.shrink();
     }
 
@@ -74,21 +75,22 @@ class _InviteSpaceMembersConsumerState
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          parentSpaces.length > 1
+          parentSpaceIds.length > 1
               ? L10n.of(context).parentSpaces
               : L10n.of(context).parentSpace,
         ),
-        for (final parent in parentSpaces)
+        for (final roomId in parentSpaceIds)
           SpaceMemberInviteCard(
-            space: parent.space,
-            isSelected: selectedSpaces.contains(parent.space),
+            roomId: roomId,
+            isSelected: selectedSpaces.contains(roomId),
             onChanged: (value) {
-              if (selectedSpaces.contains(parent.space)) {
-                selectedSpaces.remove(parent.space);
-              } else {
-                selectedSpaces.add(parent.space);
-              }
-              setState(() {});
+              setState(() {
+                if (selectedSpaces.contains(roomId)) {
+                  selectedSpaces.remove(roomId);
+                } else {
+                  selectedSpaces.add(roomId);
+                }
+              });
             },
           ),
         const SizedBox(height: 16),
@@ -115,15 +117,15 @@ class _InviteSpaceMembersConsumerState
         itemCount: data.length,
         shrinkWrap: true,
         itemBuilder: (context, index) {
-          final space = data[index];
+          final roomId = data[index].getRoomIdStr();
           return SpaceMemberInviteCard(
-            space: space,
-            isSelected: selectedSpaces.contains(space),
+            roomId: roomId,
+            isSelected: selectedSpaces.contains(roomId),
             onChanged: (value) {
-              if (selectedSpaces.contains(space)) {
-                selectedSpaces.remove(space);
+              if (selectedSpaces.contains(roomId)) {
+                selectedSpaces.remove(roomId);
               } else {
-                selectedSpaces.add(space);
+                selectedSpaces.add(roomId);
               }
               setState(() {});
             },
@@ -168,19 +170,21 @@ class _InviteSpaceMembersConsumerState
     try {
       final currentSpace = ref.read(spaceProvider(widget.roomId)).valueOrNull;
       final invited =
-          ref.read(spaceInvitedMembersProvider(widget.roomId)).valueOrNull ??
-              [];
+          (ref.read(roomInvitedMembersProvider(widget.roomId)).valueOrNull ??
+                  [])
+              .map((e) => e.userId().toString())
+              .toList();
       final joined =
           ref.read(membersIdsProvider(widget.roomId)).valueOrNull ?? [];
       var inviteCount = 0;
-      for (final space in selectedSpaces) {
-        final members = (await space.activeMembers()).toList();
+      for (final roomId in selectedSpaces) {
+        final members =
+            (await ref.watch(membersIdsProvider(roomId).future)).toList();
         for (final member in members) {
-          final memberUserId = member.userId().toString();
           final isInvited = invited.contains(member);
-          final isJoined = joined.contains(memberUserId);
+          final isJoined = joined.contains(member);
           if (currentSpace != null && !isInvited && !isJoined) {
-            await currentSpace.inviteUser(memberUserId);
+            await currentSpace.inviteUser(member);
             inviteCount++;
           }
         }

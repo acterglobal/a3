@@ -1,5 +1,4 @@
 import 'package:acter/common/models/profile_data.dart';
-import 'package:acter/common/models/types.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -7,7 +6,7 @@ import 'package:go_router/go_router.dart';
 class SpaceWithProfileCard extends StatelessWidget {
   final String roomId;
   final ProfileData profile;
-  final List<SpaceWithProfileData>? parents;
+  final List<AvatarInfo>? parents;
   final Widget? subtitle;
   final Widget? trailing;
   final double avatarSize;
@@ -106,17 +105,7 @@ class SpaceWithProfileCard extends StatelessWidget {
           displayName: title,
           avatar: profile.getAvatarImage(),
         ),
-        parentBadges: showParents && (parents?.isEmpty ?? false)
-            ? List.generate(parents!.length, (i) {
-                final roomId = parents![i].space.getRoomIdStr();
-                final displayName = parents![i].profile.displayName ?? roomId;
-                return AvatarInfo(
-                  uniqueId: roomId,
-                  displayName: displayName,
-                  avatar: parents![i].profile.getAvatarImage(),
-                );
-              })
-            : [],
+        parentBadges: showParents ? parents : [],
         size: avatarSize,
         badgesSize: avatarSize / 2,
       ),
