@@ -188,7 +188,6 @@ class ActivitiesPage extends ConsumerWidget {
       }
     }
     final hasUnconfirmedEmails = ref.watch(hasUnconfirmedEmailAddresses);
-    print('has unconfirmed addrs: $hasUnconfirmedEmails');
     if (hasUnconfirmedEmails) {
       children.add(renderUnconfirmedEmailAddrs(context));
     }
