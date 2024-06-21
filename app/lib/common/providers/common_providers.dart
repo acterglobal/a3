@@ -28,6 +28,18 @@ Future<ProfileData> getProfileData(Account account) async {
   return ProfileData(displayName.text(), avatar.data());
 }
 
+final genericUpdatesStream =
+    StreamProvider.family<int, String>((ref, key) async* {
+  final client = ref.watch(alwaysClientProvider);
+  int counter = 0; // to ensure the value updates
+
+  // ignore: unused_local_variable
+  await for (final value in client.subscribeStream(key)) {
+    yield counter;
+    counter += 1;
+  }
+});
+
 final myUserIdStrProvider = StateProvider(
   (ref) => ref.watch(
     alwaysClientProvider.select((client) => client.userId().toString()),
@@ -67,6 +79,8 @@ class EmailAddresses {
 
 final emailAddressesProvider = FutureProvider((ref) async {
   final client = ref.watch(alwaysClientProvider);
+  // ensure we are updated if the upgrade comes down the wire.
+  ref.watch(genericUpdatesStream('global.acter.dev.three_pid'));
   final threePidManager = client.threePidManager();
   final confirmed =
       asDartStringList(await threePidManager.confirmedEmailAddresses());
