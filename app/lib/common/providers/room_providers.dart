@@ -170,7 +170,7 @@ final spaceRelationsProvider = FutureProvider.autoDispose
   return await room.spaceRelations();
 });
 
-/// Get the canonical parents of the space. Errors if the space isn't found. Stays up
+/// Get the canonical parent of the space. Errors if the space isn't found. Stays up
 /// to date with underlying client data if a space was found.
 final canonicalParentProvider = FutureProvider.autoDispose
     .family<SpaceWithProfileData?, String>((ref, roomId) async {
