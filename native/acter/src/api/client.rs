@@ -237,6 +237,7 @@ impl Client {
         let engine = self.core.template_engine(template).await?;
         Ok(engine)
     }
+
     /// Is this a guest account?
     pub fn is_guest(&self) -> bool {
         match self.state.try_read() {
