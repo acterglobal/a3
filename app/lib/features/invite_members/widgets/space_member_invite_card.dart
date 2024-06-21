@@ -48,24 +48,8 @@ class SpaceMemberInviteCard extends ConsumerWidget {
     final roomId = space.getRoomIdStr();
     final title =
         profile.displayName?.isNotEmpty == true ? profile.displayName! : roomId;
-    final canonicalParents = ref.watch(canonicalParentsProvider(roomId));
-    List<AvatarInfo> parentBadges = List.empty(growable: true);
-
-    if (canonicalParents.valueOrNull != null) {
-      final parents = canonicalParents.requireValue;
-      if (parents.isNotEmpty) {
-        parentBadges = parents.map((e) {
-          final roomId = e.space.getRoomIdStr();
-          final displayName = e.profile.displayName ?? roomId;
-          final avatar = e.profile.getAvatarImage();
-          return AvatarInfo(
-            uniqueId: roomId,
-            displayName: displayName,
-            avatar: avatar,
-          );
-        }).toList();
-      }
-    }
+    final parentBadges =
+        ref.watch(parentAvatarInfosProvider(roomId)).valueOrNull;
 
     final avatar = ActerAvatar(
       options: AvatarOptions(

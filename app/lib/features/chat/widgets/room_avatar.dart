@@ -38,27 +38,13 @@ class RoomAvatar extends ConsumerWidget {
     );
   }
 
-  List<AvatarInfo> renderParentsInfo(String convoId, WidgetRef ref) {
+  List<AvatarInfo>? renderParentsInfo(String convoId, WidgetRef ref) {
     if (!showParents) {
       return [];
     }
-    final canonicalParents = ref.watch(canonicalParentsProvider(convoId));
-    return canonicalParents.when(
-      data: (parents) {
-        if (parents.isEmpty) {
-          return [];
-        }
-
-        return List.generate(parents.length, (i) {
-          final space = parents[i].space;
-          final profile = parents[i].profile;
-          return AvatarInfo(
-            uniqueId: space.getRoomIdStr(),
-            displayName: profile.displayName ?? space.getRoomIdStr(),
-            avatar: profile.getAvatarImage(),
-          );
-        });
-      },
+    final parentBadges = ref.watch(parentAvatarInfosProvider(convoId));
+    return parentBadges.when(
+      data: (avatarInfos) => avatarInfos,
       error: (e, s) => [],
       loading: () => [],
     );

@@ -8,6 +8,7 @@ import 'package:acter/common/providers/notifiers/room_notifiers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
@@ -171,13 +172,42 @@ final spaceRelationsProvider = FutureProvider.autoDispose
 
 /// Get the canonical parents of the space. Errors if the space isn't found. Stays up
 /// to date with underlying client data if a space was found.
-final canonicalParentsProvider = FutureProvider.autoDispose
-    .family<List<SpaceWithProfileData>, String>((ref, roomId) async {
+final canonicalParentProvider = FutureProvider.autoDispose
+    .family<SpaceWithProfileData?, String>((ref, roomId) async {
+  try {
+    final relations = await ref.watch(spaceRelationsProvider(roomId).future);
+    if (relations == null) {
+      return null;
+    }
+    final parent = relations.mainParent();
+    if (parent == null) {
+      return null;
+    }
+
+    final parentSpace =
+        await ref.watch(maybeSpaceProvider(parent.roomId().toString()).future);
+    if (parentSpace == null) {
+      return null;
+    }
+    final profile =
+        await ref.watch(spaceProfileDataProvider(parentSpace).future);
+    final SpaceWithProfileData data = (space: parentSpace, profile: profile);
+    return data;
+  } catch (e) {
+    _log.warning('Failed to load canonical parent for $roomId');
+    return null;
+  }
+});
+
+/// Get all the parents of the space. Errors if no relation is found.Stays up
+/// to date with underlying client data if a space was found.
+final parentsProvider = FutureProvider.autoDispose
+    .family<List<SpaceWithProfileData>?, String>((ref, roomId) async {
   try {
     List<SpaceWithProfileData> parentList = List.empty(growable: true);
     final relations = await ref.watch(spaceRelationsProvider(roomId).future);
     if (relations == null) {
-      return parentList;
+      return null;
     }
 
     // Collect all parents: mainParent and otherParents
@@ -192,6 +222,7 @@ final canonicalParentsProvider = FutureProvider.autoDispose
       final parentSpace = await ref
           .watch(maybeSpaceProvider(parent.roomId().toString()).future);
       if (parentSpace == null) {
+        // not found, skipping it
         continue;
       }
       final profile =
@@ -202,8 +233,32 @@ final canonicalParentsProvider = FutureProvider.autoDispose
 
     return parentList;
   } catch (e) {
-    _log.warning('Failed to load canonical parents for $roomId: $e');
-    return [];
+    _log.warning('Failed to load parents for $roomId: $e');
+    return null;
+  }
+});
+
+final parentAvatarInfosProvider = FutureProvider.autoDispose
+    .family<List<AvatarInfo>?, String>((ref, roomId) async {
+  try {
+    final parents = await ref.watch(parentsProvider(roomId).future);
+    if (parents == null) {
+      return null;
+    }
+    final avatarInfos = parents.map((e) {
+      final roomId = e.space.getRoomIdStr();
+      final displayName = e.profile.displayName ?? roomId;
+      final avatar = e.profile.getAvatarImage();
+      return AvatarInfo(
+        uniqueId: roomId,
+        displayName: displayName,
+        avatar: avatar,
+      );
+    }).toList();
+    return avatarInfos;
+  } catch (e) {
+    _log.warning('Failed to load parent avatar infos for $roomId: $e');
+    return null;
   }
 });
 

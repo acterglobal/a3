@@ -12,11 +12,10 @@ packages:
   acter_avatar:
     dependency: "direct main"
     description:
-      path: "."
-      ref: main
-      resolved-ref: ae37ec624b2e37b4a1ae4784cf84d1aa16f52ef9
-      url: "https://github.com/acterglobal/acter-avatar.git"
-    source: git
+      name: acter_avatar
+      sha256: f8438002b053c84d8789440c6f6e04ef6f60241d9f5973f3d28e150e8cf32ba6
+      url: "https://pub.dev"
+    source: hosted
     version: "2.0.1+1"
   acter_flutter_sdk:
     dependency: "direct main"

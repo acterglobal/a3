@@ -296,24 +296,8 @@ class SidebarWidget extends ConsumerWidget {
     return spaces.map((space) {
       final profileData = ref.watch(spaceProfileDataProvider(space));
       final roomId = space.getRoomIdStr();
-      final canonicalParents = ref.watch(canonicalParentsProvider(roomId));
-
-      var parents = List<AvatarInfo>.empty(growable: true);
-      if (canonicalParents.valueOrNull != null) {
-        final parentsValue = canonicalParents.requireValue;
-        for (final p in parentsValue) {
-          final roomId = p.space.getRoomIdStr();
-          final displayName = p.profile.displayName ?? roomId;
-          final avatar = p.profile.getAvatarImage();
-          parents.add(
-            AvatarInfo(
-              uniqueId: roomId,
-              displayName: displayName,
-              avatar: avatar,
-            ),
-          );
-        }
-      }
+      final parentBadges =
+          ref.watch(parentAvatarInfosProvider(roomId)).valueOrNull;
 
       return profileData.when(
         loading: () => _SidebarItem(
@@ -344,7 +328,7 @@ class SidebarWidget extends ConsumerWidget {
                 displayName: info.displayName,
                 avatar: info.getAvatarImage(),
               ),
-              parentBadges: parents,
+              parentBadges: parentBadges,
               size: 48,
             ),
           ),

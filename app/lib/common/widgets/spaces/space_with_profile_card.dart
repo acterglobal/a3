@@ -106,7 +106,7 @@ class SpaceWithProfileCard extends StatelessWidget {
           displayName: title,
           avatar: profile.getAvatarImage(),
         ),
-        parentBadges: showParents && parents?.isEmpty != false
+        parentBadges: showParents && (parents?.isEmpty ?? false)
             ? List.generate(parents!.length, (i) {
                 final roomId = parents![i].space.getRoomIdStr();
                 final displayName = parents![i].profile.displayName ?? roomId;

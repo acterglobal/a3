@@ -34,7 +34,7 @@ final otherSpacesForInviteMembersProvider = FutureProvider.autoDispose
   final allSpaces = ref.watch(spacesProvider);
 
   //GET PARENT SPACE
-  final parentSpaces = ref.watch(canonicalParentsProvider(spaceId)).valueOrNull;
+  final parentSpaces = ref.watch(parentsProvider(spaceId)).valueOrNull;
 
   //GET LIST OF SPACES EXCLUDING PARENT SPACES && EXCLUDING CURRENT SPACE
   final spacesExcludingParentSpacesAndCurrentSpace = allSpaces.where((space) {

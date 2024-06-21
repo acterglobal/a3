@@ -120,7 +120,7 @@ class SpaceCard extends ConsumerWidget {
     final roomId = space.getRoomIdStr();
     final profile = ref.watch(spaceProfileDataProvider(space));
     final subtitle = subtitleFn != null ? subtitleFn!(space) : null;
-    final parents = ref.watch(canonicalParentsProvider(roomId)).valueOrNull;
+    final parents = ref.watch(parentsProvider(roomId)).valueOrNull;
 
     return profile.when(
       data: (profile) => SpaceWithProfileCard(

@@ -64,8 +64,7 @@ class _InviteSpaceMembersConsumerState
   }
 
   Widget _buildParentSpaces() {
-    final parentSpaces =
-        ref.watch(canonicalParentsProvider(widget.roomId)).valueOrNull;
+    final parentSpaces = ref.watch(parentsProvider(widget.roomId)).valueOrNull;
 
     if (parentSpaces == null && parentSpaces!.isEmpty) {
       return const SizedBox.shrink();

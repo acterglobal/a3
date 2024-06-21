@@ -26,27 +26,10 @@ class SpaceHeaderProfile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profileData = ref.watch(spaceProfileDataForSpaceIdProvider(spaceId));
-    final canonicalParents = ref.watch(canonicalParentsProvider(spaceId));
+    final parentBadges =
+        ref.watch(parentAvatarInfosProvider(spaceId)).valueOrNull;
     final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
-    List<AvatarInfo> parentBadges = List.empty(growable: true);
-    if (canonicalParents.valueOrNull != null) {
-      var parents = canonicalParents.requireValue;
-      if (parents.isNotEmpty) {
-        parentBadges.addAll(
-          parents.map((e) {
-            final roomId = e.space.getRoomIdStr();
-            final displayName = e.profile.displayName ?? roomId;
-            final avatar = e.profile.getAvatarImage();
-            return AvatarInfo(
-              uniqueId: roomId,
-              displayName: displayName,
-              avatar: avatar,
-              onAvatarTap: () => goToSpace(context, roomId),
-            );
-          }).toList(),
-        );
-      }
-    }
+
     return profileData.when(
       data: (spaceProfile) {
         return Padding(
