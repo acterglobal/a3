@@ -1,5 +1,5 @@
-import 'package:acter/common/themes/app_theme.dart';
 
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/cross_signing/providers/verification_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';

@@ -1,4 +1,4 @@
-import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_item.dart';

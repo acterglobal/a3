@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';

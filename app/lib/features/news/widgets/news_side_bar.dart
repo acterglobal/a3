@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/widgets/default_bottom_sheet.dart';
 import 'package:acter/common/widgets/like_button.dart';
 import 'package:acter/common/widgets/redact_content.dart';

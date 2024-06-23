@@ -1,4 +1,4 @@
-import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/home/providers/task_providers.dart';
 import 'package:acter/features/tasks/widgets/task_item.dart';

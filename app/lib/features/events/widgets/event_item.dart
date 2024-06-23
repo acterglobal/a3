@@ -63,7 +63,7 @@ class EventItem extends StatelessWidget {
 
     return Card(
       margin: const EdgeInsets.all(12),
-      color: Theme.of(context).colorScheme.surface,
+      color: Theme.of(context).colorScheme.secondaryContainer,
       child: Container(
         height: 70,
         width: 70,

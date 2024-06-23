@@ -1,4 +1,4 @@
-import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/chat/models/room_list_filter_state/room_list_filter_state.dart';
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';

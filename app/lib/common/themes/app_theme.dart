@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io';
@@ -38,21 +37,4 @@ class EmojiConfig {
       emojiFont != null ? TextStyle(fontFamily: emojiFont) : null;
   static final checkPlatformCompatibility = emojiFont != defaultEmojiFont;
   static final emojiSizeMax = 32 * ((!kIsWeb && Platform.isIOS) ? 1.30 : 1.0);
-}
-
-extension CustomColorScheme on ColorScheme {
-  // brand
-  Color get textHighlight => secondary;
-
-  Color get textColor => whiteColor;
-
-  // states
-  Color get success => secondary;
-
-  // specific widgets
-  Color get badgeUnread => secondary;
-
-  Color get badgeImportant => Colors.yellow;
-
-  Color get badgeUrgent => const Color(0xFF93000A);
 }

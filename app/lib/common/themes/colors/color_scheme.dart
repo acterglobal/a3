@@ -33,3 +33,19 @@ var colorScheme = ColorScheme.dark(
   surface: surfaceColor,
   onSurface: whiteColor,
 );
+extension CustomColorScheme on ColorScheme {
+  // brand
+  Color get textHighlight => secondary;
+
+  Color get textColor => whiteColor;
+
+  // states
+  Color get success => secondary;
+
+  // specific widgets
+  Color get badgeUnread => secondary;
+
+  Color get badgeImportant => Colors.yellow;
+
+  Color get badgeUrgent => const Color(0xFF93000A);
+}
