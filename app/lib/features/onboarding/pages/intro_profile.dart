@@ -58,7 +58,9 @@ class IntroProfile extends StatelessWidget {
         Text(
           L10n.of(context).makeADifference,
           style: Theme.of(context).textTheme.headlineMedium,
+          textAlign: TextAlign.center,
         ),
+        const SizedBox(height: 10),
         Text(
           L10n.of(context).joinActer,
           style: Theme.of(context)
