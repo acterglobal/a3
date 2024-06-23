@@ -116,6 +116,7 @@ extension ActerLogin on ConvenientTest {
     await find.byKey(Keys.mainNav).should(findsOneWidget);
     await navigateTo([
       MainNavKeys.quickJump,
+      MainNavKeys.quickJump,
       QuickJumpKeys.settings,
       SettingsMenu.logoutAccount,
       LogoutDialogKeys.confirm,
