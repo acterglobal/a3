@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/custom_message_builder.dart';
@@ -172,7 +171,7 @@ class _ChatBubble extends ConsumerWidget {
             decoration: BoxDecoration(
               color: isAuthor
                   ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.neutral.withOpacity(0.3),
+                  : Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.3),
               borderRadius: BorderRadius.circular(22),
             ),
             child: Column(
@@ -206,7 +205,7 @@ class _ChatBubble extends ConsumerWidget {
     return Bubble(
       color: isAuthor
           ? Theme.of(context).colorScheme.surface
-          : Theme.of(context).colorScheme.neutral2,
+          : Theme.of(context).colorScheme.surface,
       borderColor: Colors.transparent,
       style: BubbleStyle(
         margin: nextMessageInGroup

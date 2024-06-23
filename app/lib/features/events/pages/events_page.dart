@@ -1,7 +1,4 @@
 import 'dart:math';
-
-import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
@@ -21,20 +18,13 @@ class EventsPage extends ConsumerWidget {
     final upcoming = ref.watch(myUpcomingEventsProvider);
     final past = ref.watch(myPastEventsProvider);
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.neutral,
       body: CustomScrollView(
         slivers: <Widget>[
           PageHeaderWidget(
             title: L10n.of(context).events,
-            sectionDecoration: const BoxDecoration(
-              gradient: primaryGradient,
-            ),
             actions: [
               IconButton(
-                icon: Icon(
-                  Atlas.plus_circle_thin,
-                  color: Theme.of(context).colorScheme.neutral5,
-                ),
+                icon: const Icon(Atlas.plus_circle_thin),
                 iconSize: 28,
                 color: Theme.of(context).colorScheme.surface,
                 onPressed: () => context.pushNamed(Routes.createEvent.name),

@@ -1,7 +1,4 @@
 import 'dart:math';
-
-import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/features/pins/widgets/pin_list_item.dart';
@@ -22,7 +19,6 @@ class PinsPage extends ConsumerWidget {
     final pins = ref.watch(pinsProvider);
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.neutral,
       body: CustomScrollView(
         slivers: <Widget>[
           _buildPageHeader(context),
@@ -36,16 +32,10 @@ class PinsPage extends ConsumerWidget {
   Widget _buildPageHeader(BuildContext context) {
     return PageHeaderWidget(
       title: L10n.of(context).pins,
-      sectionDecoration: const BoxDecoration(
-        gradient: primaryGradient,
-      ),
       actions: [
         // FIXME: only show with hasAnySpacesWithPermission check
         IconButton(
-          icon: Icon(
-            Atlas.plus_circle_thin,
-            color: Theme.of(context).colorScheme.neutral5,
-          ),
+          icon: const Icon(Atlas.plus_circle_thin),
           iconSize: 28,
           color: Theme.of(context).colorScheme.surface,
           onPressed: () => context.pushNamed(

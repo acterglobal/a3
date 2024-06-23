@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,8 +18,7 @@ class MemberAvatar extends ConsumerWidget {
     final profile =
         ref.watch(roomMemberProvider((userId: memberId, roomId: roomId)));
     return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: Theme.of(context).colorScheme.neutral4),
+      decoration: const BoxDecoration(
         shape: BoxShape.circle,
       ),
       child: profile.when(

@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,10 +23,7 @@ class AddButtonWithCanPermission extends ConsumerWidget {
     return Visibility(
       visible: canAdd,
       child: IconButton(
-        icon: Icon(
-          Atlas.plus_circle_thin,
-          color: Theme.of(context).colorScheme.neutral5,
-        ),
+        icon: const Icon(Atlas.plus_circle_thin),
         iconSize: 28,
         color: Theme.of(context).colorScheme.surface,
         onPressed: onPressed,

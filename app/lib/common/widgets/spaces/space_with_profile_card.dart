@@ -112,7 +112,6 @@ class SpaceWithProfileCard extends StatelessWidget {
     );
 
     return Card(
-      shape: renderShape(context),
       child: ListTile(
         contentPadding: contentPadding,
         onTap: onTap ?? () => context.push('/$roomId'),
@@ -129,19 +128,4 @@ class SpaceWithProfileCard extends StatelessWidget {
     );
   }
 
-  ShapeBorder? renderShape(BuildContext context) {
-    if (shape != null) {
-      return shape;
-    }
-    if (withBorder) {
-      return RoundedRectangleBorder(
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.primary,
-          width: 1.5,
-        ),
-        borderRadius: BorderRadius.circular(6),
-      );
-    }
-    return null;
-  }
 }

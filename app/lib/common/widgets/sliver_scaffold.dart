@@ -1,5 +1,3 @@
-import 'package:acter/common/themes/app_theme.dart';
-
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:flutter/material.dart';
 
@@ -49,7 +47,6 @@ class SliverScaffold extends StatelessWidget {
 
     return Material(
       elevation: 1,
-      color: colorScheme.neutral,
       surfaceTintColor: colorScheme.surfaceTint,
       borderRadius: const BorderRadius.horizontal(left: Radius.circular(28)),
       child: Scaffold(

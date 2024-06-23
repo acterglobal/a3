@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/features/tasks/providers/tasklists.dart';
 import 'package:acter/features/tasks/sheets/create_update_task_list.dart';
@@ -26,9 +25,6 @@ class TasksPage extends ConsumerWidget {
         slivers: <Widget>[
           PageHeaderWidget(
             title: L10n.of(context).tasks,
-            sectionDecoration: const BoxDecoration(
-              gradient: primaryGradient,
-            ),
             actions: [
               ValueListenableBuilder(
                 valueListenable: showCompletedTask,

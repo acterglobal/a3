@@ -1,7 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
@@ -53,7 +52,6 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   Widget build(BuildContext context) {
     final event = ref.watch(calendarEventProvider(widget.calendarId));
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
       body: event.when(
         data: (calendarEvent) {
           // Update event participants list
@@ -91,7 +89,6 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       ],
       flexibleSpace: Container(
         padding: const EdgeInsets.only(top: 20),
-        decoration: const BoxDecoration(gradient: primaryGradient),
         child: const FlexibleSpaceBar(
           background: Icon(Atlas.calendar_dots, size: 80),
         ),

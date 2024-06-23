@@ -2,49 +2,34 @@ import 'package:flutter/material.dart';
 
 // Main Colors
 Color brandColor = const Color(0xff1E4E7B);
-Color darkBlueColor = const Color(0xFF042E4B);
-Color lightBlueColor = const Color(0xFF06355D);
-Color blackColor = const Color(0xFF121212);
+Color secondaryColor = const Color(0xFF74A64D);
 
-// General Colors
-Color greenColor = const Color(0xFF74A64D);
-Color yellowColor = Colors.yellow;
-Color whiteColor = const Color(0xfffbfcfd);
-Color whiteBlueColor = const Color(0xFFA5B9CC);
+// Background Colors
+Color surfaceColor = const Color(0xFF2A2A2A);
+Color backgroundColor = const Color(0xFF171717);
 
-const primaryGradient = LinearGradient(
-  begin: AlignmentDirectional(-1.5, -2.0),
-  end: AlignmentDirectional(-1.5, 0.5),
-  colors: <Color>[
-    Color(0xFF001B3D),
-    Color(0xFF121212),
-  ],
-);
-
-const introGradient = LinearGradient(
-  colors: [
-    Color(0xff122334),
-    Color(0xff121212),
-    Color(0xff000000),
-  ],
-  begin: Alignment.topCenter,
-  end: Alignment.bottomCenter,
-  stops: [0.0, 0.5, 1.0],
-  tileMode: TileMode.decal,
-);
+//On colors
+Color whiteColor = Colors.white;
 
 var colorScheme = ColorScheme.dark(
   brightness: Brightness.dark,
+  //Primary
   primary: brandColor,
-  secondary: greenColor,
-  onSecondary: whiteColor,
   onPrimary: whiteColor,
-  primaryContainer: darkBlueColor,
+
+  //Secondary
+  secondary: secondaryColor,
+  onSecondary: whiteColor,
+
+  //Primary Container
+  primaryContainer: surfaceColor,
   onPrimaryContainer: whiteColor,
-  secondaryContainer: blackColor,
+
+  //Secondary Container
+  secondaryContainer: backgroundColor,
   onSecondaryContainer: whiteColor,
-  surface: darkBlueColor,
+
+  //Surface
+  surface: surfaceColor,
   onSurface: whiteColor,
-  surfaceContainerHighest: lightBlueColor,
-  onSurfaceVariant: whiteBlueColor,
 );

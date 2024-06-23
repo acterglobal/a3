@@ -85,11 +85,10 @@ class EmojiRow extends StatelessWidget {
                 ),
               InkWell(
                 onTap: () => _showBottomSheet(context),
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 3),
+                child: const Padding(
+                  padding: EdgeInsets.only(top: 3),
                   child: Icon(
                     Atlas.dots_horizontal_thin,
-                    color: Theme.of(context).colorScheme.neutral5,
                     size: 18,
                   ),
                 ),

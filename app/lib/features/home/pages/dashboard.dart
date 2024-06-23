@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
@@ -84,46 +83,43 @@ class Dashboard extends ConsumerWidget {
 
     return InDashboard(
       child: Scaffold(
-        body: Container(
-          decoration: const BoxDecoration(gradient: primaryGradient),
-          child: CustomScrollView(
-            slivers: <Widget>[
-              SliverAppBar(
-                backgroundColor: Colors.transparent,
-                actions: <Widget>[
-                  Visibility(
-                    // FIXME: Only show mobile / when bottom bar shown...
-                    visible: !client.isGuest(),
-                    replacement: InkWell(
-                      onTap: () => context.pushNamed(Routes.authLogin.name),
-                      child: ActerAvatar(
-                        options: AvatarOptions.DM(
-                          AvatarInfo(
-                            uniqueId: UniqueKey().toString(),
-                          ),
+        body: CustomScrollView(
+          slivers: <Widget>[
+            SliverAppBar(
+              backgroundColor: Colors.transparent,
+              actions: <Widget>[
+                Visibility(
+                  // FIXME: Only show mobile / when bottom bar shown...
+                  visible: !client.isGuest(),
+                  replacement: InkWell(
+                    onTap: () => context.pushNamed(Routes.authLogin.name),
+                    child: ActerAvatar(
+                      options: AvatarOptions.DM(
+                        AvatarInfo(
+                          uniqueId: UniqueKey().toString(),
                         ),
                       ),
                     ),
-                    child: !isDesktop
-                        ? Container(
-                            key: Keys.avatar,
-                            margin: const EdgeInsets.all(8),
-                            child: InkWell(
-                              onTap: () =>
-                                  context.pushNamed(Routes.settings.name),
-                              child: const UserAvatarWidget(size: 20),
-                            ),
-                          )
-                        : const SizedBox.shrink(),
                   ),
-                ],
-                title: isDesktop
-                    ? Text(L10n.of(context).myDashboard)
-                    : Text(L10n.of(context).overview),
-              ),
-              ...children,
-            ],
-          ),
+                  child: !isDesktop
+                      ? Container(
+                          key: Keys.avatar,
+                          margin: const EdgeInsets.all(8),
+                          child: InkWell(
+                            onTap: () =>
+                                context.pushNamed(Routes.settings.name),
+                            child: const UserAvatarWidget(size: 20),
+                          ),
+                        )
+                      : const SizedBox.shrink(),
+                ),
+              ],
+              title: isDesktop
+                  ? Text(L10n.of(context).myDashboard)
+                  : Text(L10n.of(context).overview),
+            ),
+            ...children,
+          ],
         ),
       ),
     );

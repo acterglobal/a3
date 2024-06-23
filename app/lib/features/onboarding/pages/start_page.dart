@@ -1,5 +1,4 @@
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/models/onBoard.dart';
@@ -160,9 +159,6 @@ class _StartPageState extends State<StartPage> {
   Widget _buildBody(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(top: kToolbarHeight),
-      decoration: const BoxDecoration(
-        gradient: introGradient,
-      ),
       child: Center(
         child: Container(
           constraints: const BoxConstraints(maxWidth: 500),

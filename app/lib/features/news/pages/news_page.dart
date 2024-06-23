@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/news/model/keys.dart';
@@ -29,9 +28,8 @@ class NewsPage extends ConsumerWidget {
             child: IconButton(
               key: NewsUpdateKeys.addNewsUpdate,
               onPressed: () => context.pushNamed(Routes.actionAddUpdate.name),
-              icon: Icon(
+              icon: const Icon(
                 Atlas.plus_circle_thin,
-                color: Theme.of(context).colorScheme.neutral5,
                 size: 36,
               ),
             ),

@@ -1,7 +1,6 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/chat/convo_with_profile_card.dart';
 import 'package:acter/common/widgets/chat/loading_convo_card.dart';
@@ -341,7 +340,6 @@ class _SubtitleWidget extends ConsumerWidget {
               child: Text(
                 L10n.of(context).thisMessageHasBeenDeleted,
                 style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                      color: Theme.of(context).colorScheme.neutral5,
                       fontStyle: FontStyle.italic,
                       fontWeight: FontWeight.w700,
                     ),
@@ -371,7 +369,6 @@ class _SubtitleWidget extends ConsumerWidget {
               child: Text(
                 L10n.of(context).failedToDecryptMessage,
                 style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                      color: Theme.of(context).colorScheme.neutral5,
                       fontStyle: FontStyle.italic,
                     ),
                 overflow: TextOverflow.ellipsis,

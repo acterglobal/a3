@@ -55,7 +55,6 @@ class _AskForEmail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
       appBar: _buildAppbar(),
       body: _buildBody(context),
     );
@@ -191,7 +190,6 @@ class _NewPassword extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
       appBar: _buildAppbar(),
       body: _buildBody(context),
     );

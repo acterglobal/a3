@@ -97,6 +97,7 @@ class SessionCard extends ConsumerWidget {
       context: context,
       builder: (BuildContext ctx) {
         return AlertDialog(
+          backgroundColor: Theme.of(context).colorScheme.surface,
           title: Text(L10n.of(context).authenticationRequired),
           content: Wrap(
             children: [

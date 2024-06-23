@@ -159,10 +159,7 @@ class UserStateButton extends ConsumerWidget {
     return InkWell(
       onTap: () => _handleInvite(context),
       child: Chip(
-        avatar: Icon(
-          Atlas.paper_airplane_thin,
-          color: Theme.of(context).colorScheme.neutral6,
-        ),
+        avatar: const Icon(Atlas.paper_airplane_thin),
         label: Text(L10n.of(context).invite),
       ),
     );

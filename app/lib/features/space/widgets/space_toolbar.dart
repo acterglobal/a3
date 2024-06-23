@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/space/dialogs/leave_space.dart';
 import 'package:flutter/material.dart';
@@ -19,8 +18,11 @@ class SpaceToolbar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
-    final isBookmarked = ref.watch(spaceProvider(spaceId).select(
-        (asyncValue) => (asyncValue.valueOrNull?.isBookmarked()) == true,),);
+    final isBookmarked = ref.watch(
+      spaceProvider(spaceId).select(
+        (asyncValue) => (asyncValue.valueOrNull?.isBookmarked()) == true,
+      ),
+    );
     final invited =
         ref.watch(spaceInvitedMembersProvider(spaceId)).valueOrNull ?? [];
     final showInviteBtn = membership?.canString('CanInvite') == true;
@@ -83,11 +85,7 @@ class SpaceToolbar extends ConsumerWidget {
                   .setBookmarked(!isBookmarked),
         ),
         PopupMenuButton(
-          icon: Icon(
-            key: optionsMenu,
-            Icons.more_vert,
-            color: Theme.of(context).colorScheme.neutral5,
-          ),
+          icon: const Icon(key: optionsMenu, Icons.more_vert),
           iconSize: 28,
           color: Theme.of(context).colorScheme.surface,
           itemBuilder: (BuildContext context) => submenu,

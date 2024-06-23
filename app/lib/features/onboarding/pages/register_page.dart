@@ -87,7 +87,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
       body: Column(
         children: [
           _buildAppBar(context),
@@ -321,7 +320,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
               const SizedBox(height: 10),
               Container(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.neutral,
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 padding: const EdgeInsets.symmetric(

@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -51,24 +50,14 @@ class VisibilityChip extends ConsumerWidget {
     }
     return Chip(
       padding: const EdgeInsets.symmetric(horizontal: 2),
-      backgroundColor: Theme.of(context).colorScheme.neutral,
       visualDensity: VisualDensity.compact,
-      shape: RoundedRectangleBorder(
-        borderRadius: const BorderRadius.all(Radius.circular(5)),
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.neutral3,
-        ),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(5)),
       ),
-      avatar: Icon(
-        icon,
-        color: Theme.of(context).colorScheme.neutral5,
-      ),
+      avatar: Icon(icon),
       label: Text(
         label,
-        style: Theme.of(context)
-            .textTheme
-            .labelSmall!
-            .copyWith(color: Theme.of(context).colorScheme.neutral5),
+        style: Theme.of(context).textTheme.labelSmall,
       ),
     );
   }

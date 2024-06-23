@@ -41,19 +41,9 @@ class EmojiConfig {
 }
 
 extension CustomColorScheme on ColorScheme {
-  Color get primary => const Color(0xFF9CCAFF);
-  Color get tertiary => const Color(0xFFFFC333);
-  Color get tertiary3 => const Color(0xFF3AE3E0);
-  Color get neutral => const Color(0xFF121212);
-  Color get neutral2 => const Color(0xFF2F2F2F);
-  Color get neutral3 => const Color(0xFF5D5D5D);
-  Color get neutral4 => const Color(0xFF898989);
-  Color get neutral5 => const Color(0xFFB7B7B7);
-  Color get neutral6 => const Color(0xFFE5E5E5);
-
   // brand
   Color get textHighlight => secondary;
-  Color get textButtonColor => whiteColor;
+
   Color get textColor => whiteColor;
 
   // states
@@ -61,12 +51,8 @@ extension CustomColorScheme on ColorScheme {
 
   // specific widgets
   Color get badgeUnread => secondary;
-  Color get badgeImportant => yellowColor;
-  Color get badgeUrgent => const Color(0xFF93000A);
 
-  // tasks
-  Color get tasksBG => primary;
-  Color get tasksFG => primaryContainer;
-  Color get taskOverdueBG => errorContainer;
-  Color get taskOverdueFG => error;
+  Color get badgeImportant => Colors.yellow;
+
+  Color get badgeUrgent => const Color(0xFF93000A);
 }
