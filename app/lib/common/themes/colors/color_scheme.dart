@@ -5,8 +5,8 @@ Color brandColor = const Color(0xff1E4E7B);
 Color secondaryColor = const Color(0xFF74A64D);
 
 // Background Colors
-Color surfaceColor = const Color(0xFF2A2A2A);
-Color backgroundColor = const Color(0xFF171717);
+Color surfaceColor = const Color(0xFF181818);
+Color backgroundColor = const Color(0xFF000000);
 
 //On colors
 Color whiteColor = Colors.white;

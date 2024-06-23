@@ -54,7 +54,10 @@ class VisibilityChip extends ConsumerWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(5)),
       ),
-      avatar: Icon(icon),
+      avatar: Icon(
+        icon,
+        color: Theme.of(context).colorScheme.onSurface,
+      ),
       label: Text(
         label,
         style: Theme.of(context).textTheme.labelSmall,
