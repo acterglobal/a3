@@ -1,4 +1,3 @@
-import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -57,13 +56,17 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
           Align(
             alignment: Alignment.centerRight,
             child: ActerInlineTextButton(
-              onPressed: () => _inactiveInviteCode(context, ref, inviteCode),
+              onPressed: () async {
+                final token =
+                    await ref.read(superInviteTokenProvider(inviteCode).future);
+                if (!context.mounted) return;
+                context.pushNamed(
+                  Routes.actionCreateSuperInvite.name,
+                  extra: token,
+                );
+              },
               child: Text(
-                L10n.of(context).inactivate,
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      color: Theme.of(context).colorScheme.error,
-                      decoration: TextDecoration.underline,
-                    ),
+                L10n.of(context).manage,
               ),
             ),
           ),
@@ -102,60 +105,6 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
       if (!context.mounted) return;
       EasyLoading.showError(
         L10n.of(context).activateInviteCodeFailed(error),
-        duration: const Duration(seconds: 3),
-      );
-    }
-  }
-
-  Future<void> _inactiveInviteCode(
-    BuildContext context,
-    WidgetRef ref,
-    String token,
-  ) async {
-    final bool? confirm = await showAdaptiveDialog(
-      context: context,
-      builder: (_) {
-        return AlertDialog(
-          title: Text(L10n.of(context).inactivateCode),
-          content: Text(
-            L10n.of(context).doYouWantToInactiveInviteCode,
-          ),
-          actionsAlignment: MainAxisAlignment.spaceEvenly,
-          actions: <Widget>[
-            OutlinedButton(
-              onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-              child: Text(
-                L10n.of(context).no,
-              ),
-            ),
-            ActerDangerActionButton(
-              onPressed: () async {
-                Navigator.of(context, rootNavigator: true).pop(true);
-              },
-              child: Text(
-                L10n.of(context).inactivate,
-              ),
-            ),
-          ],
-        );
-      },
-    );
-    if (confirm != true || !context.mounted) {
-      return;
-    }
-    EasyLoading.show(status: L10n.of(context).inactivateCode);
-    try {
-      final provider = ref.watch(superInvitesProvider);
-      await provider.delete(token);
-      ref.invalidate(superInvitesProvider);
-      EasyLoading.dismiss();
-      ref.invalidate(superInvitesProvider);
-    } catch (err) {
-      EasyLoading.dismiss();
-      _log.severe('Invite code creation failed', err);
-      if (!context.mounted) return;
-      EasyLoading.showError(
-        L10n.of(context).inactivateInviteCodeFailed(err),
         duration: const Duration(seconds: 3),
       );
     }
