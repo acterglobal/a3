@@ -470,7 +470,7 @@ Future<bool> onNewToken(String token) async {
     'Received the update information for the token. Updating all clients.',
   );
   // ignore: use_build_context_synchronously
-  final sdk = rootNavKey.currentContext!.read(sdkProvider).requireValue;
+  final sdk = await rootNavKey.currentContext!.read(sdkProvider.future);
 
   for (final client in sdk.clients) {
     final deviceId = client.deviceId().toString();
