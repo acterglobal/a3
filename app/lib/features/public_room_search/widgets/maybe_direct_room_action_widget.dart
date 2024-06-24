@@ -169,7 +169,7 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     if (space != null) {
       return SpaceCard(
         space: space,
-        showParent: true,
+        showParents: true,
         onTap: onTap,
         trailing: trailing,
       );
@@ -188,7 +188,7 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     if (chat != null) {
       return ConvoCard(
         room: chat,
-        showParent: true,
+        showParents: true,
         onTap: onTap,
         trailing: trailing,
       );

@@ -25,7 +25,8 @@ class SpaceSettingsMenu extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final size = MediaQuery.of(context).size;
     final spaceProfile = ref.watch(spaceProfileDataForSpaceIdProvider(spaceId));
-    final canonicalParent = ref.watch(canonicalParentProvider(spaceId));
+    final parentBadges =
+        ref.watch(parentAvatarInfosProvider(spaceId)).valueOrNull;
 
     final notificationStatus =
         ref.watch(roomNotificationStatusProvider(spaceId));
@@ -47,18 +48,7 @@ class SpaceSettingsMenu extends ConsumerWidget {
                         displayName: spaceProfile.profile.displayName,
                         avatar: spaceProfile.profile.getAvatarImage(),
                       ),
-                      parentBadges: canonicalParent.valueOrNull != null
-                          ? [
-                              AvatarInfo(
-                                uniqueId: canonicalParent.valueOrNull!.space
-                                    .getRoomIdStr(),
-                                displayName: canonicalParent
-                                    .valueOrNull!.profile.displayName,
-                                avatar: canonicalParent.valueOrNull!.profile
-                                    .getAvatarImage(),
-                              ),
-                            ]
-                          : [],
+                      parentBadges: parentBadges,
                       badgesSize: 18,
                     ),
                   ),

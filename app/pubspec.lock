@@ -13,10 +13,10 @@ packages:
     dependency: "direct main"
     description:
       name: acter_avatar
-      sha256: "3cd3b9824c70ef22ec98eeb5afe0e0fbcae788390c98c096a41a86ea4bca1799"
+      sha256: f8438002b053c84d8789440c6f6e04ef6f60241d9f5973f3d28e150e8cf32ba6
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.0+5"
+    version: "2.0.1+1"
   acter_flutter_sdk:
     dependency: "direct main"
     description:

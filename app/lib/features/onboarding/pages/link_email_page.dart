@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/validation_utils.dart';
@@ -105,6 +106,7 @@ class LinkEmailPage extends ConsumerWidget {
     EasyLoading.show(status: L10n.of(context).linkingEmailAddress);
     try {
       await manager.requestTokenViaEmail(emailController.text.trim());
+      ref.invalidate(emailAddressesProvider);
       if (!context.mounted) return;
       EasyLoading.showSuccess(L10n.of(context).pleaseCheckYourInbox);
       isLinked.value = true;

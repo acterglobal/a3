@@ -1,0 +1,1 @@
+- You can now see multiple parent avatars on space overview if it's linked as sub-space of it.
