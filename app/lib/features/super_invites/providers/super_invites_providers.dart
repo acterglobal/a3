@@ -60,9 +60,16 @@ final inviteCodeForSelectRoomOnly = FutureProvider.autoDispose
 });
 
 /// Given the list of rooms this creates a new token with a random key
-Future<String> newSuperInviteForRooms(WidgetRef ref, List<String> rooms) async {
+Future<String> newSuperInviteForRooms(
+  WidgetRef ref,
+  List<String> rooms, {
+  String? inviteCode,
+}) async {
   final superInvites = ref.read(superInvitesProvider);
   final builder = superInvites.newTokenUpdater();
+  if (inviteCode != null) {
+    builder.token(inviteCode);
+  }
   for (final roomId in rooms) {
     builder.addRoom(roomId);
   }
