@@ -296,7 +296,9 @@ class SidebarWidget extends ConsumerWidget {
     return spaces.map((space) {
       final profileData = ref.watch(spaceProfileDataProvider(space));
       final roomId = space.getRoomIdStr();
-      final canonicalParent = ref.watch(canonicalParentProvider(roomId));
+      final parentBadges =
+          ref.watch(parentAvatarInfosProvider(roomId)).valueOrNull;
+
       return profileData.when(
         loading: () => _SidebarItem(
           icon: const Icon(Atlas.arrows_dots_rotate_thin),
@@ -326,18 +328,7 @@ class SidebarWidget extends ConsumerWidget {
                 displayName: info.displayName,
                 avatar: info.getAvatarImage(),
               ),
-              parentBadges: canonicalParent.valueOrNull != null
-                  ? [
-                      AvatarInfo(
-                        uniqueId:
-                            canonicalParent.valueOrNull!.space.getRoomIdStr(),
-                        displayName:
-                            canonicalParent.valueOrNull!.profile.displayName,
-                        avatar: canonicalParent.valueOrNull!.profile
-                            .getAvatarImage(),
-                      ),
-                    ]
-                  : [],
+              parentBadges: parentBadges,
               size: 48,
             ),
           ),

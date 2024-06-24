@@ -28,19 +28,19 @@ class AvatarBuilder extends ConsumerWidget {
         return Padding(
           padding: const EdgeInsets.only(right: 10),
           child: ActerAvatar(
-            onAvatarTap: () async {
-              // ignore: use_build_context_synchronously
-              showMemberInfoDrawer(
-                context: context,
-                roomId: roomId,
-                memberId: userId,
-              );
-            },
             options: AvatarOptions.DM(
               AvatarInfo(
                 uniqueId: userId,
                 displayName: profile.displayName ?? userId,
                 avatar: profile.getAvatarImage(),
+                onAvatarTap: () async {
+                  // ignore: use_build_context_synchronously
+                  showMemberInfoDrawer(
+                    context: context,
+                    roomId: roomId,
+                    memberId: userId,
+                  );
+                },
               ),
               size: 14,
             ),

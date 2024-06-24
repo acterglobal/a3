@@ -94,10 +94,10 @@ class NewsSideBar extends ConsumerWidget {
                 uniqueId: roomId,
                 displayName: space.spaceProfileData.displayName,
                 avatar: space.spaceProfileData.getAvatarImage(),
+                onAvatarTap: () => goToSpace(context, roomId),
               ),
               size: 42,
             ),
-            onAvatarTap: () => goToSpace(context, roomId),
           ),
           error: (e, st) {
             _log.severe('Error loading space', e, st);

@@ -24,7 +24,7 @@ class InviteSpaceMembers extends ConsumerStatefulWidget {
 
 class _InviteSpaceMembersConsumerState
     extends ConsumerState<InviteSpaceMembers> {
-  List<Space> selectedSpaces = [];
+  List<String> selectedSpaces = [];
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +53,7 @@ class _InviteSpaceMembersConsumerState
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 10),
-          _buildParentSpace(),
+          _buildParentSpaces(),
           const SizedBox(height: 20),
           _buildOtherSpace(),
           _buildDoneButton(),
@@ -63,28 +63,36 @@ class _InviteSpaceMembersConsumerState
     );
   }
 
-  Widget _buildParentSpace() {
-    final parentSpace =
-        ref.watch(canonicalParentProvider(widget.roomId)).valueOrNull;
+  Widget _buildParentSpaces() {
+    final parentSpaceIds =
+        ref.watch(parentIdsProvider(widget.roomId)).valueOrNull;
 
-    if (parentSpace == null) return const SizedBox.shrink();
+    if (parentSpaceIds == null && parentSpaceIds!.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(L10n.of(context).parentSpace),
-        SpaceMemberInviteCard(
-          space: parentSpace.space,
-          isSelected: selectedSpaces.contains(parentSpace.space),
-          onChanged: (value) {
-            if (selectedSpaces.contains(parentSpace.space)) {
-              selectedSpaces.remove(parentSpace.space);
-            } else {
-              selectedSpaces.add(parentSpace.space);
-            }
-            setState(() {});
-          },
+      children: <Widget>[
+        Text(
+          parentSpaceIds.length > 1
+              ? L10n.of(context).parentSpaces
+              : L10n.of(context).parentSpace,
         ),
+        for (final roomId in parentSpaceIds)
+          SpaceMemberInviteCard(
+            roomId: roomId,
+            isSelected: selectedSpaces.contains(roomId),
+            onChanged: (value) {
+              setState(() {
+                if (selectedSpaces.contains(roomId)) {
+                  selectedSpaces.remove(roomId);
+                } else {
+                  selectedSpaces.add(roomId);
+                }
+              });
+            },
+          ),
         const SizedBox(height: 16),
         Text(L10n.of(context).otherSpaces),
       ],
@@ -109,15 +117,15 @@ class _InviteSpaceMembersConsumerState
         itemCount: data.length,
         shrinkWrap: true,
         itemBuilder: (context, index) {
-          final space = data[index];
+          final roomId = data[index].getRoomIdStr();
           return SpaceMemberInviteCard(
-            space: space,
-            isSelected: selectedSpaces.contains(space),
+            roomId: roomId,
+            isSelected: selectedSpaces.contains(roomId),
             onChanged: (value) {
-              if (selectedSpaces.contains(space)) {
-                selectedSpaces.remove(space);
+              if (selectedSpaces.contains(roomId)) {
+                selectedSpaces.remove(roomId);
               } else {
-                selectedSpaces.add(space);
+                selectedSpaces.add(roomId);
               }
               setState(() {});
             },
@@ -160,21 +168,23 @@ class _InviteSpaceMembersConsumerState
     );
 
     try {
-      final room = ref.read(maybeRoomProvider(widget.roomId)).valueOrNull;
+      final currentSpace = ref.read(spaceProvider(widget.roomId)).valueOrNull;
       final invited =
-          ref.read(spaceInvitedMembersProvider(widget.roomId)).valueOrNull ??
-              [];
+          (ref.read(roomInvitedMembersProvider(widget.roomId)).valueOrNull ??
+                  [])
+              .map((e) => e.userId().toString())
+              .toList();
       final joined =
           ref.read(membersIdsProvider(widget.roomId)).valueOrNull ?? [];
       var inviteCount = 0;
-      for (final space in selectedSpaces) {
-        final members = (await space.activeMembers()).toList();
+      for (final roomId in selectedSpaces) {
+        final members =
+            (await ref.watch(membersIdsProvider(roomId).future)).toList();
         for (final member in members) {
-          final memberUserId = member.userId().toString();
           final isInvited = invited.contains(member);
-          final isJoined = joined.contains(memberUserId);
-          if (room != null && !isInvited && !isJoined) {
-            await room.inviteUser(memberUserId);
+          final isJoined = joined.contains(member);
+          if (currentSpace != null && !isInvited && !isJoined) {
+            await currentSpace.inviteUser(member);
             inviteCount++;
           }
         }

@@ -26,8 +26,10 @@ class SpaceHeaderProfile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profileData = ref.watch(spaceProfileDataForSpaceIdProvider(spaceId));
-    final canonicalParent = ref.watch(canonicalParentProvider(spaceId));
+    final parentBadges =
+        ref.watch(parentAvatarInfosProvider(spaceId)).valueOrNull;
     final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
+
     return profileData.when(
       data: (spaceProfile) {
         return Padding(
@@ -40,26 +42,11 @@ class SpaceHeaderProfile extends ConsumerWidget {
                     uniqueId: spaceId,
                     displayName: spaceProfile.profile.displayName,
                     avatar: spaceProfile.profile.getAvatarImage(),
+                    onAvatarTap: () => goToSpace(context, spaceId),
                   ),
-                  parentBadges: canonicalParent.valueOrNull != null
-                      ? [
-                          AvatarInfo(
-                            uniqueId: canonicalParent.valueOrNull!.space
-                                .getRoomIdStr(),
-                            displayName: canonicalParent
-                                .valueOrNull!.profile.displayName,
-                            avatar: canonicalParent.valueOrNull!.profile
-                                .getAvatarImage(),
-                          ),
-                        ]
-                      : [],
+                  parentBadges: parentBadges,
                   size: 80,
                   badgesSize: 30,
-                ),
-                onAvatarTap: () => goToSpace(context, spaceId),
-                onParentBadgesTap: () => goToSpace(
-                  context,
-                  canonicalParent.valueOrNull!.space.getRoomIdStr(),
                 ),
               ),
               Column(

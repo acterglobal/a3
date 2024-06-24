@@ -158,7 +158,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         RoomAvatar(
           roomId: widget.roomId,
           avatarSize: 75,
-          showParent: true,
+          showParents: true,
         ),
         const SizedBox(height: 10),
         if (membership?.canString('CanUpdateAvatar') == true)
