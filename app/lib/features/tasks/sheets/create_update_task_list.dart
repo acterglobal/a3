@@ -1,8 +1,9 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
-import 'package:acter/common/widgets/md_editor_with_preview.dart';
+import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/tasks/providers/tasklists.dart';
+import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -44,7 +45,7 @@ class _CreateUpdateTaskListConsumerState
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
   final ValueNotifier<bool> isShowDescription = ValueNotifier(false);
-  final ValueNotifier<String> _descriptionText = ValueNotifier('');
+  EditorState textEditorState = EditorState.blank();
 
   @override
   void initState() {
@@ -136,11 +137,23 @@ class _CreateUpdateTaskListConsumerState
               L10n.of(context).description,
               style: Theme.of(context).textTheme.bodySmall,
             ),
-            MdEditorWithPreview(
-              key: CreateUpdateTaskList.descKey,
-              onChanged: (String? value) {
-                _descriptionText.value = value ?? '';
-              },
+            Container(
+              height: 200,
+              decoration: BoxDecoration(
+                border: Border.all(color:  Colors.white70),
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: HtmlEditor(
+                editorState: textEditorState,
+                editable: true,
+                autoFocus: false,
+                onChanged: (body, html) {
+                  final document = html != null
+                      ? ActerDocumentHelpers.fromHtml(html)
+                      : ActerDocumentHelpers.fromMarkdown(body);
+                  textEditorState = EditorState(document: document);
+                },
+              ),
             ),
           ],
         );
@@ -180,9 +193,10 @@ class _CreateUpdateTaskListConsumerState
       final space = await ref.read(spaceProvider(spaceId!).future);
       final taskListDraft = space.taskListDraft();
       taskListDraft.name(_titleController.text);
-      if (_descriptionText.value.isNotEmpty) {
-        taskListDraft.descriptionMarkdown(_descriptionText.value);
-      }
+      // Description text
+      final plainDescription = textEditorState.intoMarkdown();
+      final htmlBodyDescription = textEditorState.intoHtml();
+      taskListDraft.descriptionHtml(plainDescription, htmlBodyDescription);
       await taskListDraft.send();
 
       EasyLoading.dismiss();

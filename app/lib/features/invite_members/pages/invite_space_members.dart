@@ -168,7 +168,7 @@ class _InviteSpaceMembersConsumerState
     );
 
     try {
-      final currentSpace = ref.read(spaceProvider(widget.roomId)).valueOrNull;
+      final room = ref.read(maybeRoomProvider(widget.roomId)).valueOrNull;
       final invited =
           (ref.read(roomInvitedMembersProvider(widget.roomId)).valueOrNull ??
                   [])

@@ -1085,6 +1085,21 @@ object Room {
     /// update the power levels of specified member
     fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;
 
+    /// Change the avatar of the room
+    fn upload_avatar(uri: string) -> Future<Result<MxcUri>>;
+
+    /// Remove the avatar of the room
+    fn remove_avatar() -> Future<Result<EventId>>;
+
+    /// what is the description / topic
+    fn topic() -> Option<string>;
+
+    /// set description / topic of the room
+    fn set_topic(topic: string) -> Future<Result<EventId>>;
+
+    /// set name of the room
+    fn set_name(name: string) -> Future<Result<EventId>>;
+
 }
 
 
@@ -1594,6 +1609,9 @@ object TaskUpdateBuilder {
 
     /// set the description for this task list
     fn description_text(text: string);
+    /// set description html text
+    fn description_html(body: string, html_body: string);
+
     fn unset_description();
     fn unset_description_update();
 
@@ -1657,6 +1675,9 @@ object TaskDraft {
 
     /// set the description for this task
     fn description_text(text: string);
+    /// set description html text
+    fn description_html(body: string, html_body: string);
+
     fn unset_description();
 
     /// set the sort order for this task
@@ -1766,6 +1787,9 @@ object TaskListDraft {
     /// set the description for this task list
     fn description_text(text: string);
     fn description_markdown(text: string);
+    /// set description html text
+    fn description_html(body: string, html_body: string);
+
     fn unset_description();
 
     /// set the sort order for this task list
@@ -1793,6 +1817,9 @@ object TaskListUpdateBuilder {
 
     /// set the description for this task list
     fn description_text(text: string);
+    /// set description html text
+    fn description_html(body: string, html_body: string);
+
     fn unset_description();
     fn unset_description_update();
 

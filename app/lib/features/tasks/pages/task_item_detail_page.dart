@@ -5,11 +5,14 @@ import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
+import 'package:acter/common/widgets/edit_html_description_sheet.dart';
+import 'package:acter/common/widgets/redact_content.dart';
+import 'package:acter/common/widgets/render_html.dart';
+import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/tasks/providers/tasklists.dart';
 import 'package:acter/features/tasks/providers/tasks.dart';
-import 'package:acter/features/tasks/sheets/create_update_task_item.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
 import 'package:acter/features/tasks/widgets/skeleton/task_item_detail_page_skeleton.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -50,55 +53,98 @@ class TaskItemDetailPage extends ConsumerWidget {
     WidgetRef ref,
     AsyncValue<Task> task,
   ) {
-    final taskList = ref.watch(taskListProvider(taskListId));
-    return AppBar(
-      title: task.when(
-        data: (d) => GestureDetector(
-          onTap: () => showEditTaskItemNameBottomSheet(
-            context: context,
-            ref: ref,
-            task: d,
-            titleValue: d.title(),
-          ),
-          child: Text(
-            d.title(),
-            style: Theme.of(context).textTheme.titleMedium,
+    return task.when(
+      data: (data) => AppBar(
+        title: SelectionArea(
+          child: GestureDetector(
+            onTap: () => showEditTaskItemNameBottomSheet(
+              context: context,
+              ref: ref,
+              task: data,
+              titleValue: data.title(),
+            ),
+            child: Text(
+              data.title(),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
           ),
         ),
-        error: (e, s) => Text(L10n.of(context).failedToLoad(e)),
-        loading: () => Text(L10n.of(context).loading),
+        actions: [
+          PopupMenuButton(
+            icon: const Icon(Icons.more_vert),
+            itemBuilder: (context) {
+              return [
+                PopupMenuItem(
+                  onTap: () => showEditDescriptionSheet(context, ref, data),
+                  child: Text(
+                    L10n.of(context).editDescription,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+                PopupMenuItem(
+                  onTap: () =>
+                      showRedactDialog(context: context, ref: ref, task: data),
+                  child: Text(
+                    L10n.of(context).delete,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+                PopupMenuItem(
+                  onTap: () => showReportDialog(context: context, task: data),
+                  child: Text(
+                    L10n.of(context).report,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+              ];
+            },
+          ),
+        ],
       ),
-      actions: [
-        TextButton(
-          onPressed: () => editTask(
-            context,
-            ref,
-            taskList.valueOrNull,
-            task.valueOrNull,
-          ),
-          child: Text(
-            L10n.of(context).edit,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-        ),
-      ],
+      error: (e, s) => AppBar(title: Text(L10n.of(context).failedToLoad(e))),
+      loading: () => AppBar(title: Text(L10n.of(context).loading)),
     );
   }
 
-  Future<void> editTask(
-    BuildContext context,
-    WidgetRef ref,
-    TaskList? taskList,
-    Task? task,
-  ) async {
-    if (taskList != null && task != null) {
-      showCreateUpdateTaskItemBottomSheet(
-        context,
-        taskList: taskList,
-        taskName: task.title(),
-        task: task,
-      );
-    }
+  // Redact Task Item Dialog
+  void showRedactDialog({
+    required BuildContext context,
+    required WidgetRef ref,
+    required Task task,
+  }) {
+    showAdaptiveDialog(
+      context: context,
+      builder: (context) => RedactContentWidget(
+        title: L10n.of(context).deleteTaskItem,
+        onSuccess: () {
+          ref.invalidate(tasksProvider);
+          ref.invalidate(taskListProvider);
+          Navigator.of(context, rootNavigator: true).pop();
+        },
+        eventId: task.eventIdStr(),
+        senderId: task.authorStr(),
+        roomId: task.roomIdStr(),
+        isSpace: true,
+      ),
+    );
+  }
+
+  // Report Task Item Dialog
+  void showReportDialog({
+    required BuildContext context,
+    required Task task,
+  }) {
+    showAdaptiveDialog(
+      context: context,
+      builder: (ctx) => ReportContentWidget(
+        title: L10n.of(context).reportTaskItem,
+        description: L10n.of(context).reportThisContent,
+        eventId: task.eventIdStr(),
+        senderId: task.authorStr(),
+        roomId: task.roomIdStr(),
+        isSpace: true,
+      ),
+    );
   }
 
   Widget _buildBody(
@@ -120,7 +166,7 @@ class TaskItemDetailPage extends ConsumerWidget {
         child: Column(
           children: [
             const SizedBox(height: 10),
-            _widgetDescription(context, task),
+            _widgetDescription(context, task, ref),
             _widgetListName(context, ref),
             _widgetTaskDate(context, task),
             _widgetTaskAssignment(context, task, ref),
@@ -135,21 +181,81 @@ class TaskItemDetailPage extends ConsumerWidget {
     );
   }
 
-  Widget _widgetDescription(BuildContext context, Task task) {
-    if (task.description() == null) return const SizedBox.shrink();
+  Widget _widgetDescription(BuildContext context, Task task, WidgetRef ref) {
+    final description = task.description();
+    if (description == null) return const SizedBox.shrink();
+    final formattedBody = description.formattedBody();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          task.description()!.body(),
-          style: Theme.of(context).textTheme.labelLarge,
+        SelectionArea(
+          child: GestureDetector(
+            onTap: () {
+              showEditDescriptionSheet(context, ref, task);
+            },
+            child: formattedBody != null
+                ? RenderHtml(
+                    text: formattedBody,
+                    defaultTextStyle: Theme.of(context).textTheme.labelLarge,
+                  )
+                : Text(
+                    description.body(),
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
+          ),
         ),
         const SizedBox(height: 10),
         const Divider(indent: 10, endIndent: 18),
         const SizedBox(height: 10),
       ],
     );
+  }
+
+  void showEditDescriptionSheet(
+    BuildContext context,
+    WidgetRef ref,
+    Task task,
+  ) {
+    showEditHtmlDescriptionBottomSheet(
+      context: context,
+      descriptionHtmlValue: task.description()?.formattedBody(),
+      descriptionMarkdownValue: task.description()?.body(),
+      onSave: (htmlBodyDescription, plainDescription) {
+        _saveDescription(
+          context,
+          ref,
+          task,
+          htmlBodyDescription,
+          plainDescription,
+        );
+      },
+    );
+  }
+
+  Future<void> _saveDescription(
+    BuildContext context,
+    WidgetRef ref,
+    Task task,
+    String htmlBodyDescription,
+    String plainDescription,
+  ) async {
+    EasyLoading.show(status: L10n.of(context).updatingDescription);
+    try {
+      final updater = task.updateBuilder();
+      updater.descriptionHtml(plainDescription, htmlBodyDescription);
+      await updater.send();
+      EasyLoading.dismiss();
+      if (context.mounted) context.pop();
+    } catch (e, st) {
+      _log.severe('Failed to update event description', e, st);
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
+      EasyLoading.showError(
+        L10n.of(context).errorUpdatingDescription(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 
   Widget _widgetListName(

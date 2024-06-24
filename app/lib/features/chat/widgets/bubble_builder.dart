@@ -56,20 +56,20 @@ class BubbleBuilder extends ConsumerWidget {
         isMemberEvent
             ? child
             : SwipeTo(
-                onLeftSwipe: (DragUpdateDetails details) {
+                onRightSwipe: (DragUpdateDetails details) {
                   ref
                       .read(chatInputProvider(roomId).notifier)
                       .setReplyToMessage(message);
                 },
-                iconOnLeftSwipe: Icons.reply_rounded,
-                onRightSwipe: isAuthor
+                iconOnRightSwipe: Icons.reply_rounded,
+                onLeftSwipe: isAuthor
                     ? (DragUpdateDetails details) {
                         ref
                             .read(chatInputProvider(roomId).notifier)
                             .setEditMessage(message);
                       }
                     : null,
-                iconOnRightSwipe: Atlas.pencil_edit_thin,
+                iconOnLeftSwipe: Atlas.pencil_edit_thin,
                 child: _ChatBubble(
                   convo: convo,
                   message: message,

@@ -885,7 +885,7 @@
   "@play": {},
   "playbackSpeed": "Playback speed",
   "@playbackSpeed": {},
-  "pleaseCheckYourInbox": "Please check your inbox for the validation email",
+  "pleaseCheckYourInbox": "Please check your inbox for the validation email and click the link before it expires",
   "@pleaseCheckYourInbox": {},
   "pleaseEnterAName": "Please enter a name",
   "@pleaseEnterAName": {},
@@ -2224,5 +2224,15 @@
   "updateTask": "Update Task",
   "updatingTask": "Updating Task",
   "updatingTaskFailed": "Updating Task failed {error}",
-  "editTitle": "Edit Title"
+  "editTitle": "Edit Title",
+  "updatingDescription": "Updating Description",
+  "errorUpdatingDescription": "Error updating description: {error}",
+  "editLink": "Edit Link",
+  "updatingLinking": "Updating link",
+  "deleteTaskList": "Delete Task List",
+  "deleteTaskItem": "Delete Task Item",
+  "reportTaskList": "Report Task List",
+  "reportTaskItem": "Report Task Item",
+  "unconfirmedEmailsActivityTitle": "You have unconfirmed E-Mail Addresses",
+  "unconfirmedEmailsActivitySubtitle": "Please follow the link we've sent you in the email and then confirm them here"
 }
