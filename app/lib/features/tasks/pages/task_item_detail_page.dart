@@ -356,22 +356,31 @@ class TaskItemDetailPage extends ConsumerWidget {
     return ListTile(
       dense: true,
       leading: const Icon(Atlas.business_man_thin),
-      title: task.isAssignedToMe()
+      title: Row(
+        children: [
+          Text(
+            L10n.of(context).assignment,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          const Spacer(),
+          ActerInlineTextButton(
+            onPressed: () => task.isAssignedToMe()
+                ? onUnAssign(context, task)
+                : onAssign(context, task),
+            child: Text(
+              task.isAssignedToMe()
+                  ? L10n.of(context).removeMyself
+                  : L10n.of(context).assignMyself,
+            ),
+          )
+        ],
+      ),
+      subtitle: task.isAssignedToMe()
           ? assigneeName(context, task, ref)
           : Text(
               L10n.of(context).noAssignment,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
-      trailing: ActerInlineTextButton(
-        onPressed: () => task.isAssignedToMe()
-            ? onUnAssign(context, task)
-            : onAssign(context, task),
-        child: Text(
-          task.isAssignedToMe()
-              ? L10n.of(context).removeMyself
-              : L10n.of(context).assignMyself,
-        ),
-      ),
     );
   }
 
@@ -381,20 +390,34 @@ class TaskItemDetailPage extends ConsumerWidget {
     WidgetRef ref,
   ) {
     final assignees = task.assigneesStr().map((s) => s.toDartString()).toList();
-    final memberData = ref.watch(
-      roomMemberProvider((roomId: task.roomIdStr(), userId: assignees.first)),
-    );
-    return memberData.when(
-      data: (data) => Text(
-        data.profile.displayName ?? '',
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
-      error: (error, stackTrace) => Text(
-        L10n.of(context).errorLoading(error),
-      ),
-      loading: () => Skeletonizer(
-        child: Text(L10n.of(context).loading),
-      ),
+
+    return Wrap(
+      direction: Axis.horizontal,
+      children: assignees.map((i) {
+        final memberData = ref.watch(
+          roomMemberProvider(
+            (roomId: task.roomIdStr(), userId: i),
+          ),
+        );
+        return memberData.when(
+          data: (data) => Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: Chip(
+              labelPadding: EdgeInsets.zero,
+              label: Text(
+                data.profile.displayName ?? '',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ),
+          ),
+          error: (error, stackTrace) => Text(
+            L10n.of(context).errorLoading(error),
+          ),
+          loading: () => Skeletonizer(
+            child: Text(L10n.of(context).loading),
+          ),
+        );
+      }).toList(),
     );
   }
 
