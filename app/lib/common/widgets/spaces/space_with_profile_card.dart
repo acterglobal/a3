@@ -54,6 +54,9 @@ class SpaceWithProfileCard extends StatelessWidget {
   /// If null, `EdgeInsets.symmetric(horizontal: 16.0)` is used.
   final EdgeInsetsGeometry? contentPadding;
 
+  /// If null, `EdgeInsets.symmetric(horizontal: 16.0)` is used.
+  final EdgeInsetsGeometry? margin;
+
   /// The shape of the card's [Material].
   ///
   /// Defines the card's [Material.shape].
@@ -89,6 +92,7 @@ class SpaceWithProfileCard extends StatelessWidget {
     this.shape,
     this.withBorder = true,
     this.showParents = true,
+    this.margin,
     required this.avatarSize,
     required this.contentPadding,
   });
@@ -112,6 +116,7 @@ class SpaceWithProfileCard extends StatelessWidget {
     );
 
     return Card(
+      margin: margin,
       child: ListTile(
         contentPadding: contentPadding,
         onTap: onTap ?? () => context.push('/$roomId'),
@@ -127,5 +132,4 @@ class SpaceWithProfileCard extends StatelessWidget {
       ),
     );
   }
-
 }

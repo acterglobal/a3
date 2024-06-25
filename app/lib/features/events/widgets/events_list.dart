@@ -32,8 +32,9 @@ class EventsList extends ConsumerWidget {
                     itemCount: eventsLimit,
                     physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (context, idx) => EventItem(
-                        margin: const EdgeInsets.only(bottom: 14),
-                        event: events[idx]),
+                      margin: const EdgeInsets.only(bottom: 14),
+                      event: events[idx],
+                    ),
                   )
                 : Padding(
                     padding: const EdgeInsets.all(8.0),
