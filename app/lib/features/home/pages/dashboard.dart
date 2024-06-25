@@ -15,7 +15,6 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -100,7 +99,7 @@ class Dashboard extends ConsumerWidget {
           children: [
             const Icon(Icons.search),
             const SizedBox(width: 8),
-            Text(L10n.of(context).search)
+            Text(L10n.of(context).search),
           ],
         ),
       ),
@@ -114,17 +113,19 @@ class Dashboard extends ConsumerWidget {
         Row(
           children: [
             homeQuickActionItem(
-              context,
-              L10n.of(context).pins,
-              Atlas.pin,
-              Colors.orangeAccent,
+              context: context,
+              title: L10n.of(context).pins,
+              iconData: Atlas.pin,
+              color: Colors.orangeAccent,
+              onTap: () => context.pushNamed(Routes.pins.name),
             ),
             const SizedBox(width: 20),
             homeQuickActionItem(
-              context,
-              L10n.of(context).events,
-              Atlas.calendar,
-              Colors.blue,
+              context: context,
+              title: L10n.of(context).events,
+              iconData: Atlas.calendar_dots,
+              color: Colors.blue,
+              onTap: () => context.pushNamed(Routes.calendarEvents.name),
             ),
           ],
         ),
@@ -132,17 +133,19 @@ class Dashboard extends ConsumerWidget {
         Row(
           children: [
             homeQuickActionItem(
-              context,
-              L10n.of(context).tasks,
-              Atlas.list,
-              Colors.green,
+              context: context,
+              title: L10n.of(context).tasks,
+              iconData: Atlas.list,
+              color: Colors.green,
+              onTap: () => context.pushNamed(Routes.tasks.name),
             ),
             const SizedBox(width: 20),
             homeQuickActionItem(
-              context,
-              L10n.of(context).updates,
-              Atlas.megaphone_thin,
-              Colors.orange,
+              context: context,
+              title: L10n.of(context).updates,
+              iconData: Atlas.megaphone_thin,
+              color: Colors.blueGrey,
+              onTap: () => context.goNamed(Routes.updates.name),
             ),
           ],
         ),
@@ -150,28 +153,36 @@ class Dashboard extends ConsumerWidget {
     );
   }
 
-  Widget homeQuickActionItem(
-    BuildContext context,
-    String title,
-    IconData iconData,
-    Color color,
-  ) {
+  Widget homeQuickActionItem({
+    required BuildContext context,
+    required String title,
+    required IconData iconData,
+    required Color color,
+    required Function()? onTap,
+  }) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: const BorderRadius.all(Radius.circular(16)),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              iconData,
-              color: color,
-            ),
-            const SizedBox(width: 8),
-            Text(title),
-          ],
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: const BorderRadius.all(Radius.circular(16)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: const BorderRadius.all(Radius.circular(100)),
+                ),
+                child: Icon(iconData, size: 16),
+              ),
+              const SizedBox(width: 8),
+              Text(title),
+            ],
+          ),
         ),
       ),
     );
