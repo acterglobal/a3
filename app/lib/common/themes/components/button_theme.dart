@@ -6,7 +6,7 @@ ElevatedButtonThemeData elevatedButtonTheme(ColorScheme colors) =>
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.all(18),
         elevation: 0,
-        backgroundColor: colors.secondary,
+        backgroundColor: colors.primary,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
