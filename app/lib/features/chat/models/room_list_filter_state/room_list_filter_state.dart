@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod/riverpod.dart';
@@ -29,9 +30,10 @@ Future<bool> roomListFilterStateAppliesToRoom(
     if (convo.getRoomIdStr().toLowerCase().contains(searchTerm)) {
       return true;
     }
-    final profile = await ref.watch(chatProfileDataProvider(convo).future);
-    if (profile.displayName != null &&
-        profile.displayName!.toLowerCase().contains(searchTerm)) {
+    final convoId = convo.getRoomIdStr();
+    final avatarInfo = ref.read(roomAvatarInfoProvider(convoId));
+    if (avatarInfo.displayName != null &&
+        avatarInfo.displayName!.toLowerCase().contains(searchTerm)) {
       return true;
     }
     return false;

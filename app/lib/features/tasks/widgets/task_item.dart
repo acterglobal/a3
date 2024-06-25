@@ -191,8 +191,8 @@ class TaskItem extends ConsumerWidget {
         options: AvatarOptions.DM(
           AvatarInfo(
             uniqueId: assignees.first,
-            displayName: data.profile.displayName,
-            avatar: data.profile.getAvatarImage(),
+            displayName: data.avatarInfo.displayName,
+            avatar: data.avatarInfo.avatar,
           ),
           size: 16,
         ),

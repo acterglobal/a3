@@ -192,7 +192,7 @@ final chatMentionsProvider =
     final data = await ref
         .watch(roomMemberProvider((roomId: roomId, userId: mId)).future);
     Map<String, String> record = {};
-    final displayName = data.profile.displayName;
+    final displayName = data.avatarInfo.displayName;
     record['id'] = mId;
     if (displayName != null) {
       record['displayName'] = displayName;

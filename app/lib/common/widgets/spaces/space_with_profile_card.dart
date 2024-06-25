@@ -3,9 +3,9 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class SpaceWithProfileCard extends StatelessWidget {
+class SpaceWithAvatarInfoCard extends StatelessWidget {
   final String roomId;
-  final ProfileData profile;
+  final AvatarInfo avatarInfo;
   final List<AvatarInfo>? parents;
   final Widget? subtitle;
   final Widget? trailing;
@@ -73,10 +73,10 @@ class SpaceWithProfileCard extends StatelessWidget {
   ///
   final bool showParents;
 
-  const SpaceWithProfileCard({
+  const SpaceWithAvatarInfoCard({
     super.key,
     required this.roomId,
-    required this.profile,
+    required this.avatarInfo,
     this.parents,
     this.subtitle,
     this.trailing,
@@ -95,7 +95,7 @@ class SpaceWithProfileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final displayName = profile.displayName;
+    final displayName = avatarInfo.displayName;
     final title = displayName?.isNotEmpty == true ? displayName! : roomId;
 
     final avatar = ActerAvatar(
@@ -103,7 +103,7 @@ class SpaceWithProfileCard extends StatelessWidget {
         AvatarInfo(
           uniqueId: roomId,
           displayName: title,
-          avatar: profile.getAvatarImage(),
+          avatar: avatarInfo.avatar,
         ),
         parentBadges: showParents ? parents : [],
         size: avatarSize,

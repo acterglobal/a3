@@ -17,6 +17,7 @@ import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/chat/widgets/skeletons/action_item_skeleton_widget.dart';
 import 'package:acter/features/chat/widgets/skeletons/members_list_skeleton_widget.dart';
 import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
@@ -50,8 +51,7 @@ class RoomProfilePage extends ConsumerStatefulWidget {
 class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
   @override
   Widget build(BuildContext context) {
-    final convoProfile =
-        ref.watch(chatProfileDataProviderById(widget.roomId)).valueOrNull;
+    final roomAvatarInfo = ref.watch(roomAvatarInfoProvider(widget.roomId));
     final membership =
         ref.watch(roomMembershipProvider(widget.roomId)).valueOrNull;
     final convo = ref.watch(chatProvider(widget.roomId)).valueOrNull;
@@ -60,11 +60,11 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
       padding: EdgeInsets.zero,
       child: Column(
         children: [
-          _buildAppBar(context, convoProfile, membership, convo),
+          _buildAppBar(context, roomAvatarInfo, membership, convo),
           Expanded(
             child: _buildBody(
               context,
-              convoProfile,
+              roomAvatarInfo,
               membership,
               convo,
             ),
@@ -76,7 +76,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
 
   AppBar _buildAppBar(
     BuildContext context,
-    ProfileData? convoProfile,
+    AvatarInfo roomAvatarInfo,
     Member? membership,
     Convo? convo,
   ) {
@@ -84,7 +84,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     if (membership?.canString('CanSetName') == true) {
       menuListItems.add(
         PopupMenuItem(
-          onTap: () => showEditNameBottomSheet(convoProfile),
+          onTap: () => showEditNameBottomSheet(roomAvatarInfo),
           child: Text(L10n.of(context).editName),
         ),
       );
@@ -126,7 +126,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
 
   Widget _buildBody(
     BuildContext context,
-    ProfileData? convoProfile,
+    AvatarInfo roomAvatarInfo,
     Member? membership,
     Convo? convo,
   ) {
@@ -135,7 +135,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         padding: const EdgeInsets.symmetric(horizontal: 10.0),
         child: Column(
           children: [
-            _header(context, convoProfile, membership),
+            _header(context, roomAvatarInfo, membership),
             _description(context, membership, convo),
             const SizedBox(height: 24),
             _actions(context),
@@ -149,7 +149,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
 
   Widget _header(
     BuildContext context,
-    ProfileData? convoProfile,
+    AvatarInfo roomAvatarInfo,
     Member? membership,
   ) {
     return Column(
@@ -170,11 +170,11 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
           child: GestureDetector(
             onTap: () {
               if (membership?.canString('CanSetName') == true) {
-                showEditNameBottomSheet(convoProfile);
+                showEditNameBottomSheet(roomAvatarInfo);
               }
             },
             child: Text(
-              convoProfile?.displayName ?? widget.roomId,
+              roomAvatarInfo.displayName ?? widget.roomId,
               softWrap: true,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleMedium,
@@ -185,11 +185,11 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     );
   }
 
-  void showEditNameBottomSheet(ProfileData? convoProfile) {
+  void showEditNameBottomSheet(AvatarInfo roomAvatarInfo) {
     showEditTitleBottomSheet(
       context: context,
       bottomSheetTitle: L10n.of(context).editName,
-      titleValue: convoProfile?.displayName ?? '',
+      titleValue: roomAvatarInfo.displayName ?? '',
       onSave: (newName) => _saveName(newName),
     );
   }

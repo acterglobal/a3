@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-final _log = Logger('a3::common::room_avatar');
+// final _log = Logger('a3::common::room_avatar');
 
 class RoomAvatarBuilder extends ConsumerWidget {
   final String roomId;
@@ -21,34 +21,15 @@ class RoomAvatarBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final roomProfile = ref.watch(roomProfileDataProvider(roomId));
-    final child = roomProfile.when(
-      data: (profile) => ActerAvatar(
-        options: AvatarOptions(
-          AvatarInfo(
-            uniqueId: roomId,
-            displayName: profile.displayName ?? roomId,
-            avatar: profile.getAvatarImage(),
-          ),
-          size: avatarSize,
+    final roomAvatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
+    final child = ActerAvatar(
+      options: AvatarOptions(
+        AvatarInfo(
+          uniqueId: roomId,
+          displayName: roomAvatarInfo.displayName ?? roomId,
+          avatar: roomAvatarInfo.avatar,
         ),
-      ),
-      error: (e, st) {
-        _log.severe('error loading room avatar', e, st);
-        return ActerAvatar(
-          options: AvatarOptions(
-            AvatarInfo(uniqueId: roomId, displayName: roomId),
-            size: avatarSize,
-          ),
-        );
-      },
-      loading: () => Skeletonizer(
-        child: ActerAvatar(
-          options: AvatarOptions(
-            AvatarInfo(uniqueId: roomId, displayName: roomId),
-            size: avatarSize,
-          ),
-        ),
+        size: avatarSize,
       ),
     );
     if (padding != null) {

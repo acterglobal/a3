@@ -39,73 +39,67 @@ class ShareInviteCode extends ConsumerWidget {
   }
 
   Widget _buildBody(BuildContext context, WidgetRef ref) {
-    final account = ref.watch(accountProfileProvider);
-    final roomProfile = ref.watch(roomProfileDataProvider(roomId)).valueOrNull;
-    return account.when(
-      data: (data) {
-        final displayName = data.profile.displayName ?? '';
-        return Center(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            constraints: const BoxConstraints(maxWidth: 500),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _buildMessageContent(
-                  context,
-                  ref,
-                  displayName,
-                  roomProfile?.displayName ?? '',
-                ),
-                const SizedBox(height: 30),
-                _buildShareIntents(
-                  context,
-                  displayName,
-                  roomProfile?.displayName ?? '',
-                ),
-                const SizedBox(height: 10),
-                _buildDoneButton(context),
-                const SizedBox(height: 5),
-              ],
+    final accountAvatarInfo = ref.watch(accountAvatarInfoProvider);
+    final roomAvatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
+    final displayName = accountAvatarInfo.displayName ?? '';
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        constraints: const BoxConstraints(maxWidth: 500),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildMessageContent(
+              context,
+              ref,
+              displayName,
+              roomAvatarInfo.displayName ?? '',
             ),
-          ),
-        );
-      },
-      error: (e, trace) => Text('${L10n.of(context).error}: $e'),
-      loading: () => _shareInviteSkeletonWidget(context, ref),
-    );
-  }
-
-  Widget _shareInviteSkeletonWidget(BuildContext context, WidgetRef ref) {
-    return Skeletonizer(
-      child: Center(
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          constraints: const BoxConstraints(maxWidth: 500),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildMessageContent(
-                context,
-                ref,
-                'displayName',
-                'roomName',
-              ),
-              const SizedBox(height: 30),
-              _buildShareIntents(
-                context,
-                'displayName',
-                'roomName',
-              ),
-              const SizedBox(height: 10),
-              _buildDoneButton(context),
-              const SizedBox(height: 5),
-            ],
-          ),
+            const SizedBox(height: 30),
+            _buildShareIntents(
+              context,
+              displayName,
+              roomAvatarInfo.displayName ?? '',
+            ),
+            const SizedBox(height: 10),
+            _buildDoneButton(context),
+            const SizedBox(height: 5),
+          ],
         ),
       ),
     );
   }
+
+  // Widget _shareInviteSkeletonWidget(BuildContext context, WidgetRef ref) {
+  //   return Skeletonizer(
+  //     child: Center(
+  //       child: Container(
+  //         padding: const EdgeInsets.symmetric(horizontal: 20.0),
+  //         constraints: const BoxConstraints(maxWidth: 500),
+  //         child: Column(
+  //           crossAxisAlignment: CrossAxisAlignment.stretch,
+  //           children: [
+  //             _buildMessageContent(
+  //               context,
+  //               ref,
+  //               'displayName',
+  //               'roomName',
+  //             ),
+  //             const SizedBox(height: 30),
+  //             _buildShareIntents(
+  //               context,
+  //               'displayName',
+  //               'roomName',
+  //             ),
+  //             const SizedBox(height: 10),
+  //             _buildDoneButton(context),
+  //             const SizedBox(height: 5),
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _buildMessageContent(
     BuildContext context,

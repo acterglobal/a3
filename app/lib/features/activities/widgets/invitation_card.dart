@@ -73,36 +73,22 @@ class InvitationCard extends ConsumerWidget {
   }
 
   ListTile renderSpaceTile(BuildContext context, WidgetRef ref) {
-    final roomProfile =
-        ref.watch(roomProfileDataProvider(invitation.roomIdStr()));
+    final roomAvatarInfo =
+        ref.watch(roomAvatarInfoProvider(invitation.roomIdStr()));
 
     final roomId = invitation.roomIdStr();
     return ListTile(
-      leading: roomProfile.maybeWhen(
-        data: (room) => ActerAvatar(
-          options: AvatarOptions(
-            AvatarInfo(
-              uniqueId: roomId,
-              displayName: room.displayName,
-              avatar: room.getAvatarImage(),
-            ),
-            size: 48,
+      leading: ActerAvatar(
+        options: AvatarOptions(
+          AvatarInfo(
+            uniqueId: roomId,
+            displayName: roomAvatarInfo.displayName,
+            avatar: roomAvatarInfo.avatar,
           ),
-        ),
-        orElse: () => ActerAvatar(
-          options: AvatarOptions(
-            AvatarInfo(
-              uniqueId: roomId,
-            ),
-            size: 48,
-          ),
+          size: 48,
         ),
       ),
-      title: roomProfile.when(
-        data: (room) => Text(room.displayName ?? roomId),
-        loading: () => Skeletonizer(child: Text(roomId)),
-        error: (e, s) => Text(L10n.of(context).errorLoadingRoom(e, roomId)),
-      ),
+      title: Text(roomAvatarInfo.displayName ?? roomId),
       subtitle: Wrap(
         children: [
           Text(L10n.of(context).invitationToSpace),
@@ -116,35 +102,20 @@ class InvitationCard extends ConsumerWidget {
   }
 
   ListTile renderGroupChatTile(BuildContext context, WidgetRef ref) {
-    final roomProfile =
-        ref.watch(roomProfileDataProvider(invitation.roomIdStr()));
+    final roomAvatarInfo =
+        ref.watch(roomAvatarInfoProvider(invitation.roomIdStr()));
 
     final roomId = invitation.roomIdStr();
     return ListTile(
-      leading: roomProfile.maybeWhen(
-        data: (room) => ActerAvatar(
-          options: AvatarOptions(
-            AvatarInfo(
-              uniqueId: roomId,
-              displayName: room.displayName,
-              avatar: room.getAvatarImage(),
-            ),
-            size: 48,
+      leading: ActerAvatar(
+        options: AvatarOptions(
+          AvatarInfo(
+            uniqueId: roomId,
+            displayName: roomAvatarInfo.displayName,
+            avatar: roomAvatarInfo.avatar,
           ),
+          size: 48,
         ),
-        orElse: () => ActerAvatar(
-          options: AvatarOptions(
-            AvatarInfo(
-              uniqueId: roomId,
-            ),
-            size: 48,
-          ),
-        ),
-      ),
-      title: roomProfile.when(
-        data: (room) => Text(room.displayName ?? roomId),
-        loading: () => Skeletonizer(child: Text(roomId)),
-        error: (e, s) => Text(L10n.of(context).errorLoadingRoom(e, roomId)),
       ),
       subtitle: Wrap(
         children: [
@@ -171,7 +142,7 @@ class InvitationCard extends ConsumerWidget {
           AvatarInfo(
             uniqueId: roomId,
             displayName: profile?.displayName,
-            avatar: profile?.getAvatarImage(),
+            avatar: profile?.avatar,
           ),
           size: 48,
         ),

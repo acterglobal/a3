@@ -3,12 +3,13 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ConvoWithProfileCard extends ConsumerWidget {
+class ConvoWithAvatarInfoCard extends ConsumerWidget {
   final String roomId;
-  final ProfileData profile;
+  final AvatarInfo avatarInfo;
   final Widget? subtitle;
   final Widget? trailing;
   final Widget? avatar;
@@ -30,10 +31,10 @@ class ConvoWithProfileCard extends ConsumerWidget {
   ///
   final bool showParents;
 
-  const ConvoWithProfileCard({
+  const ConvoWithAvatarInfoCard({
     super.key,
     required this.roomId,
-    required this.profile,
+    required this.avatarInfo,
     this.avatar,
     this.onTap,
     this.onLongPress,
@@ -61,7 +62,7 @@ class ConvoWithProfileCard extends ConsumerWidget {
                 onLongPress: onLongPress,
                 leading: avatarWithIndicator(context, ref),
                 title: Text(
-                  profile.displayName ?? roomId,
+                  avatarInfo.displayName ?? roomId,
                   style: Theme.of(context)
                       .textTheme
                       .bodyMedium!

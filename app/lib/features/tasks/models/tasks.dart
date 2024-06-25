@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class TaskBrief {
   final Task task;
   final TaskList taskList;
-  final SpaceWithProfileData space;
+  final SpaceWithAvatarInfo space;
 
   const TaskBrief({
     required this.task,

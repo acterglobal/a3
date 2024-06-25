@@ -405,7 +405,7 @@ class TaskItemDetailPage extends ConsumerWidget {
             child: Chip(
               labelPadding: EdgeInsets.zero,
               label: Text(
-                data.profile.displayName ?? '',
+                data.avatarInfo.displayName ?? '',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ),

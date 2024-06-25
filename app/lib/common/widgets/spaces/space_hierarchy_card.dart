@@ -98,7 +98,7 @@ class SpaceHierarchyCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final roomId = roomInfo.roomIdStr();
-    final profile = ref.watch(spaceHierarchyProfileProvider(roomInfo));
+    final avatarInfo = ref.watch(spaceHierarchyAvatarInfoProvider(roomInfo));
     final topic = roomInfo.topic();
     final Widget? subtitle = topic?.isNotEmpty == true
         ? ExpandableText(
@@ -110,38 +110,26 @@ class SpaceHierarchyCard extends ConsumerWidget {
           )
         : null;
 
-    return profile.when(
-      data: (profile) => SpaceWithProfileCard(
-        roomId: roomId,
-        profile: profile,
-        subtitle: subtitle,
-        onTap: onTap ?? () {},
-        onFocusChange: onFocusChange,
-        onLongPress: onLongPress,
-        avatarSize: avatarSize,
-        contentPadding: contentPadding,
-        shape: shape,
-        withBorder: withBorder,
-        trailing: RoomHierarchyJoinButton(
-          joinRule: roomInfo.joinRuleStr().toLowerCase(),
-          roomId: roomInfo.roomIdStr(),
-          roomName: roomInfo.name() ?? roomInfo.roomIdStr(),
-          viaServerName: roomInfo.viaServerName(),
-          forward: (spaceId) {
-            goToSpace(context, spaceId);
-            ref.invalidate(relatedSpacesProvider(parentId));
-          },
-        ),
-      ),
-      error: (error, stack) => ListTile(
-        title: Text(L10n.of(context).errorLoading(roomId)),
-        subtitle: Text('$error'),
-      ),
-      loading: () => Skeletonizer(
-        child: ListTile(
-          title: Text(roomId),
-          subtitle: Text(L10n.of(context).loading),
-        ),
+    return SpaceWithAvatarInfoCard(
+      roomId: roomId,
+      avatarInfo: avatarInfo,
+      subtitle: subtitle,
+      onTap: onTap ?? () {},
+      onFocusChange: onFocusChange,
+      onLongPress: onLongPress,
+      avatarSize: avatarSize,
+      contentPadding: contentPadding,
+      shape: shape,
+      withBorder: withBorder,
+      trailing: RoomHierarchyJoinButton(
+        joinRule: roomInfo.joinRuleStr().toLowerCase(),
+        roomId: roomInfo.roomIdStr(),
+        roomName: roomInfo.name() ?? roomInfo.roomIdStr(),
+        viaServerName: roomInfo.viaServerName(),
+        forward: (spaceId) {
+          goToSpace(context, spaceId);
+          ref.invalidate(relatedSpacesProvider(parentId));
+        },
       ),
     );
   }

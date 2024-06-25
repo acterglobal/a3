@@ -96,21 +96,14 @@ class PublicRoomItem extends ConsumerWidget {
                 onTap: () => onSelected(
                   item,
                 ),
-                leading: profileInfo.when(
-                  data: (profile) => ActerAvatar(
-                    options: AvatarOptions(
-                      AvatarInfo(
-                        uniqueId: item.roomIdStr(),
-                        displayName: profile.displayName,
-                        avatar: profile.getAvatarImage(),
-                      ),
+                leading: ActerAvatar(
+                  options: AvatarOptions(
+                    AvatarInfo(
+                      uniqueId: item.roomIdStr(),
+                      displayName: profileInfo.displayName,
+                      avatar: profileInfo.avatar,
                     ),
                   ),
-                  error: (e, s) {
-                    _log.severe('loading failed', e, s);
-                    return fallbackAvatar();
-                  },
-                  loading: fallbackAvatar,
                 ),
                 title: Text(
                   item.name() ?? L10n.of(context).noDisplayName,

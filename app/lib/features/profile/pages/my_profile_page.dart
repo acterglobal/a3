@@ -14,7 +14,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ChangeDisplayName extends StatefulWidget {
-  final AccountProfile account;
+  final AccountWithAvatarInfo account;
 
   const ChangeDisplayName({
     super.key,
@@ -32,7 +32,7 @@ class _ChangeDisplayNameState extends State<ChangeDisplayName> {
   @override
   void initState() {
     super.initState();
-    newUsername.text = widget.account.profile.displayName ?? '';
+    newUsername.text = widget.account.avatarInfo.displayName ?? '';
   }
 
   @override
@@ -61,7 +61,7 @@ class _ChangeDisplayNameState extends State<ChangeDisplayName> {
         ActerPrimaryActionButton(
           onPressed: () {
             if (!_formKey.currentState!.validate()) return;
-            final currentUserName = account.profile.displayName;
+            final currentUserName = account.avatarInfo.displayName;
             final newDisplayName = newUsername.text;
             if (currentUserName != newDisplayName) {
               Navigator.pop(context, newDisplayName);
@@ -82,24 +82,25 @@ class MyProfilePage extends StatelessWidget {
   const MyProfilePage({super.key});
 
   Future<void> updateDisplayName(
-    AccountProfile profile,
+    AccountWithAvatarInfo accountWithAvatar,
     BuildContext context,
     WidgetRef ref,
   ) async {
     final TextEditingController newName = TextEditingController();
-    newName.text = profile.profile.displayName ?? '';
+    newName.text = accountWithAvatar.avatarInfo.displayName ?? '';
 
     final newText = await showDialog<String>(
       context: context,
-      builder: (BuildContext context) => ChangeDisplayName(account: profile),
+      builder: (BuildContext context) =>
+          ChangeDisplayName(account: accountWithAvatar),
     );
 
     if (!context.mounted) return;
     if (newText == null) return;
 
     EasyLoading.show(status: L10n.of(context).updatingDisplayName);
-    await profile.account.setDisplayName(newText);
-    ref.invalidate(accountProfileProvider);
+    await accountWithAvatar.account.setDisplayName(newText);
+    ref.invalidate(accountWithAvatarInfoProvider);
 
     if (!context.mounted) {
       EasyLoading.dismiss();
@@ -109,7 +110,7 @@ class MyProfilePage extends StatelessWidget {
   }
 
   Future<void> updateAvatar(
-    AccountProfile profile,
+    AccountWithAvatarInfo accountWithAvatar,
     BuildContext context,
     WidgetRef ref,
   ) async {
@@ -121,8 +122,8 @@ class MyProfilePage extends StatelessWidget {
     if (result != null) {
       EasyLoading.show(status: L10n.of(context).updatingProfileImage);
       final file = result.files.first;
-      await profile.account.uploadAvatar(file.path!);
-      ref.invalidate(accountProfileProvider);
+      await accountWithAvatar.account.uploadAvatar(file.path!);
+      ref.invalidate(accountWithAvatarInfoProvider);
       // close loading
       EasyLoading.dismiss();
     } else {
@@ -153,12 +154,12 @@ class MyProfilePage extends StatelessWidget {
   Widget _buildBody(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
-        final account = ref.watch(accountProfileProvider);
+        final account = ref.watch(accountWithAvatarInfoProvider);
 
         return account.when(
           data: (data) {
             final userId = data.account.userId().toString();
-            final displayName = data.profile.displayName ?? '';
+            final displayName = data.avatarInfo.displayName ?? '';
 
             return SingleChildScrollView(
               child: Padding(

@@ -1,14 +1,14 @@
 import 'dart:io';
 
-import 'package:acter/common/models/profile_data.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 
-typedef ChatWithProfileData = ({Convo chat, ProfileData profile});
-typedef SpaceWithProfileData = ({Space space, ProfileData profile});
+typedef ChatWithAvatarInfo = ({Convo chat, AvatarInfo avatarInfo});
+typedef SpaceWithAvatarInfo = ({Space space, AvatarInfo avatarInfo});
 typedef MemberInfo = ({String userId, String roomId});
 typedef ChatMessageInfo = ({String messageId, String roomId});
 
-typedef MemberWithProfile = ({Member member, ProfileData profile});
+typedef MemberWithAvatarInfo = ({Member member, AvatarInfo avatarInfo});
 
 enum AttachmentType { camera, image, audio, video, location, file }
 

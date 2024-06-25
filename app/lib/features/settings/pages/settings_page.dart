@@ -40,7 +40,7 @@ class SettingsPage extends ConsumerWidget {
   }
 
   Widget _userProfileUI(BuildContext context, WidgetRef ref) {
-    final account = ref.watch(accountProfileProvider);
+    final account = ref.watch(accountWithAvatarInfoProvider);
     final size = MediaQuery.of(context).size;
     final shouldGoNotNamed = size.width > 770;
     return account.when(
@@ -60,13 +60,13 @@ class SettingsPage extends ConsumerWidget {
                   options: AvatarOptions.DM(
                     AvatarInfo(
                       uniqueId: userId,
-                      avatar: data.profile.getAvatarImage(),
-                      displayName: data.profile.displayName,
+                      avatar: data.avatarInfo.avatar,
+                      displayName: data.avatarInfo.displayName,
                     ),
                   ),
                 ),
                 title: Text(
-                  data.profile.displayName ?? '',
+                  data.avatarInfo.displayName ?? '',
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.titleSmall,
                 ),

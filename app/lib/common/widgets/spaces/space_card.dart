@@ -118,38 +118,24 @@ class SpaceCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final roomId = space.getRoomIdStr();
-    final profile = ref.watch(spaceProfileDataProvider(space));
+    final avatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
     final subtitle = subtitleFn != null ? subtitleFn!(space) : null;
     final parents = ref.watch(parentAvatarInfosProvider(roomId)).valueOrNull;
 
-    return profile.when(
-      data: (profile) => SpaceWithProfileCard(
-        roomId: roomId,
-        profile: profile,
-        parents: parents,
-        subtitle: subtitle,
-        onTap: onTap,
-        onFocusChange: onFocusChange,
-        onLongPress: onLongPress,
-        avatarSize: avatarSize,
-        contentPadding: contentPadding,
-        shape: shape,
-        withBorder: withBorder,
-        showParents: showParents,
-        trailing: trailing,
-      ),
-      error: (error, stack) => ListTile(
-        title: Text(
-          L10n.of(context).errorLoadingRoom(roomId, error),
-        ),
-        subtitle: Text('$error'),
-      ),
-      loading: () => Skeletonizer(
-        child: ListTile(
-          title: Text(roomId),
-          subtitle: Text(L10n.of(context).loading),
-        ),
-      ),
+    return SpaceWithAvatarInfoCard(
+      roomId: roomId,
+      avatarInfo: avatarInfo,
+      parents: parents,
+      subtitle: subtitle,
+      onTap: onTap,
+      onFocusChange: onFocusChange,
+      onLongPress: onLongPress,
+      avatarSize: avatarSize,
+      contentPadding: contentPadding,
+      shape: shape,
+      withBorder: withBorder,
+      showParents: showParents,
+      trailing: trailing,
     );
   }
 }

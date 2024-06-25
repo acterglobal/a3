@@ -1,6 +1,7 @@
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -49,9 +50,9 @@ final searchResultProvider = FutureProvider<List<UserProfile>>((ref) async {
 
 class FoundUser {
   final String userId;
-  final ProfileData profile;
+  final AvatarInfo avatarInfo;
 
-  const FoundUser({required this.userId, required this.profile});
+  const FoundUser({required this.userId, required this.avatarInfo});
 }
 
 final suggestedUsersProvider = FutureProvider.family<List<FoundUser>, String>(
@@ -69,7 +70,7 @@ final suggestedUsersProvider = FutureProvider.family<List<FoundUser>, String>(
           _log.severe('failure fetching avatar', e, s);
         }
       }
-      final profile = ProfileData(displayName, avatar);
+      final avatarInfo = ProfileData(displayName, avatar);
       ret.add(FoundUser(userId: user.userId().toString(), profile: profile));
     }
     return ret;

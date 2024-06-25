@@ -52,72 +52,33 @@ class RoomAvatar extends ConsumerWidget {
 
   Widget chatAvatarUI(Convo convo, WidgetRef ref, BuildContext context) {
     //Data Providers
-    final convoProfile = ref.watch(chatProfileDataProvider(convo));
+    final avatarInfo = ref.watch(roomAvatarInfoProvider(convo.getRoomIdStr()));
 
     //Manage Avatar UI according to the avatar availability
-    return convoProfile.when(
-      data: (profile) {
-        //Show conversations avatar if available
-        //Group : Show default image if avatar is not available
-        if (!convo.isDm()) {
-          return ActerAvatar(
-            options: AvatarOptions(
-              AvatarInfo(
-                uniqueId: roomId,
-                displayName: profile.displayName ?? roomId,
-                avatar: profile.getAvatarImage(),
-              ),
-              size: avatarSize,
-              parentBadges: renderParentsInfo(roomId, ref),
-              badgesSize: avatarSize / 2,
-            ),
-          );
-        } else if (profile.hasAvatar()) {
-          return ActerAvatar(
-            options: AvatarOptions.DM(
-              AvatarInfo(
-                uniqueId: roomId,
-                displayName: profile.displayName ?? roomId,
-                avatar: profile.getAvatarImage(),
-              ),
-              size: 18,
-            ),
-          );
-        }
-
-        // Type == DM and no avatar: Handle avatar according to the members counts
-        else {
-          return dmAvatar(ref, context);
-        }
-      },
-      skipLoadingOnReload: false,
-      error: (err, stackTrace) {
-        _log.severe('Failed to load avatar', err, stackTrace);
-        final options = convo.isDm()
-            ? AvatarOptions.DM(
-                AvatarInfo(
-                  uniqueId: roomId,
-                  displayName: roomId,
-                ),
-                size: avatarSize,
-              )
-            : AvatarOptions(
-                AvatarInfo(
-                  uniqueId: roomId,
-                  displayName: roomId,
-                ),
-                size: avatarSize,
-              );
-        return ActerAvatar(
-          options: options,
-        );
-      },
-      loading: () => Skeletonizer(
-        child: ActerAvatar(
-          options: AvatarOptions.DM(AvatarInfo(uniqueId: roomId), size: 24),
+    //Show conversations avatar if available
+    //Group : Show default image if avatar is not available
+    if (!convo.isDm()) {
+      return ActerAvatar(
+        options: AvatarOptions(
+          avatarInfo,
+          size: avatarSize,
+          parentBadges: renderParentsInfo(roomId, ref),
+          badgesSize: avatarSize / 2,
         ),
-      ),
-    );
+      );
+    } else if (avatarInfo.avatar == null) {
+      return ActerAvatar(
+        options: AvatarOptions.DM(
+          avatarInfo,
+          size: 18,
+        ),
+      );
+    }
+
+    // Type == DM and no avatar: Handle avatar according to the members counts
+    else {
+      return dmAvatar(ref, context);
+    }
   }
 
   Widget dmAvatar(WidgetRef ref, BuildContext context) {

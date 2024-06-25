@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -48,12 +49,13 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
   // apply existing data to fields
   Future<void> _editSpaceData() async {
     final space = ref.read(spaceProvider(widget.spaceId!)).requireValue;
-    final profileData = await ref.read(spaceProfileDataProvider(space).future);
+    final spaceId = space.getRoomIdStr();
+    final avatarInfo = ref.read(roomAvatarInfoProvider(spaceId));
     final titleNotifier = ref.read(editTitleProvider.notifier);
     final topicNotifier = ref.read(editTopicProvider.notifier);
     final avatarNotifier = ref.read(editAvatarProvider.notifier);
 
-    titleNotifier.update((state) => profileData.displayName ?? '');
+    titleNotifier.update((state) => avatarInfo.displayName ?? '');
     topicNotifier.update((state) => space.topic() ?? '');
 
     if (profileData.hasAvatar()) {

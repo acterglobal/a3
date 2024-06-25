@@ -2,9 +2,12 @@ import 'dart:async';
 
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/notifiers/notification_settings_notifier.dart';
+import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -13,19 +16,12 @@ final _log = Logger('a3::common::providers');
 // Loading Providers
 final loadingProvider = StateProvider<bool>((ref) => false);
 
-// Account Profile Providers
-class AccountProfile {
+// Account Avatar Info Providers
+class AccountWithAvatarInfo {
   final Account account;
-  final ProfileData profile;
+  final AvatarInfo avatarInfo;
 
-  const AccountProfile(this.account, this.profile);
-}
-
-Future<ProfileData> getProfileData(Account account) async {
-  // FIXME: how to get informed about updates!?!
-  final displayName = await account.displayName();
-  final avatar = await account.avatar(null);
-  return ProfileData(displayName.text(), avatar.data());
+  const AccountWithAvatarInfo(this.account, this.avatarInfo);
 }
 
 final genericUpdatesStream =
@@ -52,10 +48,61 @@ final accountProvider = StateProvider(
   ),
 );
 
-final accountProfileProvider = FutureProvider((ref) async {
+final accountWithAvatarInfoProvider =
+    FutureProvider.autoDispose<AccountWithAvatarInfo>((ref) async {
+  final sdk = await ref.watch(sdkProvider.future);
   final account = ref.watch(accountProvider);
-  final profile = await getProfileData(account);
-  return AccountProfile(account, profile);
+  final thumbSize = sdk.api.newThumbSize(48, 48);
+  final userId = account.userId().toString();
+
+  final avatar = await account.avatar(thumbSize);
+  final fallback = AvatarInfo(uniqueId: userId);
+  if (avatar.data() == null) {
+    return AccountWithAvatarInfo(account, fallback);
+  }
+  final avatarInfo = ref.watch(accountAvatarInfoProvider);
+  return AccountWithAvatarInfo(account, avatarInfo);
+});
+
+final accountAvatarInfoProvider = StateProvider.autoDispose<AvatarInfo>((ref) {
+  final account = ref.watch(accountProvider);
+  final userId = account.userId().toString();
+
+  final displayName = ref.watch(accountDisplayNameProvider).valueOrNull;
+  final avatar = ref.watch(_accountAvatarProvider).valueOrNull;
+  final fallback = AvatarInfo(
+    uniqueId: userId,
+    displayName: displayName,
+  );
+
+  if (avatar == null) {
+    return fallback;
+  }
+
+  return AvatarInfo(
+    uniqueId: userId,
+    displayName: displayName,
+    avatar: avatar,
+  );
+});
+
+/// Caching the name of each Room
+final accountDisplayNameProvider =
+    FutureProvider.autoDispose<String?>((ref) async {
+  final account = ref.watch(accountProvider);
+  return (await account.displayName()).text();
+});
+
+final _accountAvatarProvider =
+    FutureProvider.autoDispose<MemoryImage?>((ref) async {
+  final sdk = await ref.watch(sdkProvider.future);
+  final account = ref.watch(accountProvider);
+  final thumbSize = sdk.api.newThumbSize(48, 48);
+  final avatar = await account.avatar(thumbSize);
+  if (avatar.data() != null) {
+    return MemoryImage(avatar.data()!.asTypedList());
+  }
+  return null;
 });
 
 final notificationSettingsProvider = AsyncNotifierProvider<
