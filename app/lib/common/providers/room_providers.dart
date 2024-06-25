@@ -259,7 +259,7 @@ final _roomAvatarProvider =
 
 /// Provide the AvatarInfo for each room. Update internally accordingly
 final roomAvatarInfoProvider =
-    StateProvider.family<AvatarInfo, String>((ref, roomId) {
+    Provider.family<AvatarInfo, String>((ref, roomId) {
   final fallback = AvatarInfo(uniqueId: roomId);
 
   final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
