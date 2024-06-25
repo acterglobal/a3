@@ -32,7 +32,7 @@ class Dashboard extends ConsumerWidget {
         child: Scaffold(
           appBar: _buildDashboardAppBar(context, client),
           body: Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(20),
             child: SingleChildScrollView(
               child: spaces.isEmpty
                   ? emptyState(context)
@@ -40,10 +40,12 @@ class Dashboard extends ConsumerWidget {
                       children: [
                         searchWidget(context),
                         homeQuickActions(context),
-                        const SizedBox(height: 16),
-                        const MySpacesSection(),
+                        const SizedBox(height: 20),
                         myTaskList(context, ref),
+                        const SizedBox(height: 28),
                         const MyEventsSection(limit: 5),
+                        const SizedBox(height: 20),
+                        const MySpacesSection(limit: 5),
                       ],
                     ),
             ),

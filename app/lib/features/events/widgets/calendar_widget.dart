@@ -25,7 +25,7 @@ class CalendarWidget extends ConsumerStatefulWidget {
 
 class _CalendarWidgetConsumerState extends ConsumerState<CalendarWidget> {
   List<ffi.CalendarEvent> eventList = [];
-  CalendarFormat _calendarFormat = CalendarFormat.month;
+  CalendarFormat _calendarFormat = CalendarFormat.twoWeeks;
   DateTime? _selectedDay;
   DateTime _focusedDay = DateTime.now();
 
