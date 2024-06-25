@@ -164,8 +164,8 @@ final roomSearchedChatsProvider =
 
 /// If the room exists, this returns its space relations
 /// Stays up to date with underlying client data if a room was found.
-final spaceRelationsProvider = FutureProvider.autoDispose
-    .family<SpaceRelations?, String>((ref, roomId) async {
+final spaceRelationsProvider =
+    FutureProvider.family<SpaceRelations?, String>((ref, roomId) async {
   final room = await ref.watch(maybeRoomProvider(roomId).future);
   if (room == null) {
     return null;
@@ -202,8 +202,8 @@ final canonicalParentProvider = FutureProvider.autoDispose
   }
 });
 
-final parentIdsProvider = FutureProvider.autoDispose
-    .family<List<String>, String>((ref, roomId) async {
+final parentIdsProvider =
+    FutureProvider.family<List<String>, String>((ref, roomId) async {
   try {
     // FIXME: we should get only the parent Ids from the underlying SDK
     final relations = await ref.watch(spaceRelationsProvider(roomId).future);
@@ -228,7 +228,7 @@ final parentIdsProvider = FutureProvider.autoDispose
 
 /// Caching the Profile of each Room
 final _roomProfileProvider =
-    FutureProvider.autoDispose.family<RoomProfile, String>((ref, roomId) {
+    FutureProvider.family<RoomProfile, String>((ref, roomId) {
   final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
   if (room == null) {
     throw RoomNotFound;
@@ -239,15 +239,15 @@ final _roomProfileProvider =
 
 /// Caching the name of each Room
 final roomDisplayNameProvider =
-    FutureProvider.autoDispose.family<String?, String>((ref, roomId) async {
+    FutureProvider.family<String?, String>((ref, roomId) async {
   return (await (await ref.watch(_roomProfileProvider(roomId).future))
           .getDisplayName())
       .text();
 });
 
 /// Caching the MemoryImage of each room
-final _roomAvatarProvider = FutureProvider.autoDispose
-    .family<MemoryImage?, String>((ref, roomId) async {
+final _roomAvatarProvider =
+    FutureProvider.family<MemoryImage?, String>((ref, roomId) async {
   final avatar = (await (await ref.watch(_roomProfileProvider(roomId).future))
           .getAvatar(null))
       .data();
@@ -259,7 +259,7 @@ final _roomAvatarProvider = FutureProvider.autoDispose
 
 /// Provide the AvatarInfo for each room. Update internally accordingly
 final roomAvatarInfoProvider =
-    StateProvider.autoDispose.family<AvatarInfo, String>((ref, roomId) {
+    StateProvider.family<AvatarInfo, String>((ref, roomId) {
   final fallback = AvatarInfo(uniqueId: roomId);
 
   final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
@@ -278,8 +278,8 @@ final roomAvatarInfoProvider =
 });
 
 /// get the [AvatarInfo] list of all the parents
-final parentAvatarInfosProvider = FutureProvider.autoDispose
-    .family<List<AvatarInfo>?, String>((ref, roomId) async {
+final parentAvatarInfosProvider =
+    FutureProvider.family<List<AvatarInfo>?, String>((ref, roomId) async {
   final parents = await ref.watch(parentIdsProvider(roomId).future);
   // watch each one individually
   return parents.map((e) => ref.watch(roomAvatarInfoProvider(e))).toList();
