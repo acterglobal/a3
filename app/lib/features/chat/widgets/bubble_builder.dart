@@ -204,7 +204,7 @@ class _ChatBubble extends ConsumerWidget {
 
     return Bubble(
       color: isAuthor
-          ? Theme.of(context).colorScheme.surface
+          ? Theme.of(context).colorScheme.primary
           : Theme.of(context).colorScheme.surface,
       borderColor: Colors.transparent,
       style: BubbleStyle(

@@ -126,7 +126,7 @@ class Dashboard extends ConsumerWidget {
               context: context,
               title: L10n.of(context).events,
               iconData: Atlas.calendar_dots,
-              color: Colors.blue,
+              color: Theme.of(context).colorScheme.primary,
               onTap: () => context.pushNamed(Routes.calendarEvents.name),
             ),
           ],

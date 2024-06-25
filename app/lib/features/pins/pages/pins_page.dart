@@ -1,10 +1,10 @@
 import 'dart:math';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
+import 'package:acter/common/widgets/plus_icon_widget.dart';
 import 'package:acter/features/pins/widgets/pin_list_item.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show ActerPin;
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -34,13 +34,8 @@ class PinsPage extends ConsumerWidget {
       title: L10n.of(context).pins,
       actions: [
         // FIXME: only show with hasAnySpacesWithPermission check
-        IconButton(
-          icon: const Icon(Atlas.plus_circle_thin),
-          iconSize: 28,
-          color: Theme.of(context).colorScheme.surface,
-          onPressed: () => context.pushNamed(
-            Routes.actionAddPin.name,
-          ),
+        PlusIconWidget(
+          onPressed: () => context.pushNamed(Routes.actionAddPin.name),
         ),
       ],
       expandedContent: Text(

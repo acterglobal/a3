@@ -1,10 +1,10 @@
 import 'package:acter/common/widgets/default_page_header.dart';
+import 'package:acter/common/widgets/plus_icon_widget.dart';
 import 'package:acter/features/tasks/providers/tasklists.dart';
 import 'package:acter/features/tasks/sheets/create_update_task_list.dart';
 import 'package:acter/features/tasks/widgets/all_tasks_done.dart';
 import 'package:acter/features/tasks/widgets/task_list_item_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -48,9 +48,7 @@ class TasksPage extends ConsumerWidget {
                   );
                 },
               ),
-              IconButton(
-                key: createNewTaskListKey,
-                icon: const Icon(Atlas.plus_circle),
+              PlusIconWidget(
                 onPressed: () => showCreateUpdateTaskListBottomSheet(context),
               ),
             ],

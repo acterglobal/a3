@@ -47,7 +47,10 @@ class ActerTheme {
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     ),
-    chipTheme: ChipThemeData(backgroundColor: surfaceColor),
+    chipTheme: ChipThemeData(
+      backgroundColor: surfaceColor,
+      selectedColor: brandColor,
+    ),
     listTileTheme: listTileTheme,
     dialogBackgroundColor: surfaceColor,
     dividerTheme: dividerTheme,
