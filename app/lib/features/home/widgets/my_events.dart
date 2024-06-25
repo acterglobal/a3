@@ -1,7 +1,6 @@
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
-import 'package:acter/features/events/widgets/calendar_widget.dart';
 import 'package:acter/features/events/widgets/events_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,11 +18,6 @@ class MyEventsSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(
-          L10n.of(context).events,
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
-        const CalendarWidget(),
         Row(
           children: [
             Text(
