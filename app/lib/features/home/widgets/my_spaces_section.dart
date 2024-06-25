@@ -53,7 +53,7 @@ class MySpacesSection extends ConsumerWidget {
         onTap: () => context.pushNamed(Routes.spaces.name),
         child: Text(
           L10n.of(context).mySpaces,
-          style: Theme.of(context).textTheme.titleMedium,
+          style: Theme.of(context).textTheme.titleSmall,
         ),
       ),
     );
