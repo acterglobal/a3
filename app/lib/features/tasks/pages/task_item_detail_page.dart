@@ -372,7 +372,7 @@ class TaskItemDetailPage extends ConsumerWidget {
                   ? L10n.of(context).removeMyself
                   : L10n.of(context).assignMyself,
             ),
-          )
+          ),
         ],
       ),
       subtitle: task.isAssignedToMe()
