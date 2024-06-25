@@ -1,1 +1,0 @@
-- [Fixes] : Wrong image/video in update slide issue is resolved
