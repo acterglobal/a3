@@ -21,7 +21,7 @@ class MyEventsSection extends ConsumerWidget {
         Row(
           children: [
             Text(
-              L10n.of(context).upcoming,
+              L10n.of(context).upcomingEvents,
               style: Theme.of(context).textTheme.titleSmall,
             ),
             const Spacer(),
