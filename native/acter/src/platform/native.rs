@@ -320,11 +320,16 @@ async fn make_store_config(
         return Ok(config.state_store(sql_state_store));
     };
 
-    let wrapped_state_store = matrix_sdk_store_media_cache_wrapper::wrap_with_file_cache(
-        sql_state_store,
-        media_cache_path,
-        passphrase,
-    )
-    .await?;
+    let wrapped_state_store =
+        matrix_sdk_store_media_cache_wrapper::wrap_with_file_cache_and_limits(
+            sql_state_store,
+            media_cache_path,
+            passphrase,
+            #[cfg(target_os = "ios")]
+            50,
+            #[cfg(not(target_os = "ios"))]
+            200,
+        )
+        .await?;
     Ok(config.state_store(wrapped_state_store))
 }
