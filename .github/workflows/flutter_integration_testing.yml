@@ -374,7 +374,7 @@ jobs:
         tests: ["Auth", "Updates", "Events", "Subspace", "SuperInvites", "Tasks", "Pins", "Attachments"] # "Bug Reporting", disabled as it needs a rageshake server
         include:
          - api_level: 23    # MinimalSDK version Smoke Test
-           tests: "Pins"    # FIXME: Having a minimal SmokeTest would be great.
+           tests: "Smoke"    
 
     steps:
       - uses: actions/checkout@v4
