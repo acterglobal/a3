@@ -513,7 +513,7 @@ jobs:
         uses: actions/upload-artifact@v1
         if: failure()
         with:
-          name: android-on-ubuntu-convtest-report-${{matrix.tests}}
+          name: android-convtest-report-${{matrix.api_level}}-${{matrix.tests}}
           path: /tmp/ConvenientTest/
 
       # file an error if this failed on `main` post-merge
