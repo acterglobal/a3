@@ -141,7 +141,7 @@ class TaskItem extends ConsumerWidget {
       label = L10n.of(context).dueTomorrow;
     } else if (dueDate.isPast) {
       label = dueDate.timeago();
-      iconColor = Theme.of(context).colorScheme.taskOverdueFG;
+      iconColor = Theme.of(context).colorScheme.onSurface;
       textStyle = textStyle?.copyWith(
         color: Theme.of(context).colorScheme.error,
       );
