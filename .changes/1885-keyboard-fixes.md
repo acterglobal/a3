@@ -1,0 +1,1 @@
+- Minor fix to dismiss the keyboard after submitting a comment & making the icons on the image overlay accessible regardless of top bezels
