@@ -5,9 +5,8 @@ import 'package:go_router/go_router.dart';
 
 class SpaceWithProfileCard extends StatelessWidget {
   final String roomId;
-  final String? parentRoomId;
   final ProfileData profile;
-  final ProfileData? parentProfile;
+  final List<AvatarInfo>? parents;
   final Widget? subtitle;
   final Widget? trailing;
   final double avatarSize;
@@ -55,6 +54,9 @@ class SpaceWithProfileCard extends StatelessWidget {
   /// If null, `EdgeInsets.symmetric(horizontal: 16.0)` is used.
   final EdgeInsetsGeometry? contentPadding;
 
+  /// If null, `EdgeInsets.symmetric(horizontal: 16.0)` is used.
+  final EdgeInsetsGeometry? margin;
+
   /// The shape of the card's [Material].
   ///
   /// Defines the card's [Material.shape].
@@ -64,22 +66,15 @@ class SpaceWithProfileCard extends StatelessWidget {
   /// with a circular corner radius of 4.0.
   final ShapeBorder? shape;
 
-  /// Whether or not to render a border around that element.
+  /// Whether or not to render the parent(s) Icon
   ///
-  /// Overwritten if you provider a `shape`. Otherwise, if set to true renders
-  /// the default border.
-  final bool withBorder;
-
-  /// Whether or not to render the parent Icon
-  ///
-  final bool showParent;
+  final bool showParents;
 
   const SpaceWithProfileCard({
     super.key,
     required this.roomId,
-    this.parentRoomId,
     required this.profile,
-    this.parentProfile,
+    this.parents,
     this.subtitle,
     this.trailing,
     this.onTap,
@@ -89,8 +84,8 @@ class SpaceWithProfileCard extends StatelessWidget {
     this.subtitleTextStyle,
     this.leadingAndTrailingTextStyle,
     this.shape,
-    this.withBorder = true,
-    this.showParent = true,
+    this.showParents = true,
+    this.margin,
     required this.avatarSize,
     required this.contentPadding,
   });
@@ -107,22 +102,14 @@ class SpaceWithProfileCard extends StatelessWidget {
           displayName: title,
           avatar: profile.getAvatarImage(),
         ),
-        parentBadges: showParent && parentRoomId != null
-            ? [
-                AvatarInfo(
-                  uniqueId: parentRoomId!,
-                  displayName: parentProfile?.displayName ?? parentRoomId,
-                  avatar: parentProfile?.getAvatarImage(),
-                ),
-              ]
-            : [],
+        parentBadges: showParents ? parents : [],
         size: avatarSize,
         badgesSize: avatarSize / 2,
       ),
     );
 
     return Card(
-      shape: renderShape(context),
+      margin: margin,
       child: ListTile(
         contentPadding: contentPadding,
         onTap: onTap ?? () => context.push('/$roomId'),
@@ -137,21 +124,5 @@ class SpaceWithProfileCard extends StatelessWidget {
         trailing: trailing,
       ),
     );
-  }
-
-  ShapeBorder? renderShape(BuildContext context) {
-    if (shape != null) {
-      return shape;
-    }
-    if (withBorder) {
-      return RoundedRectangleBorder(
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.primary,
-          width: 1.5,
-        ),
-        borderRadius: BorderRadius.circular(6),
-      );
-    }
-    return null;
   }
 }

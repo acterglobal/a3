@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -131,10 +130,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                   File(spaceAvatar!.path),
                   fit: BoxFit.cover,
                 )
-              : Icon(
-                  Atlas.up_arrow_from_bracket_thin,
-                  color: Theme.of(context).colorScheme.neutral4,
-                ),
+              : const Icon(Atlas.up_arrow_from_bracket_thin),
         ),
       ),
     );
@@ -169,9 +165,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
         const SizedBox(height: 3),
         Text(
           L10n.of(context).egGlobalMovement,
-          style: Theme.of(context).textTheme.labelSmall!.copyWith(
-                color: Theme.of(context).colorScheme.neutral4,
-              ),
+          style: Theme.of(context).textTheme.labelSmall!,
         ),
       ],
     );
@@ -212,9 +206,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
         ),
         Text(
           L10n.of(context).visibilitySubtitle,
-          style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                color: Theme.of(context).colorScheme.neutral4,
-              ),
+          style: Theme.of(context).textTheme.bodySmall!,
         ),
         const SizedBox(height: 10),
         InkWell(

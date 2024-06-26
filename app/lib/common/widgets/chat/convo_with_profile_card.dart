@@ -1,6 +1,6 @@
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/chat_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +28,7 @@ class ConvoWithProfileCard extends ConsumerWidget {
 
   /// Whether or not to render the parent Icon
   ///
-  final bool showParent;
+  final bool showParents;
 
   const ConvoWithProfileCard({
     super.key,
@@ -40,7 +40,7 @@ class ConvoWithProfileCard extends ConsumerWidget {
     this.onFocusChange,
     this.subtitle,
     this.trailing,
-    this.showParent = true,
+    this.showParents = true,
   });
 
   @override
@@ -82,7 +82,8 @@ class ConvoWithProfileCard extends ConsumerWidget {
     final unreadCounters =
         ref.watch(unreadCountersProvider(roomId)).valueOrNull;
 
-    final child = avatar ?? RoomAvatar(roomId: roomId, showParent: showParent);
+    final child =
+        avatar ?? RoomAvatar(roomId: roomId, showParents: showParents);
     if (unreadCounters == null) {
       return child;
     }

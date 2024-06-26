@@ -53,14 +53,15 @@ final _allowEdit = StateProvider.family<bool, String>(
 class CustomChatInput extends ConsumerWidget {
   final String roomId;
   final void Function(bool)? onTyping;
+
   const CustomChatInput({required this.roomId, this.onTyping, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final membership = ref.watch(roomMembershipProvider(roomId));
     return membership.when(
-      skipLoadingOnReload:
-          true, // avoid widget refresh and thus text focus updates upon room changes
+      skipLoadingOnReload: true,
+      // avoid widget refresh and thus text focus updates upon room changes
       data: (member) => buildData(context, ref, member),
       error: (error, stack) {
         _log.severe('Error loading membership', error, stack);
@@ -894,10 +895,9 @@ class _TextInputWidget extends ConsumerWidget {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(30),
-              borderSide: BorderSide(
+              borderSide: const BorderSide(
                 width: 0.5,
                 style: BorderStyle.solid,
-                color: Theme.of(context).colorScheme.onSecondaryContainer,
               ),
             ),
             enabledBorder: OutlineInputBorder(
@@ -923,7 +923,7 @@ class _TextInputWidget extends ConsumerWidget {
               style: TextStyle(
                 height: 0.5,
                 background: Paint()
-                  ..color = Theme.of(context).colorScheme.neutral2
+                  ..color = Theme.of(context).colorScheme.surface
                   ..strokeWidth = 13
                   ..strokeJoin = StrokeJoin.round
                   ..style = PaintingStyle.stroke,
@@ -947,24 +947,13 @@ class _TextInputWidget extends ConsumerWidget {
                             const SizedBox(width: 15),
                             Text(
                               authorId,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall!
-                                  .copyWith(
-                                    color:
-                                        Theme.of(context).colorScheme.neutral5,
-                                  ),
+                              style: Theme.of(context).textTheme.bodySmall,
                             ),
                           ],
                         )
                       : Text(
                           authorId,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodySmall!
-                              .copyWith(
-                                color: Theme.of(context).colorScheme.neutral5,
-                              ),
+                          style: Theme.of(context).textTheme.bodySmall,
                         ),
                 );
               },

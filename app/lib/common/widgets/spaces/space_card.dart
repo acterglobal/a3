@@ -56,6 +56,8 @@ class SpaceCard extends ConsumerWidget {
   ///
   /// If null, `EdgeInsets.symmetric(horizontal: 16.0)` is used.
   final EdgeInsetsGeometry? contentPadding;
+  /// If null, `EdgeInsets.symmetric(horizontal: 16.0)` is used.
+  final EdgeInsetsGeometry? margin;
 
   /// The shape of the card's [Material].
   ///
@@ -77,7 +79,7 @@ class SpaceCard extends ConsumerWidget {
 
   /// Whether or not to render the parent Icon
   ///
-  final bool showParent;
+  final bool showParents;
 
   const SpaceCard({
     super.key,
@@ -91,9 +93,10 @@ class SpaceCard extends ConsumerWidget {
     this.leadingAndTrailingTextStyle,
     this.avatarSize = 48,
     this.contentPadding = const EdgeInsets.all(15),
+    this.margin,
     this.shape,
     this.withBorder = true,
-    this.showParent = true,
+    this.showParents = true,
     this.trailing,
   });
 
@@ -109,9 +112,10 @@ class SpaceCard extends ConsumerWidget {
     this.leadingAndTrailingTextStyle,
     this.avatarSize = 24,
     this.contentPadding = const EdgeInsets.all(5),
+    this.margin = const EdgeInsets.only(bottom: 14),
     this.shape,
     this.withBorder = false,
-    this.showParent = false,
+    this.showParents = false,
     this.trailing,
   });
 
@@ -120,23 +124,22 @@ class SpaceCard extends ConsumerWidget {
     final roomId = space.getRoomIdStr();
     final profile = ref.watch(spaceProfileDataProvider(space));
     final subtitle = subtitleFn != null ? subtitleFn!(space) : null;
-    final parent = ref.watch(canonicalParentProvider(roomId));
+    final parents = ref.watch(parentAvatarInfosProvider(roomId)).valueOrNull;
 
     return profile.when(
       data: (profile) => SpaceWithProfileCard(
         roomId: roomId,
         profile: profile,
-        parentProfile: parent.valueOrNull?.profile,
-        parentRoomId: parent.valueOrNull?.space.getRoomIdStr(),
+        parents: parents,
         subtitle: subtitle,
         onTap: onTap,
         onFocusChange: onFocusChange,
         onLongPress: onLongPress,
         avatarSize: avatarSize,
         contentPadding: contentPadding,
+        margin: margin,
         shape: shape,
-        withBorder: withBorder,
-        showParent: showParent,
+        showParents: showParents,
         trailing: trailing,
       ),
       error: (error, stack) => ListTile(

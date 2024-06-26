@@ -1,7 +1,6 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/chat/convo_with_profile_card.dart';
 import 'package:acter/common/widgets/chat/loading_convo_card.dart';
@@ -20,9 +19,9 @@ class ConvoCard extends ConsumerStatefulWidget {
 
   final Function()? onTap;
 
-  /// Whether or not to render the parent Icon
+  /// Whether or not to render the parents Icon
   ///
-  final bool showParent;
+  final bool showParents;
 
   /// Custom Trailing Widget
   final Widget? trailing;
@@ -31,7 +30,7 @@ class ConvoCard extends ConsumerStatefulWidget {
     super.key,
     required this.room,
     this.onTap,
-    this.showParent = true,
+    this.showParents = true,
     this.trailing,
   });
 
@@ -57,7 +56,7 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
     return convoProfile.when(
       data: (profile) => ConvoWithProfileCard(
         roomId: roomId,
-        showParent: widget.showParent,
+        showParents: widget.showParents,
         profile: profile,
         onTap: widget.onTap,
         subtitle: latestMsg != null
@@ -341,7 +340,6 @@ class _SubtitleWidget extends ConsumerWidget {
               child: Text(
                 L10n.of(context).thisMessageHasBeenDeleted,
                 style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                      color: Theme.of(context).colorScheme.neutral5,
                       fontStyle: FontStyle.italic,
                       fontWeight: FontWeight.w700,
                     ),
@@ -371,7 +369,6 @@ class _SubtitleWidget extends ConsumerWidget {
               child: Text(
                 L10n.of(context).failedToDecryptMessage,
                 style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                      color: Theme.of(context).colorScheme.neutral5,
                       fontStyle: FontStyle.italic,
                     ),
                 overflow: TextOverflow.ellipsis,

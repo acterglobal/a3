@@ -33,7 +33,7 @@ List<Widget>? _renderKnownSubspaces(
         return SpaceCard(
           key: Key('subspace-list-item-${space.getRoomIdStr()}'),
           space: space,
-          showParent: false,
+          showParents: false,
         );
       },
     ),

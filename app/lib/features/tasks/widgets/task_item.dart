@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/room/room_avatar_builder.dart';
 import 'package:acter/features/tasks/providers/tasklists.dart';
@@ -42,24 +41,17 @@ class TaskItem extends ConsumerWidget {
       },
       horizontalTitleGap: 0,
       minVerticalPadding: 0,
-      contentPadding: const EdgeInsets.all(5),
+      contentPadding: const EdgeInsets.all(3),
       visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
-      style: ListTileTheme.of(context)
-          .copyWith(
-            contentPadding: const EdgeInsets.all(0),
-            visualDensity: const VisualDensity(horizontal: 0, vertical: 0),
-            minVerticalPadding: 0,
-          )
-          .style,
       minLeadingWidth: 35,
       leading: leadingWidget(),
-      title: title(context),
-      subtitle: subtitle(ref, context),
+      title: takeItemTitle(context),
+      subtitle: takeItemSubTitle(ref, context),
       trailing: trailing(ref),
     );
   }
 
-  Widget title(BuildContext context) {
+  Widget takeItemTitle(BuildContext context) {
     return Text(
       task.title(),
       style: task.isDone()
@@ -93,7 +85,7 @@ class TaskItem extends ConsumerWidget {
     );
   }
 
-  Widget subtitle(WidgetRef ref, BuildContext context) {
+  Widget takeItemSubTitle(WidgetRef ref, BuildContext context) {
     final description = task.description();
     return Padding(
       padding: const EdgeInsets.only(right: 12),
@@ -102,7 +94,20 @@ class TaskItem extends ConsumerWidget {
         children: [
           if (showBreadCrumb)
             ref.watch(taskListProvider(task.taskListIdStr())).when(
-                  data: (taskList) => Text(taskList.name()),
+                  data: (taskList) => Row(
+                    children: [
+                      const Icon(
+                        Icons.list,
+                        color: Colors.white54,
+                        size: 22,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        taskList.name(),
+                        style: Theme.of(context).textTheme.labelMedium,
+                      ),
+                    ],
+                  ),
                   error: (e, s) => Text(L10n.of(context).loadingFailed(e)),
                   loading: () => Skeletonizer(
                     child: Text(L10n.of(context).loading),
@@ -115,7 +120,6 @@ class TaskItem extends ConsumerWidget {
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.labelMedium,
             ),
-          const SizedBox(height: 8),
           dueDateWidget(context),
         ],
       ),
@@ -130,23 +134,34 @@ class TaskItem extends ConsumerWidget {
     if (dueDate == null) return const SizedBox.shrink();
 
     String? label;
-
+    Color iconColor = Colors.white54;
     if (dueDate.isToday) {
       label = L10n.of(context).dueToday;
     } else if (dueDate.isTomorrow) {
       label = L10n.of(context).dueTomorrow;
     } else if (dueDate.isPast) {
       label = dueDate.timeago();
+      iconColor = Theme.of(context).colorScheme.onSurface;
       textStyle = textStyle?.copyWith(
-        color: Theme.of(context).colorScheme.taskOverdueFG,
+        color: Theme.of(context).colorScheme.error,
       );
     }
     final dateText =
         DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(dueDate);
 
-    return Text(
-      label ?? L10n.of(context).due(dateText),
-      style: textStyle,
+    return Row(
+      children: [
+        Icon(
+          Icons.access_time,
+          color: iconColor,
+          size: 18,
+        ),
+        const SizedBox(width: 6),
+        Text(
+          label ?? L10n.of(context).due(dateText),
+          style: textStyle,
+        ),
+      ],
     );
   }
 
@@ -154,7 +169,7 @@ class TaskItem extends ConsumerWidget {
     return showBreadCrumb
         ? RoomAvatarBuilder(
             roomId: task.roomIdStr(),
-            avatarSize: 20,
+            avatarSize: 35,
           )
         : taskAssignee(ref);
   }

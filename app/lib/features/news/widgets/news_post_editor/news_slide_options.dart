@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
-import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/widgets/room/room_avatar_builder.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';

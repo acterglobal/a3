@@ -1,7 +1,4 @@
 import 'package:acter/common/models/types.dart';
-import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
-
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
@@ -25,6 +22,7 @@ class ActivitiesPage extends ConsumerWidget {
       Key('activities-one-unverified-session');
   static const Key unverifiedSessionsCard =
       Key('activities-unverified-sessions');
+  static const Key unconfirmedEmails = Key('activities-has-unconfirmed-emails');
   const ActivitiesPage({super.key});
 
   Widget? renderSyncingState(BuildContext context, WidgetRef ref) {
@@ -153,55 +151,67 @@ class ActivitiesPage extends ConsumerWidget {
     return const SliverToBoxAdapter(child: BackupStateWidget());
   }
 
+  Widget renderUnconfirmedEmailAddrs(BuildContext context) {
+    return SliverToBoxAdapter(
+      child: Card(
+        key: unconfirmedEmails,
+        margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 15),
+        child: ListTile(
+          onTap: () => context.goNamed(Routes.emailAddresses.name),
+          leading: const Icon(Atlas.envelope_minus_thin),
+          title: Text(L10n.of(context).unconfirmedEmailsActivityTitle),
+          subtitle: Text(L10n.of(context).unconfirmedEmailsActivitySubtitle),
+          trailing: const Icon(
+            Icons.keyboard_arrow_right_outlined,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // update the inner provider...
     // ignore: unused_local_variable
     final allDone = ref.watch(hasActivitiesProvider) == UrgencyBadge.none;
     final children = [];
-    bool renderEmptyState = true;
 
-    final syncState = renderSyncingState(context, ref);
-    if (syncState != null) {
-      // if all we have is this item, we still want to render the empty State...
-      children.add(syncState);
-    }
+    final syncStateWidget = renderSyncingState(context, ref);
 
     if (ref.watch(featuresProvider).isActive(LabsFeature.encryptionBackup)) {
       final backups = renderBackupSection(context, ref);
       if (backups != null) {
-        renderEmptyState = false;
         children.add(backups);
       }
     }
+    final hasUnconfirmedEmails = ref.watch(hasUnconfirmedEmailAddresses);
+    if (hasUnconfirmedEmails) {
+      children.add(renderUnconfirmedEmailAddrs(context));
+    }
+
     final sessions = renderSessions(context, ref);
     if (sessions != null) {
-      renderEmptyState = false;
       children.add(sessions);
     }
     final invitations = renderInvitations(context, ref);
     if (invitations != null && invitations.isNotEmpty) {
-      renderEmptyState = false;
       children.addAll(invitations);
     }
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.neutral,
       body: CustomScrollView(
         slivers: <Widget>[
           PageHeaderWidget(
             title: L10n.of(context).activities,
-            sectionDecoration: const BoxDecoration(
-              gradient: primaryGradient,
-            ),
             expandedContent: Text(
               L10n.of(context).activitiesDescription,
               softWrap: true,
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ),
-          ...children,
-          if (renderEmptyState)
+          if (syncStateWidget != null) syncStateWidget,
+          if (children.isNotEmpty) ...children,
+          if (children.isEmpty)
             SliverToBoxAdapter(
               child: Center(
                 heightFactor: 1.5,

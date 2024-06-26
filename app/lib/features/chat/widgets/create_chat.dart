@@ -6,10 +6,8 @@ import 'package:acter/features/invite_members/providers/invite_providers.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/base_body_widget.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/chat/providers/create_chat_providers.dart';
@@ -98,7 +96,6 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
             onPanDown: (_) => FocusScope.of(context).requestFocus(FocusNode()),
             child: DecoratedBox(
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.neutral,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: PageView.builder(
@@ -213,19 +210,17 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
       appBar: AppBar(
         title: Text(L10n.of(context).newChat),
       ),
-      body: BaseBody(
-        child: ListView(
-          controller: scrollController,
-          children: <Widget>[
-            const SizedBox(height: 15),
-            renderSearchField(context),
-            const SizedBox(height: 15),
-            renderSelectedUsers(context),
-            renderPrimaryAction(context),
-            const SizedBox(height: 15),
-            renderFoundUsers(context),
-          ],
-        ),
+      body: ListView(
+        controller: scrollController,
+        children: <Widget>[
+          const SizedBox(height: 15),
+          renderSearchField(context),
+          const SizedBox(height: 15),
+          renderSelectedUsers(context),
+          renderPrimaryAction(context),
+          const SizedBox(height: 15),
+          renderFoundUsers(context),
+        ],
       ),
     );
   }
@@ -344,12 +339,9 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
             )
           : selectedUsers.length > 1
               ? CircleAvatar(
-                  backgroundColor: Theme.of(context).colorScheme.neutral4,
+                  backgroundColor: Theme.of(context).colorScheme.surface,
                   radius: 28,
-                  child: Icon(
-                    Atlas.team_group,
-                    color: Theme.of(context).colorScheme.neutral,
-                  ),
+                  child: const Icon(Atlas.team_group),
                 )
               : ActerAvatar(
                   options: AvatarOptions.DM(
@@ -594,10 +586,7 @@ class _CreateRoomFormWidgetConsumerState
                               File(avatarUpload),
                               fit: BoxFit.cover,
                             )
-                          : Icon(
-                              Atlas.up_arrow_from_bracket_thin,
-                              color: Theme.of(context).colorScheme.neutral4,
-                            ),
+                          : const Icon(Atlas.up_arrow_from_bracket_thin),
                     ),
                   ),
                 ],
@@ -742,9 +731,7 @@ class _UserWidget extends ConsumerWidget {
           ? null
           : Text(
               userId,
-              style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                    color: Theme.of(context).colorScheme.neutral5,
-                  ),
+              style: Theme.of(context).textTheme.labelMedium,
             ),
       leading: avatarProv.when(
         data: (data) {

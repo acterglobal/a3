@@ -1,7 +1,4 @@
 import 'dart:async';
-
-import 'package:acter/common/themes/app_theme.dart';
-
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -234,7 +231,7 @@ class HtmlEditorState extends State<HtmlEditor> {
       editorState: editorState,
       editorScrollController: editorScrollController,
       style: FloatingToolbarStyle(
-        backgroundColor: Theme.of(context).colorScheme.neutral2,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         toolbarActiveColor: Theme.of(context).colorScheme.tertiary,
       ),
       child: Directionality(
@@ -310,7 +307,7 @@ class HtmlEditorState extends State<HtmlEditor> {
     return EditorStyle.desktop(
       padding: widget.editorPadding,
       cursorColor: Theme.of(context).colorScheme.primary,
-      selectionColor: Theme.of(context).colorScheme.neutral,
+      selectionColor: Theme.of(context).colorScheme.secondaryContainer,
       textStyleConfiguration: widget.textStyleConfiguration ??
           TextStyleConfiguration(
             text: Theme.of(context).textTheme.bodySmall!,
@@ -322,7 +319,7 @@ class HtmlEditorState extends State<HtmlEditor> {
     return EditorStyle.mobile(
       padding: widget.editorPadding,
       cursorColor: Theme.of(context).colorScheme.primary,
-      selectionColor: Theme.of(context).colorScheme.neutral,
+      selectionColor: Theme.of(context).colorScheme.secondaryContainer,
       textStyleConfiguration: widget.textStyleConfiguration ??
           TextStyleConfiguration(
             text: Theme.of(context).textTheme.bodySmall!,

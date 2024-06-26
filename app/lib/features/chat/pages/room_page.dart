@@ -4,7 +4,6 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/acter_theme.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -121,14 +120,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
         body: Column(
           children: [
             appBar(context),
-            Expanded(
-              child: Container(
-                decoration: const BoxDecoration(
-                  gradient: primaryGradient,
-                ),
-                child: chatBody(context),
-              ),
-            ),
+            Expanded(child: chatBody(context)),
             chatInput(context),
           ],
         ),
@@ -357,7 +349,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
             padding: const EdgeInsets.only(right: 10),
             child: RoomAvatar(
               roomId: roomId,
-              showParent: true,
+              showParents: true,
             ),
           ),
         ),

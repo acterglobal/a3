@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/sdk_provider.dart';
-import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/validation_utils.dart';
@@ -56,7 +56,6 @@ class _AskForEmail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
       appBar: _buildAppbar(),
       body: _buildBody(context),
     );
@@ -192,7 +191,6 @@ class _NewPassword extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
       appBar: _buildAppbar(),
       body: _buildBody(context),
     );

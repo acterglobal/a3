@@ -173,7 +173,7 @@ class _TextWidget extends ConsumerWidget {
                             color: isNotice
                                 ? Theme.of(context)
                                     .colorScheme
-                                    .neutral5
+                                    .onSurface
                                     .withOpacity(0.5)
                                 : null,
                           ),

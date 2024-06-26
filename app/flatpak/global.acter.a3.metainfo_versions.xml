@@ -1,3 +1,19 @@
+    <release version="1.24.3624" date="2024-06-24">
+        <url type="details">https://github.com/acterglobal/a3/releases/tag/v1.24.3624</url>
+        <description>
+# Changes since v1.24.3620 
+- [Fixes] : Wrong image/video in update slide issue is resolved
+- You can now reset your password just with your email address, if you previously confirmed your email address connected to that account.
+
+- Now shows unconfirmed emails on Activities screen to nudge you to confirm them
+
+
+- [new] You can now report any Task item and Task List
+- [new] You can now delete any Task item and Task List
+- You can now see multiple parent avatars on space overview if it's linked as sub-space of it.
+
+        </description>
+    </release>
     <release version="1.24.3613" date="2024-06-13">
         <url type="details">https://github.com/acterglobal/a3/releases/tag/v1.24.3613</url>
         <description>

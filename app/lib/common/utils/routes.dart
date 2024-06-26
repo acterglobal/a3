@@ -99,7 +99,6 @@ enum Routes {
 
   // -- super invites
   settingsSuperInvites('/settings/super_invites'),
-  settingsSuperInvitesUpdate('/settings/super_invites/:token/update'),
   // -- utils
   bugReport('/bug-report'),
   quickJump('/quick-jump'),

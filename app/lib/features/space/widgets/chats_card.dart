@@ -50,7 +50,7 @@ class ChatsCard extends ConsumerWidget {
                     itemCount: min(chats.length, 3),
                     itemBuilder: (context, index) => ConvoCard(
                       room: chats[index],
-                      showParent: false,
+                      showParents: false,
                       onTap: () =>
                           goToChat(context, chats[index].getRoomIdStr()),
                     ),

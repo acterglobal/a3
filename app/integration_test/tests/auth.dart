@@ -96,12 +96,34 @@ void authTests() {
     final userId = await t.freshAccount();
     final emailAddr = '$userId@example.org';
 
+    // we have the activities widget shown
+    await find.byKey(Keys.mainNav).should(findsOneWidget);
+    await t.navigateTo([
+      MainNavKeys.activities,
+    ]);
+
+    final emailAddrUnconfirmed = find.byKey(ActivitiesPage.unconfirmedEmails);
+    await t.tester.ensureVisible(emailAddrUnconfirmed);
+    await emailAddrUnconfirmed.should(findsOneWidget);
+
+    // Actually confirm
     await t.clickLinkInLatestEmail(
       emailAddr,
       contains: 'Validate your email',
     );
 
+    // Confirm on the App side, too
+
     await t.confirmEmailAdd(emailAddr, t.passwordFor(userId));
+
+    // the widget is gone on the activities page
+    await find.byKey(Keys.mainNav).should(findsOneWidget);
+    await t.navigateTo([
+      MainNavKeys.activities,
+    ]);
+
+    await emailAddrUnconfirmed.should(findsNothing);
+
     await t.logout();
 
     await t.navigateTo([

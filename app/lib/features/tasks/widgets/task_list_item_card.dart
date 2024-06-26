@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/tasks/widgets/task_items_list_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -28,7 +27,7 @@ class TaskListItemCard extends ConsumerWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
-        iconColor: Theme.of(context).colorScheme.neutral6,
+        iconColor: Theme.of(context).colorScheme.onSurface,
         childrenPadding: const EdgeInsets.symmetric(horizontal: 10),
         title: title(context),
         subtitle: subtitle(ref),
