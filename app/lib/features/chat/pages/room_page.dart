@@ -42,255 +42,12 @@ class RoomPage extends ConsumerWidget {
     super.key = roomPageKey,
   });
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(chatProvider(roomId)).when(
-          data: (convo) => ChatRoom(convo: convo, inSidebar: inSidebar),
-          error: (e, s) => Center(
-            child: Text(L10n.of(context).loadingRoomFailed(e)),
-          ),
-          loading: () => Center(child: Text(L10n.of(context).loading)),
-        );
-  }
-}
-
-class ChatRoom extends ConsumerStatefulWidget {
-  final Convo convo;
-  final bool inSidebar;
-
-  const ChatRoom({
-    required this.convo,
-    required this.inSidebar,
-    super.key,
-  });
-
-  @override
-  ConsumerState<ChatRoom> createState() => _ChatRoomConsumerState();
-}
-
-class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
-  AutoScrollController scrollController = AutoScrollController();
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    scrollController.addListener(() async {
-      // debounce
-      await Future.delayed(const Duration(milliseconds: 300), () async {
-        // this might be a bit too simple ...
-        if (scrollController.offset == 0) {
-          final message = ref.read(latestTrackableMessageId(widget.convo));
-          if (message != null) {
-            await ref
-                .read(timelineStreamProvider(widget.convo))
-                .sendSingleReceipt('Read', 'Main', message);
-          }
-
-          // FIXME: this is the proper API, but it doesn't seem to
-          // properly be handled by the server yet
-          // final marked = await ref
-          //
-          //     .markAsRead(false);
-        }
-      });
-    });
-  }
-
-  void showMessageOptions(
-    BuildContext context,
-    types.Message message,
-    String roomId,
-  ) async {
-    if (message is types.CustomMessage) {
-      if (message.metadata!.containsKey('eventType') &&
-          message.metadata!['eventType'] == 'm.room.redaction') {
-        return;
-      }
-    }
-    final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
-    inputNotifier.setActionsMessage(message);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return OrientationBuilder(
-      builder: (context, orientation) => Scaffold(
-        resizeToAvoidBottomInset: orientation == Orientation.portrait,
-        body: Column(
-          children: [
-            appBar(context),
-            Expanded(child: chatBody(context)),
-            chatInput(context),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget chatInput(BuildContext context) {
-    final roomId = widget.convo.getRoomIdStr();
-    final sendTypingNotice = ref.watch(
-      userAppSettingsProvider.select(
-        (settings) => settings.valueOrNull?.typingNotice() ?? false,
-      ),
-    );
-    return CustomChatInput(
-      key: Key('chat-input-$roomId'),
-      roomId: widget.convo.getRoomIdStr(),
-      onTyping: sendTypingNotice
-          ? (typing) async {
-              widget.convo.typingNotice(typing);
-            }
-          : null,
-    );
-  }
-
-  Widget chatBody(BuildContext context) {
-    final endReached =
-        ref.watch(chatStateProvider(widget.convo).select((c) => !c.hasMore));
-    final userId = ref.watch(myUserIdStrProvider);
-    final roomId = widget.convo.getRoomIdStr();
-    final messages = ref.watch(chatMessagesProvider(widget.convo));
-
-    return Chat(
-      keyboardDismissBehavior: Platform.isIOS
-          ? ScrollViewKeyboardDismissBehavior.onDrag
-          : ScrollViewKeyboardDismissBehavior.manual,
-      customBottomWidget: const SizedBox.shrink(),
-      scrollController: scrollController,
-      textMessageBuilder: (
-        types.TextMessage m, {
-        required int messageWidth,
-        required bool showName,
-      }) =>
-          TextMessageBuilder(
-        convo: widget.convo,
-        message: m,
-        messageWidth: messageWidth,
-      ),
-      l10n: ChatL10nEn(
-        emptyChatPlaceholder: '',
-        attachmentButtonAccessibilityLabel: '',
-        fileButtonAccessibilityLabel: '',
-        inputPlaceholder: L10n.of(context).message,
-        sendButtonAccessibilityLabel: '',
-      ),
-      timeFormat: DateFormat.jm(),
-      messages: messages,
-      onSendPressed: (types.PartialText partialText) {},
-      user: types.User(id: userId),
-      // disable image preview
-      disableImageGallery: true,
-      // custom avatar builder
-      avatarBuilder: (types.User user) =>
-          AvatarBuilder(userId: user.id, roomId: roomId),
-      isLastPage: endReached,
-      bubbleBuilder: (
-        Widget child, {
-        required types.Message message,
-        required bool nextMessageInGroup,
-      }) =>
-          GestureDetector(
-        onSecondaryTap: () {
-          showMessageOptions(context, message, roomId);
-        },
-        child: BubbleBuilder(
-          convo: widget.convo,
-          message: message,
-          nextMessageInGroup: nextMessageInGroup,
-          enlargeEmoji: message.metadata!['enlargeEmoji'] ?? false,
-          child: child,
-        ),
-      ),
-      imageMessageBuilder: (
-        types.ImageMessage message, {
-        required int messageWidth,
-      }) =>
-          ImageMessageBuilder(
-        roomId: widget.convo.getRoomIdStr(),
-        message: message,
-        messageWidth: messageWidth,
-      ),
-      videoMessageBuilder: (
-        types.VideoMessage message, {
-        required int messageWidth,
-      }) =>
-          VideoMessageBuilder(
-        convo: widget.convo,
-        message: message,
-        messageWidth: messageWidth,
-      ),
-      fileMessageBuilder: (
-        types.FileMessage message, {
-        required messageWidth,
-      }) {
-        return FileMessageBuilder(
-          convo: widget.convo,
-          message: message,
-          messageWidth: messageWidth,
-        );
-      },
-      customMessageBuilder: (
-        types.CustomMessage message, {
-        required int messageWidth,
-      }) =>
-          CustomMessageBuilder(
-        message: message,
-        messageWidth: messageWidth,
-      ),
-      systemMessageBuilder: (msg) => renderSystemMessage(context, msg),
-      showUserAvatars: true,
-      onMessageLongPress: (
-        BuildContext context,
-        types.Message message,
-      ) async {
-        showMessageOptions(context, message, roomId);
-      },
-      onEndReached:
-          ref.read(chatStateProvider(widget.convo).notifier).handleEndReached,
-      onEndReachedThreshold: 0.75,
-      onBackgroundTap: () {
-        ref.read(chatInputProvider(roomId).notifier).unsetActions();
-      },
-      typingIndicatorOptions: TypingIndicatorOptions(
-        typingMode: TypingIndicatorMode.name,
-        typingUsers:
-            ref.watch(chatTypingEventProvider(roomId)).valueOrNull ?? [],
-      ),
-      //Custom Theme class, see lib/common/store/chatTheme.dart
-      theme: Theme.of(context).chatTheme,
-    );
-  }
-
-  Widget renderSystemMessage(
-    BuildContext context,
-    types.SystemMessage message,
-  ) {
-    return switch (message.metadata?['type']) {
-      '_invite' => InviteSystemMessageWidget(
-          message: message,
-          roomId: widget.convo.getRoomIdStr(),
-        ),
-      '_topic' => TopicSystemMessageWidget(
-          message: message,
-          roomId: widget.convo.getRoomIdStr(),
-        ),
-      '_read_marker' => Center(
-          child: Divider(color: Theme.of(context).indicatorColor),
-        ),
-      '_encryptedInfo' => const EncryptedInfoWidget(),
-      _ => SystemMessage(key: Key(message.id), message: message.text)
-    };
-  }
-
-  Widget appBar(BuildContext context) {
-    final roomId = widget.convo.getRoomIdStr();
+  Widget appBar(BuildContext context, WidgetRef ref) {
     final roomAvatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
     final activeMembers = ref.watch(membersIdsProvider(roomId));
     return AppBar(
       elevation: 0,
-      automaticallyImplyLeading: widget.inSidebar ? false : true,
+      automaticallyImplyLeading: inSidebar ? false : true,
       centerTitle: true,
       toolbarHeight: 70,
       flexibleSpace: FrostEffect(
@@ -346,5 +103,244 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
         ),
       ],
     );
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return OrientationBuilder(
+      builder: (context, orientation) => Scaffold(
+        resizeToAvoidBottomInset: orientation == Orientation.portrait,
+        body: Column(
+          children: [
+            appBar(context, ref),
+            ref.watch(chatProvider(roomId)).when(
+                  data: (convo) => ChatRoom(convo: convo, inSidebar: inSidebar),
+                  error: (e, s) => Center(
+                    child: Text(L10n.of(context).loadingRoomFailed(e)),
+                  ),
+                  loading: () => Center(child: Text(L10n.of(context).loading)),
+                ),
+            chatInput(context, ref),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget chatInput(BuildContext context, WidgetRef ref) {
+    final sendTypingNotice = ref.watch(
+      userAppSettingsProvider.select(
+        (settings) => settings.valueOrNull?.typingNotice() ?? false,
+      ),
+    );
+    return CustomChatInput(
+      key: Key('chat-input-$roomId'),
+      roomId: roomId,
+      onTyping: sendTypingNotice
+          ? (typing) async {
+              (await ref.read(chatProvider(roomId).future))
+                  .typingNotice(typing);
+            }
+          : null,
+    );
+  }
+}
+
+class ChatRoom extends ConsumerStatefulWidget {
+  final Convo convo;
+  final bool inSidebar;
+
+  const ChatRoom({
+    required this.convo,
+    required this.inSidebar,
+    super.key,
+  });
+
+  @override
+  ConsumerState<ChatRoom> createState() => _ChatRoomConsumerState();
+}
+
+class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
+  AutoScrollController scrollController = AutoScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    scrollController.addListener(() async {
+      // debounce
+      await Future.delayed(const Duration(milliseconds: 300), () async {
+        // this might be a bit too simple ...
+        if (scrollController.offset == 0) {
+          final message = ref.read(latestTrackableMessageId(widget.convo));
+          if (message != null) {
+            await ref
+                .read(timelineStreamProvider(widget.convo))
+                .sendSingleReceipt('Read', 'Main', message);
+          }
+
+          // FIXME: this is the proper API, but it doesn't seem to
+          // properly be handled by the server yet
+          // final marked = await ref
+          //
+          //     .markAsRead(false);
+        }
+      });
+    });
+  }
+
+  void showMessageOptions(
+    BuildContext context,
+    types.Message message,
+    String roomId,
+  ) async {
+    if (message is types.CustomMessage) {
+      if (message.metadata!.containsKey('eventType') &&
+          message.metadata!['eventType'] == 'm.room.redaction') {
+        return;
+      }
+    }
+    final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
+    inputNotifier.setActionsMessage(message);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final endReached =
+        ref.watch(chatStateProvider(widget.convo).select((c) => !c.hasMore));
+    final userId = ref.watch(myUserIdStrProvider);
+    final roomId = widget.convo.getRoomIdStr();
+    final messages = ref.watch(chatMessagesProvider(widget.convo));
+
+    return Expanded(
+      child: Chat(
+        keyboardDismissBehavior: Platform.isIOS
+            ? ScrollViewKeyboardDismissBehavior.onDrag
+            : ScrollViewKeyboardDismissBehavior.manual,
+        customBottomWidget: const SizedBox.shrink(),
+        scrollController: scrollController,
+        textMessageBuilder: (
+          types.TextMessage m, {
+          required int messageWidth,
+          required bool showName,
+        }) =>
+            TextMessageBuilder(
+          convo: widget.convo,
+          message: m,
+          messageWidth: messageWidth,
+        ),
+        l10n: ChatL10nEn(
+          emptyChatPlaceholder: '',
+          attachmentButtonAccessibilityLabel: '',
+          fileButtonAccessibilityLabel: '',
+          inputPlaceholder: L10n.of(context).message,
+          sendButtonAccessibilityLabel: '',
+        ),
+        timeFormat: DateFormat.jm(),
+        messages: messages,
+        onSendPressed: (types.PartialText partialText) {},
+        user: types.User(id: userId),
+        // disable image preview
+        disableImageGallery: true,
+        // custom avatar builder
+        avatarBuilder: (types.User user) =>
+            AvatarBuilder(userId: user.id, roomId: roomId),
+        isLastPage: endReached,
+        bubbleBuilder: (
+          Widget child, {
+          required types.Message message,
+          required bool nextMessageInGroup,
+        }) =>
+            GestureDetector(
+          onSecondaryTap: () {
+            showMessageOptions(context, message, roomId);
+          },
+          child: BubbleBuilder(
+            convo: widget.convo,
+            message: message,
+            nextMessageInGroup: nextMessageInGroup,
+            enlargeEmoji: message.metadata!['enlargeEmoji'] ?? false,
+            child: child,
+          ),
+        ),
+        imageMessageBuilder: (
+          types.ImageMessage message, {
+          required int messageWidth,
+        }) =>
+            ImageMessageBuilder(
+          roomId: widget.convo.getRoomIdStr(),
+          message: message,
+          messageWidth: messageWidth,
+        ),
+        videoMessageBuilder: (
+          types.VideoMessage message, {
+          required int messageWidth,
+        }) =>
+            VideoMessageBuilder(
+          convo: widget.convo,
+          message: message,
+          messageWidth: messageWidth,
+        ),
+        fileMessageBuilder: (
+          types.FileMessage message, {
+          required messageWidth,
+        }) {
+          return FileMessageBuilder(
+            convo: widget.convo,
+            message: message,
+            messageWidth: messageWidth,
+          );
+        },
+        customMessageBuilder: (
+          types.CustomMessage message, {
+          required int messageWidth,
+        }) =>
+            CustomMessageBuilder(
+          message: message,
+          messageWidth: messageWidth,
+        ),
+        systemMessageBuilder: (msg) => renderSystemMessage(context, msg),
+        showUserAvatars: true,
+        onMessageLongPress: (
+          BuildContext context,
+          types.Message message,
+        ) async {
+          showMessageOptions(context, message, roomId);
+        },
+        onEndReached:
+            ref.read(chatStateProvider(widget.convo).notifier).handleEndReached,
+        onEndReachedThreshold: 0.75,
+        onBackgroundTap: () {
+          ref.read(chatInputProvider(roomId).notifier).unsetActions();
+        },
+        typingIndicatorOptions: TypingIndicatorOptions(
+          typingMode: TypingIndicatorMode.name,
+          typingUsers:
+              ref.watch(chatTypingEventProvider(roomId)).valueOrNull ?? [],
+        ),
+        //Custom Theme class, see lib/common/store/chatTheme.dart
+        theme: Theme.of(context).chatTheme,
+      ),
+    );
+  }
+
+  Widget renderSystemMessage(
+    BuildContext context,
+    types.SystemMessage message,
+  ) {
+    return switch (message.metadata?['type']) {
+      '_invite' => InviteSystemMessageWidget(
+          message: message,
+          roomId: widget.convo.getRoomIdStr(),
+        ),
+      '_topic' => TopicSystemMessageWidget(
+          message: message,
+          roomId: widget.convo.getRoomIdStr(),
+        ),
+      '_read_marker' => Center(
+          child: Divider(color: Theme.of(context).indicatorColor),
+        ),
+      '_encryptedInfo' => const EncryptedInfoWidget(),
+      _ => SystemMessage(key: Key(message.id), message: message.text)
+    };
   }
 }

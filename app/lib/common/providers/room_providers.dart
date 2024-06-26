@@ -279,8 +279,7 @@ final relatedSpacesProvider = FutureProvider.autoDispose
 
 /// Get the user's membership for a specific space based off the spaceId
 /// will throw if the client doesn't kow the space
-final roomMembershipProvider =
-    FutureProvider.autoDispose.family<Member?, String>(
+final roomMembershipProvider = FutureProvider.family<Member?, String>(
   (ref, roomId) async {
     final room = await ref.watch(maybeRoomProvider(roomId).future);
     if (room == null || !room.isJoined()) {
