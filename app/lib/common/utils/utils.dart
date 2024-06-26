@@ -311,7 +311,6 @@ enum RoomVisibility { Public, Private, SpaceVisible }
 
 enum LabsFeature {
   // apps in general
-  tasks,
   notes,
   cobudget,
   polls,
@@ -322,6 +321,7 @@ enum LabsFeature {
   chatUnread,
 
   // not a lab anymore but needs to stay for backwards compat
+  tasks,
   events,
   pins,
 

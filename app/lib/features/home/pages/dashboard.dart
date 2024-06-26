@@ -41,7 +41,7 @@ class Dashboard extends ConsumerWidget {
                         searchWidget(context),
                         featuresNav(context),
                         const SizedBox(height: 20),
-                        myTaskList(context, ref),
+                        const MyTasksSection(limit: 5),
                         const SizedBox(height: 28),
                         const MyEventsSection(limit: 5),
                         const SizedBox(height: 20),
@@ -188,16 +188,6 @@ class Dashboard extends ConsumerWidget {
         ),
       ),
     );
-  }
-
-  Widget myTaskList(BuildContext context, WidgetRef ref) {
-    final provider = ref.watch(featuresProvider);
-    bool isActive(f) => provider.isActive(f);
-    if (isActive(LabsFeature.tasks)) {
-      return const MyTasksSection(limit: 5);
-    } else {
-      return const SizedBox.shrink();
-    }
   }
 
   Widget emptyState(BuildContext context) {

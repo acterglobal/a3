@@ -63,7 +63,7 @@ final tabsProvider =
       );
     }
 
-    if (isActive(LabsFeature.tasks) && appSettings.tasks().active()) {
+    if (appSettings.tasks().active()) {
       tabs.add(
         TabEntry(
           key: TabEntry.tasks,

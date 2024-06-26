@@ -101,23 +101,19 @@ class _QuickJumpState extends ConsumerState<QuickJump> {
                 child: Icon(Atlas.calendar_dots_thin, size: 24),
               ),
             ),
-            isActive(LabsFeature.tasks)
-                ? IconButton(
-                    key: QuickJumpKeys.tasks,
-                    style: IconButton.styleFrom(
-                      side: BorderSide(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withOpacity(0.12),
-                      ),
-                    ),
-                    onPressed: () => routeTo(Routes.tasks),
+            IconButton(
+              key: QuickJumpKeys.tasks,
+              style: IconButton.styleFrom(
+                side: BorderSide(
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
+                ),
+              ),
+              onPressed: () => routeTo(Routes.tasks),
 
-                    // this is slightly differently sized and padded to look the same as the others
-                    icon: const TasksIcon(),
-                  )
-                : null,
+              // this is slightly differently sized and padded to look the same as the others
+              icon: const TasksIcon(),
+            ),
             IconButton(
               style: IconButton.styleFrom(
                 side: BorderSide(
