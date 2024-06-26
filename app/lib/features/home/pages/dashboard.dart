@@ -39,7 +39,7 @@ class Dashboard extends ConsumerWidget {
                   : Column(
                       children: [
                         searchWidget(context),
-                        homeQuickActions(context),
+                        featuresNav(context),
                         const SizedBox(height: 20),
                         myTaskList(context, ref),
                         const SizedBox(height: 28),
@@ -108,13 +108,13 @@ class Dashboard extends ConsumerWidget {
     );
   }
 
-  Widget homeQuickActions(BuildContext context) {
+  Widget featuresNav(BuildContext context) {
     return Column(
       children: [
         const SizedBox(height: 20),
         Row(
           children: [
-            homeQuickActionItem(
+            featuresNavItem(
               context: context,
               title: L10n.of(context).pins,
               iconData: Atlas.pin,
@@ -122,7 +122,7 @@ class Dashboard extends ConsumerWidget {
               onTap: () => context.pushNamed(Routes.pins.name),
             ),
             const SizedBox(width: 20),
-            homeQuickActionItem(
+            featuresNavItem(
               context: context,
               title: L10n.of(context).events,
               iconData: Atlas.calendar_dots,
@@ -134,7 +134,7 @@ class Dashboard extends ConsumerWidget {
         const SizedBox(height: 20),
         Row(
           children: [
-            homeQuickActionItem(
+            featuresNavItem(
               context: context,
               title: L10n.of(context).tasks,
               iconData: Atlas.list,
@@ -142,7 +142,7 @@ class Dashboard extends ConsumerWidget {
               onTap: () => context.pushNamed(Routes.tasks.name),
             ),
             const SizedBox(width: 20),
-            homeQuickActionItem(
+            featuresNavItem(
               context: context,
               title: L10n.of(context).updates,
               iconData: Atlas.megaphone_thin,
@@ -155,7 +155,7 @@ class Dashboard extends ConsumerWidget {
     );
   }
 
-  Widget homeQuickActionItem({
+  Widget featuresNavItem({
     required BuildContext context,
     required String title,
     required IconData iconData,

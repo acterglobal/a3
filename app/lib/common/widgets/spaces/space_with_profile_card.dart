@@ -66,12 +66,6 @@ class SpaceWithProfileCard extends StatelessWidget {
   /// with a circular corner radius of 4.0.
   final ShapeBorder? shape;
 
-  /// Whether or not to render a border around that element.
-  ///
-  /// Overwritten if you provider a `shape`. Otherwise, if set to true renders
-  /// the default border.
-  final bool withBorder;
-
   /// Whether or not to render the parent(s) Icon
   ///
   final bool showParents;
@@ -90,7 +84,6 @@ class SpaceWithProfileCard extends StatelessWidget {
     this.subtitleTextStyle,
     this.leadingAndTrailingTextStyle,
     this.shape,
-    this.withBorder = true,
     this.showParents = true,
     this.margin,
     required this.avatarSize,

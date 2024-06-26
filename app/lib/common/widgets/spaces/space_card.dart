@@ -139,7 +139,6 @@ class SpaceCard extends ConsumerWidget {
         contentPadding: contentPadding,
         margin: margin,
         shape: shape,
-        withBorder: withBorder,
         showParents: showParents,
         trailing: trailing,
       ),

@@ -24,7 +24,7 @@ var bottomNavigationBarTheme = BottomNavigationBarThemeData(
 
 var navigationRailTheme = NavigationRailThemeData(
   backgroundColor: surfaceColor,
-  indicatorColor:Colors.white12,
+  indicatorColor: brandColor,
   unselectedLabelTextStyle: const TextStyle(
     color: Colors.white,
     fontSize: 12,

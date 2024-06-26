@@ -15,7 +15,7 @@ class PlusIconWidget extends StatelessWidget {
       icon: Container(
         padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary,
+          color: Theme.of(context).colorScheme.primary.withAlpha(95),
           borderRadius: const BorderRadius.all(Radius.circular(100)),
         ),
         child: const Icon(

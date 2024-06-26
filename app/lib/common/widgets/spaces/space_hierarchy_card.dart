@@ -121,7 +121,6 @@ class SpaceHierarchyCard extends ConsumerWidget {
         avatarSize: avatarSize,
         contentPadding: contentPadding,
         shape: shape,
-        withBorder: withBorder,
         trailing: RoomHierarchyJoinButton(
           joinRule: roomInfo.joinRuleStr().toLowerCase(),
           roomId: roomInfo.roomIdStr(),
