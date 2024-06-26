@@ -20,78 +20,67 @@ class ImageDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.height;
     final canShare = !isDesktop;
     return Dialog(
       insetPadding: EdgeInsets.zero,
-      child: Container(
-        height: height,
-        width: width,
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    title,
-                    style: Theme.of(context).textTheme.titleSmall,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                if (canShare)
-                  IconButton(
-                    onPressed: () {
-                      Share.shareXFiles([XFile(imageFile.path)]);
-                    },
-                    icon: const Icon(Icons.share),
-                  ),
-                DownloadButton(file: imageFile),
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close),
-                ),
-              ],
-            ),
-            const SizedBox(height: 15),
-            Expanded(
-              child: Zoom(
-                clipBehavior: false,
-                width: isDesktop ? width / 3 : width,
-                child: Image.file(
-                  imageFile,
-                  frameBuilder: (
-                    BuildContext context,
-                    Widget child,
-                    int? frame,
-                    bool wasSynchronouslyLoaded,
-                  ) {
-                    if (wasSynchronouslyLoaded) {
-                      return child;
-                    }
-                    return AnimatedOpacity(
-                      opacity: frame == null ? 0 : 1,
-                      duration: const Duration(seconds: 1),
-                      curve: Curves.easeOut,
-                      child: child,
-                    );
-                  },
-                  errorBuilder: (
-                    BuildContext context,
-                    Object url,
-                    StackTrace? error,
-                  ) {
-                    return Text(
-                      L10n.of(context).couldNotLoadImage(error.toString()),
-                    );
-                  },
-                  fit: BoxFit.fitWidth,
-                ),
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: Text(
+            title,
+            style: Theme.of(context).textTheme.titleSmall,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          actions: [
+            if (canShare)
+              IconButton(
+                onPressed: () {
+                  Share.shareXFiles([XFile(imageFile.path)]);
+                },
+                icon: const Icon(Icons.share),
               ),
+            DownloadButton(file: imageFile),
+            IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.close),
             ),
           ],
+        ),
+        body: Center(
+          child: Zoom(
+            clipBehavior: false,
+            width: isDesktop ? width / 3 : width,
+            child: Image.file(
+              imageFile,
+              frameBuilder: (
+                BuildContext context,
+                Widget child,
+                int? frame,
+                bool wasSynchronouslyLoaded,
+              ) {
+                if (wasSynchronouslyLoaded) {
+                  return child;
+                }
+                return AnimatedOpacity(
+                  opacity: frame == null ? 0 : 1,
+                  duration: const Duration(seconds: 1),
+                  curve: Curves.easeOut,
+                  child: child,
+                );
+              },
+              errorBuilder: (
+                BuildContext context,
+                Object url,
+                StackTrace? error,
+              ) {
+                return Text(
+                  L10n.of(context).couldNotLoadImage(error.toString()),
+                );
+              },
+              fit: BoxFit.fitWidth,
+            ),
+          ),
         ),
       ),
     );
