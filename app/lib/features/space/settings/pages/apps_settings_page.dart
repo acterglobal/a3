@@ -2,9 +2,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/space/settings/widgets/space_settings_menu.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -67,8 +65,6 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final spaceSettingsWatcher = ref.watch(spaceAppSettingsProvider(spaceId));
-    final provider = ref.watch(featuresProvider);
-    bool isActive(f) => provider.isActive(f);
 
     return WithSidebar(
       sidebar: SpaceSettingsMenu(spaceId: spaceId),
