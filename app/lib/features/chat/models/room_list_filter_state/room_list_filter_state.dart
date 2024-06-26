@@ -26,10 +26,10 @@ Future<bool> roomListFilterStateAppliesToRoom(
   }
   if (state.searchTerm?.isNotEmpty == true) {
     final searchTerm = state.searchTerm!.toLowerCase();
-    if (convo.getRoomIdStr().toLowerCase().contains(searchTerm)) {
+    final convoId = convo.getRoomIdStr();
+    if (convoId.toLowerCase().contains(searchTerm)) {
       return true;
     }
-    final convoId = convo.getRoomIdStr();
     final avatarInfo = ref.read(roomAvatarInfoProvider(convoId));
     if (avatarInfo.displayName != null &&
         avatarInfo.displayName!.toLowerCase().contains(searchTerm)) {
