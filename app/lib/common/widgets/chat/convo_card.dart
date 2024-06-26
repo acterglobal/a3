@@ -4,7 +4,6 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/chat/convo_with_avatar_card.dart';
-import 'package:acter/common/widgets/chat/loading_convo_card.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -21,7 +20,6 @@ class ConvoCard extends ConsumerStatefulWidget {
   final Function()? onTap;
 
   /// Whether or not to render the parents Icon
-  ///
   final bool showParents;
 
   /// Custom Trailing Widget

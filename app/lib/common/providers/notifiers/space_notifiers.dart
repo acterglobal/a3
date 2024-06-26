@@ -1,47 +1,11 @@
 import 'dart:async';
 
-import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::common::space');
-
-// class SpaceAvatarInfoNotifier extends FamilyNotifier<AvatarInfo, Space> {
-//   late Stream<bool> _listener;
-//   late StreamSubscription<bool> _poller;
-
-//   AvatarInfo _getSpaceAvatarInfo() {
-//     final space = arg;
-//     final spaceId = space.getRoomIdStr();
-//     final avatarInfo = ref.read(roomAvatarInfoProvider(spaceId));
-//     return avatarInfo;
-//   }
-
-//   @override
-//   AvatarInfo build(Space arg) {
-//     final client = ref.watch(alwaysClientProvider);
-//     _listener = client
-//         .subscribeStream(arg.getRoomIdStr()); // keep it resident in memory
-//     _poller = _listener.listen(
-//       (e) async {
-//         _log.info('seen update $arg');
-//         state = _getSpaceAvatarInfo();
-//       },
-//       onError: (e, stack) {
-//         _log.severe('stream errored', e, stack);
-//       },
-//       onDone: () {
-//         _log.info('stream ended');
-//       },
-//     );
-//     ref.onDispose(() => _poller.cancel());
-//     return _getSpaceAvatarInfo();
-//   }
-// }
 
 class AsyncMaybeSpaceNotifier extends FamilyAsyncNotifier<Space?, String> {
   late Stream<bool> _listener;

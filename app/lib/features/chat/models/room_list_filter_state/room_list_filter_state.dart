@@ -1,4 +1,3 @@
-import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';

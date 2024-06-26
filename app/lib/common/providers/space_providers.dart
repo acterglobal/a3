@@ -1,4 +1,3 @@
-import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/notifiers/space_notifiers.dart';
 import 'package:acter/common/providers/room_providers.dart';
@@ -9,12 +8,6 @@ import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::common::space_providers');
-
-/// Provider the profile data of a the given space, keeps up to date with underlying client
-// final spaceAvatarInfoProvider =
-//     NotifierProvider.family<SpaceAvatarInfoNotifier, AvatarInfo, Space>(
-//   () => SpaceAvatarInfoNotifier(),
-// );
 
 /// Provider the list of all spaces, keeps up to date with the order and the underlying client
 final spacesProvider =
@@ -55,15 +48,6 @@ final spaceProvider =
   }
   throw 'Space not found';
 });
-
-/// Load the SpaceProfile Data right from the spaceId
-// final spaceAvatarInfoForSpaceIdProvider = FutureProvider.autoDispose
-//     .family<SpaceWithAvatarInfo, String>((ref, spaceId) async {
-//   final space = await ref.watch(spaceProvider(spaceId).future);
-//   final avatarInfo = ref.watch(spaceAvatarInfoProvider(space));
-//   final SpaceWithAvatarInfo data = (space: space, avatarInfo: avatarInfo);
-//   return data;
-// });
 
 /// Attempts to map a spaceId to the space, but could come back empty (null) rather than throw.
 /// keeps up to date with underlying client even if the space wasn't found initially,

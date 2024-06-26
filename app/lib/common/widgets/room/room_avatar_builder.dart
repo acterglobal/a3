@@ -2,10 +2,6 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logging/logging.dart';
-import 'package:skeletonizer/skeletonizer.dart';
-
-// final _log = Logger('a3::common::room_avatar');
 
 class RoomAvatarBuilder extends ConsumerWidget {
   final String roomId;

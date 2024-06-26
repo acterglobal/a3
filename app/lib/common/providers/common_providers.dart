@@ -1,6 +1,3 @@
-import 'dart:async';
-
-import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/notifiers/notification_settings_notifier.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/utils/utils.dart';

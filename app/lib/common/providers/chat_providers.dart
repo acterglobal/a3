@@ -1,14 +1,8 @@
 import 'package:acter/common/providers/notifiers/chat_notifiers.dart';
-import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
-
-final _log = Logger('a3::common::chat');
 
 /// Provider the profile data of a the given space, keeps up to date with underlying client
 final convoProvider =
@@ -17,39 +11,12 @@ final convoProvider =
 );
 
 // Chat Providers
-// final chatAvatarInfoProvider =
-//     FutureProvider.family<AvatarInfo, Convo>((ref, convo) async {
-//   // this ensure we are staying up to dates on updates to convo
-//   final chat = await ref.watch(convoProvider(convo).future);
-//   if (chat == null) {
-//     throw 'Chat not accessible';
-//   }
-//   final profile = chat.getProfile();
-//   final displayName = await profile.getDisplayName();
-//   final isDm = chat.isDm();
-//   try {
-//     if (profile.hasAvatar()) {
-//       final sdk = await ref.watch(sdkProvider.future);
-//       final size = sdk.api.newThumbSize(48, 48);
-//       final avatar = await profile.getAvatar(size);
-//       return ProfileData(displayName.text(), avatar.data(), isDm: isDm);
-//     }
-//   } catch (e, s) {
-//     _log.severe('Loading avatar for ${convo.getRoomIdStr()} failed', e, s);
-//   }
-//   return ProfileData(displayName.text(), null, isDm: isDm);
-// });
 
 final latestMessageProvider =
     StateNotifierProvider.family<LatestMsgNotifier, RoomMessage?, Convo>(
         (ref, convo) {
   return LatestMsgNotifier(ref, convo);
 });
-
-// final avatarInfoProviderById =
-//     FutureProvider.family.autoDispose<AvatarInfo, String>((ref, roomId) async {
-//   return ref.watch(roomAvatarInfoProvider(roomId));
-// });
 
 /// Provider the profile data of a the given space, keeps up to date with underlying client
 final chatsProvider =
