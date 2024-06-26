@@ -174,36 +174,6 @@ final spaceRelationsProvider =
   return await room.spaceRelations();
 });
 
-/// Get the canonical parent of the space. Errors if the space isn't found. Stays up
-/// to date with underlying client data if a space was found.
-final canonicalParentProvider = FutureProvider.autoDispose
-    .family<SpaceWithAvatarInfo?, String>((ref, roomId) async {
-  try {
-    final relations = await ref.watch(spaceRelationsProvider(roomId).future);
-    if (relations == null) {
-      return null;
-    }
-    final parent = relations.mainParent();
-    if (parent == null) {
-      return null;
-    }
-
-    final parentId = parent.roomId().toString();
-    final parentSpace = await ref.watch(maybeSpaceProvider(parentId).future);
-    if (parentSpace == null) {
-      return null;
-    }
-
-    final avatarInfo = ref.watch(roomAvatarInfoProvider(parentId));
-    final SpaceWithAvatarInfo data =
-        (space: parentSpace, avatarInfo: avatarInfo);
-    return data;
-  } catch (e) {
-    _log.warning('Failed to load canonical parent for $roomId');
-    return null;
-  }
-});
-
 final parentIdsProvider =
     FutureProvider.family<List<String>, String>((ref, roomId) async {
   try {
