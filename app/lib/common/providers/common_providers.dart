@@ -13,14 +13,6 @@ final _log = Logger('a3::common::providers');
 // Loading Providers
 final loadingProvider = StateProvider<bool>((ref) => false);
 
-// Account Avatar Info Providers
-class AccountWithAvatarInfo {
-  final Account account;
-  final AvatarInfo avatarInfo;
-
-  const AccountWithAvatarInfo(this.account, this.avatarInfo);
-}
-
 final genericUpdatesStream =
     StreamProvider.family<int, String>((ref, key) async* {
   final client = ref.watch(alwaysClientProvider);
@@ -46,8 +38,8 @@ final accountProvider = StateProvider(
 );
 
 /// See [AccountWithAvatarInfo].
-final accountWithAvatarInfoProvider =
-    FutureProvider.autoDispose<AccountWithAvatarInfo>((ref) async {
+final accountAvatarInfoProvider =
+    FutureProvider.autoDispose<AvatarInfo>((ref) async {
   final sdk = await ref.watch(sdkProvider.future);
   final account = ref.watch(accountProvider);
   final thumbSize = sdk.api.newThumbSize(48, 48);
