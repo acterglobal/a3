@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/room/room_avatar_builder.dart';
 import 'package:acter/features/tasks/providers/tasklists.dart';
@@ -142,9 +141,9 @@ class TaskItem extends ConsumerWidget {
       label = L10n.of(context).dueTomorrow;
     } else if (dueDate.isPast) {
       label = dueDate.timeago();
-      iconColor = Theme.of(context).colorScheme.taskOverdueFG;
+      iconColor = Theme.of(context).colorScheme.onSurface;
       textStyle = textStyle?.copyWith(
-        color: Theme.of(context).colorScheme.taskOverdueFG,
+        color: Theme.of(context).colorScheme.error,
       );
     }
     final dateText =

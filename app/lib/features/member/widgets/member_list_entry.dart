@@ -1,7 +1,6 @@
 import 'package:acter/features/member/dialogs/show_member_info_drawer.dart';
 
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -36,10 +35,7 @@ class _MemberListInnerSkeleton extends StatelessWidget {
       subtitle: Skeletonizer(
         child: Text(
           L10n.of(context).noId,
-          style: Theme.of(context)
-              .textTheme
-              .labelLarge!
-              .copyWith(color: Theme.of(context).colorScheme.neutral5),
+          style: Theme.of(context).textTheme.labelLarge,
           overflow: TextOverflow.ellipsis,
         ),
       ),
@@ -139,10 +135,7 @@ class _MemberListEntryInner extends ConsumerWidget {
       subtitle: avatarInfo.displayName != null
           ? Text(
               userId,
-              style: Theme.of(context)
-                  .textTheme
-                  .labelLarge!
-                  .copyWith(color: Theme.of(context).colorScheme.neutral5),
+              style: Theme.of(context).textTheme.labelLarge,
               overflow: TextOverflow.ellipsis,
             )
           : null,

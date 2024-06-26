@@ -23,8 +23,14 @@ use std::{
 };
 use tracing::instrument;
 
+#[cfg(feature = "queued")]
+mod queued;
+
+#[cfg(feature = "queued")]
+pub use queued::QueuedMediaStore;
+
 #[async_trait]
-trait MediaStore: Debug + Sync + Send {
+pub trait MediaStore: Debug + Sync + Send {
     type Error: Debug + Into<StoreError> + From<serde_json::Error>;
 
     async fn add_media_content(
@@ -180,11 +186,38 @@ impl core::fmt::Display for StoreCacheWrapperError {
 
 impl std::error::Error for StoreCacheWrapperError {}
 
+#[cfg(feature = "queued")]
+pub async fn wrap_with_file_cache_and_limits<T>(
+    state_store: T,
+    cache_path: PathBuf,
+    passphrase: &str,
+    queue_size: usize,
+) -> Result<MediaStoreWrapper<T, QueuedMediaStore<FileCacheMediaStore>>, StoreCacheWrapperError>
+where
+    T: StateStore + Sync + Send,
+{
+    let (store, cached) = wrap_with_file_cache_inner(state_store, cache_path, passphrase).await?;
+    let queued = QueuedMediaStore::new(cached, queue_size);
+    Ok(MediaStoreWrapper::new(store, queued))
+}
+
 pub async fn wrap_with_file_cache<T>(
     state_store: T,
     cache_path: PathBuf,
     passphrase: &str,
 ) -> Result<MediaStoreWrapper<T, FileCacheMediaStore>, StoreCacheWrapperError>
+where
+    T: StateStore + Sync + Send,
+{
+    let (store, cached) = wrap_with_file_cache_inner(state_store, cache_path, passphrase).await?;
+    Ok(MediaStoreWrapper::new(store, cached))
+}
+
+async fn wrap_with_file_cache_inner<T>(
+    state_store: T,
+    cache_path: PathBuf,
+    passphrase: &str,
+) -> Result<(T, FileCacheMediaStore), StoreCacheWrapperError>
 where
     T: StateStore + Sync + Send,
 {
@@ -210,7 +243,7 @@ where
     fs::create_dir_all(cache_path.as_path())
         .map_err(|e| StoreCacheWrapperError::StoreError(StoreError::Backend(Box::new(e))))?;
 
-    Ok(MediaStoreWrapper::new(
+    Ok((
         state_store,
         FileCacheMediaStore::with_store_cipher(cache_path, cipher),
     ))

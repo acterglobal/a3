@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/activities/providers/invitations_providers.dart';
@@ -32,10 +31,7 @@ class InvitationCard extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           renderTile(context, ref),
-          Divider(
-            color: Theme.of(context).colorScheme.neutral6,
-            indent: 5,
-          ),
+          const Divider(indent: 5),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(

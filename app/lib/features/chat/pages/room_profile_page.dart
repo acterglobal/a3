@@ -5,7 +5,6 @@ import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/base_body_widget.dart';
 import 'package:acter/common/widgets/chat/edit_room_description_sheet.dart';
 import 'package:acter/common/widgets/edit_plain_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
@@ -55,21 +54,18 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         ref.watch(roomMembershipProvider(widget.roomId)).valueOrNull;
     final convo = ref.watch(chatProvider(widget.roomId)).valueOrNull;
 
-    return BaseBody(
-      padding: EdgeInsets.zero,
-      child: Column(
-        children: [
-          _buildAppBar(context, roomAvatarInfo, membership, convo),
-          Expanded(
-            child: _buildBody(
-              context,
-              roomAvatarInfo,
-              membership,
-              convo,
-            ),
+    return Column(
+      children: [
+        _buildAppBar(context, roomAvatarInfo, membership, convo),
+        Expanded(
+          child: _buildBody(
+            context,
+            roomAvatarInfo,
+            membership,
+            convo,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -268,10 +264,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
               description: data.topic() ?? '',
               roomId: widget.roomId,
             ),
-            icon: Icon(
-              Icons.edit,
-              color: Theme.of(context).colorScheme.neutral5,
-            ),
+            icon: const Icon(Icons.edit),
           );
   }
 
@@ -401,7 +394,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
               settingsListBackground: Colors.transparent,
               dividerColor: Colors.transparent,
               settingsSectionBackground: Colors.transparent,
-              leadingIconsColor: Theme.of(context).colorScheme.neutral6,
+              leadingIconsColor: Theme.of(context).colorScheme.onSurface,
             ),
             sections: [
               SettingsSection(

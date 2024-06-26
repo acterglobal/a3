@@ -670,6 +670,8 @@
   "@looksGoodAddressConfirmed": {},
   "makeADifference": "Unlock your digital organizing.",
   "@makeADifference": {},
+  "manage": "Manage",
+  "@manage": {},
   "manageBudgetsCooperatively": "Manage budgets cooperatively",
   "@manageBudgetsCooperatively": {},
   "manageTasksListsAndToDosTogether": "Manage Tasks lists and ToDos together",
@@ -1153,6 +1155,7 @@
   "@spaceOrSpaceIdMustBeProvided": {},
   "spaces": "Spaces",
   "@spaces": {},
+  "spacesAndChats": "Spaces & Chats",
   "spacesAndChatsToAddThemTo": "Spaces & Chats to add them to",
   "@spacesAndChatsToAddThemTo": {},
   "spaceUpdated": "Space Updated",
@@ -2234,5 +2237,6 @@
   "reportTaskList": "Report Task List",
   "reportTaskItem": "Report Task Item",
   "unconfirmedEmailsActivityTitle": "You have unconfirmed E-Mail Addresses",
-  "unconfirmedEmailsActivitySubtitle": "Please follow the link we've sent you in the email and then confirm them here"
+  "unconfirmedEmailsActivitySubtitle": "Please follow the link we've sent you in the email and then confirm them here",
+  "seeAll": "See all"
 }

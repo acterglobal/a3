@@ -36,10 +36,6 @@ class SpaceMemberInviteCard extends ConsumerWidget {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 5),
       shape: RoundedRectangleBorder(
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.primary,
-          width: 1.5,
-        ),
         borderRadius: BorderRadius.circular(6),
       ),
       child: ListTile(

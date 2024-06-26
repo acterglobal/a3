@@ -53,6 +53,9 @@ class SpaceWithAvatarInfoCard extends StatelessWidget {
   /// If null, `EdgeInsets.symmetric(horizontal: 16.0)` is used.
   final EdgeInsetsGeometry? contentPadding;
 
+  /// If null, `EdgeInsets.symmetric(horizontal: 16.0)` is used.
+  final EdgeInsetsGeometry? margin;
+
   /// The shape of the card's [Material].
   ///
   /// Defines the card's [Material.shape].
@@ -61,12 +64,6 @@ class SpaceWithAvatarInfoCard extends StatelessWidget {
   /// is used. If that's null then the shape will be a [RoundedRectangleBorder]
   /// with a circular corner radius of 4.0.
   final ShapeBorder? shape;
-
-  /// Whether or not to render a border around that element.
-  ///
-  /// Overwritten if you provider a `shape`. Otherwise, if set to true renders
-  /// the default border.
-  final bool withBorder;
 
   /// Whether or not to render the parent(s) Icon
   ///
@@ -86,8 +83,8 @@ class SpaceWithAvatarInfoCard extends StatelessWidget {
     this.subtitleTextStyle,
     this.leadingAndTrailingTextStyle,
     this.shape,
-    this.withBorder = true,
     this.showParents = true,
+    this.margin,
     required this.avatarSize,
     required this.contentPadding,
   });
@@ -111,7 +108,7 @@ class SpaceWithAvatarInfoCard extends StatelessWidget {
     );
 
     return Card(
-      shape: renderShape(context),
+      margin: margin,
       child: ListTile(
         contentPadding: contentPadding,
         onTap: onTap ?? () => context.push('/$roomId'),
@@ -126,21 +123,5 @@ class SpaceWithAvatarInfoCard extends StatelessWidget {
         trailing: trailing,
       ),
     );
-  }
-
-  ShapeBorder? renderShape(BuildContext context) {
-    if (shape != null) {
-      return shape;
-    }
-    if (withBorder) {
-      return RoundedRectangleBorder(
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.primary,
-          width: 1.5,
-        ),
-        borderRadius: BorderRadius.circular(6),
-      );
-    }
-    return null;
   }
 }

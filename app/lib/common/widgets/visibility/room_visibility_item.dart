@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
 
@@ -28,7 +27,7 @@ class RoomVisibilityItem extends StatelessWidget {
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
         side: BorderSide(
-          color: Theme.of(context).colorScheme.neutral5,
+          color: Theme.of(context).colorScheme.onSurface,
         ),
         borderRadius: BorderRadius.circular(10),
       ),
@@ -43,7 +42,7 @@ class RoomVisibilityItem extends StatelessWidget {
           style: Theme.of(context)
               .textTheme
               .labelMedium!
-              .copyWith(color: Theme.of(context).colorScheme.neutral4),
+              .copyWith(color: Theme.of(context).colorScheme.surface),
         ),
         onTap: isShowRadio && spaceVisibilityValue != null && onChanged != null
             ? () => onChange(spaceVisibilityValue, context)

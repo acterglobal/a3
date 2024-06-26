@@ -1,0 +1,1 @@
+- [Improvement] : Optimised application color system

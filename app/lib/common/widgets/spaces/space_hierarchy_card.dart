@@ -8,7 +8,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SpaceHierarchyCard extends ConsumerWidget {
@@ -120,7 +119,6 @@ class SpaceHierarchyCard extends ConsumerWidget {
       avatarSize: avatarSize,
       contentPadding: contentPadding,
       shape: shape,
-      withBorder: withBorder,
       trailing: RoomHierarchyJoinButton(
         joinRule: roomInfo.joinRuleStr().toLowerCase(),
         roomId: roomInfo.roomIdStr(),

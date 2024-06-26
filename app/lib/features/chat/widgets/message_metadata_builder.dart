@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
@@ -50,7 +49,7 @@ class MessageMetadataBuilder extends ConsumerWidget {
                   child: Text(
                     L10n.of(context).cancelSend,
                     style: Theme.of(context).textTheme.labelSmall!.copyWith(
-                          color: Theme.of(context).colorScheme.neutral5,
+                          color: Theme.of(context).colorScheme.onSurface,
                           decoration: TextDecoration.underline,
                         ),
                   ),
@@ -61,7 +60,7 @@ class MessageMetadataBuilder extends ConsumerWidget {
                   child: Text(
                     L10n.of(context).retry,
                     style: Theme.of(context).textTheme.labelSmall!.copyWith(
-                          color: Theme.of(context).colorScheme.neutral5,
+                          color: Theme.of(context).colorScheme.onSurface,
                           decoration: TextDecoration.underline,
                         ),
                   ),
@@ -316,7 +315,7 @@ class _UserReceiptsWidget extends ConsumerWidget {
                               .textTheme
                               .labelSmall!
                               .copyWith(
-                                color: Theme.of(context).colorScheme.neutral5,
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                         ),
                       );

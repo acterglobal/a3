@@ -1,10 +1,10 @@
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/chat_selector_drawer.dart';
 import 'package:acter/common/widgets/checkbox_form_field.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
-import 'package:acter/common/widgets/sliver_scaffold.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/features/super_invites/widgets/to_join_room.dart';
@@ -64,128 +64,165 @@ class _CreateSuperInviteTokenPageConsumerState
 
   @override
   Widget build(BuildContext context) {
-    return SliverScaffold(
-      header: isEdit
-          ? L10n.of(context).editInviteCode
-          : L10n.of(context).createInviteCode,
-      addActions: true,
+    return Scaffold(
+      appBar: _buildAppBar(context),
       body: Form(
         key: _formKey,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              const SizedBox(height: 15),
-              isEdit
-                  ? ListTile(
-                      title: Text(_tokenController.text),
-                      subtitle: Text(
-                        L10n.of(context).claimedTimes(_acceptedCount),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const SizedBox(height: 15),
+                isEdit
+                    ? ListTile(
+                        title: Text(_tokenController.text),
+                        subtitle: Text(
+                          L10n.of(context).claimedTimes(_acceptedCount),
+                        ),
+                        trailing: IconButton(
+                          key: CreateSuperInviteTokenPage.deleteBtn,
+                          icon: const Icon(Atlas.trash_can_thin),
+                          onPressed: () => _deleteIt(context),
+                        ),
+                      )
+                    : InputTextField(
+                        hintText: L10n.of(context).code,
+                        key: CreateSuperInviteTokenPage.tokenFieldKey,
+                        textInputType: TextInputType.text,
+                        controller: _tokenController,
+                        validator: (String? val) => (val?.isNotEmpty == true &&
+                                val!.length < 6)
+                            ? L10n.of(context).codeMustBeAtLeast6CharactersLong
+                            : null,
                       ),
-                      trailing: IconButton(
-                        key: CreateSuperInviteTokenPage.deleteBtn,
-                        icon: const Icon(Atlas.trash_can_thin),
-                        onPressed: () => _deleteIt(context),
-                      ),
-                    )
-                  : InputTextField(
-                      hintText: L10n.of(context).code,
-                      key: CreateSuperInviteTokenPage.tokenFieldKey,
-                      textInputType: TextInputType.text,
-                      controller: _tokenController,
-                      validator: (String? val) => (val?.isNotEmpty == true &&
-                              val!.length < 6)
-                          ? L10n.of(context).codeMustBeAtLeast6CharactersLong
-                          : null,
-                    ),
-              CheckboxFormField(
-                key: CreateSuperInviteTokenPage.createDmKey,
-                title: Text(L10n.of(context).createDMWhenRedeeming),
-                onChanged: (newValue) =>
-                    setState(() => tokenUpdater.createDm(newValue ?? false)),
-                initialValue: _initialDmCheck,
-              ),
-              Text(L10n.of(context).spacesAndChatsToAddThemTo),
-              Card(
-                child: ListTile(
-                  title: ButtonBar(
-                    children: [
-                      OutlinedButton(
-                        key: CreateSuperInviteTokenPage.addSpaceKey,
-                        onPressed: () async {
-                          final newSpace = await selectSpaceDrawer(
-                            context: context,
-                            currentSpaceId: null,
-                            canCheck: 'CanInvite',
-                            title: Text(L10n.of(context).addSpace),
-                          );
-                          if (newSpace != null) {
-                            if (!_roomIds.contains(newSpace)) {
-                              tokenUpdater.addRoom(newSpace);
-                              setState(
-                                () => _roomIds = List.from(_roomIds)
-                                  ..add(newSpace),
-                              );
-                            }
-                          }
-                        },
-                        child: Text(L10n.of(context).addSpace),
-                      ),
-                      OutlinedButton(
-                        key: CreateSuperInviteTokenPage.addChatKey,
-                        onPressed: () async {
-                          final newSpace = await selectChatDrawer(
-                            context: context,
-                            currentChatId: null,
-                            canCheck: 'CanInvite',
-                            title: Text(L10n.of(context).addChat),
-                          );
-                          if (newSpace != null) {
-                            if (!_roomIds.contains(newSpace)) {
-                              tokenUpdater.addRoom(newSpace);
-                              setState(
-                                () => _roomIds = List.from(_roomIds)
-                                  ..add(newSpace),
-                              );
-                            }
-                          }
-                        },
-                        child: Text(L10n.of(context).addChat),
-                      ),
-                    ],
-                  ),
+                CheckboxFormField(
+                  key: CreateSuperInviteTokenPage.createDmKey,
+                  title: Text(L10n.of(context).createDMWhenRedeeming),
+                  onChanged: (newValue) =>
+                      setState(() => tokenUpdater.createDm(newValue ?? false)),
+                  initialValue: _initialDmCheck,
                 ),
-              ),
-            ],
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      L10n.of(context).spacesAndChats,
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    PopupMenuButton(
+                      icon: const Icon(Atlas.plus_circle_thin),
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          key: CreateSuperInviteTokenPage.addSpaceKey,
+                          onTap: () async {
+                            final newSpace = await selectSpaceDrawer(
+                              context: context,
+                              currentSpaceId: null,
+                              canCheck: 'CanInvite',
+                              title: Text(L10n.of(context).addSpace),
+                            );
+                            if (newSpace != null) {
+                              if (!_roomIds.contains(newSpace)) {
+                                tokenUpdater.addRoom(newSpace);
+                                setState(
+                                  () => _roomIds = List.from(_roomIds)
+                                    ..add(newSpace),
+                                );
+                              }
+                            }
+                          },
+                          child: Text(L10n.of(context).addSpace),
+                        ),
+                        PopupMenuItem(
+                          key: CreateSuperInviteTokenPage.addChatKey,
+                          onTap: () async {
+                            final newSpace = await selectChatDrawer(
+                              context: context,
+                              currentChatId: null,
+                              canCheck: 'CanInvite',
+                              title: Text(L10n.of(context).addChat),
+                            );
+                            if (newSpace != null) {
+                              if (!_roomIds.contains(newSpace)) {
+                                tokenUpdater.addRoom(newSpace);
+                                setState(
+                                  () => _roomIds = List.from(_roomIds)
+                                    ..add(newSpace),
+                                );
+                              }
+                            }
+                          },
+                          child: Text(L10n.of(context).addChat),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Text(
+                  L10n.of(context).spacesAndChatsToAddThemTo,
+                ),
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemBuilder: (context, idx) {
+                    final roomId = _roomIds[idx];
+                    return RoomToInviteTo(
+                      roomId: roomId,
+                      onRemove: () {
+                        tokenUpdater.removeRoom(roomId);
+                        setState(
+                          () => _roomIds = List.from(_roomIds)..remove(roomId),
+                        );
+                      },
+                    );
+                  },
+                  itemCount: _roomIds.length,
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                const Divider(),
+                const SizedBox(
+                  height: 10,
+                ),
+                ButtonBar(
+                  children: [
+                    OutlinedButton(
+                      onPressed: () => context.canPop()
+                          ? context.pop()
+                          : context.goNamed(Routes.main.name),
+                      child: Text(
+                        L10n.of(context).cancel,
+                      ),
+                    ),
+                    ActerPrimaryActionButton(
+                      key: CreateSuperInviteTokenPage.submitBtn,
+                      onPressed: _submit,
+                      child: Text(
+                        isEdit
+                            ? L10n.of(context).save
+                            : L10n.of(context).createCode,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
-      delegates: [
-        ListView.builder(
-          shrinkWrap: true,
-          itemBuilder: (context, idx) {
-            final roomId = _roomIds[idx];
-            return RoomToInviteTo(
-              roomId: roomId,
-              onRemove: () {
-                tokenUpdater.removeRoom(roomId);
-                setState(
-                  () => _roomIds = List.from(_roomIds)..remove(roomId),
-                );
-              },
-            );
-          },
-          itemCount: _roomIds.length,
-        ),
-      ],
-      confirmActionTitle:
-          isEdit ? L10n.of(context).save : L10n.of(context).createCode,
-      confirmActionKey: CreateSuperInviteTokenPage.submitBtn,
-      confirmActionOnPressed: _submit,
-      cancelActionTitle: L10n.of(context).cancel,
-      cancelActionOnPressed: () =>
-          context.canPop() ? context.pop() : context.goNamed(Routes.main.name),
+    );
+  }
+
+  AppBar _buildAppBar(BuildContext context) {
+    return AppBar(
+      title: Text(
+        isEdit
+            ? L10n.of(context).editInviteCode
+            : L10n.of(context).createInviteCode,
+      ),
     );
   }
 

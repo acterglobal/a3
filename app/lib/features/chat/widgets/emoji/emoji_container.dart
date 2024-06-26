@@ -51,7 +51,7 @@ class _EmojiContainerState extends State<EmojiContainer>
     keys = reactions.keys.toList();
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-      color: Theme.of(context).colorScheme.neutral2,
+      color: Theme.of(context).colorScheme.surface,
       child: Wrap(
         direction: Axis.horizontal,
         runSpacing: 3,
@@ -73,8 +73,8 @@ class _EmojiContainerState extends State<EmojiContainer>
                   ? const EdgeInsets.only(right: 4)
                   : const EdgeInsets.symmetric(horizontal: 2),
               backgroundColor: sentByMe
-                  ? Theme.of(context).colorScheme.neutral3
-                  : Theme.of(context).colorScheme.neutral2,
+                  ? Theme.of(context).colorScheme.secondaryContainer
+                  : Theme.of(context).colorScheme.surface,
               visualDensity: VisualDensity.compact,
               labelPadding: const EdgeInsets.all(0),
               shape: const StadiumBorder(

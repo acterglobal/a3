@@ -54,6 +54,9 @@ class SpaceCard extends ConsumerWidget {
   /// If null, `EdgeInsets.symmetric(horizontal: 16.0)` is used.
   final EdgeInsetsGeometry? contentPadding;
 
+  /// If null, `EdgeInsets.symmetric(horizontal: 16.0)` is used.
+  final EdgeInsetsGeometry? margin;
+
   /// The shape of the card's [Material].
   ///
   /// Defines the card's [Material.shape].
@@ -88,6 +91,7 @@ class SpaceCard extends ConsumerWidget {
     this.leadingAndTrailingTextStyle,
     this.avatarSize = 48,
     this.contentPadding = const EdgeInsets.all(15),
+    this.margin,
     this.shape,
     this.withBorder = true,
     this.showParents = true,
@@ -106,6 +110,7 @@ class SpaceCard extends ConsumerWidget {
     this.leadingAndTrailingTextStyle,
     this.avatarSize = 24,
     this.contentPadding = const EdgeInsets.all(5),
+    this.margin = const EdgeInsets.only(bottom: 14),
     this.shape,
     this.withBorder = false,
     this.showParents = false,
@@ -130,7 +135,6 @@ class SpaceCard extends ConsumerWidget {
       avatarSize: avatarSize,
       contentPadding: contentPadding,
       shape: shape,
-      withBorder: withBorder,
       showParents: showParents,
       trailing: trailing,
     );

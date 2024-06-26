@@ -39,6 +39,7 @@ class _ChangeDisplayNameState extends State<ChangeDisplayName> {
   Widget build(BuildContext context) {
     final account = widget.account;
     return AlertDialog(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       title: Text(L10n.of(context).changeYourDisplayName),
       content: Form(
         key: _formKey,
