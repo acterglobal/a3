@@ -551,8 +551,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
 
   Widget replyBuilder(String roomId, Message repliedToMessage) {
     final authorId = repliedToMessage.author.id;
-    final replyProfile =
-        ref.watch(roomMemberProvider((userId: authorId, roomId: roomId)));
+    final memberAvatar =
+        ref.watch(memberAvatarInfoProvider((userId: authorId, roomId: roomId)));
     final inputNotifier = ref.watch(chatInputProvider(roomId).notifier);
     return Row(
       children: [
@@ -563,36 +563,10 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           color: Colors.grey,
         ),
         const SizedBox(width: 4),
-        replyProfile.when(
-          data: (data) => ActerAvatar(
-            options: AvatarOptions.DM(
-              AvatarInfo(
-                uniqueId: authorId,
-                displayName: data.profile.displayName ?? authorId,
-                avatar: data.profile.getAvatarImage(),
-              ),
-              size: 12,
-            ),
-          ),
-          error: (e, st) {
-            _log.severe('Error loading avatar', e, st);
-            return ActerAvatar(
-              options: AvatarOptions.DM(
-                AvatarInfo(
-                  uniqueId: authorId,
-                  displayName: authorId,
-                ),
-                size: 24,
-              ),
-            );
-          },
-          loading: () => Skeletonizer(
-            child: ActerAvatar(
-              options: AvatarOptions.DM(
-                AvatarInfo(uniqueId: authorId),
-                size: 24,
-              ),
-            ),
+        ActerAvatar(
+          options: AvatarOptions.DM(
+            memberAvatar,
+            size: 12,
           ),
         ),
         const SizedBox(width: 5),

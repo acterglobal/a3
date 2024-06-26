@@ -92,8 +92,8 @@ class NewsSideBar extends ConsumerWidget {
             options: AvatarOptions(
               AvatarInfo(
                 uniqueId: roomId,
-                displayName: space.spaceProfileData.displayName,
-                avatar: space.spaceProfileData.getAvatarImage(),
+                displayName: space.avatarInfo.displayName,
+                avatar: space.avatarInfo.avatar,
                 onAvatarTap: () => goToSpace(context, roomId),
               ),
               size: 42,

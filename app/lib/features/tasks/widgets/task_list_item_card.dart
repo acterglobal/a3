@@ -1,4 +1,4 @@
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/tasks/widgets/task_items_list_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -58,12 +58,9 @@ class TaskListItemCard extends ConsumerWidget {
   }
 
   Widget? subtitle(WidgetRef ref) {
-    final spaceProfile = ref
-        .watch(spaceProfileDataForSpaceIdProvider(taskList.spaceIdStr()))
-        .valueOrNull;
+    final spaceProfile =
+        ref.watch(roomAvatarInfoProvider(taskList.spaceIdStr()));
 
-    return showSpace && spaceProfile != null
-        ? Text(spaceProfile.profile.displayName ?? '')
-        : null;
+    return showSpace ? Text(spaceProfile.displayName ?? '') : null;
   }
 }

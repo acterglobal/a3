@@ -121,11 +121,11 @@ class UserStateButton extends ConsumerWidget {
       dismissOnTap: false,
     );
     try {
-      final profile = ref
-          .read(roomMemberProvider((userId: userId, roomId: room.roomIdStr())))
+      final member = ref
+          .read(memberProvider((userId: userId, roomId: room.roomIdStr())))
           .valueOrNull;
-      if (profile?.member != null) {
-        await profile!.member.kick('Cancel Invite');
+      if (member != null) {
+        await member.kick('Cancel Invite');
       }
       EasyLoading.dismiss();
     } catch (e) {

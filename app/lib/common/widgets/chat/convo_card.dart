@@ -2,8 +2,7 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/chat/convo_with_profile_card.dart';
-import 'package:acter/common/widgets/chat/loading_convo_card.dart';
+import 'package:acter/common/widgets/chat/convo_with_avatar_card.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -20,7 +19,6 @@ class ConvoCard extends ConsumerStatefulWidget {
   final Function()? onTap;
 
   /// Whether or not to render the parents Icon
-  ///
   final bool showParents;
 
   /// Custom Trailing Widget
@@ -50,30 +48,21 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
   @override
   Widget build(BuildContext context) {
     String roomId = widget.room.getRoomIdStr();
-    final convoProfile = ref.watch(chatProfileDataProvider(widget.room));
+    final roomAvatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
     final latestMsg = ref.watch(latestMessageProvider(widget.room));
     // ToDo: UnreadCounter
-    return convoProfile.when(
-      data: (profile) => ConvoWithProfileCard(
-        roomId: roomId,
-        showParents: widget.showParents,
-        profile: profile,
-        onTap: widget.onTap,
-        subtitle: latestMsg != null
-            ? _SubtitleWidget(
-                room: widget.room,
-                latestMessage: latestMsg,
-              )
-            : const SizedBox.shrink(),
-        trailing: widget.trailing ?? renderTrailing(context),
-      ),
-      error: (error, stackTrace) => LoadingConvoCard(
-        roomId: roomId,
-        subtitle: Text(L10n.of(context).failedToLoadConversation(error)),
-      ),
-      loading: () => LoadingConvoCard(
-        roomId: roomId,
-      ),
+    return ConvoWithAvatarInfoCard(
+      roomId: roomId,
+      showParents: widget.showParents,
+      avatarInfo: roomAvatarInfo,
+      onTap: widget.onTap,
+      subtitle: latestMsg != null
+          ? _SubtitleWidget(
+              room: widget.room,
+              latestMessage: latestMsg,
+            )
+          : const SizedBox.shrink(),
+      trailing: widget.trailing ?? renderTrailing(context),
     );
   }
 

@@ -25,69 +25,61 @@ class SpaceHeaderProfile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profileData = ref.watch(spaceProfileDataForSpaceIdProvider(spaceId));
+    final spaceAvatarInfo = ref.watch(roomAvatarInfoProvider(spaceId));
     final parentBadges =
         ref.watch(parentAvatarInfosProvider(spaceId)).valueOrNull;
     final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
 
-    return profileData.when(
-      data: (spaceProfile) {
-        return Padding(
-          padding: const EdgeInsets.only(left: 10),
-          child: Row(
-            children: <Widget>[
-              ActerAvatar(
-                options: AvatarOptions(
-                  AvatarInfo(
-                    uniqueId: spaceId,
-                    displayName: spaceProfile.profile.displayName,
-                    avatar: spaceProfile.profile.getAvatarImage(),
-                    onAvatarTap: () => goToSpace(context, spaceId),
-                  ),
-                  parentBadges: parentBadges,
-                  size: 80,
-                  badgesSize: 30,
-                ),
+    return Padding(
+      padding: const EdgeInsets.only(left: 10),
+      child: Row(
+        children: <Widget>[
+          ActerAvatar(
+            options: AvatarOptions(
+              AvatarInfo(
+                uniqueId: spaceId,
+                displayName: spaceAvatarInfo.displayName,
+                avatar: spaceAvatarInfo.avatar,
+                onAvatarTap: () => goToSpace(context, spaceId),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  SelectionArea(
-                    child: GestureDetector(
-                      onTap: () {
-                        if (membership?.canString('CanSetName') == true) {
-                          showEditSpaceNameBottomSheet(
-                            context: context,
-                            titleValue: spaceProfile.profile.displayName ?? '',
-                            spaceId: spaceId,
-                            ref: ref,
-                          );
-                        }
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: Text(
-                          spaceProfile.profile.displayName ?? spaceId,
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                      ),
+              parentBadges: parentBadges,
+              size: 80,
+              badgesSize: 30,
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              SelectionArea(
+                child: GestureDetector(
+                  onTap: () {
+                    if (membership?.canString('CanSetName') == true) {
+                      showEditSpaceNameBottomSheet(
+                        context: context,
+                        titleValue: spaceAvatarInfo.displayName ?? '',
+                        spaceId: spaceId,
+                        ref: ref,
+                      );
+                    }
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Text(
+                      spaceAvatarInfo.displayName ?? spaceId,
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10, left: 10),
-                    child: SpaceInfo(spaceId: spaceId),
-                  ),
-                  Consumer(builder: spaceMembersBuilder),
-                ],
+                ),
               ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10, left: 10),
+                child: SpaceInfo(spaceId: spaceId),
+              ),
+              Consumer(builder: spaceMembersBuilder),
             ],
           ),
-        );
-      },
-      error: (error, stack) => Text(
-        L10n.of(context).loadingFailed(error),
+        ],
       ),
-      loading: () => Skeletonizer(child: Text(L10n.of(context).loading)),
     );
   }
 

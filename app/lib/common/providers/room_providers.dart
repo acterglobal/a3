@@ -1,9 +1,9 @@
 /// Get the relations of the given SpaceId.  Throws
 library;
 
-import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/notifiers/room_notifiers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
@@ -20,7 +20,7 @@ class RoomItem {
   final Member? membership;
   final Room? room;
   final String roomId;
-  final ProfileData roomProfileData;
+  final AvatarInfo avatarInfo;
   final List<Member> activeMembers;
 
   const RoomItem({
@@ -28,7 +28,7 @@ class RoomItem {
     this.room,
     required this.roomId,
     required this.activeMembers,
-    required this.roomProfileData,
+    required this.avatarInfo,
   });
 }
 
@@ -42,24 +42,24 @@ final maybeRoomProvider =
 );
 
 /// Provider the profile data of a the given room, keeps up to date with underlying client
-final roomProfileDataProvider =
-    FutureProvider.autoDispose.family<ProfileData, String>((ref, roomId) async {
-  final room = await ref.watch(maybeRoomProvider(roomId).future);
-  if (room == null) {
-    throw RoomNotFound;
-  }
+// final roomProfileDataProvider =
+//     FutureProvider.autoDispose.family<AvatarInfo, String>((ref, roomId) async {
+//   final room = await ref.watch(maybeRoomProvider(roomId).future);
+//   if (room == null) {
+//     throw RoomNotFound;
+//   }
 
-  final profile = room.getProfile();
-  OptionString displayName = await profile.getDisplayName();
-  try {
-    final avatar = (await profile.getAvatar(null)).data();
-    _log.info('$roomId : hasAvatar: ${avatar != null}');
-    return ProfileData(displayName.text(), avatar);
-  } catch (error) {
-    _log.severe('Loading avatar for $roomId failed', error);
-    return ProfileData(displayName.text(), null);
-  }
-});
+//   final profile = room.getProfile();
+//   OptionString displayName = await profile.getDisplayName();
+//   try {
+//     final avatar = (await profile.getAvatar(null)).data();
+//     _log.info('$roomId : hasAvatar: ${avatar != null}');
+//     return ProfileData(displayName.text(), avatar);
+//   } catch (error) {
+//     _log.severe('Loading avatar for $roomId failed', error);
+//     return ProfileData(displayName.text(), null);
+//   }
+// });
 
 /// gives current visibility state of space, return empty if no space is found
 final roomVisibilityProvider = FutureProvider.family
@@ -104,13 +104,14 @@ final briefRoomItemWithMembershipProvider =
   if (room == null) {
     throw RoomNotFound;
   }
-  final profileData = await ref.watch(roomProfileDataProvider(roomId).future);
+
+  final avatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
   return RoomItem(
-    roomId: room.roomIdStr(),
+    roomId: roomId,
     room: room,
     membership: room.isJoined() ? await room.getMyMembership() : null,
     activeMembers: [],
-    roomProfileData: profileData,
+    avatarInfo: avatarInfo,
   );
 });
 
@@ -173,35 +174,6 @@ final spaceRelationsProvider =
   return await room.spaceRelations();
 });
 
-/// Get the canonical parent of the space. Errors if the space isn't found. Stays up
-/// to date with underlying client data if a space was found.
-final canonicalParentProvider = FutureProvider.autoDispose
-    .family<SpaceWithProfileData?, String>((ref, roomId) async {
-  try {
-    final relations = await ref.watch(spaceRelationsProvider(roomId).future);
-    if (relations == null) {
-      return null;
-    }
-    final parent = relations.mainParent();
-    if (parent == null) {
-      return null;
-    }
-
-    final parentSpace =
-        await ref.watch(maybeSpaceProvider(parent.roomId().toString()).future);
-    if (parentSpace == null) {
-      return null;
-    }
-    final profile =
-        await ref.watch(spaceProfileDataProvider(parentSpace).future);
-    final SpaceWithProfileData data = (space: parentSpace, profile: profile);
-    return data;
-  } catch (e) {
-    _log.warning('Failed to load canonical parent for $roomId');
-    return null;
-  }
-});
-
 final parentIdsProvider =
     FutureProvider.family<List<String>, String>((ref, roomId) async {
   try {
@@ -248,8 +220,10 @@ final roomDisplayNameProvider =
 /// Caching the MemoryImage of each room
 final _roomAvatarProvider =
     FutureProvider.family<MemoryImage?, String>((ref, roomId) async {
+  final sdk = await ref.watch(sdkProvider.future);
+  final thumbsize = sdk.api.newThumbSize(48, 48);
   final avatar = (await (await ref.watch(_roomProfileProvider(roomId).future))
-          .getAvatar(null))
+          .getAvatar(thumbsize))
       .data();
   if (avatar != null) {
     return MemoryImage(avatar.asTypedList());
@@ -343,22 +317,33 @@ final roomIsMutedProvider =
   return status == 'muted';
 });
 
-final roomMemberProvider = FutureProvider.autoDispose
-    .family<MemberWithProfile, MemberInfo>((ref, query) async {
-  final sdk = await ref.watch(sdkProvider.future);
+final memberProvider =
+    FutureProvider.autoDispose.family<Member, MemberInfo>((ref, query) async {
   final room = await ref.watch(maybeRoomProvider(query.roomId).future);
   if (room == null) {
     throw RoomNotFound;
   }
-  final member = await room.getMember(query.userId);
-  final profile = member.getProfile();
-  final displayName = profile.getDisplayName();
-  if (!profile.hasAvatar()) {
-    return (member: member, profile: ProfileData(displayName, null));
+  return await room.getMember(query.userId);
+});
+
+final _memberProfileProvider = FutureProvider.autoDispose
+    .family<UserProfile, MemberInfo>((ref, query) async {
+  final member = await ref.watch(memberProvider(query).future);
+  return member.getProfile();
+});
+
+final memberDisplayNameProvider =
+    FutureProvider.autoDispose.family<String?, MemberInfo>((ref, query) async {
+  return ref.watch(_memberProfileProvider(query)).valueOrNull?.getDisplayName();
+});
+
+final memberAvatarInfoProvider =
+    Provider.autoDispose.family<AvatarInfo, MemberInfo>((ref, query) {
+  final member = ref.watch(memberProvider(query)).valueOrNull;
+  if (member != null) {
+    return ref.watch(userAvatarInfoProvider(member));
   }
-  final size = sdk.api.newThumbSize(48, 48);
-  final avatar = await profile.getAvatar(size);
-  return (member: member, profile: ProfileData(displayName, avatar.data()));
+  return AvatarInfo(uniqueId: query.userId);
 });
 
 final membersIdsProvider =

@@ -43,7 +43,6 @@ class _NewsItemState extends ConsumerState<NewsItem> {
     final space = ref.watch(briefSpaceItemProvider(roomId));
     final slides = widget.news.slides().toList();
 
-
     return Stack(
       children: [
         PageView.builder(
@@ -96,15 +95,15 @@ class _NewsItemState extends ConsumerState<NewsItem> {
           children: [
             Padding(
               padding: const EdgeInsets.only(right: 60, bottom: 20),
-              child: newsActionButtons(newsSlide: slides[currentSlideIndex.value]),
+              child:
+                  newsActionButtons(newsSlide: slides[currentSlideIndex.value]),
             ),
             InkWell(
               onTap: () => goToSpace(context, roomId),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: space.when(
-                  data: (space) =>
-                      Text(space.spaceProfileData.displayName ?? roomId),
+                  data: (space) => Text(space.avatarInfo.displayName ?? roomId),
                   error: (e, st) => Text(L10n.of(context).errorLoadingSpace(e)),
                   loading: () => Skeletonizer(
                     child: Text(roomId),
@@ -147,14 +146,15 @@ class _NewsItemState extends ConsumerState<NewsItem> {
     );
   }
 
-  Color getBackgroundColor(NewsSlide newsSlide){
+  Color getBackgroundColor(NewsSlide newsSlide) {
     final color = newsSlide.colors();
     return convertColor(
       color?.background(),
       Theme.of(context).colorScheme.surface,
     );
   }
-  Color getForegroundColor(NewsSlide newsSlide){
+
+  Color getForegroundColor(NewsSlide newsSlide) {
     final color = newsSlide.colors();
     return convertColor(
       color?.color(),

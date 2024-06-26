@@ -286,7 +286,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
 
   Widget appBar(BuildContext context) {
     final roomId = widget.convo.getRoomIdStr();
-    final convoProfile = ref.watch(chatProfileDataProvider(widget.convo));
+    final roomAvatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
     final activeMembers = ref.watch(membersIdsProvider(roomId));
     return AppBar(
       elevation: 0,
@@ -305,19 +305,10 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            convoProfile.when(
-              data: (profile) => Text(
-                profile.displayName ?? roomId,
-                overflow: TextOverflow.clip,
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              skipLoadingOnReload: true,
-              error: (error, stackTrace) => Text(
-                L10n.of(context).errorLoadingProfile(error),
-              ),
-              loading: () => Skeletonizer(
-                child: Text(L10n.of(context).loading),
-              ),
+            Text(
+              roomAvatarInfo.displayName ?? roomId,
+              overflow: TextOverflow.clip,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: 5),
             activeMembers.when(

@@ -1,20 +1,13 @@
-import 'package:acter/common/models/profile_data.dart';
-import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/notifiers/space_notifiers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::common::space_providers');
-
-/// Provider the profile data of a the given space, keeps up to date with underlying client
-final spaceProfileDataProvider = AsyncNotifierProvider.family<
-    AsyncSpaceProfileDataNotifier, ProfileData, Space>(
-  () => AsyncSpaceProfileDataNotifier(),
-);
 
 /// Provider the list of all spaces, keeps up to date with the order and the underlying client
 final spacesProvider =
@@ -56,15 +49,6 @@ final spaceProvider =
   throw 'Space not found';
 });
 
-/// Load the SpaceProfile Data right from the spaceId
-final spaceProfileDataForSpaceIdProvider = FutureProvider.autoDispose
-    .family<SpaceWithProfileData, String>((ref, spaceId) async {
-  final space = await ref.watch(spaceProvider(spaceId).future);
-  final profileData = await ref.watch(spaceProfileDataProvider(space).future);
-  final SpaceWithProfileData data = (space: space, profile: profileData);
-  return data;
-});
-
 /// Attempts to map a spaceId to the space, but could come back empty (null) rather than throw.
 /// keeps up to date with underlying client even if the space wasn't found initially,
 final maybeSpaceProvider =
@@ -80,14 +64,14 @@ final maybeSpaceInfoProvider =
   if (space == null || !space.isJoined()) {
     return null;
   }
-  final profileData = await ref.watch(spaceProfileDataProvider(space).future);
+  final avatarInfo = ref.watch(roomAvatarInfoProvider(spaceId));
   final membership = await space.getMyMembership();
   return SpaceItem(
     space: space,
     roomId: space.getRoomIdStr(),
     membership: membership,
     activeMembers: [],
-    spaceProfileData: profileData,
+    avatarInfo: avatarInfo,
   );
 });
 
@@ -110,7 +94,7 @@ class SpaceItem {
   final Member? membership;
   final Space? space;
   final String roomId;
-  final ProfileData spaceProfileData;
+  final AvatarInfo avatarInfo;
   final List<Member> activeMembers;
 
   const SpaceItem({
@@ -118,7 +102,7 @@ class SpaceItem {
     this.space,
     required this.roomId,
     required this.activeMembers,
-    required this.spaceProfileData,
+    required this.avatarInfo,
   });
 }
 
@@ -215,12 +199,12 @@ final searchedSpacesProvider =
 final briefSpaceItemProvider =
     FutureProvider.autoDispose.family<SpaceItem, String>((ref, spaceId) async {
   final space = await ref.watch(spaceProvider(spaceId).future);
-  final profileData = await ref.watch(spaceProfileDataProvider(space).future);
+  final avatarInfo = ref.watch(roomAvatarInfoProvider(spaceId));
   return SpaceItem(
     roomId: space.getRoomIdStr(),
     membership: null,
     activeMembers: [],
-    spaceProfileData: profileData,
+    avatarInfo: avatarInfo,
   );
 });
 
@@ -323,10 +307,10 @@ final spaceRelationsOverviewProvider = FutureProvider.autoDispose
 });
 
 /// Fill the Profile data for the given space-hierarchy-info
-final spaceHierarchyProfileProvider = FutureProvider.autoDispose
-    .family<ProfileData, SpaceHierarchyRoomInfo>((ref, space) async {
-  final avatar = await space.getAvatar(null);
-  return ProfileData(space.name(), avatar.data());
+final spaceHierarchyAvatarInfoProvider = Provider.autoDispose
+    .family<AvatarInfo, SpaceHierarchyRoomInfo>((ref, space) {
+  final roomId = space.roomIdStr();
+  return ref.watch(roomAvatarInfoProvider(roomId));
 });
 
 final acterAppSettingsProvider = FutureProvider.autoDispose
