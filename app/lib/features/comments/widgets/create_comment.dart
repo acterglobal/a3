@@ -97,6 +97,7 @@ class _CreateCommentWidgetState extends ConsumerState<CreateCommentWidget> {
       final draft = widget.manager.commentDraft();
       draft.contentFormatted(plainDescription, htmlBodyDescription);
       await draft.send();
+      FocusManager.instance.primaryFocus?.unfocus();
       if (!mounted) {
         EasyLoading.dismiss();
         return;
