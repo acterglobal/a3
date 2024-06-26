@@ -1,12 +1,16 @@
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class ConvoWithAvatarInfoCard extends ConsumerWidget {
+  final String? title;
   final String roomId;
   final AvatarInfo avatarInfo;
   final Widget? subtitle;
@@ -41,10 +45,12 @@ class ConvoWithAvatarInfoCard extends ConsumerWidget {
     this.subtitle,
     this.trailing,
     this.showParents = true,
+    this.title,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final displayName = ref.watch(roomDisplayNameProvider(roomId));
     return LayoutBuilder(
       builder: (context, constraints) {
         return Column(
@@ -60,13 +66,29 @@ class ConvoWithAvatarInfoCard extends ConsumerWidget {
                 onFocusChange: onFocusChange,
                 onLongPress: onLongPress,
                 leading: avatarWithIndicator(context, ref),
-                title: Text(
-                  avatarInfo.displayName ?? roomId,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium!
-                      .copyWith(fontWeight: FontWeight.w700),
-                  overflow: TextOverflow.ellipsis,
+                title: displayName.when(
+                  data: (dpl) => Text(
+                    dpl ?? roomId,
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium!
+                        .copyWith(fontWeight: FontWeight.w700),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  error: (error, stackTrace) => Text(
+                    roomId,
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium!
+                        .copyWith(fontWeight: FontWeight.w700),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  loading: () => Skeletonizer(
+                    child: Text(
+                      roomId,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                 ),
                 subtitle: constraints.maxWidth < 300 ? null : subtitle,
                 trailing: constraints.maxWidth < 300 ? null : trailing,

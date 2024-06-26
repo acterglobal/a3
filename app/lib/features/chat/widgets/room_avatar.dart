@@ -6,6 +6,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class RoomAvatar extends ConsumerWidget {
   final String roomId;
@@ -28,8 +29,8 @@ class RoomAvatar extends ConsumerWidget {
       child: ref.watch(chatProvider(roomId)).when(
             data: (convo) => chatAvatarUI(convo, ref, context),
             error: (e, s) =>
-                Center(child: Text(L10n.of(context).loadingRoomFailed(e))),
-            loading: () => Center(child: Text(L10n.of(context).loading)),
+                errorAvatar(context, L10n.of(context).loadingRoomFailed(e)),
+            loading: () => loadingAvatar(context),
           ),
     );
   }
@@ -43,6 +44,29 @@ class RoomAvatar extends ConsumerWidget {
       data: (avatarInfos) => avatarInfos,
       error: (e, s) => [],
       loading: () => [],
+    );
+  }
+
+  Widget errorAvatar(BuildContext context, String error) {
+    return ActerAvatar(
+      options: AvatarOptions(
+        AvatarInfo(
+          uniqueId: 'error',
+          displayName: error,
+        ),
+        size: avatarSize,
+        badgesSize: avatarSize / 2,
+      ),
+    );
+  }
+
+  Widget loadingAvatar(BuildContext context, {String? error}) {
+    return Skeletonizer(
+      child: Container(
+        color: Colors.white,
+        width: avatarSize,
+        height: avatarSize,
+      ),
     );
   }
 
