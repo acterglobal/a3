@@ -16,16 +16,10 @@ class UserAvatarWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final client = ref.watch(alwaysClientProvider);
-    final userId = client.userId().toString();
     final accountAvatarInfo = ref.watch(accountAvatarInfoProvider);
     return ActerAvatar(
       options: AvatarOptions.DM(
-        AvatarInfo(
-          uniqueId: userId,
-          displayName: accountAvatarInfo.displayName ?? userId,
-          avatar: accountAvatarInfo.avatar,
-        ),
+        accountAvatarInfo,
         size: size,
       ),
     );

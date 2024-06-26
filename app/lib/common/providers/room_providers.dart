@@ -1,9 +1,9 @@
 /// Get the relations of the given SpaceId.  Throws
 library;
 
-import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/notifiers/room_notifiers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
@@ -349,20 +349,14 @@ final roomIsMutedProvider =
 
 final roomMemberProvider = FutureProvider.autoDispose
     .family<MemberWithAvatarInfo, MemberInfo>((ref, query) async {
-  final sdk = await ref.watch(sdkProvider.future);
   final room = await ref.watch(maybeRoomProvider(query.roomId).future);
   if (room == null) {
     throw RoomNotFound;
   }
   final member = await room.getMember(query.userId);
-  final profile = member.getProfile();
+  final avatarInfo = ref.watch(userAvatarInfoProvider(member));
 
-  if (!profile.hasAvatar()) {
-    return (member: member, profile: ProfileData(displayName, null));
-  }
-  final size = sdk.api.newThumbSize(48, 48);
-  final avatar = await profile.getAvatar(size);
-  return (member: member, profile: ProfileData(displayName, avatar.data()));
+  return (avatarInfo: avatarInfo, member: member);
 });
 
 final membersIdsProvider =

@@ -16,20 +16,20 @@ class MemberAvatar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profile =
+    final avatarInfo =
         ref.watch(roomMemberProvider((userId: memberId, roomId: roomId)));
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: Theme.of(context).colorScheme.neutral4),
         shape: BoxShape.circle,
       ),
-      child: profile.when(
+      child: avatarInfo.when(
         data: (data) => ActerAvatar(
           options: AvatarOptions.DM(
             AvatarInfo(
               uniqueId: memberId,
-              avatar: data.profile.getAvatarImage(),
-              displayName: data.profile.displayName,
+              avatar: data.avatarInfo.avatar,
+              displayName: data.avatarInfo.displayName,
             ),
             size: 18,
           ),

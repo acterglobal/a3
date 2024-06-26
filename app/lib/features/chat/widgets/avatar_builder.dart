@@ -24,15 +24,15 @@ class AvatarBuilder extends ConsumerWidget {
         ref.watch(roomMemberProvider((userId: userId, roomId: roomId)));
     return memberProfile.when(
       data: (data) {
-        final profile = data.profile;
+        final avatarInfo = data.avatarInfo;
         return Padding(
           padding: const EdgeInsets.only(right: 10),
           child: ActerAvatar(
             options: AvatarOptions.DM(
               AvatarInfo(
                 uniqueId: userId,
-                displayName: profile.displayName ?? userId,
-                avatar: profile.getAvatarImage(),
+                displayName: avatarInfo.displayName ?? userId,
+                avatar: avatarInfo.avatar,
                 onAvatarTap: () async {
                   // ignore: use_build_context_synchronously
                   showMemberInfoDrawer(

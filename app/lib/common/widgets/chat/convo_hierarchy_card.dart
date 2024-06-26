@@ -102,11 +102,7 @@ class ConvoHierarchyCard extends ConsumerWidget {
     return ConvoWithAvatarInfoCard(
       avatar: ActerAvatar(
         options: AvatarOptions(
-          AvatarInfo(
-            uniqueId: roomId,
-            displayName: avatarInfo.displayName,
-            avatar: avatarInfo.avatar,
-          ),
+          avatarInfo,
           size: avatarSize,
           badgesSize: avatarSize / 2,
         ),

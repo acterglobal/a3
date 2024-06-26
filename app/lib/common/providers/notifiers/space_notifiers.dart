@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/features/home/providers/client_providers.dart';

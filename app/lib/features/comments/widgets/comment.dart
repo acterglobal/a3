@@ -32,8 +32,8 @@ class CommentWidget extends ConsumerWidget {
 
     return memberInfo.when(
       data: (data) {
-        final displayName = data.profile.displayName;
-        final avatarImage = data.profile.getAvatarImage();
+        final displayName = data.avatarInfo.displayName;
+        final avatarImage = data.avatarInfo.avatar;
         return Card(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,

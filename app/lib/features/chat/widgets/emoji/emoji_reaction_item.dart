@@ -22,17 +22,17 @@ class EmojiReactionItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profile =
+    final memberAvatarInfo =
         ref.watch(roomMemberProvider((userId: userId, roomId: roomId)));
 
     return ListTile(
-      leading: profile.when(
+      leading: memberAvatarInfo.when(
         data: (data) => ActerAvatar(
           options: AvatarOptions.DM(
             AvatarInfo(
               uniqueId: userId,
-              displayName: data.profile.displayName,
-              avatar: data.profile.getAvatarImage(),
+              displayName: data.avatarInfo.displayName,
+              avatar: data.avatarInfo.avatar,
             ),
             size: 18,
           ),
@@ -55,8 +55,8 @@ class EmojiReactionItem extends ConsumerWidget {
           );
         },
       ),
-      title: profile.when(
-        data: (data) => Text(data.profile.displayName ?? userId),
+      title: memberAvatarInfo.when(
+        data: (data) => Text(data.avatarInfo.displayName ?? userId),
         loading: () => Skeletonizer(child: Text(userId)),
         error: (e, s) => Text(L10n.of(context).loadingProfileFailed(e)),
       ),

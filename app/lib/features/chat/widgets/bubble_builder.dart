@@ -244,8 +244,8 @@ class _ChatBubble extends ConsumerWidget {
             options: AvatarOptions.DM(
               AvatarInfo(
                 uniqueId: authorId,
-                displayName: data.profile.displayName,
-                avatar: data.profile.getAvatarImage(),
+                displayName: data.avatarInfo.displayName,
+                avatar: data.avatarInfo.avatar,
               ),
               size: 12,
             ),
@@ -271,7 +271,7 @@ class _ChatBubble extends ConsumerWidget {
         const SizedBox(width: 5),
         replyProfile.when(
           data: (data) => Text(
-            data.profile.displayName ?? '',
+            data.avatarInfo.displayName ?? '',
             style: Theme.of(context).textTheme.bodySmall!.copyWith(
                   color: Theme.of(context).colorScheme.tertiary,
                 ),

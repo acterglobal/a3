@@ -24,11 +24,7 @@ class RoomAvatarBuilder extends ConsumerWidget {
     final roomAvatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
     final child = ActerAvatar(
       options: AvatarOptions(
-        AvatarInfo(
-          uniqueId: roomId,
-          displayName: roomAvatarInfo.displayName ?? roomId,
-          avatar: roomAvatarInfo.avatar,
-        ),
+        roomAvatarInfo,
         size: avatarSize,
       ),
     );

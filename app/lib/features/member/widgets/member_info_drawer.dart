@@ -1,4 +1,3 @@
-import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/menu_item_widget.dart';
@@ -23,14 +22,14 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 class _MemberInfoDrawerInner extends ConsumerWidget {
   final Member member;
-  final ProfileData profile;
+  final AvatarInfo avatarInfo;
   final String memberId;
   final bool isShowActions;
 
   const _MemberInfoDrawerInner({
     required this.memberId,
     required this.member,
-    required this.profile,
+    required this.avatarInfo,
     required this.isShowActions,
   });
 
@@ -78,9 +77,9 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 20),
-            _buildAvatarUI(context, profile),
+            _buildAvatarUI(context, avatarInfo),
             const SizedBox(height: 20),
-            if (profile.displayName != null) _buildDisplayName(context),
+            if (avatarInfo.displayName != null) _buildDisplayName(context),
             const SizedBox(height: 20),
             _buildUserName(context),
             const SizedBox(height: 20),
@@ -244,14 +243,13 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
     return ListTile(
       leading: RoomAvatarBuilder(roomId: roomId, avatarSize: 24),
       title: roomData.maybeWhen(
-        data: (roomData) =>
-            Text(roomData.roomProfileData.displayName ?? roomId),
+        data: (roomData) => Text(roomData.avatarInfo.displayName ?? roomId),
         orElse: () => Text(roomId),
       ),
     );
   }
 
-  Widget _buildAvatarUI(BuildContext context, ProfileData memberProfile) {
+  Widget _buildAvatarUI(BuildContext context, AvatarInfo memberAvatarInfo) {
     return Center(
       child: Container(
         decoration: BoxDecoration(
@@ -265,8 +263,8 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
           options: AvatarOptions.DM(
             AvatarInfo(
               uniqueId: memberId,
-              avatar: memberProfile.getAvatarImage(),
-              displayName: memberProfile.displayName,
+              avatar: memberAvatarInfo.avatar,
+              displayName: memberAvatarInfo.displayName,
             ),
             size: 50,
           ),
@@ -277,7 +275,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
 
   Widget _buildDisplayName(BuildContext context) {
     return Center(
-      child: Text(profile.displayName!), // FIXME: make this prettier
+      child: Text(avatarInfo.displayName!), // FIXME: make this prettier
     );
   }
 
@@ -319,7 +317,7 @@ class MemberInfoDrawer extends ConsumerWidget {
         .when(
           data: (data) => _MemberInfoDrawerInner(
             member: data.member,
-            profile: data.profile,
+            avatarInfo: data.avatarInfo,
             memberId: memberId,
             isShowActions: isShowActions,
           ),

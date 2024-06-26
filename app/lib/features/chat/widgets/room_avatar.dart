@@ -120,8 +120,8 @@ class RoomAvatar extends ConsumerWidget {
         options: AvatarOptions.DM(
           AvatarInfo(
             uniqueId: userId,
-            displayName: data.profile.displayName,
-            avatar: data.profile.getAvatarImage(),
+            displayName: data.avatarInfo.displayName,
+            avatar: data.avatarInfo.avatar,
           ),
           size: avatarSize,
         ),
@@ -162,15 +162,15 @@ class RoomAvatar extends ConsumerWidget {
           options: AvatarOptions.GroupDM(
             AvatarInfo(
               uniqueId: userId,
-              displayName: data.profile.displayName,
-              avatar: data.profile.getAvatarImage(),
+              displayName: data.avatarInfo.displayName,
+              avatar: data.avatarInfo.avatar,
             ),
             groupAvatars: secondaryProfile.maybeWhen(
               data: (secData) => [
                 AvatarInfo(
                   uniqueId: secondaryUserId,
-                  displayName: secData.profile.displayName,
-                  avatar: secData.profile.getAvatarImage(),
+                  displayName: secData.avatarInfo.displayName,
+                  avatar: secData.avatarInfo.avatar,
                 ),
                 for (int i = 2; i < members.length; i++)
                   AvatarInfo(
@@ -203,8 +203,8 @@ class RoomAvatar extends ConsumerWidget {
               data: (secData) => [
                 AvatarInfo(
                   uniqueId: secondaryUserId,
-                  displayName: secData.profile.displayName,
-                  avatar: secData.profile.getAvatarImage(),
+                  displayName: secData.avatarInfo.displayName,
+                  avatar: secData.avatarInfo.avatar,
                 ),
                 for (int i = 2; i < members.length; i++)
                   AvatarInfo(

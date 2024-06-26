@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:acter/common/models/profile_data.dart';
+import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/notifiers/notification_settings_notifier.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -48,6 +48,7 @@ final accountProvider = StateProvider(
   ),
 );
 
+/// See [AccountWithAvatarInfo].
 final accountWithAvatarInfoProvider =
     FutureProvider.autoDispose<AccountWithAvatarInfo>((ref) async {
   final sdk = await ref.watch(sdkProvider.future);
@@ -64,6 +65,7 @@ final accountWithAvatarInfoProvider =
   return AccountWithAvatarInfo(account, avatarInfo);
 });
 
+/// Gives [AvatarInfo] object for user account. Stays up-to-date internally.
 final accountAvatarInfoProvider = StateProvider.autoDispose<AvatarInfo>((ref) {
   final account = ref.watch(accountProvider);
   final userId = account.userId().toString();
@@ -99,6 +101,35 @@ final _accountAvatarProvider =
   final account = ref.watch(accountProvider);
   final thumbSize = sdk.api.newThumbSize(48, 48);
   final avatar = await account.avatar(thumbSize);
+  if (avatar.data() != null) {
+    return MemoryImage(avatar.data()!.asTypedList());
+  }
+  return null;
+});
+
+final userAvatarInfoProvider =
+    StateProvider.family.autoDispose<AvatarInfo, Member>((ref, member) {
+  final userId = member.userId().toString();
+  final profile = member.getProfile();
+
+  final fallback =
+      AvatarInfo(uniqueId: userId, displayName: profile.getDisplayName());
+  final avatar = ref.watch(_userAvatarProvider(profile)).valueOrNull;
+  if (!profile.hasAvatar() || avatar == null) {
+    return fallback;
+  }
+  return AvatarInfo(
+    uniqueId: userId,
+    displayName: profile.getDisplayName(),
+    avatar: avatar,
+  );
+});
+
+final _userAvatarProvider = FutureProvider.autoDispose
+    .family<MemoryImage?, UserProfile>((ref, profile) async {
+  final sdk = await ref.watch(sdkProvider.future);
+  final size = sdk.api.newThumbSize(48, 48);
+  final avatar = await profile.getAvatar(size);
   if (avatar.data() != null) {
     return MemoryImage(avatar.data()!.asTypedList());
   }

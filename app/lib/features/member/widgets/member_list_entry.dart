@@ -1,5 +1,5 @@
 import 'package:acter/features/member/dialogs/show_member_info_drawer.dart';
-import 'package:acter/common/models/profile_data.dart';
+
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -70,7 +70,7 @@ class MemberListEntry extends ConsumerWidget {
         userId: memberId,
         roomId: roomId,
         member: data.member,
-        profile: data.profile,
+        avatarInfo: data.avatarInfo,
         isShowActions: isShowActions,
       ),
       error: (e, s) => Text(L10n.of(context).errorLoadingProfile(e)),
@@ -81,7 +81,7 @@ class MemberListEntry extends ConsumerWidget {
 
 class _MemberListEntryInner extends ConsumerWidget {
   final Member member;
-  final ProfileData profile;
+  final AvatarInfo avatarInfo;
   final String userId;
   final String roomId;
   final bool isShowActions;
@@ -89,7 +89,7 @@ class _MemberListEntryInner extends ConsumerWidget {
   const _MemberListEntryInner({
     required this.userId,
     required this.member,
-    required this.profile,
+    required this.avatarInfo,
     required this.roomId,
     this.isShowActions = true,
   });
@@ -125,18 +125,18 @@ class _MemberListEntryInner extends ConsumerWidget {
         options: AvatarOptions.DM(
           AvatarInfo(
             uniqueId: userId,
-            displayName: profile.displayName,
-            avatar: profile.getAvatarImage(),
+            displayName: avatarInfo.displayName,
+            avatar: avatarInfo.avatar,
           ),
           size: 18,
         ),
       ),
       title: Text(
-        profile.displayName ?? userId,
+        avatarInfo.displayName ?? userId,
         style: Theme.of(context).textTheme.bodyMedium,
         overflow: TextOverflow.ellipsis,
       ),
-      subtitle: profile.displayName != null
+      subtitle: avatarInfo.displayName != null
           ? Text(
               userId,
               style: Theme.of(context)

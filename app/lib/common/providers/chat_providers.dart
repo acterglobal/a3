@@ -1,4 +1,3 @@
-import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/notifiers/chat_notifiers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';

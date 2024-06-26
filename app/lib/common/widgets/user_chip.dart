@@ -33,13 +33,13 @@ class UserChip extends ConsumerWidget {
           options: AvatarOptions.DM(
             AvatarInfo(
               uniqueId: memberId,
-              displayName: data.profile.displayName,
-              avatar: data.profile.getAvatarImage(),
+              displayName: data.avatarInfo.displayName,
+              avatar: data.avatarInfo.avatar,
             ),
             size: 24,
           ),
         ),
-        label: Text(data.profile.displayName ?? memberId),
+        label: Text(data.avatarInfo.displayName ?? memberId),
         onDeleted: onDeleted,
         deleteIcon: deleteIcon,
       ),

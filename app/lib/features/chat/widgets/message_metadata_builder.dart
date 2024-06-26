@@ -141,8 +141,8 @@ class _UserReceiptsWidget extends ConsumerWidget {
                                   AvatarInfo(
                                     uniqueId: userId,
                                     displayName:
-                                        data.profile.displayName ?? userId,
-                                    avatar: data.profile.getAvatarImage(),
+                                        data.avatarInfo.displayName ?? userId,
+                                    avatar: data.avatarInfo.avatar,
                                   ),
                                   size: 8,
                                 ),
@@ -199,8 +199,8 @@ class _UserReceiptsWidget extends ConsumerWidget {
                                 AvatarInfo(
                                   uniqueId: userId,
                                   displayName:
-                                      data.profile.displayName ?? userId,
-                                  avatar: data.profile.getAvatarImage(),
+                                      data.avatarInfo.displayName ?? userId,
+                                  avatar: data.avatarInfo.avatar,
                                 ),
                                 size: 8,
                               ),
@@ -275,8 +275,8 @@ class _UserReceiptsWidget extends ConsumerWidget {
                                   AvatarInfo(
                                     uniqueId: seenList[index],
                                     displayName:
-                                        data.profile.displayName ?? userId,
-                                    avatar: data.profile.getAvatarImage(),
+                                        data.avatarInfo.displayName ?? userId,
+                                    avatar: data.avatarInfo.avatar,
                                   ),
                                   size: 8,
                                 ),
@@ -306,7 +306,7 @@ class _UserReceiptsWidget extends ConsumerWidget {
                         ),
                         title: Text(
                           member.hasValue
-                              ? member.requireValue.profile.displayName!
+                              ? member.requireValue.avatarInfo.displayName!
                               : userId,
                           style: Theme.of(context).textTheme.labelSmall,
                         ),

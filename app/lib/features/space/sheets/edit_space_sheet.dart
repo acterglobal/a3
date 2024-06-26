@@ -58,15 +58,12 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
     titleNotifier.update((state) => avatarInfo.displayName ?? '');
     topicNotifier.update((state) => space.topic() ?? '');
 
-    if (profileData.hasAvatar()) {
-      Directory appDocDir = await getApplicationDocumentsDirectory();
-      final dirPath = p.join(appDocDir.path, 'dir');
-      await Directory(dirPath).create(recursive: true);
-      String filePath = p.join(appDocDir.path, '${widget.spaceId}.jpg');
-      final imageFile = File(filePath);
-      imageFile.writeAsBytes(profileData.avatar!.asTypedList());
-      avatarNotifier.update((state) => imageFile.path);
-    }
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    final dirPath = p.join(appDocDir.path, 'dir');
+    await Directory(dirPath).create(recursive: true);
+    String filePath = p.join(appDocDir.path, '${widget.spaceId}.jpg');
+    final imageFile = File(filePath);
+    avatarNotifier.update((state) => imageFile.path);
 
     _titleController.text = ref.read(editTitleProvider);
     _topicController.text = ref.read(editTopicProvider);

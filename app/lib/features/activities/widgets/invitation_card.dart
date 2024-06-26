@@ -80,11 +80,7 @@ class InvitationCard extends ConsumerWidget {
     return ListTile(
       leading: ActerAvatar(
         options: AvatarOptions(
-          AvatarInfo(
-            uniqueId: roomId,
-            displayName: roomAvatarInfo.displayName,
-            avatar: roomAvatarInfo.avatar,
-          ),
+          roomAvatarInfo,
           size: 48,
         ),
       ),
@@ -105,15 +101,10 @@ class InvitationCard extends ConsumerWidget {
     final roomAvatarInfo =
         ref.watch(roomAvatarInfoProvider(invitation.roomIdStr()));
 
-    final roomId = invitation.roomIdStr();
     return ListTile(
       leading: ActerAvatar(
         options: AvatarOptions(
-          AvatarInfo(
-            uniqueId: roomId,
-            displayName: roomAvatarInfo.displayName,
-            avatar: roomAvatarInfo.avatar,
-          ),
+          roomAvatarInfo,
           size: 48,
         ),
       ),
@@ -166,7 +157,7 @@ class InvitationCard extends ConsumerWidget {
           AvatarInfo(
             uniqueId: userId,
             displayName: profile?.displayName,
-            avatar: profile?.getAvatarImage(),
+            avatar: profile?.avatar,
           ),
           size: 24,
         ),

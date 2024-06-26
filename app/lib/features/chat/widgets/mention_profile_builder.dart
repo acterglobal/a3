@@ -23,8 +23,8 @@ class MentionProfileBuilder extends ConsumerWidget {
         options: AvatarOptions.DM(
           AvatarInfo(
             uniqueId: authorId,
-            avatar: data.profile.getAvatarImage(),
-            displayName: data.profile.displayName,
+            avatar: data.avatarInfo.avatar,
+            displayName: data.avatarInfo.displayName,
           ),
           size: 18,
         ),

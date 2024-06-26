@@ -567,8 +567,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
             options: AvatarOptions.DM(
               AvatarInfo(
                 uniqueId: authorId,
-                displayName: data.profile.displayName ?? authorId,
-                avatar: data.profile.getAvatarImage(),
+                displayName: data.avatarInfo.displayName ?? authorId,
+                avatar: data.avatarInfo.avatar,
               ),
               size: 12,
             ),
