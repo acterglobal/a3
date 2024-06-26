@@ -8,8 +8,6 @@ typedef SpaceWithAvatarInfo = ({Space space, AvatarInfo avatarInfo});
 typedef MemberInfo = ({String userId, String roomId});
 typedef ChatMessageInfo = ({String messageId, String roomId});
 
-typedef MemberWithAvatarInfo = ({Member member, AvatarInfo avatarInfo});
-
 enum AttachmentType { camera, image, audio, video, location, file }
 
 typedef AttachmentInfo = ({AttachmentType type, File file});

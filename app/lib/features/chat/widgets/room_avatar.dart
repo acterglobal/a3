@@ -6,7 +6,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 final _log = Logger('a3::chat::room_avatar');
@@ -113,109 +112,32 @@ class RoomAvatar extends ConsumerWidget {
   }
 
   Widget memberAvatar(String userId, WidgetRef ref) {
-    final memberProfile =
-        ref.watch(roomMemberProvider((userId: userId, roomId: roomId)));
-    return memberProfile.when(
-      data: (data) => ActerAvatar(
-        options: AvatarOptions.DM(
-          AvatarInfo(
-            uniqueId: userId,
-            displayName: data.avatarInfo.displayName,
-            avatar: data.avatarInfo.avatar,
-          ),
-          size: avatarSize,
-        ),
-      ),
-      error: (err, stackTrace) {
-        _log.severe("Couldn't load avatar", err, stackTrace);
-        return ActerAvatar(
-          options: AvatarOptions.DM(
-            AvatarInfo(
-              uniqueId: userId,
-            ),
-            size: avatarSize,
-          ),
-        );
-      },
-      loading: () => Skeletonizer(
-        child: ActerAvatar(
-          options: AvatarOptions.DM(
-            AvatarInfo(uniqueId: userId),
-            size: avatarSize,
-          ),
-        ),
+    return ActerAvatar(
+      options: AvatarOptions.DM(
+        ref.watch(memberAvatarInfoProvider((userId: userId, roomId: roomId))),
+        size: avatarSize,
       ),
     );
   }
 
   Widget groupAvatarDM(List<String> members, WidgetRef ref) {
-    final userId = members[0];
-    final secondaryUserId = members[1];
-    final profile =
-        ref.watch(roomMemberProvider((userId: members[0], roomId: roomId)));
-    final secondaryProfile =
-        ref.watch(roomMemberProvider((userId: members[1], roomId: roomId)));
+    final profile = ref
+        .watch(memberAvatarInfoProvider((userId: members[0], roomId: roomId)));
+    final secondaryProfile = ref
+        .watch(memberAvatarInfoProvider((userId: members[1], roomId: roomId)));
 
-    return profile.when(
-      data: (data) {
-        return ActerAvatar(
-          options: AvatarOptions.GroupDM(
+    return ActerAvatar(
+      options: AvatarOptions.GroupDM(
+        profile,
+        groupAvatars: [
+          secondaryProfile,
+          for (int i = 2; i < members.length; i++)
             AvatarInfo(
-              uniqueId: userId,
-              displayName: data.avatarInfo.displayName,
-              avatar: data.avatarInfo.avatar,
+              uniqueId: members[i],
             ),
-            groupAvatars: secondaryProfile.maybeWhen(
-              data: (secData) => [
-                AvatarInfo(
-                  uniqueId: secondaryUserId,
-                  displayName: secData.avatarInfo.displayName,
-                  avatar: secData.avatarInfo.avatar,
-                ),
-                for (int i = 2; i < members.length; i++)
-                  AvatarInfo(
-                    uniqueId: members[i],
-                  ),
-              ],
-              orElse: () => [],
-            ),
-            size: avatarSize / 2,
-          ),
-        );
-      },
-      loading: () => Skeletonizer(
-        child: ActerAvatar(
-          options: AvatarOptions.GroupDM(
-            AvatarInfo(uniqueId: userId),
-            size: avatarSize / 2,
-          ),
-        ),
+        ],
+        size: avatarSize / 2,
       ),
-      error: (err, st) {
-        _log.severe('Couldn\'t load group Avatar', err, st);
-        return ActerAvatar(
-          options: AvatarOptions.GroupDM(
-            AvatarInfo(
-              uniqueId: userId,
-              displayName: userId,
-            ),
-            groupAvatars: secondaryProfile.maybeWhen(
-              data: (secData) => [
-                AvatarInfo(
-                  uniqueId: secondaryUserId,
-                  displayName: secData.avatarInfo.displayName,
-                  avatar: secData.avatarInfo.avatar,
-                ),
-                for (int i = 2; i < members.length; i++)
-                  AvatarInfo(
-                    uniqueId: members[i],
-                  ),
-              ],
-              orElse: () => [],
-            ),
-          ),
-        );
-      },
     );
   }
 }

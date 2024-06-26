@@ -22,7 +22,6 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 final _log = Logger('a3::tasks::task_item_details_page');
 
@@ -394,27 +393,21 @@ class TaskItemDetailPage extends ConsumerWidget {
     return Wrap(
       direction: Axis.horizontal,
       children: assignees.map((i) {
-        final memberData = ref.watch(
-          roomMemberProvider(
-            (roomId: task.roomIdStr(), userId: i),
-          ),
-        );
-        return memberData.when(
-          data: (data) => Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: Chip(
-              labelPadding: EdgeInsets.zero,
-              label: Text(
-                data.avatarInfo.displayName ?? '',
-                style: Theme.of(context).textTheme.bodyMedium,
+        final displayName = ref
+            .watch(
+              memberDisplayNameProvider(
+                (roomId: task.roomIdStr(), userId: i),
               ),
+            )
+            .valueOrNull;
+        return Padding(
+          padding: const EdgeInsets.only(right: 8),
+          child: Chip(
+            labelPadding: EdgeInsets.zero,
+            label: Text(
+              displayName ?? i,
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
-          ),
-          error: (error, stackTrace) => Text(
-            L10n.of(context).errorLoading(error),
-          ),
-          loading: () => Skeletonizer(
-            child: Text(L10n.of(context).loading),
           ),
         );
       }).toList(),

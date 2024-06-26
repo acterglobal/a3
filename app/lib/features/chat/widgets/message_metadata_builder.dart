@@ -129,44 +129,17 @@ class _UserReceiptsWidget extends ConsumerWidget {
                     Consumer(
                       builder: (context, ref, child) {
                         final memberProfile = ref.watch(
-                          roomMemberProvider((userId: userId, roomId: roomId)),
+                          memberAvatarInfoProvider(
+                            (userId: userId, roomId: roomId),
+                          ),
                         );
-                        return memberProfile.when(
-                          data: (data) {
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 10),
-                              child: ActerAvatar(
-                                options: AvatarOptions.DM(
-                                  AvatarInfo(
-                                    uniqueId: userId,
-                                    displayName:
-                                        data.avatarInfo.displayName ?? userId,
-                                    avatar: data.avatarInfo.avatar,
-                                  ),
-                                  size: 8,
-                                ),
-                              ),
-                            );
-                          },
-                          error: (e, st) {
-                            _log.severe('ERROR loading avatar', e, st);
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 10),
-                              child: ActerAvatar(
-                                options: AvatarOptions.DM(
-                                  AvatarInfo(
-                                    uniqueId: userId,
-                                    displayName: userId,
-                                  ),
-                                  size: 8,
-                                ),
-                              ),
-                            );
-                          },
-                          loading: () => const SizedBox(
-                            height: 8,
-                            width: 8,
-                            child: CircularProgressIndicator(),
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: ActerAvatar(
+                            options: AvatarOptions.DM(
+                              memberProfile,
+                              size: 8,
+                            ),
                           ),
                         );
                       },
@@ -184,47 +157,17 @@ class _UserReceiptsWidget extends ConsumerWidget {
                   (idx) => Consumer(
                     builder: (context, ref, child) {
                       final memberProfile = ref.watch(
-                        roomMemberProvider(
+                        memberAvatarInfoProvider(
                           (userId: seenList[idx], roomId: roomId),
                         ),
                       );
-                      final userId = seenList[idx];
-                      return memberProfile.when(
-                        data: (data) {
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: ActerAvatar(
-                              options: AvatarOptions.DM(
-                                AvatarInfo(
-                                  uniqueId: userId,
-                                  displayName:
-                                      data.avatarInfo.displayName ?? userId,
-                                  avatar: data.avatarInfo.avatar,
-                                ),
-                                size: 8,
-                              ),
-                            ),
-                          );
-                        },
-                        error: (e, st) {
-                          _log.severe('ERROR loading avatar', e, st);
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: ActerAvatar(
-                              options: AvatarOptions(
-                                AvatarInfo(
-                                  uniqueId: userId,
-                                  displayName: userId,
-                                ),
-                                size: 8,
-                              ),
-                            ),
-                          );
-                        },
-                        loading: () => const SizedBox(
-                          height: 8,
-                          width: 8,
-                          child: CircularProgressIndicator(),
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 10),
+                        child: ActerAvatar(
+                          options: AvatarOptions.DM(
+                            memberProfile,
+                            size: 8,
+                          ),
                         ),
                       );
                     },
@@ -260,53 +203,22 @@ class _UserReceiptsWidget extends ConsumerWidget {
                   return Consumer(
                     builder: (context, ref, child) {
                       final member = ref.watch(
-                        roomMemberProvider(
+                        memberAvatarInfoProvider(
                           (userId: userId, roomId: roomId),
                         ),
                       );
                       return ListTile(
-                        leading: member.when(
-                          data: (data) {
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 10),
-                              child: ActerAvatar(
-                                options: AvatarOptions.DM(
-                                  AvatarInfo(
-                                    uniqueId: seenList[index],
-                                    displayName:
-                                        data.avatarInfo.displayName ?? userId,
-                                    avatar: data.avatarInfo.avatar,
-                                  ),
-                                  size: 8,
-                                ),
-                              ),
-                            );
-                          },
-                          error: (e, st) {
-                            _log.severe('ERROR loading avatar', e, st);
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 10),
-                              child: ActerAvatar(
-                                options: AvatarOptions.DM(
-                                  AvatarInfo(
-                                    uniqueId: userId,
-                                    displayName: userId,
-                                  ),
-                                  size: 8,
-                                ),
-                              ),
-                            );
-                          },
-                          loading: () => const SizedBox(
-                            height: 8,
-                            width: 8,
-                            child: CircularProgressIndicator(),
+                        leading: Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: ActerAvatar(
+                            options: AvatarOptions.DM(
+                              member,
+                              size: 8,
+                            ),
                           ),
                         ),
                         title: Text(
-                          member.hasValue
-                              ? member.requireValue.avatarInfo.displayName!
-                              : userId,
+                          member.displayName ?? userId,
                           style: Theme.of(context).textTheme.labelSmall,
                         ),
                         trailing: Text(

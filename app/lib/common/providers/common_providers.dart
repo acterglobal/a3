@@ -37,23 +37,6 @@ final accountProvider = StateProvider(
   ),
 );
 
-/// See [AccountWithAvatarInfo].
-final accountAvatarInfoProvider =
-    FutureProvider.autoDispose<AvatarInfo>((ref) async {
-  final sdk = await ref.watch(sdkProvider.future);
-  final account = ref.watch(accountProvider);
-  final thumbSize = sdk.api.newThumbSize(48, 48);
-  final userId = account.userId().toString();
-
-  final avatar = await account.avatar(thumbSize);
-  final fallback = AvatarInfo(uniqueId: userId);
-  if (avatar.data() == null) {
-    return AccountWithAvatarInfo(account, fallback);
-  }
-  final avatarInfo = ref.watch(accountAvatarInfoProvider);
-  return AccountWithAvatarInfo(account, avatarInfo);
-});
-
 /// Gives [AvatarInfo] object for user account. Stays up-to-date internally.
 final accountAvatarInfoProvider = StateProvider.autoDispose<AvatarInfo>((ref) {
   final account = ref.watch(accountProvider);

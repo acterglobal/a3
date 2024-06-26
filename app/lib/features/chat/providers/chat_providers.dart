@@ -189,10 +189,11 @@ final chatMentionsProvider =
   final activeMembers = await ref.read(membersIdsProvider(roomId).future);
   List<Map<String, String>> mentionRecords = [];
   for (final mId in activeMembers) {
-    final data = await ref
-        .watch(roomMemberProvider((roomId: roomId, userId: mId)).future);
+    final data = ref.watch(
+      memberAvatarInfoProvider((roomId: roomId, userId: mId)),
+    );
     Map<String, String> record = {};
-    final displayName = data.avatarInfo.displayName;
+    final displayName = data.displayName;
     record['id'] = mId;
     if (displayName != null) {
       record['displayName'] = displayName;

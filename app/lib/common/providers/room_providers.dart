@@ -347,16 +347,33 @@ final roomIsMutedProvider =
   return status == 'muted';
 });
 
-final roomMemberProvider = FutureProvider.autoDispose
-    .family<MemberWithAvatarInfo, MemberInfo>((ref, query) async {
+final memberProvider =
+    FutureProvider.autoDispose.family<Member, MemberInfo>((ref, query) async {
   final room = await ref.watch(maybeRoomProvider(query.roomId).future);
   if (room == null) {
     throw RoomNotFound;
   }
-  final member = await room.getMember(query.userId);
-  final avatarInfo = ref.watch(userAvatarInfoProvider(member));
+  return await room.getMember(query.userId);
+});
 
-  return (avatarInfo: avatarInfo, member: member);
+final _memberProfileProvider = FutureProvider.autoDispose
+    .family<UserProfile, MemberInfo>((ref, query) async {
+  final member = await ref.watch(memberProvider(query).future);
+  return member.getProfile();
+});
+
+final memberDisplayNameProvider =
+    FutureProvider.autoDispose.family<String?, MemberInfo>((ref, query) async {
+  return ref.watch(_memberProfileProvider(query)).valueOrNull?.getDisplayName();
+});
+
+final memberAvatarInfoProvider =
+    Provider.autoDispose.family<AvatarInfo, MemberInfo>((ref, query) {
+  final member = ref.watch(memberProvider(query)).valueOrNull;
+  if (member != null) {
+    return ref.watch(userAvatarInfoProvider(member));
+  }
+  return AvatarInfo(uniqueId: query.userId);
 });
 
 final membersIdsProvider =

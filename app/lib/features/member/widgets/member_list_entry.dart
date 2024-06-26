@@ -59,14 +59,13 @@ class MemberListEntry extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profileData =
-        ref.watch(roomMemberProvider((userId: memberId, roomId: roomId)));
-    return profileData.when(
+    final member =
+        ref.watch(memberProvider((userId: memberId, roomId: roomId)));
+    return member.when(
       data: (data) => _MemberListEntryInner(
         userId: memberId,
         roomId: roomId,
-        member: data.member,
-        avatarInfo: data.avatarInfo,
+        member: data,
         isShowActions: isShowActions,
       ),
       error: (e, s) => Text(L10n.of(context).errorLoadingProfile(e)),
@@ -77,7 +76,6 @@ class MemberListEntry extends ConsumerWidget {
 
 class _MemberListEntryInner extends ConsumerWidget {
   final Member member;
-  final AvatarInfo avatarInfo;
   final String userId;
   final String roomId;
   final bool isShowActions;
@@ -85,7 +83,6 @@ class _MemberListEntryInner extends ConsumerWidget {
   const _MemberListEntryInner({
     required this.userId,
     required this.member,
-    required this.avatarInfo,
     required this.roomId,
     this.isShowActions = true,
   });
@@ -106,6 +103,9 @@ class _MemberListEntryInner extends ConsumerWidget {
       );
     }
 
+    final avatarInfo =
+        ref.watch(memberAvatarInfoProvider((userId: userId, roomId: roomId)));
+
     return ListTile(
       onTap: () async {
         if (context.mounted) {
@@ -119,11 +119,7 @@ class _MemberListEntryInner extends ConsumerWidget {
       },
       leading: ActerAvatar(
         options: AvatarOptions.DM(
-          AvatarInfo(
-            uniqueId: userId,
-            displayName: avatarInfo.displayName,
-            avatar: avatarInfo.avatar,
-          ),
+          avatarInfo,
           size: 18,
         ),
       ),

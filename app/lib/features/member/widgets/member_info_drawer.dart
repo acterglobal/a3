@@ -22,14 +22,12 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 class _MemberInfoDrawerInner extends ConsumerWidget {
   final Member member;
-  final AvatarInfo avatarInfo;
   final String memberId;
   final bool isShowActions;
 
   const _MemberInfoDrawerInner({
     required this.memberId,
     required this.member,
-    required this.avatarInfo,
     required this.isShowActions,
   });
 
@@ -70,6 +68,9 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final avatarInfo = ref.watch(
+      memberAvatarInfoProvider((userId: memberId, roomId: member.roomIdStr())),
+    );
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -79,7 +80,11 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
             const SizedBox(height: 20),
             _buildAvatarUI(context, avatarInfo),
             const SizedBox(height: 20),
-            if (avatarInfo.displayName != null) _buildDisplayName(context),
+            if (avatarInfo.displayName != null)
+              Center(
+                child:
+                    Text(avatarInfo.displayName!), // FIXME: make this prettier
+              ),
             const SizedBox(height: 20),
             _buildUserName(context),
             const SizedBox(height: 20),
@@ -273,12 +278,6 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
     );
   }
 
-  Widget _buildDisplayName(BuildContext context) {
-    return Center(
-      child: Text(avatarInfo.displayName!), // FIXME: make this prettier
-    );
-  }
-
   Widget _buildUserName(BuildContext context) {
     return GestureDetector(
       onTap: () async {
@@ -312,12 +311,9 @@ class MemberInfoDrawer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref
-        .watch(roomMemberProvider((roomId: roomId, userId: memberId)))
-        .when(
+    return ref.watch(memberProvider((roomId: roomId, userId: memberId))).when(
           data: (data) => _MemberInfoDrawerInner(
-            member: data.member,
-            avatarInfo: data.avatarInfo,
+            member: data,
             memberId: memberId,
             isShowActions: isShowActions,
           ),
