@@ -68,37 +68,6 @@ class ShareInviteCode extends ConsumerWidget {
     );
   }
 
-  // Widget _shareInviteSkeletonWidget(BuildContext context, WidgetRef ref) {
-  //   return Skeletonizer(
-  //     child: Center(
-  //       child: Container(
-  //         padding: const EdgeInsets.symmetric(horizontal: 20.0),
-  //         constraints: const BoxConstraints(maxWidth: 500),
-  //         child: Column(
-  //           crossAxisAlignment: CrossAxisAlignment.stretch,
-  //           children: [
-  //             _buildMessageContent(
-  //               context,
-  //               ref,
-  //               'displayName',
-  //               'roomName',
-  //             ),
-  //             const SizedBox(height: 30),
-  //             _buildShareIntents(
-  //               context,
-  //               'displayName',
-  //               'roomName',
-  //             ),
-  //             const SizedBox(height: 10),
-  //             _buildDoneButton(context),
-  //             const SizedBox(height: 5),
-  //           ],
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
-
   Widget _buildMessageContent(
     BuildContext context,
     WidgetRef ref,
