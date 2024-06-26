@@ -115,14 +115,21 @@ class _PinItemState extends ConsumerState<PinItem> {
           );
         },
         child: Card(
-          child: Container(
+          child: Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 const Icon(Atlas.link_chain_thin, size: 18),
                 const SizedBox(width: 16),
-                Text(widget.pin.url() ?? ''),
-                const Spacer(),
+                Flexible(
+                  child: Text(
+                    widget.pin.url() ?? '',
+                    softWrap: false,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const SizedBox(width: 16),
                 GestureDetector(
                   onTap: () async {
                     await openLink(widget.pin.url() ?? '', context);
