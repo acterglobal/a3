@@ -39,11 +39,7 @@ final AutoDisposeFutureProvider<List<SpaceDetails>> spacesFoundProvider =
         roomId,
         icon: ActerAvatar(
           options: AvatarOptions(
-            AvatarInfo(
-              uniqueId: roomId,
-              displayName: info.displayName,
-              avatar: info.avatar,
-            ),
+            info,
           ),
         ),
       ),
