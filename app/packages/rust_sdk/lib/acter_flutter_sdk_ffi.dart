@@ -50307,7 +50307,7 @@ class Account {
     return tmp6;
   }
 
-  /// Submit token to finish email register
+  /// find out session id that is related with email address and add email address to account using session id & password
   Future<bool> tryConfirmEmailStatus(
     String emailAddress,
     String password,

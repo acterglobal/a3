@@ -2316,7 +2316,7 @@ object Account {
     /// get the registered 3pid on the homeserver for this account
     fn get_3pids(address: string) -> Future<Result<Vec<ThreePid>>>;
 
-    /// Submit token to finish email register
+    /// find out session id that is related with email address and add email address to account using session id & password
     fn try_confirm_email_status(email_address: string, password: string) -> Future<Result<bool>>;
 
     /// Submit token to finish email register
