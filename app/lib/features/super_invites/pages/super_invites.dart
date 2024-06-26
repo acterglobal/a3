@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
@@ -28,10 +27,7 @@ class SuperInvitesPage extends ConsumerWidget {
           centerTitle: true,
           actions: [
             IconButton(
-              icon: Icon(
-                Atlas.arrows_rotating_right_thin,
-                color: Theme.of(context).colorScheme.neutral5,
-              ),
+              icon: const Icon(Atlas.arrows_rotating_right_thin),
               iconSize: 28,
               color: Theme.of(context).colorScheme.surface,
               onPressed: () async {
@@ -40,10 +36,7 @@ class SuperInvitesPage extends ConsumerWidget {
             ),
             IconButton(
               key: createNewToken,
-              icon: Icon(
-                Atlas.plus_circle_thin,
-                color: Theme.of(context).colorScheme.neutral5,
-              ),
+              icon: const Icon(Atlas.plus_circle_thin),
               iconSize: 28,
               color: Theme.of(context).colorScheme.surface,
               onPressed: () async {

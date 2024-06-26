@@ -1,5 +1,5 @@
 import 'package:acter/common/models/types.dart';
-import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:flutter/material.dart';
 
 class BadgedIcon extends StatelessWidget {

@@ -1,7 +1,4 @@
 import 'package:acter/common/models/types.dart';
-import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
-
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
@@ -202,14 +199,10 @@ class ActivitiesPage extends ConsumerWidget {
     }
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.neutral,
       body: CustomScrollView(
         slivers: <Widget>[
           PageHeaderWidget(
             title: L10n.of(context).activities,
-            sectionDecoration: const BoxDecoration(
-              gradient: primaryGradient,
-            ),
             expandedContent: Text(
               L10n.of(context).activitiesDescription,
               softWrap: true,

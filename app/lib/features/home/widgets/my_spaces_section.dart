@@ -28,14 +28,9 @@ class MySpacesSection extends ConsumerWidget {
         limit: bookmarkedSpaces.length,
         showAll: true,
         showAllCounter: spaces.length,
-        title: Row(
-          children: [
-            const Icon(Icons.bookmark_outline),
-            Text(
-              L10n.of(context).bookmarkedSpaces,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-          ],
+        title: Text(
+          L10n.of(context).bookmarkedSpaces,
+          style: Theme.of(context).textTheme.titleSmall,
         ),
       );
     }
@@ -58,7 +53,7 @@ class MySpacesSection extends ConsumerWidget {
         onTap: () => context.pushNamed(Routes.spaces.name),
         child: Text(
           L10n.of(context).mySpaces,
-          style: Theme.of(context).textTheme.titleMedium,
+          style: Theme.of(context).textTheme.titleSmall,
         ),
       ),
     );
@@ -87,32 +82,29 @@ class _RenderSpacesSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        title,
+        if (showAll)
+          Row(
+            children: [
+              title,
+              const Spacer(),
+              ActerInlineTextButton(
+                onPressed: () => context.pushNamed(Routes.spaces.name),
+                child: Text(L10n.of(context).seeAll),
+              ),
+            ],
+          ),
+        const SizedBox(height: 8),
         ListView.builder(
           shrinkWrap: true,
           itemCount: limit,
           physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (context, index) {
-            return SpaceCard(space: spaces[index]);
+            return SpaceCard(
+              space: spaces[index],
+              margin: const EdgeInsets.only(bottom: 14),
+            );
           },
         ),
-        if (showAll)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: ActerInlineTextButton(
-                  onPressed: () {
-                    context.pushNamed(Routes.spaces.name);
-                  },
-                  child: Text(
-                    L10n.of(context).seeAllMySpaces(showAllCounter),
-                  ),
-                ),
-              ),
-            ],
-          ),
         if (showActions)
           Padding(
             padding: const EdgeInsets.symmetric(

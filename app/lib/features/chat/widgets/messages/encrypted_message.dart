@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/dialogs/encryption_info_drawer.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +28,6 @@ class EncryptedMessageWidget extends StatelessWidget {
               TextSpan(
                 text: L10n.of(context).encryptedChatMessage,
                 style: Theme.of(context).textTheme.labelSmall!.copyWith(
-                      color: Theme.of(context).colorScheme.neutral5,
                       fontStyle: FontStyle.italic,
                     ),
               ),

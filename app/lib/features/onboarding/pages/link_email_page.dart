@@ -23,7 +23,6 @@ class LinkEmailPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
       body: _buildBody(context, ref),
     );
   }
@@ -59,7 +58,7 @@ class LinkEmailPage extends ConsumerWidget {
         Text(
           L10n.of(context).protectPrivacyTitle,
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: greenColor,
+                color: Theme.of(context).colorScheme.secondary,
               ),
           textAlign: TextAlign.center,
         ),

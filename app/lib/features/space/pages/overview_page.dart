@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/features/space/widgets/about_card.dart';
 import 'package:acter/features/space/widgets/chats_card.dart';
 import 'package:acter/features/space/widgets/events_card.dart';
@@ -47,34 +46,31 @@ class SpaceOverview extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // get platform of context.
-    return DecoratedBox(
-      decoration: const BoxDecoration(gradient: primaryGradient),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
-            AboutCard(spaceId: spaceIdOrAlias),
-            ActerSpaceChecker(
-              spaceId: spaceIdOrAlias,
-              expectation: (a) => a == null,
-              child: NonActerSpaceCard(spaceId: spaceIdOrAlias),
-            ),
-            ActerSpaceChecker(
-              spaceId: spaceIdOrAlias,
-              expectation: (a) => a?.events().active() ?? false,
-              child: EventsCard(spaceId: spaceIdOrAlias),
-            ),
-            ActerSpaceChecker(
-              spaceId: spaceIdOrAlias,
-              expectation: (a) => a?.pins().active() ?? false,
-              child: LinksCard(spaceId: spaceIdOrAlias),
-            ),
-            ChatsCard(spaceId: spaceIdOrAlias),
-            SubSpacesCard(spaceId: spaceIdOrAlias),
-            RecommendedSpaceCard(spaceId: spaceIdOrAlias),
-          ],
-        ),
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
+          AboutCard(spaceId: spaceIdOrAlias),
+          ActerSpaceChecker(
+            spaceId: spaceIdOrAlias,
+            expectation: (a) => a == null,
+            child: NonActerSpaceCard(spaceId: spaceIdOrAlias),
+          ),
+          ActerSpaceChecker(
+            spaceId: spaceIdOrAlias,
+            expectation: (a) => a?.events().active() ?? false,
+            child: EventsCard(spaceId: spaceIdOrAlias),
+          ),
+          ActerSpaceChecker(
+            spaceId: spaceIdOrAlias,
+            expectation: (a) => a?.pins().active() ?? false,
+            child: LinksCard(spaceId: spaceIdOrAlias),
+          ),
+          ChatsCard(spaceId: spaceIdOrAlias),
+          SubSpacesCard(spaceId: spaceIdOrAlias),
+          RecommendedSpaceCard(spaceId: spaceIdOrAlias),
+        ],
       ),
     );
   }

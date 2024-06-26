@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
@@ -22,7 +21,6 @@ class UploadAvatarPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
       body: _buildBody(context, ref),
     );
   }
@@ -54,7 +52,7 @@ class UploadAvatarPage extends ConsumerWidget {
     return Text(
       L10n.of(context).avatarAddTitle,
       style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            color: greenColor,
+            color: Theme.of(context).colorScheme.secondary,
           ),
       textAlign: TextAlign.center,
     );

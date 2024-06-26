@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/toolkit/menu_item_widget.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/invite_members/widgets/invite_code_ui.dart';
@@ -153,7 +152,7 @@ class InvitePage extends ConsumerWidget {
       child: Container(
         decoration: BoxDecoration(
           border: Border.all(
-            color: Theme.of(context).colorScheme.neutral6,
+            color: Theme.of(context).colorScheme.primary,
             width: 1.5,
           ),
           borderRadius: BorderRadius.circular(15),

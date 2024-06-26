@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +17,6 @@ class SaveUsernamePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
       body: _buildBody(context),
     );
   }
@@ -54,7 +52,7 @@ class SaveUsernamePage extends StatelessWidget {
         Text(
           L10n.of(context).saveUsernameTitle,
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: greenColor,
+                color: Theme.of(context).colorScheme.secondary,
               ),
           textAlign: TextAlign.center,
         ),

@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -123,7 +122,7 @@ class ShareInviteCode extends ConsumerWidget {
             child: Container(
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: Theme.of(context).colorScheme.neutral6,
+                  color: Theme.of(context).colorScheme.onSurface,
                   width: 1,
                 ),
                 borderRadius: BorderRadius.circular(5),
@@ -217,7 +216,7 @@ class ShareInviteCode extends ConsumerWidget {
     return Container(
       decoration: BoxDecoration(
         border: Border.all(
-          color: Theme.of(context).colorScheme.neutral6,
+          color: Theme.of(context).colorScheme.onSurface,
           width: 1,
         ),
         borderRadius: BorderRadius.circular(5),
