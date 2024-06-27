@@ -175,7 +175,6 @@ GoRouter makeRouter(Ref ref) {
     errorBuilder: (context, state) => NotFoundPage(routerState: state),
     navigatorKey: rootNavKey,
     initialLocation: '/',
-    debugLogDiagnostics: true,
     routes: makeRoutes(ref),
   );
 }

@@ -174,11 +174,12 @@ dev_dependencies:
   icons_launcher: ^2.0.7
   flutter_lints: ^4.0.0
   build_runner: ^2.4.6
-  convenient_test: ^1.3.2
-  convenient_test_dev: ^1.3.2
+  convenient_test: ^1.3.7
+  convenient_test_dev: ^1.3.7
   convenient_test_manager_dart:
     git:
-      url: https://github.com/fzyzcjy/flutter_convenient_test/
+      url: https://github.com/gnunicorn/flutter_convenient_test/
+      ref: ben-cli-limit-tests
       path: packages/convenient_test_manager_dart
   msix: ^3.7.0
   # mockito: ^5.4.2
