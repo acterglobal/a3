@@ -3,7 +3,6 @@ library;
 
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
-import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/notifiers/room_notifiers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
@@ -336,13 +335,32 @@ final memberDisplayNameProvider =
   return ref.watch(_memberProfileProvider(query)).valueOrNull?.getDisplayName();
 });
 
+/// Caching the MemoryImage of each room
+final _memberAvatarProvider = FutureProvider.autoDispose
+    .family<MemoryImage?, MemberInfo>((ref, query) async {
+  final sdk = await ref.watch(sdkProvider.future);
+
+  final thumbsize = sdk.api.newThumbSize(48, 48);
+  final profile = await ref.watch(_memberProfileProvider(query).future);
+  // use .data() consumes the value so we keep it stored, any further call to .data()
+  // comes back empty as the data was consumed.
+  final avatar = (await profile.getAvatar(thumbsize)).data();
+  if (avatar != null) {
+    return MemoryImage(avatar.asTypedList());
+  }
+  return null;
+});
+
 final memberAvatarInfoProvider =
     Provider.autoDispose.family<AvatarInfo, MemberInfo>((ref, query) {
-  final member = ref.watch(memberProvider(query)).valueOrNull;
-  if (member != null) {
-    return ref.watch(userAvatarInfoProvider(member));
-  }
-  return AvatarInfo(uniqueId: query.userId);
+  final displayName = ref.watch(memberDisplayNameProvider(query)).valueOrNull;
+  final avatarData = ref.watch(_memberAvatarProvider(query)).valueOrNull;
+
+  return AvatarInfo(
+    uniqueId: query.userId,
+    displayName: displayName,
+    avatar: avatarData,
+  );
 });
 
 final membersIdsProvider =

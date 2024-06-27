@@ -79,35 +79,6 @@ final _accountAvatarProvider =
   return null;
 });
 
-final userAvatarInfoProvider =
-    StateProvider.family.autoDispose<AvatarInfo, Member>((ref, member) {
-  final userId = member.userId().toString();
-  final profile = member.getProfile();
-
-  final fallback =
-      AvatarInfo(uniqueId: userId, displayName: profile.getDisplayName());
-  final avatar = ref.watch(_userAvatarProvider(profile)).valueOrNull;
-  if (!profile.hasAvatar() || avatar == null) {
-    return fallback;
-  }
-  return AvatarInfo(
-    uniqueId: userId,
-    displayName: profile.getDisplayName(),
-    avatar: avatar,
-  );
-});
-
-final _userAvatarProvider = FutureProvider.autoDispose
-    .family<MemoryImage?, UserProfile>((ref, profile) async {
-  final sdk = await ref.watch(sdkProvider.future);
-  final size = sdk.api.newThumbSize(48, 48);
-  final avatar = await profile.getAvatar(size);
-  if (avatar.data() != null) {
-    return MemoryImage(avatar.data()!.asTypedList());
-  }
-  return null;
-});
-
 final notificationSettingsProvider = AsyncNotifierProvider<
     AsyncNotificationSettingsNotifier,
     NotificationSettings>(() => AsyncNotificationSettingsNotifier());
