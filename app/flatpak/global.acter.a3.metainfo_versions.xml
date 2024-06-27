@@ -1,3 +1,19 @@
+    <release version="1.24.3627" date="2024-06-27">
+        <url type="details">https://github.com/acterglobal/a3/releases/tag/v1.24.3627</url>
+        <description>
+# Changes since release-latest 
+- [Improvement] : Optimised application color system
+- Tasks and ToDo-List have left the lab and are now on by default for everyone.
+
+- SuperInvites can now be easily managed from the Room Invite screen
+- SuperInvite Codes are generated with the room display name as a prefix and additional numbers now
+
+- Task item detail page UI-UX enhancement
+- My task list on home screen optimised with compact design and better visual indications 
+- Minor fix to dismiss the keyboard after submitting a comment & making the icons on the image overlay accessible regardless of top bezels
+
+        </description>
+    </release>
     <release version="1.24.3624" date="2024-06-24">
         <url type="details">https://github.com/acterglobal/a3/releases/tag/v1.24.3624</url>
         <description>
