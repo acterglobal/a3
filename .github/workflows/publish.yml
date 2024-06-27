@@ -60,10 +60,8 @@ jobs:
       prev_tag: ${{ inputs.prev_tag || 'release-latest' }}
     steps:
       - id: version
-        # FIXME: the `.3` here is a stupidity-counter: by running it once manually with the wrong tag 1.24.1178
-        #        by accident and apple enforcing an increasing number scheme, we now have to add prefix them with `3`
-        #        until 2025 ...
-        run: echo "version=`date +1.%y.3%-m%d`" >> $GITHUB_OUTPUT
+        # the suffix 0 allows us to provide up to 9 more hotfixes on the same day
+        run: echo "version=`date +1.%y.%-m%d0`" >> $GITHUB_OUTPUT
       - id: build_num
         run: echo "build_num=`date +%s`" >> $GITHUB_OUTPUT
 
