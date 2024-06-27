@@ -10,7 +10,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class ConvoWithAvatarInfoCard extends ConsumerWidget {
-  final String? title;
   final String roomId;
   final AvatarInfo avatarInfo;
   final Widget? subtitle;
@@ -45,7 +44,6 @@ class ConvoWithAvatarInfoCard extends ConsumerWidget {
     this.subtitle,
     this.trailing,
     this.showParents = true,
-    this.title,
   });
 
   @override
