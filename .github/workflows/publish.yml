@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       new_tag:
-        description: 'Provide the tag name for this release'
+        description: 'Provide the version for this release'
         required: true
         type: string
       prev_tag:
