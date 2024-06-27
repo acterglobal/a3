@@ -1,2 +1,0 @@
-- SuperInvites can now be easily managed from the Room Invite screen
-- SuperInvite Codes are generated with the room display name as a prefix and additional numbers now
