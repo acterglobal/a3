@@ -5,6 +5,7 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class RoomAvatar extends ConsumerWidget {
   final String roomId;
@@ -23,6 +24,14 @@ class RoomAvatar extends ConsumerWidget {
     //Fetch room conversations details from roomId
     final isDm =
         ref.watch(chatProvider(roomId).select((c) => c.valueOrNull?.isDm()));
+    if (isDm == null) {
+      // means we are still in loading
+      return SizedBox(
+        width: avatarSize,
+        height: avatarSize,
+        child: loadingAvatar(),
+      );
+    }
     return SizedBox(
       width: avatarSize,
       height: avatarSize,
@@ -32,16 +41,34 @@ class RoomAvatar extends ConsumerWidget {
     );
   }
 
+  Widget errorAvatar(String error) {
+    return ActerAvatar(
+      options: AvatarOptions(
+        AvatarInfo(
+          uniqueId: 'error',
+          displayName: error,
+        ),
+        size: avatarSize,
+        badgesSize: avatarSize / 2,
+      ),
+    );
+  }
+
+  Widget loadingAvatar() {
+    return Skeletonizer(
+      child: Container(
+        color: Colors.white,
+        width: avatarSize,
+        height: avatarSize,
+      ),
+    );
+  }
+
   List<AvatarInfo>? renderParentsInfo(WidgetRef ref) {
     if (!showParents) {
       return [];
     }
-    final parentBadges = ref.watch(parentAvatarInfosProvider(roomId));
-    return parentBadges.when(
-      data: (avatarInfos) => avatarInfos,
-      error: (e, s) => [],
-      loading: () => [],
-    );
+    return ref.watch(parentAvatarInfosProvider(roomId)).valueOrNull ?? [];
   }
 
   Widget groupChatAvatarUI(WidgetRef ref, BuildContext context) {
@@ -81,8 +108,8 @@ class RoomAvatar extends ConsumerWidget {
       },
       skipLoadingOnReload: false,
       error: (error, stackTrace) =>
-          Text(L10n.of(context).loadingMembersCountFailed(error)),
-      loading: () => const CircularProgressIndicator(),
+          errorAvatar(L10n.of(context).loadingMembersCountFailed(error)),
+      loading: () => loadingAvatar(),
     );
   }
 

@@ -58,34 +58,51 @@ class CustomChatInput extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final membership = ref.watch(roomMembershipProvider(roomId));
-    return membership.when(
-      skipLoadingOnReload: true,
-      // avoid widget refresh and thus text focus updates upon room changes
-      data: (member) => buildData(context, ref, member),
-      error: (error, stack) {
-        _log.severe('Error loading membership', error, stack);
-        return Expanded(
-          child: Text(L10n.of(context).loadingChatsFailed(error)),
-        );
-      },
-      loading: () {
-        return const Skeletonizer(
+    final canSend = ref.watch(
+      roomMembershipProvider(roomId).select(
+        (membership) =>
+            membership.valueOrNull?.canString('CanSendChatMessages'),
+      ),
+    );
+    if (canSend == null) {
+      // we are still loading
+      return loadingState(context);
+    }
+    if (canSend) {
+      return _ChatInput(roomId: roomId, onTyping: onTyping);
+    }
+
+    return FrostEffect(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 15),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Row(
             children: [
-              Icon(Atlas.paperclip_attachment_thin),
-              Expanded(child: Text('loading')),
+              const SizedBox(width: 1),
+              const Icon(
+                Atlas.block_prohibited_thin,
+                size: 14,
+                color: Colors.grey,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                L10n.of(context).chatMissingPermissionsToSend,
+                style: const TextStyle(color: Colors.grey, fontSize: 14),
+              ),
             ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
-  Widget buildData(BuildContext context, WidgetRef ref, Member? membership) {
-    final canSend = membership?.canString('CanSendChatMessages') == true;
-    if (!canSend) {
-      return FrostEffect(
+  Widget loadingState(BuildContext context) {
+    return Skeletonizer(
+      child: FrostEffect(
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 15),
           decoration: BoxDecoration(
@@ -94,26 +111,77 @@ class CustomChatInput extends ConsumerWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Row(
-              children: [
-                const SizedBox(width: 1),
-                const Icon(
-                  Atlas.block_prohibited_thin,
-                  size: 14,
-                  color: Colors.grey,
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                const Padding(
+                  padding: EdgeInsets.only(right: 10),
+                  child: Icon(
+                    Atlas.paperclip_attachment_thin,
+                    size: 20,
+                  ),
                 ),
-                const SizedBox(width: 4),
-                Text(
-                  L10n.of(context).chatMissingPermissionsToSend,
-                  style: const TextStyle(color: Colors.grey, fontSize: 14),
+                Flexible(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: TextField(
+                      style: Theme.of(context).textTheme.bodyMedium,
+                      cursorColor: Theme.of(context).colorScheme.primary,
+                      maxLines: 6,
+                      minLines: 1,
+                      decoration: InputDecoration(
+                        isCollapsed: true,
+                        prefixIcon: Icon(
+                          Icons.shield,
+                          size: 18,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withOpacity(0.8),
+                        ),
+                        suffixIcon: const Icon(Icons.emoji_emotions),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30),
+                          borderSide: BorderSide(
+                            width: 0.5,
+                            style: BorderStyle.solid,
+                            color: Theme.of(context).colorScheme.surface,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30),
+                          borderSide: const BorderSide(
+                            width: 0.5,
+                            style: BorderStyle.solid,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30),
+                          borderSide: BorderSide(
+                            width: 0.5,
+                            style: BorderStyle.solid,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                        hintText: L10n.of(context).newMessage,
+                        hintStyle: Theme.of(context)
+                            .textTheme
+                            .labelLarge!
+                            .copyWith(
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                        contentPadding: const EdgeInsets.all(15),
+                        hintMaxLines: 1,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
         ),
-      );
-    } else {
-      return _ChatInput(roomId: roomId, onTyping: onTyping);
-    }
+      ),
+    );
   }
 }
 

@@ -211,23 +211,31 @@ final _roomProfileProvider =
 /// Caching the name of each Room
 final roomDisplayNameProvider =
     FutureProvider.family<String?, String>((ref, roomId) async {
-  return (await (await ref.watch(_roomProfileProvider(roomId).future))
-          .getDisplayName())
-      .text();
+  try {
+    final profile = await ref.watch(_roomProfileProvider(roomId).future);
+    return (await profile.getDisplayName()).text();
+  } on RoomNotFound {
+    return null;
+  }
 });
 
 /// Caching the MemoryImage of each room
 final _roomAvatarProvider =
     FutureProvider.family<MemoryImage?, String>((ref, roomId) async {
-  final sdk = await ref.watch(sdkProvider.future);
-  final thumbsize = sdk.api.newThumbSize(48, 48);
-  final avatar = (await (await ref.watch(_roomProfileProvider(roomId).future))
-          .getAvatar(thumbsize))
-      .data();
-  if (avatar != null) {
-    return MemoryImage(avatar.asTypedList());
+  try {
+    final sdk = await ref.watch(sdkProvider.future);
+    final thumbsize = sdk.api.newThumbSize(48, 48);
+
+    final avatar = (await (await ref.watch(_roomProfileProvider(roomId).future))
+            .getAvatar(thumbsize))
+        .data();
+    if (avatar != null) {
+      return MemoryImage(avatar.asTypedList());
+    }
+    return null;
+  } on RoomNotFound {
+    return null;
   }
-  return null;
 });
 
 /// Provide the AvatarInfo for each room. Update internally accordingly
@@ -278,8 +286,7 @@ final relatedSpacesProvider = FutureProvider.autoDispose
 
 /// Get the user's membership for a specific space based off the spaceId
 /// will throw if the client doesn't kow the space
-final roomMembershipProvider =
-    FutureProvider.autoDispose.family<Member?, String>(
+final roomMembershipProvider = FutureProvider.family<Member?, String>(
   (ref, roomId) async {
     final room = await ref.watch(maybeRoomProvider(roomId).future);
     if (room == null || !room.isJoined()) {
