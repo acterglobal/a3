@@ -2,7 +2,6 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -22,23 +21,22 @@ class RoomAvatar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     //Fetch room conversations details from roomId
+    final isDm =
+        ref.watch(chatProvider(roomId).select((c) => c.valueOrNull?.isDm()));
     return SizedBox(
       width: avatarSize,
       height: avatarSize,
-      child: ref.watch(chatProvider(roomId)).when(
-            data: (convo) => chatAvatarUI(convo, ref, context),
-            error: (e, s) =>
-                Center(child: Text(L10n.of(context).loadingRoomFailed(e))),
-            loading: () => Center(child: Text(L10n.of(context).loading)),
-          ),
+      child: isDm == true
+          ? dmAvatar(ref, context)
+          : groupChatAvatarUI(ref, context),
     );
   }
 
-  List<AvatarInfo>? renderParentsInfo(String convoId, WidgetRef ref) {
+  List<AvatarInfo>? renderParentsInfo(WidgetRef ref) {
     if (!showParents) {
       return [];
     }
-    final parentBadges = ref.watch(parentAvatarInfosProvider(convoId));
+    final parentBadges = ref.watch(parentAvatarInfosProvider(roomId));
     return parentBadges.when(
       data: (avatarInfos) => avatarInfos,
       error: (e, s) => [],
@@ -46,35 +44,15 @@ class RoomAvatar extends ConsumerWidget {
     );
   }
 
-  Widget chatAvatarUI(Convo convo, WidgetRef ref, BuildContext context) {
-    //Data Providers
-    final avatarInfo = ref.watch(roomAvatarInfoProvider(convo.getRoomIdStr()));
-
-    //Manage Avatar UI according to the avatar availability
-    //Show conversations avatar if available
-    //Group : Show default image if avatar is not available
-    if (!convo.isDm()) {
-      return ActerAvatar(
-        options: AvatarOptions(
-          avatarInfo,
-          size: avatarSize,
-          parentBadges: renderParentsInfo(roomId, ref),
-          badgesSize: avatarSize / 2,
-        ),
-      );
-    } else if (avatarInfo.avatar == null) {
-      return ActerAvatar(
-        options: AvatarOptions.DM(
-          avatarInfo,
-          size: 18,
-        ),
-      );
-    }
-
-    // Type == DM and no avatar: Handle avatar according to the members counts
-    else {
-      return dmAvatar(ref, context);
-    }
+  Widget groupChatAvatarUI(WidgetRef ref, BuildContext context) {
+    return ActerAvatar(
+      options: AvatarOptions(
+        ref.watch(roomAvatarInfoProvider(roomId)),
+        size: avatarSize,
+        parentBadges: renderParentsInfo(ref),
+        badgesSize: avatarSize / 2,
+      ),
+    );
   }
 
   Widget dmAvatar(WidgetRef ref, BuildContext context) {
