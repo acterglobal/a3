@@ -48,7 +48,7 @@ dependencies:
   flutter_keyboard_visibility: ^6.0.0
   expandable_text: ^2.3.0
   cached_network_image: ^3.2.1
-  fc_native_video_thumbnail: ^0.8.0
+  fc_native_video_thumbnail: ^0.9.0
   flutter_mentions:
     git:
       url: https://github.com/acterglobal/flutter_mentions.git
@@ -58,8 +58,6 @@ dependencies:
   flutter_slidable: ^3.0.0
   quds_popup_menu: ^0.0.1+1
   acter_avatar: ^2.0.1+1
-  table_calendar: ^3.0.9
-  omni_datetime_picker: ^1.0.9
   flutter_easyloading: ^3.0.5
   appflowy_editor: ^3.0.0
 
@@ -67,13 +65,13 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: ^0.19.0
-  freezed: ^2.3.3
+  freezed: ^2.5.2
   acter_flutter_sdk:
     path: packages/rust_sdk
 
   # State Management
-  flutter_riverpod: ^2.4.4
-  riverpod: ^2.3.6
+  flutter_riverpod: ^2.5.1
+  riverpod: ^2.5.1
   # Routing
   go_router: ^14.1.4
 
@@ -102,8 +100,7 @@ dependencies:
   shared_preferences: ^2.2.0
   image_picker_for_web: ^3.0.1
   riverpod_infinite_scroll:
-    git: 
-      url: https://github.com/acterglobal/riverpod_infinite_scroll.git
+    path: packages/riverpod_inifinte_scroll/
   infinite_scroll_pagination: ^4.0.0
   convert: ^3.1.1
   push: ^2.3.0
