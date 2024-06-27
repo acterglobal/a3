@@ -900,9 +900,8 @@ jobs:
           git add "docs/content/releases/${{ needs.tags.outputs.tag }}.md"
           echo "Add release v${{ needs.tags.outputs.tag }}"
           git commit -m "Releasing v${{ needs.tags.outputs.tag }}"
-          git tag -f v${{ needs.tags.outputs.tag }}
-          git tag -f release-latest
-          git push -f origin main v${{ needs.tags.outputs.tag }} release-latest
+          git tag v${{ needs.tags.outputs.tag }}
+          git push origin main v${{ needs.tags.outputs.tag }} release-latest
 
       - name: Release
         id: create_release
