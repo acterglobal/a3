@@ -9,57 +9,57 @@ default-members = ["native/acter"]
 
 [workspace.dependencies.matrix-sdk]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "1380af4f005ee5f34607db5cbb6705f93048b85a"
+rev = "6464d218133717617310e23b3f3025a075bb87c2"
 default-features = false
 features = ["experimental-sliding-sync"]
 
 [workspace.dependencies.matrix-sdk-base]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "1380af4f005ee5f34607db5cbb6705f93048b85a"
+rev = "6464d218133717617310e23b3f3025a075bb87c2"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-sqlite]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "1380af4f005ee5f34607db5cbb6705f93048b85a"
+rev = "6464d218133717617310e23b3f3025a075bb87c2"
 default-features = false
 features = ["crypto-store", "state-store"]
 
 [workspace.dependencies.matrix-sdk-store-encryption]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "1380af4f005ee5f34607db5cbb6705f93048b85a"
+rev = "6464d218133717617310e23b3f3025a075bb87c2"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-test]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "1380af4f005ee5f34607db5cbb6705f93048b85a"
+rev = "6464d218133717617310e23b3f3025a075bb87c2"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-ui]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "1380af4f005ee5f34607db5cbb6705f93048b85a"
+rev = "6464d218133717617310e23b3f3025a075bb87c2"
 default-features = false
 features = ["e2e-encryption"]
 
 [workspace.dependencies.ruma]
-git = "https://github.com/Hywan/ruma"
-branch = "feat-sliding-sync-list-include-heroes"
+git = "https://github.com/ruma/ruma"
+rev = "e5a370f7e5fcebb0da6e4945e51c5fafba9aa5f0"
 features = ["client-api-c", "compat-upload-signatures", "compat-user-id", "compat-arbitrary-length-ids", "unstable-msc3401"]
 
 [workspace.dependencies.ruma-client-api]
-git = "https://github.com/Hywan/ruma"
-branch = "feat-sliding-sync-list-include-heroes"
+git = "https://github.com/ruma/ruma"
+rev = "e5a370f7e5fcebb0da6e4945e51c5fafba9aa5f0"
 
 [workspace.dependencies.ruma-common]
-git = "https://github.com/Hywan/ruma"
-branch = "feat-sliding-sync-list-include-heroes"
+git = "https://github.com/ruma/ruma"
+rev = "e5a370f7e5fcebb0da6e4945e51c5fafba9aa5f0"
 
 [workspace.dependencies.ruma-events]
-git = "https://github.com/Hywan/ruma"
-branch = "feat-sliding-sync-list-include-heroes"
+git = "https://github.com/ruma/ruma"
+rev = "e5a370f7e5fcebb0da6e4945e51c5fafba9aa5f0"
 
 [workspace.dependencies.ruma-macros]
-git = "https://github.com/Hywan/ruma"
-branch = "feat-sliding-sync-list-include-heroes"
+git = "https://github.com/ruma/ruma"
+rev = "e5a370f7e5fcebb0da6e4945e51c5fafba9aa5f0"
 
 [workspace.dependencies.url]
 version = "2.5.0"

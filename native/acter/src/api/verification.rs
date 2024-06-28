@@ -662,6 +662,7 @@ async fn sas_verification_handler(
                     error!("Dropping flow for {}: {}", flow_id, e);
                 }
             }
+            SasState::Created { protocols } => {} // FIXME: Is there anything for us to do here?
         }
     }
     Ok(())
