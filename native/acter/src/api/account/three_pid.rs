@@ -305,7 +305,7 @@ impl Account {
                 if !capabilities.thirdparty_id_changes.enabled {
                     bail!("Server doesn't support change of third party identity");
                 }
-                let content = account
+                let mut content = account
                     .account_data::<ThreePidContent>()
                     .await?
                     .context("Not found any email registration content")?
