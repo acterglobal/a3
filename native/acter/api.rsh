@@ -2306,9 +2306,6 @@ object Account {
     /// If password is not enough complex, homeserver may reject this request.
     fn request_3pid_management_token_via_email(email_address: string) -> Future<Result<ThreePidEmailTokenResponse>>;
 
-    /// delete 3pid from the homeserver for this account
-    fn delete_3pid_as_email(address: string) -> Future<Result<bool>>;
-
     /// get the registered 3pid on the homeserver for this account
     fn get_3pids(address: string) -> Future<Result<Vec<ThreePid>>>;
 

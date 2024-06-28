@@ -192,25 +192,6 @@ impl Account {
             .await?
     }
 
-    pub async fn delete_3pid_as_email(&self, address: String) -> Result<bool> {
-        let client = self.client.deref().clone();
-        let account = self.account.clone();
-
-        RUNTIME
-            .spawn(async move {
-                let capabilities = client.get_capabilities().await?;
-                if !capabilities.thirdparty_id_changes.enabled {
-                    bail!("Server doesn't support 3pid change");
-                }
-                account
-                    .delete_3pid(&address, Medium::Email, None)
-                    .await
-                    .map_err(clearify_error)?;
-                Ok(true)
-            })
-            .await?
-    }
-
     pub async fn get_3pids(&self, address: String) -> Result<Vec<ThreePid>> {
         let account = self.account.clone();
 

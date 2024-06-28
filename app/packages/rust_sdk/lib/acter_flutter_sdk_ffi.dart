@@ -10798,50 +10798,6 @@ class Api {
     return tmp7;
   }
 
-  bool? __accountDelete3pidAsEmailFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _accountDelete3pidAsEmailFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final tmp7 = tmp13 > 0;
-    return tmp7;
-  }
-
   FfiListThreePid? __accountGet3pidsFuturePoll(
     int boxed,
     int postCobject,
@@ -24674,23 +24630,6 @@ class Api {
             int,
             int,
           )>();
-  late final _accountDelete3pidAsEmailPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__Account_delete_3pid_as_email");
-
-  late final _accountDelete3pidAsEmail =
-      _accountDelete3pidAsEmailPtr.asFunction<
-          int Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
   late final _accountGet3pidsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -30451,21 +30390,6 @@ class Api {
   late final _accountRequest3pidManagementTokenViaEmailFuturePoll =
       _accountRequest3pidManagementTokenViaEmailFuturePollPtr.asFunction<
           _AccountRequest3pidManagementTokenViaEmailFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _accountDelete3pidAsEmailFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AccountDelete3pidAsEmailFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Account_delete_3pid_as_email_future_poll");
-
-  late final _accountDelete3pidAsEmailFuturePoll =
-      _accountDelete3pidAsEmailFuturePollPtr.asFunction<
-          _AccountDelete3pidAsEmailFuturePollReturn Function(
             int,
             int,
             int,
@@ -50089,40 +50013,6 @@ class Account {
     return tmp6;
   }
 
-  /// delete 3pid from the homeserver for this account
-  Future<bool> delete3pidAsEmail(
-    String address,
-  ) {
-    final tmp1 = address;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5 = _api._accountDelete3pidAsEmail(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 =
-        _Box(_api, tmp7_0, "__Account_delete_3pid_as_email_future_drop");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 =
-        _nativeFuture(tmp7_1, _api.__accountDelete3pidAsEmailFuturePoll);
-    return tmp6;
-  }
-
   /// get the registered 3pid on the homeserver for this account
   Future<FfiListThreePid> get3pids(
     String address,
@@ -62201,21 +62091,6 @@ class _AccountRequest3pidManagementTokenViaEmailFuturePollReturn
   @ffi.Uint64()
   external int arg4;
   @ffi.Int64()
-  external int arg5;
-}
-
-class _AccountDelete3pidAsEmailFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Uint8()
   external int arg5;
 }
 
