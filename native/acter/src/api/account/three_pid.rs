@@ -153,7 +153,9 @@ impl Account {
             .await?
     }
 
-    // this fn will use client secret & session id that were returned from previous stage of UIAA process
+    // add 3pid on the homeserver for this account
+    // this 3pid may be used by the homeserver to authenticate the user during sensitive operations
+    #[cfg(feature = "testing")]
     pub async fn add_3pid(
         &self,
         client_secret: String,
