@@ -8,37 +8,43 @@ members = [
 default-members = ["native/acter"]
 
 [workspace.dependencies.matrix-sdk]
-git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "6464d218133717617310e23b3f3025a075bb87c2"
+git = "https://github.com/gnunicorn/matrix-rust-sdk"
+branch = "ben-semaphore-for-limiting-concurrent-requests"
+# path = "../matrix-rust-sdk/crates/matrix-sdk"
 default-features = false
 features = ["experimental-sliding-sync"]
 
 [workspace.dependencies.matrix-sdk-base]
-git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "6464d218133717617310e23b3f3025a075bb87c2"
+git = "https://github.com/gnunicorn/matrix-rust-sdk"
+branch = "ben-semaphore-for-limiting-concurrent-requests"
+# path = "../matrix-rust-sdk/crates/matrix-sdk-base"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-sqlite]
-git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "6464d218133717617310e23b3f3025a075bb87c2"
+git = "https://github.com/gnunicorn/matrix-rust-sdk"
+branch = "ben-semaphore-for-limiting-concurrent-requests"
+# path = "../matrix-rust-sdk/crates/matrix-sdk-sqlite"
 default-features = false
 features = ["crypto-store", "state-store"]
 
 [workspace.dependencies.matrix-sdk-store-encryption]
-git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "6464d218133717617310e23b3f3025a075bb87c2"
-default-features = false
-
-[workspace.dependencies.matrix-sdk-test]
-git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "6464d218133717617310e23b3f3025a075bb87c2"
+git = "https://github.com/gnunicorn/matrix-rust-sdk"
+branch = "ben-semaphore-for-limiting-concurrent-requests"
+# path = "../matrix-rust-sdk/crates/matrix-sdk-store-encryption"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-ui]
-git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "6464d218133717617310e23b3f3025a075bb87c2"
+git = "https://github.com/gnunicorn/matrix-rust-sdk"
+branch = "ben-semaphore-for-limiting-concurrent-requests"
+# path = "../matrix-rust-sdk/crates/matrix-sdk-ui"
 default-features = false
 features = ["e2e-encryption"]
+
+[workspace.dependencies.matrix-sdk-test]
+git = "https://github.com/gnunicorn/matrix-rust-sdk"
+branch = "ben-semaphore-for-limiting-concurrent-requests"
+# path = "../matrix-rust-sdk/testing/matrix-sdk-test"
+default-features = false
 
 [workspace.dependencies.ruma]
 git = "https://github.com/ruma/ruma"
