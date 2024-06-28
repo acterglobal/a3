@@ -247,7 +247,7 @@ impl Account {
                 if !capabilities.thirdparty_id_changes.enabled {
                     bail!("Server doesn't support change of third party identity");
                 }
-                let content = account
+                let mut content = account
                     .account_data::<ThreePidContent>()
                     .await?
                     .context("Not found any email registration content")?
@@ -278,6 +278,11 @@ impl Account {
                     }
                     return Err(e.into());
                 }
+
+                // now email address can be removed from account data
+                // because session id & passphrase are wasted
+                content.via_email.remove(&email_address);
+                account.set_account_data(content).await?;
 
                 Ok(true)
             })
@@ -352,6 +357,11 @@ impl Account {
                     }
                     return Err(e.into());
                 }
+
+                // now email address can be removed from account data
+                // because session id & passphrase are wasted
+                content.via_email.remove(&email_address);
+                account.set_account_data(content).await?;
 
                 Ok(true)
             })
