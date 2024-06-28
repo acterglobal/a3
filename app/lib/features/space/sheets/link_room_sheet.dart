@@ -329,17 +329,14 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     }
 
     if (!parentCanSee) {
-      final spaceProfile = await ref
-          .read(spaceProfileDataForSpaceIdProvider(parentSpaceId).future);
-      final roomProfile =
-          await ref.read(roomProfileDataProvider(room.roomIdStr()).future);
+      final spaceAvatarInfo = ref.read(roomAvatarInfoProvider(parentSpaceId));
       if (!mounted) return;
       final parentSpaceName =
           // ignore: use_build_context_synchronously
-          spaceProfile.profile.displayName ?? L10n.of(context).theParentSpace;
+          spaceAvatarInfo.displayName ?? L10n.of(context).theParentSpace;
       final roomName =
           // ignore: use_build_context_synchronously
-          roomProfile.displayName ?? L10n.of(context).theSelectedRooms;
+          spaceAvatarInfo.displayName ?? L10n.of(context).theSelectedRooms;
       bool shouldChange = await showDialog(
         // ignore: use_build_context_synchronously
         context: context,

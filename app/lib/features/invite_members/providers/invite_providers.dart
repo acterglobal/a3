@@ -1,6 +1,6 @@
-import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -49,9 +49,9 @@ final searchResultProvider = FutureProvider<List<UserProfile>>((ref) async {
 
 class FoundUser {
   final String userId;
-  final ProfileData profile;
+  final AvatarInfo avatarInfo;
 
-  const FoundUser({required this.userId, required this.profile});
+  const FoundUser({required this.userId, required this.avatarInfo});
 }
 
 final suggestedUsersProvider = FutureProvider.family<List<FoundUser>, String>(
@@ -61,16 +61,24 @@ final suggestedUsersProvider = FutureProvider.family<List<FoundUser>, String>(
     final List<FoundUser> ret = [];
     for (final user in suggested) {
       String? displayName = user.getDisplayName();
-      FfiBufferUint8? avatar;
+      MemoryImage? avatar;
       if (user.hasAvatar()) {
         try {
-          avatar = (await user.getAvatar(null)).data();
+          avatar = await user
+              .getAvatar(null)
+              .then((val) => MemoryImage(val.data()!.asTypedList()));
         } catch (e, s) {
           _log.severe('failure fetching avatar', e, s);
         }
       }
-      final profile = ProfileData(displayName, avatar);
-      ret.add(FoundUser(userId: user.userId().toString(), profile: profile));
+      final avatarInfo = AvatarInfo(
+        uniqueId: user.userId().toString(),
+        displayName: displayName,
+        avatar: avatar,
+      );
+      ret.add(
+        FoundUser(userId: user.userId().toString(), avatarInfo: avatarInfo),
+      );
     }
     return ret;
   },
@@ -91,7 +99,7 @@ final filteredSuggestedUsersProvider =
       if (element.userId.toLowerCase().contains(lowered)) {
         return true;
       }
-      return element.profile.displayName?.toLowerCase().contains(lowered) ==
+      return element.avatarInfo.displayName?.toLowerCase().contains(lowered) ==
           true;
     }).toList();
   },

@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       new_tag:
-        description: 'Provide the tag name for this release'
+        description: 'Provide the version for this release'
         required: true
         type: string
       prev_tag:
@@ -60,10 +60,8 @@ jobs:
       prev_tag: ${{ inputs.prev_tag || 'release-latest' }}
     steps:
       - id: version
-        # FIXME: the `.3` here is a stupidity-counter: by running it once manually with the wrong tag 1.24.1178
-        #        by accident and apple enforcing an increasing number scheme, we now have to add prefix them with `3`
-        #        until 2025 ...
-        run: echo "version=`date +1.%y.3%-m%d`" >> $GITHUB_OUTPUT
+        # the suffix 0 allows us to provide up to 9 more hotfixes on the same day
+        run: echo "version=`date +1.%y.%-m%d0`" >> $GITHUB_OUTPUT
       - id: build_num
         run: echo "build_num=`date +%s`" >> $GITHUB_OUTPUT
 
@@ -902,9 +900,8 @@ jobs:
           git add "docs/content/releases/${{ needs.tags.outputs.tag }}.md"
           echo "Add release v${{ needs.tags.outputs.tag }}"
           git commit -m "Releasing v${{ needs.tags.outputs.tag }}"
-          git tag -f v${{ needs.tags.outputs.tag }}
-          git tag -f release-latest
-          git push -f origin main v${{ needs.tags.outputs.tag }} release-latest
+          git tag v${{ needs.tags.outputs.tag }}
+          git push origin main v${{ needs.tags.outputs.tag }} release-latest
 
       - name: Release
         id: create_release

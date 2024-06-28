@@ -2,7 +2,6 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -10,7 +9,6 @@ import 'package:acter/features/home/widgets/in_dashboard.dart';
 import 'package:acter/features/home/widgets/my_events.dart';
 import 'package:acter/features/home/widgets/my_spaces_section.dart';
 import 'package:acter/features/home/widgets/my_tasks.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -41,7 +39,7 @@ class Dashboard extends ConsumerWidget {
                         searchWidget(context),
                         featuresNav(context),
                         const SizedBox(height: 20),
-                        myTaskList(context, ref),
+                        const MyTasksSection(limit: 5),
                         const SizedBox(height: 28),
                         const MyEventsSection(limit: 5),
                         const SizedBox(height: 20),
@@ -188,16 +186,6 @@ class Dashboard extends ConsumerWidget {
         ),
       ),
     );
-  }
-
-  Widget myTaskList(BuildContext context, WidgetRef ref) {
-    final provider = ref.watch(featuresProvider);
-    bool isActive(f) => provider.isActive(f);
-    if (isActive(LabsFeature.tasks)) {
-      return const MyTasksSection(limit: 5);
-    } else {
-      return const SizedBox.shrink();
-    }
   }
 
   Widget emptyState(BuildContext context) {

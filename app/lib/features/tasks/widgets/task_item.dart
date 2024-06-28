@@ -179,36 +179,16 @@ class TaskItem extends ConsumerWidget {
 
     if (assignees.isEmpty) return null;
 
-    final memberData = ref.watch(
-      roomMemberProvider(
+    final avatarInfo = ref.watch(
+      memberAvatarInfoProvider(
         (roomId: task.roomIdStr(), userId: assignees.first),
       ),
     );
 
-    return memberData.when(
-      data: (data) => ActerAvatar(
-        options: AvatarOptions.DM(
-          AvatarInfo(
-            uniqueId: assignees.first,
-            displayName: data.profile.displayName,
-            avatar: data.profile.getAvatarImage(),
-          ),
-          size: 16,
-        ),
-      ),
-      error: (error, stackTrace) => ActerAvatar(
-        options: AvatarOptions.DM(
-          AvatarInfo(uniqueId: assignees.first),
-          size: 16,
-        ),
-      ),
-      loading: () => Skeletonizer(
-        child: ActerAvatar(
-          options: AvatarOptions.DM(
-            AvatarInfo(uniqueId: assignees.first),
-            size: 16,
-          ),
-        ),
+    return ActerAvatar(
+      options: AvatarOptions.DM(
+        avatarInfo,
+        size: 16,
       ),
     );
   }

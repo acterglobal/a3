@@ -97,21 +97,17 @@ class InvitePage extends ConsumerWidget {
   }
 
   Widget _roomProfileDetailsUI(WidgetRef ref) {
-    final roomProfile = ref.watch(roomProfileDataProvider(roomId)).valueOrNull;
+    final roomAvatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
     return Column(
       children: [
         ActerAvatar(
           options: AvatarOptions(
-            AvatarInfo(
-              uniqueId: roomId,
-              displayName: roomProfile?.displayName,
-              avatar: roomProfile?.getAvatarImage(),
-            ),
+            roomAvatarInfo,
             size: 50,
           ),
         ),
         const SizedBox(height: 10),
-        Text(roomProfile?.displayName ?? ''),
+        Text(roomAvatarInfo.displayName ?? ''),
       ],
     );
   }

@@ -1,13 +1,11 @@
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/widgets/chat/convo_with_profile_card.dart';
+import 'package:acter/common/widgets/chat/convo_with_avatar_card.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_join_button.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class ConvoHierarchyCard extends ConsumerWidget {
   /// The room info to display
@@ -96,51 +94,35 @@ class ConvoHierarchyCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final roomId = roomInfo.roomIdStr();
-    final profile = ref.watch(spaceHierarchyProfileProvider(roomInfo));
+    final avatarInfo = ref.watch(spaceHierarchyAvatarInfoProvider(roomInfo));
     final topic = roomInfo.topic();
     final subtitle = topic?.isNotEmpty == true ? Text(topic!) : null;
 
-    return profile.when(
-      data: (profile) => ConvoWithProfileCard(
-        avatar: ActerAvatar(
-          options: AvatarOptions(
-            AvatarInfo(
-              uniqueId: roomId,
-              displayName: profile.displayName,
-              avatar: profile.getAvatarImage(),
-            ),
-            size: avatarSize,
-            badgesSize: avatarSize / 2,
-          ),
+    return ConvoWithAvatarInfoCard(
+      avatar: ActerAvatar(
+        options: AvatarOptions(
+          avatarInfo,
+          size: avatarSize,
+          badgesSize: avatarSize / 2,
         ),
+      ),
+      roomId: roomId,
+      avatarInfo: avatarInfo,
+      subtitle: subtitle,
+      trailing: RoomHierarchyJoinButton(
+        joinRule: roomInfo.joinRuleStr().toLowerCase(),
         roomId: roomId,
-        profile: profile,
-        subtitle: subtitle,
-        trailing: RoomHierarchyJoinButton(
-          joinRule: roomInfo.joinRuleStr().toLowerCase(),
-          roomId: roomId,
-          roomName: roomInfo.name() ?? roomInfo.roomIdStr(),
-          viaServerName: roomInfo.viaServerName(),
-          forward: (roomId) {
-            goToChat(context, roomId);
-            // make sure the UI refreshes when the user comes back here
-            ref.invalidate(spaceRelationsOverviewProvider(parentId));
-          },
-        ),
-        onTap: onTap,
-        onFocusChange: onFocusChange,
-        onLongPress: onLongPress,
+        roomName: roomInfo.name() ?? roomInfo.roomIdStr(),
+        viaServerName: roomInfo.viaServerName(),
+        forward: (roomId) {
+          goToChat(context, roomId);
+          // make sure the UI refreshes when the user comes back here
+          ref.invalidate(spaceRelationsOverviewProvider(parentId));
+        },
       ),
-      error: (error, stack) => ListTile(
-        title: Text(L10n.of(context).errorLoading(roomId)),
-        subtitle: Text('$error'),
-      ),
-      loading: () => Skeletonizer(
-        child: ListTile(
-          title: Text(roomId),
-          subtitle: Text(L10n.of(context).loading),
-        ),
-      ),
+      onTap: onTap,
+      onFocusChange: onFocusChange,
+      onLongPress: onLongPress,
     );
   }
 }

@@ -130,7 +130,7 @@ class UploadAvatarPage extends ConsumerWidget {
 
   Future<void> uploadAvatar(BuildContext context, WidgetRef ref) async {
     try {
-      final accountProfile = await ref.watch(accountProfileProvider.future);
+      final account = ref.watch(accountProvider);
       if (selectedUserAvatar.value == null ||
           selectedUserAvatar.value?.path == null) {
         if (context.mounted) {
@@ -141,9 +141,8 @@ class UploadAvatarPage extends ConsumerWidget {
       if (context.mounted) {
         EasyLoading.show(status: L10n.of(context).avatarUploading);
       }
-      await accountProfile.account
-          .uploadAvatar(selectedUserAvatar.value!.path!);
-      ref.invalidate(accountProfileProvider);
+      await account.uploadAvatar(selectedUserAvatar.value!.path!);
+      ref.invalidate(accountProvider);
       if (context.mounted) context.goNamed(Routes.main.name);
       // close loading
       EasyLoading.dismiss();
