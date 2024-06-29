@@ -110,7 +110,7 @@ class SpaceCard extends ConsumerWidget {
     this.leadingAndTrailingTextStyle,
     this.avatarSize = 24,
     this.contentPadding = const EdgeInsets.all(5),
-    this.margin = const EdgeInsets.only(bottom: 14),
+    this.margin,
     this.shape,
     this.withBorder = false,
     this.showParents = false,
@@ -125,6 +125,7 @@ class SpaceCard extends ConsumerWidget {
     final parents = ref.watch(parentAvatarInfosProvider(roomId)).valueOrNull;
 
     return SpaceWithAvatarInfoCard(
+      margin: margin,
       roomId: roomId,
       avatarInfo: avatarInfo,
       parents: parents,
