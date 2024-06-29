@@ -28,7 +28,10 @@ class ActerTheme {
     colorScheme: colorScheme,
     primaryColor: brandColor,
     indicatorColor: brandColor,
-    appBarTheme: AppBarTheme(color: backgroundColor),
+    appBarTheme: AppBarTheme(
+      color: backgroundColor,
+      surfaceTintColor: backgroundColor,
+    ),
     scaffoldBackgroundColor: backgroundColor,
     highlightColor: Colors.transparent,
     hoverColor: Colors.transparent,
