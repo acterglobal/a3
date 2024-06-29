@@ -30,7 +30,7 @@ class Dashboard extends ConsumerWidget {
         child: Scaffold(
           appBar: _buildDashboardAppBar(context, client),
           body: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
             child: SingleChildScrollView(
               child: spaces.isEmpty
                   ? emptyState(context)
