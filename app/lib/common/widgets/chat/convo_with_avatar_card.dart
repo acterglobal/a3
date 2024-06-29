@@ -59,7 +59,7 @@ class ConvoWithAvatarInfoCard extends ConsumerWidget {
                 onTap: onTap,
                 selected: roomId == ref.watch(selectedChatIdProvider),
                 selectedTileColor:
-                    Theme.of(context).colorScheme.secondaryContainer,
+                    Theme.of(context).colorScheme.primary,
                 onFocusChange: onFocusChange,
                 onLongPress: onLongPress,
                 leading: avatarWithIndicator(context, ref),
