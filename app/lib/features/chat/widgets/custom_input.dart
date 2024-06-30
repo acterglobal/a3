@@ -879,6 +879,7 @@ class _TextInputWidget extends ConsumerWidget {
         },
       },
       child: Focus(
+        focusNode: chatFocus,
         child: FlutterMentions(
           key: mentionKey,
           // restore input if available, but only as a read on startup
@@ -904,7 +905,6 @@ class _TextInputWidget extends ConsumerWidget {
           cursorColor: Theme.of(context).colorScheme.primary,
           maxLines: 6,
           minLines: 1,
-          focusNode: chatFocus,
           onTap: () => onTextTap(
             ref.read(chatInputProvider(roomId)).emojiPickerVisible,
             ref,
