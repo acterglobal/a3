@@ -5,6 +5,8 @@ import 'package:acter/features/space/widgets/chats_card.dart';
 import 'package:acter/features/space/widgets/events_card.dart';
 import 'package:acter/features/space/widgets/links_card.dart';
 import 'package:acter/features/space/widgets/related_spaces/sub_spaces_card.dart';
+import 'package:acter/features/space/widgets/space_header.dart';
+import 'package:acter/features/space/widgets/space_toolbar.dart';
 import 'package:animated_size_and_fade/animated_size_and_fade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -50,9 +52,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: spaceBodyUI(),
-      ),
+      body: spaceBodyUI(),
     );
   }
 
@@ -64,11 +64,17 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
         return ScrollableListTabScroller(
           itemCount: tabsList.length,
           itemPositionsListener: itemPositionsListener,
-          headerContainerBuilder: (BuildContext context, Widget menuBarWidget) {
-            return spaceHeaderUI(menuBarWidget);
-          },
+
+          //Space Details Header UI
+          headerContainerBuilder:
+              (BuildContext context, Widget menuBarWidget) =>
+                  spaceHeaderUI(menuBarWidget),
+
+          //Space Details Tab Menu UI
           tabBuilder: (BuildContext context, int index, bool active) =>
               spaceTabMenuUI(tabsList[index], active),
+
+          //Space Details Page UI
           itemBuilder: (BuildContext context, int index) =>
               spacePageUI(tabsList[index]),
         );
@@ -81,26 +87,32 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   Widget spaceHeaderUI(Widget menuBarWidget) {
     final displayName =
         ref.watch(roomDisplayNameProvider(widget.spaceId)).valueOrNull;
+
     return Column(
       children: [
+        //Header Content UI
         ValueListenableBuilder(
           valueListenable: showHeader,
           builder: (context, showHeader, child) {
             return Stack(
               children: [
                 AnimatedSizeAndFade(
-                  sizeDuration: const Duration(milliseconds: 500),
-                  child: showHeader ? spaceAvatar() : const SizedBox.shrink(),
+                  sizeDuration: const Duration(milliseconds: 700),
+                  child: showHeader
+                      ? SpaceHeader(spaceIdOrAlias: widget.spaceId)
+                      : const SizedBox.shrink(),
                 ),
-                AppBar(
-                  title: showHeader ? null : Text(displayName ?? ''),
-                  backgroundColor: Colors.transparent,
-                  surfaceTintColor: Theme.of(context).colorScheme.surface,
-                ),
+                !showHeader
+                    ? SpaceToolbar(
+                        spaceId: widget.spaceId,
+                        spaceTitle: Text(displayName ?? ''),
+                      )
+                    : const SizedBox.shrink(),
               ],
             );
           },
         ),
+        //Append menu bar widget
         menuBarWidget,
       ],
     );
@@ -129,16 +141,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
         color: active ? Theme.of(context).colorScheme.primary : null,
         borderRadius: BorderRadius.circular(100),
       ),
-      child: Text(
-        tabItem.label,
-        style: !active
-            ? null
-            : TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-                color: active ? Theme.of(context).colorScheme.onSurface : null,
-              ),
-      ),
+      child: Text(tabItem.label),
     );
   }
 
@@ -166,5 +169,11 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
     } else {
       return const SizedBox.shrink();
     }
+  }
+
+  Widget spaceTopicUI() {
+    return Card(
+      child: Container(),
+    );
   }
 }
