@@ -1,6 +1,6 @@
+import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
-import 'package:acter_avatar/acter_avatar.dart';
 import 'package:animated_size_and_fade/animated_size_and_fade.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter/material.dart';
@@ -55,10 +55,9 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
     return profileData.when(
       data: (spaceProfile) {
         return Scaffold(
-          appBar: AppBar(
-            title: Text(spaceProfile.profile.displayName ?? ''),
+          body: SafeArea(
+            child: spaceBodyUI(spaceProfile),
           ),
-          body: spaceBodyUI(spaceProfile),
         );
       },
       error: (error, stack) => Skeletonizer(
@@ -70,7 +69,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
     );
   }
 
-  Widget spaceBodyUI(spaceProfile) {
+  Widget spaceBodyUI(SpaceWithProfileData spaceProfile) {
     final spaceMenus = ref.watch(tabsProvider(widget.spaceId));
     return spaceMenus.when(
       skipLoadingOnReload: true,
@@ -92,17 +91,28 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
     );
   }
 
-  Widget spaceHeaderUI(spaceProfile, child) {
+  Widget spaceHeaderUI(SpaceWithProfileData spaceProfile, child) {
     return Column(
       children: [
         ValueListenableBuilder(
           valueListenable: showHeader,
           builder: (context, showHeader, child) {
-            return AnimatedSizeAndFade(
-              sizeDuration: const Duration(milliseconds: 500),
-              child: showHeader
-                  ? spaceAvatar(spaceProfile)
-                  : const SizedBox.shrink(),
+            return Stack(
+              children: [
+                AnimatedSizeAndFade(
+                  sizeDuration: const Duration(milliseconds: 500),
+                  child: showHeader
+                      ? spaceAvatar(spaceProfile)
+                      : const SizedBox.shrink(),
+                ),
+                AppBar(
+                  title: showHeader
+                      ? null
+                      : Text(spaceProfile.profile.displayName ?? ''),
+                  backgroundColor: Colors.transparent,
+                  surfaceTintColor: Theme.of(context).colorScheme.surface,
+                ),
+              ],
             );
           },
         ),
@@ -111,17 +121,17 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
     );
   }
 
-  Widget spaceAvatar(spaceProfile) {
-    return ActerAvatar(
-      options: AvatarOptions(
-        AvatarInfo(
-          uniqueId: widget.spaceId,
-          displayName: spaceProfile.profile.displayName,
-          avatar: spaceProfile.profile.getAvatarImage(),
-        ),
-        size: 200,
-      ),
-    );
+  Widget spaceAvatar(SpaceWithProfileData spaceProfile) {
+    if (spaceProfile.profile.getAvatarImage() != null) {
+      return Image.memory(
+        spaceProfile.profile.getAvatarImage()!.bytes,
+        height: 300,
+        width: MediaQuery.of(context).size.width,
+        fit: BoxFit.cover,
+      );
+    } else {
+      return Container(height: 200, color: Colors.red);
+    }
   }
 
   Widget spaceTabMenuUI(TabEntry tabItem, active) {
@@ -156,7 +166,11 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
             tabsList[index].label,
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
           ),
-          const SizedBox(height: 300),
+          const SizedBox(height: 16),
+          Container(
+            height: 300,
+            color: Colors.blueGrey,
+          ),
         ],
       ),
     );
