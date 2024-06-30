@@ -7,11 +7,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 typedef MakeIconFn = Widget Function(BuildContext, Color color);
 
 class TabEntry {
-  static const chatsKey = Key('chat');
   static const overview = Key('overview');
   static const pins = Key('pins');
   static const tasks = Key('tasks');
   static const events = Key('events');
+  static const chatsKey = Key('chat');
+  static const spacesKey = Key('spaces');
+  static const membersKey = Key('members');
 
   final Key key;
   final String label;
@@ -101,7 +103,7 @@ final tabsProvider =
 
   tabs.add(
     TabEntry(
-      key: const Key('spaces'),
+      key: TabEntry.spacesKey,
       label: 'Spaces',
       makeIcon: (ctx, color) => Icon(
         Atlas.connection_thin,
@@ -113,7 +115,7 @@ final tabsProvider =
 
   tabs.add(
     TabEntry(
-      key: const Key('members'),
+      key: TabEntry.membersKey,
       label: 'Members',
       makeIcon: (ctx, color) => Icon(
         Atlas.group_team_collective_thin,
