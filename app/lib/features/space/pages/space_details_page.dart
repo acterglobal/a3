@@ -1,13 +1,10 @@
-import 'package:acter/common/models/types.dart';
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:animated_size_and_fade/animated_size_and_fade.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:scrollable_list_tab_scroller/scrollable_list_tab_scroller.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 class SpaceDetailsPage extends ConsumerStatefulWidget {
   final String spaceId;
@@ -26,7 +23,6 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   ValueNotifier<bool> showHeader = ValueNotifier<bool>(true);
   final ItemPositionsListener itemPositionsListener =
       ItemPositionsListener.create();
-  List<String> spaceMenusList = [];
 
   @override
   void initState() {
@@ -48,28 +44,14 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    //Get space profile details
-    final profileData =
-        ref.watch(spaceProfileDataForSpaceIdProvider(widget.spaceId));
-
-    return profileData.when(
-      data: (spaceProfile) {
-        return Scaffold(
-          body: SafeArea(
-            child: spaceBodyUI(spaceProfile),
-          ),
-        );
-      },
-      error: (error, stack) => Skeletonizer(
-        child: Text(L10n.of(context).loadingFailed(error)),
-      ),
-      loading: () => Skeletonizer(
-        child: Text(L10n.of(context).loading),
+    return Scaffold(
+      body: SafeArea(
+        child: spaceBodyUI(),
       ),
     );
   }
 
-  Widget spaceBodyUI(SpaceWithProfileData spaceProfile) {
+  Widget spaceBodyUI() {
     final spaceMenus = ref.watch(tabsProvider(widget.spaceId));
     return spaceMenus.when(
       skipLoadingOnReload: true,
@@ -77,8 +59,8 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
         return ScrollableListTabScroller(
           itemCount: tabsList.length,
           itemPositionsListener: itemPositionsListener,
-          headerContainerBuilder: (BuildContext context, Widget child) {
-            return spaceHeaderUI(spaceProfile, child);
+          headerContainerBuilder: (BuildContext context, Widget menuBarWidget) {
+            return spaceHeaderUI(menuBarWidget);
           },
           tabBuilder: (BuildContext context, int index, bool active) =>
               spaceTabMenuUI(tabsList[index], active),
@@ -91,7 +73,9 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
     );
   }
 
-  Widget spaceHeaderUI(SpaceWithProfileData spaceProfile, child) {
+  Widget spaceHeaderUI(Widget menuBarWidget) {
+    final displayName =
+        ref.watch(roomDisplayNameProvider(widget.spaceId)).valueOrNull;
     return Column(
       children: [
         ValueListenableBuilder(
@@ -101,14 +85,10 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
               children: [
                 AnimatedSizeAndFade(
                   sizeDuration: const Duration(milliseconds: 500),
-                  child: showHeader
-                      ? spaceAvatar(spaceProfile)
-                      : const SizedBox.shrink(),
+                  child: showHeader ? spaceAvatar() : const SizedBox.shrink(),
                 ),
                 AppBar(
-                  title: showHeader
-                      ? null
-                      : Text(spaceProfile.profile.displayName ?? ''),
+                  title: showHeader ? null : Text(displayName ?? ''),
                   backgroundColor: Colors.transparent,
                   surfaceTintColor: Theme.of(context).colorScheme.surface,
                 ),
@@ -116,15 +96,17 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
             );
           },
         ),
-        child,
+        menuBarWidget,
       ],
     );
   }
 
-  Widget spaceAvatar(SpaceWithProfileData spaceProfile) {
-    if (spaceProfile.profile.getAvatarImage() != null) {
+  Widget spaceAvatar() {
+    final avatarData =
+        ref.watch(roomAvatarProvider(widget.spaceId)).valueOrNull;
+    if (avatarData != null) {
       return Image.memory(
-        spaceProfile.profile.getAvatarImage()!.bytes,
+        avatarData.bytes,
         height: 300,
         width: MediaQuery.of(context).size.width,
         fit: BoxFit.cover,
@@ -134,7 +116,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
     }
   }
 
-  Widget spaceTabMenuUI(TabEntry tabItem, active) {
+  Widget spaceTabMenuUI(TabEntry tabItem, bool active) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       margin: const EdgeInsets.only(left: 12, top: 12, bottom: 12),
@@ -155,7 +137,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
     );
   }
 
-  Widget spacePageUI(List<TabEntry> tabsList, index) {
+  Widget spacePageUI(List<TabEntry> tabsList, int index) {
     return Padding(
       padding: const EdgeInsets.all(12),
       child: Column(
