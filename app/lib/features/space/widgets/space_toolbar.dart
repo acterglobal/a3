@@ -12,8 +12,13 @@ class SpaceToolbar extends ConsumerWidget {
   static const settingsMenu = Key('space-options-settings');
   static const leaveMenu = Key('space-options-leave');
   final String spaceId;
+  final Widget? spaceTitle;
 
-  const SpaceToolbar({super.key, required this.spaceId});
+  const SpaceToolbar({
+    super.key,
+    required this.spaceId,
+    this.spaceTitle,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -64,6 +69,7 @@ class SpaceToolbar extends ConsumerWidget {
 
     return AppBar(
       backgroundColor: Colors.transparent,
+      title: spaceTitle,
       actions: [
         showInviteBtn && invited.length <= 100
             ? OutlinedButton(
