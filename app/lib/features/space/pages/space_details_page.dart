@@ -1,5 +1,10 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
+import 'package:acter/features/space/widgets/about_card.dart';
+import 'package:acter/features/space/widgets/chats_card.dart';
+import 'package:acter/features/space/widgets/events_card.dart';
+import 'package:acter/features/space/widgets/links_card.dart';
+import 'package:acter/features/space/widgets/related_spaces/sub_spaces_card.dart';
 import 'package:animated_size_and_fade/animated_size_and_fade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -65,7 +70,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
           tabBuilder: (BuildContext context, int index, bool active) =>
               spaceTabMenuUI(tabsList[index], active),
           itemBuilder: (BuildContext context, int index) =>
-              spacePageUI(tabsList, index),
+              spacePageUI(tabsList[index]),
         );
       },
       error: (error, stack) => Container(),
@@ -137,24 +142,29 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
     );
   }
 
-  Widget spacePageUI(List<TabEntry> tabsList, int index) {
-    return Padding(
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            tabsList[index].label,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-          ),
-          const SizedBox(height: 16),
-          Container(
-            height: 300,
-            color: Colors.blueGrey,
-          ),
-        ],
-      ),
-    );
+  Widget spacePageUI(TabEntry tabItem) {
+    if (tabItem.key == TabEntry.overview) {
+      return AboutCard(spaceId: widget.spaceId);
+    } else if (tabItem.key == TabEntry.pins) {
+      return LinksCard(spaceId: widget.spaceId);
+    } else if (tabItem.key == TabEntry.tasks) {
+      return const SizedBox(
+        height: 300,
+        child: Text('Space Tasks'),
+      );
+    } else if (tabItem.key == TabEntry.events) {
+      return EventsCard(spaceId: widget.spaceId);
+    } else if (tabItem.key == TabEntry.chatsKey) {
+      return ChatsCard(spaceId: widget.spaceId);
+    } else if (tabItem.key == TabEntry.spacesKey) {
+      return SubSpacesCard(spaceId: widget.spaceId);
+    } else if (tabItem.key == TabEntry.membersKey) {
+      return const SizedBox(
+        height: 300,
+        child: Text('Space Members'),
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
   }
 }

@@ -1,5 +1,9 @@
+import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/tasks/providers/tasklists.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,18 +35,27 @@ class TabEntry {
 final tabsProvider =
     FutureProvider.family<List<TabEntry>, String>((ref, spaceId) async {
   final space = await ref.watch(maybeSpaceProvider(spaceId).future);
+  final spaceTopic = space?.topic();
+  final taskList = await ref.read(spaceTasksListsProvider(spaceId).future);
+  final eventList = await ref.read(spaceEventsProvider(spaceId).future);
+  final chatsList = await ref.read(relatedChatsProvider(spaceId).future);
+  final spacesList = await ref.read(relatedSpacesProvider(spaceId).future);
 
-  List<TabEntry> tabs = [
-    TabEntry(
-      key: TabEntry.overview,
-      label: 'Overview',
-      makeIcon: (ctx, color) => Icon(
-        Atlas.layout_half_thin,
-        color: color,
+  List<TabEntry> tabs = [];
+
+  if (spaceTopic != null) {
+    tabs.add(
+      TabEntry(
+        key: TabEntry.overview,
+        label: 'Overview',
+        makeIcon: (ctx, color) => Icon(
+          Atlas.layout_half_thin,
+          color: color,
+        ),
+        target: Routes.space,
       ),
-      target: Routes.space,
-    ),
-  ];
+    );
+  }
 
   if ((await space?.isActerSpace()) == true) {
     final appSettings = await space!.appSettings();
@@ -60,7 +73,7 @@ final tabsProvider =
       );
     }
 
-    if (appSettings.tasks().active()) {
+    if (appSettings.tasks().active() && taskList.isNotEmpty) {
       tabs.add(
         TabEntry(
           key: TabEntry.tasks,
@@ -74,7 +87,7 @@ final tabsProvider =
       );
     }
 
-    if (appSettings.events().active()) {
+    if (appSettings.events().active() && eventList.isNotEmpty) {
       tabs.add(
         TabEntry(
           key: TabEntry.events,
@@ -89,29 +102,33 @@ final tabsProvider =
     }
   }
 
-  tabs.add(
-    TabEntry(
-      key: TabEntry.chatsKey,
-      label: 'Chats',
-      makeIcon: (ctx, color) => Icon(
-        Atlas.chats_thin,
-        color: color,
+  if (chatsList.isNotEmpty) {
+    tabs.add(
+      TabEntry(
+        key: TabEntry.chatsKey,
+        label: 'Chats',
+        makeIcon: (ctx, color) => Icon(
+          Atlas.chats_thin,
+          color: color,
+        ),
+        target: Routes.spaceChats,
       ),
-      target: Routes.spaceChats,
-    ),
-  );
+    );
+  }
 
-  tabs.add(
-    TabEntry(
-      key: TabEntry.spacesKey,
-      label: 'Spaces',
-      makeIcon: (ctx, color) => Icon(
-        Atlas.connection_thin,
-        color: color,
+  if (spacesList.isNotEmpty) {
+    tabs.add(
+      TabEntry(
+        key: TabEntry.spacesKey,
+        label: 'Spaces',
+        makeIcon: (ctx, color) => Icon(
+          Atlas.connection_thin,
+          color: color,
+        ),
+        target: Routes.spaceRelatedSpaces,
       ),
-      target: Routes.spaceRelatedSpaces,
-    ),
-  );
+    );
+  }
 
   tabs.add(
     TabEntry(
