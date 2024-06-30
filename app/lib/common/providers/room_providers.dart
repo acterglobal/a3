@@ -220,7 +220,7 @@ final roomDisplayNameProvider =
 });
 
 /// Caching the MemoryImage of each room
-final _roomAvatarProvider =
+final roomAvatarProvider =
     FutureProvider.family<MemoryImage?, String>((ref, roomId) async {
   try {
     final sdk = await ref.watch(sdkProvider.future);
@@ -249,7 +249,7 @@ final roomAvatarInfoProvider =
   }
 
   final displayName = ref.watch(roomDisplayNameProvider(roomId)).valueOrNull;
-  final avatarData = ref.watch(_roomAvatarProvider(roomId)).valueOrNull;
+  final avatarData = ref.watch(roomAvatarProvider(roomId)).valueOrNull;
 
   return AvatarInfo(
     uniqueId: roomId,
