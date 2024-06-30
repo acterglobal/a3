@@ -3,7 +3,6 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 typedef MakeIconFn = Widget Function(BuildContext, Color color);
 
@@ -64,15 +63,9 @@ final tabsProvider =
         TabEntry(
           key: TabEntry.tasks,
           label: 'Tasks',
-          makeIcon: (context, color) => SvgPicture.asset(
-            'assets/images/tasks.svg',
-            semanticsLabel: 'tasks',
-            width: 24,
-            height: 24,
-            colorFilter: ColorFilter.mode(
-              color,
-              BlendMode.srcIn,
-            ),
+          makeIcon: (ctx, color) => Icon(
+            Atlas.list,
+            color: color,
           ),
           target: Routes.spaceTasks,
         ),
