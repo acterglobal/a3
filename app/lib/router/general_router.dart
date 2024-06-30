@@ -18,6 +18,8 @@ import 'package:acter/features/onboarding/pages/start_page.dart';
 import 'package:acter/features/onboarding/pages/upload_avatar_page.dart';
 import 'package:acter/features/pins/pages/create_pin_page.dart';
 import 'package:acter/features/search/pages/quick_jump.dart';
+import 'package:acter/features/space/pages/space_details_page.dart';
+import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/super_invites/pages/create.dart';
 import 'package:acter/features/space/sheets/edit_space_sheet.dart';
 import 'package:acter/features/space/sheets/link_room_sheet.dart';
@@ -26,8 +28,10 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:riverpod/riverpod.dart';
 
-List<RouteBase> makeGeneralRoutes() {
+List<RouteBase> makeGeneralRoutes(Ref ref) {
+  final tabKeyNotifier = ref.watch(selectedTabKeyProvider.notifier);
   return [
     GoRoute(
       parentNavigatorKey: rootNavKey,
@@ -329,6 +333,20 @@ List<RouteBase> makeGeneralRoutes() {
                   initialPage: state.extra as int?,
                 ),
               );
+      },
+    ),
+    GoRoute(
+      name: Routes.space.name,
+      path: Routes.space.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        tabKeyNotifier.switchTo(const Key('overview'));
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: SpaceDetailsPage(
+            spaceId: state.pathParameters['spaceId']!,
+          ),
+        );
       },
     ),
     GoRoute(
