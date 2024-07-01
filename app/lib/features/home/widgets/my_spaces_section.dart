@@ -82,17 +82,17 @@ class _RenderSpacesSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (showAll)
-          Row(
-            children: [
-              title,
-              const Spacer(),
+        Row(
+          children: [
+            title,
+            const Spacer(),
+            if (showAll)
               ActerInlineTextButton(
                 onPressed: () => context.pushNamed(Routes.spaces.name),
                 child: Text(L10n.of(context).seeAll),
               ),
-            ],
-          ),
+          ],
+        ),
         const SizedBox(height: 8),
         ListView.builder(
           shrinkWrap: true,
