@@ -2,6 +2,7 @@ use android_logger::{AndroidLogger, Config};
 use anyhow::Result;
 use log::LevelFilter;
 use matrix_sdk::{config::RequestConfig, ClientBuilder};
+use std::num::NonZeroUsize;
 
 use super::native;
 
@@ -30,7 +31,7 @@ pub async fn new_client_config(
     .await?
     .user_agent(format!("acter-android/{:}", env!("CARGO_PKG_VERSION")))
     // limit the concurrent request done at the same time to 50
-    .request_config(RequestConfig::default().max_concurrent_requests(50));
+    .request_config(RequestConfig::default().max_concurrent_requests(NonZeroUsize::new(50)));
     Ok(builder)
 }
 

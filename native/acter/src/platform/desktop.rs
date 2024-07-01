@@ -1,5 +1,6 @@
 use anyhow::Result;
 use matrix_sdk::{config::RequestConfig, ClientBuilder};
+use std::num::NonZeroUsize;
 
 use super::native;
 
@@ -32,7 +33,7 @@ pub async fn new_client_config(
         env!("CARGO_PKG_VERSION")
     ))
     // limit the concurrent request done at the same time to 100
-    .request_config(RequestConfig::default().max_concurrent_requests(100));
+    .request_config(RequestConfig::default().max_concurrent_requests(NonZeroUsize::new(100)));
 
     Ok(builder)
 }
