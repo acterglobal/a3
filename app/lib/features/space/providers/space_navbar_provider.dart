@@ -35,16 +35,11 @@ class TabEntry {
 
 final tabsProvider =
     FutureProvider.family<List<TabEntry>, String>((ref, spaceId) async {
-  final space = await ref.read(spaceProvider(spaceId).future);
-  final spaceTopic = space.topic();
-  final pinsList = await ref.read(spacePinsProvider(space).future);
-  final taskList = await ref.read(spaceTasksListsProvider(spaceId).future);
-  final eventList = await ref.read(spaceEventsProvider(spaceId).future);
-  final chatsList = await ref.read(relatedChatsProvider(spaceId).future);
-  final spacesList = await ref.read(relatedSpacesProvider(spaceId).future);
+  final space = await ref.watch(spaceProvider(spaceId).future);
 
   List<TabEntry> tabs = [];
 
+  final spaceTopic = space.topic();
   if (spaceTopic != null) {
     tabs.add(
       TabEntry(
@@ -61,49 +56,59 @@ final tabsProvider =
 
   if ((await space.isActerSpace()) == true) {
     final appSettings = await space.appSettings();
-    if (appSettings.pins().active() && pinsList.isNotEmpty) {
-      tabs.add(
-        TabEntry(
-          key: TabEntry.pins,
-          label: 'Pins',
-          makeIcon: (ctx, color) => Icon(
-            Atlas.pin_thin,
-            color: color,
+    if (appSettings.pins().active()) {
+      final pinsList = await ref.watch(spacePinsProvider(space).future);
+      if (pinsList.isNotEmpty) {
+        tabs.add(
+          TabEntry(
+            key: TabEntry.pins,
+            label: 'Pins',
+            makeIcon: (ctx, color) => Icon(
+              Atlas.pin_thin,
+              color: color,
+            ),
+            target: Routes.spacePins,
           ),
-          target: Routes.spacePins,
-        ),
-      );
+        );
+      }
     }
 
-    if (appSettings.tasks().active() && taskList.isNotEmpty) {
-      tabs.add(
-        TabEntry(
-          key: TabEntry.tasks,
-          label: 'Tasks',
-          makeIcon: (ctx, color) => Icon(
-            Atlas.list,
-            color: color,
+    if (appSettings.tasks().active()) {
+      final taskList = await ref.watch(spaceTasksListsProvider(spaceId).future);
+      if (taskList.isNotEmpty) {
+        tabs.add(
+          TabEntry(
+            key: TabEntry.tasks,
+            label: 'Tasks',
+            makeIcon: (ctx, color) => Icon(
+              Atlas.list,
+              color: color,
+            ),
+            target: Routes.spaceTasks,
           ),
-          target: Routes.spaceTasks,
-        ),
-      );
+        );
+      }
     }
 
-    if (appSettings.events().active() && eventList.isNotEmpty) {
-      tabs.add(
-        TabEntry(
-          key: TabEntry.events,
-          label: 'Events',
-          makeIcon: (ctx, color) => Icon(
-            Atlas.calendar_schedule_thin,
-            color: color,
+    if (appSettings.events().active()) {
+      final eventList = await ref.watch(spaceEventsProvider(spaceId).future);
+      if (eventList.isNotEmpty) {
+        tabs.add(
+          TabEntry(
+            key: TabEntry.events,
+            label: 'Events',
+            makeIcon: (ctx, color) => Icon(
+              Atlas.calendar_schedule_thin,
+              color: color,
+            ),
+            target: Routes.spaceEvents,
           ),
-          target: Routes.spaceEvents,
-        ),
-      );
+        );
+      }
     }
   }
 
+  final chatsList = await ref.watch(relatedChatsProvider(spaceId).future);
   if (chatsList.isNotEmpty) {
     tabs.add(
       TabEntry(
@@ -118,6 +123,7 @@ final tabsProvider =
     );
   }
 
+  final spacesList = await ref.watch(relatedSpacesProvider(spaceId).future);
   if (spacesList.isNotEmpty) {
     tabs.add(
       TabEntry(

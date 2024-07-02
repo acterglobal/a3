@@ -278,8 +278,8 @@ final joinRulesAllowedRoomsProvider = FutureProvider.autoDispose
 /// Get the List of related of the spaces for the space. Errors if the space or any
 /// related space isn't found. Stays up  to date with underlying client data if
 /// a space was found.
-final relatedSpacesProvider = FutureProvider.autoDispose
-    .family<List<Space>, String>((ref, spaceId) async {
+final relatedSpacesProvider =
+    FutureProvider.family<List<Space>, String>((ref, spaceId) async {
   return (await ref.watch(spaceRelationsOverviewProvider(spaceId).future))
       .knownSubspaces;
 });

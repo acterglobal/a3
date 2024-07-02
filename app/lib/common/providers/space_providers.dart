@@ -224,8 +224,8 @@ final spaceInvitedMembersProvider = FutureProvider.autoDispose
 /// Get the SpaceRelationsOverview of related SpaceItem for the space. Errors if
 /// the space or any related space isn't found. Stays up  to date with underlying
 /// client data if a space was found.
-final spaceRelationsOverviewProvider = FutureProvider.autoDispose
-    .family<SpaceRelationsOverview, String>((ref, spaceId) async {
+final spaceRelationsOverviewProvider =
+    FutureProvider.family<SpaceRelationsOverview, String>((ref, spaceId) async {
   final relatedSpaces = await ref.watch(spaceRelationsProvider(spaceId).future);
   if (relatedSpaces == null) {
     throw 'Space not found';

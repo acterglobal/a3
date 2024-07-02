@@ -15,8 +15,8 @@ final pinProvider = AsyncNotifierProvider.autoDispose
   () => AsyncPinNotifier(),
 );
 
-final spacePinsProvider = AsyncNotifierProvider.autoDispose
-    .family<AsyncSpacePinsNotifier, List<ActerPin>, Space>(
+final spacePinsProvider =
+    AsyncNotifierProvider.family<AsyncSpacePinsNotifier, List<ActerPin>, Space>(
   () => AsyncSpacePinsNotifier(),
 );
 
@@ -37,4 +37,3 @@ final pinEditProvider = StateNotifierProvider.family
     .autoDispose<PinEditNotifier, PinEditState, ActerPin>(
   (ref, pin) => PinEditNotifier(pin: pin, ref: ref),
 );
-

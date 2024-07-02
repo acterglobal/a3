@@ -35,8 +35,8 @@ final chatProvider =
   ); // retrying for up to 30seconds before failing
 });
 
-final relatedChatsProvider = FutureProvider.autoDispose
-    .family<List<Convo>, String>((ref, spaceId) async {
+final relatedChatsProvider =
+    FutureProvider.family<List<Convo>, String>((ref, spaceId) async {
   return (await ref.watch(spaceRelationsOverviewProvider(spaceId).future))
       .knownChats;
 });
