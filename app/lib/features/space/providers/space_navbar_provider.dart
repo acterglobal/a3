@@ -3,6 +3,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/tasks/providers/tasklists.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -34,8 +35,9 @@ class TabEntry {
 
 final tabsProvider =
     FutureProvider.family<List<TabEntry>, String>((ref, spaceId) async {
-  final space = await ref.watch(maybeSpaceProvider(spaceId).future);
-  final spaceTopic = space?.topic();
+  final space = await ref.read(spaceProvider(spaceId).future);
+  final spaceTopic = space.topic();
+  final pinsList = await ref.read(spacePinsProvider(space).future);
   final taskList = await ref.read(spaceTasksListsProvider(spaceId).future);
   final eventList = await ref.read(spaceEventsProvider(spaceId).future);
   final chatsList = await ref.read(relatedChatsProvider(spaceId).future);
@@ -57,9 +59,9 @@ final tabsProvider =
     );
   }
 
-  if ((await space?.isActerSpace()) == true) {
-    final appSettings = await space!.appSettings();
-    if (appSettings.pins().active()) {
+  if ((await space.isActerSpace()) == true) {
+    final appSettings = await space.appSettings();
+    if (appSettings.pins().active() && pinsList.isNotEmpty) {
       tabs.add(
         TabEntry(
           key: TabEntry.pins,
