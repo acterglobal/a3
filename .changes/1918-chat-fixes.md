@@ -1,2 +1,3 @@
 - Fix inviting all space members to chat room, fixes #1895
 - Do not render link previews for room and user mentions, fixes #1604
+- Fix chat input Capitlization, fixes #1902

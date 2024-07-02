@@ -899,6 +899,7 @@ class _TextInputWidget extends ConsumerWidget {
             }
           },
           textInputAction: TextInputAction.newline,
+          textCapitalization: TextCapitalization.sentences,
           enabled: ref.watch(_allowEdit(roomId)),
           onSubmitted: (value) => onSendButtonPressed(),
           style: Theme.of(context).textTheme.bodyMedium,
