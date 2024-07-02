@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/features/space/widgets/space_details/about_section.dart';
+import 'package:acter/features/space/widgets/space_sections/about_section.dart';
 import 'package:acter/features/space/widgets/chats_card.dart';
 import 'package:acter/features/space/widgets/events_card.dart';
 import 'package:acter/features/space/widgets/links_card.dart';
