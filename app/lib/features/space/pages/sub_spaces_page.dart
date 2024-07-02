@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
@@ -74,44 +75,36 @@ class SubSpacesPage extends ConsumerWidget {
     );
   }
 
-  Widget? titleBuilder(BuildContext context, bool canLink) {
-    if (canLink) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [_renderTools(context)],
-      );
-    } else {
-      return null;
-    }
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final spaces = ref.watch(spaceRelationsOverviewProvider(spaceIdOrAlias));
     final widthCount = (MediaQuery.of(context).size.width ~/ 300).toInt();
     const int minCount = 3;
     final crossAxisCount = max(1, min(widthCount, minCount));
+    final spaceName =
+        ref.watch(roomDisplayNameProvider(spaceIdOrAlias)).valueOrNull;
     // get platform of context.
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          AppBar(),
+    return Scaffold(
+      appBar: AppBar(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(L10n.of(context).spaces),
+            Text(
+              '($spaceName)',
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+          ],
+        ),
+        actions: [
           spaces.when(
             data: (spaces) {
-              return renderSubSpaces(
-                    context,
-                    spaceIdOrAlias,
-                    spaces,
-                    crossAxisCount: crossAxisCount,
-                    titleBuilder: () => titleBuilder(
-                      context,
-                      spaces.membership?.canString('CanLinkSpaces') ?? false,
-                    ),
-                  ) ??
-                  renderFallback(
-                    context,
-                    spaces.membership?.canString('CanLinkSpaces') ?? false,
-                  );
+              if (spaces.membership?.canString('CanLinkSpaces') ?? false) {
+                return _renderTools(context);
+              } else {
+                return const SizedBox.shrink();
+              }
             },
             error: (error, stack) => Center(
               child: Text(L10n.of(context).loadingFailed(error)),
@@ -121,6 +114,32 @@ class SubSpacesPage extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            spaces.when(
+              data: (spaces) {
+                return renderSubSpaces(
+                      context,
+                      spaceIdOrAlias,
+                      spaces,
+                      crossAxisCount: crossAxisCount,
+                    ) ??
+                    renderFallback(
+                      context,
+                      spaces.membership?.canString('CanLinkSpaces') ?? false,
+                    );
+              },
+              error: (error, stack) => Center(
+                child: Text(L10n.of(context).loadingFailed(error)),
+              ),
+              loading: () => Center(
+                child: Text(L10n.of(context).loading),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

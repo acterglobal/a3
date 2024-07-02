@@ -23,85 +23,88 @@ class SpacePinsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final space = ref.watch(spaceProvider(spaceIdOrAlias)).requireValue;
     final pins = ref.watch(spacePinsProvider(space));
+    final spaceName =
+        ref.watch(roomDisplayNameProvider(spaceIdOrAlias)).valueOrNull;
 
     // get platform of context.
-    return CustomScrollView(
-      slivers: [
-        const SliverAppBar(),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    L10n.of(context).pins,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ),
-                AddButtonWithCanPermission(
-                  roomId: spaceIdOrAlias,
-                  canString: 'CanPostPin',
-                  onPressed: () => context.pushNamed(
-                    Routes.actionAddPin.name,
-                    queryParameters: {'spaceId': spaceIdOrAlias},
-                  ),
-                ),
-              ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(L10n.of(context).pins),
+            Text(
+              '($spaceName)',
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+          ],
+        ),
+        actions: [
+          AddButtonWithCanPermission(
+            roomId: spaceIdOrAlias,
+            canString: 'CanPostPin',
+            onPressed: () => context.pushNamed(
+              Routes.actionAddPin.name,
+              queryParameters: {'spaceId': spaceIdOrAlias},
             ),
           ),
-        ),
-        pins.when(
-          data: (pins) {
-            final size = MediaQuery.of(context).size;
-            final widthCount = (size.width ~/ 600).toInt();
-            const int minCount = 2;
-            if (pins.isEmpty) {
-              final membership =
-                  ref.watch(roomMembershipProvider(spaceIdOrAlias));
-              bool canAdd = membership.requireValue!.canString('CanPostPin');
-              return SliverToBoxAdapter(
-                child: Center(
-                  heightFactor: 1,
-                  child: EmptyState(
-                    title: L10n.of(context).noPinsAvailableYet,
-                    subtitle: L10n.of(context).noPinsAvailableDescription,
-                    image: 'assets/images/empty_pin.svg',
-                    primaryButton: canAdd
-                        ? ActerPrimaryActionButton(
-                            onPressed: () => context.pushNamed(
-                              Routes.actionAddPin.name,
-                              queryParameters: {'spaceId': spaceIdOrAlias},
-                            ),
-                            child: Text(L10n.of(context).sharePin),
-                          )
-                        : null,
+        ],
+      ),
+      body: CustomScrollView(
+        slivers: [
+          pins.when(
+            data: (pins) {
+              final size = MediaQuery.of(context).size;
+              final widthCount = (size.width ~/ 600).toInt();
+              const int minCount = 2;
+              if (pins.isEmpty) {
+                final membership =
+                    ref.watch(roomMembershipProvider(spaceIdOrAlias));
+                bool canAdd = membership.requireValue!.canString('CanPostPin');
+                return SliverToBoxAdapter(
+                  child: Center(
+                    heightFactor: 1,
+                    child: EmptyState(
+                      title: L10n.of(context).noPinsAvailableYet,
+                      subtitle: L10n.of(context).noPinsAvailableDescription,
+                      image: 'assets/images/empty_pin.svg',
+                      primaryButton: canAdd
+                          ? ActerPrimaryActionButton(
+                              onPressed: () => context.pushNamed(
+                                Routes.actionAddPin.name,
+                                queryParameters: {'spaceId': spaceIdOrAlias},
+                              ),
+                              child: Text(L10n.of(context).sharePin),
+                            )
+                          : null,
+                    ),
                   ),
+                );
+              }
+              return SliverToBoxAdapter(
+                child: StaggeredGrid.count(
+                  crossAxisCount: max(1, min(widthCount, minCount)),
+                  children: <Widget>[
+                    for (var pin in pins)
+                      PinListItemById(pinId: pin.eventIdStr()),
+                  ],
                 ),
               );
-            }
-            return SliverToBoxAdapter(
-              child: StaggeredGrid.count(
-                crossAxisCount: max(1, min(widthCount, minCount)),
-                children: <Widget>[
-                  for (var pin in pins)
-                    PinListItemById(pinId: pin.eventIdStr()),
-                ],
+            },
+            error: (error, stack) => SliverToBoxAdapter(
+              child: Center(
+                child: Text(L10n.of(context).loadingFailed(error)),
               ),
-            );
-          },
-          error: (error, stack) => SliverToBoxAdapter(
-            child: Center(
-              child: Text(L10n.of(context).loadingFailed(error)),
+            ),
+            loading: () => SliverToBoxAdapter(
+              child: Center(
+                child: Text(L10n.of(context).loading),
+              ),
             ),
           ),
-          loading: () => SliverToBoxAdapter(
-            child: Center(
-              child: Text(L10n.of(context).loading),
-            ),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

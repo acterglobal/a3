@@ -44,44 +44,7 @@ class SpaceChatsPage extends ConsumerWidget {
         return SliverToBoxAdapter(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              PopupMenuButton(
-                key: actionsMenuKey,
-                icon: const Icon(Atlas.plus_circle),
-                iconSize: 28,
-                color: Theme.of(context).colorScheme.surface,
-                itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                  PopupMenuItem(
-                    key: createChatKey,
-                    onTap: () => context.pushNamed(
-                      Routes.createChat.name,
-                      queryParameters: {'spaceId': spaceIdOrAlias},
-                      extra: 1,
-                    ),
-                    child: Row(
-                      children: <Widget>[
-                        Text(L10n.of(context).createChat),
-                        const Spacer(),
-                        const Icon(Atlas.chats),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    onTap: () => context.pushNamed(
-                      Routes.linkChat.name,
-                      pathParameters: {'spaceId': spaceIdOrAlias},
-                    ),
-                    child: Row(
-                      children: <Widget>[
-                        Text(L10n.of(context).linkExistingChat),
-                        const Spacer(),
-                        const Icon(Atlas.chats),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
+            children: [],
           ),
         );
       },
@@ -200,13 +163,67 @@ class SpaceChatsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return CustomScrollView(
-      slivers: <Widget>[
-        const SliverAppBar(),
-        renderRelated(context, ref),
-        renderChats(context, ref),
-        renderFurther(context, ref),
-      ],
+    final spaceName =
+        ref.watch(roomDisplayNameProvider(spaceIdOrAlias)).valueOrNull;
+    return Scaffold(
+      appBar: AppBar(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(L10n.of(context).chat),
+            Text(
+              '($spaceName)',
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+          ],
+        ),
+        actions: [
+          PopupMenuButton(
+            key: actionsMenuKey,
+            icon: const Icon(Atlas.plus_circle),
+            iconSize: 28,
+            color: Theme.of(context).colorScheme.surface,
+            itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+              PopupMenuItem(
+                key: createChatKey,
+                onTap: () => context.pushNamed(
+                  Routes.createChat.name,
+                  queryParameters: {'spaceId': spaceIdOrAlias},
+                  extra: 1,
+                ),
+                child: Row(
+                  children: <Widget>[
+                    Text(L10n.of(context).createChat),
+                    const Spacer(),
+                    const Icon(Atlas.chats),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                onTap: () => context.pushNamed(
+                  Routes.linkChat.name,
+                  pathParameters: {'spaceId': spaceIdOrAlias},
+                ),
+                child: Row(
+                  children: <Widget>[
+                    Text(L10n.of(context).linkExistingChat),
+                    const Spacer(),
+                    const Icon(Atlas.chats),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+      body: CustomScrollView(
+        slivers: <Widget>[
+          renderRelated(context, ref),
+          renderChats(context, ref),
+          renderFurther(context, ref),
+        ],
+      ),
     );
   }
 }
