@@ -11,7 +11,7 @@ readme = "Readme.md"
 license = "MIT OR Apache-2.0"
 
 [features]
-queued = ["dep:deadqueue"]
+queued = ["dep:tokio"]
 default = ["queued"]
 
 [dependencies]
@@ -24,7 +24,7 @@ ruma-common = { workspace = true }
 ruma-events = { workspace = true }
 serde_json = "1"
 tracing = "0.1.40"
-deadqueue = { version = "0.2.4", features = ["limited"], optional = true }
+tokio = { version = "1.38.0", features = ["sync"], default-features = false, optional = true }
 
 [dev-dependencies]
 anyhow = "1.0.79"

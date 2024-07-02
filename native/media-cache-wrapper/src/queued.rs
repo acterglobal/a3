@@ -1,6 +1,7 @@
 use crate::MediaStore;
+use std::sync::Arc;
 use async_trait::async_trait;
-use deadqueue::limited::Queue;
+use tokio::sync::Semaphore;
 use matrix_sdk_base::media::MediaRequest;
 use ruma_common::MxcUri;
 use tracing::instrument;
@@ -11,7 +12,7 @@ where
     T: MediaStore,
 {
     inner: T,
-    queue: Queue<()>,
+    queue: Arc<Semaphore>,
 }
 
 impl<T> QueuedMediaStore<T>
@@ -21,7 +22,7 @@ where
     pub fn new(store: T, queue_size: usize) -> Self {
         QueuedMediaStore {
             inner: store,
-            queue: Queue::new(queue_size),
+            queue: Arc::new(Semaphore::new(queue_size)),
         }
     }
 }
@@ -39,12 +40,8 @@ where
         request: &MediaRequest,
         content: Vec<u8>,
     ) -> Result<(), Self::Error> {
-        self.queue.push(()).await;
-        let res = self.inner.add_media_content(request, content).await;
-        if self.queue.try_pop().is_none() {
-            tracing::warn!("More pop than pushed on add?");
-        }
-        res
+        let _handle = self.queue.acquire().await.expect("We never close the semaphore");
+        self.inner.add_media_content(request, content).await
     }
 
     #[instrument(skip_all)]
@@ -52,31 +49,19 @@ where
         &self,
         request: &MediaRequest,
     ) -> Result<Option<Vec<u8>>, Self::Error> {
-        self.queue.push(()).await;
-        let res = self.inner.get_media_content(request).await;
-        if self.queue.try_pop().is_none() {
-            tracing::warn!("More pop than pushed on get?");
-        }
-        res
+        let _handle = self.queue.acquire().await.expect("We never close the semaphore");
+        self.inner.get_media_content(request).await
     }
 
     #[instrument(skip_all)]
     async fn remove_media_content(&self, request: &MediaRequest) -> Result<(), Self::Error> {
-        self.queue.push(()).await;
-        let res = self.inner.remove_media_content(request).await;
-        if self.queue.try_pop().is_none() {
-            tracing::warn!("More pop than pushed on remove?");
-        }
-        res
+        let _handle = self.queue.acquire().await.expect("We never close the semaphore");
+        self.inner.remove_media_content(request).await
     }
 
     #[instrument(skip_all)]
     async fn remove_media_content_for_uri(&self, uri: &MxcUri) -> Result<(), Self::Error> {
-        self.queue.push(()).await;
-        let res = self.inner.remove_media_content_for_uri(uri).await;
-        if self.queue.try_pop().is_none() {
-            tracing::warn!("More pop than pushed on get?");
-        }
-        res
+        let _handle = self.queue.acquire().await.expect("We never close the semaphore");
+        self.inner.remove_media_content_for_uri(uri).await
     }
 }

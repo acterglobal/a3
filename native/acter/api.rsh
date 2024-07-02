@@ -1205,11 +1205,6 @@ object TimelineStream {
     /// if sent twice, reaction is redacted
     fn toggle_reaction(event_id: string, key: string) -> Future<Result<bool>>;
 
-    /// retry local echo message send
-    fn retry_send(txn_id: string) -> Future<Result<bool>>;
-
-    /// cancel local echo message
-    fn cancel_send(txn_id: string) -> Future<Result<bool>>;
 }
 
 

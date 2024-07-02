@@ -1,6 +1,7 @@
 use anyhow::Result;
-use matrix_sdk::ClientBuilder;
+use matrix_sdk::{config::RequestConfig, ClientBuilder};
 use oslog::OsLogger;
+use std::num::NonZeroUsize;
 
 use super::native;
 
@@ -27,7 +28,10 @@ pub async fn new_client_config(
         reset_if_existing,
     )
     .await?
-    .user_agent(format!("acter-ios/{:}", env!("CARGO_PKG_VERSION")));
+    .user_agent(format!("acter-ios/{:}", env!("CARGO_PKG_VERSION")))
+    // limit the concurrent request done at the same time to 20
+    .request_config(RequestConfig::default().max_concurrent_requests(NonZeroUsize::new(20)));
+
     Ok(builder)
 }
 

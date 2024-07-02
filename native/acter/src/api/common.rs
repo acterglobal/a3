@@ -9,17 +9,14 @@ use matrix_sdk::media::{MediaFormat, MediaThumbnailSize};
 use ruma::UInt;
 use ruma_client_api::media::get_content_thumbnail;
 use ruma_common::{EventId, MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedMxcUri, OwnedUserId};
-use ruma_events::{
-    room::{
-        message::{
-            AudioInfo, AudioMessageEventContent, EmoteMessageEventContent, FileInfo,
-            FileMessageEventContent, ImageMessageEventContent, LocationInfo,
-            LocationMessageEventContent, TextMessageEventContent, UnstableAudioDetailsContentBlock,
-            VideoInfo, VideoMessageEventContent,
-        },
-        ImageInfo, MediaSource as SdkMediaSource, ThumbnailInfo as SdkThumbnailInfo,
+use ruma_events::room::{
+    message::{
+        AudioInfo, AudioMessageEventContent, EmoteMessageEventContent, FileInfo,
+        FileMessageEventContent, ImageMessageEventContent, LocationInfo,
+        LocationMessageEventContent, TextMessageEventContent, UnstableAudioDetailsContentBlock,
+        VideoInfo, VideoMessageEventContent,
     },
-    sticker::StickerEventContent,
+    ImageInfo, MediaSource as SdkMediaSource, ThumbnailInfo as SdkThumbnailInfo,
 };
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
@@ -223,16 +220,6 @@ impl From<&EmoteMessageEventContent> for MsgContent {
         MsgContent::Text {
             body: value.body.clone(),
             formatted_body: value.formatted.clone().map(|x| x.body),
-        }
-    }
-}
-
-impl From<&StickerEventContent> for MsgContent {
-    fn from(value: &StickerEventContent) -> Self {
-        MsgContent::Image {
-            body: value.body.clone(),
-            source: SdkMediaSource::Plain(value.url.clone()),
-            info: Some(value.info.clone()),
         }
     }
 }

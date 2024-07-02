@@ -162,6 +162,7 @@
   "@settingsSubmittingFailed": {},
   "chatRoomCreated": "Chat Created",
   "@chatRoomCreated": {},
+  "chatSendingFailed": "Failed to sent. Will retry ...",
   "chatSettingsTyping": "Send typing notifications",
   "@chatSettingsTyping": {},
   "chatSettingsTypingExplainer": "(soon) Inform others when you are typing",
