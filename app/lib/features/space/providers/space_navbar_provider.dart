@@ -108,21 +108,6 @@ final tabsProvider =
     }
   }
 
-  final chatsList = await ref.watch(relatedChatsProvider(spaceId).future);
-  if (chatsList.isNotEmpty) {
-    tabs.add(
-      TabEntry(
-        key: TabEntry.chatsKey,
-        label: 'Chats',
-        makeIcon: (ctx, color) => Icon(
-          Atlas.chats_thin,
-          color: color,
-        ),
-        target: Routes.spaceChats,
-      ),
-    );
-  }
-
   final spacesList = await ref.watch(relatedSpacesProvider(spaceId).future);
   if (spacesList.isNotEmpty) {
     tabs.add(
@@ -134,6 +119,21 @@ final tabsProvider =
           color: color,
         ),
         target: Routes.spaceRelatedSpaces,
+      ),
+    );
+  }
+
+  final chatsList = await ref.watch(relatedChatsProvider(spaceId).future);
+  if (chatsList.isNotEmpty) {
+    tabs.add(
+      TabEntry(
+        key: TabEntry.chatsKey,
+        label: 'Chats',
+        makeIcon: (ctx, color) => Icon(
+          Atlas.chats_thin,
+          color: color,
+        ),
+        target: Routes.spaceChats,
       ),
     );
   }
