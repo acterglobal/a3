@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/features/space/widgets/about_card.dart';
+import 'package:acter/features/space/widgets/space_details/about_section.dart';
 import 'package:acter/features/space/widgets/chats_card.dart';
 import 'package:acter/features/space/widgets/events_card.dart';
 import 'package:acter/features/space/widgets/links_card.dart';
@@ -51,7 +51,7 @@ class SpaceOverview extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
-          AboutCard(spaceId: spaceIdOrAlias),
+          AboutSection(spaceId: spaceIdOrAlias),
           ActerSpaceChecker(
             spaceId: spaceIdOrAlias,
             expectation: (a) => a == null,
