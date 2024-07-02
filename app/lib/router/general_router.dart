@@ -26,8 +26,9 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:riverpod/riverpod.dart';
 
-List<RouteBase> makeGeneralRoutes() {
+List<RouteBase> makeGeneralRoutes(Ref ref) {
   return [
     GoRoute(
       parentNavigatorKey: rootNavKey,

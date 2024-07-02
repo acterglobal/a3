@@ -23,12 +23,12 @@ import 'package:acter/features/settings/pages/labs_page.dart';
 import 'package:acter/features/settings/pages/licenses_page.dart';
 import 'package:acter/features/settings/pages/notifications_page.dart';
 import 'package:acter/features/settings/pages/sessions_page.dart';
+import 'package:acter/features/space/pages/space_details_page.dart';
 import 'package:acter/features/space/settings/pages/visibility_accessibility_page.dart';
 import 'package:acter/features/super_invites/pages/super_invites.dart';
 import 'package:acter/features/space/pages/chats_page.dart';
 import 'package:acter/features/space/pages/events_page.dart';
 import 'package:acter/features/space/pages/members_page.dart';
-import 'package:acter/features/space/pages/overview_page.dart';
 import 'package:acter/features/space/pages/pins_page.dart';
 import 'package:acter/features/space/pages/sub_spaces_page.dart';
 import 'package:acter/features/space/pages/space_tasks_page.dart';
@@ -302,20 +302,6 @@ List<RouteBase> makeHomeShellRoutes(ref) {
       },
     ),
     GoRoute(
-      name: Routes.space.name,
-      path: Routes.space.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        tabKeyNotifier.switchTo(const Key('overview'));
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: SpaceOverview(
-            spaceIdOrAlias: state.pathParameters['spaceId']!,
-          ),
-        );
-      },
-    ),
-    GoRoute(
       name: Routes.searchPublicDirectory.name,
       path: Routes.searchPublicDirectory.route,
       redirect: authGuardRedirect,
@@ -324,6 +310,20 @@ List<RouteBase> makeHomeShellRoutes(ref) {
           key: state.pageKey,
           child: SearchPublicDirectory(
             query: state.uri.queryParameters['query'],
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.space.name,
+      path: Routes.space.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        tabKeyNotifier.switchTo(const Key('overview'));
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: SpaceDetailsPage(
+            spaceId: state.pathParameters['spaceId']!,
           ),
         );
       },
