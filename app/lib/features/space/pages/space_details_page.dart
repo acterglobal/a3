@@ -2,8 +2,8 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/space/widgets/space_details/about_section.dart';
 import 'package:acter/features/space/widgets/chats_card.dart';
-import 'package:acter/features/space/widgets/events_card.dart';
 import 'package:acter/features/space/widgets/related_spaces/sub_spaces_card.dart';
+import 'package:acter/features/space/widgets/space_details/events_section.dart';
 import 'package:acter/features/space/widgets/space_details/pins_section.dart';
 import 'package:acter/features/space/widgets/space_details/tasks_section.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
@@ -154,7 +154,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
     } else if (tabItem.key == TabEntry.tasks) {
       return TasksSection(spaceId: widget.spaceId);
     } else if (tabItem.key == TabEntry.events) {
-      return EventsCard(spaceId: widget.spaceId);
+      return EventsSection(spaceId: widget.spaceId);
     } else if (tabItem.key == TabEntry.chatsKey) {
       return ChatsCard(spaceId: widget.spaceId);
     } else if (tabItem.key == TabEntry.spacesKey) {
