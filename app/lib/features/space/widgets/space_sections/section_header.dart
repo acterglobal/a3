@@ -5,13 +5,13 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 class SectionHeader extends StatelessWidget {
   final String title;
   final bool isShowSeeAllButton;
-  final Function()? onTapSeeAll;
+  final VoidCallback onTapSeeAll;
 
   const SectionHeader({
     super.key,
     required this.title,
+    required this.onTapSeeAll,
     this.isShowSeeAllButton = false,
-    this.onTapSeeAll,
   });
 
   @override
@@ -31,7 +31,7 @@ class SectionHeader extends StatelessWidget {
           const Spacer(),
           if (isShowSeeAllButton)
             ActerInlineTextButton(
-              onPressed: () => onTapSeeAll,
+              onPressed: () => onTapSeeAll(),
               child: Text(L10n.of(context).seeAll),
             ),
         ],

@@ -96,7 +96,7 @@ class SubSpacesPage extends ConsumerWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
-          SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
+          AppBar(),
           spaces.when(
             data: (spaces) {
               return renderSubSpaces(

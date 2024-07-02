@@ -203,9 +203,7 @@ class SpaceChatsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return CustomScrollView(
       slivers: <Widget>[
-        SliverToBoxAdapter(
-          child: SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
-        ),
+        const SliverAppBar(),
         renderRelated(context, ref),
         renderChats(context, ref),
         renderFurther(context, ref),

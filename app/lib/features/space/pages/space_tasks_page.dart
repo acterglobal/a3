@@ -25,9 +25,7 @@ class SpaceTasksPage extends ConsumerWidget {
     return CustomScrollView(
       key: scrollView,
       slivers: [
-        SliverToBoxAdapter(
-          child: SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
-        ),
+        const SliverAppBar(),
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),

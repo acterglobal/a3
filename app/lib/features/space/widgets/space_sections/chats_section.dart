@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter/router/utils.dart';
@@ -6,6 +7,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:go_router/go_router.dart';
 
 class ChatsSection extends ConsumerWidget {
   final String spaceId;
@@ -40,7 +42,10 @@ class ChatsSection extends ConsumerWidget {
         SectionHeader(
           title: L10n.of(context).chats,
           isShowSeeAllButton: isShowSeeAllButton,
-          onTapSeeAll: () {},
+          onTapSeeAll: () => context.pushNamed(
+            Routes.spaceChats.name,
+            pathParameters: {'spaceId': spaceId},
+          ),
         ),
         chatsListUI(chats, chatsLimit),
       ],

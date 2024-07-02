@@ -1,10 +1,12 @@
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:go_router/go_router.dart';
 
 class SpacesSection extends ConsumerWidget {
   final String spaceId;
@@ -42,7 +44,10 @@ class SpacesSection extends ConsumerWidget {
         SectionHeader(
           title: L10n.of(context).spaces,
           isShowSeeAllButton: isShowSeeAllButton,
-          onTapSeeAll: () {},
+          onTapSeeAll: () => context.pushNamed(
+            Routes.spaceRelatedSpaces.name,
+            pathParameters: {'spaceId': spaceId},
+          ),
         ),
         spacesListUI(spaces, spacesLimit),
       ],
