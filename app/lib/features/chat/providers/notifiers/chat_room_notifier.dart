@@ -734,51 +734,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.notice':
-            MsgContent? msgContent = eventItem.msgContent();
-            if (msgContent != null) {
-              String? formattedBody = msgContent.formattedBody();
-              String body = msgContent.body(); // always exists
-              return types.TextMessage(
-                author: author,
-                remoteId: eventItem.uniqueId(),
-                createdAt: createdAt,
-                id: eventId,
-                text: formattedBody ?? body,
-                metadata: {
-                  'itemType': 'event',
-                  'eventType': eventType,
-                  'msgType': msgType,
-                  'was_edited': wasEdited,
-                  'isEditable': isEditable,
-                  'eventState': eventState,
-                  'receipts': receipts,
-                },
-              );
-            }
-            break;
           case 'm.server_notice':
-            MsgContent? msgContent = eventItem.msgContent();
-            if (msgContent != null) {
-              String? formattedBody = msgContent.formattedBody();
-              String body = msgContent.body(); // always exists
-              return types.TextMessage(
-                author: author,
-                remoteId: eventItem.uniqueId(),
-                createdAt: createdAt,
-                id: eventId,
-                text: formattedBody ?? body,
-                metadata: {
-                  'itemType': 'event',
-                  'eventType': eventType,
-                  'msgType': msgType,
-                  'was_edited': wasEdited,
-                  'isEditable': isEditable,
-                  'eventState': eventState,
-                  'receipts': receipts,
-                },
-              );
-            }
-            break;
           case 'm.text':
             MsgContent? msgContent = eventItem.msgContent();
             if (msgContent != null) {
