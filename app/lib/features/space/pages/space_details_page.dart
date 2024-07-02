@@ -3,6 +3,7 @@ import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/space/widgets/space_details/about_section.dart';
 import 'package:acter/features/space/widgets/space_details/chats_section.dart';
 import 'package:acter/features/space/widgets/space_details/events_section.dart';
+import 'package:acter/features/space/widgets/space_details/members_section.dart';
 import 'package:acter/features/space/widgets/space_details/pins_section.dart';
 import 'package:acter/features/space/widgets/space_details/spaces_sesction.dart';
 import 'package:acter/features/space/widgets/space_details/tasks_section.dart';
@@ -160,10 +161,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
     } else if (tabItem.key == TabEntry.spacesKey) {
       return SpacesSection(spaceId: widget.spaceId);
     } else if (tabItem.key == TabEntry.membersKey) {
-      return const SizedBox(
-        height: 300,
-        child: Text('Space Members'),
-      );
+      return MembersSection(spaceId: widget.spaceId);
     } else {
       return const SizedBox.shrink();
     }
