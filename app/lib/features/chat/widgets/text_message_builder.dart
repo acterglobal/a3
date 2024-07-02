@@ -2,6 +2,8 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/room_chip.dart';
+import 'package:acter/common/widgets/user_chip.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -12,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
+import 'package:flutter_matrix_html/text_parser.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
@@ -145,9 +148,14 @@ class _TextWidget extends ConsumerWidget {
                 )
               : Html(
                   onLinkTap: (url) => onLinkTap(url, context, ref),
-                  onPillTap: (id) => onPillTap(context, id),
                   backgroundColor: Colors.transparent,
                   data: message.text,
+                  pillBuilder: ({
+                    required String identifier,
+                    required String url,
+                    OnPillTap? onTap,
+                  }) =>
+                      _pillBuilder(context, ref, identifier, url),
                   shrinkToFit: true,
                   defaultTextStyle:
                       Theme.of(context).textTheme.bodySmall!.copyWith(
@@ -176,17 +184,23 @@ class _TextWidget extends ConsumerWidget {
     );
   }
 
-  Future<void> onPillTap(BuildContext context, String identifier) async {
-    if (identifier.isEmpty) return;
-    final userId = extractUserIdFromUri(identifier);
-    if (userId != null) {
-      return await showMemberInfoDrawer(
-        context: context,
-        roomId: roomId,
-        memberId: userId,
-        // isShowActions: false,
-      );
-    }
+  Widget _pillBuilder(
+    BuildContext context,
+    WidgetRef ref,
+    String identifier,
+    String uri,
+  ) {
+    return switch (identifier.characters.first) {
+      '@' => UserChip(
+          roomId: roomId,
+          memberId: identifier,
+        ),
+      '!' => RoomChip(roomId: identifier),
+      _ => InkWell(
+          child: Text(identifier),
+          onTap: () => onLinkTap(Uri.parse(uri), context, ref),
+        ),
+    };
   }
 
   Future<void> onLinkTap(Uri uri, BuildContext context, WidgetRef ref) async {
@@ -194,7 +208,6 @@ class _TextWidget extends ConsumerWidget {
 
     ///If link is type of matrix room link
     if (roomId != null) {
-      await navigateToRoomOrAskToJoin(context, ref, roomId);
     }
 
     ///If link is other than matrix room link

@@ -226,7 +226,10 @@ void askToJoinRoom(
   );
 }
 
-final matrixLinks = RegExp('(matrix://|https://matrix.to/#/)([\\S]*)');
+final matrixLinks = RegExp(
+  '(matrix:|https://matrix.to/#/)([\\S]*)',
+  caseSensitive: false,
+);
 
 String prepareMsg(MsgContent? content) {
   if (content == null) return '';
@@ -236,6 +239,8 @@ String prepareMsg(MsgContent? content) {
   }
   final body = content.body();
   // replace all matrix-style links with a hrefs
-  return body.replaceAllMapped(matrixLinks,
-      (match) => '<a href="${match.group(0)}">${match.group(0)}</a>');
+  return body.replaceAllMapped(
+    matrixLinks,
+    (match) => '<a href="${match.group(0)}">${match.group(0)}</a>',
+  );
 }
