@@ -43,8 +43,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       do {
         await loadMore(failOnError: true);
         await Future.delayed(const Duration(milliseconds: 200), () => null);
-      } while (state.hasMore &&
-          ref.read(renderableChatMessagesProvider(convo)).length < 10);
+      } while (state.hasMore && state.messages.where(msgFilter).length < 10);
     } catch (error) {
       _log.severe('Error loading more messages', error);
       state = state.copyWith(
