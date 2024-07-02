@@ -41,7 +41,7 @@ class SpaceChatsPage extends ConsumerWidget {
           return const SliverToBoxAdapter(child: SizedBox.shrink());
         }
 
-        return SliverToBoxAdapter(
+        return const SliverToBoxAdapter(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [],
