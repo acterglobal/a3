@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
-import 'package:acter/features/space/widgets/about_card.dart';
+import 'package:acter/features/space/widgets/space_details/about_section.dart';
 import 'package:acter/features/space/widgets/chats_card.dart';
 import 'package:acter/features/space/widgets/events_card.dart';
 import 'package:acter/features/space/widgets/links_card.dart';
@@ -147,7 +147,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
 
   Widget spacePageUI(TabEntry tabItem) {
     if (tabItem.key == TabEntry.overview) {
-      return AboutCard(spaceId: widget.spaceId);
+      return AboutSection(spaceId: widget.spaceId);
     } else if (tabItem.key == TabEntry.pins) {
       return LinksCard(spaceId: widget.spaceId);
     } else if (tabItem.key == TabEntry.tasks) {
