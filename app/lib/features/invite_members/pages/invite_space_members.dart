@@ -168,7 +168,15 @@ class _InviteSpaceMembersConsumerState
     );
 
     try {
-      final currentSpace = ref.read(spaceProvider(widget.roomId)).valueOrNull;
+      final room = ref.read(maybeRoomProvider(widget.roomId)).valueOrNull;
+      if (room == null) {
+        _log.severe('Room failed to be found');
+        if (!mounted) return;
+        EasyLoading.showToast(
+          L10n.of(context).invitingSpaceMembersError('Missing room'),
+        );
+        return;
+      }
       final invited =
           (ref.read(roomInvitedMembersProvider(widget.roomId)).valueOrNull ??
                   [])
@@ -183,8 +191,8 @@ class _InviteSpaceMembersConsumerState
         for (final member in members) {
           final isInvited = invited.contains(member);
           final isJoined = joined.contains(member);
-          if (currentSpace != null && !isInvited && !isJoined) {
-            await currentSpace.inviteUser(member);
+          if (!isInvited && !isJoined) {
+            await room.inviteUser(member);
             inviteCount++;
           }
         }
