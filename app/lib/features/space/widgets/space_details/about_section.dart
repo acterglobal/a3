@@ -1,7 +1,6 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/edit_plain_description_sheet.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';

@@ -3,8 +3,8 @@ import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/space/widgets/space_details/about_section.dart';
 import 'package:acter/features/space/widgets/chats_card.dart';
 import 'package:acter/features/space/widgets/events_card.dart';
-import 'package:acter/features/space/widgets/links_card.dart';
 import 'package:acter/features/space/widgets/related_spaces/sub_spaces_card.dart';
+import 'package:acter/features/space/widgets/space_details/pins_section.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/features/space/widgets/space_toolbar.dart';
 import 'package:animated_size_and_fade/animated_size_and_fade.dart';
@@ -149,7 +149,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
     if (tabItem.key == TabEntry.overview) {
       return AboutSection(spaceId: widget.spaceId);
     } else if (tabItem.key == TabEntry.pins) {
-      return LinksCard(spaceId: widget.spaceId);
+      return PinsSection(spaceId: widget.spaceId);
     } else if (tabItem.key == TabEntry.tasks) {
       return const SizedBox(
         height: 300,
