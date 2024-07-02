@@ -2,6 +2,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/rooms.dart';
 import 'package:acter/router/utils.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/dom.dart' as html;
@@ -223,4 +224,18 @@ void askToJoinRoom(
       ),
     ),
   );
+}
+
+final matrixLinks = RegExp('(matrix://|https://matrix.to/#/)([\\S]*)');
+
+String prepareMsg(MsgContent? content) {
+  if (content == null) return '';
+  final formatted = content.formattedBody();
+  if (formatted != null) {
+    return formatted;
+  }
+  final body = content.body();
+  // replace all matrix-style links with a hrefs
+  return body.replaceAllMapped(matrixLinks,
+      (match) => '<a href="${match.group(0)}">${match.group(0)}</a>');
 }

@@ -15,7 +15,6 @@ import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
-final matrixLinks = RegExp('(matrix://|https://matrix.to/#/)[\\S]*');
 // removes all matrix custom links
 String _cleanMessage(String input) {
   final cleaned = simplifyBody(input).replaceAll(matrixLinks, '');
