@@ -99,14 +99,11 @@ class EmailAddresses {
 }
 
 final emailAddressesProvider = FutureProvider((ref) async {
-  final client = ref.watch(alwaysClientProvider);
+  final account = ref.watch(accountProvider);
   // ensure we are updated if the upgrade comes down the wire.
   ref.watch(genericUpdatesStream('global.acter.dev.three_pid'));
-  final threePidManager = client.threePidManager();
-  final confirmed =
-      asDartStringList(await threePidManager.confirmedEmailAddresses());
-  final requested =
-      asDartStringList(await threePidManager.requestedEmailAddresses());
+  final confirmed = asDartStringList(await account.confirmedEmailAddresses());
+  final requested = asDartStringList(await account.requestedEmailAddresses());
   final List<String> unconfirmed = [];
   for (var i = 0; i < requested.length; i++) {
     if (!confirmed.contains(requested[i])) {
