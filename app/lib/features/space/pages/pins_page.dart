@@ -28,11 +28,7 @@ class SpacePinsPage extends ConsumerWidget {
     // get platform of context.
     return CustomScrollView(
       slivers: [
-        SliverToBoxAdapter(
-          child: SpaceHeader(
-            spaceIdOrAlias: spaceIdOrAlias,
-          ),
-        ),
+        const SliverAppBar(),
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.all(8.0),

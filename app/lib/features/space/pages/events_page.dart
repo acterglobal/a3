@@ -25,9 +25,7 @@ class SpaceEventsPage extends ConsumerWidget {
     final past = ref.watch(spacePastEventsProvider(spaceIdOrAlias));
     return CustomScrollView(
       slivers: <Widget>[
-        SliverToBoxAdapter(
-          child: SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
-        ),
+       const SliverAppBar(),
         SliverPadding(
           padding: const EdgeInsets.symmetric(horizontal: 15),
           sliver: SliverToBoxAdapter(

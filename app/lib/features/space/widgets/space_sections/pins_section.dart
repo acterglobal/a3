@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/pin_list_item.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
@@ -6,6 +7,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:go_router/go_router.dart';
 
 class PinsSection extends ConsumerWidget {
   final String spaceId;
@@ -41,7 +43,10 @@ class PinsSection extends ConsumerWidget {
         SectionHeader(
           title: L10n.of(context).pins,
           isShowSeeAllButton: isShowSeeAllButton,
-          onTapSeeAll: () {},
+          onTapSeeAll: () => context.pushNamed(
+            Routes.spacePins.name,
+            pathParameters: {'spaceId': spaceId},
+          ),
         ),
         pinsListUI(pins, pinsLimit),
       ],

@@ -1,3 +1,4 @@
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
@@ -5,6 +6,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:go_router/go_router.dart';
 
 class EventsSection extends ConsumerWidget {
   final String spaceId;
@@ -42,7 +44,10 @@ class EventsSection extends ConsumerWidget {
         SectionHeader(
           title: L10n.of(context).events,
           isShowSeeAllButton: isShowSeeAllButton,
-          onTapSeeAll: () {},
+          onTapSeeAll: () => context.pushNamed(
+            Routes.spaceEvents.name,
+            pathParameters: {'spaceId': spaceId},
+          ),
         ),
         eventsListUI(events, eventsLimit),
       ],
