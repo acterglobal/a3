@@ -10,12 +10,14 @@ class TaskListItemCard extends ConsumerWidget {
   final TaskList taskList;
   final bool showSpace;
   final bool showCompletedTask;
+  final bool initiallyExpanded;
 
   const TaskListItemCard({
     super.key,
     required this.taskList,
     this.showSpace = false,
     this.showCompletedTask = false,
+    this.initiallyExpanded = true,
   });
 
   @override
@@ -23,7 +25,7 @@ class TaskListItemCard extends ConsumerWidget {
     return Card(
       key: Key('task-list-card-${taskList.eventIdStr()}'),
       child: ExpansionTile(
-        initiallyExpanded: true,
+        initiallyExpanded: initiallyExpanded,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
