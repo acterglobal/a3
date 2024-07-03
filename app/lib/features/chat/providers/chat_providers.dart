@@ -59,9 +59,10 @@ final chatTopic =
   return c?.topic();
 });
 
-final msgFilter = (types.Message m) =>
-    m is! types.UnsupportedMessage &&
-    !(m is types.CustomMessage && !renderCustomMessageBubble(m));
+bool msgFilter(types.Message m) {
+  return m is! types.UnsupportedMessage &&
+      !(m is types.CustomMessage && !renderCustomMessageBubble(m));
+}
 
 final renderableChatMessagesProvider =
     StateProvider.autoDispose.family<List<Message>, Convo>((ref, convo) {
