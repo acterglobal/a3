@@ -2306,8 +2306,8 @@ object Account {
     /// If password is not enough complex, homeserver may reject this request.
     fn request_3pid_management_token_via_email(email_address: string) -> Future<Result<ThreePidEmailTokenResponse>>;
 
-    /// get the registered 3pid on the homeserver for this account
-    fn get_3pids(address: string) -> Future<Result<Vec<ThreePid>>>;
+    /// get the array of registered 3pid on the homeserver for this account
+    fn get_3pids() -> Future<Result<Vec<ThreePid>>>;
 
     /// find out session id that is related with email address and add email address to account using session id & password
     fn try_confirm_email_status(email_address: string, password: string) -> Future<Result<bool>>;

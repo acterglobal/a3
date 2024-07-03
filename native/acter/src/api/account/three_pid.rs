@@ -192,7 +192,7 @@ impl Account {
             .await?
     }
 
-    pub async fn get_3pids(&self, address: String) -> Result<Vec<ThreePid>> {
+    pub async fn get_3pids(&self) -> Result<Vec<ThreePid>> {
         let account = self.account.clone();
 
         RUNTIME
