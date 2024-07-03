@@ -2307,7 +2307,7 @@ object Account {
     fn request_3pid_management_token_via_email(email_address: string) -> Future<Result<ThreePidEmailTokenResponse>>;
 
     /// get the array of registered 3pid on the homeserver for this account
-    fn get_3pids() -> Future<Result<Vec<ThreePid>>>;
+    fn external_ids() -> Future<Result<Vec<ExternalId>>>;
 
     /// find out session id that is related with email address and add email address to account using session id & password
     fn try_confirm_email_status(email_address: string, password: string) -> Future<Result<bool>>;
@@ -2319,7 +2319,7 @@ object Account {
     fn remove_email_address(email_address: string) -> Future<Result<bool>>;
 }
 
-object ThreePid {
+object ExternalId {
     /// get address of 3pid
     fn address() -> string;
 

@@ -54,7 +54,7 @@ mod uniffi_api;
 #[cfg(feature = "uniffi")]
 pub use uniffi_api::*;
 
-pub use account::{Account, ThreePid, ThreePidEmailTokenResponse};
+pub use account::{Account, ExternalId, ThreePidEmailTokenResponse};
 pub use acter_core::{
     events::{
         calendar::EventLocationInfo, news::NewsContent, Colorize, ColorizeBuilder, ObjRef,

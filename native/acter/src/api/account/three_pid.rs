@@ -36,14 +36,14 @@ impl ThreePidEmailTokenResponse {
 }
 
 #[derive(Clone)]
-pub struct ThreePid {
+pub struct ExternalId {
     address: String,
     medium: Medium,
     added_at: MilliSecondsSinceUnixEpoch,
     validated_at: MilliSecondsSinceUnixEpoch,
 }
 
-impl ThreePid {
+impl ExternalId {
     pub fn address(&self) -> String {
         self.address.clone()
     }
@@ -192,7 +192,7 @@ impl Account {
             .await?
     }
 
-    pub async fn get_3pids(&self) -> Result<Vec<ThreePid>> {
+    pub async fn external_ids(&self) -> Result<Vec<ExternalId>> {
         let account = self.account.clone();
 
         RUNTIME
@@ -201,7 +201,7 @@ impl Account {
                 let records = resp
                     .threepids
                     .iter()
-                    .map(|x| ThreePid {
+                    .map(|x| ExternalId {
                         address: x.address.clone(),
                         medium: x.medium.clone(),
                         added_at: x.added_at,

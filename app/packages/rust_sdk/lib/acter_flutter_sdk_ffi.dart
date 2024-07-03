@@ -10798,7 +10798,7 @@ class Api {
     return tmp7;
   }
 
-  FfiListThreePid? __accountGet3pidsFuturePoll(
+  FfiListExternalId? __accountExternalIdsFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -10812,7 +10812,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _accountGet3pidsFuturePoll(
+    final tmp6 = _accountExternalIdsFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -10839,9 +10839,9 @@ class Api {
       throw tmp9_0;
     }
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListThreePid");
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListExternalId");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiListThreePid._(this, tmp13_1);
+    final tmp14 = FfiListExternalId._(this, tmp13_1);
     final tmp7 = tmp14;
     return tmp7;
   }
@@ -24630,13 +24630,13 @@ class Api {
             int,
             int,
           )>();
-  late final _accountGet3pidsPtr = _lookup<
+  late final _accountExternalIdsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__Account_get_3pids");
+          )>>("__Account_external_ids");
 
-  late final _accountGet3pids = _accountGet3pidsPtr.asFunction<
+  late final _accountExternalIds = _accountExternalIdsPtr.asFunction<
       int Function(
         int,
       )>();
@@ -24709,43 +24709,43 @@ class Api {
             int,
             int,
           )>();
-  late final _threePidAddressPtr = _lookup<
+  late final _externalIdAddressPtr = _lookup<
       ffi.NativeFunction<
-          _ThreePidAddressReturn Function(
+          _ExternalIdAddressReturn Function(
             ffi.Int64,
-          )>>("__ThreePid_address");
+          )>>("__ExternalId_address");
 
-  late final _threePidAddress = _threePidAddressPtr.asFunction<
-      _ThreePidAddressReturn Function(
+  late final _externalIdAddress = _externalIdAddressPtr.asFunction<
+      _ExternalIdAddressReturn Function(
         int,
       )>();
-  late final _threePidMediumPtr = _lookup<
+  late final _externalIdMediumPtr = _lookup<
       ffi.NativeFunction<
-          _ThreePidMediumReturn Function(
+          _ExternalIdMediumReturn Function(
             ffi.Int64,
-          )>>("__ThreePid_medium");
+          )>>("__ExternalId_medium");
 
-  late final _threePidMedium = _threePidMediumPtr.asFunction<
-      _ThreePidMediumReturn Function(
+  late final _externalIdMedium = _externalIdMediumPtr.asFunction<
+      _ExternalIdMediumReturn Function(
         int,
       )>();
-  late final _threePidAddedAtPtr = _lookup<
+  late final _externalIdAddedAtPtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint64 Function(
             ffi.Int64,
-          )>>("__ThreePid_added_at");
+          )>>("__ExternalId_added_at");
 
-  late final _threePidAddedAt = _threePidAddedAtPtr.asFunction<
+  late final _externalIdAddedAt = _externalIdAddedAtPtr.asFunction<
       int Function(
         int,
       )>();
-  late final _threePidValidatedAtPtr = _lookup<
+  late final _externalIdValidatedAtPtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint64 Function(
             ffi.Int64,
-          )>>("__ThreePid_validated_at");
+          )>>("__ExternalId_validated_at");
 
-  late final _threePidValidatedAt = _threePidValidatedAtPtr.asFunction<
+  late final _externalIdValidatedAt = _externalIdValidatedAtPtr.asFunction<
       int Function(
         int,
       )>();
@@ -30388,17 +30388,17 @@ class Api {
             int,
             int,
           )>();
-  late final _accountGet3pidsFuturePollPtr = _lookup<
+  late final _accountExternalIdsFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _AccountGet3pidsFuturePollReturn Function(
+          _AccountExternalIdsFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__Account_get_3pids_future_poll");
+          )>>("__Account_external_ids_future_poll");
 
-  late final _accountGet3pidsFuturePoll =
-      _accountGet3pidsFuturePollPtr.asFunction<
-          _AccountGet3pidsFuturePollReturn Function(
+  late final _accountExternalIdsFuturePoll =
+      _accountExternalIdsFuturePollPtr.asFunction<
+          _AccountExternalIdsFuturePollReturn Function(
             int,
             int,
             int,
@@ -32492,6 +32492,55 @@ class Api {
   late final _ffiListEventLocationInfoInsert =
       _ffiListEventLocationInfoInsertPtr
           .asFunction<void Function(int, int, int)>();
+  FfiListExternalId createFfiListExternalId() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListExternalIdCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListExternalId");
+    return FfiListExternalId._(this, list_box);
+  }
+
+  late final _ffiListExternalIdCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListExternalIdCreate");
+
+  late final _ffiListExternalIdCreate =
+      _ffiListExternalIdCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListExternalIdLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListExternalIdLen");
+
+  late final _ffiListExternalIdLen =
+      _ffiListExternalIdLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListExternalIdElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListExternalIdElementAt");
+
+  late final _ffiListExternalIdElementAt =
+      _ffiListExternalIdElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListExternalIdRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListExternalIdRemove");
+
+  late final _ffiListExternalIdRemove =
+      _ffiListExternalIdRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListExternalIdAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListExternalIdAdd");
+
+  late final _ffiListExternalIdAdd =
+      _ffiListExternalIdAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListExternalIdInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
+              ffi.IntPtr)>>("__FfiListExternalIdInsert");
+
+  late final _ffiListExternalIdInsert =
+      _ffiListExternalIdInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListFfiString createFfiListFfiString() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListFfiStringCreate());
@@ -33480,55 +33529,6 @@ class Api {
 
   late final _ffiListTaskListInsert =
       _ffiListTaskListInsertPtr.asFunction<void Function(int, int, int)>();
-  FfiListThreePid createFfiListThreePid() {
-    final ffi.Pointer<ffi.Void> list_ptr =
-        ffi.Pointer.fromAddress(_ffiListThreePidCreate());
-    final list_box = _Box(this, list_ptr, "drop_box_FfiListThreePid");
-    return FfiListThreePid._(this, list_box);
-  }
-
-  late final _ffiListThreePidCreatePtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-          "__FfiListThreePidCreate");
-
-  late final _ffiListThreePidCreate =
-      _ffiListThreePidCreatePtr.asFunction<int Function()>();
-
-  late final _ffiListThreePidLenPtr =
-      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-          "__FfiListThreePidLen");
-
-  late final _ffiListThreePidLen =
-      _ffiListThreePidLenPtr.asFunction<int Function(int)>();
-
-  late final _ffiListThreePidElementAtPtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-          "__FfiListThreePidElementAt");
-
-  late final _ffiListThreePidElementAt =
-      _ffiListThreePidElementAtPtr.asFunction<int Function(int, int)>();
-
-  late final _ffiListThreePidRemovePtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-          "__FfiListThreePidRemove");
-
-  late final _ffiListThreePidRemove =
-      _ffiListThreePidRemovePtr.asFunction<int Function(int, int)>();
-
-  late final _ffiListThreePidAddPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-          "__FfiListThreePidAdd");
-
-  late final _ffiListThreePidAdd =
-      _ffiListThreePidAddPtr.asFunction<void Function(int, int)>();
-
-  late final _ffiListThreePidInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListThreePidInsert");
-
-  late final _ffiListThreePidInsert =
-      _ffiListThreePidInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListUserId createFfiListUserId() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListUserIdCreate());
@@ -50008,17 +50008,17 @@ class Account {
   }
 
   /// get the array of registered 3pid on the homeserver for this account
-  Future<FfiListThreePid> get3pids() {
+  Future<FfiListExternalId> externalIds() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._accountGet3pids(
+    final tmp1 = _api._accountExternalIds(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__Account_get_3pids_future_drop");
+    final tmp3_1 = _Box(_api, tmp3_0, "__Account_external_ids_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__accountGet3pidsFuturePoll);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__accountExternalIdsFuturePoll);
     return tmp2;
   }
 
@@ -50178,17 +50178,17 @@ class Account {
   }
 }
 
-class ThreePid {
+class ExternalId {
   final Api _api;
   final _Box _box;
 
-  ThreePid._(this._api, this._box);
+  ExternalId._(this._api, this._box);
 
   /// get address of 3pid
   String address() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._threePidAddress(
+    final tmp1 = _api._externalIdAddress(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -50219,7 +50219,7 @@ class ThreePid {
   String medium() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._threePidMedium(
+    final tmp1 = _api._externalIdMedium(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -50249,7 +50249,7 @@ class ThreePid {
   int addedAt() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._threePidAddedAt(
+    final tmp1 = _api._externalIdAddedAt(
       tmp0,
     );
     final tmp3 = tmp1;
@@ -50261,7 +50261,7 @@ class ThreePid {
   int validatedAt() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._threePidValidatedAt(
+    final tmp1 = _api._externalIdValidatedAt(
       tmp0,
     );
     final tmp3 = tmp1;
@@ -58735,7 +58735,7 @@ class _ActerUserAppSettingsTypingNoticeReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _ThreePidAddressReturn extends ffi.Struct {
+class _ExternalIdAddressReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -58744,7 +58744,7 @@ class _ThreePidAddressReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _ThreePidMediumReturn extends ffi.Struct {
+class _ExternalIdMediumReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -62071,7 +62071,7 @@ class _AccountRequest3pidManagementTokenViaEmailFuturePollReturn
   external int arg5;
 }
 
-class _AccountGet3pidsFuturePollReturn extends ffi.Struct {
+class _AccountExternalIdsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -64053,6 +64053,66 @@ class FfiListEventLocationInfo extends Iterable<EventLocationInfo>
   }
 }
 
+class FfiListExternalId extends Iterable<ExternalId>
+    implements CustomIterable<ExternalId> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListExternalId._(this._api, this._box);
+
+  @override
+  Iterator<ExternalId> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListExternalIdLen(_box.borrow());
+  }
+
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  ExternalId elementAt(int index) {
+    final address = _api._ffiListExternalIdElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return ExternalId._(_api, reference);
+  }
+
+  ExternalId operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  ExternalId remove(int index) {
+    final address = _api._ffiListExternalIdRemove(_box.borrow(), index);
+    final reference =
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_ExternalId");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return ExternalId._(_api, reference);
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void add(ExternalId element) {
+    _api._ffiListExternalIdAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, ExternalId element) {
+    _api._ffiListExternalIdInsert(_box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
 class FfiListFfiString extends Iterable<FfiString>
     implements CustomIterable<FfiString> {
   final Api _api;
@@ -65253,66 +65313,6 @@ class FfiListTaskList extends Iterable<TaskList>
   /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, TaskList element) {
     _api._ffiListTaskListInsert(_box.borrow(), index, element._box.borrow());
-    element._box.move();
-  }
-
-  void drop() {
-    _box.drop();
-  }
-}
-
-class FfiListThreePid extends Iterable<ThreePid>
-    implements CustomIterable<ThreePid> {
-  final Api _api;
-  final _Box _box;
-
-  FfiListThreePid._(this._api, this._box);
-
-  @override
-  Iterator<ThreePid> get iterator => CustomIterator(this);
-
-  @override
-  int get length {
-    return _api._ffiListThreePidLen(_box.borrow());
-  }
-
-  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
-  @override
-  ThreePid elementAt(int index) {
-    final address = _api._ffiListThreePidElementAt(_box.borrow(), index);
-    final reference = _Box(
-      _api,
-      ffi.Pointer.fromAddress(address),
-      "drop_box_Leak",
-      context: this,
-    );
-    return ThreePid._(_api, reference);
-  }
-
-  ThreePid operator [](int index) {
-    return elementAt(index);
-  }
-
-  /// Moves the element out of this list and returns it
-  ThreePid remove(int index) {
-    final address = _api._ffiListThreePidRemove(_box.borrow(), index);
-    final reference =
-        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_ThreePid");
-    reference._finalizer = _api._registerFinalizer(reference);
-    return ThreePid._(_api, reference);
-  }
-
-  /// The inserted element is moved into the list and must not be used again
-  /// Although you can use the "elementAt" method to get a reference to the added element
-  void add(ThreePid element) {
-    _api._ffiListThreePidAdd(_box.borrow(), element._box.borrow());
-    element._box.move();
-  }
-
-  /// The inserted element is moved into the list and must not be used again
-  /// Although you can use the "elementAt" method to get a reference to the added element
-  void insert(int index, ThreePid element) {
-    _api._ffiListThreePidInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
   }
 

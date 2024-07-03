@@ -18,7 +18,7 @@ use crate::{ActerUserAppSettings, Client};
 
 mod three_pid;
 
-pub use three_pid::{ThreePid, ThreePidEmailTokenResponse};
+pub use three_pid::{ExternalId, ThreePidEmailTokenResponse};
 
 #[derive(Clone, Debug)]
 pub struct Account {
