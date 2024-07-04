@@ -14,6 +14,7 @@ class ConvoWithAvatarInfoCard extends ConsumerWidget {
   final Widget? subtitle;
   final Widget? trailing;
   final Widget? avatar;
+  final bool showSelectedIndication;
 
   /// Called when the user long-presses on this list tile.
   ///
@@ -43,6 +44,7 @@ class ConvoWithAvatarInfoCard extends ConsumerWidget {
     this.subtitle,
     this.trailing,
     this.showParents = true,
+    this.showSelectedIndication = true,
   });
 
   @override
@@ -57,9 +59,9 @@ class ConvoWithAvatarInfoCard extends ConsumerWidget {
               color: Colors.transparent,
               child: ListTile(
                 onTap: onTap,
-                selected: roomId == ref.watch(selectedChatIdProvider),
-                selectedTileColor:
-                    Theme.of(context).colorScheme.primary,
+                selected: showSelectedIndication &&
+                    roomId == ref.watch(selectedChatIdProvider),
+                selectedTileColor: Theme.of(context).colorScheme.primary,
                 onFocusChange: onFocusChange,
                 onLongPress: onLongPress,
                 leading: avatarWithIndicator(context, ref),

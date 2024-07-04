@@ -62,6 +62,7 @@ class ChatsSection extends ConsumerWidget {
         return ConvoCard(
           room: chats[index],
           showParents: false,
+          showSelectedIndication: false,
           onTap: () => goToChat(context, chats[index].getRoomIdStr()),
         );
       },

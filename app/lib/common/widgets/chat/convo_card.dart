@@ -23,6 +23,7 @@ class ConvoCard extends ConsumerStatefulWidget {
 
   /// Custom Trailing Widget
   final Widget? trailing;
+  final bool showSelectedIndication;
 
   const ConvoCard({
     super.key,
@@ -30,6 +31,7 @@ class ConvoCard extends ConsumerStatefulWidget {
     this.onTap,
     this.showParents = true,
     this.trailing,
+    this.showSelectedIndication = true,
   });
 
   @override
@@ -56,6 +58,7 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
       showParents: widget.showParents,
       avatarInfo: roomAvatarInfo,
       onTap: widget.onTap,
+      showSelectedIndication: widget.showSelectedIndication,
       subtitle: latestMsg != null
           ? _SubtitleWidget(
               room: widget.room,
