@@ -32,14 +32,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.4.1"
-  animated_size_and_fade:
-    dependency: "direct main"
-    description:
-      name: animated_size_and_fade
-      sha256: "374fac69541eab2c8e4c466cdebd8a1f9203da0a14656213d2a074aacfc9adb3"
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.0.0"
   app_settings:
     dependency: "direct main"
     description:
