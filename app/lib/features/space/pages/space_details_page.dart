@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/widgets/scrollable_list_tab_scroller.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/space/widgets/space_sections/about_section.dart';
 import 'package:acter/features/space/widgets/space_sections/chats_section.dart';
@@ -13,7 +14,6 @@ import 'package:acter/features/space/widgets/space_toolbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:scrollable_list_tab_scroller/scrollable_list_tab_scroller.dart';
 
 class SpaceDetailsPage extends ConsumerStatefulWidget {
   final String spaceId;

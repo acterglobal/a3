@@ -1847,16 +1847,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.1"
-  scrollable_list_tab_scroller:
-    dependency: "direct main"
-    description:
-      name: scrollable_list_tab_scroller
-      sha256: "762373446f84d3ae11f0ef0efaa0271d671b7b52aa2d4815d4870df64b6a303d"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.1"
   scrollable_positioned_list:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: scrollable_positioned_list
       sha256: "1b54d5f1329a1e263269abc9e2543d90806131aa14fe7c6062a8054d57249287"
@@ -1864,7 +1856,7 @@ packages:
     source: hosted
     version: "0.3.8"
   scrolls_to_top:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: scrolls_to_top
       sha256: "8d6684d936b9c1a19c19ee93c836251ae9c803023290762a30cb7657e88e272e"
