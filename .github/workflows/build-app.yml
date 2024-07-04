@@ -106,8 +106,8 @@ jobs:
             flutter_config: "--enable-windows-desktop"
             flutter_build_args: "build windows"
             artifact_prefix: acter-nightly-windows
-            artifact_path: app\\build\\windows\\x64\\runner
-            zip_files: "Release"
+            artifact_path: app\\build\\windows\\x64\\runner\\Release
+            zip_files: "*"
 
     steps:
       - if: ${{ inputs.only != null && matrix.target != inputs.only }}
