@@ -142,12 +142,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
               eventId: event.eventId().toString(),
               onSuccess: () {
                 ref.invalidate(calendarEventProvider);
-                if (context.canPop()) context.pop();
-                if (context.mounted) {
-                  context.goNamed(
-                    Routes.spaceEvents.name,
-                    pathParameters: {'spaceId': roomId},
-                  );
+                if (context.canPop()) {
+                  Navigator.of(context, rootNavigator: true).pop();
                 }
               },
               senderId: event.sender().toString(),
