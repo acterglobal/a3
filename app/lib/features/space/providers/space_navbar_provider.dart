@@ -87,8 +87,17 @@ final tabsProvider =
     const TabEntry(key: TabEntry.membersKey, label: 'Members'),
   );
 
-  tabs.add(
-    const TabEntry(key: TabEntry.actionsKey, label: '•••'),
-  );
+  final membership = ref.watch(roomMembershipProvider(spaceId));
+  bool canAddPin = membership.requireValue!.canString('CanPostPin');
+  bool canAddEvent = membership.requireValue!.canString('CanPostEvent');
+  bool canAddTask = membership.requireValue!.canString('CanPostTaskList');
+  bool canLinkSpaces = membership.requireValue!.canString('CanLinkSpaces');
+
+  //Show action menu only if you have at lease one permission
+  if (canAddPin | canAddEvent | canAddTask | canLinkSpaces) {
+    tabs.add(
+      const TabEntry(key: TabEntry.actionsKey, label: '•••'),
+    );
+  }
   return tabs;
 });
