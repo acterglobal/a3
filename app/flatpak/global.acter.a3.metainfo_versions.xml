@@ -1,3 +1,15 @@
+    <release version="1.24.7040" date="2024-07-04">
+        <url type="details">https://github.com/acterglobal/a3/releases/tag/v1.24.7040</url>
+        <description>
+# Changes since release-latest 
+- [fixes] General UI and Color issues fixes
+- Fix inviting all space members to chat room, fixes #1895
+- Do not render link previews for room and user mentions, fixes #1604
+- Fix chat input Capitalization, fixes #1902
+- Fix support for proper user mentions and room links, fixes #1829
+
+        </description>
+    </release>
     <release version="1.24.6270" date="2024-06-27">
         <url type="details">https://github.com/acterglobal/a3/releases/tag/v1.24.6270</url>
         <description>
