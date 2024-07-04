@@ -1,15 +1,11 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/tasks/providers/tasklists.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-typedef MakeIconFn = Widget Function(BuildContext, Color color);
 
 class TabEntry {
   static const overview = Key('overview');
@@ -22,14 +18,10 @@ class TabEntry {
 
   final Key key;
   final String label;
-  final Routes target;
-  final MakeIconFn makeIcon;
 
   const TabEntry({
     required this.key,
-    required this.makeIcon,
     required this.label,
-    required this.target,
   });
 }
 
@@ -42,15 +34,7 @@ final tabsProvider =
   final spaceTopic = space.topic();
   if (spaceTopic != null) {
     tabs.add(
-      TabEntry(
-        key: TabEntry.overview,
-        label: 'Overview',
-        makeIcon: (ctx, color) => Icon(
-          Atlas.layout_half_thin,
-          color: color,
-        ),
-        target: Routes.space,
-      ),
+      const TabEntry(key: TabEntry.overview, label: 'Overview'),
     );
   }
 
@@ -60,15 +44,7 @@ final tabsProvider =
       final pinsList = await ref.watch(spacePinsProvider(space).future);
       if (pinsList.isNotEmpty) {
         tabs.add(
-          TabEntry(
-            key: TabEntry.pins,
-            label: 'Pins',
-            makeIcon: (ctx, color) => Icon(
-              Atlas.pin_thin,
-              color: color,
-            ),
-            target: Routes.spacePins,
-          ),
+          const TabEntry(key: TabEntry.pins, label: 'Pins'),
         );
       }
     }
@@ -77,15 +53,7 @@ final tabsProvider =
       final taskList = await ref.watch(spaceTasksListsProvider(spaceId).future);
       if (taskList.isNotEmpty) {
         tabs.add(
-          TabEntry(
-            key: TabEntry.tasks,
-            label: 'Tasks',
-            makeIcon: (ctx, color) => Icon(
-              Atlas.list,
-              color: color,
-            ),
-            target: Routes.spaceTasks,
-          ),
+          const TabEntry(key: TabEntry.tasks, label: 'Tasks'),
         );
       }
     }
@@ -94,15 +62,7 @@ final tabsProvider =
       final eventList = await ref.watch(spaceEventsProvider(spaceId).future);
       if (eventList.isNotEmpty) {
         tabs.add(
-          TabEntry(
-            key: TabEntry.events,
-            label: 'Events',
-            makeIcon: (ctx, color) => Icon(
-              Atlas.calendar_schedule_thin,
-              color: color,
-            ),
-            target: Routes.spaceEvents,
-          ),
+          const TabEntry(key: TabEntry.events, label: 'Events'),
         );
       }
     }
@@ -111,43 +71,19 @@ final tabsProvider =
   final spacesList = await ref.watch(relatedSpacesProvider(spaceId).future);
   if (spacesList.isNotEmpty) {
     tabs.add(
-      TabEntry(
-        key: TabEntry.spacesKey,
-        label: 'Spaces',
-        makeIcon: (ctx, color) => Icon(
-          Atlas.connection_thin,
-          color: color,
-        ),
-        target: Routes.spaceRelatedSpaces,
-      ),
+      const TabEntry(key: TabEntry.spacesKey, label: 'Spaces'),
     );
   }
 
   final chatsList = await ref.watch(relatedChatsProvider(spaceId).future);
   if (chatsList.isNotEmpty) {
     tabs.add(
-      TabEntry(
-        key: TabEntry.chatsKey,
-        label: 'Chats',
-        makeIcon: (ctx, color) => Icon(
-          Atlas.chats_thin,
-          color: color,
-        ),
-        target: Routes.spaceChats,
-      ),
+      const TabEntry(key: TabEntry.chatsKey, label: 'Chats'),
     );
   }
 
   tabs.add(
-    TabEntry(
-      key: TabEntry.membersKey,
-      label: 'Members',
-      makeIcon: (ctx, color) => Icon(
-        Atlas.group_team_collective_thin,
-        color: color,
-      ),
-      target: Routes.spaceMembers,
-    ),
+    const TabEntry(key: TabEntry.membersKey, label: 'Members'),
   );
   return tabs;
 });
@@ -164,14 +100,3 @@ class SelectedTabNotifier extends Notifier<Key> {
     });
   }
 }
-
-final selectedTabKeyProvider =
-    NotifierProvider<SelectedTabNotifier, Key>(() => SelectedTabNotifier());
-
-final selectedTabIdxProvider =
-    FutureProvider.autoDispose.family<int, String>((ref, spaceId) async {
-  final tabs = await ref.watch(tabsProvider(spaceId).future);
-  final selectedKey = ref.watch(selectedTabKeyProvider);
-  final index = tabs.indexWhere((e) => e.key == selectedKey);
-  return index < 0 ? 0 : index;
-});

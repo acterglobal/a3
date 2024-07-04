@@ -54,20 +54,21 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Theme.of(context).colorScheme.primary.withOpacity(0.5),
-                Theme.of(context).colorScheme.surface.withOpacity(0.7),
-                Theme.of(context).colorScheme.secondaryContainer,
-              ],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              stops: const [0.0, 0.2, 1.0],
-              tileMode: TileMode.decal,
-            ),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Theme.of(context).colorScheme.primary.withOpacity(0.5),
+              Theme.of(context).colorScheme.surface.withOpacity(0.7),
+              Theme.of(context).colorScheme.secondaryContainer,
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            stops: const [0.0, 0.2, 1.0],
+            tileMode: TileMode.decal,
           ),
-          child: spaceBodyUI()),
+        ),
+        child: spaceBodyUI(),
+      ),
     );
   }
 

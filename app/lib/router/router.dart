@@ -149,7 +149,7 @@ List<StatefulShellBranch> shellBranches(Ref ref) {
   return [
     StatefulShellBranch(
       navigatorKey: homeTabNavKey,
-      routes: makeHomeShellRoutes(ref),
+      routes: makeHomeShellRoutes(),
     ),
     StatefulShellBranch(
       navigatorKey: updateTabNavKey,
