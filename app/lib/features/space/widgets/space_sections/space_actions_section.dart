@@ -20,68 +20,85 @@ class SpaceActionsSection extends StatelessWidget {
           isShowSeeAllButton: false,
           onTapSeeAll: () {},
         ),
-        Wrap(
-          children: [
-            TextButton.icon(
-              onPressed: () {},
-              icon: const Icon(Atlas.pin),
-              label: Text(
-                L10n.of(context).addPin,
-                style: Theme.of(context).textTheme.bodyMedium,
+        Container(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  spaceActionButton(
+                    context,
+                    Atlas.pin,
+                    L10n.of(context).addPin,
+                  ),
+                  const SizedBox(width: 12),
+                  spaceActionButton(
+                    context,
+                    Atlas.calendar_dots,
+                    L10n.of(context).addEvent,
+                  ),
+                  const SizedBox(width: 12),
+                  spaceActionButton(
+                    context,
+                    Atlas.list,
+                    L10n.of(context).addTask,
+                  ),
+                ],
               ),
-            ),
-            TextButton.icon(
-              onPressed: () {},
-              icon: const Icon(Atlas.calendar_dots),
-              label: Text(
-                L10n.of(context).addEvent,
-                style: Theme.of(context).textTheme.bodyMedium,
+              Row(
+                children: [
+                  spaceActionButton(
+                    context,
+                    Atlas.chats,
+                    L10n.of(context).addChat,
+                  ),
+                  const SizedBox(width: 12),
+                  spaceActionButton(
+                    context,
+                    Icons.link,
+                    L10n.of(context).linkChat,
+                  ),
+                  const SizedBox(width: 12),
+                  spaceActionButton(
+                    context,
+                    Icons.people,
+                    L10n.of(context).addSpace,
+                  ),
+                ],
               ),
-            ),
-            TextButton.icon(
-              onPressed: () {},
-              icon: const Icon(Atlas.list),
-              label: Text(
-                L10n.of(context).addTask,
-                style: Theme.of(context).textTheme.bodyMedium,
+              Row(
+                children: [
+                  spaceActionButton(
+                    context,
+                    Icons.link,
+                    L10n.of(context).linkSpace,
+                  ),
+                ],
               ),
-            ),
-            TextButton.icon(
-              onPressed: () {},
-              icon: const Icon(Atlas.chats),
-              label: Text(
-                L10n.of(context).addChat,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ),
-            TextButton.icon(
-              onPressed: () {},
-              icon: const Icon(Atlas.users),
-              label: Text(
-                L10n.of(context).addSpace,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ),
-            TextButton.icon(
-              onPressed: () {},
-              icon: const Icon(Atlas.link),
-              label: Text(
-                L10n.of(context).linkChat,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ),
-            TextButton.icon(
-              onPressed: () {},
-              icon: const Icon(Atlas.link),
-              label: Text(
-                L10n.of(context).linkSpace,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
         const SizedBox(height: 300),
       ],
+    );
+  }
+
+  Widget spaceActionButton(
+    BuildContext context,
+    IconData iconData,
+    String title,
+  ) {
+    return OutlinedButton.icon(
+      style: ButtonStyle(
+        padding: WidgetStateProperty.all(
+            const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+      ),
+      onPressed: () {},
+      icon: Icon(iconData),
+      label: Text(
+        title,
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
     );
   }
 }
