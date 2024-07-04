@@ -7,7 +7,8 @@ use ruma_client_api::{
     uiaa::{AuthData, Password, UserIdentifier},
 };
 use ruma_common::{
-    thirdparty::Medium, ClientSecret, MilliSecondsSinceUnixEpoch, OwnedClientSecret, SessionId,
+    thirdparty::{Medium, ThirdPartyIdentifier},
+    ClientSecret, MilliSecondsSinceUnixEpoch, OwnedClientSecret, SessionId,
 };
 use serde::Deserialize;
 use std::{collections::BTreeMap, ops::Deref};
@@ -44,6 +45,15 @@ pub struct ExternalId {
 }
 
 impl ExternalId {
+    fn new(val: &ThirdPartyIdentifier) -> Self {
+        ExternalId {
+            address: val.address.clone(),
+            medium: val.medium.clone(),
+            added_at: val.added_at,
+            validated_at: val.validated_at,
+        }
+    }
+
     pub fn address(&self) -> String {
         self.address.clone()
     }
@@ -198,16 +208,7 @@ impl Account {
         RUNTIME
             .spawn(async move {
                 let resp = account.get_3pids().await.map_err(clearify_error)?;
-                let records = resp
-                    .threepids
-                    .iter()
-                    .map(|x| ExternalId {
-                        address: x.address.clone(),
-                        medium: x.medium.clone(),
-                        added_at: x.added_at,
-                        validated_at: x.validated_at,
-                    })
-                    .collect();
+                let records = resp.threepids.iter().map(ExternalId::new).collect();
                 Ok(records)
             })
             .await?
