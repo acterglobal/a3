@@ -15,6 +15,7 @@ class TabEntry {
   static const chatsKey = Key('chat');
   static const spacesKey = Key('spaces');
   static const membersKey = Key('members');
+  static const actionsKey = Key('quickActionsKey');
 
   final Key key;
   final String label;
@@ -84,6 +85,10 @@ final tabsProvider =
 
   tabs.add(
     const TabEntry(key: TabEntry.membersKey, label: 'Members'),
+  );
+
+  tabs.add(
+    const TabEntry(key: TabEntry.actionsKey, label: '•••'),
   );
   return tabs;
 });

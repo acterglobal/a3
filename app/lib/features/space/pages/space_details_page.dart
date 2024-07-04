@@ -5,6 +5,7 @@ import 'package:acter/features/space/widgets/space_sections/chats_section.dart';
 import 'package:acter/features/space/widgets/space_sections/events_section.dart';
 import 'package:acter/features/space/widgets/space_sections/members_section.dart';
 import 'package:acter/features/space/widgets/space_sections/pins_section.dart';
+import 'package:acter/features/space/widgets/space_sections/space_actions_section.dart';
 import 'package:acter/features/space/widgets/space_sections/spaces_sesction.dart';
 import 'package:acter/features/space/widgets/space_sections/tasks_section.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
@@ -179,6 +180,8 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
       return SpacesSection(spaceId: widget.spaceId);
     } else if (tabItem.key == TabEntry.membersKey) {
       return MembersSection(spaceId: widget.spaceId);
+    } else if (tabItem.key == TabEntry.actionsKey) {
+      return SpaceActionsSection(spaceId: widget.spaceId);
     } else {
       return const SizedBox.shrink();
     }
