@@ -62,16 +62,17 @@ class SpaceActionsSection extends ConsumerWidget {
           ),
         ),
         spaceActionButton(
-            context: context,
-            iconData: Atlas.list,
-            title: L10n.of(context).addTask,
-            isShow: canAddTask,
-            onPressed: () {
-              showCreateUpdateTaskListBottomSheet(
-                context,
-                initialSelectedSpace: spaceId,
-              );
-            }),
+          context: context,
+          iconData: Atlas.list,
+          title: L10n.of(context).addTask,
+          isShow: canAddTask,
+          onPressed: () {
+            showCreateUpdateTaskListBottomSheet(
+              context,
+              initialSelectedSpace: spaceId,
+            );
+          },
+        ),
         spaceActionButton(
           context: context,
           iconData: Atlas.chats,
