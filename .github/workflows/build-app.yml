@@ -104,10 +104,11 @@ jobs:
             os: windows-latest
             cargo_make_args: desktop
             flutter_config: "--enable-windows-desktop"
-            flutter_build_args: "build windows"
+            flutter_build_args: "build windows --split-debug-info=debug_symbols"
             artifact_prefix: acter-nightly-windows
             artifact_path: app\\build\\windows\\x64\\runner\\Release
             zip_files: "*"
+            with_debug_symbols: true
 
     steps:
       - if: ${{ inputs.only != null && matrix.target != inputs.only }}
@@ -369,8 +370,9 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         name: "Upload debug artifacts"
+        if: ${ {matrix.with_debug_symbols }}
         with:
-          name: ${{ matrix.name }}
+          name: ${{ matrix.name }}-debug-symbols
           path: app/debug_symbols/*
 
       - name: Release
