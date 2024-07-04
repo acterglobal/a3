@@ -1,0 +1,1 @@
+- [Improvement] Space Detail Screen UI-UX improvement
