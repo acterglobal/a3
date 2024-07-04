@@ -406,6 +406,7 @@ class _DefaultHeaderWidgetState extends State<DefaultHeaderWidget>
         onTap: _onTapTab,
         indicator: const BoxDecoration(),
         indicatorWeight: 0,
+        dividerColor: Colors.white12,
         labelPadding: EdgeInsets.zero,
         automaticIndicatorColorAdjustment: false,
         overlayColor: WidgetStateProperty.all(Colors.transparent),
