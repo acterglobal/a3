@@ -612,7 +612,7 @@ where
         room_id: &RoomId,
         transaction_id: &TransactionId,
         content: SerializableEventContent,
-    ) -> Result<(), Self::Error> {
+    ) -> Result<bool, Self::Error> {
         Ok(self
             .inner
             .update_send_queue_event(room_id, transaction_id, content)
@@ -626,7 +626,7 @@ where
         &self,
         room_id: &RoomId,
         transaction_id: &TransactionId,
-    ) -> Result<(), Self::Error> {
+    ) -> Result<bool, Self::Error> {
         Ok(self
             .inner
             .remove_send_queue_event(room_id, transaction_id)
