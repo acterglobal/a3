@@ -87,7 +87,7 @@ jobs:
             rename_file: "Acter.pkg"
             rename_suffix: "pkg"
             with_debug_symbols: true
-          - name: Windows
+          - name: Windows msix
             os: windows-latest
             target: windows
             cargo_make_args: desktop
@@ -99,6 +99,15 @@ jobs:
             artifact_path: app\\build\\windows\\x64\\runner\\Release
             zip_files: false
             with_debug_symbols: true
+
+          - name: Windows exe
+            os: windows-latest
+            cargo_make_args: desktop
+            flutter_config: "--enable-windows-desktop"
+            flutter_build_args: "build windows"
+            artifact_prefix: acter-nightly-windows
+            artifact_path: app\\build\\windows\\x64\\runner
+            zip_files: "Release"
 
     steps:
       - if: ${{ inputs.only != null && matrix.target != inputs.only }}
