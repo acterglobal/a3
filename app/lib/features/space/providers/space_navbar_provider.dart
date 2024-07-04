@@ -92,16 +92,3 @@ final tabsProvider =
   );
   return tabs;
 });
-
-class SelectedTabNotifier extends Notifier<Key> {
-  @override
-  Key build() {
-    return const Key('overview');
-  }
-
-  void switchTo(Key input) {
-    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-      state = input;
-    });
-  }
-}
