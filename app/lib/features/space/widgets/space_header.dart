@@ -22,6 +22,7 @@ class _SpaceHeaderState extends ConsumerState<SpaceHeader> {
       children: [
         SpaceToolbar(spaceId: widget.spaceIdOrAlias),
         SpaceHeaderProfile(widget.spaceIdOrAlias),
+        const SizedBox(height: 12),
       ],
     );
   }
