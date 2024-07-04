@@ -370,7 +370,7 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         name: "Upload debug artifacts"
-        if: ${ {matrix.with_debug_symbols }}
+        if: ${{ matrix.with_debug_symbols }}
         with:
           name: ${{ matrix.name }}-debug-symbols
           path: app/debug_symbols/*
