@@ -36,6 +36,7 @@ class _MyUserAvatar extends ConsumerWidget {
 class _SidebarItemIndicator extends ConsumerStatefulWidget {
   final List<Routes> routes;
   final bool reversed;
+
   const _SidebarItemIndicator({
     required this.routes,
     this.reversed = false,
@@ -128,7 +129,7 @@ class _SidebarItem extends StatelessWidget {
       height: 40,
       width: 40,
       key: tutorialGlobalKey,
-      margin: const EdgeInsets.all(12.0),
+      margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
       child: inner,
     );
   }
@@ -228,6 +229,7 @@ class SidebarWidget extends ConsumerWidget {
         icon: const Icon(
           Atlas.magnifying_glass_thin,
           key: MainNavKeys.quickJump,
+          size: 18,
         ),
         label: Text(
           'Jump',
@@ -242,6 +244,7 @@ class SidebarWidget extends ConsumerWidget {
         icon: const Icon(
           Atlas.home_thin,
           key: MainNavKeys.dashboardHome,
+          size: 18,
         ),
         label: Text(
           'Home',

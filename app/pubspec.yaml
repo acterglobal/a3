@@ -53,6 +53,7 @@ dependencies:
     git:
       url: https://github.com/acterglobal/flutter_mentions.git
   flutter_matrix_html:
+    # path: "../../flutter_matrix_html"
     git:
       url: https://github.com/acterglobal/flutter_matrix_html.git
   flutter_slidable: ^3.0.0

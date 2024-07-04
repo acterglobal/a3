@@ -879,6 +879,7 @@ class _TextInputWidget extends ConsumerWidget {
         },
       },
       child: Focus(
+        focusNode: chatFocus,
         child: FlutterMentions(
           key: mentionKey,
           // restore input if available, but only as a read on startup
@@ -898,13 +899,13 @@ class _TextInputWidget extends ConsumerWidget {
             }
           },
           textInputAction: TextInputAction.newline,
+          textCapitalization: TextCapitalization.sentences,
           enabled: ref.watch(_allowEdit(roomId)),
           onSubmitted: (value) => onSendButtonPressed(),
           style: Theme.of(context).textTheme.bodyMedium,
           cursorColor: Theme.of(context).colorScheme.primary,
           maxLines: 6,
           minLines: 1,
-          focusNode: chatFocus,
           onTap: () => onTextTap(
             ref.read(chatInputProvider(roomId)).emojiPickerVisible,
             ref,

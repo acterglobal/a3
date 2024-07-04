@@ -789,7 +789,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "310543cbaa2e5e33cdefdcda501824d2273e0a22"
+      resolved-ref: f3da8da87a01c3761a8becf530834f883abc16b1
       url: "https://github.com/acterglobal/flutter_matrix_html.git"
     source: git
     version: "1.2.2"

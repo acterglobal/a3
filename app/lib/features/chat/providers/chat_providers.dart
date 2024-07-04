@@ -59,15 +59,18 @@ final chatTopic =
   return c?.topic();
 });
 
+bool msgFilter(types.Message m) {
+  return m is! types.UnsupportedMessage &&
+      !(m is types.CustomMessage && !renderCustomMessageBubble(m));
+}
+
 final renderableChatMessagesProvider =
     StateProvider.autoDispose.family<List<Message>, Convo>((ref, convo) {
   return ref
       .watch(chatStateProvider(convo).select((value) => value.messages))
       .where(
         // filter only items we can show
-        (m) =>
-            m is! types.UnsupportedMessage &&
-            !(m is types.CustomMessage && !renderCustomMessageBubble(m)),
+        msgFilter,
       )
       .toList()
       .reversed
