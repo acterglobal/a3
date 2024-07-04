@@ -9,7 +9,6 @@ import 'package:acter/features/space/widgets/space_sections/spaces_sesction.dart
 import 'package:acter/features/space/widgets/space_sections/tasks_section.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/features/space/widgets/space_toolbar.dart';
-import 'package:animated_size_and_fade/animated_size_and_fade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -98,18 +97,21 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
           builder: (context, showHeader, child) {
             return Stack(
               children: [
-                AnimatedSizeAndFade(
-                  sizeDuration: const Duration(milliseconds: 700),
-                  child: showHeader
-                      ? SpaceHeader(spaceIdOrAlias: widget.spaceId)
-                      : const SizedBox.shrink(),
+                AnimatedContainer(
+                  height: showHeader ? null : 0,
+                  curve: Curves.easeIn,
+                  duration: const Duration(seconds: 1),
+                  child: SpaceHeader(spaceIdOrAlias: widget.spaceId),
                 ),
-                !showHeader
-                    ? SpaceToolbar(
-                        spaceId: widget.spaceId,
-                        spaceTitle: Text(displayName ?? ''),
-                      )
-                    : const SizedBox.shrink(),
+                AnimatedContainer(
+                  height: !showHeader ? null : 0,
+                  curve: Curves.easeOut,
+                  duration: const Duration(seconds: 1),
+                  child: SpaceToolbar(
+                    spaceId: widget.spaceId,
+                    spaceTitle: Text(displayName ?? ''),
+                  ),
+                ),
               ],
             );
           },

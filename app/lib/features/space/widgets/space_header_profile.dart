@@ -40,10 +40,11 @@ class SpaceHeaderProfile extends ConsumerWidget {
                 onAvatarTap: () => goToSpace(context, spaceId),
               ),
               parentBadges: parentBadges,
-              size: 80,
+              size: 70,
               badgesSize: 30,
             ),
           ),
+          const SizedBox(width: 8),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[

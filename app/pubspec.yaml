@@ -128,7 +128,6 @@ dependencies:
   dotted_border: ^2.1.0
   firebase_core: ^3.1.0
   scrollable_list_tab_scroller: ^3.0.1
-  animated_size_and_fade: ^4.0.0
 
 dev_dependencies:
   flutter_test:
