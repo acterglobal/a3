@@ -38,85 +38,82 @@ class SpaceActionsSection extends ConsumerWidget {
     bool canAddTask = membership.requireValue!.canString('CanPostTaskList');
     bool canLinkSpaces = membership.requireValue!.canString('CanLinkSpaces');
 
-    return Container(
-      padding: const EdgeInsets.all(14),
-      child: Wrap(
-        crossAxisAlignment: WrapCrossAlignment.start,
-        children: [
-          spaceActionButton(
-            context: context,
-            iconData: Atlas.pin,
-            title: L10n.of(context).addPin,
-            isShow: canAddPin,
-            onPressed: () => context.pushNamed(
-              Routes.actionAddPin.name,
-              queryParameters: {'spaceId': spaceId},
-            ),
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.start,
+      children: [
+        spaceActionButton(
+          context: context,
+          iconData: Atlas.pin,
+          title: L10n.of(context).addPin,
+          isShow: canAddPin,
+          onPressed: () => context.pushNamed(
+            Routes.actionAddPin.name,
+            queryParameters: {'spaceId': spaceId},
           ),
-          spaceActionButton(
-            context: context,
-            iconData: Atlas.calendar_dots,
-            title: L10n.of(context).addEvent,
-            isShow: canAddEvent,
-            onPressed: () => context.pushNamed(
-              Routes.createEvent.name,
-              queryParameters: {'spaceId': spaceId},
-            ),
+        ),
+        spaceActionButton(
+          context: context,
+          iconData: Atlas.calendar_dots,
+          title: L10n.of(context).addEvent,
+          isShow: canAddEvent,
+          onPressed: () => context.pushNamed(
+            Routes.createEvent.name,
+            queryParameters: {'spaceId': spaceId},
           ),
-          spaceActionButton(
-              context: context,
-              iconData: Atlas.list,
-              title: L10n.of(context).addTask,
-              isShow: canAddTask,
-              onPressed: () {
-                showCreateUpdateTaskListBottomSheet(
-                  context,
-                  initialSelectedSpace: spaceId,
-                );
-              }),
-          spaceActionButton(
+        ),
+        spaceActionButton(
             context: context,
-            iconData: Atlas.chats,
-            title: L10n.of(context).addChat,
-            isShow: canLinkSpaces,
-            onPressed: () => context.pushNamed(
-              Routes.createChat.name,
-              queryParameters: {'spaceId': spaceId},
-              extra: 1,
-            ),
+            iconData: Atlas.list,
+            title: L10n.of(context).addTask,
+            isShow: canAddTask,
+            onPressed: () {
+              showCreateUpdateTaskListBottomSheet(
+                context,
+                initialSelectedSpace: spaceId,
+              );
+            }),
+        spaceActionButton(
+          context: context,
+          iconData: Atlas.chats,
+          title: L10n.of(context).addChat,
+          isShow: canLinkSpaces,
+          onPressed: () => context.pushNamed(
+            Routes.createChat.name,
+            queryParameters: {'spaceId': spaceId},
+            extra: 1,
           ),
-          spaceActionButton(
-            context: context,
-            iconData: Icons.people,
-            title: L10n.of(context).addSpace,
-            isShow: canLinkSpaces,
-            onPressed: () => context.pushNamed(
-              Routes.createSpace.name,
-              queryParameters: {'parentSpaceId': spaceId},
-            ),
+        ),
+        spaceActionButton(
+          context: context,
+          iconData: Icons.people,
+          title: L10n.of(context).addSpace,
+          isShow: canLinkSpaces,
+          onPressed: () => context.pushNamed(
+            Routes.createSpace.name,
+            queryParameters: {'parentSpaceId': spaceId},
           ),
-          spaceActionButton(
-            context: context,
-            iconData: Icons.link,
-            title: L10n.of(context).linkChat,
-            isShow: canLinkSpaces,
-            onPressed: () => context.pushNamed(
-              Routes.linkChat.name,
-              pathParameters: {'spaceId': spaceId},
-            ),
+        ),
+        spaceActionButton(
+          context: context,
+          iconData: Icons.link,
+          title: L10n.of(context).linkChat,
+          isShow: canLinkSpaces,
+          onPressed: () => context.pushNamed(
+            Routes.linkChat.name,
+            pathParameters: {'spaceId': spaceId},
           ),
-          spaceActionButton(
-            context: context,
-            iconData: Icons.link,
-            title: L10n.of(context).linkSpace,
-            isShow: canLinkSpaces,
-            onPressed: () => context.pushNamed(
-              Routes.linkSubspace.name,
-              pathParameters: {'spaceId': spaceId},
-            ),
+        ),
+        spaceActionButton(
+          context: context,
+          iconData: Icons.link,
+          title: L10n.of(context).linkSpace,
+          isShow: canLinkSpaces,
+          onPressed: () => context.pushNamed(
+            Routes.linkSubspace.name,
+            pathParameters: {'spaceId': spaceId},
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
