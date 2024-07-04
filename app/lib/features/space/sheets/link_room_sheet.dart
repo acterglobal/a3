@@ -2,7 +2,7 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/room/brief_room_list_entry.dart';
@@ -329,17 +329,14 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     }
 
     if (!parentCanSee) {
-      final spaceProfile = await ref
-          .read(spaceProfileDataForSpaceIdProvider(parentSpaceId).future);
-      final roomProfile =
-          await ref.read(roomProfileDataProvider(room.roomIdStr()).future);
+      final spaceAvatarInfo = ref.read(roomAvatarInfoProvider(parentSpaceId));
       if (!mounted) return;
       final parentSpaceName =
           // ignore: use_build_context_synchronously
-          spaceProfile.profile.displayName ?? L10n.of(context).theParentSpace;
+          spaceAvatarInfo.displayName ?? L10n.of(context).theParentSpace;
       final roomName =
           // ignore: use_build_context_synchronously
-          roomProfile.displayName ?? L10n.of(context).theSelectedRooms;
+          spaceAvatarInfo.displayName ?? L10n.of(context).theSelectedRooms;
       bool shouldChange = await showDialog(
         // ignore: use_build_context_synchronously
         context: context,

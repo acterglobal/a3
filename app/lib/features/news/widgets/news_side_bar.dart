@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/widgets/default_bottom_sheet.dart';
 import 'package:acter/common/widgets/like_button.dart';
 import 'package:acter/common/widgets/redact_content.dart';
@@ -92,8 +92,8 @@ class NewsSideBar extends ConsumerWidget {
             options: AvatarOptions(
               AvatarInfo(
                 uniqueId: roomId,
-                displayName: space.spaceProfileData.displayName,
-                avatar: space.spaceProfileData.getAvatarImage(),
+                displayName: space.avatarInfo.displayName,
+                avatar: space.avatarInfo.avatar,
                 onAvatarTap: () => goToSpace(context, roomId),
               ),
               size: 42,

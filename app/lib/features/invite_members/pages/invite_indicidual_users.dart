@@ -129,15 +129,12 @@ class InviteIndividualUsers extends ConsumerWidget {
     final room = ref.watch(briefRoomItemWithMembershipProvider(roomId));
     return Card(
       child: ListTile(
-        title: Text(user.profile.displayName ?? user.userId),
-        subtitle: user.profile.displayName != null ? Text(user.userId) : null,
+        title: Text(user.avatarInfo.displayName ?? user.userId),
+        subtitle:
+            user.avatarInfo.displayName != null ? Text(user.userId) : null,
         leading: ActerAvatar(
           options: AvatarOptions.DM(
-            AvatarInfo(
-              uniqueId: user.userId,
-              displayName: user.profile.displayName,
-              avatar: user.profile.getAvatarImage(),
-            ),
+            user.avatarInfo,
           ),
         ),
         trailing: UserStateButton(

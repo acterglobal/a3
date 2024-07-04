@@ -2,7 +2,6 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 class MentionProfileBuilder extends ConsumerWidget {
   final String roomId;
@@ -17,33 +16,11 @@ class MentionProfileBuilder extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mentionProfile =
-        ref.watch(roomMemberProvider((userId: authorId, roomId: roomId)));
-    return mentionProfile.when(
-      data: (data) => ActerAvatar(
-        options: AvatarOptions.DM(
-          AvatarInfo(
-            uniqueId: authorId,
-            avatar: data.profile.getAvatarImage(),
-            displayName: data.profile.displayName,
-          ),
-          size: 18,
-        ),
-      ),
-      error: (e, st) {
-        return ActerAvatar(
-          options: AvatarOptions.DM(
-            AvatarInfo(uniqueId: authorId),
-            size: 18,
-          ),
-        );
-      },
-      loading: () => Skeletonizer(
-        child: ActerAvatar(
-          options: AvatarOptions.DM(
-            AvatarInfo(uniqueId: authorId),
-            size: 18,
-          ),
-        ),
+        ref.watch(memberAvatarInfoProvider((userId: authorId, roomId: roomId)));
+    return ActerAvatar(
+      options: AvatarOptions.DM(
+        mentionProfile,
+        size: 18,
       ),
     );
   }

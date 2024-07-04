@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/room/room_avatar_builder.dart';
 import 'package:acter/features/tasks/providers/tasklists.dart';
@@ -142,9 +141,9 @@ class TaskItem extends ConsumerWidget {
       label = L10n.of(context).dueTomorrow;
     } else if (dueDate.isPast) {
       label = dueDate.timeago();
-      iconColor = Theme.of(context).colorScheme.taskOverdueFG;
+      iconColor = Theme.of(context).colorScheme.onSurface;
       textStyle = textStyle?.copyWith(
-        color: Theme.of(context).colorScheme.taskOverdueFG,
+        color: Theme.of(context).colorScheme.error,
       );
     }
     final dateText =
@@ -180,36 +179,16 @@ class TaskItem extends ConsumerWidget {
 
     if (assignees.isEmpty) return null;
 
-    final memberData = ref.watch(
-      roomMemberProvider(
+    final avatarInfo = ref.watch(
+      memberAvatarInfoProvider(
         (roomId: task.roomIdStr(), userId: assignees.first),
       ),
     );
 
-    return memberData.when(
-      data: (data) => ActerAvatar(
-        options: AvatarOptions.DM(
-          AvatarInfo(
-            uniqueId: assignees.first,
-            displayName: data.profile.displayName,
-            avatar: data.profile.getAvatarImage(),
-          ),
-          size: 16,
-        ),
-      ),
-      error: (error, stackTrace) => ActerAvatar(
-        options: AvatarOptions.DM(
-          AvatarInfo(uniqueId: assignees.first),
-          size: 16,
-        ),
-      ),
-      loading: () => Skeletonizer(
-        child: ActerAvatar(
-          options: AvatarOptions.DM(
-            AvatarInfo(uniqueId: assignees.first),
-            size: 16,
-          ),
-        ),
+    return ActerAvatar(
+      options: AvatarOptions.DM(
+        avatarInfo,
+        size: 16,
       ),
     );
   }

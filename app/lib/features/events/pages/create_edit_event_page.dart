@@ -3,7 +3,6 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/base_body_widget.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/events/model/keys.dart';
@@ -107,7 +106,7 @@ class CreateEditEventPageConsumerState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppbar(),
-      body: BaseBody(child: _buildBody()),
+      body: _buildBody(),
     );
   }
 
@@ -128,22 +127,25 @@ class CreateEditEventPageConsumerState
     return SingleChildScrollView(
       child: Form(
         key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 20),
-            _eventNameField(),
-            const SizedBox(height: 10),
-            _eventDateAndTime(),
-            const SizedBox(height: 10),
-            _eventDescriptionField(),
-            const SizedBox(height: 10),
-            if (widget.calendarId == null)
-              const SelectSpaceFormField(canCheck: 'CanPostEvent'),
-            const SizedBox(height: 20),
-            _eventActionButtons(),
-            const SizedBox(height: 30),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 20),
+              _eventNameField(),
+              const SizedBox(height: 10),
+              _eventDateAndTime(),
+              const SizedBox(height: 10),
+              _eventDescriptionField(),
+              const SizedBox(height: 10),
+              if (widget.calendarId == null)
+                const SelectSpaceFormField(canCheck: 'CanPostEvent'),
+              const SizedBox(height: 20),
+              _eventActionButtons(),
+              const SizedBox(height: 30),
+            ],
+          ),
         ),
       ),
     );

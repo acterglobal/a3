@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_link_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
@@ -195,9 +194,6 @@ class PinPage extends ConsumerWidget {
                 centerTitle: false,
                 leadingWidth: 40,
                 toolbarHeight: 100,
-                flexibleSpace: Container(
-                  decoration: const BoxDecoration(gradient: primaryGradient),
-                ),
                 title: _buildTitle(context, ref, acterPin),
                 actions: [
                   _buildActionMenu(context, ref, acterPin),

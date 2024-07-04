@@ -10,12 +10,14 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class EventItem extends StatelessWidget {
   final CalendarEvent event;
+  final EdgeInsetsGeometry? margin;
   final Function(String)? onTapEventItem;
   final bool isShowRsvp;
 
   const EventItem({
     super.key,
     required this.event,
+    this.margin,
     this.onTapEventItem,
     this.isShowRsvp = true,
   });
@@ -34,6 +36,7 @@ class EventItem extends StatelessWidget {
         );
       },
       child: Card(
+        margin: margin,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -63,7 +66,7 @@ class EventItem extends StatelessWidget {
 
     return Card(
       margin: const EdgeInsets.all(12),
-      color: Theme.of(context).colorScheme.surface,
+      color: Theme.of(context).colorScheme.primary,
       child: Container(
         height: 70,
         width: 70,

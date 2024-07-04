@@ -1,10 +1,7 @@
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class UserAvatarWidget extends ConsumerWidget {
   final double size;
@@ -16,25 +13,11 @@ class UserAvatarWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final client = ref.watch(alwaysClientProvider);
-    final userId = client.userId().toString();
-    final accountProfile = ref.watch(accountProfileProvider);
-    return accountProfile.when(
-      data: (data) => ActerAvatar(
-        options: AvatarOptions.DM(
-          AvatarInfo(
-            uniqueId: userId,
-            displayName: data.profile.displayName,
-            avatar: data.profile.getAvatarImage(),
-          ),
-          size: size,
-        ),
-      ),
-      error: (error, stackTrace) => Text(L10n.of(context).couldNotLoadAvatar),
-      loading: () => Skeletonizer(
-        child: ActerAvatar(
-          options: AvatarOptions.DM(AvatarInfo(uniqueId: userId)),
-        ),
+    final accountAvatarInfo = ref.watch(accountAvatarInfoProvider);
+    return ActerAvatar(
+      options: AvatarOptions.DM(
+        accountAvatarInfo,
+        size: size,
       ),
     );
   }

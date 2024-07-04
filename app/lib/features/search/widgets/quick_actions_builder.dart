@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
@@ -41,8 +41,7 @@ class QuickActionsBuilder extends ConsumerWidget {
       hasSpaceWithPermissionProvider('CanPostTaskList'),
     );
     final canPostEvent = (canPostEventProvider.valueOrNull ?? false);
-    final canPostTaskList = isActive(LabsFeature.tasks) &&
-        (canCreateTaskListProvider.valueOrNull ?? false);
+    final canPostTaskList = canCreateTaskListProvider.valueOrNull ?? false;
     return Wrap(
       alignment: WrapAlignment.spaceEvenly,
       spacing: 8,

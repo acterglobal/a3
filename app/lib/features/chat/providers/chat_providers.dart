@@ -59,15 +59,18 @@ final chatTopic =
   return c?.topic();
 });
 
+bool msgFilter(types.Message m) {
+  return m is! types.UnsupportedMessage &&
+      !(m is types.CustomMessage && !renderCustomMessageBubble(m));
+}
+
 final renderableChatMessagesProvider =
     StateProvider.autoDispose.family<List<Message>, Convo>((ref, convo) {
   return ref
       .watch(chatStateProvider(convo).select((value) => value.messages))
       .where(
         // filter only items we can show
-        (m) =>
-            m is! types.UnsupportedMessage &&
-            !(m is types.CustomMessage && !renderCustomMessageBubble(m)),
+        msgFilter,
       )
       .toList()
       .reversed
@@ -189,10 +192,11 @@ final chatMentionsProvider =
   final activeMembers = await ref.read(membersIdsProvider(roomId).future);
   List<Map<String, String>> mentionRecords = [];
   for (final mId in activeMembers) {
-    final data = await ref
-        .watch(roomMemberProvider((roomId: roomId, userId: mId)).future);
+    final data = ref.watch(
+      memberAvatarInfoProvider((roomId: roomId, userId: mId)),
+    );
     Map<String, String> record = {};
-    final displayName = data.profile.displayName;
+    final displayName = data.displayName;
     record['id'] = mId;
     if (displayName != null) {
       record['displayName'] = displayName;
