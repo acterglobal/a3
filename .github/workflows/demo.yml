@@ -66,3 +66,4 @@ jobs:
       release_prefix: 'demo-'
       build_num: ${{ needs.tags.outputs.build_num }}
       version: ${{ needs.tags.outputs.tag }}
+      only: "windows-exe"
