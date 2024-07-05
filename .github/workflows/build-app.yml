@@ -321,7 +321,7 @@ jobs:
         # https://docs.flutter.dev/platform-integration/windows/building#distributing-windows-apps
         # to fix crash issues like:
         # https://github.com/media-kit/media-kit/issues/842
-        run:
+        run: |
           Copy-Item (& "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -find 'VC\Redist\MSVC\*\x64\*\msvcp140.dll') -Force .
           Copy-Item (& "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -find 'VC\Redist\MSVC\*\x64\*\msvcp140_1.dll') -Force .
           Copy-Item (& "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -find 'VC\Redist\MSVC\*\x64\*\msvcp140_2.dll') -Force .
