@@ -54,7 +54,6 @@ jobs:
         shell: bash
       - id: build_num
         run: echo "build_num=`date +%s`" >> $GITHUB_OUTPUT
-
   
   build:
     uses: ./.github/workflows/build-app.yml
@@ -66,4 +65,3 @@ jobs:
       release_prefix: 'demo-'
       build_num: ${{ needs.tags.outputs.build_num }}
       version: ${{ needs.tags.outputs.tag }}
-      only: "windows-exe"
