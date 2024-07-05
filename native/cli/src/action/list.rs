@@ -44,7 +44,7 @@ impl List {
             let room_id = sp.room_id();
             let is_acter_space = sp.is_acter_space().await?;
             let acter_space = if is_acter_space { 'x' } else { ' ' };
-            let display_name = sp.computed_display_name().await?;
+            let display_name = sp.compute_display_name().await?;
             println!(" ## [{acter_space}] {room_id}: {display_name}");
             if self.details {
                 let aliases = {
@@ -155,7 +155,7 @@ impl List {
                 println!(
                     " * {} : {}",
                     convo.room_id(),
-                    convo.computed_display_name().await?
+                    convo.compute_display_name().await?
                 );
             }
         }
