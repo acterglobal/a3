@@ -16,7 +16,7 @@ on:
       release_title:
         required: false
         type: string
-      only:
+      target:
         required: false
         type: string
 
@@ -112,12 +112,12 @@ jobs:
             with_debug_symbols: true
 
     steps:
-      - if: ${{ inputs.only != null && matrix.target != inputs.only }}
+      - if: ${{ inputs.target != null && inputs.target != 'all' && matrix.target != inputs.target }}
         run: |
           echo "Skipping build app for ${{ matrix.name }}"
           exit 1
     
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
  ######  ######## ######## ##     ## ########  
 ##    ## ##          ##    ##     ## ##     ## 
@@ -267,7 +267,7 @@ jobs:
             --dart-define PUSH_SERVER="${{ secrets.PUSH_SERVER }}" \
             --dart-define RAGESHAKE_URL="${{ secrets.RAGESHAKE_URL }}" \
             --dart-define RAGESHAKE_APP_NAME="${{ secrets.RAGESHAKE_APP_NAME }}" \
-            --dart-define RAGESHAKE_APP_VERSION="${{ inputs.version }}/${{ matrix.name }}" \
+            --dart-define RAGESHAKE_APP_VERSION="${{inputs.release_prefix}}${{ inputs.version }}/${{ matrix.name }}" \
             --dart-define DEFAULT_HOMESERVER_URL="${{vars.DEFAULT_HOMESERVER_URL}}" \
             --dart-define DEFAULT_HOMESERVER_NAME="${{vars.DEFAULT_HOMESERVER_NAME}}"
         working-directory: ./app
@@ -395,8 +395,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           draft: true
-          name: ${{ inputs.release_title }} ${{ inputs.version }}
-          tag_name: v${{ inputs.version }}
+          name: ${{ inputs.release_title }}${{inputs.release_prefix}}${{ inputs.version }}
+          tag_name: ${{inputs.release_prefix}}${{ inputs.version }}
           generate_release_notes: false
           files: |
             ${{ matrix.artifact_prefix }}-${{ inputs.version }}.*
