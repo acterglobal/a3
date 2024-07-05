@@ -1,0 +1,1 @@
+[fixes] : General UI color issues fixes
