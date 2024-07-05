@@ -89,7 +89,7 @@ jobs:
             with_debug_symbols: true
           - name: Windows msix
             os: windows-latest
-            target: windows
+            target: windows-msix
             cargo_make_args: desktop
             flutter_config: "--enable-windows-desktop"
             flutter_build_args: "build windows --split-debug-info=debug_symbols"
@@ -102,6 +102,7 @@ jobs:
 
           - name: Windows exe
             os: windows-latest
+            target: windows-exe
             cargo_make_args: desktop
             flutter_config: "--enable-windows-desktop"
             flutter_build_args: "build windows --split-debug-info=debug_symbols"
@@ -313,7 +314,7 @@ jobs:
           sed "s/__TAG__/$TAG/g ; s/__VERSION__/$VERSION/g" .github/templates/ios-manifest.plist.tmpl > ios-manifest.plist
 
       - name: Copy VSCode redistribution libs over
-        if: matrix.target == 'windows'
+        if: matrix.os == 'windows-latest'
         working-directory: ${{ matrix.artifact_path }}
         shell: powershell
         # Copy the latest vscode redistribution .dll files into the folder as per
@@ -327,7 +328,7 @@ jobs:
           Copy-Item (& "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -find 'VC\Redist\MSVC\*\x64\*\vcruntime140.dll') -Force .
           Copy-Item (& "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -find 'VC\Redist\MSVC\*\x64\*\vcruntime140_1.dll') -Force .
       - name: Build MSIX
-        if: matrix.target == 'windows'
+        if: matrix.target == 'windows-msix'
         working-directory: app
         run: dart pub run msix:create --store --build-windows false --version ${{ inputs.version }}.0 -v
 
