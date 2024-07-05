@@ -1,8 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
-
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/settings/widgets/email_address_card.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -215,8 +213,7 @@ class EmailAddressesPage extends ConsumerWidget {
   }
 
   Future<void> addEmailAddress(BuildContext context, WidgetRef ref) async {
-    final client = ref.read(alwaysClientProvider);
-    final manager = client.threePidManager();
+    final account = ref.read(accountProvider);
     final newValue = await showDialog<String>(
       context: context,
       builder: (BuildContext context) => const AddEmailAddr(),
@@ -224,7 +221,7 @@ class EmailAddressesPage extends ConsumerWidget {
     if (newValue != null && context.mounted) {
       EasyLoading.show(status: L10n.of(context).addingEmailAddress);
       try {
-        await manager.requestTokenViaEmail(newValue);
+        await account.request3pidManagementTokenViaEmail(newValue);
         ref.invalidate(emailAddressesProvider);
         if (!context.mounted) {
           EasyLoading.dismiss();

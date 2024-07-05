@@ -19,6 +19,7 @@ class ForgotPassword extends ConsumerStatefulWidget {
   static Key passwordKey = const Key('pw-reset-password-field');
   static Key emailFieldKey = const Key('pw-reset-email-field');
   static Key submitKey = const Key('pw-reset-submit-btn');
+
   const ForgotPassword({super.key});
 
   @override
@@ -154,7 +155,7 @@ class _AskForEmail extends StatelessWidget {
     final lang = L10n.of(context);
     EasyLoading.show(status: lang.sendingEmail);
     try {
-      final resp = await sdk.api.requestPasswordChangeEmailToken(
+      final resp = await sdk.api.requestPasswordChangeTokenViaEmail(
         defaultServerUrl,
         emailController.text.trim(),
       );
