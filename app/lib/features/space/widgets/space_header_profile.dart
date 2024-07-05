@@ -1,15 +1,20 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/spaces/space_info.dart';
 import 'package:acter/features/space/widgets/member_avatar.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+
+final _log = Logger('a3::space::space_header');
 
 class SpaceHeaderProfile extends ConsumerWidget {
   static const headerKey = Key('space-header');
@@ -20,67 +25,61 @@ class SpaceHeaderProfile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profileData = ref.watch(spaceProfileDataForSpaceIdProvider(spaceId));
-    final canonicalParent = ref.watch(canonicalParentProvider(spaceId));
-    return profileData.when(
-      data: (spaceProfile) {
-        return Padding(
-          padding: const EdgeInsets.only(left: 10),
-          child: Row(
-            children: <Widget>[
-              ActerAvatar(
-                options: AvatarOptions(
-                  AvatarInfo(
-                    uniqueId: spaceId,
-                    displayName: spaceProfile.profile.displayName,
-                    avatar: spaceProfile.profile.getAvatarImage(),
-                  ),
-                  parentBadges: canonicalParent.valueOrNull != null
-                      ? [
-                          AvatarInfo(
-                            uniqueId: canonicalParent.valueOrNull!.space
-                                .getRoomIdStr(),
-                            displayName: canonicalParent
-                                .valueOrNull!.profile.displayName,
-                            avatar: canonicalParent.valueOrNull!.profile
-                                .getAvatarImage(),
-                          ),
-                        ]
-                      : [],
-                  size: 80,
-                  badgesSize: 30,
-                ),
+    final spaceAvatarInfo = ref.watch(roomAvatarInfoProvider(spaceId));
+    final parentBadges =
+        ref.watch(parentAvatarInfosProvider(spaceId)).valueOrNull;
+    final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
+
+    return Padding(
+      padding: const EdgeInsets.only(left: 10),
+      child: Row(
+        children: <Widget>[
+          ActerAvatar(
+            options: AvatarOptions(
+              AvatarInfo(
+                uniqueId: spaceId,
+                displayName: spaceAvatarInfo.displayName,
+                avatar: spaceAvatarInfo.avatar,
                 onAvatarTap: () => goToSpace(context, spaceId),
-                onParentBadgesTap: () => goToSpace(
-                  context,
-                  canonicalParent.valueOrNull!.space.getRoomIdStr(),
-                ),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
+              parentBadges: parentBadges,
+              size: 80,
+              badgesSize: 30,
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              SelectionArea(
+                child: GestureDetector(
+                  onTap: () {
+                    if (membership?.canString('CanSetName') == true) {
+                      showEditSpaceNameBottomSheet(
+                        context: context,
+                        titleValue: spaceAvatarInfo.displayName ?? '',
+                        spaceId: spaceId,
+                        ref: ref,
+                      );
+                    }
+                  },
+                  child: Padding(
                     padding: const EdgeInsets.only(left: 8.0),
                     child: Text(
-                      spaceProfile.profile.displayName ?? spaceId,
+                      spaceAvatarInfo.displayName ?? spaceId,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10, left: 10),
-                    child: SpaceInfo(spaceId: spaceId),
-                  ),
-                  Consumer(builder: spaceMembersBuilder),
-                ],
+                ),
               ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10, left: 10),
+                child: SpaceInfo(spaceId: spaceId),
+              ),
+              Consumer(builder: spaceMembersBuilder),
             ],
           ),
-        );
-      },
-      error: (error, stack) => Text(
-        L10n.of(context).loadingFailed(error),
+        ],
       ),
-      loading: () => Skeletonizer(child: Text(L10n.of(context).loading)),
     );
   }
 
@@ -145,6 +144,34 @@ class SpaceHeaderProfile extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+
+  void showEditSpaceNameBottomSheet({
+    required BuildContext context,
+    required String titleValue,
+    required String spaceId,
+    required WidgetRef ref,
+  }) {
+    showEditTitleBottomSheet(
+      context: context,
+      bottomSheetTitle: L10n.of(context).editName,
+      titleValue: titleValue,
+      onSave: (newName) async {
+        try {
+          EasyLoading.show(status: L10n.of(context).updateName);
+          final space = await ref.read(spaceProvider(spaceId).future);
+          await space.setName(newName);
+          EasyLoading.dismiss();
+          if (!context.mounted) return;
+          context.pop();
+        } catch (e, st) {
+          _log.severe('Failed to edit space name', e, st);
+          EasyLoading.dismiss();
+          if (!context.mounted) return;
+          EasyLoading.showError(L10n.of(context).updateNameFailed(e));
+        }
+      },
     );
   }
 }

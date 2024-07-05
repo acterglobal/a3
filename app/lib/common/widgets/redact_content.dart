@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
@@ -61,9 +60,7 @@ class RedactContentWidget extends ConsumerWidget {
         padding: const EdgeInsets.all(8.0),
         child: Text(
           description ?? L10n.of(context).removeThisContent,
-          style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                color: Theme.of(context).colorScheme.neutral6,
-              ),
+          style: Theme.of(context).textTheme.bodySmall,
         ),
       ),
       description: Padding(

@@ -14,6 +14,7 @@ void logoutConfirmationDialog(BuildContext context, WidgetRef ref) {
     context: context,
     builder: (BuildContext ctx) {
       return AlertDialog(
+        backgroundColor: Theme.of(context).colorScheme.surface,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

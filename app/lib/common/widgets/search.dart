@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -29,7 +28,7 @@ class Search extends StatelessWidget {
                 hintText: L10n.of(context).search,
                 hintStyle: TextStyle(
                   fontSize: 16,
-                  color: Theme.of(context).colorScheme.neutral4,
+                  color: Theme.of(context).colorScheme.surface,
                 ),
                 prefixIcon: const Icon(Atlas.magnifying_glass),
                 border: InputBorder.none,

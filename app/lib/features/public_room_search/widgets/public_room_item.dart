@@ -99,11 +99,7 @@ class PublicRoomItem extends ConsumerWidget {
                 leading: profileInfo.when(
                   data: (profile) => ActerAvatar(
                     options: AvatarOptions(
-                      AvatarInfo(
-                        uniqueId: item.roomIdStr(),
-                        displayName: profile.displayName,
-                        avatar: profile.getAvatarImage(),
-                      ),
+                      profile,
                     ),
                   ),
                   error: (e, s) {

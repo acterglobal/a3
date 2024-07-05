@@ -41,7 +41,6 @@ default-features = false
 features = ["e2e-encryption"]
 
 [workspace.dependencies.ruma]
-#version = "0.10.1"
 git = "https://github.com/Hywan/ruma"
 branch = "feat-sliding-sync-list-include-heroes"
 features = ["client-api-c", "compat-upload-signatures", "compat-user-id", "compat-arbitrary-length-ids", "unstable-msc3401"]
@@ -49,22 +48,22 @@ features = ["client-api-c", "compat-upload-signatures", "compat-user-id", "compa
 [workspace.dependencies.ruma-client-api]
 git = "https://github.com/Hywan/ruma"
 branch = "feat-sliding-sync-list-include-heroes"
-# version = "0.18.0"
 
 [workspace.dependencies.ruma-common]
 git = "https://github.com/Hywan/ruma"
 branch = "feat-sliding-sync-list-include-heroes"
-#version = "0.13.0"
 
 [workspace.dependencies.ruma-events]
 git = "https://github.com/Hywan/ruma"
 branch = "feat-sliding-sync-list-include-heroes"
-#version = "0.28.1"
 
 [workspace.dependencies.ruma-macros]
 git = "https://github.com/Hywan/ruma"
 branch = "feat-sliding-sync-list-include-heroes"
-#version = "0.13.0"
+
+[workspace.dependencies.url]
+version = "2.5.0"
+features = ["serde"]
 
 [workspace.dependencies]
 strum = { version = "0.26.1", features = ["derive"] }

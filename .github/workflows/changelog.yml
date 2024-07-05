@@ -1,0 +1,42 @@
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+name: Changelog Check
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for changes in .changes
+        id: changed-changes
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+             .changes/*.md
+      - name: Not found - add Comment
+        if: steps.changed-changes.outputs.any_changed == 'false'
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            Hey there :wave:,
+            and thanks for the contribution. But it seems like you forgot to 
+            - [ ] :newspaper:  Add a markdown file in `.changes/` explaining what changed
+          comment_tag: changelog_comment
+      - name: Found - delete Comment
+        if: steps.changed-changes.outputs.any_changed == 'true'
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            :+1: Thanks heaps, looks like all necessary changes have been done,
+            - [x] :newspaper:  Add a markdown file in `.changes/` explaining what changed
+          comment_tag: changelog_comment
+          mode: delete

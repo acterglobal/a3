@@ -22,6 +22,16 @@ class SessionsPage extends ConsumerWidget {
           elevation: 0.0,
           title: Text(L10n.of(context).sessions),
           centerTitle: true,
+          actions: [
+            IconButton(
+              icon: const Icon(Atlas.arrows_rotating_right_thin),
+              iconSize: 28,
+              color: Theme.of(context).colorScheme.surface,
+              onPressed: () async {
+                ref.invalidate(allSessionsProvider);
+              },
+            ),
+          ],
         ),
         body: allSessions.when(
           data: (sessions) => buildSessions(context, sessions),

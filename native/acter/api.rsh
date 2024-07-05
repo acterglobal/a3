@@ -35,6 +35,15 @@ fn guest_client(base_path: string, media_cache_base_path: string, default_homese
 /// Create a new client from the registration token
 fn register_with_token(base_path: string, media_cache_base_path: string, username: string, password: string, registration_token: string, default_homeserver_name: string, default_homeserver_url: string, device_name: string) -> Future<Result<Client>>;
 
+/// Request the registration token via email
+fn request_registration_token_via_email(base_path: string, media_cache_base_path: string, username: string, default_homeserver_name: string, default_homeserver_url: string, email: string) -> Future<Result<RegistrationTokenViaEmailResponse>>;
+
+/// Request the password change token via email
+fn request_password_change_token_via_email(default_homeserver_url: string, email: string) -> Future<Result<PasswordChangeEmailTokenResponse>>;
+
+/// Finish password reset without login
+fn reset_password(default_homeserver_url: string, sid: string, client_secret: string, new_val: string) -> Future<Result<bool>>;
+
 /// destroy the local data of a session
 fn destroy_local_data(base_path: string, media_cache_base_path: Option<string>, username: string, default_homeserver_name: string) -> Future<Result<bool>>;
 
@@ -346,6 +355,17 @@ object RoomId {
 
 object UserId {
     fn to_string() -> string;
+}
+
+object RegistrationTokenViaEmailResponse {
+    fn sid() -> string;
+    fn submit_url() -> Option<string>;
+}
+
+object PasswordChangeEmailTokenResponse {
+    fn client_secret() -> string;
+    fn sid() -> string;
+    fn submit_url() -> Option<string>;
 }
 
 
@@ -1065,6 +1085,21 @@ object Room {
     /// update the power levels of specified member
     fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;
 
+    /// Change the avatar of the room
+    fn upload_avatar(uri: string) -> Future<Result<MxcUri>>;
+
+    /// Remove the avatar of the room
+    fn remove_avatar() -> Future<Result<EventId>>;
+
+    /// what is the description / topic
+    fn topic() -> Option<string>;
+
+    /// set description / topic of the room
+    fn set_topic(topic: string) -> Future<Result<EventId>>;
+
+    /// set name of the room
+    fn set_name(name: string) -> Future<Result<EventId>>;
+
 }
 
 
@@ -1574,6 +1609,9 @@ object TaskUpdateBuilder {
 
     /// set the description for this task list
     fn description_text(text: string);
+    /// set description html text
+    fn description_html(body: string, html_body: string);
+
     fn unset_description();
     fn unset_description_update();
 
@@ -1637,6 +1675,9 @@ object TaskDraft {
 
     /// set the description for this task
     fn description_text(text: string);
+    /// set description html text
+    fn description_html(body: string, html_body: string);
+
     fn unset_description();
 
     /// set the sort order for this task
@@ -1746,6 +1787,9 @@ object TaskListDraft {
     /// set the description for this task list
     fn description_text(text: string);
     fn description_markdown(text: string);
+    /// set description html text
+    fn description_html(body: string, html_body: string);
+
     fn unset_description();
 
     /// set the sort order for this task list
@@ -1773,6 +1817,9 @@ object TaskListUpdateBuilder {
 
     /// set the description for this task list
     fn description_text(text: string);
+    /// set description html text
+    fn description_html(body: string, html_body: string);
+
     fn unset_description();
     fn unset_description_update();
 
@@ -2241,9 +2288,14 @@ object Account {
 
     /// listen to updates to the app settings
     fn subscribe_app_settings_stream() -> Stream<bool>;
-}
 
-object ThreePidManager {
+    // deactivate the account. This can not be reversed. The username will
+    // be blocked from any future usage, all personal data will be removed.
+    fn deactivate(password: string) -> Future<Result<bool>>;
+
+    /// change password
+    fn change_password(old_val: string, new_val: string) -> Future<Result<bool>>;
+
     /// get email addresses from third party identifier
     fn confirmed_email_addresses() -> Future<Result<Vec<string>>>;
 
@@ -2252,16 +2304,45 @@ object ThreePidManager {
 
     /// Requests token via email and add email address to third party identifier.
     /// If password is not enough complex, homeserver may reject this request.
-    fn request_token_via_email(email_address: string) -> Future<Result<bool>>;
+    fn request_3pid_management_token_via_email(email_address: string) -> Future<Result<ThreePidEmailTokenResponse>>;
+
+    /// get the array of registered 3pid on the homeserver for this account
+    fn external_ids() -> Future<Result<Vec<ExternalId>>>;
+
+    /// find out session id that is related with email address and add email address to account using session id & password
+    fn try_confirm_email_status(email_address: string, password: string) -> Future<Result<bool>>;
 
     /// Submit token to finish email register
     fn submit_token_from_email(email_address: string, token: string, password: string) -> Future<Result<bool>>;
 
-    /// Submit token to finish email register
-    fn try_confirm_email_status(email_address: string, password: string) -> Future<Result<bool>>;
-
     /// Remove email address from confirmed list or unconfirmed list
     fn remove_email_address(email_address: string) -> Future<Result<bool>>;
+}
+
+object ExternalId {
+    /// get address of 3pid
+    fn address() -> string;
+
+    /// get medium of 3pid
+    /// one of [email, msisdn]
+    fn medium() -> string;
+
+    /// get time when the homeserver associated the third party identifier with the user
+    fn added_at() -> u64;
+
+    /// get time when the identifier was validated by the identity server
+    fn validated_at() -> u64;
+}
+
+object ThreePidEmailTokenResponse {
+    /// get session id
+    fn sid() -> string;
+
+    /// get submit url
+    fn submit_url() -> Option<string>;
+
+    /// get client secret
+    fn client_secret() -> string;
 }
 
 object SyncState {
@@ -2465,16 +2546,6 @@ object CreateSpaceSettings {}
 
 /// Main entry point for `acter`.
 object Client {
-
-    // deactivate the account. This can not be reversed. The username will
-    // be blocked from any future usage, all personal data will be removed.
-    fn deactivate(password: string) -> Future<Result<bool>>;
-
-    /// change password
-    fn change_password(old_val: string, new_val: string) -> Future<Result<bool>>;
-
-    // Special
-
     /// start the sync
     fn start_sync() -> SyncState;
 
@@ -2673,9 +2744,6 @@ object Client {
 
     /// get only past events that I responded as rsvp
     fn my_past_events(secs_from_now: Option<u32>) -> Future<Result<Vec<CalendarEvent>>>;
-
-    /// get intermediate info of login (via email and phone) from account data
-    fn three_pid_manager() -> Result<ThreePidManager>;
 
     /// super invites interface
     fn super_invites() -> SuperInvites;

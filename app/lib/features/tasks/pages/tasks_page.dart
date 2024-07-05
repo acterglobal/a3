@@ -1,11 +1,10 @@
-import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
+import 'package:acter/common/widgets/plus_icon_widget.dart';
 import 'package:acter/features/tasks/providers/tasklists.dart';
 import 'package:acter/features/tasks/sheets/create_update_task_list.dart';
 import 'package:acter/features/tasks/widgets/all_tasks_done.dart';
-import 'package:acter/features/tasks/widgets/task_list_card.dart';
+import 'package:acter/features/tasks/widgets/task_list_item_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -14,7 +13,9 @@ class TasksPage extends ConsumerWidget {
   static const createNewTaskListKey = Key('tasks-create-list');
   static const taskListsKey = Key('tasks-task-lists');
 
-  const TasksPage({super.key});
+  TasksPage({super.key});
+
+  final ValueNotifier<bool> showCompletedTask = ValueNotifier(false);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,13 +25,30 @@ class TasksPage extends ConsumerWidget {
         slivers: <Widget>[
           PageHeaderWidget(
             title: L10n.of(context).tasks,
-            sectionDecoration: const BoxDecoration(
-              gradient: primaryGradient,
-            ),
             actions: [
-              IconButton(
-                key: createNewTaskListKey,
-                icon: const Icon(Atlas.plus_circle),
+              ValueListenableBuilder(
+                valueListenable: showCompletedTask,
+                builder: (context, value, child) {
+                  return TextButton.icon(
+                    onPressed: () => showCompletedTask.value = !value,
+                    icon: Icon(
+                      value
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                      size: 18,
+                    ),
+                    label: Text(
+                      value
+                          ? L10n.of(context).hideCompleted
+                          : L10n.of(context).showCompleted,
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                    ),
+                  );
+                },
+              ),
+              PlusIconWidget(
                 onPressed: () => showCreateUpdateTaskListBottomSheet(context),
               ),
             ],
@@ -50,7 +68,16 @@ class TasksPage extends ConsumerWidget {
                 delegate: SliverChildBuilderDelegate(
                   (BuildContext context, int index) {
                     TaskList taskList = taskLists[index];
-                    return TaskListCard(taskList: taskList);
+                    return ValueListenableBuilder(
+                      valueListenable: showCompletedTask,
+                      builder: (context, value, child) {
+                        return TaskListItemCard(
+                          taskList: taskList,
+                          showCompletedTask: value,
+                          showSpace: true,
+                        );
+                      },
+                    );
                   },
                   childCount: taskLists.length,
                 ),

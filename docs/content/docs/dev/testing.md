@@ -209,12 +209,6 @@ sudo systemctl status matrix-synapse
 
 You needn't to add `admin` user with `register_new_matrix_user`.
 
-#### Firewall
-
-If you are running synapse on a virtual or remote machine and API call is not working, you can update the firewall rules to allow access to the ports. To turn off the public profile of a server firewall on a `Ubuntu` linux, you can use `gufw` and disable it like so:
-
-![Ubuntu Firewall](../../../static/images/ubuntu-firewall.png)
-
 </details>
 
 <details>
@@ -361,13 +355,13 @@ sudo systemctl status matrix-synapse
 
 You needn't to add `admin` user with `register_new_matrix_user`.
 
+</details>
+
 #### Firewall
 
 If you are running synapse on a virtual or remote machine and API call is not working, you can update the firewall rules to allow access to the ports. To turn off the public profile of a server firewall on a `Ubuntu` linux, you can use `gufw` and disable it like so:
 
 ![Ubuntu Firewall](../../../static/images/ubuntu-firewall.png)
-
-</details>
 
 #### Testing the server
 
@@ -413,6 +407,49 @@ CREATE DATABASE synapse ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' template=tem
 4. Run this command `cargo run -p acter-cli mock --homeserver-url http://192.168.142.130:8008 --homeserver-name ds9.acter.global`
 
 This server name must be the same as one in `/etc/matrix-synapse/conf.d/server_name.yaml`.
+
+#### Email config
+
+We will use `mailhog` as local mail server for authentication.
+Probably `mailtutan` may be good choice, but it is dummy server that doesn't respond a request from `synapse`.
+`synapse` is pending if there is no reply from mail server.
+
+1. Clone & prepare to run `mailhog`
+
+```
+git clone https://github.com/mailhog/MailHog.git
+cd MailHog
+go mod vendor
+```
+
+2. Run `mailhog` without specific auth file
+
+```
+go run .
+```
+
+If you don't specify separate auth file, `mailhog` captures emails incoming to all domains.
+For example, we are using `{uuid}@example.org` in integration test and `mailhog` captures email incoming to `example.org`.
+
+4. Insert the following config to `homeserver.yaml`
+
+```yaml
+email:
+  smtp_host: localhost
+  smtp_port: 1025
+  force_tls: false
+  require_transport_security: false
+  enable_tls: false
+  notif_from: "Your Friendly %(app)s homeserver <noreply@example.com>"
+  can_verify_email: true
+```
+
+Here `force_tls/require_transport_security/enable_tls` should be `false` as `mailhog` doesn't support TLS properly.
+And `can_verify_email` is not specified in [dev docs](https://matrix-org.github.io/synapse/latest/usage/configuration/config_documentation.html#email), but it should be set because `synapse` uses it.
+
+5. Restart `synapse`
+
+When you run tests (ex: `auth::can_register_via_email` or `auth::can_reset_password_via_email`) related with authentication via email, you can see `{uuid}@example.org` receives email from `noreply@example.com`.
 
 ### Rust integration tests
 

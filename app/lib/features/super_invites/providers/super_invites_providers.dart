@@ -14,6 +14,18 @@ final superInvitesTokensProvider =
   return (await superInvites.tokens()).toList();
 });
 
+final superInviteTokenProvider = FutureProvider.autoDispose
+    .family<SuperInviteToken, String>((ref, tokenCode) async {
+  final tokens = await ref.watch(superInvitesTokensProvider.future);
+  for (final token in tokens) {
+    if (token.token() == tokenCode) {
+      return token;
+    }
+  }
+
+  throw 'SuperInvite $tokenCode not found';
+});
+
 final superInvitesProvider = Provider<SuperInvites>((ref) {
   final client = ref.watch(alwaysClientProvider);
   return client.superInvites();
@@ -48,9 +60,16 @@ final inviteCodeForSelectRoomOnly = FutureProvider.autoDispose
 });
 
 /// Given the list of rooms this creates a new token with a random key
-Future<String> newSuperInviteForRooms(WidgetRef ref, List<String> rooms) async {
+Future<String> newSuperInviteForRooms(
+  WidgetRef ref,
+  List<String> rooms, {
+  String? inviteCode,
+}) async {
   final superInvites = ref.read(superInvitesProvider);
   final builder = superInvites.newTokenUpdater();
+  if (inviteCode != null) {
+    builder.token(inviteCode);
+  }
   for (final roomId in rooms) {
     builder.addRoom(roomId);
   }

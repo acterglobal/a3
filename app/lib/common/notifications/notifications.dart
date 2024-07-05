@@ -20,8 +20,9 @@ import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:push/push.dart';
-import 'package:riverpod/riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:acter/config/firebase_options.dart';
 
 final _log = Logger('a3::notifications');
 
@@ -118,6 +119,11 @@ Future<void> initializeNotifications() async {
     return; // nothing for us to do here.
   }
 
+  if (Platform.isAndroid) {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  }
   final NotificationAppLaunchDetails? notificationAppLaunchDetails = !kIsWeb &&
           Platform.isLinux
       ? null
@@ -463,7 +469,7 @@ Future<bool> onNewToken(String token) async {
     'Received the update information for the token. Updating all clients.',
   );
   // ignore: use_build_context_synchronously
-  final sdk = rootNavKey.currentContext!.read(sdkProvider).requireValue;
+  final sdk = await rootNavKey.currentContext!.read(sdkProvider.future);
 
   for (final client in sdk.clients) {
     final deviceId = client.deviceId().toString();

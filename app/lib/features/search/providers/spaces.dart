@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/search/model/search_term_delegate.dart';
 import 'package:acter/features/search/providers/search.dart';
@@ -24,8 +25,9 @@ final AutoDisposeFutureProvider<List<SpaceDetails>> spacesFoundProvider =
   final searchValue = ref.watch(searchValueProvider).toLowerCase();
 
   for (final space in spaces) {
-    final info = await ref.watch(spaceProfileDataProvider(space).future);
     final roomId = space.getRoomIdStr();
+    final info = ref.watch(roomAvatarInfoProvider(roomId));
+
     if (searchValue.isNotEmpty) {
       if (!(info.displayName!.toLowerCase()).contains(searchValue)) {
         continue;
@@ -37,11 +39,7 @@ final AutoDisposeFutureProvider<List<SpaceDetails>> spacesFoundProvider =
         roomId,
         icon: ActerAvatar(
           options: AvatarOptions(
-            AvatarInfo(
-              uniqueId: roomId,
-              displayName: info.displayName,
-              avatar: info.getAvatarImage(),
-            ),
+            info,
           ),
         ),
       ),

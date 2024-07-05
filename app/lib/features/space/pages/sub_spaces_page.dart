@@ -1,8 +1,6 @@
 import 'dart:math';
 
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -28,11 +26,7 @@ class SubSpacesPage extends ConsumerWidget {
     BuildContext context,
   ) {
     return PopupMenuButton(
-      icon: Icon(
-        Atlas.plus_circle,
-        key: moreOptionKey,
-        color: Theme.of(context).colorScheme.neutral5,
-      ),
+      icon: const Icon(Atlas.plus_circle, key: moreOptionKey),
       iconSize: 28,
       color: Theme.of(context).colorScheme.surface,
       itemBuilder: (BuildContext context) => <PopupMenuEntry>[
@@ -99,38 +93,35 @@ class SubSpacesPage extends ConsumerWidget {
     const int minCount = 3;
     final crossAxisCount = max(1, min(widthCount, minCount));
     // get platform of context.
-    return DecoratedBox(
-      decoration: const BoxDecoration(gradient: primaryGradient),
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
-            spaces.when(
-              data: (spaces) {
-                return renderSubSpaces(
-                      context,
-                      spaceIdOrAlias,
-                      spaces,
-                      crossAxisCount: crossAxisCount,
-                      titleBuilder: () => titleBuilder(
-                        context,
-                        spaces.membership?.canString('CanLinkSpaces') ?? false,
-                      ),
-                    ) ??
-                    renderFallback(
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
+          spaces.when(
+            data: (spaces) {
+              return renderSubSpaces(
+                    context,
+                    spaceIdOrAlias,
+                    spaces,
+                    crossAxisCount: crossAxisCount,
+                    titleBuilder: () => titleBuilder(
                       context,
                       spaces.membership?.canString('CanLinkSpaces') ?? false,
-                    );
-              },
-              error: (error, stack) => Center(
-                child: Text(L10n.of(context).loadingFailed(error)),
-              ),
-              loading: () => Center(
-                child: Text(L10n.of(context).loading),
-              ),
+                    ),
+                  ) ??
+                  renderFallback(
+                    context,
+                    spaces.membership?.canString('CanLinkSpaces') ?? false,
+                  );
+            },
+            error: (error, stack) => Center(
+              child: Text(L10n.of(context).loadingFailed(error)),
             ),
-          ],
-        ),
+            loading: () => Center(
+              child: Text(L10n.of(context).loading),
+            ),
+          ),
+        ],
       ),
     );
   }

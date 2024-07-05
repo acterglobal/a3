@@ -35,22 +35,13 @@ class NewsItem extends ConsumerStatefulWidget {
 }
 
 class _NewsItemState extends ConsumerState<NewsItem> {
-  int currentSlideIndex = 0;
+  final ValueNotifier<int> currentSlideIndex = ValueNotifier(0);
 
   @override
   Widget build(BuildContext context) {
     final roomId = widget.news.roomId().toString();
     final space = ref.watch(briefSpaceItemProvider(roomId));
     final slides = widget.news.slides().toList();
-    final color = slides[currentSlideIndex].colors();
-    final bgColor = convertColor(
-      color?.background(),
-      Theme.of(context).colorScheme.surface,
-    );
-    final fgColor = convertColor(
-      color?.color(),
-      Theme.of(context).colorScheme.onPrimary,
-    );
 
     return Stack(
       children: [
@@ -58,11 +49,12 @@ class _NewsItemState extends ConsumerState<NewsItem> {
           scrollDirection: Axis.horizontal,
           itemCount: slides.length,
           onPageChanged: (page) {
-            currentSlideIndex = page;
-            setState(() {});
+            currentSlideIndex.value = page;
           },
           itemBuilder: (context, idx) {
             final slideType = slides[idx].typeStr();
+            final bgColor = getBackgroundColor(slides[idx]);
+            final fgColor = getForegroundColor(slides[idx]);
             switch (slideType) {
               case 'image':
                 return ImageSlide(
@@ -103,15 +95,15 @@ class _NewsItemState extends ConsumerState<NewsItem> {
           children: [
             Padding(
               padding: const EdgeInsets.only(right: 60, bottom: 20),
-              child: newsActionButtons(newsSlide: slides[currentSlideIndex]),
+              child:
+                  newsActionButtons(newsSlide: slides[currentSlideIndex.value]),
             ),
             InkWell(
               onTap: () => goToSpace(context, roomId),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: space.when(
-                  data: (space) =>
-                      Text(space.spaceProfileData.displayName ?? roomId),
+                  data: (space) => Text(space.avatarInfo.displayName ?? roomId),
                   error: (e, st) => Text(L10n.of(context).errorLoadingSpace(e)),
                   loading: () => Skeletonizer(
                     child: Text(roomId),
@@ -133,19 +125,40 @@ class _NewsItemState extends ConsumerState<NewsItem> {
             visible: slides.length > 1,
             child: Align(
               alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 50),
-                child: CarouselIndicator(
-                  count: slides.length,
-                  index: currentSlideIndex,
-                  width: 10,
-                  height: 10,
-                ),
+              child: ValueListenableBuilder(
+                valueListenable: currentSlideIndex,
+                builder: (context, value, child) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 50),
+                    child: CarouselIndicator(
+                      count: slides.length,
+                      index: value,
+                      width: 10,
+                      height: 10,
+                    ),
+                  );
+                },
               ),
             ),
           ),
         ),
       ],
+    );
+  }
+
+  Color getBackgroundColor(NewsSlide newsSlide) {
+    final color = newsSlide.colors();
+    return convertColor(
+      color?.background(),
+      Theme.of(context).colorScheme.surface,
+    );
+  }
+
+  Color getForegroundColor(NewsSlide newsSlide) {
+    final color = newsSlide.colors();
+    return convertColor(
+      color?.color(),
+      Theme.of(context).colorScheme.onPrimary,
     );
   }
 

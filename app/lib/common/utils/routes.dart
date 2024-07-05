@@ -43,8 +43,8 @@ enum Routes {
 
   // --- tasks
   tasks('/tasks'),
-  task('/tasks/:taskListId([^/]+)/:taskId([^/]+)'),
-  taskList('/tasks/:taskListId([^/]+)'),
+  taskListDetails('/tasks/:taskListId([^/]+)'),
+  taskItemDetails('/tasks/:taskListId([^/]+)/:taskId([^/]+)'),
 
   // --- Invite
   inviteIndividual('/inviteIndividual'),
@@ -99,7 +99,6 @@ enum Routes {
 
   // -- super invites
   settingsSuperInvites('/settings/super_invites'),
-  settingsSuperInvitesUpdate('/settings/super_invites/:token/update'),
   // -- utils
   bugReport('/bug-report'),
   quickJump('/quick-jump'),

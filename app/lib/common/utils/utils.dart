@@ -41,7 +41,7 @@ extension Context on BuildContext {
   // Incase if you face any issue using this then please wrap your widget
   // with consumer and then call your provider
 
-  T read<T>(ProviderBase<T> provider) {
+  T read<T>(ProviderListenable<T> provider) {
     return ProviderScope.containerOf(this, listen: false).read(provider);
   }
 }
@@ -157,8 +157,10 @@ Future<bool> openLink(String target, BuildContext context) async {
   }
 }
 
-Future<void> shareTextToWhatsApp(BuildContext context,
-    {required String text,}) async {
+Future<void> shareTextToWhatsApp(
+  BuildContext context, {
+  required String text,
+}) async {
   final url = 'whatsapp://send?text=$text';
   final encodedUri = Uri.parse(url);
   if (await canLaunchUrl(encodedUri)) {
@@ -309,7 +311,6 @@ enum RoomVisibility { Public, Private, SpaceVisible }
 
 enum LabsFeature {
   // apps in general
-  tasks,
   notes,
   cobudget,
   polls,
@@ -320,6 +321,7 @@ enum LabsFeature {
   chatUnread,
 
   // not a lab anymore but needs to stay for backwards compat
+  tasks,
   events,
   pins,
 

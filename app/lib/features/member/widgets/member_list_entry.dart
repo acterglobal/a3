@@ -1,7 +1,6 @@
 import 'package:acter/features/member/dialogs/show_member_info_drawer.dart';
-import 'package:acter/common/models/profile_data.dart';
+
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -36,10 +35,7 @@ class _MemberListInnerSkeleton extends StatelessWidget {
       subtitle: Skeletonizer(
         child: Text(
           L10n.of(context).noId,
-          style: Theme.of(context)
-              .textTheme
-              .labelLarge!
-              .copyWith(color: Theme.of(context).colorScheme.neutral5),
+          style: Theme.of(context).textTheme.labelLarge,
           overflow: TextOverflow.ellipsis,
         ),
       ),
@@ -63,14 +59,13 @@ class MemberListEntry extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profileData =
-        ref.watch(roomMemberProvider((userId: memberId, roomId: roomId)));
-    return profileData.when(
+    final member =
+        ref.watch(memberProvider((userId: memberId, roomId: roomId)));
+    return member.when(
       data: (data) => _MemberListEntryInner(
         userId: memberId,
         roomId: roomId,
-        member: data.member,
-        profile: data.profile,
+        member: data,
         isShowActions: isShowActions,
       ),
       error: (e, s) => Text(L10n.of(context).errorLoadingProfile(e)),
@@ -81,7 +76,6 @@ class MemberListEntry extends ConsumerWidget {
 
 class _MemberListEntryInner extends ConsumerWidget {
   final Member member;
-  final ProfileData profile;
   final String userId;
   final String roomId;
   final bool isShowActions;
@@ -89,7 +83,6 @@ class _MemberListEntryInner extends ConsumerWidget {
   const _MemberListEntryInner({
     required this.userId,
     required this.member,
-    required this.profile,
     required this.roomId,
     this.isShowActions = true,
   });
@@ -110,6 +103,9 @@ class _MemberListEntryInner extends ConsumerWidget {
       );
     }
 
+    final avatarInfo =
+        ref.watch(memberAvatarInfoProvider((userId: userId, roomId: roomId)));
+
     return ListTile(
       onTap: () async {
         if (context.mounted) {
@@ -123,26 +119,19 @@ class _MemberListEntryInner extends ConsumerWidget {
       },
       leading: ActerAvatar(
         options: AvatarOptions.DM(
-          AvatarInfo(
-            uniqueId: userId,
-            displayName: profile.displayName,
-            avatar: profile.getAvatarImage(),
-          ),
+          avatarInfo,
           size: 18,
         ),
       ),
       title: Text(
-        profile.displayName ?? userId,
+        avatarInfo.displayName ?? userId,
         style: Theme.of(context).textTheme.bodyMedium,
         overflow: TextOverflow.ellipsis,
       ),
-      subtitle: profile.displayName != null
+      subtitle: avatarInfo.displayName != null
           ? Text(
               userId,
-              style: Theme.of(context)
-                  .textTheme
-                  .labelLarge!
-                  .copyWith(color: Theme.of(context).colorScheme.neutral5),
+              style: Theme.of(context).textTheme.labelLarge,
               overflow: TextOverflow.ellipsis,
             )
           : null,

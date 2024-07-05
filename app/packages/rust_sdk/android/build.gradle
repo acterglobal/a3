@@ -34,6 +34,10 @@ android {
     defaultConfig {
         minSdkVersion 16
     }
+
+    packagingOptions {
+            doNotStrip '**.so'
+    }
 }
 
 dependencies {

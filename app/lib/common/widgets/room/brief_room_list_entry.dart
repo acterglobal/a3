@@ -43,8 +43,7 @@ class BriefRoomEntry extends ConsumerWidget {
       enabled: canLink,
       leading: RoomAvatarBuilder(roomId: roomId, avatarSize: 24),
       title: roomData.maybeWhen(
-        data: (roomData) =>
-            Text(roomData.roomProfileData.displayName ?? roomId),
+        data: (roomData) => Text(roomData.avatarInfo.displayName ?? roomId),
         orElse: () => Text(roomId),
       ),
       subtitle: subtitle,

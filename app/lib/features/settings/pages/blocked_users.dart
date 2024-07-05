@@ -1,6 +1,4 @@
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
-
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
@@ -80,10 +78,7 @@ class BlockedUsersPage extends ConsumerWidget {
           centerTitle: true,
           actions: [
             IconButton(
-              icon: Icon(
-                Atlas.plus_circle_thin,
-                color: Theme.of(context).colorScheme.neutral5,
-              ),
+              icon: const Icon(Atlas.plus_circle_thin),
               iconSize: 28,
               color: Theme.of(context).colorScheme.surface,
               onPressed: () async => await onAdd(context, ref),

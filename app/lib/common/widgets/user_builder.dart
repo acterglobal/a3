@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -121,11 +121,11 @@ class UserStateButton extends ConsumerWidget {
       dismissOnTap: false,
     );
     try {
-      final profile = ref
-          .read(roomMemberProvider((userId: userId, roomId: room.roomIdStr())))
+      final member = ref
+          .read(memberProvider((userId: userId, roomId: room.roomIdStr())))
           .valueOrNull;
-      if (profile?.member != null) {
-        await profile!.member.kick('Cancel Invite');
+      if (member != null) {
+        await member.kick('Cancel Invite');
       }
       EasyLoading.dismiss();
     } catch (e) {
@@ -159,10 +159,7 @@ class UserStateButton extends ConsumerWidget {
     return InkWell(
       onTap: () => _handleInvite(context),
       child: Chip(
-        avatar: Icon(
-          Atlas.paper_airplane_thin,
-          color: Theme.of(context).colorScheme.neutral6,
-        ),
+        avatar: const Icon(Atlas.paper_airplane_thin),
         label: Text(L10n.of(context).invite),
       ),
     );

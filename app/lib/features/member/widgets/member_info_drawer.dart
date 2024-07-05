@@ -1,4 +1,3 @@
-import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/menu_item_widget.dart';
@@ -23,14 +22,12 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 class _MemberInfoDrawerInner extends ConsumerWidget {
   final Member member;
-  final ProfileData profile;
   final String memberId;
   final bool isShowActions;
 
   const _MemberInfoDrawerInner({
     required this.memberId,
     required this.member,
-    required this.profile,
     required this.isShowActions,
   });
 
@@ -71,6 +68,9 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final avatarInfo = ref.watch(
+      memberAvatarInfoProvider((userId: memberId, roomId: member.roomIdStr())),
+    );
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -78,9 +78,13 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 20),
-            _buildAvatarUI(context, profile),
+            _buildAvatarUI(context, avatarInfo),
             const SizedBox(height: 20),
-            if (profile.displayName != null) _buildDisplayName(context),
+            if (avatarInfo.displayName != null)
+              Center(
+                child:
+                    Text(avatarInfo.displayName!), // FIXME: make this prettier
+              ),
             const SizedBox(height: 20),
             _buildUserName(context),
             const SizedBox(height: 20),
@@ -244,14 +248,13 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
     return ListTile(
       leading: RoomAvatarBuilder(roomId: roomId, avatarSize: 24),
       title: roomData.maybeWhen(
-        data: (roomData) =>
-            Text(roomData.roomProfileData.displayName ?? roomId),
+        data: (roomData) => Text(roomData.avatarInfo.displayName ?? roomId),
         orElse: () => Text(roomId),
       ),
     );
   }
 
-  Widget _buildAvatarUI(BuildContext context, ProfileData memberProfile) {
+  Widget _buildAvatarUI(BuildContext context, AvatarInfo memberAvatarInfo) {
     return Center(
       child: Container(
         decoration: BoxDecoration(
@@ -265,19 +268,13 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
           options: AvatarOptions.DM(
             AvatarInfo(
               uniqueId: memberId,
-              avatar: memberProfile.getAvatarImage(),
-              displayName: memberProfile.displayName,
+              avatar: memberAvatarInfo.avatar,
+              displayName: memberAvatarInfo.displayName,
             ),
             size: 50,
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildDisplayName(BuildContext context) {
-    return Center(
-      child: Text(profile.displayName!), // FIXME: make this prettier
     );
   }
 
@@ -314,12 +311,9 @@ class MemberInfoDrawer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref
-        .watch(roomMemberProvider((roomId: roomId, userId: memberId)))
-        .when(
+    return ref.watch(memberProvider((roomId: roomId, userId: memberId))).when(
           data: (data) => _MemberInfoDrawerInner(
-            member: data.member,
-            profile: data.profile,
+            member: data,
             memberId: memberId,
             isShowActions: isShowActions,
           ),

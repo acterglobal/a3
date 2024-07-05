@@ -189,7 +189,11 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
     EasyLoading.show(status: L10n.of(context).changingYourPassword);
     try {
       final client = ref.read(alwaysClientProvider);
-      await client.changePassword(oldPassword.text.trim(), newPassword.text.trim());
+      final account = client.account();
+      await account.changePassword(
+        oldPassword.text.trim(),
+        newPassword.text.trim(),
+      );
       oldPassword.clear();
       newPassword.clear();
       confirmPassword.clear();
