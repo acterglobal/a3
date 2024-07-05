@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 // Main Colors
-Color brandColor = const Color(0xff1E4E7B);
+Color brandColor = const Color(0xff126bab);
 Color secondaryColor = const Color(0xFF74A64D);
 
 // Background Colors
-Color surfaceColor = const Color(0xff282c31);
-Color backgroundColor = const Color(0xff1b1f23);
+Color surfaceColor = const Color(0xff181c1f);
+Color backgroundColor = const Color(0xff0d0f11);
 
 //On colors
 Color whiteColor = Colors.white;

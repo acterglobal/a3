@@ -1,0 +1,2 @@
+- Switching to black background and bolder blue colors for highlights for better contrast
+- Fix to make sure the description of the visibility items is legible 
