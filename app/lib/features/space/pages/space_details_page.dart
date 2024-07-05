@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/scrollable_list_tab_scroller.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
+import 'package:acter/features/space/widgets/skeletons/space_details_skeletons.dart';
 import 'package:acter/features/space/widgets/space_sections/about_section.dart';
 import 'package:acter/features/space/widgets/space_sections/chats_section.dart';
 import 'package:acter/features/space/widgets/space_sections/events_section.dart';
@@ -14,6 +15,7 @@ import 'package:acter/features/space/widgets/space_toolbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SpaceDetailsPage extends ConsumerStatefulWidget {
   final String spaceId;
@@ -96,8 +98,8 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
               spacePageUI(tabsList[index]),
         );
       },
-      error: (error, stack) => Container(),
-      loading: () => Container(),
+      error: (error, stack) => Text(L10n.of(context).loadingFailed(error)),
+      loading: () => const SpaceDetailsSkeletons(),
     );
   }
 
@@ -166,24 +168,25 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   }
 
   Widget spacePageUI(TabEntry tabItem) {
-    if (tabItem.key == TabEntry.overview) {
-      return AboutSection(spaceId: widget.spaceId);
-    } else if (tabItem.key == TabEntry.pins) {
-      return PinsSection(spaceId: widget.spaceId);
-    } else if (tabItem.key == TabEntry.tasks) {
-      return TasksSection(spaceId: widget.spaceId);
-    } else if (tabItem.key == TabEntry.events) {
-      return EventsSection(spaceId: widget.spaceId);
-    } else if (tabItem.key == TabEntry.chatsKey) {
-      return ChatsSection(spaceId: widget.spaceId);
-    } else if (tabItem.key == TabEntry.spacesKey) {
-      return SpacesSection(spaceId: widget.spaceId);
-    } else if (tabItem.key == TabEntry.membersKey) {
-      return MembersSection(spaceId: widget.spaceId);
-    } else if (tabItem.key == TabEntry.actionsKey) {
-      return SpaceActionsSection(spaceId: widget.spaceId);
-    } else {
-      return const SizedBox.shrink();
+    switch (tabItem.key) {
+      case TabEntry.overview:
+        return AboutSection(spaceId: widget.spaceId);
+      case TabEntry.pins:
+        return PinsSection(spaceId: widget.spaceId);
+      case TabEntry.tasks:
+        return TasksSection(spaceId: widget.spaceId);
+      case TabEntry.events:
+        return EventsSection(spaceId: widget.spaceId);
+      case TabEntry.chatsKey:
+        return ChatsSection(spaceId: widget.spaceId);
+      case TabEntry.spacesKey:
+        return SpacesSection(spaceId: widget.spaceId);
+      case TabEntry.membersKey:
+        return MembersSection(spaceId: widget.spaceId);
+      case TabEntry.actionsKey:
+        return SpaceActionsSection(spaceId: widget.spaceId);
+      default:
+        return const SizedBox.shrink();
     }
   }
 
