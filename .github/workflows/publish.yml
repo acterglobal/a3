@@ -67,7 +67,7 @@ jobs:
       build_num: ${{ steps.build_num.outputs.build_num }}
       prev_tag: ${{ inputs.prev_tag || 'release-latest' }}
       targets: ${{ inputs.target || 'all' }}
-      release_title: ${{ inputs.custom_title || 'Acter '}}
+      release_title: ${{ inputs.custom_title || 'Release '}}
     steps:
       - id: version
         # the suffix 0 allows us to provide up to 9 more hotfixes on the same day
@@ -80,7 +80,6 @@ jobs:
     needs:
      - tags
     with:
-      release_prefix: 'v'
       build_num: ${{ needs.tags.outputs.build_num }}
       version: ${{ needs.tags.outputs.tag }}
       release_title: ${{ needs.tags.outputs.release_title }}
