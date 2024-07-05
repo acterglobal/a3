@@ -45,10 +45,10 @@ pub struct ExternalId {
 }
 
 impl ExternalId {
-    fn new(val: &ThirdPartyIdentifier) -> Self {
+    fn new(val: ThirdPartyIdentifier) -> Self {
         ExternalId {
-            address: val.address.clone(),
-            medium: val.medium.clone(),
+            address: val.address,
+            medium: val.medium,
             added_at: val.added_at,
             validated_at: val.validated_at,
         }
@@ -208,7 +208,7 @@ impl Account {
         RUNTIME
             .spawn(async move {
                 let resp = account.get_3pids().await.map_err(clearify_error)?;
-                let records = resp.threepids.iter().map(ExternalId::new).collect();
+                let records = resp.threepids.into_iter().map(ExternalId::new).collect();
                 Ok(records)
             })
             .await?
