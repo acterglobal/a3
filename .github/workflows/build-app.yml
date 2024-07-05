@@ -305,13 +305,27 @@ jobs:
         ##        ##   ##  ##    ##  
         ##        ##    ##  ######   
 
-      - name: Generate manifest
+      - name: Generate iOS manifest
         if: matrix.target == 'ios'
         env:
           VERSION: ${{inputs.version}}
         run: |
           sed "s/__TAG__/$TAG/g ; s/__VERSION__/$VERSION/g" .github/templates/ios-manifest.plist.tmpl > ios-manifest.plist
 
+      - name: Copy VSCode redistribution libs over
+        if: matrix.target == 'windows'
+        working-directory: ${{ matrix.artifact_path }}
+        shell: powershell
+        # Copy the latest vscode redistribution .dll files into the folder as per
+        # https://docs.flutter.dev/platform-integration/windows/building#distributing-windows-apps
+        # to fix crash issues like:
+        # https://github.com/media-kit/media-kit/issues/842
+        run:
+          Copy-Item (& "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -find 'VC\Redist\MSVC\*\x64\*\msvcp140.dll') -Force .
+          Copy-Item (& "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -find 'VC\Redist\MSVC\*\x64\*\msvcp140_1.dll') -Force .
+          Copy-Item (& "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -find 'VC\Redist\MSVC\*\x64\*\msvcp140_2.dll') -Force .
+          Copy-Item (& "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -find 'VC\Redist\MSVC\*\x64\*\vcruntime140.dll') -Force .
+          Copy-Item (& "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -find 'VC\Redist\MSVC\*\x64\*\vcruntime140_1.dll') -Force .
       - name: Build MSIX
         if: matrix.target == 'windows'
         working-directory: app
