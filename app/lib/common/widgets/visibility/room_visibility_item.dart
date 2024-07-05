@@ -39,10 +39,7 @@ class RoomVisibilityItem extends StatelessWidget {
         ),
         subtitle: Text(
           subtitle,
-          style: Theme.of(context)
-              .textTheme
-              .labelMedium!
-              .copyWith(color: Theme.of(context).colorScheme.surface),
+          style: Theme.of(context).textTheme.labelMedium,
         ),
         onTap: isShowRadio && spaceVisibilityValue != null && onChanged != null
             ? () => onChange(spaceVisibilityValue, context)
