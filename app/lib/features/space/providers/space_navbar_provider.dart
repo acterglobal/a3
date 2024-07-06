@@ -89,8 +89,8 @@ final tabsProvider =
 
   final membership = ref.watch(roomMembershipProvider(spaceId));
   bool canAddPin = membership.valueOrNull?.canString('CanPostPin') == true;
-  bool canAddEvent = membership.valueOrNull?.canString('CanPostEvent') == true;;
-  bool canAddTask = membership.valueOrNull?.canString('CanPostTaskList') == true;;
+  bool canAddEvent = membership.valueOrNull?.canString('CanPostEvent') == true;
+  bool canAddTask = membership.valueOrNull?.canString('CanPostTaskList') == true;
   bool canLinkSpaces = membership.valueOrNull?.canString('CanLinkSpaces') == true;
 
   //Show action menu only if you have at lease one permission

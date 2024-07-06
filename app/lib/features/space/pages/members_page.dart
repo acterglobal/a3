@@ -32,7 +32,9 @@ class SpaceMembersPage extends ConsumerWidget {
                 ? OutlinedButton(
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                     ),
                     onPressed: () => context.pushNamed(
                       Routes.spaceInvite.name,

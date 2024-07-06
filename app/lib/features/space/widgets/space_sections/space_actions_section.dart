@@ -36,10 +36,10 @@ class SpaceActionsSection extends ConsumerWidget {
     bool canAddPin = membership.valueOrNull?.canString('CanPostPin') == true;
     bool canAddEvent =
         membership.valueOrNull?.canString('CanPostEvent') == true;
-    ;
+
     bool canAddTask =
         membership.valueOrNull?.canString('CanPostTaskList') == true;
-    ;
+
     bool canLinkSpaces =
         membership.valueOrNull?.canString('CanLinkSpaces') == true;
 
