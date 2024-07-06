@@ -220,7 +220,7 @@ final roomDisplayNameProvider =
 });
 
 /// Caching the MemoryImage of each room
-final _roomAvatarProvider =
+final roomAvatarProvider =
     FutureProvider.family<MemoryImage?, String>((ref, roomId) async {
   try {
     final sdk = await ref.watch(sdkProvider.future);
@@ -249,7 +249,7 @@ final roomAvatarInfoProvider =
   }
 
   final displayName = ref.watch(roomDisplayNameProvider(roomId)).valueOrNull;
-  final avatarData = ref.watch(_roomAvatarProvider(roomId)).valueOrNull;
+  final avatarData = ref.watch(roomAvatarProvider(roomId)).valueOrNull;
 
   return AvatarInfo(
     uniqueId: roomId,
@@ -278,8 +278,8 @@ final joinRulesAllowedRoomsProvider = FutureProvider.autoDispose
 /// Get the List of related of the spaces for the space. Errors if the space or any
 /// related space isn't found. Stays up  to date with underlying client data if
 /// a space was found.
-final relatedSpacesProvider = FutureProvider.autoDispose
-    .family<List<Space>, String>((ref, spaceId) async {
+final relatedSpacesProvider =
+    FutureProvider.family<List<Space>, String>((ref, spaceId) async {
   return (await ref.watch(spaceRelationsOverviewProvider(spaceId).future))
       .knownSubspaces;
 });
