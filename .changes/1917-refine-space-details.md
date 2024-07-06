@@ -1,1 +1,1 @@
-- [Improvement] Space Detail Screen UI-UX improvement
+- [Improvement] Total overhaul of the Space Detail Screen replacing the navigation with a fresh and variable top bar navigation, nice intro sections with full-screen-views of the actual features and quick actions on the bottom (if you have the rights to). Making the space screen a more mobile-friendly and nicer to work with.

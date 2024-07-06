@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class ChatsSection extends ConsumerWidget {
   final String spaceId;
@@ -26,8 +27,10 @@ class ChatsSection extends ConsumerWidget {
       data: (events) => buildChatsSectionUI(context, events),
       error: (error, stack) =>
           Center(child: Text(L10n.of(context).loadingFailed(error))),
-      loading: () => Center(
-        child: Text(L10n.of(context).loading),
+      loading: () => Skeletonizer(
+        child: Center(
+          child: Text(L10n.of(context).loading),
+        ),
       ),
     );
   }

@@ -130,7 +130,7 @@ final GlobalKey<NavigatorState> searchTabNavKey = GlobalKey<NavigatorState>(
 
 List<RouteBase> makeRoutes(Ref ref) {
   return [
-    ...makeGeneralRoutes(ref),
+    ...makeGeneralRoutes(),
     StatefulShellRoute.indexedStack(
       parentNavigatorKey: rootNavKey,
       builder: (

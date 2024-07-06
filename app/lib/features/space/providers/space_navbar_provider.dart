@@ -88,10 +88,10 @@ final tabsProvider =
   );
 
   final membership = ref.watch(roomMembershipProvider(spaceId));
-  bool canAddPin = membership.requireValue!.canString('CanPostPin');
-  bool canAddEvent = membership.requireValue!.canString('CanPostEvent');
-  bool canAddTask = membership.requireValue!.canString('CanPostTaskList');
-  bool canLinkSpaces = membership.requireValue!.canString('CanLinkSpaces');
+  bool canAddPin = membership.valueOrNull?.canString('CanPostPin') == true;
+  bool canAddEvent = membership.valueOrNull?.canString('CanPostEvent') == true;;
+  bool canAddTask = membership.valueOrNull?.canString('CanPostTaskList') == true;;
+  bool canLinkSpaces = membership.valueOrNull?.canString('CanLinkSpaces') == true;
 
   //Show action menu only if you have at lease one permission
   if (canAddPin | canAddEvent | canAddTask | canLinkSpaces) {

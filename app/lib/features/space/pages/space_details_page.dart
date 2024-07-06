@@ -8,7 +8,7 @@ import 'package:acter/features/space/widgets/space_sections/events_section.dart'
 import 'package:acter/features/space/widgets/space_sections/members_section.dart';
 import 'package:acter/features/space/widgets/space_sections/pins_section.dart';
 import 'package:acter/features/space/widgets/space_sections/space_actions_section.dart';
-import 'package:acter/features/space/widgets/space_sections/spaces_sesction.dart';
+import 'package:acter/features/space/widgets/space_sections/spaces_section.dart';
 import 'package:acter/features/space/widgets/space_sections/tasks_section.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/features/space/widgets/space_toolbar.dart';

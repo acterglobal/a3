@@ -27,31 +27,6 @@ class SpaceChatsPage extends ConsumerWidget {
 
   const SpaceChatsPage({super.key, required this.spaceIdOrAlias});
 
-  Widget renderRelated(BuildContext context, WidgetRef ref) {
-    final related = ref.watch(spaceRelationsOverviewProvider(spaceIdOrAlias));
-    return related.maybeWhen(
-      data: (spaces) {
-        bool checkPermission(String permission) {
-          return spaces.membership?.canString(permission) ?? false;
-        }
-
-        final canLinkSpace = checkPermission('CanLinkSpaces');
-
-        if (!canLinkSpace) {
-          return const SliverToBoxAdapter(child: SizedBox.shrink());
-        }
-
-        return const SliverToBoxAdapter(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [],
-          ),
-        );
-      },
-      orElse: () => const SliverToBoxAdapter(child: SizedBox.shrink()),
-    );
-  }
-
   Widget _renderEmpty(BuildContext context, WidgetRef ref) {
     final chats = ref.watch(relatedChatsProvider(spaceIdOrAlias));
 
@@ -164,7 +139,8 @@ class SpaceChatsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final spaceName =
-        ref.watch(roomDisplayNameProvider(spaceIdOrAlias)).valueOrNull;
+        ref.watch(roomDisplayNameProvider(spaceIdOrAlias)).valueOrNull ??
+            spaceIdOrAlias;
     return Scaffold(
       appBar: AppBar(
         title: Column(
@@ -219,7 +195,6 @@ class SpaceChatsPage extends ConsumerWidget {
       ),
       body: CustomScrollView(
         slivers: <Widget>[
-          renderRelated(context, ref),
           renderChats(context, ref),
           renderFurther(context, ref),
         ],
