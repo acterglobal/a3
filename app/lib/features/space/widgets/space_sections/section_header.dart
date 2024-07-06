@@ -46,11 +46,12 @@ class SectionHeader extends StatelessWidget {
                 .copyWith(color: Theme.of(context).primaryColor),
           ),
           const Spacer(),
-          if (isShowSeeAllButton)
-            ActerInlineTextButton(
-              onPressed: () => onTapSeeAll(),
-              child: Text(L10n.of(context).seeAll),
-            ),
+          isShowSeeAllButton
+              ? ActerInlineTextButton(
+                  onPressed: () => onTapSeeAll(),
+                  child: Text(L10n.of(context).seeAll),
+                )
+              : const SizedBox(height: 50),
         ],
       ),
     );
