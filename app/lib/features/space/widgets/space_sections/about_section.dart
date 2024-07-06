@@ -15,15 +15,18 @@ class AboutSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            aboutLabel(context),
-            spaceDescription(context, ref),
-          ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              aboutLabel(context),
+              spaceDescription(context, ref),
+            ],
+          ),
         ),
       ),
     );
