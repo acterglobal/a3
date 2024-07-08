@@ -557,8 +557,9 @@ impl Client {
         async_stream::stream! {
             let (current_items, stream) = {
                 let locked = convos.read().await;
+                let filter_locked:Vec<Convo> = locked.iter().cloned().filter(|x| x.is_joined()).collect();
                 (
-                    ConvoDiff::current_items(locked.clone().into_iter().collect()),
+                    ConvoDiff::current_items(filter_locked),
                     locked.subscribe(),
                 )
             };

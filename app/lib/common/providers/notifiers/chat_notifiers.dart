@@ -86,70 +86,64 @@ class ChatRoomsListNotifier extends StateNotifier<List<Convo>> {
 
   List<Convo> listCopy() => List.from(state, growable: true);
 
+  void _sortList(List<Convo> list) {
+    list.sort((a, b) => b.latestMessageTs().compareTo(a.latestMessageTs()));
+  }
+
   void _handleDiff(ConvoDiff diff) {
+    final newList = listCopy();
     switch (diff.action()) {
       case 'Append':
-        final newList = listCopy();
         List<Convo> items = diff.values()!.toList();
         newList.addAll(items);
-        state = newList;
         break;
       case 'Insert':
         Convo m = diff.value()!;
         final index = diff.index()!;
-        final newList = listCopy();
         newList.insert(index, m);
-        state = newList;
         break;
       case 'Set':
         Convo m = diff.value()!;
         final index = diff.index()!;
-        final newList = listCopy();
         newList[index] = m;
-        state = newList;
         break;
       case 'Remove':
         final index = diff.index()!;
-        final newList = listCopy();
         newList.removeAt(index);
-        state = newList;
         break;
       case 'PushBack':
         Convo m = diff.value()!;
-        final newList = listCopy();
         newList.add(m);
-        state = newList;
         break;
       case 'PushFront':
         Convo m = diff.value()!;
-        final newList = listCopy();
         newList.insert(0, m);
-        state = newList;
         break;
       case 'PopBack':
-        final newList = listCopy();
         newList.removeLast();
-        state = newList;
         break;
       case 'PopFront':
-        final newList = listCopy();
         newList.removeAt(0);
-        state = newList;
         break;
       case 'Clear':
-        state = [];
+        newList.clear();
         break;
       case 'Reset':
-        state = diff.values()!.toList();
-        break;
+        final list = diff.values()!.toList();
+        _sortList(list);
+        state = list;
+        return;
       case 'Truncate':
         final length = diff.index()!;
-        final newList = listCopy();
-        state = newList.take(length).toList();
-        break;
+        final list = newList.take(length).toList();
+        _sortList(list);
+        state = list;
+        return;
       default:
         break;
     }
+    _sortList(newList);
+    state = newList;
   }
 }
 
