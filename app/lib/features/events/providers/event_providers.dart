@@ -120,8 +120,9 @@ class AsyncCalendarEventNotifier
 }
 
 final allUpcomingEventsProvider = AsyncNotifierProvider.autoDispose<
-    AsyncUpcomingEventsNotifier,
-    List<ffi.CalendarEvent>>(() => AsyncUpcomingEventsNotifier());
+    AsyncUpcomingEventsNotifier, List<ffi.CalendarEvent>>(
+  () => AsyncUpcomingEventsNotifier(),
+);
 
 class AsyncUpcomingEventsNotifier
     extends AutoDisposeAsyncNotifier<List<ffi.CalendarEvent>> {
@@ -147,8 +148,9 @@ class AsyncUpcomingEventsNotifier
 }
 
 final myUpcomingEventsProvider = AsyncNotifierProvider.autoDispose<
-    AsyncMyUpcomingEventsNotifier,
-    List<ffi.CalendarEvent>>(() => AsyncMyUpcomingEventsNotifier());
+    AsyncMyUpcomingEventsNotifier, List<ffi.CalendarEvent>>(
+  () => AsyncMyUpcomingEventsNotifier(),
+);
 
 class AsyncMyUpcomingEventsNotifier
     extends AutoDisposeAsyncNotifier<List<ffi.CalendarEvent>> {
@@ -174,8 +176,9 @@ class AsyncMyUpcomingEventsNotifier
 }
 
 final myPastEventsProvider = AsyncNotifierProvider.autoDispose<
-    AsyncMyPastEventsNotifier,
-    List<ffi.CalendarEvent>>(() => AsyncMyPastEventsNotifier());
+    AsyncMyPastEventsNotifier, List<ffi.CalendarEvent>>(
+  () => AsyncMyPastEventsNotifier(),
+);
 
 class AsyncMyPastEventsNotifier
     extends AutoDisposeAsyncNotifier<List<ffi.CalendarEvent>> {
@@ -218,8 +221,29 @@ Future<List<ffi.CalendarEvent>> _sortEventListDscTime(
   return eventsList;
 }
 
-final myRsvpStatusProvider = FutureProvider.family
-    .autoDispose<ffi.OptionRsvpStatus, String>((ref, calendarId) async {
-  final event = await ref.watch(calendarEventProvider(calendarId).future);
-  return await event.respondedByMe();
-});
+final myRsvpStatusProvider = AsyncNotifierProvider.autoDispose
+    .family<AsyncRsvpStatusNotifier, ffi.OptionRsvpStatus, String>(
+  () => AsyncRsvpStatusNotifier(),
+);
+
+class AsyncRsvpStatusNotifier
+    extends AutoDisposeFamilyAsyncNotifier<ffi.OptionRsvpStatus, String> {
+  late Stream<bool> _listener;
+
+  Future<ffi.OptionRsvpStatus> _getMyResponse() async {
+    final client = ref.read(alwaysClientProvider);
+    final calEvent = await client.waitForCalendarEvent(arg, null);
+    return await calEvent.respondedByMe();
+  }
+
+  @override
+  Future<ffi.OptionRsvpStatus> build(String arg) async {
+    final client = ref.watch(alwaysClientProvider);
+    _listener =
+        client.subscribeStream('$arg::rsvp'); // keep it resident in memory
+    _listener.forEach((e) async {
+      state = await AsyncValue.guard(_getMyResponse);
+    });
+    return await _getMyResponse();
+  }
+}
