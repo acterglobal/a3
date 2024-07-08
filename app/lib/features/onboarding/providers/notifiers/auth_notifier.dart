@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/sdk_provider.dart';
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
@@ -17,7 +16,6 @@ class AuthStateNotifier extends StateNotifier<bool> {
 
   Future<void> nuke(BuildContext context) async {
     await ActerSdk.nuke();
-    ref.invalidate(spacesProvider);
 
     if (context.mounted) {
       context.goNamed(Routes.main.name);
@@ -80,7 +78,6 @@ class AuthStateNotifier extends StateNotifier<bool> {
     if (stillHasClient) {
       _log.info('Still has clients, dropping back to other');
       ref.read(clientProvider.notifier).state = sdk.currentClient;
-      ref.invalidate(spacesProvider);
       if (context.mounted) {
         context.goNamed(Routes.main.name);
       }
