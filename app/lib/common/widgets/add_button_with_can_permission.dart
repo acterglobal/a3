@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -23,8 +22,14 @@ class AddButtonWithCanPermission extends ConsumerWidget {
     return Visibility(
       visible: canAdd,
       child: IconButton(
-        icon: const Icon(Atlas.plus_circle_thin),
-        iconSize: 28,
+        icon: Container(
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
+            borderRadius: const BorderRadius.all(Radius.circular(100)),
+          ),
+          child: const Icon(Icons.add),
+        ),
         color: Theme.of(context).colorScheme.surface,
         onPressed: onPressed,
       ),
