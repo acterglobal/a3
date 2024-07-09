@@ -22,8 +22,7 @@ use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     notification_settings::{IsEncrypted, IsOneToOne},
     room::{Room as SdkRoom, RoomMember},
-    RoomMemberships, RoomState,
-    DisplayName,
+    DisplayName, RoomMemberships, RoomState,
 };
 use ruma::{assign, Int};
 use ruma_client_api::{
