@@ -86,12 +86,17 @@ class ChatRoomsListNotifier extends StateNotifier<List<Convo>> {
 
   List<Convo> listCopy() => List.from(state, growable: true);
 
+  void _sortList(List<Convo> list) {
+    list.sort((a, b) => b.latestMessageTs().compareTo(b.latestMessageTs()));
+  }
+
   void _handleDiff(ConvoDiff diff) {
     switch (diff.action()) {
       case 'Append':
         final newList = listCopy();
         List<Convo> items = diff.values()!.toList();
         newList.addAll(items);
+        _sortList(newList);
         state = newList;
         break;
       case 'Insert':
@@ -99,6 +104,7 @@ class ChatRoomsListNotifier extends StateNotifier<List<Convo>> {
         final index = diff.index()!;
         final newList = listCopy();
         newList.insert(index, m);
+        _sortList(newList);
         state = newList;
         break;
       case 'Set':
@@ -106,34 +112,40 @@ class ChatRoomsListNotifier extends StateNotifier<List<Convo>> {
         final index = diff.index()!;
         final newList = listCopy();
         newList[index] = m;
+        _sortList(newList);
         state = newList;
         break;
       case 'Remove':
         final index = diff.index()!;
         final newList = listCopy();
         newList.removeAt(index);
+        _sortList(newList);
         state = newList;
         break;
       case 'PushBack':
         Convo m = diff.value()!;
         final newList = listCopy();
         newList.add(m);
+        _sortList(newList);
         state = newList;
         break;
       case 'PushFront':
         Convo m = diff.value()!;
         final newList = listCopy();
         newList.insert(0, m);
+        _sortList(newList);
         state = newList;
         break;
       case 'PopBack':
         final newList = listCopy();
         newList.removeLast();
+        _sortList(newList);
         state = newList;
         break;
       case 'PopFront':
         final newList = listCopy();
         newList.removeAt(0);
+        _sortList(newList);
         state = newList;
         break;
       case 'Clear':
@@ -145,6 +157,7 @@ class ChatRoomsListNotifier extends StateNotifier<List<Convo>> {
       case 'Truncate':
         final length = diff.index()!;
         final newList = listCopy();
+        _sortList(newList);
         state = newList.take(length).toList();
         break;
       default:
