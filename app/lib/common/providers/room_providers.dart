@@ -40,26 +40,6 @@ final maybeRoomProvider =
   () => AsyncMaybeRoomNotifier(),
 );
 
-/// Provider the profile data of a the given room, keeps up to date with underlying client
-// final roomProfileDataProvider =
-//     FutureProvider.autoDispose.family<AvatarInfo, String>((ref, roomId) async {
-//   final room = await ref.watch(maybeRoomProvider(roomId).future);
-//   if (room == null) {
-//     throw RoomNotFound;
-//   }
-
-//   final profile = room.getProfile();
-//   OptionString displayName = await profile.getDisplayName();
-//   try {
-//     final avatar = (await profile.getAvatar(null)).data();
-//     _log.info('$roomId : hasAvatar: ${avatar != null}');
-//     return ProfileData(displayName.text(), avatar);
-//   } catch (error) {
-//     _log.severe('Loading avatar for $roomId failed', error);
-//     return ProfileData(displayName.text(), null);
-//   }
-// });
-
 /// gives current visibility state of space, return empty if no space is found
 final roomVisibilityProvider = FutureProvider.family
     .autoDispose<RoomVisibility?, String>((ref, roomId) async {
@@ -107,13 +87,8 @@ final _briefGroupChatsWithName =
   List<_RoomIdAndName> items = [];
   for (final convo in chatList) {
     final roomId = convo.getRoomIdStr();
-    final room = await ref.watch(maybeRoomProvider(roomId).future);
-
-    if (room != null) {
-      final profile = room.getProfile();
-      OptionString displayName = await profile.getDisplayName();
-      items.add((roomId, displayName.text()));
-    }
+    final displayName = ref.watch(roomDisplayNameProvider(roomId)).valueOrNull;
+    items.add((roomId, displayName));
   }
   return items;
 });
@@ -177,45 +152,31 @@ final parentIdsProvider =
   }
 });
 
-/// Caching the Profile of each Room
-final _roomProfileProvider =
-    FutureProvider.family<RoomProfile, String>((ref, roomId) {
-  final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
-  if (room == null) {
-    throw RoomNotFound;
-  }
-
-  return room.getProfile();
-});
-
 /// Caching the name of each Room
 final roomDisplayNameProvider =
     FutureProvider.family<String?, String>((ref, roomId) async {
-  try {
-    final profile = await ref.watch(_roomProfileProvider(roomId).future);
-    return (await profile.getDisplayName()).text();
-  } on RoomNotFound {
+  final room = await ref.watch(maybeRoomProvider(roomId).future);
+  if (room == null) {
     return null;
   }
+  return (await room.getDisplayName()).text();
 });
 
 /// Caching the MemoryImage of each room
 final roomAvatarProvider =
     FutureProvider.family<MemoryImage?, String>((ref, roomId) async {
-  try {
-    final sdk = await ref.watch(sdkProvider.future);
-    final thumbsize = sdk.api.newThumbSize(48, 48);
-
-    final avatar = (await (await ref.watch(_roomProfileProvider(roomId).future))
-            .getAvatar(thumbsize))
-        .data();
-    if (avatar != null) {
-      return MemoryImage(avatar.asTypedList());
-    }
-    return null;
-  } on RoomNotFound {
+  final sdk = await ref.watch(sdkProvider.future);
+  final thumbsize = sdk.api.newThumbSize(48, 48);
+  final room = await ref.watch(maybeRoomProvider(roomId).future);
+  if (room == null || !room.hasAvatar()) {
     return null;
   }
+
+  final avatar = (await room.avatar(thumbsize)).data();
+  if (avatar != null) {
+    return MemoryImage(avatar.asTypedList());
+  }
+  return null;
 });
 
 /// Provide the AvatarInfo for each room. Update internally accordingly
@@ -316,6 +277,12 @@ final _memberProfileProvider = FutureProvider.autoDispose
     .family<UserProfile, MemberInfo>((ref, query) async {
   final member = await ref.watch(memberProvider(query).future);
   return member.getProfile();
+});
+
+final membershipStatusStr =
+    FutureProvider.autoDispose.family<String, MemberInfo>((ref, query) async {
+  final member = await ref.watch(memberProvider(query).future);
+  return member.membershipStatusStr();
 });
 
 final memberDisplayNameProvider =

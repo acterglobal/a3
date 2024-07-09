@@ -47,32 +47,30 @@ bool isJoined(String userId, List<String> joined) {
 }
 
 class UserBuilder extends ConsumerWidget {
-  final UserProfile profile;
+  final String userId;
   final String roomId;
 
   const UserBuilder({
     super.key,
-    required this.profile,
+    required this.userId,
     required this.roomId,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
-    final avatarProv = ref.watch(userAvatarProvider(profile));
-    final displayName = profile.getDisplayName();
-    final userId = profile.userId().toString();
+    final avatarInfo =
+        ref.watch(memberAvatarInfoProvider((roomId: roomId, userId: userId)));
+    final displayName = ref
+        .watch(memberDisplayNameProvider((roomId: roomId, userId: userId)))
+        .valueOrNull;
     return Card(
       child: ListTile(
         title: Text(displayName ?? userId),
         subtitle: (displayName == null) ? null : Text(userId),
         leading: ActerAvatar(
           options: AvatarOptions.DM(
-            AvatarInfo(
-              uniqueId: userId,
-              displayName: displayName,
-              avatar: avatarProv.valueOrNull,
-            ),
+            avatarInfo,
             size: 18,
           ),
         ),

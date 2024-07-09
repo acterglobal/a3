@@ -433,7 +433,6 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
   }
 
   Widget _convoMembersList() {
-    final convo = ref.watch(chatProvider(widget.roomId));
     final members = ref.watch(membersIdsProvider(widget.roomId));
 
     return Container(
@@ -465,11 +464,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
             error: (error, stackTrace) =>
                 Text(L10n.of(context).errorLoadingMembersCount(error)),
           ),
-          convo.when(
-            data: (data) => MemberList(convo: data),
-            loading: () => const MembersListSkeleton(),
-            error: (e, s) => Text('${L10n.of(context).error}: $e'),
-          ),
+          MemberList(roomId: widget.roomId),
         ],
       ),
     );

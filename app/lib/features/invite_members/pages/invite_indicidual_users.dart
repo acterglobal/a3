@@ -169,7 +169,7 @@ class InviteIndividualUsers extends ConsumerWidget {
                 itemBuilder: (context, index) {
                   return foundUsers.when(
                     data: (data) => UserBuilder(
-                      profile: data[index],
+                      userId: data[index].userId().toString(),
                       roomId: roomId,
                     ),
                     error: (err, stackTrace) =>

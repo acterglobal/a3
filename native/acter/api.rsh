@@ -250,25 +250,6 @@ object UserProfile {
     fn get_display_name() -> Option<string>;
 }
 
-object RoomProfile {
-    /// get room id
-    fn room_id() -> RoomId;
-
-    /// get room id as String
-    fn room_id_str() -> string;
-
-    /// whether to have avatar
-    fn has_avatar() -> bool;
-
-    /// get the binary data of avatar
-    /// if thumb size is given, avatar thumbnail is returned
-    /// if thumb size is not given, avatar file is returned
-    fn get_avatar(thumb_size: Option<ThumbnailSize>) -> Future<Result<OptionBuffer>>;
-
-    /// get the display name
-    fn get_display_name() -> Future<Result<OptionString>>;
-}
-
 
 /// Deliver receipt event from rust to flutter
 object ReceiptEvent {
@@ -1018,6 +999,17 @@ object Room {
     /// the RoomId as a String
     fn room_id_str() -> string;
 
+    /// whether to have avatar
+    fn has_avatar() -> bool;
+
+    /// get the binary data of avatar
+    /// if thumb size is given, avatar thumbnail is returned
+    /// if thumb size is not given, avatar file is returned
+    fn avatar(thumb_size: Option<ThumbnailSize>) -> Future<Result<OptionBuffer>>;
+
+    /// get the display name
+    fn display_name() -> Future<Result<OptionString>>;
+
     /// Whether new updates have been received for this room
     fn subscribe_to_updates() -> Stream<bool>;
 
@@ -1035,9 +1027,6 @@ object Room {
 
     /// whether we are part of this room
     fn is_joined() -> bool;
-
-    /// get the room profile that contains avatar and display name
-    fn get_profile() -> RoomProfile;
 
     /// get the room profile that contains avatar and display name
     fn space_relations() -> Future<Result<SpaceRelations>>;
@@ -1219,8 +1208,6 @@ object TimelineStream {
 
 
 object Convo {
-    /// get the room profile that contains avatar and display name
-    fn get_profile() -> RoomProfile;
 
     /// get the room profile that contains avatar and display name
     fn space_relations() -> Future<Result<SpaceRelations>>;
@@ -1991,8 +1978,6 @@ object ActerAppSettingsBuilder {
 
 
 object Space {
-    /// get the room profile that contains avatar and display name
-    fn get_profile() -> RoomProfile;
 
     /// get the room profile that contains avatar and display name
     fn space_relations() -> Future<Result<SpaceRelations>>;
