@@ -39,7 +39,7 @@ class CreateEditEventPage extends ConsumerStatefulWidget {
 
 class CreateEditEventPageConsumerState
     extends ConsumerState<CreateEditEventPage> {
-  final _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>(debugLabel: 'event form key');
   final _eventNameController = TextEditingController();
   final _startDateController = TextEditingController();
   final _startTimeController = TextEditingController();

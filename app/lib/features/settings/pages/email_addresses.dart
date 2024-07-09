@@ -18,7 +18,8 @@ class AddEmailAddr extends StatefulWidget {
 
 class _AddEmailAddrState extends State<AddEmailAddr> {
   final TextEditingController newEmailAddress = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey =
+      GlobalKey<FormState>(debugLabel: 'ask eamil addr form');
 
   @override
   Widget build(BuildContext context) {

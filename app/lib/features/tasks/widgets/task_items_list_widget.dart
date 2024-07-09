@@ -124,7 +124,7 @@ class _InlineTaskAdd extends StatefulWidget {
 }
 
 class _InlineTaskAddState extends State<_InlineTaskAdd> {
-  final _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>(debugLabel: 'inline task form');
   final _textCtrl = TextEditingController();
   final FocusNode focusNode = FocusNode();
 

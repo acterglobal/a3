@@ -36,7 +36,8 @@ class CreateSuperInviteTokenPage extends ConsumerStatefulWidget {
 class _CreateSuperInviteTokenPageConsumerState
     extends ConsumerState<CreateSuperInviteTokenPage> {
   final TextEditingController _tokenController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey =
+      GlobalKey<FormState>(debugLabel: 'create super invites form');
   late SuperInvitesTokenUpdateBuilder tokenUpdater;
   bool isEdit = false;
   int _acceptedCount = 0;
