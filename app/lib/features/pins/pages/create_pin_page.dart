@@ -28,7 +28,8 @@ class CreatePinPage extends ConsumerStatefulWidget {
 class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _linkController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey =
+      GlobalKey<FormState>(debugLabel: 'create pin form');
   EditorState textEditorState = EditorState.blank();
   AttachmentsManager? manager;
 

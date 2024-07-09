@@ -66,7 +66,8 @@ class HomeShell extends ConsumerStatefulWidget {
 }
 
 class HomeShellState extends ConsumerState<HomeShell> {
-  final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _key =
+      GlobalKey<ScaffoldState>(debugLabel: 'home shell scaffold');
   late ShakeDetector detector;
 
   @override

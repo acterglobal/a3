@@ -21,7 +21,8 @@ class AddUserToBlock extends StatefulWidget {
 
 class _AddUserToBlockState extends State<AddUserToBlock> {
   final TextEditingController userName = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey =
+      GlobalKey<FormState>(debugLabel: 'blocked user form');
 
   @override
   Widget build(BuildContext context) {

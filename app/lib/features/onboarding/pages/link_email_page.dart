@@ -15,7 +15,7 @@ class LinkEmailPage extends ConsumerWidget {
 
   LinkEmailPage({super.key});
 
-  final formKey = GlobalKey<FormState>();
+  final formKey = GlobalKey<FormState>(debugLabel: 'link email page form');
   final ValueNotifier<bool> isLinked = ValueNotifier(false);
   final TextEditingController emailController = TextEditingController();
 
