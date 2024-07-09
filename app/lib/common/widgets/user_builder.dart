@@ -58,7 +58,7 @@ class UserBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final room = ref.watch(briefRoomItemWithMembershipProvider(roomId));
+    final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
     final avatarProv = ref.watch(userAvatarProvider(profile));
     final displayName = profile.getDisplayName();
     final userId = profile.userId().toString();
@@ -76,16 +76,14 @@ class UserBuilder extends ConsumerWidget {
             size: 18,
           ),
         ),
-        trailing: room.when(
-          data: (data) => UserStateButton(
-            userId: userId,
-            room: data.room!,
-          ),
-          error: (err, stackTrace) => Text('Error: $err'),
-          loading: () => const Skeletonizer(
-            child: Text('Loading user'),
-          ),
-        ),
+        trailing: room != null
+            ? UserStateButton(
+                userId: userId,
+                room: room,
+              )
+            : const Skeletonizer(
+                child: Text('Loading user'),
+              ),
       ),
     );
   }

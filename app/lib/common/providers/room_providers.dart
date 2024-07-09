@@ -94,26 +94,6 @@ final roomInvitedMembersProvider = FutureProvider.autoDispose
   return members.toList();
 });
 
-/// Get the RoomItem of the given sapceId filled in brief form
-/// (only spaceProfileData, no activeMembers) with Membership.
-/// Stays up to date with underlying client info
-final briefRoomItemWithMembershipProvider =
-    FutureProvider.autoDispose.family<RoomItem, String>((ref, roomId) async {
-  final room = await ref.watch(maybeRoomProvider(roomId).future);
-  if (room == null) {
-    throw RoomNotFound;
-  }
-
-  final avatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
-  return RoomItem(
-    roomId: roomId,
-    room: room,
-    membership: room.isJoined() ? await room.getMyMembership() : null,
-    activeMembers: [],
-    avatarInfo: avatarInfo,
-  );
-});
-
 final roomSearchValueProvider =
     StateProvider.autoDispose<String?>((ref) => null);
 
@@ -340,7 +320,14 @@ final _memberProfileProvider = FutureProvider.autoDispose
 
 final memberDisplayNameProvider =
     FutureProvider.autoDispose.family<String?, MemberInfo>((ref, query) async {
-  return ref.watch(_memberProfileProvider(query)).valueOrNull?.getDisplayName();
+  try {
+    return ref
+        .watch(_memberProfileProvider(query))
+        .valueOrNull
+        ?.getDisplayName();
+  } on RoomNotFound {
+    return null;
+  }
 });
 
 /// Caching the MemoryImage of each room
@@ -349,14 +336,18 @@ final _memberAvatarProvider = FutureProvider.autoDispose
   final sdk = await ref.watch(sdkProvider.future);
 
   final thumbsize = sdk.api.newThumbSize(48, 48);
-  final profile = await ref.watch(_memberProfileProvider(query).future);
-  // use .data() consumes the value so we keep it stored, any further call to .data()
-  // comes back empty as the data was consumed.
-  final avatar = (await profile.getAvatar(thumbsize)).data();
-  if (avatar != null) {
-    return MemoryImage(avatar.asTypedList());
+  try {
+    final profile = await ref.watch(_memberProfileProvider(query).future);
+    // use .data() consumes the value so we keep it stored, any further call to .data()
+    // comes back empty as the data was consumed.
+    final avatar = (await profile.getAvatar(thumbsize)).data();
+    if (avatar != null) {
+      return MemoryImage(avatar.asTypedList());
+    }
+    return null;
+  } on RoomNotFound {
+    return null;
   }
-  return null;
 });
 
 final memberAvatarInfoProvider =
@@ -371,11 +362,12 @@ final memberAvatarInfoProvider =
   );
 });
 
+/// Ids of the members of this Room. Returns empty list if the room isn't found
 final membersIdsProvider =
     FutureProvider.family<List<String>, String>((ref, roomIdOrAlias) async {
   final room = await ref.watch(maybeRoomProvider(roomIdOrAlias).future);
   if (room == null) {
-    throw RoomNotFound;
+    return [];
   }
   final members = await room.activeMembersIds();
   return asDartStringList(members);
