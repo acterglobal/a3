@@ -1,20 +1,16 @@
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/parser.dart';
-import 'package:riverpod/riverpod.dart';
 
 class ChatInputNotifier extends StateNotifier<ChatInputState> {
-  ChatInputNotifier() : super(const ChatInputState());
+  final String roomId;
+  ChatInputNotifier(this.roomId) : super(const ChatInputState());
 
   void emojiPickerVisible(bool value) =>
       state = state.copyWith(emojiPickerVisible: value);
-
-  void addMention(String displayName, String authorId) {
-    final mentions = Map.of(state.mentions);
-    mentions[displayName] = authorId;
-    state = state.copyWith(mentions: mentions);
-  }
 
   void setReplyToMessage(Message message) {
     state = state.copyWith(
@@ -28,7 +24,7 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
   }
 
   void setEditMessage(Message message) {
-    final Map<String, String> mentions = {};
+    List<UserRoomProfile> roomMembers = [];
     String messageBodyText = '';
 
     if (message is TextMessage) {
@@ -48,8 +44,12 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
           msg = userMentionMessageData.parsedMessage;
 
           // Update mentions data
-          mentions[userMentionMessageData.displayName] =
-              userMentionMessageData.userName;
+          roomMembers.add(
+            (
+              displayName: userMentionMessageData.displayName,
+              userId: userMentionMessageData.userName,
+            ),
+          );
         }
 
         // Parse data
@@ -60,7 +60,7 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
     state = state.copyWith(
       selectedMessage: message,
       selectedMessageState: SelectedMessageState.edit,
-      mentions: mentions,
+      roomMembers: roomMembers,
       message: messageBodyText,
     );
   }
@@ -103,7 +103,28 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
       sendingState: SendingState.preparing,
       selectedMessage: null,
       selectedMessageState: SelectedMessageState.none,
-      mentions: {},
+      roomMembers: [],
     );
+  }
+
+  Future<void> searchUser(WidgetRef ref, String query) async {
+    if (query.isEmpty) return;
+
+    query = query.toLowerCase().trim();
+
+    state = state.copyWith(roomMembers: [], searchLoading: true);
+
+    await Future.delayed(const Duration(milliseconds: 250));
+
+    final chatMentions = await ref.read(chatMentionsProvider(roomId).future);
+    final result = chatMentions
+        .where(
+          (user) =>
+              user.userId.toLowerCase().contains(query) ||
+              user.displayName!.toLowerCase().contains(query),
+        )
+        .toList();
+
+    state = state.copyWith(roomMembers: [...result], searchLoading: false);
   }
 }

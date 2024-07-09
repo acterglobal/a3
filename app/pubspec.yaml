@@ -68,6 +68,8 @@ dependencies:
   freezed: ^2.3.3
   acter_flutter_sdk:
     path: packages/rust_sdk
+  fluttertagger: 
+    path: packages/fluttertagger
 
   # State Management
   flutter_riverpod: ^2.5.1

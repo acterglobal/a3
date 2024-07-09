@@ -36,7 +36,7 @@ final autoDownloadMediaProvider =
 // keep track of text controller values across rooms.
 final chatInputProvider =
     StateNotifierProvider.family<ChatInputNotifier, ChatInputState, String>(
-  (ref, roomId) => ChatInputNotifier(),
+  (ref, roomId) => ChatInputNotifier(roomId),
 );
 
 final chatStateProvider =
@@ -182,29 +182,25 @@ final isRoomEncryptedProvider =
   return await convo.isEncrypted();
 });
 
-typedef Mentions = List<Map<String, String>>;
-
-final chatMentionsProvider =
-    FutureProvider.autoDispose.family<Mentions, String>((ref, roomId) async {
+final chatMentionsProvider = FutureProvider.autoDispose
+    .family<List<UserRoomProfile>, String>((ref, roomId) async {
   final activeMembers = await ref.read(membersIdsProvider(roomId).future);
-  List<Map<String, String>> mentionRecords = [];
+  List<UserRoomProfile> membersProfile = [];
   for (final mId in activeMembers) {
     final data = ref.watch(
       memberAvatarInfoProvider((roomId: roomId, userId: mId)),
     );
-    Map<String, String> record = {};
     final displayName = data.displayName;
-    record['id'] = mId;
+    UserRoomProfile profile = (displayName: null, userId: mId);
     if (displayName != null) {
-      record['displayName'] = displayName;
-      // all of our search terms:
-      record['display'] = displayName;
+      profile = (displayName: displayName, userId: mId);
     } else {
-      record['display'] = mId;
+      profile = (displayName: mId, userId: mId);
     }
-    mentionRecords.add(record);
+    membersProfile.add(profile);
   }
-  return mentionRecords;
+  print('$membersProfile');
+  return membersProfile;
 });
 
 final chatTypingEventProvider = StreamProvider.autoDispose
