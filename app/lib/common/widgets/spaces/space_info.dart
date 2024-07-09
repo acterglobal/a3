@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/visibility/visibility_chip.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -37,7 +36,6 @@ class SpaceInfo extends ConsumerWidget {
             const SizedBox(width: 5),
             acterSpaceInfoUI(context, ref, space),
             encryptedInfoUI(context, ref, space),
-            joinRuleUI(context, space),
           ],
         );
       },
@@ -122,70 +120,5 @@ class SpaceInfo extends ConsumerWidget {
             )
             .valueOrNull ??
         const SizedBox.shrink();
-  }
-
-  Widget joinRuleUI(BuildContext context, Space space) {
-    final joinRuleStr = space.joinRuleStr();
-    switch (joinRuleStr) {
-      case 'invite':
-        return Tooltip(
-          message: L10n.of(context).thisSpaceIsInviteOnly,
-          child: Icon(
-            Atlas.shield_envelope_thin,
-            size: size,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-        );
-      case 'restricted':
-        final roomIds =
-            asDartStringList(space.restrictedRoomIdsStr()).join(', ');
-        return Tooltip(
-          message: L10n.of(context).anyoneFromTheseRoomsCanJoin(roomIds),
-          child: Icon(
-            Atlas.arrow_down_shield_thin,
-            size: size,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-        );
-      case 'knock':
-        return Tooltip(
-          message: L10n.of(context).anyoneCanAskToJoinThisSpace,
-          child: Icon(
-            Atlas.arrow_down_shield_thin,
-            size: size,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-        );
-      case 'knock_restricted':
-        final roomIds =
-            asDartStringList(space.restrictedRoomIdsStr()).join(', ');
-        return Tooltip(
-          message: L10n.of(context).anyoneFromTheseRoomsCanAskToJoin(roomIds),
-          child: Icon(
-            Atlas.arrow_down_shield_thin,
-            size: size,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-        );
-      case 'public':
-        return Tooltip(
-          message: L10n.of(context).thisSpaceIsPubliclyAccessible,
-          child: Icon(
-            Atlas.glasses_vision_thin,
-            size: size,
-            color: Theme.of(context).colorScheme.error,
-          ),
-        );
-      case 'private':
-      default:
-        return Tooltip(
-          message: L10n.of(context).unclearJoinRule(joinRuleStr),
-          child: Icon(
-            Atlas.shield_exclamation_thin,
-            size: size,
-            color: Theme.of(context).colorScheme.error,
-          ),
-        );
-    }
   }
 }

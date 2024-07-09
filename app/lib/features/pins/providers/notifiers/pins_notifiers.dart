@@ -48,7 +48,7 @@ class AsyncPinNotifier
 }
 
 class AsyncSpacePinsNotifier
-    extends AutoDisposeFamilyAsyncNotifier<List<ActerPin>, Space> {
+    extends FamilyAsyncNotifier<List<ActerPin>, Space> {
   late Stream<bool> _listener;
   late StreamSubscription<bool> _poller;
 

@@ -1,4 +1,4 @@
-import 'package:acter/features/space/widgets/space_header.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/tasks/providers/tasklists.dart';
 import 'package:acter/features/tasks/sheets/create_update_task_list.dart';
 import 'package:acter/features/tasks/widgets/empty_task_list.dart';
@@ -21,106 +21,104 @@ class SpaceTasksPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final taskLists = ref.watch(spaceTasksListsProvider(spaceIdOrAlias));
+    final spaceName =
+        ref.watch(roomDisplayNameProvider(spaceIdOrAlias)).valueOrNull;
     // get platform of context.
-    return CustomScrollView(
-      key: scrollView,
-      slivers: [
-        SliverToBoxAdapter(
-          child: SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
+    return Scaffold(
+      appBar: AppBar(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(L10n.of(context).tasks),
+            Text(
+              '($spaceName)',
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+          ],
         ),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    taskLists.hasValue && taskLists.valueOrNull!.isNotEmpty
-                        ? L10n.of(context)
-                            .tasksCount(taskLists.valueOrNull!.length)
-                        : L10n.of(context).tasks,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
+        actions: [
+          ValueListenableBuilder(
+            valueListenable: showCompletedTask,
+            builder: (context, value, child) {
+              return TextButton.icon(
+                onPressed: () => showCompletedTask.value = !value,
+                icon: Icon(
+                  value
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                  size: 18,
                 ),
-                ValueListenableBuilder(
-                  valueListenable: showCompletedTask,
-                  builder: (context, value, child) {
-                    return TextButton.icon(
-                      onPressed: () => showCompletedTask.value = !value,
-                      icon: Icon(
-                        value
-                            ? Icons.visibility_off_outlined
-                            : Icons.visibility_outlined,
-                        size: 18,
-                      ),
-                      label: Text(
-                        value
-                            ? L10n.of(context).hideCompleted
-                            : L10n.of(context).showCompleted,
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                      ),
+                label: Text(
+                  value
+                      ? L10n.of(context).hideCompleted
+                      : L10n.of(context).showCompleted,
+                ),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                ),
+              );
+            },
+          ),
+          IconButton(
+            key: createTaskKey,
+            icon: const Icon(Atlas.plus_circle_thin),
+            iconSize: 28,
+            color: Theme.of(context).colorScheme.surface,
+            onPressed: () => showCreateUpdateTaskListBottomSheet(
+              context,
+              initialSelectedSpace: spaceIdOrAlias,
+            ),
+          ),
+        ],
+      ),
+      body: CustomScrollView(
+        key: scrollView,
+        slivers: [
+          taskLists.when(
+            data: (taskLists) {
+              if (taskLists.isEmpty) {
+                return SliverToBoxAdapter(
+                  child: EmptyTaskList(initialSelectedSpace: spaceIdOrAlias),
+                );
+              }
+              return SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (BuildContext context, int index) {
+                    TaskList taskList = taskLists[index];
+                    return ValueListenableBuilder(
+                      valueListenable: showCompletedTask,
+                      builder: (context, value, child) {
+                        return TaskListItemCard(
+                          taskList: taskList,
+                          showCompletedTask: value,
+                        );
+                      },
                     );
                   },
+                  childCount: taskLists.length,
                 ),
-                IconButton(
-                  key: createTaskKey,
-                  icon: const Icon(Atlas.plus_circle_thin),
-                  iconSize: 28,
-                  color: Theme.of(context).colorScheme.surface,
-                  onPressed: () => showCreateUpdateTaskListBottomSheet(
-                    context,
-                    initialSelectedSpace: spaceIdOrAlias,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        taskLists.when(
-          data: (taskLists) {
-            if (taskLists.isEmpty) {
-              return SliverToBoxAdapter(
-                child: EmptyTaskList(initialSelectedSpace: spaceIdOrAlias),
               );
-            }
-            return SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (BuildContext context, int index) {
-                  TaskList taskList = taskLists[index];
-                  return ValueListenableBuilder(
-                    valueListenable: showCompletedTask,
-                    builder: (context, value, child) {
-                      return TaskListItemCard(
-                        taskList: taskList,
-                        showCompletedTask: value,
-                      );
-                    },
-                  );
-                },
-                childCount: taskLists.length,
+            },
+            error: (error, stack) => SliverToBoxAdapter(
+              child: SizedBox(
+                height: 450,
+                child: Center(
+                  child: Text(L10n.of(context).loadingFailed(error)),
+                ),
               ),
-            );
-          },
-          error: (error, stack) => SliverToBoxAdapter(
-            child: SizedBox(
-              height: 450,
-              child: Center(
-                child: Text(L10n.of(context).loadingFailed(error)),
+            ),
+            loading: () => SliverToBoxAdapter(
+              child: SizedBox(
+                height: 450,
+                child: Center(
+                  child: Text(L10n.of(context).loading),
+                ),
               ),
             ),
           ),
-          loading: () => SliverToBoxAdapter(
-            child: SizedBox(
-              height: 450,
-              child: Center(
-                child: Text(L10n.of(context).loading),
-              ),
-            ),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

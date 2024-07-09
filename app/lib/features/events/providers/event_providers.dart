@@ -5,13 +5,13 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:riverpod/riverpod.dart';
 
-final spaceEventsProvider = AsyncNotifierProvider.autoDispose
-    .family<AsyncSpaceEventsNotifier, List<ffi.CalendarEvent>, String>(
+final spaceEventsProvider = AsyncNotifierProvider.family<
+    AsyncSpaceEventsNotifier, List<ffi.CalendarEvent>, String>(
   () => AsyncSpaceEventsNotifier(),
 );
 
 class AsyncSpaceEventsNotifier
-    extends AutoDisposeFamilyAsyncNotifier<List<ffi.CalendarEvent>, String> {
+    extends FamilyAsyncNotifier<List<ffi.CalendarEvent>, String> {
   late Stream<bool> _listener;
 
   Future<List<ffi.CalendarEvent>> _getEvents(ffi.Space space) async {
