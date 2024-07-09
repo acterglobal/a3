@@ -159,7 +159,7 @@ final roomDisplayNameProvider =
   if (room == null) {
     return null;
   }
-  return (await room.getDisplayName()).text();
+  return (await room.displayName()).text();
 });
 
 /// Caching the MemoryImage of each room
