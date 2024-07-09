@@ -141,7 +141,6 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
               title: L10n.of(context).removeThisPost,
               eventId: event.eventId().toString(),
               onSuccess: () {
-                ref.invalidate(calendarEventProvider);
                 if (context.canPop()) context.pop();
                 if (context.mounted) {
                   context.goNamed(
