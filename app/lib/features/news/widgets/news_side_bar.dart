@@ -182,7 +182,6 @@ class ActionBox extends ConsumerWidget {
               eventId: news.eventId().toString(),
               onSuccess: () {
                 if (context.canPop()) context.pop();
-                ref.invalidate(newsListProvider);
               },
               senderId: senderId,
               roomId: roomId,
