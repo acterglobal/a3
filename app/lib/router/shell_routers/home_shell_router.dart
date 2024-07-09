@@ -23,16 +23,15 @@ import 'package:acter/features/settings/pages/labs_page.dart';
 import 'package:acter/features/settings/pages/licenses_page.dart';
 import 'package:acter/features/settings/pages/notifications_page.dart';
 import 'package:acter/features/settings/pages/sessions_page.dart';
+import 'package:acter/features/space/pages/space_details_page.dart';
 import 'package:acter/features/space/settings/pages/visibility_accessibility_page.dart';
 import 'package:acter/features/super_invites/pages/super_invites.dart';
 import 'package:acter/features/space/pages/chats_page.dart';
 import 'package:acter/features/space/pages/events_page.dart';
 import 'package:acter/features/space/pages/members_page.dart';
-import 'package:acter/features/space/pages/overview_page.dart';
 import 'package:acter/features/space/pages/pins_page.dart';
 import 'package:acter/features/space/pages/sub_spaces_page.dart';
 import 'package:acter/features/space/pages/space_tasks_page.dart';
-import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
 import 'package:acter/features/space/settings/pages/index_page.dart';
 import 'package:acter/features/space/settings/pages/notification_configuration_page.dart';
@@ -43,12 +42,9 @@ import 'package:acter/features/tasks/pages/task_item_detail_page.dart';
 import 'package:acter/features/tasks/pages/task_list_details_page.dart';
 import 'package:acter/features/tasks/pages/tasks_page.dart';
 import 'package:acter/router/router.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-List<RouteBase> makeHomeShellRoutes(ref) {
-  final tabKeyNotifier = ref.watch(selectedTabKeyProvider.notifier);
+List<RouteBase> makeHomeShellRoutes() {
   return <RouteBase>[
     GoRoute(
       name: Routes.dashboard.name,
@@ -222,7 +218,6 @@ List<RouteBase> makeHomeShellRoutes(ref) {
       path: Routes.spaceRelatedSpaces.route,
       redirect: authGuardRedirect,
       pageBuilder: (context, state) {
-        tabKeyNotifier.switchTo(const Key('spaces'));
         return NoTransitionPage(
           key: state.pageKey,
           child: SubSpacesPage(
@@ -236,7 +231,6 @@ List<RouteBase> makeHomeShellRoutes(ref) {
       path: Routes.spaceMembers.route,
       redirect: authGuardRedirect,
       pageBuilder: (context, state) {
-        tabKeyNotifier.switchTo(const Key('members'));
         return NoTransitionPage(
           key: state.pageKey,
           child: SpaceMembersPage(
@@ -250,7 +244,6 @@ List<RouteBase> makeHomeShellRoutes(ref) {
       path: Routes.spacePins.route,
       redirect: authGuardRedirect,
       pageBuilder: (context, state) {
-        tabKeyNotifier.switchTo(const Key('pins'));
         return NoTransitionPage(
           key: state.pageKey,
           child: SpacePinsPage(
@@ -264,7 +257,6 @@ List<RouteBase> makeHomeShellRoutes(ref) {
       path: Routes.spaceEvents.route,
       redirect: authGuardRedirect,
       pageBuilder: (context, state) {
-        tabKeyNotifier.switchTo(const Key('events'));
         return NoTransitionPage(
           key: state.pageKey,
           child: SpaceEventsPage(
@@ -278,7 +270,6 @@ List<RouteBase> makeHomeShellRoutes(ref) {
       path: Routes.spaceChats.route,
       redirect: authGuardRedirect,
       pageBuilder: (context, state) {
-        tabKeyNotifier.switchTo(const Key('chat'));
         return NoTransitionPage(
           key: state.pageKey,
           child: SpaceChatsPage(
@@ -292,24 +283,9 @@ List<RouteBase> makeHomeShellRoutes(ref) {
       path: Routes.spaceTasks.route,
       redirect: authGuardRedirect,
       pageBuilder: (context, state) {
-        tabKeyNotifier.switchTo(const Key('tasks'));
         return NoTransitionPage(
           key: state.pageKey,
           child: SpaceTasksPage(
-            spaceIdOrAlias: state.pathParameters['spaceId']!,
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.space.name,
-      path: Routes.space.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        tabKeyNotifier.switchTo(const Key('overview'));
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: SpaceOverview(
             spaceIdOrAlias: state.pathParameters['spaceId']!,
           ),
         );
@@ -324,6 +300,19 @@ List<RouteBase> makeHomeShellRoutes(ref) {
           key: state.pageKey,
           child: SearchPublicDirectory(
             query: state.uri.queryParameters['query'],
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.space.name,
+      path: Routes.space.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: SpaceDetailsPage(
+            spaceId: state.pathParameters['spaceId']!,
           ),
         );
       },

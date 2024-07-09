@@ -9,7 +9,6 @@ import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/space/providers/notifiers/space_hierarchy_notifier.dart';
 import 'package:acter/features/space/providers/space_providers.dart';
-import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -27,68 +26,6 @@ class SpaceChatsPage extends ConsumerWidget {
   final String spaceIdOrAlias;
 
   const SpaceChatsPage({super.key, required this.spaceIdOrAlias});
-
-  Widget renderRelated(BuildContext context, WidgetRef ref) {
-    final related = ref.watch(spaceRelationsOverviewProvider(spaceIdOrAlias));
-    return related.maybeWhen(
-      data: (spaces) {
-        bool checkPermission(String permission) {
-          return spaces.membership?.canString(permission) ?? false;
-        }
-
-        final canLinkSpace = checkPermission('CanLinkSpaces');
-
-        if (!canLinkSpace) {
-          return const SliverToBoxAdapter(child: SizedBox.shrink());
-        }
-
-        return SliverToBoxAdapter(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              PopupMenuButton(
-                key: actionsMenuKey,
-                icon: const Icon(Atlas.plus_circle),
-                iconSize: 28,
-                color: Theme.of(context).colorScheme.surface,
-                itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                  PopupMenuItem(
-                    key: createChatKey,
-                    onTap: () => context.pushNamed(
-                      Routes.createChat.name,
-                      queryParameters: {'spaceId': spaceIdOrAlias},
-                      extra: 1,
-                    ),
-                    child: Row(
-                      children: <Widget>[
-                        Text(L10n.of(context).createChat),
-                        const Spacer(),
-                        const Icon(Atlas.chats),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    onTap: () => context.pushNamed(
-                      Routes.linkChat.name,
-                      pathParameters: {'spaceId': spaceIdOrAlias},
-                    ),
-                    child: Row(
-                      children: <Widget>[
-                        Text(L10n.of(context).linkExistingChat),
-                        const Spacer(),
-                        const Icon(Atlas.chats),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-      orElse: () => const SliverToBoxAdapter(child: SizedBox.shrink()),
-    );
-  }
 
   Widget _renderEmpty(BuildContext context, WidgetRef ref) {
     final chats = ref.watch(relatedChatsProvider(spaceIdOrAlias));
@@ -201,15 +138,67 @@ class SpaceChatsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return CustomScrollView(
-      slivers: <Widget>[
-        SliverToBoxAdapter(
-          child: SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
+    final spaceName =
+        ref.watch(roomDisplayNameProvider(spaceIdOrAlias)).valueOrNull ??
+            spaceIdOrAlias;
+    return Scaffold(
+      appBar: AppBar(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(L10n.of(context).chat),
+            Text(
+              '($spaceName)',
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+          ],
         ),
-        renderRelated(context, ref),
-        renderChats(context, ref),
-        renderFurther(context, ref),
-      ],
+        actions: [
+          PopupMenuButton(
+            key: actionsMenuKey,
+            icon: const Icon(Atlas.plus_circle),
+            iconSize: 28,
+            color: Theme.of(context).colorScheme.surface,
+            itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+              PopupMenuItem(
+                key: createChatKey,
+                onTap: () => context.pushNamed(
+                  Routes.createChat.name,
+                  queryParameters: {'spaceId': spaceIdOrAlias},
+                  extra: 1,
+                ),
+                child: Row(
+                  children: <Widget>[
+                    Text(L10n.of(context).createChat),
+                    const Spacer(),
+                    const Icon(Atlas.chats),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                onTap: () => context.pushNamed(
+                  Routes.linkChat.name,
+                  pathParameters: {'spaceId': spaceIdOrAlias},
+                ),
+                child: Row(
+                  children: <Widget>[
+                    Text(L10n.of(context).linkExistingChat),
+                    const Spacer(),
+                    const Icon(Atlas.chats),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+      body: CustomScrollView(
+        slivers: <Widget>[
+          renderChats(context, ref),
+          renderFurther(context, ref),
+        ],
+      ),
     );
   }
 }
