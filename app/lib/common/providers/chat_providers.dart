@@ -26,7 +26,7 @@ final _convosProvider =
 
 /// Provider that sorts up list based on latest timestamp from [_convosProvider].
 final chatsProvider = StateProvider<List<Convo>>((ref) {
-  final convos = ref.watch(_convosProvider);
+  final convos = List.of(ref.watch(_convosProvider));
   convos.sort((a, b) => b.latestMessageTs().compareTo(a.latestMessageTs()));
   return convos;
 });
@@ -43,9 +43,10 @@ final chatProvider =
 
 final relatedChatsProvider =
     FutureProvider.family<List<Convo>, String>((ref, spaceId) async {
-  final chats =
-      (await ref.watch(spaceRelationsOverviewProvider(spaceId).future))
-          .knownChats;
+  final chats = List.of(
+    (await ref.watch(spaceRelationsOverviewProvider(spaceId).future))
+        .knownChats,
+  );
   chats.sort((a, b) => b.latestMessageTs().compareTo(a.latestMessageTs()));
   return chats;
 });
