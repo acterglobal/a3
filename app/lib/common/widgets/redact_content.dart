@@ -94,7 +94,7 @@ class RedactContentWidget extends ConsumerWidget {
       if (isSpace) {
         final space = await ref.read(spaceProvider(roomId).future);
         final redactedId = await space.redactContent(eventId, reason);
-        ref.invalidate(spacePinsProvider(space));
+        ref.invalidate(pinListProvider(roomId));
         _log.info(
           'Content from user:{$senderId redacted $redactedId reason:$reason}',
         );

@@ -36,10 +36,13 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-      final spaceNotifier = ref.read(selectedSpaceIdProvider.notifier);
-      spaceNotifier.state = widget.initialSelectedSpace;
-    });
+    if (widget.initialSelectedSpace != null &&
+        widget.initialSelectedSpace!.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+        final spaceNotifier = ref.read(selectedSpaceIdProvider.notifier);
+        spaceNotifier.state = widget.initialSelectedSpace;
+      });
+    }
   }
 
   @override

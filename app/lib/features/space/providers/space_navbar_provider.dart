@@ -42,7 +42,7 @@ final tabsProvider =
   if ((await space.isActerSpace()) == true) {
     final appSettings = await space.appSettings();
     if (appSettings.pins().active()) {
-      final pinsList = await ref.watch(spacePinsProvider(space).future);
+      final pinsList = await ref.watch(pinListProvider(spaceId).future);
       if (pinsList.isNotEmpty) {
         tabs.add(
           const TabEntry(key: TabEntry.pins, label: 'Pins'),
@@ -90,8 +90,10 @@ final tabsProvider =
   final membership = ref.watch(roomMembershipProvider(spaceId));
   bool canAddPin = membership.valueOrNull?.canString('CanPostPin') == true;
   bool canAddEvent = membership.valueOrNull?.canString('CanPostEvent') == true;
-  bool canAddTask = membership.valueOrNull?.canString('CanPostTaskList') == true;
-  bool canLinkSpaces = membership.valueOrNull?.canString('CanLinkSpaces') == true;
+  bool canAddTask =
+      membership.valueOrNull?.canString('CanPostTaskList') == true;
+  bool canLinkSpaces =
+      membership.valueOrNull?.canString('CanLinkSpaces') == true;
 
   //Show action menu only if you have at lease one permission
   if (canAddPin | canAddEvent | canAddTask | canLinkSpaces) {
