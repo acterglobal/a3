@@ -9,6 +9,7 @@ import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/invite_members/providers/invite_providers.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/pin_list_item.dart';
+import 'package:acter/features/pins/widgets/pin_list_skeleton.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -97,7 +98,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
             data: (pins) => _buildPinsList(pins),
             error: (error, stack) =>
                 Center(child: Text(L10n.of(context).loadingFailed(error))),
-            loading: () => Center(child: Text(L10n.of(context).loading)),
+            loading: () => const PinListSkeleton(),
           ),
         ),
       ],
