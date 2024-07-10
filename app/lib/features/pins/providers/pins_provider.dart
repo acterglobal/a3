@@ -5,6 +5,25 @@ import 'package:acter/features/pins/providers/notifiers/pins_notifiers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:riverpod/riverpod.dart';
 
+final pinListProvider = AsyncNotifierProvider.autoDispose
+    .family<AsyncPinListNotifier, List<ActerPin>, String?>(
+  () => AsyncPinListNotifier(),
+);
+
+typedef AllPinsSearchParams = ({String? spaceId, String searchText});
+
+final pinListSearchProvider = FutureProvider.autoDispose
+    .family<List<ActerPin>, AllPinsSearchParams>((ref, params) async {
+  final pinList = await ref.watch(pinListProvider(params.spaceId).future);
+  List<ActerPin> filteredPinList = [];
+  for (final pin in pinList) {
+    if (pin.title().toLowerCase().contains(params.searchText.toLowerCase())) {
+      filteredPinList.add(pin);
+    }
+  }
+  return filteredPinList;
+});
+
 final pinsProvider =
     AsyncNotifierProvider.autoDispose<AsyncPinsNotifier, List<ActerPin>>(
   () => AsyncPinsNotifier(),

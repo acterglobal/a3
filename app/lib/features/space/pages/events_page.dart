@@ -40,8 +40,10 @@ class SpaceEventsPage extends ConsumerWidget {
         ),
         actions: [
           AddButtonWithCanPermission(
-            roomId: spaceIdOrAlias,
-            canString: 'CanPostEvent',
+            canPermissionParam: (
+              spaceId: spaceIdOrAlias,
+              canString: 'CanPostEvent'
+            ),
             onPressed: () => context.pushNamed(
               Routes.createEvent.name,
               queryParameters: {'spaceId': spaceIdOrAlias},

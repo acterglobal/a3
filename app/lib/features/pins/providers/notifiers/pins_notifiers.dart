@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:riverpod/riverpod.dart';
@@ -67,5 +66,43 @@ class AsyncSpacePinsNotifier
     });
     ref.onDispose(() => _poller.cancel());
     return await _getPins();
+  }
+}
+
+class AsyncPinListNotifier
+    extends AutoDisposeFamilyAsyncNotifier<List<ActerPin>, String?> {
+  late Stream<bool> _listener;
+  late StreamSubscription<bool> _poller;
+
+  @override
+  Future<List<ActerPin>> build(String? arg) async {
+    final client = ref.watch(alwaysClientProvider);
+
+    //GET ALL PINS
+    if (arg == null) {
+      _listener = client.subscribeStream('pins');
+    }
+    //GET SPACE PINS
+    else {
+      _listener = client.subscribeStream('$arg::pins');
+    }
+
+    _poller = _listener.listen((e) async {
+      state = await AsyncValue.guard(() => _getPinList(client));
+    });
+    ref.onDispose(() => _poller.cancel());
+    return await _getPinList(client);
+  }
+
+  Future<List<ActerPin>> _getPinList(Client client) async {
+    //GET ALL PINS
+    if (arg == null) {
+      return (await client.pins()).toList(); // this might throw internally
+    }
+    //GET SPACE PINS
+    else {
+      final space = await client.space(arg!);
+      return (await space.pins()).toList(); // this might throw internally
+    }
   }
 }

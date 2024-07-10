@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
@@ -7,6 +9,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
 
 class PinsSection extends ConsumerWidget {
@@ -48,20 +51,21 @@ class PinsSection extends ConsumerWidget {
             pathParameters: {'spaceId': spaceId},
           ),
         ),
-        pinsListUI(pins, pinsLimit),
+        pinsListUI(context, pins, pinsLimit),
       ],
     );
   }
 
-  Widget pinsListUI(List<ActerPin> pins, int pinsLimit) {
-    return ListView.builder(
-      shrinkWrap: true,
-      itemCount: pinsLimit,
-      padding: EdgeInsets.zero,
-      physics: const NeverScrollableScrollPhysics(),
-      itemBuilder: (context, index) {
-        return PinListItemById(pinId: pins[index].eventIdStr());
-      },
+  Widget pinsListUI(BuildContext context, List<ActerPin> pins, int pinsLimit) {
+    final size = MediaQuery.of(context).size;
+    final widthCount = (size.width ~/ 500).toInt();
+    const int minCount = 2;
+
+    return StaggeredGrid.count(
+      crossAxisCount: max(1, min(widthCount, minCount)),
+      children: [
+        for (var pin in pins) PinListItemById(pinId: pin.eventIdStr()),
+      ],
     );
   }
 }
