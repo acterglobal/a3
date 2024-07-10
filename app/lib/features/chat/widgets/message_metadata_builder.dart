@@ -1,12 +1,10 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Convo, EventSendState;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quds_popup_menu/quds_popup_menu.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -41,27 +39,7 @@ class MessageMetadataBuilder extends ConsumerWidget {
           case 'SendingFailed':
             return Row(
               children: <Widget>[
-                GestureDetector(
-                  onTap: () => _handleCancelRetrySend(context, ref),
-                  child: Text(
-                    L10n.of(context).cancelSend,
-                    style: Theme.of(context).textTheme.labelSmall!.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface,
-                          decoration: TextDecoration.underline,
-                        ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                GestureDetector(
-                  onTap: () => _handleRetry(context, ref),
-                  child: Text(
-                    L10n.of(context).retry,
-                    style: Theme.of(context).textTheme.labelSmall!.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface,
-                          decoration: TextDecoration.underline,
-                        ),
-                  ),
-                ),
+                Text(L10n.of(context).chatSendingFailed),
                 const SizedBox(width: 5),
                 Icon(
                   Atlas.warning_thin,
@@ -75,31 +53,6 @@ class MessageMetadataBuilder extends ConsumerWidget {
         }
       }
       return const SizedBox.shrink();
-    }
-  }
-
-  Future<void> _handleRetry(BuildContext context, WidgetRef ref) async {
-    try {
-      final stream = ref.read(timelineStreamProvider(convo));
-      // attempts to retry sending local echo to server
-      await stream.retrySend(message.id);
-    } catch (e) {
-      // ignore: use_build_context_synchronously
-      EasyLoading.showError(L10n.of(context).failedToSend(e));
-    }
-  }
-
-  Future<void> _handleCancelRetrySend(
-    BuildContext context,
-    WidgetRef ref,
-  ) async {
-    try {
-      final stream = ref.read(timelineStreamProvider(convo));
-      // cancels the retry sending of local echos
-      await stream.cancelSend(message.id);
-    } catch (e) {
-      // ignore: use_build_context_synchronously
-      EasyLoading.showError(L10n.of(context).failedToSend(e));
     }
   }
 }
