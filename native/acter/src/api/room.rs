@@ -22,7 +22,7 @@ use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     notification_settings::{IsEncrypted, IsOneToOne},
     room::{Room as SdkRoom, RoomMember},
-    RoomMemberships, RoomState,
+    DisplayName, RoomMemberships, RoomState,
 };
 use ruma::{assign, Int};
 use ruma_client_api::{
@@ -48,9 +48,7 @@ use std::{io::Write, ops::Deref, path::PathBuf};
 use tokio_stream::{wrappers::BroadcastStream, StreamExt};
 use tracing::{info, warn};
 
-use crate::{
-    OptionBuffer, OptionString, RoomMessage, RoomProfile, ThumbnailSize, UserProfile, RUNTIME,
-};
+use crate::{OptionBuffer, OptionString, RoomMessage, ThumbnailSize, UserProfile, RUNTIME};
 
 use super::{
     api::FfiBuffer,
@@ -580,6 +578,37 @@ impl Room {
         Room { core, room }
     }
 
+    pub fn has_avatar(&self) -> bool {
+        self.room.avatar_url().is_some()
+    }
+
+    pub async fn avatar(&self, thumb_size: Option<Box<ThumbnailSize>>) -> Result<OptionBuffer> {
+        let room = self.room.clone();
+        let format = ThumbnailSize::parse_into_media_format(thumb_size);
+        RUNTIME
+            .spawn(async move {
+                let buf = room.avatar(format).await?;
+                Ok(OptionBuffer::new(buf))
+            })
+            .await?
+    }
+
+    pub async fn display_name(&self) -> Result<OptionString> {
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let result = room.compute_display_name().await?;
+                match result {
+                    DisplayName::Named(name) => Ok(OptionString::new(Some(name))),
+                    DisplayName::Aliased(name) => Ok(OptionString::new(Some(name))),
+                    DisplayName::Calculated(name) => Ok(OptionString::new(Some(name))),
+                    DisplayName::EmptyWas(name) => Ok(OptionString::new(Some(name))),
+                    DisplayName::Empty => Ok(OptionString::new(None)),
+                }
+            })
+            .await?
+    }
+
     pub fn subscribe_to_updates(&self) -> impl Stream<Item = bool> {
         BroadcastStream::new(self.room.subscribe_to_updates()).map(|f| f.is_ok())
     }
@@ -728,10 +757,6 @@ impl Room {
                 })
             })
             .await?
-    }
-
-    pub fn get_profile(&self) -> RoomProfile {
-        RoomProfile::new(self.room.clone())
     }
 
     pub async fn upload_avatar(&self, uri: String) -> Result<OwnedMxcUri> {

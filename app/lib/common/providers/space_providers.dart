@@ -152,11 +152,9 @@ final _spaceIdAndNames =
   final spaces = ref.watch(spacesProvider);
   List<_SpaceIdAndName> items = [];
   for (final space in spaces) {
+    final roomId = space.getRoomIdStr();
     items.add(
-      (
-        space.getRoomIdStr(),
-        (await space.getProfile().getDisplayName()).text()
-      ),
+      (roomId, await ref.watch(roomDisplayNameProvider(roomId).future)),
     );
   }
   return items;
@@ -224,8 +222,8 @@ final spaceInvitedMembersProvider = FutureProvider.autoDispose
 /// Get the SpaceRelationsOverview of related SpaceItem for the space. Errors if
 /// the space or any related space isn't found. Stays up  to date with underlying
 /// client data if a space was found.
-final spaceRelationsOverviewProvider = FutureProvider.autoDispose
-    .family<SpaceRelationsOverview, String>((ref, spaceId) async {
+final spaceRelationsOverviewProvider =
+    FutureProvider.family<SpaceRelationsOverview, String>((ref, spaceId) async {
   final relatedSpaces = await ref.watch(spaceRelationsProvider(spaceId).future);
   if (relatedSpaces == null) {
     throw 'Space not found';

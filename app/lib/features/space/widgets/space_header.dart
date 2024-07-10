@@ -1,6 +1,5 @@
 import 'package:acter/features/space/widgets/space_header_profile.dart';
 import 'package:acter/features/space/widgets/space_toolbar.dart';
-import 'package:acter/features/space/widgets/top_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -23,7 +22,7 @@ class _SpaceHeaderState extends ConsumerState<SpaceHeader> {
       children: [
         SpaceToolbar(spaceId: widget.spaceIdOrAlias),
         SpaceHeaderProfile(widget.spaceIdOrAlias),
-        TopNavBar(spaceId: widget.spaceIdOrAlias),
+        const SizedBox(height: 12),
       ],
     );
   }

@@ -1,31 +1,88 @@
 use acter_core::events::three_pid::{ThreePidContent, ThreePidRecord};
 use anyhow::{bail, Context, Result};
-use matrix_sdk::{
-    reqwest::{ClientBuilder, StatusCode},
-    Account,
-};
-use ruma::{thirdparty::Medium, uint, ClientSecret, SessionId};
+use matrix_sdk::reqwest::{ClientBuilder, StatusCode};
+use ruma::{assign, uint};
 use ruma_client_api::{
-    account::ThirdPartyIdRemovalStatus,
+    account::{request_3pid_management_token_via_email, ThirdPartyIdRemovalStatus},
     uiaa::{AuthData, Password, UserIdentifier},
+};
+use ruma_common::{
+    thirdparty::{Medium, ThirdPartyIdentifier},
+    ClientSecret, MilliSecondsSinceUnixEpoch, OwnedClientSecret, SessionId,
 };
 use serde::Deserialize;
 use std::{collections::BTreeMap, ops::Deref};
 
-use super::{client::Client, RUNTIME};
+use super::Account;
+use crate::{api::common::clearify_error, RUNTIME};
 
 #[derive(Clone)]
-pub struct ThreePidManager {
-    account: Account,
-    client: Client,
+pub struct ThreePidEmailTokenResponse {
+    inner: request_3pid_management_token_via_email::v3::Response,
+    client_secret: OwnedClientSecret,
 }
 
-impl ThreePidManager {
+impl ThreePidEmailTokenResponse {
+    pub fn sid(&self) -> String {
+        self.inner.sid.to_string()
+    }
+
+    pub fn submit_url(&self) -> Option<String> {
+        self.inner.submit_url.clone()
+    }
+
+    pub fn client_secret(&self) -> String {
+        self.client_secret.to_string()
+    }
+}
+
+#[derive(Clone)]
+pub struct ExternalId {
+    address: String,
+    medium: Medium,
+    added_at: MilliSecondsSinceUnixEpoch,
+    validated_at: MilliSecondsSinceUnixEpoch,
+}
+
+impl ExternalId {
+    fn new(val: ThirdPartyIdentifier) -> Self {
+        ExternalId {
+            address: val.address,
+            medium: val.medium,
+            added_at: val.added_at,
+            validated_at: val.validated_at,
+        }
+    }
+
+    pub fn address(&self) -> String {
+        self.address.clone()
+    }
+
+    pub fn medium(&self) -> String {
+        self.medium.to_string()
+    }
+
+    pub fn added_at(&self) -> u64 {
+        self.added_at.get().into()
+    }
+
+    pub fn validated_at(&self) -> u64 {
+        self.validated_at.get().into()
+    }
+}
+
+#[derive(Deserialize, Debug)]
+struct ValidateResponse {
+    pub success: bool,
+}
+
+impl Account {
     pub async fn confirmed_email_addresses(&self) -> Result<Vec<String>> {
         let account = self.account.clone();
+
         RUNTIME
             .spawn(async move {
-                let response = account.get_3pids().await?;
+                let response = account.get_3pids().await.map_err(clearify_error)?;
                 let addresses = response
                     .threepids
                     .iter()
@@ -57,34 +114,39 @@ impl ThreePidManager {
             .await?
     }
 
-    pub async fn request_token_via_email(&self, email_address: String) -> Result<bool> {
-        let client = self.client.clone();
+    pub async fn request_3pid_management_token_via_email(
+        &self,
+        email: String,
+    ) -> Result<ThreePidEmailTokenResponse> {
+        let client = self.client.deref().clone();
         let account = self.account.clone();
-        let secret = ClientSecret::new(); // make random string that will be exposed to confirmation email
+        let client_secret = ClientSecret::new();
+
         RUNTIME
             .spawn(async move {
                 let capabilities = client.get_capabilities().await?;
                 if !capabilities.thirdparty_id_changes.enabled {
-                    bail!("This client cannot change third party identity");
+                    bail!("Server doesn't support change of third party identity");
                 }
-                let response = account
-                    .request_3pid_email_token(&secret, &email_address, uint!(0))
-                    .await?;
+                let inner = account
+                    .request_3pid_email_token(&client_secret, &email, uint!(0))
+                    .await
+                    .map_err(clearify_error)?;
 
                 // add this record to custom data
-                let record = ThreePidRecord::new(response.sid.to_string(), secret);
+                let record = ThreePidRecord::new(inner.sid.to_string(), client_secret.clone());
                 let maybe_content = account.account_data::<ThreePidContent>().await?;
                 let content = if let Some(raw_content) = maybe_content {
                     let mut content = raw_content.deserialize()?;
                     content
                         .via_email
-                        .entry(email_address)
+                        .entry(email)
                         .and_modify(|x| *x = record.clone())
                         .or_insert(record);
                     content
                 } else {
                     let mut via_email = BTreeMap::new();
-                    via_email.insert(email_address, record);
+                    via_email.insert(email, record);
                     let via_phone = BTreeMap::new();
                     ThreePidContent {
                         via_email,
@@ -93,7 +155,61 @@ impl ThreePidManager {
                 };
                 account.set_account_data(content).await?;
 
+                Ok(ThreePidEmailTokenResponse {
+                    inner,
+                    client_secret,
+                })
+            })
+            .await?
+    }
+
+    // add 3pid on the homeserver for this account
+    // this 3pid may be used by the homeserver to authenticate the user during sensitive operations
+    #[cfg(feature = "testing")]
+    pub async fn add_3pid(
+        &self,
+        client_secret: String,
+        sid: String,
+        password: String,
+    ) -> Result<bool> {
+        let client = self.client.deref().clone();
+        let account = self.account.clone();
+        let user_id = self.user_id.clone();
+        let client_secret = ClientSecret::parse(&client_secret)?;
+        let sid = SessionId::parse(&sid)?; // it was already related with email or msisdn
+
+        RUNTIME
+            .spawn(async move {
+                let capabilities = client.get_capabilities().await?;
+                if !capabilities.thirdparty_id_changes.enabled {
+                    bail!("Server doesn't support 3pid change");
+                }
+                if let Err(e) = account.add_3pid(&client_secret, &sid, None).await {
+                    let Some(inf) = e.as_uiaa_response() else {
+                        return Err(clearify_error(e));
+                    };
+                    let pswd = assign!(Password::new(user_id.into(), password), {
+                        session: inf.session.clone(),
+                    });
+                    let auth_data = AuthData::Password(pswd);
+                    account
+                        .add_3pid(&client_secret, &sid, Some(auth_data))
+                        .await
+                        .map_err(clearify_error)?;
+                }
                 Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn external_ids(&self) -> Result<Vec<ExternalId>> {
+        let account = self.account.clone();
+
+        RUNTIME
+            .spawn(async move {
+                let resp = account.get_3pids().await.map_err(clearify_error)?;
+                let records = resp.threepids.into_iter().map(ExternalId::new).collect();
+                Ok(records)
             })
             .await?
     }
@@ -103,17 +219,17 @@ impl ThreePidManager {
         email_address: String,
         password: String,
     ) -> Result<bool> {
-        let client = self.client.clone();
+        let client = self.client.deref().clone();
         let account = self.account.clone();
-        let user_id = self.client.user_id()?;
+        let user_id = self.user_id.clone();
 
         RUNTIME
             .spawn(async move {
                 let capabilities = client.get_capabilities().await?;
                 if !capabilities.thirdparty_id_changes.enabled {
-                    bail!("This client cannot change third party identity");
+                    bail!("Server doesn't support change of third party identity");
                 }
-                let content = account
+                let mut content = account
                     .account_data::<ThreePidContent>()
                     .await?
                     .context("Not found any email registration content")?
@@ -145,6 +261,11 @@ impl ThreePidManager {
                     return Err(e.into());
                 }
 
+                // now email address can be removed from account data
+                // because session id & passphrase are wasted
+                content.via_email.remove(&email_address);
+                account.set_account_data(content).await?;
+
                 Ok(true)
             })
             .await?
@@ -164,9 +285,9 @@ impl ThreePidManager {
             .spawn(async move {
                 let capabilities = client.get_capabilities().await?;
                 if !capabilities.thirdparty_id_changes.enabled {
-                    bail!("This client cannot change third party identity");
+                    bail!("Server doesn't support change of third party identity");
                 }
-                let content = account
+                let mut content = account
                     .account_data::<ThreePidContent>()
                     .await?
                     .context("Not found any email registration content")?
@@ -219,6 +340,11 @@ impl ThreePidManager {
                     return Err(e.into());
                 }
 
+                // now email address can be removed from account data
+                // because session id & passphrase are wasted
+                content.via_email.remove(&email_address);
+                account.set_account_data(content).await?;
+
                 Ok(true)
             })
             .await?
@@ -231,7 +357,7 @@ impl ThreePidManager {
             .spawn(async move {
                 let capabilities = client.get_capabilities().await?;
                 if !capabilities.thirdparty_id_changes.enabled {
-                    bail!("This client cannot change third party identity");
+                    bail!("Server doesn't support change of third party identity");
                 }
                 // find it among the confirmed email addresses
                 let response = account.get_3pids().await?;
@@ -269,19 +395,4 @@ impl ThreePidManager {
             })
             .await?
     }
-}
-
-impl Client {
-    pub fn three_pid_manager(&self) -> Result<ThreePidManager> {
-        let account = self.account()?;
-        Ok(ThreePidManager {
-            account: account.deref().clone(),
-            client: self.clone(),
-        })
-    }
-}
-
-#[derive(Deserialize, Debug)]
-struct ValidateResponse {
-    pub success: bool,
 }

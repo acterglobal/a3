@@ -7,11 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
-final dashboardKey = GlobalKey();
-final updateKey = GlobalKey();
-final chatsKey = GlobalKey();
-final activityKey = GlobalKey();
-final jumpToKey = GlobalKey();
+final dashboardKey = GlobalKey(debugLabel: 'dashboard');
+final updateKey = GlobalKey(debugLabel: 'updae');
+final chatsKey = GlobalKey(debugLabel: 'chats');
+final activityKey = GlobalKey(debugLabel: 'activities');
+final jumpToKey = GlobalKey(debugLabel: 'jump to key');
 
 const bottomNavigationPrefKey = 'bottomNavigationPrefKey';
 
