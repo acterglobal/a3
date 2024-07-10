@@ -6,7 +6,6 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
-import 'package:acter/features/invite_members/providers/invite_providers.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/pin_list_item.dart';
 import 'package:acter/features/pins/widgets/pin_list_skeleton.dart';
@@ -17,6 +16,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
+import 'package:acter/features/search/providers/search.dart';
 
 class PinsListPage extends ConsumerStatefulWidget {
   final String? spaceId;
@@ -29,7 +29,8 @@ class PinsListPage extends ConsumerStatefulWidget {
 
 class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
   final TextEditingController searchTextController = TextEditingController();
-  bool hasSearchTerm = false;
+
+  String get searchValue => ref.watch(searchValueProvider);
 
   @override
   Widget build(BuildContext context) {
@@ -76,10 +77,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
   Widget _buildBody() {
     AsyncValue<List<ActerPin>> pinList;
 
-    final searchValue = ref.watch(searchValueProvider) ?? '';
-    hasSearchTerm = searchValue.isNotEmpty;
-
-    if (hasSearchTerm) {
+    if (searchValue.isNotEmpty) {
       pinList = ref.watch(
         pinListSearchProvider(
           (spaceId: widget.spaceId, searchText: searchValue),
@@ -115,7 +113,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
           child: Icon(Atlas.magnifying_glass),
         ),
         hintText: L10n.of(context).search,
-        trailing: hasSearchTerm
+        trailing: searchValue.isNotEmpty
             ? [
                 IconButton(
                   onPressed: () {
@@ -156,7 +154,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
 
   Widget _buildPinsEmptyState() {
     bool canAdd = false;
-    if (!hasSearchTerm) {
+    if (searchValue.isEmpty) {
       canAdd =
           ref.watch(hasSpaceWithPermissionProvider('CanPostPin')).valueOrNull ??
               false;
@@ -164,12 +162,12 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
     return Center(
       heightFactor: 1,
       child: EmptyState(
-        title: hasSearchTerm
+        title: searchValue.isNotEmpty
             ? L10n.of(context).noMatchingPinsFound
             : L10n.of(context).noPinsAvailableYet,
         subtitle: L10n.of(context).noPinsAvailableDescription,
         image: 'assets/images/empty_pin.svg',
-        primaryButton: canAdd && !hasSearchTerm
+        primaryButton: canAdd && searchValue.isEmpty
             ? ActerPrimaryActionButton(
                 onPressed: () => context.pushNamed(
                   Routes.actionAddPin.name,
