@@ -49,21 +49,20 @@ class PinsSection extends ConsumerWidget {
             pathParameters: {'spaceId': spaceId},
           ),
         ),
-        pinsListUI(context, pins, pinsLimit),
+        pinsListUI(pins, pinsLimit),
       ],
     );
   }
 
-  Widget pinsListUI(BuildContext context, List<ActerPin> pins, int pinsLimit) {
-    final size = MediaQuery.of(context).size;
-    final widthCount = (size.width ~/ 500).toInt();
-    const int minCount = 2;
-
-    return StaggeredGrid.count(
-      crossAxisCount: max(1, min(widthCount, minCount)),
-      children: [
-        for (var pin in pins) PinListItemById(pinId: pin.eventIdStr()),
-      ],
+  Widget pinsListUI(List<ActerPin> pins, int pinsLimit) {
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: pinsLimit,
+      padding: EdgeInsets.zero,
+      physics: const NeverScrollableScrollPhysics(),
+      itemBuilder: (context, index) {
+        return PinListItemById(pinId: pins[index].eventIdStr());
+      },
     );
   }
 }

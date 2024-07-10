@@ -94,6 +94,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
     }
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _buildSearchBar(),
         Expanded(
@@ -122,6 +123,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
             ? [
                 IconButton(
                   onPressed: () {
+                    FocusManager.instance.primaryFocus?.unfocus();
                     ref.read(searchValueProvider.notifier).state = '';
                     searchTextController.clear();
                   },
