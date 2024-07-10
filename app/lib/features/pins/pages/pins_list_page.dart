@@ -56,8 +56,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
           canString: 'CanPostPin',
           onPressed: () => context.pushNamed(
             Routes.actionAddPin.name,
-            queryParameters:
-                widget.spaceId != null ? {'spaceId': widget.spaceId} : {},
+            queryParameters: {'spaceId': widget.spaceId},
           ),
         ),
       ],
@@ -171,8 +170,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
             ? ActerPrimaryActionButton(
                 onPressed: () => context.pushNamed(
                   Routes.actionAddPin.name,
-                  queryParameters:
-                      widget.spaceId != null ? {'spaceId': widget.spaceId} : {},
+                  queryParameters: {'spaceId': widget.spaceId},
                 ),
                 child: Text(L10n.of(context).createPin),
               )
