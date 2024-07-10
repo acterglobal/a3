@@ -143,7 +143,14 @@ dev_dependencies:
       url: https://github.com/gnunicorn/flutter_convenient_test/
       ref: ben-cli-limit-tests
       path: packages/convenient_test_manager_dart
-  msix: ^3.7.0
+  msix: #^3.7.0
+    # FIXME mainline `msix` comes with outdated VS redistribution libs
+    # that make our app crash. We already copy over the proper ones in the
+    # CI job, it we need a msix-version that doesn't copy over its own bad ones
+    # see https://github.com/YehudaKremer/msix/issues/272#issuecomment-2181634105
+    git:
+      url: https://github.com/insertjokehere/msix.git
+      ref: msvc_redist
   # mockito: ^5.4.2
   uuid: ^4.0.0
   enough_mail: ^2.1.6

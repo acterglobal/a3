@@ -332,11 +332,11 @@ packages:
     dependency: "direct dev"
     description:
       path: "packages/convenient_test_manager_dart"
-      ref: HEAD
-      resolved-ref: "0edbf822a35144c9b64df1749a4d350544e7535f"
-      url: "https://github.com/fzyzcjy/flutter_convenient_test/"
+      ref: ben-cli-limit-tests
+      resolved-ref: "076f44d79aae72990726c94e036abbeffa31cfd6"
+      url: "https://github.com/gnunicorn/flutter_convenient_test/"
     source: git
-    version: "1.4.0"
+    version: "1.3.7"
   convert:
     dependency: "direct main"
     description:
@@ -1401,10 +1401,11 @@ packages:
   msix:
     dependency: "direct dev"
     description:
-      name: msix
-      sha256: "519b183d15dc9f9c594f247e2d2339d855cf0eaacc30e19b128e14f3ecc62047"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: msvc_redist
+      resolved-ref: "4c5cd4c3187bbe2eb8365f11c3d929e4d1aeac92"
+      url: "https://github.com/insertjokehere/msix.git"
+    source: git
     version: "3.16.7"
   multiavatar:
     dependency: transitive
