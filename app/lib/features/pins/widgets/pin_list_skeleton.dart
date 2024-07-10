@@ -25,7 +25,8 @@ class PinListSkeleton extends StatelessWidget {
       leading: Icon(Atlas.pin, size: 60),
       title: Text('Title Title Title Title Title'),
       subtitle: Text(
-          'Sub-title Sub-title Sub-title Sub-title Sub-title Sub-title Sub-title'),
+        'Sub-title Sub-title Sub-title Sub-title Sub-title Sub-title Sub-title',
+      ),
     );
   }
 }
