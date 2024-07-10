@@ -1,30 +1,23 @@
-import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-typedef CanPermissionParam = ({String spaceId, String canString});
-
 class AddButtonWithCanPermission extends ConsumerWidget {
   final VoidCallback onPressed;
-  final CanPermissionParam? canPermissionParam;
+  final String? canString;
 
   const AddButtonWithCanPermission({
     super.key,
     required this.onPressed,
-    this.canPermissionParam,
+    this.canString,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (canPermissionParam == null) return _buildIconButton(context);
-
-    final membership =
-        ref.watch(roomMembershipProvider(canPermissionParam!.spaceId));
-
-    bool canAdd = membership.valueOrNull?.canString(
-          canPermissionParam!.canString,
-        ) ==
-        true;
+    if (canString == null) return _buildIconButton(context);
+    final canAdd =
+        ref.watch(hasSpaceWithPermissionProvider(canString!)).valueOrNull ??
+            false;
 
     return canAdd ? _buildIconButton(context) : const SizedBox.shrink();
   }

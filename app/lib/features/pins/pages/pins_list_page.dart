@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
@@ -50,9 +51,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
       ),
       actions: [
         AddButtonWithCanPermission(
-          canPermissionParam: widget.spaceId != null
-              ? (spaceId: widget.spaceId!, canString: 'CanPostPin')
-              : null,
+          canString: 'CanPostPin',
           onPressed: () => context.pushNamed(
             Routes.actionAddPin.name,
             queryParameters:
@@ -155,10 +154,11 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
   }
 
   Widget _buildPinsEmptyState() {
-    bool canAdd = true;
-    if (widget.spaceId != null && !hasSearchTerm) {
-      final membership = ref.watch(roomMembershipProvider(widget.spaceId!));
-      canAdd = membership.valueOrNull?.canString('CanPostPin') == true;
+    bool canAdd = false;
+    if (!hasSearchTerm) {
+      canAdd =
+          ref.watch(hasSpaceWithPermissionProvider('CanPostPin')).valueOrNull ??
+              false;
     }
     return Center(
       heightFactor: 1,
