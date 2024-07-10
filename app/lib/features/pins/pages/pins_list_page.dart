@@ -45,7 +45,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(L10n.of(context).pins),
-          _buildSpaceName(),
+          if (widget.spaceId != null) _buildSpaceName(),
         ],
       ),
       actions: [
@@ -64,17 +64,13 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
   }
 
   Widget _buildSpaceName() {
-    if (widget.spaceId != null) {
-      String spaceName =
-          ref.watch(roomDisplayNameProvider(widget.spaceId!)).valueOrNull ?? '';
-      return Text(
-        '($spaceName)',
-        overflow: TextOverflow.ellipsis,
-        style: Theme.of(context).textTheme.labelLarge,
-      );
-    } else {
-      return const SizedBox.shrink();
-    }
+    String spaceName =
+        ref.watch(roomDisplayNameProvider(widget.spaceId!)).valueOrNull ?? '';
+    return Text(
+      '($spaceName)',
+      overflow: TextOverflow.ellipsis,
+      style: Theme.of(context).textTheme.labelLarge,
+    );
   }
 
   Widget _buildBody() {
@@ -162,7 +158,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
     bool canAdd = true;
     if (widget.spaceId != null && !hasSearchTerm) {
       final membership = ref.watch(roomMembershipProvider(widget.spaceId!));
-      canAdd = membership.requireValue!.canString('CanPostPin');
+      canAdd = membership.valueOrNull?.canString('CanPostPin') == true;
     }
     return Center(
       heightFactor: 1,

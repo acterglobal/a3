@@ -39,9 +39,8 @@ class AsyncPinListNotifier
     //GET ALL PINS
     if (arg == null) {
       _listener = client.subscribeStream('pins');
-    }
-    //GET SPACE PINS
-    else {
+    } else {
+      //GET SPACE PINS
       _listener = client.subscribeStream('$arg::pins');
     }
 
@@ -56,9 +55,8 @@ class AsyncPinListNotifier
     //GET ALL PINS
     if (arg == null) {
       return (await client.pins()).toList(); // this might throw internally
-    }
-    //GET SPACE PINS
-    else {
+    } else {
+      //GET SPACE PINS
       final space = await client.space(arg!);
       return (await space.pins()).toList(); // this might throw internally
     }

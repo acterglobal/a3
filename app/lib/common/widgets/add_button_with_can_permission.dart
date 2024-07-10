@@ -21,9 +21,10 @@ class AddButtonWithCanPermission extends ConsumerWidget {
     final membership =
         ref.watch(roomMembershipProvider(canPermissionParam!.spaceId));
 
-    bool canAdd = membership.requireValue!.canString(
-      canPermissionParam!.canString,
-    );
+    bool canAdd = membership.valueOrNull?.canString(
+          canPermissionParam!.canString,
+        ) ==
+        true;
 
     return canAdd ? _buildIconButton(context) : const SizedBox.shrink();
   }
