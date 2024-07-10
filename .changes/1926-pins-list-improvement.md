@@ -1,0 +1,2 @@
+- [Improvement] : Pins list UI is now more consistent and robot
+- [New] : Now you can search any pin by it's title name

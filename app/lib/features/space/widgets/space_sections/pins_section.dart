@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/pin_list_item.dart';
@@ -24,8 +23,7 @@ class PinsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final space = ref.watch(spaceProvider(spaceId)).requireValue;
-    final pinList = ref.watch(spacePinsProvider(space));
+    final pinList = ref.watch(pinListProvider(spaceId));
     return pinList.when(
       data: (pins) => buildPinsSectionUI(context, pins),
       error: (error, stack) =>

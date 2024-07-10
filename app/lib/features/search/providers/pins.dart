@@ -17,7 +17,7 @@ class PinDetails extends SearchTermDelegate {
 
 final AutoDisposeFutureProvider<List<PinDetails>> pinsFoundProvider =
     FutureProvider.autoDispose((ref) async {
-  final pins = await ref.watch(pinsProvider.future);
+  final pins = await ref.watch(pinListProvider(null).future);
   final List<PinDetails> finalPins = [];
   final searchValue = ref.watch(searchValueProvider).toLowerCase();
 
