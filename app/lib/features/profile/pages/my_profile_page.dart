@@ -250,6 +250,7 @@ class MyProfilePage extends StatelessWidget {
       child: ListTile(
         title: Text(
           title,
+          key: key,
           style: Theme.of(context).textTheme.labelMedium,
         ),
         subtitle: Padding(

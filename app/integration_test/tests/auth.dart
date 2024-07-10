@@ -159,22 +159,7 @@ void authTests() {
     await submit.tap();
 
     // forwards us to the login, let's try it
-
-    Finder user = find.byKey(LoginPageKeys.usernameField);
-    await user.should(findsOneWidget);
-
-    await user.enterTextWithoutReplace(userId);
-
-    Finder password = find.byKey(LoginPageKeys.passwordField);
-    await password.should(findsOneWidget);
-
-    await password.enterTextWithoutReplace('newPasswordFor$userId');
-
-    Finder submitBtn = find.byKey(LoginPageKeys.submitBtn);
-    await t.tester.ensureVisible(submitBtn);
-    await submitBtn.should(findsOneWidget);
-    await submitBtn.tap();
-
+    await t.loginFormSubmission(userId, password: 'newPasswordFor$userId');
     // we should see a main navigation, either at the side (desktop) or the bottom (mobile/tablet)
     await find.byKey(Keys.mainNav).should(findsOneWidget);
   });
