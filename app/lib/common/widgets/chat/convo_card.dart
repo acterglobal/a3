@@ -134,12 +134,6 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
     await room.unmute();
     if (!mounted) return;
     EasyLoading.showToast(L10n.of(context).notificationsUnmuted);
-    await Future.delayed(const Duration(seconds: 1), () {
-      // FIXME: we want to refresh the view but don't know
-      //        when the event was confirmed form sync :(
-      // let's hope that a second delay is reasonable enough
-      ref.invalidate(maybeRoomProvider(roomId));
-    });
   }
 }
 

@@ -161,12 +161,6 @@ class _NotificationSettingsTile extends ConsumerWidget {
         return;
       }
       EasyLoading.showToast(L10n.of(context).notificationStatusSubmitted);
-      await Future.delayed(const Duration(seconds: 1), () {
-        // FIXME: we want to refresh the view but don't know
-        //        when the event was confirmed form sync :(
-        // let's hope that a second delay is reasonable enough
-        ref.invalidate(maybeRoomProvider(roomId));
-      });
     } catch (e, st) {
       _log.severe('Failed to change notification mode', e, st);
       if (!context.mounted) {
