@@ -8,7 +8,6 @@ import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/invite_members/pages/invite_page.dart';
 import 'package:acter/features/space/pages/chats_page.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
-import 'package:acter/features/space/widgets/space_header_profile.dart';
 import 'package:acter/features/spaces/model/keys.dart';
 import 'package:acter/features/spaces/pages/create_space_page.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
