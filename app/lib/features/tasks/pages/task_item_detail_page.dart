@@ -150,7 +150,6 @@ class TaskItemDetailPage extends ConsumerWidget {
       builder: (context) => RedactContentWidget(
         title: L10n.of(context).deleteTaskItem,
         onSuccess: () {
-          ref.invalidate(taskListProvider);
           Navigator.of(context, rootNavigator: true).pop();
         },
         eventId: task.eventIdStr(),
