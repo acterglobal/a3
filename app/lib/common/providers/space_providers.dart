@@ -152,11 +152,9 @@ final _spaceIdAndNames =
   final spaces = ref.watch(spacesProvider);
   List<_SpaceIdAndName> items = [];
   for (final space in spaces) {
+    final roomId = space.getRoomIdStr();
     items.add(
-      (
-        space.getRoomIdStr(),
-        (await space.getProfile().getDisplayName()).text()
-      ),
+      (roomId, await ref.watch(roomDisplayNameProvider(roomId).future)),
     );
   }
   return items;

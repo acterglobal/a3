@@ -16,7 +16,7 @@ class AsyncMaybeRoomNotifier extends FamilyAsyncNotifier<Room?, String> {
     try {
       return await client.room(arg);
     } catch (e) {
-      _log.warning('room not found', e);
+      _log.warning('room $arg not found', e);
       return null;
     }
   }

@@ -236,7 +236,8 @@ class PasswordConfirm extends StatefulWidget {
 
 class _PasswordConfirmState extends State<PasswordConfirm> {
   final TextEditingController newPassword = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey =
+      GlobalKey<FormState>(debugLabel: 'password confirm form');
   bool passwordVisible = false;
 
   @override
@@ -307,7 +308,8 @@ class TokenConfirm extends StatefulWidget {
 class _TokenConfirmState extends State<TokenConfirm> {
   final TextEditingController tokenField = TextEditingController();
   final TextEditingController newPassword = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey =
+      GlobalKey<FormState>(debugLabel: 'token confirm form');
   bool passwordVisible = false;
 
   @override

@@ -9,7 +9,7 @@ import 'package:acter/features/invite_members/pages/invite_pending.dart';
 import 'package:acter/features/invite_members/pages/invite_space_members.dart';
 import 'package:acter/features/invite_members/pages/share_invite_code.dart';
 import 'package:acter/features/pins/pages/pin_page.dart';
-import 'package:acter/features/pins/pages/pins_page.dart';
+import 'package:acter/features/pins/pages/pins_list_page.dart';
 import 'package:acter/features/settings/pages/backup_page.dart';
 import 'package:acter/features/settings/pages/change_password.dart';
 import 'package:acter/features/settings/pages/chat_settings_page.dart';
@@ -29,7 +29,6 @@ import 'package:acter/features/super_invites/pages/super_invites.dart';
 import 'package:acter/features/space/pages/chats_page.dart';
 import 'package:acter/features/space/pages/events_page.dart';
 import 'package:acter/features/space/pages/members_page.dart';
-import 'package:acter/features/space/pages/pins_page.dart';
 import 'package:acter/features/space/pages/sub_spaces_page.dart';
 import 'package:acter/features/space/pages/space_tasks_page.dart';
 import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
@@ -246,8 +245,8 @@ List<RouteBase> makeHomeShellRoutes() {
       pageBuilder: (context, state) {
         return NoTransitionPage(
           key: state.pageKey,
-          child: SpacePinsPage(
-            spaceIdOrAlias: state.pathParameters['spaceId']!,
+          child: PinsListPage(
+            spaceId: state.pathParameters['spaceId'],
           ),
         );
       },
@@ -426,7 +425,7 @@ List<RouteBase> makeHomeShellRoutes() {
       pageBuilder: (context, state) {
         return NoTransitionPage(
           key: state.pageKey,
-          child: const PinsPage(),
+          child: const PinsListPage(),
         );
       },
     ),

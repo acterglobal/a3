@@ -14,8 +14,9 @@ use futures::{
 use matrix_sdk::{
     media::{MediaRequest, UniqueKey},
     room::Room as SdkRoom,
-    Client as SdkClient, RoomState,
+    Client as SdkClient,
 };
+use matrix_sdk_base::RoomStateFilter;
 use ruma_common::{
     device_id, IdParseError, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId,
     OwnedServerName, OwnedUserId, RoomAliasId, RoomId, RoomOrAliasId, UserId,
@@ -196,10 +197,9 @@ impl Client {
 
     async fn get_spaces_and_chats(&self) -> (Vec<Room>, Vec<Room>) {
         let client = self.core.clone();
-        self.rooms()
+        // only include items we are ourselves are currently joined in
+        self.rooms_filtered(RoomStateFilter::JOINED)
             .into_iter()
-            .filter(|room| matches!(room.state(), RoomState::Joined))
-            // only include items we are ourselves are currently joined in
             .fold(
                 (Vec::new(), Vec::new()),
                 move |(mut spaces, mut convos), room| {

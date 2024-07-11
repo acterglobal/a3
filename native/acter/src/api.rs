@@ -92,7 +92,7 @@ pub use invitation::Invitation;
 pub use message::{EventSendState, RoomEventItem, RoomMessage, RoomVirtualItem};
 pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide, NewsSlideDraft};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
-pub use profile::{RoomProfile, UserProfile};
+pub use profile::UserProfile;
 pub use push::{
     NotificationItem, NotificationRoom, NotificationSender, NotificationSettings, Pusher,
 };

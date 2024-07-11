@@ -4,7 +4,6 @@ import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:riverpod/riverpod.dart';
 
-/// Provider the profile data of a the given space, keeps up to date with underlying client
 final convoProvider =
     AsyncNotifierProvider.family<AsyncConvoNotifier, Convo?, Convo>(
   () => AsyncConvoNotifier(),
@@ -18,11 +17,18 @@ final latestMessageProvider =
   return LatestMsgNotifier(ref, convo);
 });
 
-/// Provider the profile data of a the given space, keeps up to date with underlying client
-final chatsProvider =
+/// Provider for fetching rooms list. This'll always bring up unsorted list.
+final _convosProvider =
     StateNotifierProvider<ChatRoomsListNotifier, List<Convo>>((ref) {
   final client = ref.watch(alwaysClientProvider);
   return ChatRoomsListNotifier(ref: ref, client: client);
+});
+
+/// Provider that sorts up list based on latest timestamp from [_convosProvider].
+final chatsProvider = StateProvider<List<Convo>>((ref) {
+  final convos = List.of(ref.watch(_convosProvider));
+  convos.sort((a, b) => b.latestMessageTs().compareTo(a.latestMessageTs()));
+  return convos;
 });
 
 final chatProvider =
@@ -37,8 +43,12 @@ final chatProvider =
 
 final relatedChatsProvider =
     FutureProvider.family<List<Convo>, String>((ref, spaceId) async {
-  return (await ref.watch(spaceRelationsOverviewProvider(spaceId).future))
-      .knownChats;
+  final chats = List.of(
+    (await ref.watch(spaceRelationsOverviewProvider(spaceId).future))
+        .knownChats,
+  );
+  chats.sort((a, b) => b.latestMessageTs().compareTo(a.latestMessageTs()));
+  return chats;
 });
 
 final selectedChatIdProvider =

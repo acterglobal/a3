@@ -4,12 +4,15 @@ use core::fmt::Debug;
 use matrix_sdk_base::{
     deserialized_responses::RawAnySyncOrStrippedState,
     media::{MediaRequest, UniqueKey},
-    store::StoreEncryptionError,
+    store::{QueuedEvent, SerializableEventContent, StoreEncryptionError},
     MinimalRoomMemberEvent, RoomInfo, RoomMemberships, StateChanges, StateStore, StateStoreDataKey,
     StateStoreDataValue, StoreError,
 };
 use matrix_sdk_store_encryption::StoreCipher;
-use ruma_common::{serde::Raw, EventId, MxcUri, OwnedEventId, OwnedUserId, RoomId, UserId};
+use ruma_common::{
+    serde::Raw, EventId, MxcUri, OwnedEventId, OwnedRoomId, OwnedTransactionId, OwnedUserId,
+    RoomId, TransactionId, UserId,
+};
 use ruma_events::{
     presence::PresenceEvent,
     receipt::{Receipt, ReceiptThread, ReceiptType},
@@ -569,6 +572,99 @@ where
         Ok(self
             .inner
             .remove_room(room_id)
+            .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
+    }
+
+    /// Save an event to be sent by a send queue later.
+    ///
+    /// # Arguments
+    ///
+    /// * `room_id` - The `RoomId` of the send queue's room.
+    /// * `transaction_id` - The unique key identifying the event to be sent
+    ///   (and its transaction). Note: this is expected to be randomly generated
+    ///   and thus unique.
+    /// * `content` - Serializable event content to be sent.
+    async fn save_send_queue_event(
+        &self,
+        room_id: &RoomId,
+        transaction_id: OwnedTransactionId,
+        content: SerializableEventContent,
+    ) -> Result<(), Self::Error> {
+        Ok(self
+            .inner
+            .save_send_queue_event(room_id, transaction_id, content)
+            .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
+    }
+
+    /// Updates a send queue event with the given content, and resets its wedged
+    /// status to false.
+    ///
+    /// # Arguments
+    ///
+    /// * `room_id` - The `RoomId` of the send queue's room.
+    /// * `transaction_id` - The unique key identifying the event to be sent
+    ///   (and its transaction).
+    /// * `content` - Serializable event content to replace the original one.
+    async fn update_send_queue_event(
+        &self,
+        room_id: &RoomId,
+        transaction_id: &TransactionId,
+        content: SerializableEventContent,
+    ) -> Result<bool, Self::Error> {
+        Ok(self
+            .inner
+            .update_send_queue_event(room_id, transaction_id, content)
+            .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
+    }
+
+    /// Remove an event previously inserted with [`Self::save_send_queue_event`]
+    /// from the database, based on its transaction id.
+    async fn remove_send_queue_event(
+        &self,
+        room_id: &RoomId,
+        transaction_id: &TransactionId,
+    ) -> Result<bool, Self::Error> {
+        Ok(self
+            .inner
+            .remove_send_queue_event(room_id, transaction_id)
+            .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
+    }
+
+    /// Loads all the send queue events for the given room.
+    async fn load_send_queue_events(
+        &self,
+        room_id: &RoomId,
+    ) -> Result<Vec<QueuedEvent>, Self::Error> {
+        Ok(self
+            .inner
+            .load_send_queue_events(room_id)
+            .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
+    }
+
+    /// Updates the send queue wedged status for a given send queue event.
+    async fn update_send_queue_event_status(
+        &self,
+        room_id: &RoomId,
+        transaction_id: &TransactionId,
+        wedged: bool,
+    ) -> Result<(), Self::Error> {
+        Ok(self
+            .inner
+            .update_send_queue_event_status(room_id, transaction_id, wedged)
+            .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
+    }
+
+    /// Loads all the rooms which have any pending events in their send queue.
+    async fn load_rooms_with_unsent_events(&self) -> Result<Vec<OwnedRoomId>, Self::Error> {
+        Ok(self
+            .inner
+            .load_rooms_with_unsent_events()
             .await
             .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
     }

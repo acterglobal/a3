@@ -50,7 +50,7 @@ class _AskForEmail extends StatelessWidget {
 
   _AskForEmail({required this.onSubmit, required this.sdk});
 
-  final formKey = GlobalKey<FormState>();
+  final formKey = GlobalKey<FormState>(debugLabel: 'ask for email form');
   final TextEditingController emailController = TextEditingController();
 
   @override
@@ -185,7 +185,7 @@ class _NewPassword extends StatelessWidget {
 
   _NewPassword({required this.tokenResponse, required this.sdk});
 
-  final formKey = GlobalKey<FormState>();
+  final formKey = GlobalKey<FormState>(debugLabel: 'new password form');
   final TextEditingController passwordController = TextEditingController();
 
   @override

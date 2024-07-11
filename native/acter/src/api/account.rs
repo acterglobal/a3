@@ -83,7 +83,7 @@ impl Account {
         RUNTIME
             .spawn(async move {
                 let source = match account.get_cached_avatar_url().await? {
-                    Some(url) => MediaSource::Plain(url.into()),
+                    Some(url) => MediaSource::Plain(url),
                     None => match account.get_avatar_url().await? {
                         Some(e) => MediaSource::Plain(e),
                         None => return Ok(OptionBuffer::new(None)),

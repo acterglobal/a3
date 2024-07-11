@@ -26,7 +26,8 @@ class ChangeDisplayName extends StatefulWidget {
 
 class _ChangeDisplayNameState extends State<ChangeDisplayName> {
   final TextEditingController newUsername = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey =
+      GlobalKey<FormState>(debugLabel: 'display name form');
 
   @override
   void initState() {
