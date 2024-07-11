@@ -7,16 +7,11 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
-import 'package:acter/features/space/providers/notifiers/space_hierarchy_notifier.dart';
-import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:acter/router/utils.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
@@ -100,38 +95,36 @@ class SpaceChatsPage extends ConsumerWidget {
     );
   }
 
-  AsyncValue<
-      AutoDisposeStateNotifierProvider<FilteredSpaceHierarchyNotifier,
-          PagedState<Next?, SpaceHierarchyRoomInfo>>> relatedProvider(
-    WidgetRef ref,
-  ) {
-    return ref
-        .watch(spaceRelationsOverviewProvider(spaceIdOrAlias))
-        .whenData((spaces) => remoteChatHierarchyProvider(spaces));
-  }
-
   Widget renderFurther(BuildContext context, WidgetRef ref) {
-    return relatedProvider(ref).when(
-      data: (provider) =>
-          RiverPagedBuilder<Next?, SpaceHierarchyRoomInfo>.autoDispose(
-        firstPageKey: const Next(isStart: true),
-        provider: provider,
-        itemBuilder: (context, item, index) => ConvoHierarchyCard(
-          parentId: spaceIdOrAlias,
-          roomInfo: item,
-        ),
-        noItemsFoundIndicatorBuilder: (context, controller) =>
-            _renderEmpty(context, ref),
-        pagedBuilder: (controller, builder) => PagedSliverList(
-          pagingController: controller,
-          builderDelegate: builder,
-        ),
-      ),
+    final remoteChats = ref.watch(remoteChatRelationsProvider(spaceIdOrAlias));
+
+    return remoteChats.when(
+      data: (chats) {
+        if (chats.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        return SliverList.builder(
+          itemBuilder: (context, idx) {
+            final item = chats[idx];
+            return ConvoHierarchyCard(
+              parentId: spaceIdOrAlias,
+              roomInfo: item,
+            );
+          },
+        );
+      },
       error: (e, s) => SliverToBoxAdapter(
         child: Text(L10n.of(context).errorLoadingRelatedChats(e)),
       ),
       loading: () => SliverToBoxAdapter(
-        child: Text(L10n.of(context).loadingOtherChats),
+        child: Skeletonizer(
+          child: Card(
+            child: ListTile(
+              title: Text(L10n.of(context).loadingOtherChats),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -141,6 +134,10 @@ class SpaceChatsPage extends ConsumerWidget {
     final spaceName =
         ref.watch(roomDisplayNameProvider(spaceIdOrAlias)).valueOrNull ??
             spaceIdOrAlias;
+
+    final chatsList =
+        ref.watch(spaceRelationsOverviewProvider(spaceIdOrAlias)).valueOrNull;
+
     return Scaffold(
       appBar: AppBar(
         title: Column(
@@ -195,8 +192,12 @@ class SpaceChatsPage extends ConsumerWidget {
       ),
       body: CustomScrollView(
         slivers: <Widget>[
-          renderChats(context, ref),
-          renderFurther(context, ref),
+          if (chatsList?.knownChats.isNotEmpty == true)
+            renderChats(context, ref),
+          if (chatsList?.hasMoreChats == true) renderFurther(context, ref),
+          if (chatsList?.hasMoreChats == false &&
+              chatsList?.knownChats.isEmpty == true)
+            _renderEmpty(context, ref),
         ],
       ),
     );

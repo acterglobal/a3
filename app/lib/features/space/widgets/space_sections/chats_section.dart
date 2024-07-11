@@ -1,6 +1,7 @@
-import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
+import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -22,9 +23,14 @@ class ChatsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final chatsList = ref.watch(relatedChatsProvider(spaceId));
+    final chatsList = ref.watch(spaceRelationsOverviewProvider(spaceId));
     return chatsList.when(
-      data: (events) => buildChatsSectionUI(context, events),
+      data: (spaceRelationsOverview) => buildChatsSectionUI(
+        context,
+        ref,
+        spaceRelationsOverview.knownChats,
+        spaceRelationsOverview.hasMoreChats,
+      ),
       error: (error, stack) =>
           Center(child: Text(L10n.of(context).loadingFailed(error))),
       loading: () => Skeletonizer(
@@ -35,9 +41,15 @@ class ChatsSection extends ConsumerWidget {
     );
   }
 
-  Widget buildChatsSectionUI(BuildContext context, List<Convo> chats) {
+  Widget buildChatsSectionUI(
+    BuildContext context,
+    WidgetRef ref,
+    List<Convo> chats,
+    bool hasMore,
+  ) {
     int chatsLimit = (chats.length > limit) ? limit : chats.length;
-    bool isShowSeeAllButton = chats.length > chatsLimit;
+    int moreCount = limit > chats.length ? limit - chats.length : 0;
+    bool isShowSeeAllButton = (chats.length > chatsLimit) || hasMore;
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -51,6 +63,7 @@ class ChatsSection extends ConsumerWidget {
           ),
         ),
         chatsListUI(chats, chatsLimit),
+        if (moreCount > 0 && hasMore) renderFurther(context, ref, moreCount),
       ],
     );
   }
@@ -69,6 +82,37 @@ class ChatsSection extends ConsumerWidget {
           onTap: () => goToChat(context, chats[index].getRoomIdStr()),
         );
       },
+    );
+  }
+
+  Widget renderFurther(BuildContext context, WidgetRef ref, int maxItems) {
+    final remoteChats = ref.watch(remoteChatRelationsProvider(spaceId));
+
+    return remoteChats.when(
+      data: (chats) {
+        if (chats.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        return ListView.builder(
+          shrinkWrap: true,
+          padding: EdgeInsets.zero,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: maxItems,
+          itemBuilder: (context, idx) {
+            final item = chats[idx];
+            return ConvoHierarchyCard(
+              parentId: spaceId,
+              roomInfo: item,
+            );
+          },
+        );
+      },
+      error: (e, s) =>
+          Card(child: Text(L10n.of(context).errorLoadingRelatedChats(e))),
+      loading: () => Skeletonizer(
+        child: Card(child: Text(L10n.of(context).loadingOtherChats)),
+      ),
     );
   }
 }
