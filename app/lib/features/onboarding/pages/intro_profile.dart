@@ -19,7 +19,8 @@ class IntroProfile extends StatelessWidget {
   }
 
   Widget _buildBody(BuildContext context) {
-    var imageSize = MediaQuery.of(context).size.height / 5;
+    // limit the to always show the button even if the keyboard is opened
+    final imageSize = MediaQuery.of(context).size.height / 5;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 30),
       child: Column(

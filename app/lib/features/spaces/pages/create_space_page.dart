@@ -23,6 +23,7 @@ final _selectedVisibilityProvider =
     StateProvider.autoDispose<RoomVisibility?>((ref) => null);
 
 class CreateSpacePage extends ConsumerStatefulWidget {
+  static const permissionsKey = Key('create-space-permissions-key');
   final String? initialParentsSpaceId;
 
   const CreateSpacePage({super.key, this.initialParentsSpaceId});
@@ -210,6 +211,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
         ),
         const SizedBox(height: 10),
         InkWell(
+          key: CreateSpacePage.permissionsKey,
           onTap: () async {
             final spaceVisibility = ref.read(_selectedVisibilityProvider);
             final selected = await selectVisibilityDrawer(
@@ -274,6 +276,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
         ),
         const SizedBox(width: 20),
         ActerPrimaryActionButton(
+          key: CreateSpaceKeys.submitBtn,
           onPressed: _handleCreateSpace,
           child: Text(L10n.of(context).createSpace),
         ),
