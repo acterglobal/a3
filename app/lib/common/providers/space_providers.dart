@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/notifiers/relations_notifier.dart';
 import 'package:acter/common/providers/notifiers/space_notifiers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -307,27 +308,14 @@ final spaceRelationsOverviewProvider =
 });
 
 final hasSubChatsProvider =
-    FutureProvider.family<bool, String>((ref, spaceId) async {
-  try {
-    final relatedSpaces =
-        await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
-    return (relatedSpaces.knownChats.isNotEmpty || relatedSpaces.hasMoreChats);
-  } on SpaceNotFound {
-    return false;
-  }
-});
+    AsyncNotifierProvider.family<HasSubChatsNotifier, bool, String>(
+  () => HasSubChatsNotifier(),
+);
 
 final hasSubSpacesProvider =
-    FutureProvider.family<bool, String>((ref, spaceId) async {
-  try {
-    final relatedSpaces =
-        await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
-    return (relatedSpaces.knownSubspaces.isNotEmpty ||
-        relatedSpaces.hasMoreSubspaces);
-  } on SpaceNotFound {
-    return false;
-  }
-});
+    AsyncNotifierProvider.family<HasSubSpacesNotifier, bool, String>(
+  () => HasSubSpacesNotifier(),
+);
 
 final _spaceRemoteRelationsProvider =
     FutureProvider.family<List<SpaceHierarchyRoomInfo>, String>(
