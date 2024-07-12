@@ -1,1 +1,0 @@
-- At PR#1783, many fns for password rest were made and some of them are unnecessary or duplicated. Will refactor them.

@@ -1,1 +1,0 @@
-- Fixed the chat rooms list ordering based on latest message timestamp.
