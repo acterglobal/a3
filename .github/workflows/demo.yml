@@ -56,7 +56,7 @@ jobs:
         run: echo "build_num=`date +%s`" >> $GITHUB_OUTPUT
   
   build:
-    uses: ./.github/workflows/actions/build-app.yml
+    uses: ./.github/workflows/build-app.yml
     needs:
      - run_checker
      - tags
