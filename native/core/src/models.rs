@@ -37,7 +37,7 @@ pub use tag::Tag;
 pub use tasks::{
     Task, TaskList, TaskListUpdate, TaskSelfAssign, TaskSelfUnassign, TaskStats, TaskUpdate,
 };
-use tracing::{error, trace};
+use tracing::{info, trace, warn};
 
 #[cfg(test)]
 pub use test::{TestModel, TestModelBuilder, TestModelBuilderError};
@@ -134,7 +134,7 @@ pub trait ActerModel: Debug {
 
     /// handle transition from an external Item upon us
     fn transition(&mut self, model: &AnyActerModel) -> crate::Result<bool> {
-        error!(?self, ?model, "Transition has not been implemented");
+        warn!(?self, ?model, "Transition has not been implemented");
         Ok(false)
     }
     /// The execution to run when this model is found.
@@ -249,6 +249,13 @@ impl ActerModel for RedactedActerModel {
 
     async fn execute(self, store: &Store) -> crate::Result<Vec<String>> {
         default_model_execute(store, self.into()).await
+    }
+
+    fn transition(&mut self, model: &AnyActerModel) -> crate::Result<bool> {
+        // Transitions aren't possible anymore when the source has been redacted
+        // so we eat up the content and just log that we had to do that.
+        info!(?self, ?model, "Transition on Redaction Swallowed");
+        Ok(false)
     }
 }
 
