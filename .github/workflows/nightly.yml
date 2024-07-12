@@ -46,7 +46,7 @@ jobs:
 
   
   build:
-    uses: ./.github/workflows/build-app.yml
+    uses: ./.github/workflows/actions/build-app.yml
     needs:
      - tags
     with:
