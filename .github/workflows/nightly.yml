@@ -66,6 +66,41 @@ jobs:
 ##        ##     ## ##     ## ##        ##  ##    ## ##     ## 
 ##         #######  ########  ######## ####  ######  ##     ## 
 
+
+
+########  ##          ###    ##    ##     ######  ########  #######  ########  ######## 
+##     ## ##         ## ##    ##  ##     ##    ##    ##    ##     ## ##     ## ##       
+##     ## ##        ##   ##    ####      ##          ##    ##     ## ##     ## ##       
+########  ##       ##     ##    ##        ######     ##    ##     ## ########  ######   
+##        ##       #########    ##             ##    ##    ##     ## ##   ##   ##       
+##        ##       ##     ##    ##       ##    ##    ##    ##     ## ##    ##  ##       
+##        ######## ##     ##    ##        ######     ##     #######  ##     ## ######## 
+
+
+  google-play-store:
+    runs-on: ubuntu-latest
+    environment: release
+    needs:
+      - tags
+      - build
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: Android
+      # - uses: actions/download-artifact@v3
+      #   with:
+      #     name: Android-debug-symbols
+      - name: Release Build to playstore
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAYSTORE_ACCOUNT_KEY }}
+          packageName: global.acter.a3
+          releaseName: ${{ needs.tags.outputs.tag }}
+          releaseFiles: app-release.aab
+          # debugSymbols: "*.symbols"
+          track: alpha
+          status: completed
+
   publish:
     environment: nightly
     runs-on: ubuntu-latest
