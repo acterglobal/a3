@@ -147,14 +147,14 @@ jobs:
 
       - name: Cache Cargo
         id: cache-cargo
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cargo
           key: ${{ matrix.os }}-cargo-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
 
       - name: Cache Rust
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: |
             target
