@@ -84,6 +84,7 @@ jobs:
       version: ${{ needs.tags.outputs.tag }}
       release_title: ${{ needs.tags.outputs.release_title }}
       target: ${{ needs.tags.outputs.targets }}
+    secrets: inherit
 
  ######  ##     ##    ###    ##    ##  ######   ######## ##        #######   ######   
 ##    ## ##     ##   ## ##   ###   ## ##    ##  ##       ##       ##     ## ##    ##  
