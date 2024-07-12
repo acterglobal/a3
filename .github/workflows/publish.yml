@@ -214,9 +214,9 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: Android
-      - uses: actions/download-artifact@v3
-        with:
-          name: Android-debug-symbols
+      # - uses: actions/download-artifact@v3
+      #   with:
+      #     name: Android-debug-symbols
       - name: Release Build to playstore
         uses: r0adkll/upload-google-play@v1
         with:
@@ -224,7 +224,7 @@ jobs:
           packageName: global.acter.a3
           releaseName: ${{ needs.tags.outputs.tag }}
           releaseFiles: app-release.aab
-          debugSymbols: "*.symbols"
+          # debugSymbols: "*.symbols"
           track: beta
           status: completed
 
