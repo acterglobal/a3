@@ -111,7 +111,7 @@ jobs:
             cargo_make_args: desktop
             flutter_config: "--enable-windows-desktop"
             flutter_build_args: "build windows --split-debug-info=debug_symbols"
-            artifact_prefix: acter-nightly-windows
+            artifact_prefix: acter-windows
             artifact_path: app\\build\\windows\\x64\\runner\\Release
             zip_files: "*"
             with_debug_symbols: true
