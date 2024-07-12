@@ -5,7 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HasSubSpacesNotifier extends FamilyAsyncNotifier<bool, String> {
   @override
-  FutureOr<bool> build(String spaceId) async {
+  FutureOr<bool> build(String arg) async {
+    final spaceId = arg;
     final relatedSpaces =
         await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
     if (relatedSpaces.knownSubspaces.isNotEmpty) {
@@ -23,7 +24,8 @@ class HasSubSpacesNotifier extends FamilyAsyncNotifier<bool, String> {
 
 class HasSubChatsNotifier extends FamilyAsyncNotifier<bool, String> {
   @override
-  FutureOr<bool> build(String spaceId) async {
+  FutureOr<bool> build(String arg) async {
+    final spaceId = arg;
     final relatedSpaces =
         await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
     if (relatedSpaces.knownChats.isNotEmpty) {
