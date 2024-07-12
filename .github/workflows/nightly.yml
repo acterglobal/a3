@@ -55,6 +55,7 @@ jobs:
       version: ${{ needs.tags.outputs.tag }}
       release_title: "Nightly "
       targets: 'all'
+    secrets: inherit
 
 ########  ##     ## ########  ##       ####  ######  ##     ## 
 ##     ## ##     ## ##     ## ##        ##  ##    ## ##     ## 

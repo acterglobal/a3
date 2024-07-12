@@ -42,6 +42,7 @@ jobs:
             artifact_prefix: acter-${{inputs.release_prefix}}android
             artifact_path:  app/build/app/outputs/bundle/release/
             specific_upload_artifacts: app/build/app/outputs/bundle/release/app-release.aab
+            with_debug_symbols: true
           - name: Android apk
             target: android
             os: ubuntu-latest
@@ -53,6 +54,7 @@ jobs:
             artifact_prefix: acter-${{inputs.release_prefix}}android
             artifact_path:  app/build/app/outputs/apk/release/
             specific_upload_artifacts: app/build/app/outputs/apk/release/*.apk
+            with_debug_symbols: true
           - name: Linux x64
             target: linux
             os: ubuntu-latest
