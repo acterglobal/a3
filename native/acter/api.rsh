@@ -1869,13 +1869,6 @@ object SpaceHierarchyRoomInfo {
     fn via_server_name() -> Option<string>;
 }
 
-object SpaceHierarchyListResult {
-    /// to be used for the next `since`
-    fn next_batch() -> Option<string>;
-    /// get the chunk of items in this response
-    fn rooms() -> Future<Result<Vec<SpaceHierarchyRoomInfo>>>;
-}
-
 object SpaceRelation {
     /// the room ID this Relation links to
     fn room_id() -> RoomId;
@@ -1897,7 +1890,7 @@ object SpaceRelations {
     /// children
     fn children() -> Vec<SpaceRelation>;
     /// query for children from the server
-    fn query_hierarchy(from: Option<string>) -> Future<Result<SpaceHierarchyListResult>>;
+    fn query_hierarchy() -> Future<Result<Vec<SpaceHierarchyRoomInfo>>>;
 }
 
 object RoomPowerLevels {

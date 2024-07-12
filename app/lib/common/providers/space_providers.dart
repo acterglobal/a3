@@ -160,6 +160,8 @@ final _spaceIdAndNames =
   return items;
 });
 
+class SpaceNotFound extends Error {}
+
 typedef _SpaceIdAndName = (String, String?);
 
 final searchedSpacesProvider =
@@ -226,7 +228,7 @@ final spaceRelationsOverviewProvider =
     FutureProvider.family<SpaceRelationsOverview, String>((ref, spaceId) async {
   final relatedSpaces = await ref.watch(spaceRelationsProvider(spaceId).future);
   if (relatedSpaces == null) {
-    throw 'Space not found';
+    throw SpaceNotFound;
   }
   final membership = await ref.watch(roomMembershipProvider(spaceId).future);
   bool hasMoreSubspaces = false;
@@ -302,6 +304,83 @@ final spaceRelationsOverviewProvider =
     hasMoreSubspaces: hasMoreSubspaces,
     hasMoreChats: hasMoreChats,
   );
+});
+
+final hasSubChatsProvider =
+    FutureProvider.family<bool, String>((ref, spaceId) async {
+  try {
+    final relatedSpaces =
+        await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
+    return (relatedSpaces.knownChats.isNotEmpty || relatedSpaces.hasMoreChats);
+  } on SpaceNotFound {
+    return false;
+  }
+});
+
+final hasSubSpacesProvider =
+    FutureProvider.family<bool, String>((ref, spaceId) async {
+  try {
+    final relatedSpaces =
+        await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
+    return (relatedSpaces.knownSubspaces.isNotEmpty ||
+        relatedSpaces.hasMoreSubspaces);
+  } on SpaceNotFound {
+    return false;
+  }
+});
+
+final _spaceRemoteRelationsProvider =
+    FutureProvider.family<List<SpaceHierarchyRoomInfo>, String>(
+        (ref, spaceId) async {
+  final relatedSpaces = await ref.watch(spaceRelationsProvider(spaceId).future);
+  if (relatedSpaces == null) {
+    return [];
+  }
+  return (await relatedSpaces.queryHierarchy()).toList();
+});
+
+final remoteChatRelationsProvider =
+    FutureProvider.family<List<SpaceHierarchyRoomInfo>, String>(
+        (ref, spaceId) async {
+  try {
+    final relatedSpaces =
+        await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
+    final toIgnore =
+        relatedSpaces.knownChats.map((e) => e.getRoomIdStr()).toList();
+    final roomHierarchy =
+        await ref.watch(_spaceRemoteRelationsProvider(spaceId).future);
+    // filter out the known rooms
+    return roomHierarchy
+        .where((r) => !r.isSpace() && !toIgnore.contains(r.roomIdStr()))
+        .toList();
+  } on SpaceNotFound {
+    return [];
+  }
+});
+
+final remoteSubspaceRelationsProvider =
+    FutureProvider.family<List<SpaceHierarchyRoomInfo>, String>(
+        (ref, spaceId) async {
+  try {
+    final relatedSpaces =
+        await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
+    final toIgnore =
+        relatedSpaces.knownSubspaces.map((e) => e.getRoomIdStr()).toList();
+    toIgnore.addAll(relatedSpaces.parents.map((e) => e.getRoomIdStr()));
+    if (relatedSpaces.mainParent != null) {
+      toIgnore.add(relatedSpaces.mainParent!.getRoomIdStr());
+    }
+    toIgnore.add(spaceId); // the hierarchy also gives us ourselfes ...
+
+    final roomHierarchy =
+        await ref.watch(_spaceRemoteRelationsProvider(spaceId).future);
+    // filter out the known rooms
+    return roomHierarchy
+        .where((r) => r.isSpace() && !toIgnore.contains(r.roomIdStr()))
+        .toList();
+  } on SpaceNotFound {
+    return [];
+  }
 });
 
 /// Fill the Profile data for the given space-hierarchy-info

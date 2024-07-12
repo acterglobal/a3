@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
+import 'package:acter/features/space/widgets/related_spaces/helpers.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +25,9 @@ class SpacesSection extends ConsumerWidget {
     return spacesList.when(
       data: (spaceRelationsOverview) => buildSpacesSectionUI(
         context,
+        ref,
         spaceRelationsOverview.knownSubspaces,
+        spaceRelationsOverview.hasMoreSubspaces,
       ),
       error: (error, stack) =>
           Center(child: Text(L10n.of(context).loadingFailed(error))),
@@ -34,9 +37,15 @@ class SpacesSection extends ConsumerWidget {
     );
   }
 
-  Widget buildSpacesSectionUI(BuildContext context, List<Space> spaces) {
+  Widget buildSpacesSectionUI(
+    BuildContext context,
+    WidgetRef ref,
+    List<Space> spaces,
+    bool hasMore,
+  ) {
     int spacesLimit = (spaces.length > limit) ? limit : spaces.length;
-    bool isShowSeeAllButton = spaces.length > spacesLimit;
+    int renderMoreCount = limit > spaces.length ? limit - spaces.length : 0;
+    bool isShowSeeAllButton = (spaces.length > spacesLimit) || hasMore;
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,6 +59,14 @@ class SpacesSection extends ConsumerWidget {
           ),
         ),
         spacesListUI(spaces, spacesLimit),
+        if (renderMoreCount > 0 && hasMore)
+          renderMoreSubspaces(
+            context,
+            ref,
+            spaceId,
+            maxLength: renderMoreCount,
+            padding: EdgeInsets.zero,
+          ),
       ],
     );
   }
