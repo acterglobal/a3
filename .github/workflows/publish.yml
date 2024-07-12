@@ -7,7 +7,7 @@ concurrency:
 on:
   workflow_dispatch:
     inputs:
-      new_tag:
+      new_version:
         description: 'Provide the version for this release'
         required: true
         type: string
@@ -29,7 +29,7 @@ on:
           - windows-exe
           - windows-msix
       custom_title:
-        description: 'You want a custom title for the release (with final space please)?'
+        description: 'You want a custom title for the release?'
         required: false
         type: string
 
@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Check latest commit
     outputs:
-      should_run: ${{ inputs.new_tag != null || steps.check-new-commits.outputs.has-new-commits }}
+      should_run: ${{ inputs.new_version != null || steps.check-new-commits.outputs.has-new-commits }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -63,11 +63,12 @@ jobs:
     if: ${{ needs.run_checker.outputs.should_run != 'false' }}
     # Map a step output to a job output
     outputs:
-      tag: ${{ inputs.new_tag || steps.version.outputs.version }}
+      tag: v${{ inputs.new_version || steps.version.outputs.version }}
+      version: ${{ inputs.new_version || steps.version.outputs.version }}
       build_num: ${{ steps.build_num.outputs.build_num }}
       prev_tag: ${{ inputs.prev_tag || 'release-latest' }}
       targets: ${{ inputs.target || 'all' }}
-      release_title: ${{ inputs.custom_title || 'Release '}}
+      release_title: ${{ inputs.custom_title || 'Release'}}
     steps:
       - id: version
         # the suffix 0 allows us to provide up to 9 more hotfixes on the same day
@@ -81,8 +82,9 @@ jobs:
      - tags
     with:
       build_num: ${{ needs.tags.outputs.build_num }}
-      version: ${{ needs.tags.outputs.tag }}
-      release_title: ${{ needs.tags.outputs.release_title }}
+      version: ${{ needs.tags.outputs.version }}
+      release_title: ${{ needs.tags.outputs.release_title }} ${{ needs.tags.outputs.tag }}
+      release_tag: ${{ needs.tags.outputs.tag }}
       target: ${{ needs.tags.outputs.targets }}
     secrets: inherit
 
@@ -124,8 +126,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           draft: true
-          name: ${{ needs.tags.outputs.release_title }} v${{ needs.tags.outputs.tag }}
-          tag_name: v${{ needs.tags.outputs.tag }}
+          name: ${{ needs.tags.outputs.release_title }} ${{ needs.tags.outputs.tag }}
+          tag_name: ${{ needs.tags.outputs.tag }}
           generate_release_notes: false
           body_path: CHANGELOG.md
           files: CHANGELOG.md
@@ -152,7 +154,7 @@ jobs:
           name: Windows msix
       - name: Create Archive
         run: |
-          Rename-Item -Path acter-windows-${{ needs.tags.outputs.tag }}.msix  -NewName acter.msix
+          Rename-Item -Path acter-windows-${{ needs.tags.outputs.version }}.msix  -NewName acter.msix
           Compress-Archive -Path acter.msix acter.zip
 
       - name: setup storebroker
@@ -220,7 +222,7 @@ jobs:
         with:
           serviceAccountJsonPlainText: ${{ secrets.PLAYSTORE_ACCOUNT_KEY }}
           packageName: global.acter.a3
-          releaseName: v${{ needs.tags.outputs.tag }}
+          releaseName: ${{ needs.tags.outputs.tag }}
           releaseFiles: app-release.aab
           debugSymbols: "*.symbols"
           track: beta
@@ -329,7 +331,7 @@ jobs:
           mkdir private_keys
           echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output "private_keys/AuthKey_$APPLE_API_KEY_ID.p8"
           ls -ltas private_keys
-          xcrun altool --upload-app --type macos --file acter-macosx-${{ needs.tags.outputs.tag }}.pkg \
+          xcrun altool --upload-app --type macos --file acter-macosx-${{ needs.tags.outputs.version }}.pkg \
               --bundle-id global.acter.a3 \
               --apiKey "$APPLE_API_KEY_ID" \
               --apiIssuer "$APPLE_ISSUER_ID"
@@ -368,11 +370,11 @@ jobs:
       - name: Create PKGBUILD file
         run: |
           cp app/linux/packaging/aur/PKGBUILD PKGBUILD
-          sed -i "s/%{{TAG}}%/${{ needs.tags.outputs.tag }}/g" PKGBUILD
-          VERSION=$(echo ${{ needs.tags.outputs.tag }} | sed "s/-/./g")
+          sed -i "s/%{{TAG}}%/${{ needs.tags.outputs.version }}/g" PKGBUILD
+          VERSION=$(echo ${{ needs.tags.outputs.version }} | sed "s/-/./g")
           sed -i "s/%{{VERSION}}%/$VERSION/g" PKGBUILD
           sed -i "s/%{{PKGREL}}%/2/g" PKGBUILD
-          sed -i "s/%{{LINUX_MD5}}%/`md5sum acter-linux-x64-${{ needs.tags.outputs.tag }}.tar.bz2  | awk '{print $1}'`/g" PKGBUILD
+          sed -i "s/%{{LINUX_MD5}}%/`md5sum acter-linux-x64-${{ needs.tags.outputs.version }}.tar.bz2  | awk '{print $1}'`/g" PKGBUILD
       - uses: KSXGitHub/github-actions-deploy-aur@v2.7.1
         name: Publish to AUR
         with:
@@ -381,7 +383,7 @@ jobs:
           commit_username: Sari
           commit_email: sari@acter.global
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
-          commit_message: Updated to ${{ needs.tags.outputs.tag }}
+          commit_message: Updated to ${{ needs.tags.outputs.version }}
 
 
 
@@ -419,32 +421,32 @@ jobs:
 
       - name: "Generate docs"
         run: |
-          echo "+++" > docs/content/releases/${{ needs.tags.outputs.tag }}.md
-          echo "title = \" v${{ needs.tags.outputs.tag }}\"" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
-          echo "template = \"releases/release.html\"" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
-          echo "date = `date +%Y-%m-%d`" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
-          echo "+++" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
-          echo "" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
-          cat CHANGELOG.md >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          echo "+++" > docs/content/releases/${{ needs.tags.outputs.version }}.md
+          echo "title = \" ${{ needs.tags.outputs.tag }}\"" >> docs/content/releases/${{ needs.tags.outputs.version }}.md
+          echo "template = \"releases/release.html\"" >> docs/content/releases/${{ needs.tags.outputs.version }}.md
+          echo "date = `date +%Y-%m-%d`" >> docs/content/releases/${{ needs.tags.outputs.version }}.md
+          echo "+++" >> docs/content/releases/${{ needs.tags.outputs.version }}.md
+          echo "" >> docs/content/releases/${{ needs.tags.outputs.version }}.md
+          cat CHANGELOG.md >> docs/content/releases/${{ needs.tags.outputs.version }}.md
 
       - name: Clear old docs
         continue-on-error: true
         run: |
           git rm .changes/*.md
-          git commit -m "Clearing .changes for v${{ needs.tags.outputs.tag }}"
+          git commit -m "Clearing .changes for ${{ needs.tags.outputs.version }}"
 
       - name: "Update flatpack version"
         run : |
-          bash app/flatpak/add_release_info.sh ${{ needs.tags.outputs.tag }}
+          bash app/flatpak/add_release_info.sh ${{ needs.tags.outputs.version }}
           git add app/flatpak/global.acter.a3.metainfo_versions.xml
 
       - name: Tag for release
         run: |
-          git add "docs/content/releases/${{ needs.tags.outputs.tag }}.md"
-          echo "Add release v${{ needs.tags.outputs.tag }}"
-          git commit -m "Releasing v${{ needs.tags.outputs.tag }}"
-          git tag v${{ needs.tags.outputs.tag }}
-          git push origin main v${{ needs.tags.outputs.tag }} release-latest
+          git add "docs/content/releases/${{ needs.tags.outputs.version }}.md"
+          echo "Add release ${{ needs.tags.outputs.tag }}"
+          git commit -m "Releasing ${{ needs.tags.outputs.tag }}"
+          git tag ${{ needs.tags.outputs.tag }}
+          git push origin main ${{ needs.tags.outputs.tag }} release-latest
 
       - name: Release
         id: create_release
@@ -453,8 +455,8 @@ jobs:
           # publish this full release now
           draft: true
           generate_release_notes: false
-          name: ${{ needs.tags.outputs.release_title }} ${{ needs.tags.outputs.tag }}
-          tag_name: v${{ needs.tags.outputs.tag }}
+          name: ${{ needs.tags.outputs.release_title }} ${{ needs.tags.outputs.version }}
+          tag_name: ${{ needs.tags.outputs.tag }}
           body_path: CHANGELOG.md
           make_latest: true
       - uses: eregon/publish-release@v1

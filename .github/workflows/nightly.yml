@@ -50,10 +50,11 @@ jobs:
     needs:
      - tags
     with:
-      release_prefix: 'nightly-'
+      artifacts_prefix: 'nightly-'
       build_num: ${{ needs.tags.outputs.build_num }}
       version: ${{ needs.tags.outputs.tag }}
-      release_title: "Nightly "
+      release_title: "Nightly ${{ needs.tags.outputs.tag }}"
+      release_tag: nightly-${{ needs.tags.outputs.tag }}
       targets: 'all'
     secrets: inherit
 

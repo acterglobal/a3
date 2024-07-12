@@ -62,7 +62,8 @@ jobs:
      - tags
     if: ${{ needs.run_checker.outputs.should_run != 'false' }}
     with:
-      release_prefix: 'demo-'
+      artifact_prefix: 'demo-'
+      release_tag: demo-${{ needs.tags.outputs.tag }}
       build_num: ${{ needs.tags.outputs.build_num }}
       version: ${{ needs.tags.outputs.tag }}
     secrets: inherit
