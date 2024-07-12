@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Check latest commit
     outputs:
-      should_run: ${{ steps.check-new-commits.outputs.has-new-commits }}
+      should_run: ${{ inputs.new_tag != null || steps.check-new-commits.outputs.has-new-commits }}
     steps:
       - uses: actions/checkout@v4
         with:
