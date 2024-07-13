@@ -10,7 +10,7 @@ pub mod tasks;
 pub mod three_pid;
 
 pub use common::{
-    BelongsTo, BrandIcon, CalendarEventAction, Color, Colorize, ColorizeBuilder, Date, Icon,
+    ActerIcon, BelongsTo, CalendarEventAction, Color, Colorize, ColorizeBuilder, Date, Icon,
     Labels, ObjRef, ObjRefBuilder, Position, RefDetails, RefDetailsBuilder, Reference, References,
     TaskAction, TaskListAction, Update, UtcDateTime,
 };
