@@ -1,11 +1,8 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/spaces/space_with_profile_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 typedef SubtitleFn = Widget? Function(Space);
 
@@ -57,6 +54,9 @@ class SpaceCard extends ConsumerWidget {
   /// If null, `EdgeInsets.symmetric(horizontal: 16.0)` is used.
   final EdgeInsetsGeometry? contentPadding;
 
+  /// If null, `EdgeInsets.symmetric(horizontal: 16.0)` is used.
+  final EdgeInsetsGeometry? margin;
+
   /// The shape of the card's [Material].
   ///
   /// Defines the card's [Material.shape].
@@ -77,7 +77,7 @@ class SpaceCard extends ConsumerWidget {
 
   /// Whether or not to render the parent Icon
   ///
-  final bool showParent;
+  final bool showParents;
 
   const SpaceCard({
     super.key,
@@ -91,9 +91,10 @@ class SpaceCard extends ConsumerWidget {
     this.leadingAndTrailingTextStyle,
     this.avatarSize = 48,
     this.contentPadding = const EdgeInsets.all(15),
+    this.margin,
     this.shape,
     this.withBorder = true,
-    this.showParent = true,
+    this.showParents = true,
     this.trailing,
   });
 
@@ -109,48 +110,34 @@ class SpaceCard extends ConsumerWidget {
     this.leadingAndTrailingTextStyle,
     this.avatarSize = 24,
     this.contentPadding = const EdgeInsets.all(5),
+    this.margin,
     this.shape,
     this.withBorder = false,
-    this.showParent = false,
+    this.showParents = false,
     this.trailing,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final roomId = space.getRoomIdStr();
-    final profile = ref.watch(spaceProfileDataProvider(space));
+    final avatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
     final subtitle = subtitleFn != null ? subtitleFn!(space) : null;
-    final parent = ref.watch(canonicalParentProvider(roomId));
+    final parents = ref.watch(parentAvatarInfosProvider(roomId)).valueOrNull;
 
-    return profile.when(
-      data: (profile) => SpaceWithProfileCard(
-        roomId: roomId,
-        profile: profile,
-        parentProfile: parent.valueOrNull?.profile,
-        parentRoomId: parent.valueOrNull?.space.getRoomIdStr(),
-        subtitle: subtitle,
-        onTap: onTap,
-        onFocusChange: onFocusChange,
-        onLongPress: onLongPress,
-        avatarSize: avatarSize,
-        contentPadding: contentPadding,
-        shape: shape,
-        withBorder: withBorder,
-        showParent: showParent,
-        trailing: trailing,
-      ),
-      error: (error, stack) => ListTile(
-        title: Text(
-          L10n.of(context).errorLoadingRoom(roomId, error),
-        ),
-        subtitle: Text('$error'),
-      ),
-      loading: () => Skeletonizer(
-        child: ListTile(
-          title: Text(roomId),
-          subtitle: Text(L10n.of(context).loading),
-        ),
-      ),
+    return SpaceWithAvatarInfoCard(
+      margin: margin,
+      roomId: roomId,
+      avatarInfo: avatarInfo,
+      parents: parents,
+      subtitle: subtitle,
+      onTap: onTap,
+      onFocusChange: onFocusChange,
+      onLongPress: onLongPress,
+      avatarSize: avatarSize,
+      contentPadding: contentPadding,
+      shape: shape,
+      showParents: showParents,
+      trailing: trailing,
     );
   }
 }

@@ -46,6 +46,14 @@ The test suite is run against using `matrix-sdk-sqlite` `SqliteStore`. Though th
 
 This is part of [Acter](https://acter.global), which we are providing regular releases of for iOS, Android and Linux, MacOS & Windows, supporting at least the latest stable release. This crate is included in that and thus constantly tested for these environments.
 
+## Features
+
+### `queued`
+
+This now offers new default-on feature `queued` which exposes a new `QueuedMediaStore`, a wrapper that allows you to enforce the number of concurrent requests to made. This is particularly useful on devices where many concurrent open files might be an issue (looking at you, iOS).
+
+To use it just switch your call of `wrap_with_file_cache` with the newly exposed `wrap_with_file_cache_and_limits`, which has an one additional `usize` parameter with which you can limit the number of concurrent requests done or pending at the same time.
+
 ## License
 
 This crate is provided as is under either MIT OR Apache-2.0 . Copyright Benjamin Kampmann & Acter Contributors 2023.

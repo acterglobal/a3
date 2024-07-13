@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -47,45 +47,41 @@ bool isJoined(String userId, List<String> joined) {
 }
 
 class UserBuilder extends ConsumerWidget {
-  final UserProfile profile;
+  final String userId;
   final String roomId;
 
   const UserBuilder({
     super.key,
-    required this.profile,
+    required this.userId,
     required this.roomId,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final room = ref.watch(briefRoomItemWithMembershipProvider(roomId));
-    final avatarProv = ref.watch(userAvatarProvider(profile));
-    final displayName = profile.getDisplayName();
-    final userId = profile.userId().toString();
+    final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
+    final avatarInfo =
+        ref.watch(memberAvatarInfoProvider((roomId: roomId, userId: userId)));
+    final displayName = ref
+        .watch(memberDisplayNameProvider((roomId: roomId, userId: userId)))
+        .valueOrNull;
     return Card(
       child: ListTile(
         title: Text(displayName ?? userId),
         subtitle: (displayName == null) ? null : Text(userId),
         leading: ActerAvatar(
           options: AvatarOptions.DM(
-            AvatarInfo(
-              uniqueId: userId,
-              displayName: displayName,
-              avatar: avatarProv.valueOrNull,
-            ),
+            avatarInfo,
             size: 18,
           ),
         ),
-        trailing: room.when(
-          data: (data) => UserStateButton(
-            userId: userId,
-            room: data.room!,
-          ),
-          error: (err, stackTrace) => Text('Error: $err'),
-          loading: () => const Skeletonizer(
-            child: Text('Loading user'),
-          ),
-        ),
+        trailing: room != null
+            ? UserStateButton(
+                userId: userId,
+                room: room,
+              )
+            : const Skeletonizer(
+                child: Text('Loading user'),
+              ),
       ),
     );
   }
@@ -121,11 +117,11 @@ class UserStateButton extends ConsumerWidget {
       dismissOnTap: false,
     );
     try {
-      final profile = ref
-          .read(roomMemberProvider((userId: userId, roomId: room.roomIdStr())))
+      final member = ref
+          .read(memberProvider((userId: userId, roomId: room.roomIdStr())))
           .valueOrNull;
-      if (profile?.member != null) {
-        await profile!.member.kick('Cancel Invite');
+      if (member != null) {
+        await member.kick('Cancel Invite');
       }
       EasyLoading.dismiss();
     } catch (e) {
@@ -159,10 +155,7 @@ class UserStateButton extends ConsumerWidget {
     return InkWell(
       onTap: () => _handleInvite(context),
       child: Chip(
-        avatar: Icon(
-          Atlas.paper_airplane_thin,
-          color: Theme.of(context).colorScheme.neutral6,
-        ),
+        avatar: const Icon(Atlas.paper_airplane_thin),
         label: Text(L10n.of(context).invite),
       ),
     );

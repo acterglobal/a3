@@ -28,7 +28,7 @@ class RoomToInviteTo extends ConsumerWidget {
         if (space != null) {
           return SpaceCard(
             space: space,
-            showParent: true,
+            showParents: true,
             trailing: removeWidget(),
           );
         }
@@ -38,7 +38,7 @@ class RoomToInviteTo extends ConsumerWidget {
         if (chat != null) {
           return ConvoCard(
             room: chat,
-            showParent: true,
+            showParents: true,
             trailing: removeWidget(),
           );
         }

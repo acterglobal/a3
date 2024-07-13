@@ -112,7 +112,7 @@ class BugReportPage extends ConsumerStatefulWidget {
 }
 
 class _BugReportState extends ConsumerState<BugReportPage> {
-  final formKey = GlobalKey<FormState>();
+  final formKey = GlobalKey<FormState>(debugLabel: 'Bug report form key');
   final titleController = TextEditingController();
   bool withScreenshot = false;
   bool withLogFile = false;

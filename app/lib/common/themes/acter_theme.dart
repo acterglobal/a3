@@ -28,8 +28,11 @@ class ActerTheme {
     colorScheme: colorScheme,
     primaryColor: brandColor,
     indicatorColor: brandColor,
-    appBarTheme: AppBarTheme(color: lightBlueColor),
-    scaffoldBackgroundColor: lightBlueColor,
+    appBarTheme: AppBarTheme(
+      color: backgroundColor,
+      surfaceTintColor: backgroundColor,
+    ),
+    scaffoldBackgroundColor: backgroundColor,
     highlightColor: Colors.transparent,
     hoverColor: Colors.transparent,
     progressIndicatorTheme: progressIndicatorTheme,
@@ -41,13 +44,18 @@ class ActerTheme {
     iconTheme: const IconThemeData(color: Colors.white),
     cardTheme: cardTheme,
     searchBarTheme: SearchBarThemeData(
-      backgroundColor: WidgetStateProperty.all(darkBlueColor),
+      backgroundColor: WidgetStateProperty.all(surfaceColor),
       elevation: WidgetStateProperty.all(0),
       shape: WidgetStateProperty.all<RoundedRectangleBorder>(
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     ),
+    chipTheme: ChipThemeData(
+      backgroundColor: surfaceColor,
+      selectedColor: brandColor,
+    ),
     listTileTheme: listTileTheme,
+    dialogBackgroundColor: surfaceColor,
     dividerTheme: dividerTheme,
     dialogTheme: dialogTheme,
     bottomSheetTheme: bottomSheetTheme,

@@ -2,9 +2,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/space/settings/widgets/space_settings_menu.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -67,8 +65,6 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final spaceSettingsWatcher = ref.watch(spaceAppSettingsProvider(spaceId));
-    final provider = ref.watch(featuresProvider);
-    bool isActive(f) => provider.isActive(f);
 
     return WithSidebar(
       sidebar: SpaceSettingsMenu(spaceId: spaceId),
@@ -215,81 +211,63 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
             );
           }
 
-          if (isActive(LabsFeature.tasks)) {
-            labActions.add(
-              SettingsTile.switchTile(
+          if (tasks.active()) {
+            final taskListCurrentPw = powerLevels.taskLists();
+            final tasksCurrentPw = powerLevels.tasks();
+            final pwTextTL = maxPowerLevel == 100
+                ? powerLevelName(taskListCurrentPw)
+                : 'Custom ($taskListCurrentPw)';
+            final pwTextT = maxPowerLevel == 100
+                ? powerLevelName(tasksCurrentPw)
+                : 'Custom ($tasksCurrentPw)';
+            moreSections.add(
+              SettingsSection(
                 title: const Text('Tasks'),
-                key: tasksSwitch,
-                enabled: canEdit,
-                description: const Text('ToDo-Lists & Tasks'),
-                initialValue: tasks.active(),
-                onToggle: (newVal) async => await onTaskToggle(
-                  context,
-                  tasks,
-                  newVal,
-                  appSettings,
-                  space,
-                ),
+                tiles: [
+                  SettingsTile(
+                    enabled: canEdit,
+                    title: const Text('TaskList PowerLevel'),
+                    description: const Text(
+                      'Minimum power level required to create & manage task lists',
+                    ),
+                    trailing: taskListCurrentPw != null
+                        ? Text(pwTextTL)
+                        : Text(defaultDesc),
+                    onPressed: (context) async => await onTaskListLevelChange(
+                      context,
+                      maxPowerLevel,
+                      taskListCurrentPw,
+                      space,
+                      powerLevels,
+                    ),
+                  ),
+                  SettingsTile(
+                    enabled: canEdit,
+                    title: const Text('Tasks PowerLevel'),
+                    description: const Text(
+                      'Minimum power level required to interact with tasks',
+                    ),
+                    trailing: tasksCurrentPw != null
+                        ? Text(pwTextT)
+                        : Text(defaultDesc),
+                    onPressed: (context) async => await onTaskLevelChange(
+                      context,
+                      maxPowerLevel,
+                      tasksCurrentPw,
+                      space,
+                      powerLevels,
+                    ),
+                  ),
+                  SettingsTile.switchTile(
+                    title: const Text('Comments'),
+                    description: const Text('not yet supported'),
+                    enabled: false,
+                    initialValue: false,
+                    onToggle: (newVal) {},
+                  ),
+                ],
               ),
             );
-            if (tasks.active()) {
-              final taskListCurrentPw = powerLevels.taskLists();
-              final tasksCurrentPw = powerLevels.tasks();
-              final pwTextTL = maxPowerLevel == 100
-                  ? powerLevelName(taskListCurrentPw)
-                  : 'Custom ($taskListCurrentPw)';
-              final pwTextT = maxPowerLevel == 100
-                  ? powerLevelName(tasksCurrentPw)
-                  : 'Custom ($tasksCurrentPw)';
-              moreSections.add(
-                SettingsSection(
-                  title: const Text('Tasks'),
-                  tiles: [
-                    SettingsTile(
-                      enabled: canEdit,
-                      title: const Text('TaskList PowerLevel'),
-                      description: const Text(
-                        'Minimum power level required to create & manage task lists',
-                      ),
-                      trailing: taskListCurrentPw != null
-                          ? Text(pwTextTL)
-                          : Text(defaultDesc),
-                      onPressed: (context) async => await onTaskListLevelChange(
-                        context,
-                        maxPowerLevel,
-                        taskListCurrentPw,
-                        space,
-                        powerLevels,
-                      ),
-                    ),
-                    SettingsTile(
-                      enabled: canEdit,
-                      title: const Text('Tasks PowerLevel'),
-                      description: const Text(
-                        'Minimum power level required to interact with tasks',
-                      ),
-                      trailing: tasksCurrentPw != null
-                          ? Text(pwTextT)
-                          : Text(defaultDesc),
-                      onPressed: (context) async => await onTaskLevelChange(
-                        context,
-                        maxPowerLevel,
-                        tasksCurrentPw,
-                        space,
-                        powerLevels,
-                      ),
-                    ),
-                    SettingsTile.switchTile(
-                      title: const Text('Comments'),
-                      description: const Text('not yet supported'),
-                      enabled: false,
-                      initialValue: false,
-                      onToggle: (newVal) {},
-                    ),
-                  ],
-                ),
-              );
-            }
           }
 
           return Scaffold(
@@ -333,6 +311,20 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                       onToggle: (newVal) async => await onCalendarEventToggle(
                         context,
                         events,
+                        newVal,
+                        appSettings,
+                        space,
+                      ),
+                    ),
+                    SettingsTile.switchTile(
+                      title: const Text('Tasks'),
+                      key: tasksSwitch,
+                      enabled: canEdit,
+                      description: const Text('ToDo-Lists & Tasks'),
+                      initialValue: tasks.active(),
+                      onToggle: (newVal) async => await onTaskToggle(
+                        context,
+                        tasks,
                         newVal,
                         appSettings,
                         space,
@@ -728,7 +720,8 @@ class ChangePowerLevel extends StatefulWidget {
 
 class _ChangePowerLevelState extends State<ChangePowerLevel> {
   final TextEditingController dropDownMenuCtrl = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey =
+      GlobalKey<FormState>(debugLabel: 'change power level form');
 
   String? currentMemberStatus;
   int? customValue;

@@ -1,13 +1,15 @@
 import 'package:acter/common/utils/constants.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
+import 'package:acter/common/widgets/visibility/room_visibility_item.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
 import 'package:acter/features/chat/widgets/create_chat.dart';
 import 'package:acter/features/home/data/keys.dart';
+import 'package:acter/features/invite_members/pages/invite_page.dart';
 import 'package:acter/features/space/pages/chats_page.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
-import 'package:acter/features/space/widgets/space_header_profile.dart';
-import 'package:acter/features/space/widgets/top_nav.dart';
 import 'package:acter/features/spaces/model/keys.dart';
+import 'package:acter/features/spaces/pages/create_space_page.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -56,13 +58,6 @@ extension ActerSpace on ConvenientTest {
 
     if (appTab != null) {
       final selectedApp = find.byKey(appTab);
-      if (!selectedApp.tryEvaluate()) {
-        // our tab might be hidden in the new submenu ..
-        final moreKey = find.byKey(TopNavBar.moreTabsKey);
-        await tester.ensureVisible(moreKey);
-        await moreKey.should(findsOneWidget);
-        await moreKey.tap();
-      }
       await tester.ensureVisible(selectedApp);
       await selectedApp.should(findsOneWidget);
       await selectedApp.tap();
@@ -109,24 +104,15 @@ extension ActerSpace on ConvenientTest {
     String title, {
     StepCallback? onCreateForm,
     String? parentSpaceId,
+    RoomVisibility? roomVisibility,
   }) async {
     SystemChannels.textInput.invokeMethod('TextInput.hide');
     await find.byKey(Keys.mainNav).should(findsOneWidget);
-    final homeKey = find.byKey(MainNavKeys.dashboardHome);
-    await homeKey.should(findsOneWidget);
-    await homeKey.tap();
-
-    final spacesKey = find.byKey(DashboardKeys.widgetMySpacesHeader);
-    await spacesKey.should(findsOneWidget);
-    await spacesKey.tap();
-
-    final actions = find.byKey(SpacesKeys.mainActions);
-    await actions.should(findsOneWidget);
-    await actions.tap();
-
-    final createAction = find.byKey(SpacesKeys.actionCreate);
-    await createAction.should(findsOneWidget);
-    await createAction.tap();
+    await navigateTo([
+      MainNavKeys.quickJump,
+      MainNavKeys.quickJump,
+      SpacesKeys.actionCreate,
+    ]);
 
     final titleField = find.byKey(CreateSpaceKeys.titleField);
     await titleField.should(findsOneWidget);
@@ -139,6 +125,15 @@ extension ActerSpace on ConvenientTest {
     if (onCreateForm != null) {
       await onCreateForm(this);
     }
+    if (roomVisibility != null) {
+      // open the drawer
+      final selectSpacesKey = find.byKey(CreateSpacePage.permissionsKey);
+      await tester.ensureVisible(selectSpacesKey);
+      await selectSpacesKey.tap();
+      final select = find.byKey(RoomVisibilityItem.generateKey(roomVisibility));
+      await tester.ensureVisible(select);
+      await select.tap();
+    }
 
     final submit = find.byKey(CreateSpaceKeys.submitBtn);
     await tester.ensureVisible(submit);
@@ -146,11 +141,11 @@ extension ActerSpace on ConvenientTest {
 
     // we should be forwarded to the space.
 
-    final spaceHeader = find.byKey(SpaceHeaderProfile.headerKey);
-    await spaceHeader.should(findsOneWidget);
+    final invitePage = find.byKey(InvitePage.invitePageKey);
+    await invitePage.should(findsOneWidget);
     // read the actual spaceId
-    final header = spaceHeader.evaluate().first.widget as SpaceHeaderProfile;
-    return header.spaceId;
+    final header = invitePage.evaluate().first.widget as InvitePage;
+    return header.roomId;
   }
 
   Future<void> selectSpace(String spaceId, Key key) async {

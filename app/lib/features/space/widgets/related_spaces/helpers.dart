@@ -1,12 +1,13 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter/common/widgets/spaces/space_hierarchy_card.dart';
-import 'package:acter/features/space/providers/notifiers/space_hierarchy_notifier.dart';
-import 'package:acter/features/space/providers/space_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::space::widget::related_spaces::helpers');
 
 List<Widget>? _renderKnownSubspaces(
   BuildContext context,
@@ -33,47 +34,71 @@ List<Widget>? _renderKnownSubspaces(
         return SpaceCard(
           key: Key('subspace-list-item-${space.getRoomIdStr()}'),
           space: space,
-          showParent: false,
+          showParents: false,
         );
       },
     ),
   ];
 }
 
-List<Widget>? _renderMoreSubspaces(
+Widget renderMoreSubspaces(
   BuildContext context,
-  bool canLinkSpace,
-  String spaceIdOrAlias,
-  SpaceRelationsOverview spaces, {
-  bool renderHeader = true,
+  WidgetRef ref,
+  String spaceIdOrAlias, {
+  int? maxLength,
+  EdgeInsetsGeometry? padding,
 }) {
-  if (!spaces.hasMoreSubspaces) {
-    return null;
-  }
+  final otherSubspaces =
+      ref.watch(remoteSubspaceRelationsProvider(spaceIdOrAlias));
 
-  return [
-    RiverPagedBuilder<Next?, SpaceHierarchyRoomInfo>.autoDispose(
-      firstPageKey: const Next(isStart: true),
-      provider: remoteSpaceHierarchyProvider(spaces),
-      itemBuilder: (context, item, index) => SpaceHierarchyCard(
-        key: Key('subspace-list-item-${item.roomIdStr()}'),
-        roomInfo: item,
-        parentId: spaceIdOrAlias,
-      ),
-      noItemsFoundIndicatorBuilder: (context, controller) =>
-          const SizedBox.shrink(),
-      pagedBuilder: (controller, builder) => PagedListView(
-        shrinkWrap: true,
+  return otherSubspaces.when(
+    data: (spaces) {
+      if (spaces.isEmpty) {
+        return const SizedBox.shrink();
+      }
+
+      return GridView.builder(
+        padding: padding,
+        itemCount: maxLength ?? spaces.length,
         physics: const NeverScrollableScrollPhysics(),
-        pagingController: controller,
-        builderDelegate: builder,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 1,
+          childAspectRatio: 4.0,
+          mainAxisExtent: 100,
+        ),
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          final item = spaces[index];
+          return SpaceHierarchyCard(
+            key: Key('subspace-list-item-${item.roomIdStr()}'),
+            roomInfo: item,
+            parentId: spaceIdOrAlias,
+          );
+        },
+      );
+    },
+    error: (error, s) {
+      _log.severe(
+        'Loading subspaces from remote failed $spaceIdOrAlias',
+        error,
+        s,
+      );
+      return Card(
+        child:
+            ListTile(title: Text(L10n.of(context).loadingSpacesFailed(error))),
+      );
+    },
+    loading: () => const Skeletonizer(
+      child: Card(
+        child: ListTile(title: Text('random text')),
       ),
     ),
-  ];
+  );
 }
 
 Widget? renderSubSpaces(
   BuildContext context,
+  WidgetRef ref,
   String spaceIdOrAlias,
   SpaceRelationsOverview spaces, {
   int crossAxisCount = 1,
@@ -89,17 +114,17 @@ Widget? renderSubSpaces(
     // crossAxisCount: crossAxisCount,
   );
 
-  final moreSubspaces = _renderMoreSubspaces(
-    context,
-    canLinkSpace,
-    spaceIdOrAlias,
-    spaces,
-    renderHeader: false,
-  );
+  final moreSubspaces = spaces.hasMoreSubspaces
+      ? renderMoreSubspaces(
+          context,
+          ref,
+          spaceIdOrAlias,
+        )
+      : null;
 
   final items = [
     if (knownSubspaces != null) ...knownSubspaces,
-    if (moreSubspaces != null) ...moreSubspaces,
+    if (moreSubspaces != null) moreSubspaces,
   ];
 
   if (items.isNotEmpty) {

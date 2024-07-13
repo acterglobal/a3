@@ -1,5 +1,4 @@
 import 'package:acter/common/notifications/notifications.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
@@ -240,10 +239,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
           }
           return [
             IconButton(
-              icon: Icon(
-                Atlas.plus_circle_thin,
-                color: Theme.of(context).colorScheme.neutral5,
-              ),
+              icon: const Icon(Atlas.plus_circle_thin),
               iconSize: 20,
               color: Theme.of(context).colorScheme.surface,
               onPressed: () => _onTargetAdd(context, ref, emails),

@@ -1,14 +1,12 @@
 import 'dart:math';
 
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/space/widgets/related_spaces/helpers.dart';
-import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,11 +26,7 @@ class SubSpacesPage extends ConsumerWidget {
     BuildContext context,
   ) {
     return PopupMenuButton(
-      icon: Icon(
-        Atlas.plus_circle,
-        key: moreOptionKey,
-        color: Theme.of(context).colorScheme.neutral5,
-      ),
+      icon: const Icon(Atlas.plus_circle, key: moreOptionKey),
       iconSize: 28,
       color: Theme.of(context).colorScheme.surface,
       itemBuilder: (BuildContext context) => <PopupMenuEntry>[
@@ -81,41 +75,57 @@ class SubSpacesPage extends ConsumerWidget {
     );
   }
 
-  Widget? titleBuilder(BuildContext context, bool canLink) {
-    if (canLink) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [_renderTools(context)],
-      );
-    } else {
-      return null;
-    }
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final spaces = ref.watch(spaceRelationsOverviewProvider(spaceIdOrAlias));
     final widthCount = (MediaQuery.of(context).size.width ~/ 300).toInt();
     const int minCount = 3;
     final crossAxisCount = max(1, min(widthCount, minCount));
+    final spaceName =
+        ref.watch(roomDisplayNameProvider(spaceIdOrAlias)).valueOrNull;
     // get platform of context.
-    return DecoratedBox(
-      decoration: const BoxDecoration(gradient: primaryGradient),
-      child: SingleChildScrollView(
+    return Scaffold(
+      appBar: AppBar(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(L10n.of(context).spaces),
+            Text(
+              '($spaceName)',
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+          ],
+        ),
+        actions: [
+          spaces.when(
+            data: (spaces) {
+              if (spaces.membership?.canString('CanLinkSpaces') ?? false) {
+                return _renderTools(context);
+              } else {
+                return const SizedBox.shrink();
+              }
+            },
+            error: (error, stack) => Center(
+              child: Text(L10n.of(context).loadingFailed(error)),
+            ),
+            loading: () => Center(
+              child: Text(L10n.of(context).loading),
+            ),
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
         child: Column(
           children: [
-            SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
             spaces.when(
               data: (spaces) {
                 return renderSubSpaces(
                       context,
+                      ref,
                       spaceIdOrAlias,
                       spaces,
                       crossAxisCount: crossAxisCount,
-                      titleBuilder: () => titleBuilder(
-                        context,
-                        spaces.membership?.canString('CanLinkSpaces') ?? false,
-                      ),
                     ) ??
                     renderFallback(
                       context,

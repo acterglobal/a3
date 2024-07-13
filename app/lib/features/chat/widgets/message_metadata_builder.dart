@@ -1,19 +1,13 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Convo, EventSendState;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logging/logging.dart';
 import 'package:quds_popup_menu/quds_popup_menu.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-
-final _log = Logger('a3::chat::message_metadata_builder');
 
 class MessageMetadataBuilder extends ConsumerWidget {
   final Convo convo;
@@ -45,27 +39,7 @@ class MessageMetadataBuilder extends ConsumerWidget {
           case 'SendingFailed':
             return Row(
               children: <Widget>[
-                GestureDetector(
-                  onTap: () => _handleCancelRetrySend(context, ref),
-                  child: Text(
-                    L10n.of(context).cancelSend,
-                    style: Theme.of(context).textTheme.labelSmall!.copyWith(
-                          color: Theme.of(context).colorScheme.neutral5,
-                          decoration: TextDecoration.underline,
-                        ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                GestureDetector(
-                  onTap: () => _handleRetry(context, ref),
-                  child: Text(
-                    L10n.of(context).retry,
-                    style: Theme.of(context).textTheme.labelSmall!.copyWith(
-                          color: Theme.of(context).colorScheme.neutral5,
-                          decoration: TextDecoration.underline,
-                        ),
-                  ),
-                ),
+                Text(L10n.of(context).chatSendingFailed),
                 const SizedBox(width: 5),
                 Icon(
                   Atlas.warning_thin,
@@ -79,31 +53,6 @@ class MessageMetadataBuilder extends ConsumerWidget {
         }
       }
       return const SizedBox.shrink();
-    }
-  }
-
-  Future<void> _handleRetry(BuildContext context, WidgetRef ref) async {
-    try {
-      final stream = ref.read(timelineStreamProvider(convo));
-      // attempts to retry sending local echo to server
-      await stream.retrySend(message.id);
-    } catch (e) {
-      // ignore: use_build_context_synchronously
-      EasyLoading.showError(L10n.of(context).failedToSend(e));
-    }
-  }
-
-  Future<void> _handleCancelRetrySend(
-    BuildContext context,
-    WidgetRef ref,
-  ) async {
-    try {
-      final stream = ref.read(timelineStreamProvider(convo));
-      // cancels the retry sending of local echos
-      await stream.cancelSend(message.id);
-    } catch (e) {
-      // ignore: use_build_context_synchronously
-      EasyLoading.showError(L10n.of(context).failedToSend(e));
     }
   }
 }
@@ -130,44 +79,17 @@ class _UserReceiptsWidget extends ConsumerWidget {
                     Consumer(
                       builder: (context, ref, child) {
                         final memberProfile = ref.watch(
-                          roomMemberProvider((userId: userId, roomId: roomId)),
+                          memberAvatarInfoProvider(
+                            (userId: userId, roomId: roomId),
+                          ),
                         );
-                        return memberProfile.when(
-                          data: (data) {
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 10),
-                              child: ActerAvatar(
-                                options: AvatarOptions.DM(
-                                  AvatarInfo(
-                                    uniqueId: userId,
-                                    displayName:
-                                        data.profile.displayName ?? userId,
-                                    avatar: data.profile.getAvatarImage(),
-                                  ),
-                                  size: 8,
-                                ),
-                              ),
-                            );
-                          },
-                          error: (e, st) {
-                            _log.severe('ERROR loading avatar', e, st);
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 10),
-                              child: ActerAvatar(
-                                options: AvatarOptions.DM(
-                                  AvatarInfo(
-                                    uniqueId: userId,
-                                    displayName: userId,
-                                  ),
-                                  size: 8,
-                                ),
-                              ),
-                            );
-                          },
-                          loading: () => const SizedBox(
-                            height: 8,
-                            width: 8,
-                            child: CircularProgressIndicator(),
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: ActerAvatar(
+                            options: AvatarOptions.DM(
+                              memberProfile,
+                              size: 8,
+                            ),
                           ),
                         );
                       },
@@ -185,47 +107,17 @@ class _UserReceiptsWidget extends ConsumerWidget {
                   (idx) => Consumer(
                     builder: (context, ref, child) {
                       final memberProfile = ref.watch(
-                        roomMemberProvider(
+                        memberAvatarInfoProvider(
                           (userId: seenList[idx], roomId: roomId),
                         ),
                       );
-                      final userId = seenList[idx];
-                      return memberProfile.when(
-                        data: (data) {
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: ActerAvatar(
-                              options: AvatarOptions.DM(
-                                AvatarInfo(
-                                  uniqueId: userId,
-                                  displayName:
-                                      data.profile.displayName ?? userId,
-                                  avatar: data.profile.getAvatarImage(),
-                                ),
-                                size: 8,
-                              ),
-                            ),
-                          );
-                        },
-                        error: (e, st) {
-                          _log.severe('ERROR loading avatar', e, st);
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: ActerAvatar(
-                              options: AvatarOptions(
-                                AvatarInfo(
-                                  uniqueId: userId,
-                                  displayName: userId,
-                                ),
-                                size: 8,
-                              ),
-                            ),
-                          );
-                        },
-                        loading: () => const SizedBox(
-                          height: 8,
-                          width: 8,
-                          child: CircularProgressIndicator(),
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 10),
+                        child: ActerAvatar(
+                          options: AvatarOptions.DM(
+                            memberProfile,
+                            size: 8,
+                          ),
                         ),
                       );
                     },
@@ -261,53 +153,22 @@ class _UserReceiptsWidget extends ConsumerWidget {
                   return Consumer(
                     builder: (context, ref, child) {
                       final member = ref.watch(
-                        roomMemberProvider(
+                        memberAvatarInfoProvider(
                           (userId: userId, roomId: roomId),
                         ),
                       );
                       return ListTile(
-                        leading: member.when(
-                          data: (data) {
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 10),
-                              child: ActerAvatar(
-                                options: AvatarOptions.DM(
-                                  AvatarInfo(
-                                    uniqueId: seenList[index],
-                                    displayName:
-                                        data.profile.displayName ?? userId,
-                                    avatar: data.profile.getAvatarImage(),
-                                  ),
-                                  size: 8,
-                                ),
-                              ),
-                            );
-                          },
-                          error: (e, st) {
-                            _log.severe('ERROR loading avatar', e, st);
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 10),
-                              child: ActerAvatar(
-                                options: AvatarOptions.DM(
-                                  AvatarInfo(
-                                    uniqueId: userId,
-                                    displayName: userId,
-                                  ),
-                                  size: 8,
-                                ),
-                              ),
-                            );
-                          },
-                          loading: () => const SizedBox(
-                            height: 8,
-                            width: 8,
-                            child: CircularProgressIndicator(),
+                        leading: Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: ActerAvatar(
+                            options: AvatarOptions.DM(
+                              member,
+                              size: 8,
+                            ),
                           ),
                         ),
                         title: Text(
-                          member.hasValue
-                              ? member.requireValue.profile.displayName!
-                              : userId,
+                          member.displayName ?? userId,
                           style: Theme.of(context).textTheme.labelSmall,
                         ),
                         trailing: Text(
@@ -316,7 +177,7 @@ class _UserReceiptsWidget extends ConsumerWidget {
                               .textTheme
                               .labelSmall!
                               .copyWith(
-                                color: Theme.of(context).colorScheme.neutral5,
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                         ),
                       );

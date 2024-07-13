@@ -228,13 +228,13 @@ class _VisibilityAccessibilityPageState
 
   Widget _spaceFoundUI(SpaceItem spaceItem, bool canEdit) {
     return _spaceItemCard(
-      spaceItem.spaceProfileData.displayName ?? spaceItem.roomId,
+      spaceItem.avatarInfo.displayName ?? spaceItem.roomId,
       avatar: ActerAvatar(
         options: AvatarOptions(
           AvatarInfo(
             uniqueId: spaceItem.roomId,
-            displayName: spaceItem.spaceProfileData.displayName,
-            avatar: spaceItem.spaceProfileData.getAvatarImage(),
+            displayName: spaceItem.avatarInfo.displayName,
+            avatar: spaceItem.avatarInfo.avatar,
           ),
           size: 45,
           badgesSize: 45 / 2,

@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/chat/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -42,8 +43,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       do {
         await loadMore(failOnError: true);
         await Future.delayed(const Duration(milliseconds: 200), () => null);
-      } while (state.hasMore &&
-          ref.read(renderableChatMessagesProvider(convo)).length < 10);
+      } while (state.hasMore && state.messages.where(msgFilter).length < 10);
     } catch (error) {
       _log.severe('Error loading more messages', error);
       state = state.copyWith(
@@ -94,19 +94,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 
   void replaceMessageAt(int index, types.Message m) {
-    final newState = messagesCopy();
-    newState[index] = m;
-    state = state.copyWith(messages: newState);
-  }
-
-  void replaceMessage(types.Message m) {
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-      final messages = messagesCopy();
-      int index = messages.indexWhere((x) => x.id == m.id);
-      if (index != -1) {
-        messages[index] = m;
-        state = state.copyWith(messages: messages);
-      }
+      final newState = messagesCopy();
+      newState[index] = m;
+      state = state.copyWith(messages: newState);
     });
   }
 
@@ -391,7 +382,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     final messages = state.messages;
     int index = messages.indexWhere((x) => x.id == replyId);
     if (index != -1 && repliedTo != null) {
-      replaceMessage(
+      replaceMessageAt(
+        index,
         messages[index].copyWith(repliedMessage: repliedTo),
       );
     }
@@ -734,81 +726,32 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.notice':
-            MsgContent? msgContent = eventItem.msgContent();
-            if (msgContent != null) {
-              String? formattedBody = msgContent.formattedBody();
-              String body = msgContent.body(); // always exists
-              return types.TextMessage(
-                author: author,
-                remoteId: eventItem.uniqueId(),
-                createdAt: createdAt,
-                id: eventId,
-                text: formattedBody ?? body,
-                metadata: {
-                  'itemType': 'event',
-                  'eventType': eventType,
-                  'msgType': msgType,
-                  'was_edited': wasEdited,
-                  'isEditable': isEditable,
-                  'eventState': eventState,
-                  'receipts': receipts,
-                },
-              );
-            }
-            break;
           case 'm.server_notice':
-            MsgContent? msgContent = eventItem.msgContent();
-            if (msgContent != null) {
-              String? formattedBody = msgContent.formattedBody();
-              String body = msgContent.body(); // always exists
-              return types.TextMessage(
-                author: author,
-                remoteId: eventItem.uniqueId(),
-                createdAt: createdAt,
-                id: eventId,
-                text: formattedBody ?? body,
-                metadata: {
-                  'itemType': 'event',
-                  'eventType': eventType,
-                  'msgType': msgType,
-                  'was_edited': wasEdited,
-                  'isEditable': isEditable,
-                  'eventState': eventState,
-                  'receipts': receipts,
-                },
-              );
-            }
-            break;
           case 'm.text':
-            MsgContent? msgContent = eventItem.msgContent();
-            if (msgContent != null) {
-              String? formattedBody = msgContent.formattedBody();
-              String body = msgContent.body(); // always exists
-              Map<String, dynamic> metadata = {
-                'eventState': eventState,
-                'receipts': receipts,
-              };
-              metadata['was_edited'] = wasEdited;
-              metadata['isEditable'] = isEditable;
-              if (inReplyTo != null) {
-                metadata['repliedTo'] = inReplyTo;
-              }
-
-              if (reactions.isNotEmpty) {
-                metadata['reactions'] = reactions;
-              }
-              // check whether string only contains emoji(s).
-              metadata['enlargeEmoji'] = isOnlyEmojis(body);
-              return types.TextMessage(
-                author: author,
-                remoteId: eventItem.uniqueId(),
-                createdAt: createdAt,
-                id: eventId,
-                metadata: metadata,
-                text: formattedBody ?? body,
-              );
+            final body = prepareMsg(eventItem.msgContent());
+            Map<String, dynamic> metadata = {
+              'eventState': eventState,
+              'receipts': receipts,
+            };
+            metadata['was_edited'] = wasEdited;
+            metadata['isEditable'] = isEditable;
+            if (inReplyTo != null) {
+              metadata['repliedTo'] = inReplyTo;
             }
-            break;
+
+            if (reactions.isNotEmpty) {
+              metadata['reactions'] = reactions;
+            }
+            // check whether string only contains emoji(s).
+            metadata['enlargeEmoji'] = isOnlyEmojis(body);
+            return types.TextMessage(
+              author: author,
+              remoteId: eventItem.uniqueId(),
+              createdAt: createdAt,
+              id: eventId,
+              metadata: metadata,
+              text: body,
+            );
           case 'm.video':
             MsgContent? msgContent = eventItem.msgContent();
             if (msgContent != null) {
@@ -935,7 +878,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           final metadata = {...messages[index].metadata ?? {}};
           metadata['base64'] = base64Encode(data.asTypedList());
           final message = messages[index].copyWith(metadata: metadata);
-          replaceMessage(message);
+          replaceMessageAt(index, message);
         }
         break;
     }
@@ -957,7 +900,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       final updatedMessage = (messages[index] as types.TextMessage).copyWith(
         previewData: previewData,
       );
-      replaceMessage(updatedMessage);
+      replaceMessageAt(index, updatedMessage);
     }
   }
 }

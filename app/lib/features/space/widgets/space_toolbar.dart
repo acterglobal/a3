@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/space/dialogs/leave_space.dart';
 import 'package:flutter/material.dart';
@@ -13,14 +12,22 @@ class SpaceToolbar extends ConsumerWidget {
   static const settingsMenu = Key('space-options-settings');
   static const leaveMenu = Key('space-options-leave');
   final String spaceId;
+  final Widget? spaceTitle;
 
-  const SpaceToolbar({super.key, required this.spaceId});
+  const SpaceToolbar({
+    super.key,
+    required this.spaceId,
+    this.spaceTitle,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
-    final isBookmarked = ref.watch(spaceProvider(spaceId).select(
-        (asyncValue) => (asyncValue.valueOrNull?.isBookmarked()) == true,),);
+    final isBookmarked = ref.watch(
+      spaceProvider(spaceId).select(
+        (asyncValue) => (asyncValue.valueOrNull?.isBookmarked()) == true,
+      ),
+    );
     final invited =
         ref.watch(spaceInvitedMembersProvider(spaceId)).valueOrNull ?? [];
     final showInviteBtn = membership?.canString('CanInvite') == true;
@@ -62,6 +69,7 @@ class SpaceToolbar extends ConsumerWidget {
 
     return AppBar(
       backgroundColor: Colors.transparent,
+      title: spaceTitle,
       actions: [
         showInviteBtn && invited.length <= 100
             ? OutlinedButton(
@@ -83,11 +91,7 @@ class SpaceToolbar extends ConsumerWidget {
                   .setBookmarked(!isBookmarked),
         ),
         PopupMenuButton(
-          icon: Icon(
-            key: optionsMenu,
-            Icons.more_vert,
-            color: Theme.of(context).colorScheme.neutral5,
-          ),
+          icon: const Icon(key: optionsMenu, Icons.more_vert),
           iconSize: 28,
           color: Theme.of(context).colorScheme.surface,
           itemBuilder: (BuildContext context) => submenu,

@@ -1,3 +1,68 @@
+    <release version="1.24.7123" date="2024-07-12">
+        <url type="details">https://github.com/acterglobal/a3/releases/tag/v1.24.7123</url>
+        <description>
+# Changes since v1.24.7120 
+        </description>
+    </release>
+    <release version="1.24.7121" date="2024-07-12">
+        <url type="details">https://github.com/acterglobal/a3/releases/tag/v1.24.7121</url>
+        <description>
+# Changes since v1.24.7120 
+        </description>
+    </release>
+    <release version="1.24.7120" date="2024-07-12">
+        <url type="details">https://github.com/acterglobal/a3/releases/tag/v1.24.7120</url>
+        <description>
+# Changes since release-latest 
+- Switching to black background and bolder blue colors for highlights for better contrast
+- Fix to make sure the description of the visibility items is legible 
+- Fixed the chat rooms list ordering based on latest message timestamp.
+
+- [Improvement] Total overhaul of the Space Detail Screen replacing the navigation with a fresh and variable top bar navigation, nice intro sections with full-screen-views of the actual features and quick actions on the bottom (if you have the rights to). Making the space screen a more mobile-friendly and nicer to work with.
+- [fixes] General UI and Color issues fixes
+- [Improvement] : Pins list UI is now more consistent and robust
+- [New] : Now you can search any pin by it's title name
+- At PR#1783, many fns for password rest were made and some of them are unnecessary or duplicated. Will refactor them.
+
+- Fix inviting all space members to chat room, fixes #1895
+- Do not render link previews for room and user mentions, fixes #1604
+- Fix chat input Capitalization, fixes #1902
+- Fix support for proper user mentions and room links, fixes #1829
+
+        </description>
+    </release>
+    <release version="1.24.6270" date="2024-06-27">
+        <url type="details">https://github.com/acterglobal/a3/releases/tag/v1.24.6270</url>
+        <description>
+# Changes since release-latest 
+- [Improvement] : Optimised application color system
+- Tasks and ToDo-List have left the lab and are now on by default for everyone.
+
+- SuperInvites can now be easily managed from the Room Invite screen
+- SuperInvite Codes are generated with the room display name as a prefix and additional numbers now
+
+- Task item detail page UI-UX enhancement
+- My task list on home screen optimised with compact design and better visual indications 
+- Minor fix to dismiss the keyboard after submitting a comment & making the icons on the image overlay accessible regardless of top bezels
+
+        </description>
+    </release>
+    <release version="1.24.3624" date="2024-06-24">
+        <url type="details">https://github.com/acterglobal/a3/releases/tag/v1.24.3624</url>
+        <description>
+# Changes since v1.24.3620 
+- [Fixes] : Wrong image/video in update slide issue is resolved
+- You can now reset your password just with your email address, if you previously confirmed your email address connected to that account.
+
+- Now shows unconfirmed emails on Activities screen to nudge you to confirm them
+
+
+- [new] You can now report any Task item and Task List
+- [new] You can now delete any Task item and Task List
+- You can now see multiple parent avatars on space overview if it's linked as sub-space of it.
+
+        </description>
+    </release>
     <release version="1.24.3613" date="2024-06-13">
         <url type="details">https://github.com/acterglobal/a3/releases/tag/v1.24.3613</url>
         <description>

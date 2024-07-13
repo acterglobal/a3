@@ -34,6 +34,24 @@ pub async fn accept_all_invites(client: Client) -> Result<Vec<OwnedRoomId>> {
     Ok(rooms)
 }
 
+pub async fn random_user(prefix: &str) -> Result<Client> {
+    let uuid = Uuid::new_v4().to_string();
+    let user = ensure_user(
+        option_env!("DEFAULT_HOMESERVER_URL")
+            .unwrap_or("http://localhost:8118")
+            .to_string(),
+        option_env!("DEFAULT_HOMESERVER_NAME")
+            .unwrap_or("localhost")
+            .to_string(),
+        format!("it-{prefix}-{uuid}"),
+        option_env!("REGISTRATION_TOKEN").map(ToString::to_string),
+        "acter-integration-tests".to_owned(),
+        StoreConfig::default(),
+    )
+    .await?;
+    Ok(user)
+}
+
 pub async fn random_user_with_random_space(prefix: &str) -> Result<(Client, OwnedRoomId)> {
     let uuid = Uuid::new_v4().to_string();
     let user = ensure_user(

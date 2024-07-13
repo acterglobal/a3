@@ -1,7 +1,6 @@
 import 'dart:io';
-
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/sliver_scaffold.dart';
@@ -48,23 +47,21 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
   // apply existing data to fields
   Future<void> _editSpaceData() async {
     final space = ref.read(spaceProvider(widget.spaceId!)).requireValue;
-    final profileData = await ref.read(spaceProfileDataProvider(space).future);
+    final spaceId = space.getRoomIdStr();
+    final avatarInfo = ref.read(roomAvatarInfoProvider(spaceId));
     final titleNotifier = ref.read(editTitleProvider.notifier);
     final topicNotifier = ref.read(editTopicProvider.notifier);
     final avatarNotifier = ref.read(editAvatarProvider.notifier);
 
-    titleNotifier.update((state) => profileData.displayName ?? '');
+    titleNotifier.update((state) => avatarInfo.displayName ?? '');
     topicNotifier.update((state) => space.topic() ?? '');
 
-    if (profileData.hasAvatar()) {
-      Directory appDocDir = await getApplicationDocumentsDirectory();
-      final dirPath = p.join(appDocDir.path, 'dir');
-      await Directory(dirPath).create(recursive: true);
-      String filePath = p.join(appDocDir.path, '${widget.spaceId}.jpg');
-      final imageFile = File(filePath);
-      imageFile.writeAsBytes(profileData.avatar!.asTypedList());
-      avatarNotifier.update((state) => imageFile.path);
-    }
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    final dirPath = p.join(appDocDir.path, 'dir');
+    await Directory(dirPath).create(recursive: true);
+    String filePath = p.join(appDocDir.path, '${widget.spaceId}.jpg');
+    final imageFile = File(filePath);
+    avatarNotifier.update((state) => imageFile.path);
 
     _titleController.text = ref.read(editTitleProvider);
     _topicController.text = ref.read(editTopicProvider);
@@ -102,10 +99,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
                                 child: GestureDetector(
                                   onTap: _clearAvatar,
                                   child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .neutral4,
+                                    decoration: const BoxDecoration(
                                       shape: BoxShape.circle,
                                     ),
                                     child: const Icon(Icons.close, size: 14),
@@ -136,9 +130,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
                       const SizedBox(height: 3),
                       Text(
                         L10n.of(context).egGlobalMovement,
-                        style: Theme.of(context).textTheme.labelSmall!.copyWith(
-                              color: Theme.of(context).colorScheme.neutral4,
-                            ),
+                        style: Theme.of(context).textTheme.labelSmall!,
                       ),
                     ],
                   ),
@@ -188,10 +180,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
           borderRadius: BorderRadius.circular(5),
         ),
         child: avatarUpload.isEmpty
-            ? Icon(
-                Atlas.up_arrow_from_bracket_thin,
-                color: Theme.of(context).colorScheme.neutral4,
-              )
+            ? const Icon(Atlas.up_arrow_from_bracket_thin)
             : null,
       ),
     );

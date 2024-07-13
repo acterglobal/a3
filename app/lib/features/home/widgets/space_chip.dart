@@ -35,7 +35,7 @@ class SpaceChip extends ConsumerWidget {
         loading: () => renderLoading(spaceId!),
       );
     }
-    return renderSpace(context, space);
+    return renderSpace(context, space!);
   }
 
   Widget renderLoading(String spaceId) {
@@ -54,7 +54,7 @@ class SpaceChip extends ConsumerWidget {
     );
   }
 
-  Widget renderSpace(BuildContext context, space) {
+  Widget renderSpace(BuildContext context,SpaceItem space) {
     return InkWell(
       onTap:
           onTapOpenSpaceDetail ? () => goToSpace(context, space.roomId) : null,
@@ -63,13 +63,13 @@ class SpaceChip extends ConsumerWidget {
           options: AvatarOptions(
             AvatarInfo(
               uniqueId: space.roomId,
-              displayName: space.spaceProfileData.displayName,
-              avatar: space.spaceProfileData.getAvatarImage(),
+              displayName: space.avatarInfo.displayName,
+              avatar: space.avatarInfo.avatar,
             ),
             size: 24,
           ),
         ),
-        label: Text(space.spaceProfileData.displayName ?? space.roomId),
+        label: Text(space.avatarInfo.displayName ?? space.roomId),
       ),
     );
   }

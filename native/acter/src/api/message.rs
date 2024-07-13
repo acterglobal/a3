@@ -25,8 +25,10 @@ impl EventSendState {
     fn new(inner: &SdkEventSendState) -> Self {
         let (state, error, event_id) = match inner {
             SdkEventSendState::NotSentYet => ("NotSentYet".to_string(), None, None),
-            SdkEventSendState::Cancelled => ("Cancelled".to_string(), None, None),
-            SdkEventSendState::SendingFailed { error } => (
+            SdkEventSendState::SendingFailed {
+                error,
+                is_recoverable,
+            } => (
                 "SendingFailed".to_string(),
                 Some(error.to_owned().to_string()),
                 None,
@@ -150,7 +152,8 @@ impl RoomEventItem {
             }
             TimelineItemContent::Sticker(s) => {
                 me.event_type("m.sticker".to_string());
-                me.msg_content(Some(MsgContent::from(s.content())));
+                // FIXME: proper sticker support needed
+                // me.msg_content(Some(MsgContent::from(s.content())));
             }
             TimelineItemContent::UnableToDecrypt(encrypted_msg) => {
                 info!("Edit event applies to event that couldn't be decrypted");
@@ -284,6 +287,9 @@ impl RoomEventItem {
             }
             TimelineItemContent::CallInvite => {
                 me.event_type("m.call_invite".to_owned());
+            }
+            TimelineItemContent::CallNotify => {
+                me.event_type("m.call_notify".to_owned());
             }
         };
         me.build().expect("Building Room Event doesn't fail")

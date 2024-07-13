@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/network_provider.dart';
-import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
@@ -44,7 +44,7 @@ class RegisterPage extends ConsumerStatefulWidget {
 }
 
 class _RegisterPageState extends ConsumerState<RegisterPage> {
-  final formKey = GlobalKey<FormState>();
+  final formKey = GlobalKey<FormState>(debugLabel: 'register page form');
   final TextEditingController username = TextEditingController();
   final TextEditingController password = TextEditingController();
   final TextEditingController token = TextEditingController();
@@ -87,7 +87,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
       body: Column(
         children: [
           _buildAppBar(context),
@@ -321,7 +320,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
               const SizedBox(height: 10),
               Container(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.neutral,
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 padding: const EdgeInsets.symmetric(
@@ -332,7 +330,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'tryacter',
+                      'organize',
                       style: Theme.of(context).textTheme.headlineMedium,
                     ),
                     IconButton(
@@ -343,7 +341,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           toastPosition: EasyLoadingToastPosition.bottom,
                         );
                         await Clipboard.setData(
-                          const ClipboardData(text: 'tryacter'),
+                          const ClipboardData(text: 'organize'),
                         );
                       },
                       icon: const Icon(Icons.copy, size: 20),

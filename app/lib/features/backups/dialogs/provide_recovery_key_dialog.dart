@@ -16,7 +16,7 @@ class _RecoveryKeyDialog extends ConsumerStatefulWidget {
 class __RecoveryKeyDialogState extends ConsumerState<_RecoveryKeyDialog> {
   TextEditingController recoveryKey = TextEditingController();
   bool showInput = false;
-  final formKey = GlobalKey<FormState>();
+  final formKey = GlobalKey<FormState>(debugLabel: 'Recovery Key Form');
 
   @override
   Widget build(BuildContext context) {

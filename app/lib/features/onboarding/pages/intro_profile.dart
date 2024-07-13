@@ -1,6 +1,4 @@
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
-
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -21,9 +19,9 @@ class IntroProfile extends StatelessWidget {
   }
 
   Widget _buildBody(BuildContext context) {
-    var imageSize = MediaQuery.of(context).size.height / 5;
+    // limit the to always show the button even if the keyboard is opened
+    final imageSize = MediaQuery.of(context).size.height / 5;
     return Container(
-      decoration: const BoxDecoration(gradient: introGradient),
       padding: const EdgeInsets.symmetric(horizontal: 30),
       child: Column(
         children: [
@@ -61,7 +59,9 @@ class IntroProfile extends StatelessWidget {
         Text(
           L10n.of(context).makeADifference,
           style: Theme.of(context).textTheme.headlineMedium,
+          textAlign: TextAlign.center,
         ),
+        const SizedBox(height: 10),
         Text(
           L10n.of(context).joinActer,
           style: Theme.of(context)

@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/custom_message_builder.dart';
@@ -19,7 +18,6 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import 'package:swipe_to/swipe_to.dart';
 
 final _log = Logger('a3::chat::bubble_builder');
@@ -56,20 +54,20 @@ class BubbleBuilder extends ConsumerWidget {
         isMemberEvent
             ? child
             : SwipeTo(
-                onLeftSwipe: (DragUpdateDetails details) {
+                onRightSwipe: (DragUpdateDetails details) {
                   ref
                       .read(chatInputProvider(roomId).notifier)
                       .setReplyToMessage(message);
                 },
-                iconOnLeftSwipe: Icons.reply_rounded,
-                onRightSwipe: isAuthor
+                iconOnRightSwipe: Icons.reply_rounded,
+                onLeftSwipe: isAuthor
                     ? (DragUpdateDetails details) {
                         ref
                             .read(chatInputProvider(roomId).notifier)
                             .setEditMessage(message);
                       }
                     : null,
-                iconOnRightSwipe: Atlas.pencil_edit_thin,
+                iconOnLeftSwipe: Atlas.pencil_edit_thin,
                 child: _ChatBubble(
                   convo: convo,
                   message: message,
@@ -170,9 +168,10 @@ class _ChatBubble extends ConsumerWidget {
         children: <Widget>[
           Container(
             decoration: BoxDecoration(
-              color: isAuthor
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.neutral.withOpacity(0.3),
+              color: Theme.of(context)
+                  .colorScheme
+                  .secondaryContainer
+                  .withOpacity(0.3),
               borderRadius: BorderRadius.circular(22),
             ),
             child: Column(
@@ -205,8 +204,8 @@ class _ChatBubble extends ConsumerWidget {
 
     return Bubble(
       color: isAuthor
-          ? Theme.of(context).colorScheme.surface
-          : Theme.of(context).colorScheme.neutral2,
+          ? Theme.of(context).colorScheme.primary
+          : Theme.of(context).colorScheme.surface,
       borderColor: Colors.transparent,
       style: BubbleStyle(
         margin: nextMessageInGroup
@@ -236,51 +235,21 @@ class _ChatBubble extends ConsumerWidget {
     final roomId = convo.getRoomIdStr();
     final authorId = message.repliedMessage!.author.id;
     final replyProfile =
-        ref.watch(roomMemberProvider((userId: authorId, roomId: roomId)));
+        ref.watch(memberAvatarInfoProvider((userId: authorId, roomId: roomId)));
     return Row(
       children: [
-        replyProfile.when(
-          data: (data) => ActerAvatar(
-            options: AvatarOptions.DM(
-              AvatarInfo(
-                uniqueId: authorId,
-                displayName: data.profile.displayName,
-                avatar: data.profile.getAvatarImage(),
-              ),
-              size: 12,
-            ),
-          ),
-          error: (err, stackTrace) {
-            _log.severe('Failed to load profile', err, stackTrace);
-            return ActerAvatar(
-              options: AvatarOptions.DM(
-                AvatarInfo(uniqueId: authorId),
-                size: 24,
-              ),
-            );
-          },
-          loading: () => Skeletonizer(
-            child: ActerAvatar(
-              options: AvatarOptions.DM(
-                AvatarInfo(uniqueId: authorId),
-                size: 24,
-              ),
-            ),
+        ActerAvatar(
+          options: AvatarOptions.DM(
+            replyProfile,
+            size: 12,
           ),
         ),
         const SizedBox(width: 5),
-        replyProfile.when(
-          data: (data) => Text(
-            data.profile.displayName ?? '',
-            style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                  color: Theme.of(context).colorScheme.tertiary,
-                ),
-          ),
-          error: (err, stackTrace) {
-            _log.severe('Failed to load profile', err, stackTrace);
-            return const Text('');
-          },
-          loading: () => Skeletonizer(child: Text(authorId)),
+        Text(
+          replyProfile.displayName ?? '',
+          style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                color: Theme.of(context).colorScheme.tertiary,
+              ),
         ),
       ],
     );

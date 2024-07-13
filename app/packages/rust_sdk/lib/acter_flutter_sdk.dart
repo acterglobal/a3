@@ -703,6 +703,7 @@ class ActerSdk {
       return false;
     }
 
+    final account = client.account();
     final userId = client.userId().toString();
 
     // take it out of the loop
@@ -711,8 +712,8 @@ class ActerSdk {
       _index = _index > 0 ? _index - 1 : 0;
     }
     try {
-      if (!await client.deactivate(password)) {
-        throw 'Deactivating the client failed';
+      if (!await account.deactivate(password)) {
+        throw 'Deactivating the account failed';
       }
     } catch (e) {
       // reset the client locally

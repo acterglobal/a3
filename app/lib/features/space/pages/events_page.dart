@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
@@ -9,7 +8,6 @@ import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/skeletons/event_list_skeleton_widget.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
-import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -24,35 +22,34 @@ class SpaceEventsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final upcoming = ref.watch(spaceUpcomingEventsProvider(spaceIdOrAlias));
     final past = ref.watch(spacePastEventsProvider(spaceIdOrAlias));
-    return DecoratedBox(
-      decoration: const BoxDecoration(gradient: primaryGradient),
-      child: CustomScrollView(
-        slivers: <Widget>[
-          SliverToBoxAdapter(
-            child: SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            sliver: SliverToBoxAdapter(
-              child: Row(
-                children: [
-                  Text(
-                    L10n.of(context).events,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const Spacer(),
-                  AddButtonWithCanPermission(
-                    roomId: spaceIdOrAlias,
-                    canString: 'CanPostEvent',
-                    onPressed: () => context.pushNamed(
-                      Routes.createEvent.name,
-                      queryParameters: {'spaceId': spaceIdOrAlias},
-                    ),
-                  ),
-                ],
-              ),
+    final spaceName =
+        ref.watch(roomDisplayNameProvider(spaceIdOrAlias)).valueOrNull;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(L10n.of(context).events),
+            Text(
+              '($spaceName)',
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+          ],
+        ),
+        actions: [
+          AddButtonWithCanPermission(
+            canString: 'CanPostEvent',
+            onPressed: () => context.pushNamed(
+              Routes.createEvent.name,
+              queryParameters: {'spaceId': spaceIdOrAlias},
             ),
           ),
+        ],
+      ),
+      body: CustomScrollView(
+        slivers: <Widget>[
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
             sliver: SliverToBoxAdapter(

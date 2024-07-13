@@ -28,17 +28,21 @@ class CreatePinPage extends ConsumerStatefulWidget {
 class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _linkController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey =
+      GlobalKey<FormState>(debugLabel: 'create pin form');
   EditorState textEditorState = EditorState.blank();
   AttachmentsManager? manager;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-      final spaceNotifier = ref.read(selectedSpaceIdProvider.notifier);
-      spaceNotifier.state = widget.initialSelectedSpace;
-    });
+    if (widget.initialSelectedSpace != null &&
+        widget.initialSelectedSpace!.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+        final spaceNotifier = ref.read(selectedSpaceIdProvider.notifier);
+        spaceNotifier.state = widget.initialSelectedSpace;
+      });
+    }
   }
 
   @override
