@@ -57,23 +57,58 @@ jobs:
       release_tag: nightly-${{ needs.tags.outputs.tag }}
     secrets: inherit
 
-########  ##     ## ########  ##       ####  ######  ##     ## 
-##     ## ##     ## ##     ## ##        ##  ##    ## ##     ## 
-##     ## ##     ## ##     ## ##        ##  ##       ##     ## 
-########  ##     ## ########  ##        ##   ######  ######### 
-##        ##     ## ##     ## ##        ##        ## ##     ## 
-##        ##     ## ##     ## ##        ##  ##    ## ##     ## 
-##         #######  ########  ######## ####  ######  ##     ## 
 
+ ######  ##     ##    ###    ##    ##  ######   ######## ##        #######   ######   
+##    ## ##     ##   ## ##   ###   ## ##    ##  ##       ##       ##     ## ##    ##  
+##       ##     ##  ##   ##  ####  ## ##        ##       ##       ##     ## ##        
+##       ######### ##     ## ## ## ## ##   #### ######   ##       ##     ## ##   #### 
+##       ##     ## ######### ##  #### ##    ##  ##       ##       ##     ## ##    ##  
+##    ## ##     ## ##     ## ##   ### ##    ##  ##       ##       ##     ## ##    ##  
+ ######  ##     ## ##     ## ##    ##  ######   ######## ########  #######   ######  
 
+  changelog:
+    environment: release
+    runs-on: ubuntu-latest
+    name: Generate Changelog
+    needs:
+      - tags
+    steps:
+      - uses: actions/checkout@v4
 
-########  ##          ###    ##    ##     ######  ########  #######  ########  ######## 
-##     ## ##         ## ##    ##  ##     ##    ##    ##    ##     ## ##     ## ##       
-##     ## ##        ##   ##    ####      ##          ##    ##     ## ##     ## ##       
-########  ##       ##     ##    ##        ######     ##    ##     ## ########  ######   
-##        ##       #########    ##             ##    ##    ##     ## ##   ##   ##       
-##        ##       ##     ##    ##       ##    ##    ##    ##     ## ##    ##  ##       
-##        ######## ##     ##    ##        ######     ##     #######  ##     ## ######## 
+      - name: Install rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Generate Changelog
+        run: |
+          git fetch --prune --unshallow --tags
+          cargo run -p mr_minutes -- --since ${{ needs.tags.outputs.prev_tag }} --output nightly-changes-generated.md
+          echo "** Changes since ${{ needs.tags.outputs.prev_tag }} **" > nightly-changes.md
+          cat nightly-changes-generated.md >>  CHANGELOG.md
+
+      - uses: actions/upload-artifact@v3
+        name: "Upload Changelog"
+        with:
+          name: Changelog
+          path: CHANGELOG.md
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          generate_release_notes: false
+          name: Nightly ${{ needs.tags.outputs.tag }}
+          tag_name: nightly-${{ needs.tags.outputs.tag }}
+          body_path: CHANGELOG.md
+          prerelease: true
+
+########  ##          ###    ##    ##     ######  ########  #######  ########  ########                  ###    ##       ########  ##     ##    ###    
+##     ## ##         ## ##    ##  ##     ##    ##    ##    ##     ## ##     ## ##                       ## ##   ##       ##     ## ##     ##   ## ##   
+##     ## ##        ##   ##    ####      ##          ##    ##     ## ##     ## ##                      ##   ##  ##       ##     ## ##     ##  ##   ##  
+########  ##       ##     ##    ##        ######     ##    ##     ## ########  ######      #######    ##     ## ##       ########  ######### ##     ## 
+##        ##       #########    ##             ##    ##    ##     ## ##   ##   ##                     ######### ##       ##        ##     ## ######### 
+##        ##       ##     ##    ##       ##    ##    ##    ##     ## ##    ##  ##                     ##     ## ##       ##        ##     ## ##     ## 
+##        ######## ##     ##    ##        ######     ##     #######  ##     ## ########               ##     ## ######## ##        ##     ## ##     ## 
 
 
   google-play-store:
@@ -100,87 +135,124 @@ jobs:
           track: alpha
           status: completed
 
-  publish:
-    environment: nightly
-    runs-on: ubuntu-latest
-    name: Publish
-    if: ${{ github.event.schedule }}
+####  #######   ######     ######## ########  ######  ######## ######## ##       ####  ######   ##     ## ######## 
+ ##  ##     ## ##    ##       ##    ##       ##    ##    ##    ##       ##        ##  ##    ##  ##     ##    ##    
+ ##  ##     ## ##             ##    ##       ##          ##    ##       ##        ##  ##        ##     ##    ##    
+ ##  ##     ##  ######        ##    ######    ######     ##    ######   ##        ##  ##   #### #########    ##    
+ ##  ##     ##       ##       ##    ##             ##    ##    ##       ##        ##  ##    ##  ##     ##    ##    
+ ##  ##     ## ##    ##       ##    ##       ##    ##    ##    ##       ##        ##  ##    ##  ##     ##    ##    
+####  #######   ######        ##    ########  ######     ##    ##       ######## ####  ######   ##     ##    ##    
+
+
+  apple-store-ios:
+    runs-on: macos-latest
+    environment: release
+    needs:
+      - tags
+      - changelog
+      - build
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: iOS
+      - uses: actions/download-artifact@v3
+        with:
+          name: Changelog
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          architecture: x64
+      - run: pip3 install codemagic-cli-tools
+
+      - name: Install App Store Connect Auth
+        env:
+          APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+        run: |
+          mkdir private_keys  
+          echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output "private_keys/AuthKey_$APPLE_API_KEY_ID.p8"
+          ls -ltas private_keys
+
+      - name: Publish to Testflight
+        env:
+          APP_STORE_CONNECT_KEY_IDENTIFIER: ${{ secrets.APPLE_API_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
+        shell: bash
+        run: |
+          app-store-connect publish --verbose --testflight --expire-build-submitted-for-review --platform=IOS --whats-new @file:CHANGELOG.md --path=*.ipa
+        
+      - name: Clean up keychain and provisioning profile
+        if: ${{ always() }}
+        run: |
+          rm -rf private_keys
+
+
+
+##     ##    ###     ######     ######## ########  ######  ######## ######## ##       ####  ######   ##     ## ######## 
+###   ###   ## ##   ##    ##       ##    ##       ##    ##    ##    ##       ##        ##  ##    ##  ##     ##    ##    
+#### ####  ##   ##  ##             ##    ##       ##          ##    ##       ##        ##  ##        ##     ##    ##    
+## ### ## ##     ## ##             ##    ######    ######     ##    ######   ##        ##  ##   #### #########    ##    
+##     ## ######### ##             ##    ##             ##    ##    ##       ##        ##  ##    ##  ##     ##    ##    
+##     ## ##     ## ##    ##       ##    ##       ##    ##    ##    ##       ##        ##  ##    ##  ##     ##    ##    
+##     ## ##     ##  ######        ##    ########  ######     ##    ##       ######## ####  ######   ##     ##    ##    
+
+
+  apple-store-mac:
+    runs-on: macos-latest
+    environment: release
     needs:
       - tags
       - build
+      - changelog
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v3
         with:
-          token: ${{ secrets.PAT }}
+          name: MacOS
 
-      - name: Install rust
-        uses: actions-rs/toolchain@v1
+      - uses: actions/download-artifact@v3
         with:
-          toolchain: stable
+          name: Changelog
 
-      - name: Configure git
-        run: | # make sure we have the tags and all
-          git fetch --prune --unshallow --tags
-          git config --global user.name 'Sari'
-          git config --global user.email 'acter-sari@users.noreply.github.com'
-
-      - name: Generate Changelog
-        run: |
-          cargo run -p mr_minutes -- --since nightly-latest --output nightly-changes-generated.md
-          echo "** Changes since ${{ needs.tags.outputs.prev_tag }} **" > nightly-changes.md
-          cat nightly-changes-generated.md >>  nightly-changes.md
-
-      - name: "Generate docs"
-        run: |
-          echo "+++" > docs/content/nightly/${{ needs.tags.outputs.tag }}.md
-          echo "title = \" Nightly ${{ needs.tags.outputs.tag }}\"" >> docs/content/nightly/${{ needs.tags.outputs.tag }}.md
-          echo "template = \"nightlies/release.html\"" >> docs/content/nightly/${{ needs.tags.outputs.tag }}.md
-          echo "date = ${{ needs.tags.outputs.tag }}" >> docs/content/nightly/${{ needs.tags.outputs.tag }}.md
-          echo "+++" >>docs/content/nightly/${{ needs.tags.outputs.tag }}.md
-          echo "" >>docs/content/nightly/${{ needs.tags.outputs.tag }}.md
-          cat nightly-changes.md >> docs/content/nightly/${{ needs.tags.outputs.tag }}.md
-
-      - name: Tag for nightly release
-        run: |
-          git add "docs/content/nightly/${{ needs.tags.outputs.tag }}.md"
-          echo "Tagging ${{ needs.tags.outputs.tag }}" > notes.md
-          echo "" >> notes.md
-          cat nightly-changes.md >> notes.md
-          git commit -F notes.md
-          git tag nightly-${{ needs.tags.outputs.tag }}
-          git tag -f nightly-latest
-          git push -f origin main nightly-${{ needs.tags.outputs.tag }} nightly-latest
-      - name: Release
-        id: create_release
-        uses: softprops/action-gh-release@v1
+      - uses: actions/setup-python@v5
         with:
-          # publish this nightly release now
-          draft: true
-          generate_release_notes: false
-          name: Nightly ${{ needs.tags.outputs.tag }}
-          tag_name: nightly-${{ needs.tags.outputs.tag }}
-          body_path: nightly-changes.md
-          prerelease: true
-      - uses: eregon/publish-release@v1
+          python-version: "3.11"
+          architecture: x64
+
+      - run: pip3 install codemagic-cli-tools
+
+      - name: Install App Store Connect Auth
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          release_id: ${{ steps.create_release.outputs.id }}
+          APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+        run: |
+          mkdir private_keys  
+          echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output "private_keys/AuthKey_$APPLE_API_KEY_ID.p8"
+          ls -ltas private_keys
 
-      - name: Send message to nightly channel
-        id: matrix-chat-message
-        uses: fadenb/matrix-chat-message@v0.0.6
-        with:
-          homeserver: 'matrix.acter.global'
-          token: ${{ secrets.NIGHTLY_MATRIX_TOKEN }}
-          channel:  '!PsBFWhNhPEAfCBdApa:acter.global'
-          message: |
-            ## Nightly ${{ needs.tags.outputs.tag }} released
+      - name: Publish to Testflight
+        env:
+          APP_STORE_CONNECT_KEY_IDENTIFIER: ${{ secrets.APPLE_API_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
+        shell: bash
+        run: |
+          app-store-connect publish --verbose --testflight --expire-build-submitted-for-review --platform=MAC_OS --whats-new @file:CHANGELOG.md --path=*.pkg
+        
+      - name: Clean up keychain and provisioning profile
+        if: ${{ always() }}
+        run: |
+          rm -rf private_keys
 
-            Latest nightly builds have been built and [can be downloaded from here](https://dev.acter.global/nightly/${{ needs.tags.outputs.tag }}/).
-            Direct install links:
-             - 🤖 [Android devices](https://github.com/acterglobal/a3/releases/download/nightly-${{ needs.tags.outputs.tag }}/acter-nightly-android-arm64-${{ needs.tags.outputs.tag }}.apk)
-             - 🍎 [iOS devices](itms-services://?action=download-manifest&amp;url=https://github.com/acterglobal/a3/releases/download/nightly-${{ needs.tags.outputs.tag }}/ios-manifest.plist) (for ad-hoc registered devices only)
+
+   ###    ########   ######  ##     ##       ###    ##     ## ########  
+  ## ##   ##     ## ##    ## ##     ##      ## ##   ##     ## ##     ## 
+ ##   ##  ##     ## ##       ##     ##     ##   ##  ##     ## ##     ## 
+##     ## ########  ##       #########    ##     ## ##     ## ########  
+######### ##   ##   ##       ##     ##    ######### ##     ## ##   ##   
+##     ## ##    ##  ##    ## ##     ##    ##     ## ##     ## ##    ##  
+##     ## ##     ##  ######  ##     ##    ##     ##  #######  ##     ## 
+
 
   publish_aur:
     environment: release
@@ -211,3 +283,88 @@ jobs:
           commit_email: sari@acter.global
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
           commit_message: Updated to ${{ needs.tags.outputs.tag }}
+
+
+ ######   #### ######## ##     ## ##     ## ########     ########  ##     ## ########  ##       ####  ######  ##     ## 
+##    ##   ##     ##    ##     ## ##     ## ##     ##    ##     ## ##     ## ##     ## ##        ##  ##    ## ##     ## 
+##         ##     ##    ##     ## ##     ## ##     ##    ##     ## ##     ## ##     ## ##        ##  ##       ##     ## 
+##   ####  ##     ##    ######### ##     ## ########     ########  ##     ## ########  ##        ##   ######  ######### 
+##    ##   ##     ##    ##     ## ##     ## ##     ##    ##        ##     ## ##     ## ##        ##        ## ##     ## 
+##    ##   ##     ##    ##     ## ##     ## ##     ##    ##        ##     ## ##     ## ##        ##  ##    ## ##     ## 
+ ######   ####    ##    ##     ##  #######  ########     ##         #######  ########  ######## ####  ######  ##     ## 
+
+  publish:
+    environment: nightly
+    runs-on: ubuntu-latest
+    name: Publish
+    if: ${{ github.event.schedule }}
+    needs:
+      - tags
+      - build
+      - changelog
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT }}
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: Changelog
+
+      - name: Configure git
+        run: | # make sure we have the tags and all
+          git fetch --prune --unshallow --tags
+          git config --global user.name 'Sari'
+          git config --global user.email 'acter-sari@users.noreply.github.com'
+
+      - name: "Generate docs"
+        run: |
+          echo "+++" > docs/content/nightly/${{ needs.tags.outputs.tag }}.md
+          echo "title = \" Nightly ${{ needs.tags.outputs.tag }}\"" >> docs/content/nightly/${{ needs.tags.outputs.tag }}.md
+          echo "template = \"nightlies/release.html\"" >> docs/content/nightly/${{ needs.tags.outputs.tag }}.md
+          echo "date = ${{ needs.tags.outputs.tag }}" >> docs/content/nightly/${{ needs.tags.outputs.tag }}.md
+          echo "+++" >>docs/content/nightly/${{ needs.tags.outputs.tag }}.md
+          echo "" >>docs/content/nightly/${{ needs.tags.outputs.tag }}.md
+          cat CHANGELOG.md >> docs/content/nightly/${{ needs.tags.outputs.tag }}.md
+
+      - name: Tag for nightly release
+        run: |
+          git add "docs/content/nightly/${{ needs.tags.outputs.tag }}.md"
+          echo "Tagging ${{ needs.tags.outputs.tag }}" > notes.md
+          echo "" >> notes.md
+          cat CHANGELOG.md >> notes.md
+          git commit -F notes.md
+          git tag nightly-${{ needs.tags.outputs.tag }}
+          git tag -f nightly-latest
+          git push -f origin main nightly-${{ needs.tags.outputs.tag }} nightly-latest
+      - name: Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          # publish this nightly release now
+          draft: true
+          generate_release_notes: false
+          name: Nightly ${{ needs.tags.outputs.tag }}
+          tag_name: nightly-${{ needs.tags.outputs.tag }}
+          body_path: CHANGELOG.md
+          prerelease: true
+      - uses: eregon/publish-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          release_id: ${{ steps.create_release.outputs.id }}
+
+      - name: Send message to nightly channel
+        id: matrix-chat-message
+        uses: fadenb/matrix-chat-message@v0.0.6
+        with:
+          homeserver: 'matrix.acter.global'
+          token: ${{ secrets.NIGHTLY_MATRIX_TOKEN }}
+          channel:  '!PsBFWhNhPEAfCBdApa:acter.global'
+          message: |
+            ## Nightly ${{ needs.tags.outputs.tag }} released
+
+            Latest nightly builds have been built and [can be downloaded from here](https://dev.acter.global/nightly/${{ needs.tags.outputs.tag }}/).
+            Direct install links:
+             - 🤖 [Android devices](https://github.com/acterglobal/a3/releases/download/nightly-${{ needs.tags.outputs.tag }}/acter-nightly-android-arm64-${{ needs.tags.outputs.tag }}.apk)
+             - 🍎 [iOS devices](itms-services://?action=download-manifest&amp;url=https://github.com/acterglobal/a3/releases/download/nightly-${{ needs.tags.outputs.tag }}/ios-manifest.plist) (for ad-hoc registered devices only)
