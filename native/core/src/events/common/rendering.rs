@@ -42,7 +42,7 @@ impl FromStr for Position {
 }
 
 /// Customize the color scheme
-#[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize, Default)]
 pub struct Colorize {
     /// The foreground color to be used, as HEX
     color: Option<Color>,
@@ -90,7 +90,7 @@ impl ColorizeBuilder {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, EnumString, Display)]
+#[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize, EnumString, Display)]
 #[serde(rename_all = "kebab-case")]
 #[strum(serialize_all = "kebab-case")]
 pub enum BrandLogo {
@@ -128,7 +128,7 @@ pub enum BrandLogo {
     // FIXME: support for others?
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, EnumString, Display)]
+#[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize, EnumString, Display)]
 #[serde(rename_all = "kebab-case")]
 #[strum(serialize_all = "kebab-case")]
 pub enum ActerIcon {
@@ -205,3 +205,15 @@ impl Icon {
         }
     }
 }
+
+impl PartialEq for Icon {
+    fn eq(&self, other: &Self) -> bool {
+        match (&self, &other) {
+            (Icon::Emoji { key: a }, Icon::Emoji { key: b }) => a == b,
+            (Icon::BrandLogo { icon: a }, Icon::BrandLogo { icon: b }) => a == b,
+            (Icon::ActerIcon { icon: a }, Icon::ActerIcon { icon: b }) => a == b,
+            _ => false, // we can't match images unfortunately
+        }
+    }
+}
+impl Eq for Icon {}

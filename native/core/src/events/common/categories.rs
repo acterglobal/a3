@@ -26,23 +26,22 @@ impl PossiblyRedactedStateEventContent for PossiblyRedactedCategoriesStateEventC
 #[derive(Debug, Serialize, Deserialize, Clone, EventContent)]
 #[ruma_event(type = "global.acter.category", kind = State, state_key_type = String, custom_possibly_redacted)]
 pub struct CategoriesStateEventContent {
-    #[serde(flatten)]
     pub categories: Vec<Category>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Builder)]
+#[derive(Debug, Clone, Serialize, Eq, PartialEq, Deserialize, Builder)]
 pub struct Category {
-    id: String,
-    title: String,
+    pub id: String,
+    pub title: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[builder(default, setter(name = "icon_typed"))]
-    icon: Option<Icon>,
+    pub icon: Option<Icon>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[builder(default)]
-    colorize: Option<Colorize>,
+    pub colorize: Option<Colorize>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     #[builder(default)]
-    entries: Vec<String>,
+    pub entries: Vec<String>,
 }
 
 impl Category {

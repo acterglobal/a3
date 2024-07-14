@@ -1,5 +1,6 @@
 mod auth;
 mod calendar;
+mod categories;
 mod formatted_body;
 mod invitation;
 mod msg_edit;

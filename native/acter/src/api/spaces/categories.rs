@@ -1,9 +1,10 @@
 use super::Space;
 use crate::{Categories, CategoriesBuilder, RUNTIME};
-use acter_core::events::{CategoriesStateEvent, CategoriesStateEventContent};
+use acter_core::events::CategoriesStateEventContent;
 use anyhow::{bail, Result};
-use matrix_sdk::deserialized_responses::SyncOrStrippedState;
-use ruma_events::EventContent;
+use matrix_sdk::deserialized_responses::{RawSyncOrStrippedState, SyncOrStrippedState};
+use ruma_events::{EventContent, FullStateEventContent, SyncStateEvent};
+use tracing::warn;
 
 impl Space {
     pub async fn categories(&self, cat_type: String) -> Result<Categories> {
@@ -13,15 +14,18 @@ impl Space {
         let room = self.inner.room.clone();
         RUNTIME
             .spawn(async move {
-                let inner = if let Some(raw_state) = room
+                let inner = if let Some(RawSyncOrStrippedState::Sync(raw_state)) = room
                     .get_state_event_static_for_key::<CategoriesStateEventContent, _>(&cat_type)
                     .await?
                 {
-                    if let SyncOrStrippedState::Sync(ev) = raw_state.deserialize()? {
-                        ev.as_original().map(|o| o.content.clone())
-                    } else {
-                        None
-                    }
+                    match raw_state
+                        .get_field::<CategoriesStateEventContent>("content") {
+                            Ok(u) => u,
+                            Err(error) => {
+                                warn!(room_id=?room.room_id(), ?raw_state, ?error, "Failed to deserialize categories.");
+                                None
+                            }
+                        }
                 } else {
                     None
                 };
