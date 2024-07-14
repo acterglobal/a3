@@ -23,6 +23,7 @@ mod attachments;
 mod auth;
 mod backup;
 mod calendar_events;
+mod categories;
 mod client;
 mod comments;
 mod common;
@@ -57,8 +58,8 @@ pub use uniffi_api::*;
 pub use account::{Account, ExternalId, ThreePidEmailTokenResponse};
 pub use acter_core::{
     events::{
-        calendar::EventLocationInfo, news::NewsContent, Colorize, ColorizeBuilder, ObjRef,
-        ObjRefBuilder, RefDetails, RefDetailsBuilder, UtcDateTime,
+        calendar::EventLocationInfo, news::NewsContent, Category, CategoryBuilder, Colorize,
+        ColorizeBuilder, ObjRef, ObjRefBuilder, RefDetails, RefDetailsBuilder, UtcDateTime,
     },
     models::{ActerModel, Tag, TextMessageContent},
 };
@@ -75,6 +76,7 @@ pub use auth::{
 };
 pub use backup::BackupManager;
 pub use calendar_events::{CalendarEvent, CalendarEventDraft, CalendarEventUpdateBuilder};
+pub use categories::{Categories, CategoriesBuilder};
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};
 pub use common::{

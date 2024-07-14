@@ -177,6 +177,17 @@ pub enum Icon {
 }
 
 impl Icon {
+    pub fn parse(typ: String, key: String) -> Icon {
+        match typ.to_lowercase().as_str() {
+            "emoji" => Icon::Emoji { key },
+            "logo" | "brand" | "brand-logo" => Icon::BrandLogo {
+                icon: BrandLogo::from_str(&key).unwrap_or(BrandLogo::Custom(key)),
+            },
+            _ => Icon::ActerIcon {
+                icon: ActerIcon::from_str(&key).unwrap_or(ActerIcon::Custom(key)),
+            },
+        }
+    }
     pub fn icon_type_str(&self) -> String {
         match self {
             Icon::Emoji { .. } => "emoji".to_owned(),
