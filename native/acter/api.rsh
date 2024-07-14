@@ -39,7 +39,7 @@ fn register_with_token(base_path: string, media_cache_base_path: string, usernam
 fn request_registration_token_via_email(base_path: string, media_cache_base_path: string, username: string, default_homeserver_name: string, default_homeserver_url: string, email: string) -> Future<Result<RegistrationTokenViaEmailResponse>>;
 
 /// Request the password change token via email
-fn request_password_change_email_token(default_homeserver_url: string, email: string) -> Future<Result<PasswordChangeEmailTokenResponse>>;
+fn request_password_change_token_via_email(default_homeserver_url: string, email: string) -> Future<Result<PasswordChangeEmailTokenResponse>>;
 
 /// Finish password reset without login
 fn reset_password(default_homeserver_url: string, sid: string, client_secret: string, new_val: string) -> Future<Result<bool>>;
@@ -248,25 +248,6 @@ object UserProfile {
 
     /// get the display name
     fn get_display_name() -> Option<string>;
-}
-
-object RoomProfile {
-    /// get room id
-    fn room_id() -> RoomId;
-
-    /// get room id as String
-    fn room_id_str() -> string;
-
-    /// whether to have avatar
-    fn has_avatar() -> bool;
-
-    /// get the binary data of avatar
-    /// if thumb size is given, avatar thumbnail is returned
-    /// if thumb size is not given, avatar file is returned
-    fn get_avatar(thumb_size: Option<ThumbnailSize>) -> Future<Result<OptionBuffer>>;
-
-    /// get the display name
-    fn get_display_name() -> Future<Result<OptionString>>;
 }
 
 
@@ -1018,6 +999,17 @@ object Room {
     /// the RoomId as a String
     fn room_id_str() -> string;
 
+    /// whether to have avatar
+    fn has_avatar() -> bool;
+
+    /// get the binary data of avatar
+    /// if thumb size is given, avatar thumbnail is returned
+    /// if thumb size is not given, avatar file is returned
+    fn avatar(thumb_size: Option<ThumbnailSize>) -> Future<Result<OptionBuffer>>;
+
+    /// get the display name
+    fn display_name() -> Future<Result<OptionString>>;
+
     /// Whether new updates have been received for this room
     fn subscribe_to_updates() -> Stream<bool>;
 
@@ -1035,9 +1027,6 @@ object Room {
 
     /// whether we are part of this room
     fn is_joined() -> bool;
-
-    /// get the room profile that contains avatar and display name
-    fn get_profile() -> RoomProfile;
 
     /// get the room profile that contains avatar and display name
     fn space_relations() -> Future<Result<SpaceRelations>>;
@@ -1205,11 +1194,6 @@ object TimelineStream {
     /// if sent twice, reaction is redacted
     fn toggle_reaction(event_id: string, key: string) -> Future<Result<bool>>;
 
-    /// retry local echo message send
-    fn retry_send(txn_id: string) -> Future<Result<bool>>;
-
-    /// cancel local echo message
-    fn cancel_send(txn_id: string) -> Future<Result<bool>>;
 }
 
 
@@ -1224,8 +1208,6 @@ object TimelineStream {
 
 
 object Convo {
-    /// get the room profile that contains avatar and display name
-    fn get_profile() -> RoomProfile;
 
     /// get the room profile that contains avatar and display name
     fn space_relations() -> Future<Result<SpaceRelations>>;
@@ -1887,13 +1869,6 @@ object SpaceHierarchyRoomInfo {
     fn via_server_name() -> Option<string>;
 }
 
-object SpaceHierarchyListResult {
-    /// to be used for the next `since`
-    fn next_batch() -> Option<string>;
-    /// get the chunk of items in this response
-    fn rooms() -> Future<Result<Vec<SpaceHierarchyRoomInfo>>>;
-}
-
 object SpaceRelation {
     /// the room ID this Relation links to
     fn room_id() -> RoomId;
@@ -1915,7 +1890,7 @@ object SpaceRelations {
     /// children
     fn children() -> Vec<SpaceRelation>;
     /// query for children from the server
-    fn query_hierarchy(from: Option<string>) -> Future<Result<SpaceHierarchyListResult>>;
+    fn query_hierarchy() -> Future<Result<Vec<SpaceHierarchyRoomInfo>>>;
 }
 
 object RoomPowerLevels {
@@ -1996,8 +1971,6 @@ object ActerAppSettingsBuilder {
 
 
 object Space {
-    /// get the room profile that contains avatar and display name
-    fn get_profile() -> RoomProfile;
 
     /// get the room profile that contains avatar and display name
     fn space_relations() -> Future<Result<SpaceRelations>>;
@@ -2295,9 +2268,7 @@ object Account {
 
     /// change password
     fn change_password(old_val: string, new_val: string) -> Future<Result<bool>>;
-}
 
-object ThreePidManager {
     /// get email addresses from third party identifier
     fn confirmed_email_addresses() -> Future<Result<Vec<string>>>;
 
@@ -2306,16 +2277,45 @@ object ThreePidManager {
 
     /// Requests token via email and add email address to third party identifier.
     /// If password is not enough complex, homeserver may reject this request.
-    fn request_token_via_email(email_address: string) -> Future<Result<bool>>;
+    fn request_3pid_management_token_via_email(email_address: string) -> Future<Result<ThreePidEmailTokenResponse>>;
+
+    /// get the array of registered 3pid on the homeserver for this account
+    fn external_ids() -> Future<Result<Vec<ExternalId>>>;
+
+    /// find out session id that is related with email address and add email address to account using session id & password
+    fn try_confirm_email_status(email_address: string, password: string) -> Future<Result<bool>>;
 
     /// Submit token to finish email register
     fn submit_token_from_email(email_address: string, token: string, password: string) -> Future<Result<bool>>;
 
-    /// Submit token to finish email register
-    fn try_confirm_email_status(email_address: string, password: string) -> Future<Result<bool>>;
-
     /// Remove email address from confirmed list or unconfirmed list
     fn remove_email_address(email_address: string) -> Future<Result<bool>>;
+}
+
+object ExternalId {
+    /// get address of 3pid
+    fn address() -> string;
+
+    /// get medium of 3pid
+    /// one of [email, msisdn]
+    fn medium() -> string;
+
+    /// get time when the homeserver associated the third party identifier with the user
+    fn added_at() -> u64;
+
+    /// get time when the identifier was validated by the identity server
+    fn validated_at() -> u64;
+}
+
+object ThreePidEmailTokenResponse {
+    /// get session id
+    fn sid() -> string;
+
+    /// get submit url
+    fn submit_url() -> Option<string>;
+
+    /// get client secret
+    fn client_secret() -> string;
 }
 
 object SyncState {
@@ -2717,9 +2717,6 @@ object Client {
 
     /// get only past events that I responded as rsvp
     fn my_past_events(secs_from_now: Option<u32>) -> Future<Result<Vec<CalendarEvent>>>;
-
-    /// get intermediate info of login (via email and phone) from account data
-    fn three_pid_manager() -> Result<ThreePidManager>;
 
     /// super invites interface
     fn super_invites() -> SuperInvites;

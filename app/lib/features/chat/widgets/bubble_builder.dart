@@ -168,12 +168,10 @@ class _ChatBubble extends ConsumerWidget {
         children: <Widget>[
           Container(
             decoration: BoxDecoration(
-              color: isAuthor
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context)
-                      .colorScheme
-                      .secondaryContainer
-                      .withOpacity(0.3),
+              color: Theme.of(context)
+                  .colorScheme
+                  .secondaryContainer
+                  .withOpacity(0.3),
               borderRadius: BorderRadius.circular(22),
             ),
             child: Column(

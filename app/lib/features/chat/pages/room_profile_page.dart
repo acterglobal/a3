@@ -2,7 +2,6 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
-
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/edit_room_description_sheet.dart';
@@ -13,7 +12,6 @@ import 'package:acter/common/widgets/visibility/visibility_chip.dart';
 import 'package:acter/features/chat/widgets/member_list.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/chat/widgets/skeletons/action_item_skeleton_widget.dart';
-import 'package:acter/features/chat/widgets/skeletons/members_list_skeleton_widget.dart';
 import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -434,7 +432,6 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
   }
 
   Widget _convoMembersList() {
-    final convo = ref.watch(chatProvider(widget.roomId));
     final members = ref.watch(membersIdsProvider(widget.roomId));
 
     return Container(
@@ -466,11 +463,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
             error: (error, stackTrace) =>
                 Text(L10n.of(context).errorLoadingMembersCount(error)),
           ),
-          convo.when(
-            data: (data) => MemberList(convo: data),
-            loading: () => const MembersListSkeleton(),
-            error: (e, s) => Text('${L10n.of(context).error}: $e'),
-          ),
+          MemberList(roomId: widget.roomId),
         ],
       ),
     );

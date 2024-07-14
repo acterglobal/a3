@@ -91,11 +91,11 @@ class SessionCard extends ConsumerWidget {
     );
   }
 
-  Future<void> onLogout(BuildContext context, WidgetRef ref) async {
+  Future<void> onLogout(BuildContext ctx, WidgetRef ref) async {
     TextEditingController passwordController = TextEditingController();
     final result = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext ctx) {
+      context: ctx,
+      builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Theme.of(context).colorScheme.surface,
           title: Text(L10n.of(context).authenticationRequired),

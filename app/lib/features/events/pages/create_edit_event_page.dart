@@ -39,7 +39,7 @@ class CreateEditEventPage extends ConsumerStatefulWidget {
 
 class CreateEditEventPageConsumerState
     extends ConsumerState<CreateEditEventPage> {
-  final _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>(debugLabel: 'event form key');
   final _eventNameController = TextEditingController();
   final _startDateController = TextEditingController();
   final _startTimeController = TextEditingController();
@@ -127,22 +127,25 @@ class CreateEditEventPageConsumerState
     return SingleChildScrollView(
       child: Form(
         key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 20),
-            _eventNameField(),
-            const SizedBox(height: 10),
-            _eventDateAndTime(),
-            const SizedBox(height: 10),
-            _eventDescriptionField(),
-            const SizedBox(height: 10),
-            if (widget.calendarId == null)
-              const SelectSpaceFormField(canCheck: 'CanPostEvent'),
-            const SizedBox(height: 20),
-            _eventActionButtons(),
-            const SizedBox(height: 30),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 20),
+              _eventNameField(),
+              const SizedBox(height: 10),
+              _eventDateAndTime(),
+              const SizedBox(height: 10),
+              _eventDescriptionField(),
+              const SizedBox(height: 10),
+              if (widget.calendarId == null)
+                const SelectSpaceFormField(canCheck: 'CanPostEvent'),
+              const SizedBox(height: 20),
+              _eventActionButtons(),
+              const SizedBox(height: 30),
+            ],
+          ),
         ),
       ),
     );

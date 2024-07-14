@@ -6,8 +6,8 @@ import 'package:acter/features/tasks/providers/tasklists.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 void showCreateUpdateTaskListBottomSheet(
@@ -42,7 +42,8 @@ class CreateUpdateTaskList extends ConsumerStatefulWidget {
 
 class _CreateUpdateTaskListConsumerState
     extends ConsumerState<CreateUpdateTaskList> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey =
+      GlobalKey<FormState>(debugLabel: 'create task list form');
   final TextEditingController _titleController = TextEditingController();
   final ValueNotifier<bool> isShowDescription = ValueNotifier(false);
   EditorState textEditorState = EditorState.blank();
@@ -140,7 +141,7 @@ class _CreateUpdateTaskListConsumerState
             Container(
               height: 200,
               decoration: BoxDecoration(
-                border: Border.all(color:  Colors.white70),
+                border: Border.all(color: Colors.white70),
                 borderRadius: BorderRadius.circular(10.0),
               ),
               child: HtmlEditor(

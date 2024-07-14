@@ -22,7 +22,7 @@ use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     notification_settings::{IsEncrypted, IsOneToOne},
     room::{Room as SdkRoom, RoomMember},
-    RoomMemberships, RoomState,
+    DisplayName, RoomMemberships, RoomState,
 };
 use ruma::{assign, Int};
 use ruma_client_api::{
@@ -48,9 +48,7 @@ use std::{io::Write, ops::Deref, path::PathBuf};
 use tokio_stream::{wrappers::BroadcastStream, StreamExt};
 use tracing::{info, warn};
 
-use crate::{
-    OptionBuffer, OptionString, RoomMessage, RoomProfile, ThumbnailSize, UserProfile, RUNTIME,
-};
+use crate::{OptionBuffer, OptionString, RoomMessage, ThumbnailSize, UserProfile, RUNTIME};
 
 use super::{
     api::FfiBuffer,
@@ -461,32 +459,8 @@ impl SpaceHierarchyRoomInfo {
 }
 
 impl SpaceHierarchyRoomInfo {
-    pub(crate) async fn new(chunk: SpaceHierarchyRoomsChunk, core: CoreClient) -> Self {
+    pub(crate) fn new(chunk: SpaceHierarchyRoomsChunk, core: CoreClient) -> Self {
         SpaceHierarchyRoomInfo { chunk, core }
-    }
-}
-
-pub struct SpaceHierarchyListResult {
-    resp: get_hierarchy::v1::Response,
-    core: CoreClient,
-}
-
-impl SpaceHierarchyListResult {
-    pub fn next_batch(&self) -> Option<String> {
-        self.resp.next_batch.clone()
-    }
-
-    pub async fn rooms(&self) -> Result<Vec<SpaceHierarchyRoomInfo>> {
-        let core = self.core.clone();
-        let chunks = self.resp.rooms.clone();
-        RUNTIME
-            .spawn(async move {
-                let iter = chunks
-                    .into_iter()
-                    .map(|chunk| SpaceHierarchyRoomInfo::new(chunk, core.clone()));
-                Ok(futures::future::join_all(iter).await)
-            })
-            .await?
     }
 }
 
@@ -557,14 +531,29 @@ impl SpaceRelations {
         self.room.room_id().to_string()
     }
 
-    pub async fn query_hierarchy(&self, from: Option<String>) -> Result<SpaceHierarchyListResult> {
+    pub async fn query_hierarchy(&self) -> Result<Vec<SpaceHierarchyRoomInfo>> {
         let c = self.room.core.clone();
         let room_id = self.room.room_id().to_owned();
         RUNTIME
             .spawn(async move {
-                let request = assign!(get_hierarchy::v1::Request::new(room_id), { from, max_depth: Some(1u32.into()) });
-                let resp = c.client().send(request, None).await?;
-                Ok(SpaceHierarchyListResult { resp, core: c.clone() })
+                println!("query start");
+                let mut next : Option<String> = Some("".to_owned());
+                let mut rooms = Vec::new();
+                while next.is_some() {
+                    let request = assign!(get_hierarchy::v1::Request::new(room_id.clone()), { from: next.clone(), max_depth: Some(1u32.into()) });
+                    println!("sending query ");
+                    let resp = c.client().send(request, None).await?;
+                    println!("query receveived");
+                    if (resp.rooms.is_empty()) {
+                        break; // we are done
+                    }
+                    next = resp.next_batch;
+                    println!("going for next");
+                    rooms.extend(resp.rooms
+                        .into_iter()
+                        .map(|chunk| SpaceHierarchyRoomInfo::new(chunk, c.clone())));
+                    }
+                Ok(rooms)
             })
             .await?
     }
@@ -578,6 +567,37 @@ pub struct Room {
 impl Room {
     pub fn new(core: CoreClient, room: SdkRoom) -> Self {
         Room { core, room }
+    }
+
+    pub fn has_avatar(&self) -> bool {
+        self.room.avatar_url().is_some()
+    }
+
+    pub async fn avatar(&self, thumb_size: Option<Box<ThumbnailSize>>) -> Result<OptionBuffer> {
+        let room = self.room.clone();
+        let format = ThumbnailSize::parse_into_media_format(thumb_size);
+        RUNTIME
+            .spawn(async move {
+                let buf = room.avatar(format).await?;
+                Ok(OptionBuffer::new(buf))
+            })
+            .await?
+    }
+
+    pub async fn display_name(&self) -> Result<OptionString> {
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let result = room.compute_display_name().await?;
+                match result {
+                    DisplayName::Named(name) => Ok(OptionString::new(Some(name))),
+                    DisplayName::Aliased(name) => Ok(OptionString::new(Some(name))),
+                    DisplayName::Calculated(name) => Ok(OptionString::new(Some(name))),
+                    DisplayName::EmptyWas(name) => Ok(OptionString::new(Some(name))),
+                    DisplayName::Empty => Ok(OptionString::new(None)),
+                }
+            })
+            .await?
     }
 
     pub fn subscribe_to_updates(&self) -> impl Stream<Item = bool> {
@@ -728,10 +748,6 @@ impl Room {
                 })
             })
             .await?
-    }
-
-    pub fn get_profile(&self) -> RoomProfile {
-        RoomProfile::new(self.room.clone())
     }
 
     pub async fn upload_avatar(&self, uri: String) -> Result<OwnedMxcUri> {

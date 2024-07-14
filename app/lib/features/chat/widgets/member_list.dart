@@ -1,21 +1,20 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/features/chat/widgets/skeletons/members_list_skeleton_widget.dart';
 import 'package:acter/features/member/widgets/member_list_entry.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class MemberList extends ConsumerWidget {
-  final Convo convo;
+  final String roomId;
 
   const MemberList({
-    required this.convo,
+    required this.roomId,
     super.key,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final roomId = convo.getRoomIdStr();
     final members = ref.watch(membersIdsProvider(roomId));
 
     return members.when(
@@ -46,9 +45,7 @@ class MemberList extends ConsumerWidget {
       error: (error, stack) => Center(
         child: Text(L10n.of(context).loadingFailed(error)),
       ),
-      loading: () => Center(
-        child: Text(L10n.of(context).loading),
-      ),
+      loading: () => const MembersListSkeleton(),
     );
   }
 }

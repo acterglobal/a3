@@ -244,13 +244,11 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
 
   Widget _roomTitle(BuildContext context, WidgetRef ref) {
     final roomId = member.roomIdStr();
-    final roomData = ref.watch(briefRoomItemWithMembershipProvider(roomId));
+    final roomName =
+        ref.watch(roomDisplayNameProvider(roomId)).valueOrNull ?? roomId;
     return ListTile(
       leading: RoomAvatarBuilder(roomId: roomId, avatarSize: 24),
-      title: roomData.maybeWhen(
-        data: (roomData) => Text(roomData.avatarInfo.displayName ?? roomId),
-        orElse: () => Text(roomId),
-      ),
+      title: Text(roomName),
     );
   }
 

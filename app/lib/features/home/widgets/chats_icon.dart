@@ -18,6 +18,7 @@ class ChatsIcon extends ConsumerWidget {
       child: const Icon(
         Atlas.chats_thin,
         key: MainNavKeys.chats,
+        size: 18,
       ),
     );
   }

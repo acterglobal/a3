@@ -44,7 +44,6 @@ mod spaces;
 mod stream;
 mod super_invites;
 mod tasks;
-mod three_pid;
 mod typing;
 mod utils;
 mod verification;
@@ -55,7 +54,7 @@ mod uniffi_api;
 #[cfg(feature = "uniffi")]
 pub use uniffi_api::*;
 
-pub use account::Account;
+pub use account::{Account, ExternalId, ThreePidEmailTokenResponse};
 pub use acter_core::{
     events::{
         calendar::EventLocationInfo, news::NewsContent, Colorize, ColorizeBuilder, ObjRef,
@@ -66,7 +65,7 @@ pub use acter_core::{
 pub use attachments::{Attachment, AttachmentDraft, AttachmentsManager};
 pub use auth::{
     destroy_local_data, guest_client, login_new_client, login_with_token, register_with_token,
-    request_password_change_email_token, request_registration_token_via_email, reset_password,
+    request_password_change_token_via_email, request_registration_token_via_email, reset_password,
     set_proxy, PasswordChangeEmailTokenResponse, RegistrationTokenViaEmailResponse,
 };
 #[cfg(feature = "testing")]
@@ -93,7 +92,7 @@ pub use invitation::Invitation;
 pub use message::{EventSendState, RoomEventItem, RoomMessage, RoomVirtualItem};
 pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide, NewsSlideDraft};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
-pub use profile::{RoomProfile, UserProfile};
+pub use profile::UserProfile;
 pub use push::{
     NotificationItem, NotificationRoom, NotificationSender, NotificationSettings, Pusher,
 };
@@ -101,7 +100,7 @@ pub use reactions::{Reaction, ReactionManager};
 pub use receipt::{ReceiptEvent, ReceiptRecord, ReceiptThread};
 pub use room::{
     new_join_rule_builder, JoinRuleBuilder, Member, MemberPermission, MembershipStatus, Room,
-    SpaceHierarchyListResult, SpaceHierarchyRoomInfo, SpaceRelation, SpaceRelations,
+    SpaceHierarchyRoomInfo, SpaceRelation, SpaceRelations,
 };
 pub use rsvp::{Rsvp, RsvpDraft, RsvpManager, RsvpStatus};
 pub use search::{PublicSearchResult, PublicSearchResultItem};
@@ -121,7 +120,6 @@ pub use super_invites::{
 pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,
 };
-pub use three_pid::ThreePidManager;
 pub use typing::TypingEvent;
 pub use utils::parse_markdown;
 pub use verification::{SessionManager, VerificationEmoji, VerificationEvent};

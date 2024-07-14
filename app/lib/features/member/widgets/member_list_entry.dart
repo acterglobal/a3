@@ -6,42 +6,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
-
-class _MemberListInnerSkeleton extends StatelessWidget {
-  const _MemberListInnerSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: Skeletonizer(
-        child: ActerAvatar(
-          options: AvatarOptions.DM(
-            AvatarInfo(
-              uniqueId: L10n.of(context).noIdGiven,
-            ),
-            size: 18,
-          ),
-        ),
-      ),
-      title: Skeletonizer(
-        child: Text(
-          L10n.of(context).noId,
-          style: Theme.of(context).textTheme.bodyMedium,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
-      subtitle: Skeletonizer(
-        child: Text(
-          L10n.of(context).noId,
-          style: Theme.of(context).textTheme.labelLarge,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
-    );
-  }
-}
 
 class MemberListEntry extends ConsumerWidget {
   final String memberId;
@@ -59,37 +23,9 @@ class MemberListEntry extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final member =
-        ref.watch(memberProvider((userId: memberId, roomId: roomId)));
-    return member.when(
-      data: (data) => _MemberListEntryInner(
-        userId: memberId,
-        roomId: roomId,
-        member: data,
-        isShowActions: isShowActions,
-      ),
-      error: (e, s) => Text(L10n.of(context).errorLoadingProfile(e)),
-      loading: () => const _MemberListInnerSkeleton(),
-    );
-  }
-}
-
-class _MemberListEntryInner extends ConsumerWidget {
-  final Member member;
-  final String userId;
-  final String roomId;
-  final bool isShowActions;
-
-  const _MemberListEntryInner({
-    required this.userId,
-    required this.member,
-    required this.roomId,
-    this.isShowActions = true,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final memberStatus = member.membershipStatusStr();
+    final memberStatus = ref
+        .watch(membershipStatusStr((roomId: roomId, userId: memberId)))
+        .valueOrNull;
     Widget? trailing;
     if (memberStatus == 'Admin') {
       trailing = const Tooltip(
@@ -104,7 +40,7 @@ class _MemberListEntryInner extends ConsumerWidget {
     }
 
     final avatarInfo =
-        ref.watch(memberAvatarInfoProvider((userId: userId, roomId: roomId)));
+        ref.watch(memberAvatarInfoProvider((userId: memberId, roomId: roomId)));
 
     return ListTile(
       onTap: () async {
@@ -112,7 +48,7 @@ class _MemberListEntryInner extends ConsumerWidget {
           await showMemberInfoDrawer(
             context: context,
             roomId: roomId,
-            memberId: userId,
+            memberId: memberId,
             isShowActions: isShowActions,
           );
         }
@@ -124,13 +60,13 @@ class _MemberListEntryInner extends ConsumerWidget {
         ),
       ),
       title: Text(
-        avatarInfo.displayName ?? userId,
+        avatarInfo.displayName ?? memberId,
         style: Theme.of(context).textTheme.bodyMedium,
         overflow: TextOverflow.ellipsis,
       ),
       subtitle: avatarInfo.displayName != null
           ? Text(
-              userId,
+              memberId,
               style: Theme.of(context).textTheme.labelLarge,
               overflow: TextOverflow.ellipsis,
             )

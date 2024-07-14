@@ -22,7 +22,7 @@ class LoginPage extends ConsumerStatefulWidget {
 }
 
 class _LoginPageState extends ConsumerState<LoginPage> {
-  final formKey = GlobalKey<FormState>();
+  final formKey = GlobalKey<FormState>(debugLabel: 'login page form');
   final TextEditingController username = TextEditingController();
   final TextEditingController password = TextEditingController();
   bool _passwordVisible = false;

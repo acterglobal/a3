@@ -20,6 +20,7 @@ class CreateSuperInviteTokenPage extends ConsumerStatefulWidget {
   static Key tokenFieldKey = const Key('super-invites-create-token-token');
   static Key createDmKey = const Key('super-invites-create-token-create-dm');
   static Key addSpaceKey = const Key('super-invites-create-token-add-space');
+  static Key addSubmenu = const Key('super-invites-create-token-add-submenu');
   static Key addChatKey = const Key('super-invites-create-token-add-chat');
   static Key submitBtn = const Key('super-invites-create-submitBtn');
   static Key deleteBtn = const Key('super-invites-create-delete');
@@ -36,7 +37,8 @@ class CreateSuperInviteTokenPage extends ConsumerStatefulWidget {
 class _CreateSuperInviteTokenPageConsumerState
     extends ConsumerState<CreateSuperInviteTokenPage> {
   final TextEditingController _tokenController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey =
+      GlobalKey<FormState>(debugLabel: 'create super invites form');
   late SuperInvitesTokenUpdateBuilder tokenUpdater;
   bool isEdit = false;
   int _acceptedCount = 0;
@@ -113,6 +115,7 @@ class _CreateSuperInviteTokenPageConsumerState
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                     PopupMenuButton(
+                      key: CreateSuperInviteTokenPage.addSubmenu,
                       icon: const Icon(Atlas.plus_circle_thin),
                       itemBuilder: (context) => [
                         PopupMenuItem(

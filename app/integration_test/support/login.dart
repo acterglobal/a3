@@ -126,42 +126,49 @@ extension ActerLogin on ConvenientTest {
     await find.byKey(Keys.mainNav).should(findsNothing);
   }
 
-  Future<void> tryLogin(String username, {String? registrationToken}) async {
+  Future<void> tryLogin(
+    String username, {
+    String? password,
+    String? registrationToken,
+  }) async {
+    await navigateTo([
+      Keys.exploreBtn,
+      Keys.skipBtn,
+      Keys.loginBtn,
+    ]);
+    await loginFormSubmission(
+      username,
+      password: password,
+      registrationToken: registrationToken,
+    );
+  }
+
+  Future<void> loginFormSubmission(
+    String username, {
+    String? password,
+    String? registrationToken,
+  }) async {
     String passwordText =
-        passwordFor(username, registrationToken: registrationToken);
-
-    Finder explore = find.byKey(Keys.exploreBtn);
-    await explore.should(findsOneWidget);
-
-    await explore.tap();
-
-    Finder skip = find.byKey(Keys.skipBtn);
-    await skip.should(findsOneWidget);
-
-    await skip.tap();
-
-    Finder login = find.byKey(Keys.loginBtn);
-    await login.should(findsOneWidget);
-
-    await login.tap();
+        password ?? passwordFor(username, registrationToken: registrationToken);
 
     Finder user = find.byKey(LoginPageKeys.usernameField);
     await user.should(findsOneWidget);
 
     await user.enterTextWithoutReplace(username);
 
-    Finder password = find.byKey(LoginPageKeys.passwordField);
-    await password.should(findsOneWidget);
+    Finder passwordField = find.byKey(LoginPageKeys.passwordField);
+    await passwordField.should(findsOneWidget);
 
-    await password.enterTextWithoutReplace(passwordText);
+    await passwordField.enterTextWithoutReplace(passwordText);
 
     Finder submitBtn = find.byKey(LoginPageKeys.submitBtn);
+    await tester.ensureVisible(submitBtn);
     await submitBtn.should(findsOneWidget);
     await submitBtn.tap();
   }
 
-  Future<void> login(String username) async {
-    await tryLogin(username);
+  Future<void> login(String username, {String? password}) async {
+    await tryLogin(username, password: password);
     // we should see a main navigation, either at the side (desktop) or the bottom (mobile/tablet)
     await find.byKey(Keys.mainNav).should(findsOneWidget);
   }

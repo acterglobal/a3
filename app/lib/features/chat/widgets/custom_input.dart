@@ -199,7 +199,7 @@ class _ChatInput extends ConsumerStatefulWidget {
 
 class __ChatInputState extends ConsumerState<_ChatInput> {
   GlobalKey<FlutterMentionsState> mentionKey =
-      GlobalKey<FlutterMentionsState>();
+      GlobalKey<FlutterMentionsState>(debugLabel: 'mentions key');
 
   void handleEmojiSelected(Category? category, Emoji emoji) {
     final mentionState = mentionKey.currentState!;

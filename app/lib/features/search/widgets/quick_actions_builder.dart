@@ -5,6 +5,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
+import 'package:acter/features/spaces/model/keys.dart';
 import 'package:acter/features/tasks/sheets/create_update_task_list.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -48,84 +49,83 @@ class QuickActionsBuilder extends ConsumerWidget {
       runSpacing: 10,
       children: List.from(
         [
-          canPostNews
-              ? OutlinedButton.icon(
-                  key: QuickJumpKeys.createUpdateAction,
-                  onPressed: () =>
-                      context.pushNamed(Routes.actionAddUpdate.name),
-                  icon: const Icon(
-                    Atlas.plus_circle_thin,
-                    size: 18,
-                  ),
-                  label: Text(
-                    L10n.of(context).update,
-                    style: Theme.of(context).textTheme.labelMedium,
-                  ),
-                )
-              : null,
-          canPostPin
-              ? OutlinedButton.icon(
-                  key: QuickJumpKeys.createPinAction,
-                  onPressed: () => context.pushNamed(Routes.actionAddPin.name),
-                  icon: const Icon(
-                    Atlas.plus_circle_thin,
-                    size: 18,
-                  ),
-                  label: Text(
-                    L10n.of(context).pin,
-                    style: Theme.of(context).textTheme.labelMedium,
-                  ),
-                )
-              : null,
-          canPostEvent
-              ? OutlinedButton.icon(
-                  key: QuickJumpKeys.createEventAction,
-                  onPressed: () => context.pushNamed(Routes.createEvent.name),
-                  icon: const Icon(Atlas.plus_circle_thin, size: 18),
-                  label: Text(
-                    L10n.of(context).event,
-                    style: Theme.of(context).textTheme.labelMedium,
-                  ),
-                )
-              : null,
-          canPostTaskList
-              ? OutlinedButton.icon(
-                  key: QuickJumpKeys.createTaskListAction,
-                  onPressed: () => showCreateUpdateTaskListBottomSheet(context),
-                  icon: const Icon(Atlas.plus_circle_thin, size: 18),
-                  label: Text(
-                    L10n.of(context).taskList,
-                    style: Theme.of(context).textTheme.labelMedium,
-                  ),
-                )
-              : null,
-          isActive(LabsFeature.polls)
-              ? OutlinedButton.icon(
-                  onPressed: () {
-                    _log.info('poll pressed');
-                  },
-                  icon: const Icon(Atlas.plus_circle_thin, size: 18),
-                  label: Text(
-                    L10n.of(context).poll,
-                    style: Theme.of(context).textTheme.labelMedium,
-                  ),
-                )
-              : null,
-          isActive(LabsFeature.discussions)
-              ? OutlinedButton.icon(
-                  onPressed: () {
-                    _log.info('Discussion pressed');
-                  },
-                  icon: const Icon(
-                    Atlas.plus_circle_thin,
-                    size: 18,
-                  ),
-                  label: Text(
-                    L10n.of(context).discussion,
-                    style: Theme.of(context).textTheme.labelMedium,
-                  ),
-                )
-              : null,
+          if (canPostNews)
+            OutlinedButton.icon(
+              key: QuickJumpKeys.createUpdateAction,
+              onPressed: () => context.pushNamed(Routes.actionAddUpdate.name),
+              icon: const Icon(
+                Atlas.plus_circle_thin,
+                size: 18,
+              ),
+              label: Text(
+                L10n.of(context).update,
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
+            ),
+          if (canPostPin)
+            OutlinedButton.icon(
+              key: QuickJumpKeys.createPinAction,
+              onPressed: () => context.pushNamed(Routes.actionAddPin.name),
+              icon: const Icon(
+                Atlas.plus_circle_thin,
+                size: 18,
+              ),
+              label: Text(
+                L10n.of(context).pin,
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
+            ),
+          if (canPostEvent)
+            OutlinedButton.icon(
+              key: QuickJumpKeys.createEventAction,
+              onPressed: () => context.pushNamed(Routes.createEvent.name),
+              icon: const Icon(Atlas.plus_circle_thin, size: 18),
+              label: Text(
+                L10n.of(context).event,
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
+            ),
+          if (canPostTaskList)
+            OutlinedButton.icon(
+              key: QuickJumpKeys.createTaskListAction,
+              onPressed: () => showCreateUpdateTaskListBottomSheet(context),
+              icon: const Icon(Atlas.plus_circle_thin, size: 18),
+              label: Text(
+                L10n.of(context).taskList,
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
+            ),
+          if (isActive(LabsFeature.polls))
+            OutlinedButton.icon(
+              onPressed: () {
+                _log.info('poll pressed');
+              },
+              icon: const Icon(Atlas.plus_circle_thin, size: 18),
+              label: Text(
+                L10n.of(context).poll,
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
+            ),
+          if (isActive(LabsFeature.discussions))
+            OutlinedButton.icon(
+              onPressed: () {
+                _log.info('Discussion pressed');
+              },
+              icon: const Icon(
+                Atlas.plus_circle_thin,
+                size: 18,
+              ),
+              label: Text(
+                L10n.of(context).discussion,
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
+            ),
+          OutlinedButton.icon(
+            icon: const Icon(Atlas.connection),
+            key: SpacesKeys.actionCreate,
+            onPressed: () => context.pushNamed(Routes.createSpace.name),
+            label: Text(L10n.of(context).createSpace),
+          ),
           OutlinedButton.icon(
             key: QuickJumpKeys.bugReport,
             style: OutlinedButton.styleFrom(
@@ -147,7 +147,7 @@ class QuickActionsBuilder extends ConsumerWidget {
               await openBugReport(context);
             },
           ),
-        ].where((element) => element != null),
+        ],
       ),
     );
   }

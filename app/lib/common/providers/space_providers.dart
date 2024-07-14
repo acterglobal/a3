@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/notifiers/relations_notifier.dart';
 import 'package:acter/common/providers/notifiers/space_notifiers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -152,15 +153,15 @@ final _spaceIdAndNames =
   final spaces = ref.watch(spacesProvider);
   List<_SpaceIdAndName> items = [];
   for (final space in spaces) {
+    final roomId = space.getRoomIdStr();
     items.add(
-      (
-        space.getRoomIdStr(),
-        (await space.getProfile().getDisplayName()).text()
-      ),
+      (roomId, await ref.watch(roomDisplayNameProvider(roomId).future)),
     );
   }
   return items;
 });
+
+class SpaceNotFound extends Error {}
 
 typedef _SpaceIdAndName = (String, String?);
 
@@ -224,11 +225,11 @@ final spaceInvitedMembersProvider = FutureProvider.autoDispose
 /// Get the SpaceRelationsOverview of related SpaceItem for the space. Errors if
 /// the space or any related space isn't found. Stays up  to date with underlying
 /// client data if a space was found.
-final spaceRelationsOverviewProvider = FutureProvider.autoDispose
-    .family<SpaceRelationsOverview, String>((ref, spaceId) async {
+final spaceRelationsOverviewProvider =
+    FutureProvider.family<SpaceRelationsOverview, String>((ref, spaceId) async {
   final relatedSpaces = await ref.watch(spaceRelationsProvider(spaceId).future);
   if (relatedSpaces == null) {
-    throw 'Space not found';
+    throw SpaceNotFound;
   }
   final membership = await ref.watch(roomMembershipProvider(spaceId).future);
   bool hasMoreSubspaces = false;
@@ -304,6 +305,70 @@ final spaceRelationsOverviewProvider = FutureProvider.autoDispose
     hasMoreSubspaces: hasMoreSubspaces,
     hasMoreChats: hasMoreChats,
   );
+});
+
+final hasSubChatsProvider =
+    AsyncNotifierProvider.family<HasSubChatsNotifier, bool, String>(
+  () => HasSubChatsNotifier(),
+);
+
+final hasSubSpacesProvider =
+    AsyncNotifierProvider.family<HasSubSpacesNotifier, bool, String>(
+  () => HasSubSpacesNotifier(),
+);
+
+final _spaceRemoteRelationsProvider =
+    FutureProvider.family<List<SpaceHierarchyRoomInfo>, String>(
+        (ref, spaceId) async {
+  final relatedSpaces = await ref.watch(spaceRelationsProvider(spaceId).future);
+  if (relatedSpaces == null) {
+    return [];
+  }
+  return (await relatedSpaces.queryHierarchy()).toList();
+});
+
+final remoteChatRelationsProvider =
+    FutureProvider.family<List<SpaceHierarchyRoomInfo>, String>(
+        (ref, spaceId) async {
+  try {
+    final relatedSpaces =
+        await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
+    final toIgnore =
+        relatedSpaces.knownChats.map((e) => e.getRoomIdStr()).toList();
+    final roomHierarchy =
+        await ref.watch(_spaceRemoteRelationsProvider(spaceId).future);
+    // filter out the known rooms
+    return roomHierarchy
+        .where((r) => !r.isSpace() && !toIgnore.contains(r.roomIdStr()))
+        .toList();
+  } on SpaceNotFound {
+    return [];
+  }
+});
+
+final remoteSubspaceRelationsProvider =
+    FutureProvider.family<List<SpaceHierarchyRoomInfo>, String>(
+        (ref, spaceId) async {
+  try {
+    final relatedSpaces =
+        await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
+    final toIgnore =
+        relatedSpaces.knownSubspaces.map((e) => e.getRoomIdStr()).toList();
+    toIgnore.addAll(relatedSpaces.parents.map((e) => e.getRoomIdStr()));
+    if (relatedSpaces.mainParent != null) {
+      toIgnore.add(relatedSpaces.mainParent!.getRoomIdStr());
+    }
+    toIgnore.add(spaceId); // the hierarchy also gives us ourselfes ...
+
+    final roomHierarchy =
+        await ref.watch(_spaceRemoteRelationsProvider(spaceId).future);
+    // filter out the known rooms
+    return roomHierarchy
+        .where((r) => r.isSpace() && !toIgnore.contains(r.roomIdStr()))
+        .toList();
+  } on SpaceNotFound {
+    return [];
+  }
 });
 
 /// Fill the Profile data for the given space-hierarchy-info

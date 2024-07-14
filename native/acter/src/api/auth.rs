@@ -495,7 +495,7 @@ impl RegistrationTokenViaEmailResponse {
     }
 }
 
-pub async fn request_password_change_email_token(
+pub async fn request_password_change_token_via_email(
     default_homeserver_url: String,
     email: String,
 ) -> Result<PasswordChangeEmailTokenResponse> {

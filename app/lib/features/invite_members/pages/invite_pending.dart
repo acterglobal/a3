@@ -43,7 +43,7 @@ class InvitePending extends ConsumerWidget {
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
                   return UserBuilder(
-                    profile: invited[index].getProfile(),
+                    userId: invited[index].userId().toString(),
                     roomId: roomId,
                   );
                 },

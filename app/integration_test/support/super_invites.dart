@@ -25,6 +25,7 @@ extension SuperInvites on ConvenientTest {
     await find.byKey(Keys.mainNav).should(findsOneWidget);
     await navigateTo([
       MainNavKeys.quickJump,
+      MainNavKeys.quickJump,
       QuickJumpKeys.settings,
       SettingsMenu.superInvitations,
       SuperInvitesPage.createNewToken,
@@ -35,24 +36,20 @@ extension SuperInvites on ConvenientTest {
     await tokenTxt.enterTextWithoutReplace(newToken);
 
     for (final spaceId in spaceIds) {
-      final addSpaceBtn = find.byKey(CreateSuperInviteTokenPage.addSpaceKey);
-      await addSpaceBtn.should(findsOneWidget);
-      await addSpaceBtn.tap();
-
-      final select = find.byKey(Key('select-space-$spaceId'));
-      await tester.ensureVisible(select);
-      await select.tap();
+      await navigateTo([
+        CreateSuperInviteTokenPage.addSubmenu,
+        CreateSuperInviteTokenPage.addSpaceKey,
+        Key('select-space-$spaceId'),
+      ]);
     }
 
     if (chats?.isNotEmpty == true) {
       for (final chatId in chats!) {
-        final addSpaceBtn = find.byKey(CreateSuperInviteTokenPage.addChatKey);
-        await addSpaceBtn.should(findsOneWidget);
-        await addSpaceBtn.tap();
-
-        final select = find.byKey(Key('select-chat-$chatId'));
-        await tester.ensureVisible(select);
-        await select.tap();
+        await navigateTo([
+          CreateSuperInviteTokenPage.addSubmenu,
+          CreateSuperInviteTokenPage.addChatKey,
+          Key('select-chat-$chatId'),
+        ]);
       }
     }
 
@@ -73,17 +70,12 @@ extension SuperInvites on ConvenientTest {
     FutureOr<void> Function()? dialogTest,
   }) async {
     await find.byKey(Keys.mainNav).should(findsOneWidget);
-    final quickJumpKey = find.byKey(MainNavKeys.quickJump);
-    await quickJumpKey.should(findsOneWidget);
-    await quickJumpKey.tap();
-
-    final spacesKey = find.byKey(QuickJumpKeys.settings);
-    await spacesKey.should(findsOneWidget);
-    await spacesKey.tap();
-
-    final updateField = find.byKey(SettingsMenu.superInvitations);
-    await updateField.should(findsOneWidget);
-    await updateField.tap();
+    await navigateTo([
+      MainNavKeys.quickJump,
+      MainNavKeys.quickJump,
+      QuickJumpKeys.settings,
+      SettingsMenu.superInvitations,
+    ]);
 
     final tokenTxt = find.byKey(RedeemToken.redeemTokenField);
     await tokenTxt.should(findsOneWidget);

@@ -2,15 +2,9 @@ use acter_core::events::settings::{ActerUserAppSettingsContent, APP_USER_SETTING
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::{media::MediaRequest, Account as SdkAccount};
-use ruma::{assign, uint};
-use ruma_client_api::{
-    account::request_3pid_management_token_via_email,
-    uiaa::{AuthData, Password},
-};
-use ruma_common::{
-    thirdparty::Medium, ClientSecret, MilliSecondsSinceUnixEpoch, OwnedClientSecret, OwnedMxcUri,
-    OwnedUserId, SessionId, UserId,
-};
+use ruma::assign;
+use ruma_client_api::uiaa::{AuthData, Password};
+use ruma_common::{OwnedMxcUri, OwnedUserId, UserId};
 use ruma_events::{ignored_user_list::IgnoredUserListEventContent, room::MediaSource};
 use std::{ops::Deref, path::PathBuf};
 use tokio::sync::broadcast::Receiver;
@@ -21,6 +15,10 @@ use super::{
     RUNTIME,
 };
 use crate::{ActerUserAppSettings, Client};
+
+mod three_pid;
+
+pub use three_pid::{ExternalId, ThreePidEmailTokenResponse};
 
 #[derive(Clone, Debug)]
 pub struct Account {
@@ -66,7 +64,7 @@ impl Account {
             .spawn(async move {
                 let capabilities = client.get_capabilities().await?;
                 if !capabilities.set_displayname.enabled {
-                    bail!("This client cannot change display name");
+                    bail!("Server doesn't support change of display name");
                 }
                 let name = if new_name.is_empty() {
                     None
@@ -85,7 +83,7 @@ impl Account {
         RUNTIME
             .spawn(async move {
                 let source = match account.get_cached_avatar_url().await? {
-                    Some(url) => MediaSource::Plain(url.into()),
+                    Some(url) => MediaSource::Plain(url),
                     None => match account.get_avatar_url().await? {
                         Some(e) => MediaSource::Plain(e),
                         None => return Ok(OptionBuffer::new(None)),
@@ -108,7 +106,7 @@ impl Account {
             .spawn(async move {
                 let capabilities = client.get_capabilities().await?;
                 if !capabilities.set_avatar_url.enabled {
-                    bail!("This client cannot change avatar url");
+                    bail!("Server doesn't support change of avatar url");
                 }
                 let guess = mime_guess::from_path(path.clone());
                 let content_type = guess.first().context("don't know mime type")?;
@@ -154,104 +152,6 @@ impl Account {
                     .context("Ignored users not found")?
                     .deserialize()?;
                 Ok(content.ignored_users.keys().cloned().collect())
-            })
-            .await?
-    }
-
-    pub async fn request_3pid_email_token(
-        &self,
-        email: String,
-    ) -> Result<ThreePidEmailTokenResponse> {
-        let account = self.account.clone();
-        let client_secret = ClientSecret::new();
-
-        RUNTIME
-            .spawn(async move {
-                let inner = account
-                    .request_3pid_email_token(&client_secret, &email, uint!(0))
-                    .await
-                    .map_err(clearify_error)?;
-                Ok(ThreePidEmailTokenResponse {
-                    inner,
-                    client_secret,
-                })
-            })
-            .await?
-    }
-
-    // this fn will use client secret & session id that were returned from previous stage of UIAA process
-    pub async fn add_3pid(
-        &self,
-        client_secret: String,
-        sid: String,
-        password: String,
-    ) -> Result<bool> {
-        let client = self.client.deref().clone();
-        let account = self.account.clone();
-        let user_id = self.user_id.clone();
-        let client_secret = ClientSecret::parse(&client_secret)?;
-        let sid = SessionId::parse(&sid)?; // it was already related with email or msisdn
-
-        RUNTIME
-            .spawn(async move {
-                let capabilities = client.get_capabilities().await?;
-                if !capabilities.thirdparty_id_changes.enabled {
-                    bail!("Server doesn't support 3pid change");
-                }
-                if let Err(e) = account.add_3pid(&client_secret, &sid, None).await {
-                    let Some(inf) = e.as_uiaa_response() else {
-                        return Err(clearify_error(e));
-                    };
-                    let pswd = assign!(Password::new(user_id.into(), password), {
-                        session: inf.session.clone(),
-                    });
-                    let auth_data = AuthData::Password(pswd);
-                    account
-                        .add_3pid(&client_secret, &sid, Some(auth_data))
-                        .await
-                        .map_err(clearify_error)?;
-                }
-                Ok(true)
-            })
-            .await?
-    }
-
-    pub async fn delete_3pid_email(&self, address: String) -> Result<bool> {
-        let client = self.client.deref().clone();
-        let account = self.account.clone();
-
-        RUNTIME
-            .spawn(async move {
-                let capabilities = client.get_capabilities().await?;
-                if !capabilities.thirdparty_id_changes.enabled {
-                    bail!("Server doesn't support 3pid change");
-                }
-                account
-                    .delete_3pid(&address, Medium::Email, None)
-                    .await
-                    .map_err(clearify_error)?;
-                Ok(true)
-            })
-            .await?
-    }
-
-    pub async fn get_3pids(&self, address: String) -> Result<Vec<ThreePid>> {
-        let account = self.account.clone();
-
-        RUNTIME
-            .spawn(async move {
-                let resp = account.get_3pids().await.map_err(clearify_error)?;
-                let records = resp
-                    .threepids
-                    .iter()
-                    .map(|x| ThreePid {
-                        address: x.address.clone(),
-                        medium: x.medium.clone(),
-                        added_at: x.added_at,
-                        validated_at: x.validated_at,
-                    })
-                    .collect();
-                Ok(records)
             })
             .await?
     }
@@ -332,51 +232,5 @@ impl Account {
 
     pub fn subscribe(&self) -> Receiver<()> {
         self.client.subscribe(APP_USER_SETTINGS.to_string())
-    }
-}
-
-#[derive(Clone)]
-pub struct ThreePidEmailTokenResponse {
-    inner: request_3pid_management_token_via_email::v3::Response,
-    client_secret: OwnedClientSecret,
-}
-
-impl ThreePidEmailTokenResponse {
-    pub fn sid(&self) -> String {
-        self.inner.sid.to_string()
-    }
-
-    pub fn submit_url(&self) -> Option<String> {
-        self.inner.submit_url.clone()
-    }
-
-    pub fn client_secret(&self) -> String {
-        self.client_secret.to_string()
-    }
-}
-
-#[derive(Clone)]
-pub struct ThreePid {
-    address: String,
-    medium: Medium,
-    added_at: MilliSecondsSinceUnixEpoch,
-    validated_at: MilliSecondsSinceUnixEpoch,
-}
-
-impl ThreePid {
-    pub fn address(&self) -> String {
-        self.address.clone()
-    }
-
-    pub fn medium(&self) -> String {
-        self.medium.to_string()
-    }
-
-    pub fn added_at(&self) -> u64 {
-        self.added_at.get().into()
-    }
-
-    pub fn validated_at(&self) -> u64 {
-        self.validated_at.get().into()
     }
 }

@@ -15,7 +15,7 @@ PODS:
     - FlutterMacOS
   - Firebase/CoreOnly (10.27.0):
     - FirebaseCore (= 10.27.0)
-  - firebase_core (3.1.0):
+  - firebase_core (3.1.1):
     - Firebase/CoreOnly (~> 10.27.0)
     - FlutterMacOS
   - FirebaseCore (10.27.0):
@@ -159,7 +159,7 @@ SPEC CHECKSUMS:
   fc_native_video_thumbnail: 927d4dcfd4c7e9f2cc1a20bb52dfee83de3792c2
   file_selector_macos: 54fdab7caa3ac3fc43c9fac4d7d8d231277f8cf2
   Firebase: 26b040b20866a55f55eb3611b9fcf3ae64816b86
-  firebase_core: 3cf30a8be4c850f7192bf9597f5939d0c3af706b
+  firebase_core: df33f64432203e675060e475de6ea8127eb8398a
   FirebaseCore: a2b95ae4ce7c83ceecfbbbe3b6f1cddc7415a808
   FirebaseCoreInternal: 58d07f1362fddeb0feb6a857d1d1d1c5e558e698
   flutter_local_notifications: 3805ca215b2fb7f397d78b66db91f6a747af52e4

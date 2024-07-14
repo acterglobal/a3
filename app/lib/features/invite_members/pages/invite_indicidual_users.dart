@@ -126,7 +126,7 @@ class InviteIndividualUsers extends ConsumerWidget {
   }
 
   Widget _buildSuggestedUserItem(WidgetRef ref, FoundUser user) {
-    final room = ref.watch(briefRoomItemWithMembershipProvider(roomId));
+    final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
     return Card(
       child: ListTile(
         title: Text(user.avatarInfo.displayName ?? user.userId),
@@ -137,10 +137,12 @@ class InviteIndividualUsers extends ConsumerWidget {
             user.avatarInfo,
           ),
         ),
-        trailing: UserStateButton(
-          userId: user.userId,
-          room: room.valueOrNull!.room!,
-        ),
+        trailing: room != null
+            ? UserStateButton(
+                userId: user.userId,
+                room: room,
+              )
+            : null,
       ),
     );
   }
@@ -167,7 +169,7 @@ class InviteIndividualUsers extends ConsumerWidget {
                 itemBuilder: (context, index) {
                   return foundUsers.when(
                     data: (data) => UserBuilder(
-                      profile: data[index],
+                      userId: data[index].userId().toString(),
                       roomId: roomId,
                     ),
                     error: (err, stackTrace) =>

@@ -1,0 +1,27 @@
+name: Reusable Changelog Build
+
+on:
+  workflow_call:
+
+jobs:
+  build-changelog:
+    environment: release
+    runs-on: ubuntu-latest
+    name: Generate Changelog
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Generate Changelog
+        run: |
+          git fetch --prune --unshallow --tags
+          cargo run -p mr_minutes -- --output CHANGELOG.md
+
+      - uses: actions/upload-artifact@v3
+        name: "Upload Changelog"
+        with:
+          name: Changelog
+          path: CHANGELOG.md
