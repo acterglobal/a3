@@ -1,4 +1,5 @@
 mod auth;
+mod bookmarks;
 mod calendar;
 mod formatted_body;
 mod invitation;

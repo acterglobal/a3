@@ -22,6 +22,7 @@ mod account;
 mod attachments;
 mod auth;
 mod backup;
+mod bookmarks;
 mod calendar_events;
 mod client;
 mod comments;
@@ -74,6 +75,7 @@ pub use auth::{
     register_under_config, register_with_token_under_config, sanitize_user,
 };
 pub use backup::BackupManager;
+pub use bookmarks::Bookmarks;
 pub use calendar_events::{CalendarEvent, CalendarEventDraft, CalendarEventUpdateBuilder};
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};
