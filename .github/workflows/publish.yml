@@ -34,7 +34,7 @@ on:
         type: string
 
   schedule:
-   - cron: 0 3 * * 4
+   - cron: 0 1 * * 4
 
 jobs:
   run_checker:
@@ -88,49 +88,11 @@ jobs:
       target: ${{ needs.tags.outputs.targets }}
     secrets: inherit
 
- ######  ##     ##    ###    ##    ##  ######   ######## ##        #######   ######   
-##    ## ##     ##   ## ##   ###   ## ##    ##  ##       ##       ##     ## ##    ##  
-##       ##     ##  ##   ##  ####  ## ##        ##       ##       ##     ## ##        
-##       ######### ##     ## ## ## ## ##   #### ######   ##       ##     ## ##   #### 
-##       ##     ## ######### ##  #### ##    ##  ##       ##       ##     ## ##    ##  
-##    ## ##     ## ##     ## ##   ### ##    ##  ##       ##       ##     ## ##    ##  
- ######  ##     ## ##     ## ##    ##  ######   ######## ########  #######   ######  
-
   changelog:
-    environment: release
-    runs-on: ubuntu-latest
-    name: Generate Changelog
+    uses: ./.github/workflows/build-changelog.yml
     needs:
       - tags
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-      - name: Generate Changelog
-        run: |
-          git fetch --prune --unshallow --tags
-          cargo run -p mr_minutes -- --since ${{ needs.tags.outputs.prev_tag }} --output CHANGELOG-generated.md
-          echo "# Changes since ${{ needs.tags.outputs.prev_tag }} " > CHANGELOG.md
-          cat CHANGELOG-generated.md >> CHANGELOG.md
-
-      - uses: actions/upload-artifact@v3
-        name: "Upload Changelog"
-        with:
-          name: Changelog
-          path: CHANGELOG.md
-
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        with:
-          draft: true
-          name: ${{ needs.tags.outputs.release_title }} ${{ needs.tags.outputs.tag }}
-          tag_name: ${{ needs.tags.outputs.tag }}
-          generate_release_notes: false
-          body_path: CHANGELOG.md
-          files: CHANGELOG.md
+    secrets: inherit
 
 ##     ##  ######      ######  ########  #######  ########  ######## 
 ###   ### ##    ##    ##    ##    ##    ##     ## ##     ## ##       
@@ -459,6 +421,7 @@ jobs:
           tag_name: ${{ needs.tags.outputs.tag }}
           body_path: CHANGELOG.md
           make_latest: true
+          files: CHANGELOG.md
       - uses: eregon/publish-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

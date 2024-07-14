@@ -6,14 +6,14 @@ concurrency:
 
 on:
   schedule:
-   - cron: 0 3 * * *
+   - cron: 30 3 * * *
 
 jobs:
   run_checker:
     runs-on: ubuntu-latest
     name: Check latest commit
     outputs:
-      should_run: ${{ steps.check-new-commits.outputs.has-new-commits }}
+      should_run: ${{ steps.check-new-commits.outputs.has-new-commits && steps.check-changelog-files.outputs.has-changelog-files }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -27,6 +27,17 @@ jobs:
           else
             echo "has-new-commits=false" >> $GITHUB_OUTPUT ;
           fi
+      - name: Check whether any changelog files are present
+        id: check-changelog-files
+        shell: bash
+        run: |
+            files=$(shopt -s nullglob;shopt -s dotglob;echo .changes/*.md)
+            if (( ${#files} ))
+            then
+              echo "has-changelog-files=true"  >> $GITHUB_OUTPUT ;
+            else
+              echo "has-changelog-files=false" >> $GITHUB_OUTPUT ;
+            fi
 
   tags:
     runs-on: ubuntu-latest
@@ -57,50 +68,11 @@ jobs:
       release_tag: nightly-${{ needs.tags.outputs.tag }}
     secrets: inherit
 
-
- ######  ##     ##    ###    ##    ##  ######   ######## ##        #######   ######   
-##    ## ##     ##   ## ##   ###   ## ##    ##  ##       ##       ##     ## ##    ##  
-##       ##     ##  ##   ##  ####  ## ##        ##       ##       ##     ## ##        
-##       ######### ##     ## ## ## ## ##   #### ######   ##       ##     ## ##   #### 
-##       ##     ## ######### ##  #### ##    ##  ##       ##       ##     ## ##    ##  
-##    ## ##     ## ##     ## ##   ### ##    ##  ##       ##       ##     ## ##    ##  
- ######  ##     ## ##     ## ##    ##  ######   ######## ########  #######   ######  
-
   changelog:
-    environment: release
-    runs-on: ubuntu-latest
-    name: Generate Changelog
+    uses: ./.github/workflows/build-changelog.yml
     needs:
       - tags
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-      - name: Generate Changelog
-        run: |
-          git fetch --prune --unshallow --tags
-          cargo run -p mr_minutes -- --since ${{ needs.tags.outputs.prev_tag }} --output nightly-changes-generated.md
-          echo "** Changes since ${{ needs.tags.outputs.prev_tag }} **" > nightly-changes.md
-          cat nightly-changes-generated.md >>  CHANGELOG.md
-
-      - uses: actions/upload-artifact@v3
-        name: "Upload Changelog"
-        with:
-          name: Changelog
-          path: CHANGELOG.md
-
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        with:
-          draft: true
-          generate_release_notes: false
-          name: Nightly ${{ needs.tags.outputs.tag }}
-          tag_name: nightly-${{ needs.tags.outputs.tag }}
-          body_path: CHANGELOG.md
-          prerelease: true
+    secrets: inherit
 
 ########  ##          ###    ##    ##     ######  ########  #######  ########  ########                  ###    ##       ########  ##     ##    ###    
 ##     ## ##         ## ##    ##  ##     ##    ##    ##    ##     ## ##     ## ##                       ## ##   ##       ##     ## ##     ##   ## ##   
