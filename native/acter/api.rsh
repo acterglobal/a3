@@ -1961,6 +1961,45 @@ object ActerAppSettingsBuilder {
 }
 
 
+//   ######     ###    ######## ########  ######    #######  ########  ##    ## 
+//  ##    ##   ## ##      ##    ##       ##    ##  ##     ## ##     ##  ##  ##  
+//  ##        ##   ##     ##    ##       ##        ##     ## ##     ##   ####   
+//  ##       ##     ##    ##    ######   ##   #### ##     ## ########     ##    
+//  ##       #########    ##    ##       ##    ##  ##     ## ##   ##      ##    
+//  ##    ## ##     ##    ##    ##       ##    ##  ##     ## ##    ##     ##    
+//   ######  ##     ##    ##    ########  ######    #######  ##     ##    ##    
+
+
+object Category {
+    fn id() -> string;
+    fn title() -> string;
+    fn entries() -> string;
+    fn icon_type_str() -> Option<string>;
+    fn icon_str() -> Option<string>;
+    fn update_builder() -> CategoryBuilder;
+}
+
+object CategoryBuilder {
+    fn title(title: string);
+    fn clear_entries();
+    fn add_entry(entry: string);
+    fn unset_icon();
+    fn icon(type: string, key: string);
+    fn build() -> Result<Category>;
+}
+
+
+object Categories {
+    fn categories() -> Vec<Category>;
+    fn new_category_builder() -> CategoryBuilder;
+    fn update_builder() -> CategoriesBuilder;
+}
+
+object CategoriesBuilder {
+    fn add(cat: Category);
+    fn clear();
+}
+
 //   ######  ########     ###     ######  ######## 
 //  ##    ## ##     ##   ## ##   ##    ## ##       
 //  ##       ##     ##  ##   ##  ##       ##       
@@ -2106,6 +2145,14 @@ object Space {
     /// it's the callers job to ensure the person has the privileges to
     /// redact that content.
     fn redact_content(event_id: string, reason: Option<string>) -> Future<Result<EventId>>;
+
+
+    /// Get the categories for a specific key.
+    /// currently supported: spaces, chats
+    fn categories(key: string) -> Future<Result<Categories>>;
+
+    /// Set the categories for a specific key
+    fn set_categories(key: string, categories: CategoriesBuilder) -> Future<Result<bool>>;
 }
 
 enum MembershipStatus {

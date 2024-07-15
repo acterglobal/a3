@@ -10,11 +10,7 @@ pub mod settings;
 pub mod tasks;
 pub mod three_pid;
 
-pub use common::{
-    BelongsTo, BrandIcon, CalendarEventAction, Color, Colorize, ColorizeBuilder, Date, Icon,
-    Labels, ObjRef, ObjRefBuilder, Position, RefDetails, RefDetailsBuilder, Reference, References,
-    TaskAction, TaskListAction, Update, UtcDateTime,
-};
+pub use common::*;
 use ruma_common::exports::{serde::de::Error as SerdeDeError, serde_json as smart_serde_json};
 use ruma_events::{
     reaction::{ReactionEvent, ReactionEventContent},
