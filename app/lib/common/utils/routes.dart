@@ -32,6 +32,9 @@ enum Routes {
   // --- search
   searchPublicDirectory('/search/public'),
 
+  // --- Full Screen Avatar
+  fullScreenAvatar('/fullScreenAvatar'),
+
   // --- chat
   chat('/chat'),
   // show as dialog

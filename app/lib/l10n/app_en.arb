@@ -2243,5 +2243,6 @@
   "addPin": "Add Pin",
   "addEvent": "Add Event",
   "linkChat": "Link Chat",
-  "linkSpace": "Link Space"
+  "linkSpace": "Link Space",
+  "failedToUploadAvatar": "Failed to upload avatar: {error}"
 }
