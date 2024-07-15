@@ -21,11 +21,12 @@ final invitationUserProfileProvider = FutureProvider.autoDispose
   final displayName = user.getDisplayName();
   final fallback = AvatarInfo(uniqueId: userId, displayName: displayName);
   final avatar = await user.getAvatar(null);
+  final avatarData = avatar.data();
 
-  if (!user.hasAvatar() || avatar.data() == null) {
+  if (!user.hasAvatar() || avatarData == null) {
     return fallback;
   }
-  final data = MemoryImage(Uint8List.fromList(avatar.data()!.asTypedList()));
+  final data = MemoryImage(Uint8List.fromList(avatarData.asTypedList()));
 
   return AvatarInfo(
     uniqueId: userId,

@@ -75,8 +75,9 @@ final _accountAvatarProvider =
   final account = ref.watch(accountProvider);
   final thumbSize = sdk.api.newThumbSize(48, 48);
   final avatar = await account.avatar(thumbSize);
-  if (avatar.data() != null) {
-    return MemoryImage(Uint8List.fromList(avatar.data()!.asTypedList()));
+  final avatarData = avatar.data();
+  if (avatarData != null) {
+    return MemoryImage(Uint8List.fromList(avatarData.asTypedList()));
   }
   return null;
 });
