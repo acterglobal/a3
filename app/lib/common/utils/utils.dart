@@ -192,9 +192,9 @@ Future<void> openAvatar(
   WidgetRef ref,
   String roomId,
 ) async {
-  final membership = await ref.watch(roomMembershipProvider(roomId).future);
+  final membership = await ref.read(roomMembershipProvider(roomId).future);
   final canUpdateAvatar = membership?.canString('CanUpdateAvatar') == true;
-  final avatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
+  final avatarInfo = ref.read(roomAvatarInfoProvider(roomId));
 
   if (avatarInfo.avatar != null && context.mounted) {
     //Open avatar in full screen if avatar data available
@@ -202,9 +202,7 @@ Future<void> openAvatar(
       Routes.fullScreenAvatar.name,
       queryParameters: {'roomId': roomId},
     );
-  } else if (avatarInfo.avatar == null &&
-      canUpdateAvatar &&
-      context.mounted) {
+  } else if (avatarInfo.avatar == null && canUpdateAvatar && context.mounted) {
     //Change avatar if avatar is null and have relevant permission
     uploadAvatar(ref, context, roomId);
   }
@@ -230,7 +228,12 @@ Future<void> uploadAvatar(
     EasyLoading.dismiss();
   } catch (e, st) {
     _log.severe('Failed to upload avatar', e, st);
-    EasyLoading.dismiss();
+    if (context.mounted) {
+      EasyLoading.showError(
+        L10n.of(context).failedToUploadAvatar(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 }
 

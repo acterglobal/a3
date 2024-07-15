@@ -19,7 +19,7 @@ class FullScreenAvatarPage extends ConsumerWidget {
   }
 
   AppBar _buildAppBar(BuildContext context, WidgetRef ref) {
-    final membership = ref.watch(roomMembershipProvider(roomId)).requireValue;
+    final membership = ref.watch(roomMembershipProvider(roomId)).valueOrNull;
     return AppBar(
       leading: IconButton(
         onPressed: context.pop,
@@ -29,7 +29,7 @@ class FullScreenAvatarPage extends ConsumerWidget {
         if (membership?.canString('CanUpdateAvatar') == true)
           IconButton(
             onPressed: () => uploadAvatar(ref, context, roomId),
-            icon: const Icon(Icons.edit_outlined),
+            icon: const Icon(Icons.upload),
           ),
       ],
     );
