@@ -67,7 +67,7 @@ final suggestedUsersProvider = FutureProvider.family<List<FoundUser>, String>(
       if (user.hasAvatar()) {
         try {
           avatar = await user.getAvatar(null).then((val) =>
-              MemoryImage(Uint8List.fromList(val.data()!.asTypedList())));
+              MemoryImage(Uint8List.fromList(val.data()!.asTypedList())),);
         } catch (e, s) {
           _log.severe('failure fetching avatar', e, s);
         }
