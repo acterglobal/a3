@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -64,9 +66,8 @@ final suggestedUsersProvider = FutureProvider.family<List<FoundUser>, String>(
       MemoryImage? avatar;
       if (user.hasAvatar()) {
         try {
-          avatar = await user
-              .getAvatar(null)
-              .then((val) => MemoryImage(val.data()!.asTypedList()));
+          avatar = await user.getAvatar(null).then((val) =>
+              MemoryImage(Uint8List.fromList(val.data()!.asTypedList())));
         } catch (e, s) {
           _log.severe('failure fetching avatar', e, s);
         }
