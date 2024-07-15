@@ -23,8 +23,17 @@ fn main() {
         let ffigen = FfiGen::new(&path).expect("Could not parse api.rsh");
         let dart = crate_dir.join(API_DART_FILENAME);
         // building the rust source for reuse in cbindgen later
+        let target_abi = if std::env::var("CARGO_CFG_TARGET_POINTER_WIDTH")
+            .unwrap_or("64".to_string())
+            .as_str()
+            == "32"
+        {
+            ffi_gen::Abi::Native32
+        } else {
+            ffi_gen::Abi::Native64
+        };
         let rst = ffigen
-            .generate_rust(ffi_gen::Abi::Native64)
+            .generate_rust(target_abi)
             .expect("Failure generating rust side of ffigen");
         std::fs::write(crate_dir.join("src").join(API_RUST_FILENAME), rst)
             .expect("Writing rust file failed.");
