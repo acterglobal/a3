@@ -2290,6 +2290,9 @@ object Account {
 
     /// Remove email address from confirmed list or unconfirmed list
     fn remove_email_address(email_address: string) -> Future<Result<bool>>;
+
+    /// Get the Bookmarks manager
+    fn bookmarks() -> Future<Result<Bookmarks>>;
 }
 
 object ExternalId {
@@ -2316,6 +2319,27 @@ object ThreePidEmailTokenResponse {
 
     /// get client secret
     fn client_secret() -> string;
+}
+
+
+//  ########   #######   #######  ##    ## ##     ##    ###    ########  ##    ##  ######  
+//  ##     ## ##     ## ##     ## ##   ##  ###   ###   ## ##   ##     ## ##   ##  ##    ## 
+//  ##     ## ##     ## ##     ## ##  ##   #### ####  ##   ##  ##     ## ##  ##   ##       
+//  ########  ##     ## ##     ## #####    ## ### ## ##     ## ########  #####     ######  
+//  ##     ## ##     ## ##     ## ##  ##   ##     ## ######### ##   ##   ##  ##         ## 
+//  ##     ## ##     ## ##     ## ##   ##  ##     ## ##     ## ##    ##  ##   ##  ##    ## 
+//  ########   #######   #######  ##    ## ##     ## ##     ## ##     ## ##    ##  ######  
+
+
+object Bookmarks {
+    /// get the list of bookmarks for a specific key
+    fn entries(key: string) -> Vec<string>;
+
+    /// add the following entry to the bookmarks of key
+    fn add(key: string, entry: string) -> Future<Result<bool>>;
+
+    /// remove the following entry from the bookmarks of key
+    fn remove(key: string, entry: string) -> Future<Result<bool>>;
 }
 
 object SyncState {
