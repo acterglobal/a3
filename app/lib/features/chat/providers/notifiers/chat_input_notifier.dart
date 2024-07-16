@@ -1,6 +1,5 @@
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
-import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/parser.dart';
@@ -11,6 +10,12 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
 
   void emojiPickerVisible(bool value) =>
       state = state.copyWith(emojiPickerVisible: value);
+
+  void addMention(String displayName, String authorId) {
+    final mentions = Map.of(state.mentions);
+    mentions[displayName] = authorId;
+    state = state.copyWith(mentions: mentions);
+  }
 
   void setReplyToMessage(Message message) {
     state = state.copyWith(
@@ -24,7 +29,7 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
   }
 
   void setEditMessage(Message message) {
-    List<AvatarInfo> roomMembers = [];
+    final Map<String, String> mentions = {};
     String messageBodyText = '';
 
     if (message is TextMessage) {
@@ -44,12 +49,8 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
           msg = userMentionMessageData.parsedMessage;
 
           // Update mentions data
-          roomMembers.add(
-            AvatarInfo(
-              displayName: userMentionMessageData.displayName,
-              uniqueId: userMentionMessageData.userName,
-            ),
-          );
+          mentions[userMentionMessageData.displayName] =
+              userMentionMessageData.userName;
         }
 
         // Parse data
@@ -60,6 +61,7 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
     state = state.copyWith(
       selectedMessage: message,
       selectedMessageState: SelectedMessageState.edit,
+      mentions: mentions,
       message: messageBodyText,
     );
   }
@@ -102,6 +104,7 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
       sendingState: SendingState.preparing,
       selectedMessage: null,
       selectedMessageState: SelectedMessageState.none,
+      mentions: {},
     );
   }
 }

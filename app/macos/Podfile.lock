@@ -152,7 +152,7 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/wakelock_plus/macos
 
 SPEC CHECKSUMS:
-  acter_flutter_sdk: f2902724df7e503255c5668bb8739dacb406f705
+  acter_flutter_sdk: a2ce9616c3d66cc8f3ca770b6832f320b9a7ea1b
   connectivity_plus: ddd7f30999e1faaef5967c23d5b6d503d10434db
   device_info_plus: ce1b7762849d3ec103d0e0517299f2db7ad60720
   emoji_picker_flutter: 533634326b1c5de9a181ba14b9758e6dfe967a20
@@ -183,4 +183,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: ce7dbe26c78bfc7ba46736094c1e2d25982870fa
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.15.2

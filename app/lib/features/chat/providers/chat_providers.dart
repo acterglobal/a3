@@ -186,21 +186,14 @@ final isRoomEncryptedProvider =
   return await convo.isEncrypted();
 });
 
-final chatMentionsProvider = FutureProvider.autoDispose
-    .family<List<AvatarInfo>, String>((ref, roomId) async {
+final chatMentionsProvider = FutureProvider.family
+    .autoDispose<List<AvatarInfo>, String>((ref, roomId) async {
   final client = ref.watch(alwaysClientProvider);
   final myId = client.userId().toString();
-  final activeMembers = await ref.read(membersIdsProvider(roomId).future);
-  List<AvatarInfo> membersProfile = [];
-  for (final mId in activeMembers) {
-    if (mId != myId) {
-      final data = ref.watch(
-        memberAvatarInfoProvider((roomId: roomId, userId: mId)),
-      );
-      membersProfile.add(data);
-    }
-  }
-  return membersProfile;
+  final activeMembers = await ref.watch(membersIdsProvider(roomId).future);
+  return activeMembers.where((mId) => mId != myId).map((mId) {
+    return ref.watch(memberAvatarInfoProvider((roomId: roomId, userId: mId)));
+  }).toList();
 });
 
 final chatTypingEventProvider = StreamProvider.autoDispose

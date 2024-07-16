@@ -26,6 +26,7 @@ class ChatInputState with _$ChatInputState {
     @Default(SendingState.preparing) SendingState sendingState,
     @Default(false) bool emojiPickerVisible,
     @Default(null) types.Message? selectedMessage,
+    @Default({}) Map<String, String> mentions,
     @Default(false) bool editBtnVisible,
   }) = _ChatInputState;
 }

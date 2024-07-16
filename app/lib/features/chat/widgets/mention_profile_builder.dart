@@ -18,7 +18,7 @@ class MentionProfileBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mentions = ref.watch(chatMentionsProvider((roomQuery.roomId)));
+    var mentions = ref.watch(chatMentionsProvider((roomQuery.roomId)));
 
     if (mentions.valueOrNull != null) {
       final data = mentions.requireValue;
@@ -41,38 +41,43 @@ class MentionProfileBuilder extends ConsumerWidget {
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Card(
-            margin: const EdgeInsets.all(8),
-            elevation: 2,
-            clipBehavior: Clip.hardEdge,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: users.length,
-              itemBuilder: (_, index) {
-                final user = users.elementAt(index);
-                return ListTile(
-                  onTap: () {
-                    final autocomplete = MultiTriggerAutocomplete.of(ctx);
-                    return autocomplete.acceptAutocompleteOption(
-                      user.displayName ?? user.uniqueId.substring(1),
-                    );
-                  },
-                  leading: ActerAvatar(
-                    options: AvatarOptions.DM(
-                      user,
-                      size: 18,
+          Flexible(
+            child: Card(
+              margin: const EdgeInsets.all(8),
+              elevation: 2,
+              clipBehavior: Clip.hardEdge,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: users.length,
+                itemBuilder: (_, index) {
+                  final user = users.elementAt(index);
+                  return ListTile(
+                    onTap: () {
+                      final autocomplete = MultiTriggerAutocomplete.of(ctx);
+                      ref
+                          .read(chatInputProvider(roomQuery.roomId).notifier)
+                          .addMention(user.displayName ?? '', user.uniqueId);
+                      return autocomplete.acceptAutocompleteOption(
+                        user.displayName ?? user.uniqueId.substring(1),
+                      );
+                    },
+                    leading: ActerAvatar(
+                      options: AvatarOptions.DM(
+                        user,
+                        size: 18,
+                      ),
                     ),
-                  ),
-                  title: Text(user.displayName ?? data[index].uniqueId),
-                  titleTextStyle: Theme.of(context).textTheme.bodyMedium,
-                  subtitleTextStyle: Theme.of(context).textTheme.labelMedium,
-                  subtitle:
-                      user.displayName != null ? Text(user.uniqueId) : null,
-                );
-              },
+                    title: Text(user.displayName ?? data[index].uniqueId),
+                    titleTextStyle: Theme.of(context).textTheme.bodyMedium,
+                    subtitleTextStyle: Theme.of(context).textTheme.labelMedium,
+                    subtitle:
+                        user.displayName != null ? Text(user.uniqueId) : null,
+                  );
+                },
+              ),
             ),
           ),
         ],
