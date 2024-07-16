@@ -2,7 +2,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
-import 'package:acter/features/tasks/providers/tasklists.dart';
+import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -50,7 +50,7 @@ final tabsProvider =
     }
 
     if (appSettings.tasks().active()) {
-      final taskList = await ref.watch(spaceTasksListsProvider(spaceId).future);
+      final taskList = await ref.watch(tasksListsProvider(spaceId).future);
       if (taskList.isNotEmpty) {
         tabs.add(
           const TabEntry(key: TabEntry.tasks, label: 'Tasks'),

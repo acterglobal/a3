@@ -1,6 +1,6 @@
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
-import 'package:acter/features/tasks/providers/tasklists.dart';
+import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/task_list_item_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +20,7 @@ class TasksSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final taskList = ref.watch(spaceTasksListsProvider(spaceId));
+    final taskList = ref.watch(tasksListsProvider(spaceId));
     return taskList.when(
       data: (tasks) => buildTasksSectionUI(context, tasks),
       error: (error, stack) =>

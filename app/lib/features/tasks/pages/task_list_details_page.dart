@@ -5,7 +5,7 @@ import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
-import 'package:acter/features/tasks/providers/tasklists.dart';
+import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/task_items_list_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +43,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   }
 
   AppBar _buildAppbar() {
-    final taskList = ref.watch(taskListProvider(widget.taskListId));
+    final taskList = ref.watch(taskListItemProvider(widget.taskListId));
 
     return taskList.when(
       data: (d) => AppBar(
@@ -131,7 +131,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   }
 
   Widget _buildBody() {
-    final taskList = ref.watch(taskListProvider(widget.taskListId));
+    final taskList = ref.watch(taskListItemProvider(widget.taskListId));
     return taskList.when(
       data: (data) => _buildTaskListData(data),
       error: (e, s) => Text(L10n.of(context).failedToLoad(e)),
@@ -290,7 +290,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
         updater.name(newName);
         try {
           await updater.send();
-          ref.invalidate(spaceTasksListsProvider);
+          ref.invalidate(tasksListsProvider);
           EasyLoading.dismiss();
           if (!context.mounted) return;
           context.pop();

@@ -8,7 +8,9 @@ import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::tasks::providers');
 
-class TasksNotifier extends FamilyAsyncNotifier<TasksOverview, TaskList> {
+//List of task items based on the specified task list
+class TaskItemsListNotifier
+    extends FamilyAsyncNotifier<TasksOverview, TaskList> {
   late Stream<bool> _listener;
   late StreamSubscription<bool> _poller;
 
@@ -46,7 +48,8 @@ class TasksNotifier extends FamilyAsyncNotifier<TasksOverview, TaskList> {
   }
 }
 
-class TaskListNotifier extends FamilyAsyncNotifier<TaskList, String> {
+//Single Task List Item based on the task list id
+class TaskListItemNotifier extends FamilyAsyncNotifier<TaskList, String> {
   late Stream<bool> _listener;
   late StreamSubscription<bool> _poller;
 
@@ -69,7 +72,8 @@ class TaskListNotifier extends FamilyAsyncNotifier<TaskList, String> {
   }
 }
 
-class TaskNotifier extends FamilyAsyncNotifier<Task, Task> {
+//Single Task Item Details Provider based on the Task Object
+class TaskItemNotifier extends FamilyAsyncNotifier<Task, Task> {
   late Stream<bool> _listener;
   late StreamSubscription<bool> _poller;
 
@@ -84,5 +88,43 @@ class TaskNotifier extends FamilyAsyncNotifier<Task, Task> {
     });
     ref.onDispose(() => _poller.cancel());
     return task;
+  }
+}
+
+//List of all task list
+//If space Id given then it will return list of space task list
+class AsyncTaskListsNotifier
+    extends FamilyAsyncNotifier<List<TaskList>, String?> {
+  late Stream<bool> _listener;
+  late StreamSubscription<bool> _poller;
+
+  @override
+  Future<List<TaskList>> build(String? arg) async {
+    final client = ref.watch(alwaysClientProvider);
+
+    //GET ALL TASKS LIST
+    _listener = client.subscribeStream('tasks');
+
+    _poller = _listener.listen((e) async {
+      state = await AsyncValue.guard(() => _getTasksList(client));
+    });
+    ref.onDispose(() => _poller.cancel());
+
+    return await _getTasksList(client);
+  }
+
+  Future<List<TaskList>> _getTasksList(Client client) async {
+    //GET ALL TASKS LIST
+    final tasksList = (await client.taskLists()).toList();
+    // this might throw internally
+
+    if (arg == null) {
+      return tasksList;
+    } else {
+      //GET SPACE TASKS LIST
+      return tasksList
+          .where((t) => t.spaceIdStr() == arg!)
+          .toList(); // this might throw internally
+    }
   }
 }
