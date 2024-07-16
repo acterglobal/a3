@@ -337,7 +337,7 @@ jobs:
           sed -i "s/%{{VERSION}}%/$VERSION/g" PKGBUILD
           sed -i "s/%{{PKGREL}}%/2/g" PKGBUILD
           sed -i "s/%{{LINUX_MD5}}%/`md5sum acter-linux-x64-${{ needs.tags.outputs.version }}.tar.bz2  | awk '{print $1}'`/g" PKGBUILD
-      - uses: KSXGitHub/github-actions-deploy-aur@v2.7.1
+      - uses: KSXGitHub/github-actions-deploy-aur@v2.7.2
         name: Publish to AUR
         with:
           pkgname: acter-bin
