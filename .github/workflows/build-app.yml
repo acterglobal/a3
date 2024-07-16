@@ -273,7 +273,7 @@ jobs:
         shell: bash
         run: |
           flutter ${{ matrix.flutter_build_args }} \
-            ${{ input.flutter_build_extra || "" }} \
+            ${{ inputs.flutter_build_extra || '' }} \
             --build-name="${{ inputs.version }}" \
             --build-number="${{ inputs.build_num }}" \
             --dart-define PUSH_SERVER="${{ secrets.PUSH_SERVER }}" \
