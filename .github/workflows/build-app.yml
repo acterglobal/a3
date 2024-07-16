@@ -13,6 +13,10 @@ on:
         required: true
         type: string
 
+      prerelease:
+        type: boolean
+        default: true
+
       artifacts_prefix:
         required: false
         type: string
@@ -403,6 +407,7 @@ jobs:
           name: ${{ inputs.release_title }}
           tag_name: ${{inputs.release_tag}}
           generate_release_notes: false
+          prerelease: ${{ inputs.prerelease }}
           files: |
             ${{ matrix.artifact_prefix }}-${{ inputs.version }}.*
             ${{ matrix.specific_upload_artifacts }}
