@@ -69,6 +69,7 @@ jobs:
       prev_tag: ${{ inputs.prev_tag || 'release-latest' }}
       targets: ${{ inputs.target || 'all' }}
       release_title: ${{ inputs.custom_title || 'Release'}}
+      flutter_build_extra: --dart-define SENTRY_ENVIRONMENT=release"
     steps:
       - id: version
         # the suffix 0 allows us to provide up to 9 more hotfixes on the same day
