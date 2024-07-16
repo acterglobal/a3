@@ -233,7 +233,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     if (!context.mounted) return;
     if (loginSuccess == null) {
       // no message means, login was successful.
-      context.goNamed(Routes.main.name);
+      context.goNamed(Routes.analyticsOptIn.name);
     } else {
       EasyLoading.showError(
         loginSuccess,

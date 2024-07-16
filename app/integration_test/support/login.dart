@@ -102,6 +102,10 @@ extension ActerLogin on ConvenientTest {
     await tester.ensureVisible(skipBtn);
     await skipBtn.tap();
 
+    Finder doneBtn = find.byKey(AnalyticsOptIn.skipBtn);
+    await tester.ensureVisible(doneBtn);
+    await doneBtn.tap();
+
     // we should see a main navigation, either at the side (desktop) or the bottom (mobile/tablet)
     await find.byKey(Keys.mainNav).should(findsOneWidget);
   }

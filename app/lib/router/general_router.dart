@@ -12,6 +12,7 @@ import 'package:acter/features/auth/pages/forgot_password.dart';
 import 'package:acter/features/intro/pages/intro_page.dart';
 import 'package:acter/features/intro/pages/intro_profile.dart';
 import 'package:acter/features/auth/pages/login_page.dart';
+import 'package:acter/features/onboarding/pages/analytics_opt_in_page.dart';
 import 'package:acter/features/onboarding/pages/link_email_page.dart';
 import 'package:acter/features/auth/pages/register_page.dart';
 import 'package:acter/features/onboarding/pages/save_username_page.dart';
@@ -83,6 +84,12 @@ List<RouteBase> makeGeneralRoutes() {
       name: Routes.uploadAvatar.name,
       path: Routes.uploadAvatar.route,
       builder: (context, state) => UploadAvatarPage(),
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.analyticsOptIn.name,
+      path: Routes.analyticsOptIn.route,
+      builder: (context, state) => const AnalyticsOptInPage(),
     ),
     GoRoute(
       parentNavigatorKey: rootNavKey,

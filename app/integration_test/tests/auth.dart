@@ -54,7 +54,7 @@ void authTests() {
     await deactivateCfmBtn.tap();
 
     // we are back on the onboarding screens.
-    Finder skip = find.byKey(Keys.skipBtn);
+    Finder skip = find.byKey(Keys.exploreBtn);
     await skip.should(findsOneWidget);
 
     // be back on home.

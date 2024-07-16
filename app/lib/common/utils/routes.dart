@@ -18,6 +18,7 @@ enum Routes {
   saveUsername('/saveUsername'),
   linkEmail('/linkEmail'),
   uploadAvatar('/uploadAvatar'),
+  analyticsOptIn('/analyticsOptIn'),
 
   // --- profile
   myProfile('/profile'),
