@@ -47,6 +47,7 @@ jobs:
     # Map a step output to a job output
     outputs:
       tag: ${{ steps.tag.outputs.tag }}
+      version: ${{ steps.version.outputs.version }}
       build_num: ${{ steps.build_num.outputs.build_num }}
       prev_tag: 'nightly-latest'
     steps:
@@ -54,7 +55,9 @@ jobs:
         run: echo "tag=`date +%F`" >> $GITHUB_OUTPUT
       - id: build_num
         run: echo "build_num=`date +%s`" >> $GITHUB_OUTPUT
-
+      - id: version
+        # the suffix 0 allows us to provide up to 9 more hotfixes on the same day
+        run: echo "version=`date +1.%y.%-m%d0`" >> $GITHUB_OUTPUT
   
   build:
     uses: ./.github/workflows/build-app.yml
@@ -63,7 +66,7 @@ jobs:
     with:
       artifacts_prefix: 'nightly-'
       build_num: ${{ needs.tags.outputs.build_num }}
-      version: ${{ needs.tags.outputs.tag }}
+      version: ${{ needs.tags.outputs.version }}
       release_title: "Nightly ${{ needs.tags.outputs.tag }}"
       release_tag: nightly-${{ needs.tags.outputs.tag }}
     secrets: inherit
