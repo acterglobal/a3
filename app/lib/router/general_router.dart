@@ -8,14 +8,13 @@ import 'package:acter/common/widgets/side_sheet_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/widgets/create_chat.dart';
 import 'package:acter/features/news/pages/add_news_page.dart';
-import 'package:acter/features/onboarding/pages/forgot_password.dart';
-import 'package:acter/features/onboarding/pages/intro_page.dart';
-import 'package:acter/features/onboarding/pages/intro_profile.dart';
-import 'package:acter/features/onboarding/pages/login_page.dart';
+import 'package:acter/features/auth/pages/forgot_password.dart';
+import 'package:acter/features/intro/pages/intro_page.dart';
+import 'package:acter/features/intro/pages/intro_profile.dart';
+import 'package:acter/features/auth/pages/login_page.dart';
 import 'package:acter/features/onboarding/pages/link_email_page.dart';
-import 'package:acter/features/onboarding/pages/register_page.dart';
+import 'package:acter/features/auth/pages/register_page.dart';
 import 'package:acter/features/onboarding/pages/save_username_page.dart';
-import 'package:acter/features/onboarding/pages/start_page.dart';
 import 'package:acter/features/onboarding/pages/upload_avatar_page.dart';
 import 'package:acter/features/pins/pages/create_pin_page.dart';
 import 'package:acter/features/search/pages/quick_jump.dart';
@@ -41,12 +40,6 @@ List<RouteBase> makeGeneralRoutes() {
       name: Routes.intro.name,
       path: Routes.intro.route,
       builder: (context, state) => const IntroPage(),
-    ),
-    GoRoute(
-      parentNavigatorKey: rootNavKey,
-      name: Routes.start.name,
-      path: Routes.start.route,
-      builder: (context, state) => const StartPage(),
     ),
     GoRoute(
       parentNavigatorKey: rootNavKey,

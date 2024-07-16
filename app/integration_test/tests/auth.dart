@@ -4,7 +4,7 @@ import 'package:acter/common/dialogs/deactivation_confirmation.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/activities/pages/activities_page.dart';
 import 'package:acter/features/home/data/keys.dart';
-import 'package:acter/features/onboarding/pages/forgot_password.dart';
+import 'package:acter/features/auth/pages/forgot_password.dart';
 import 'package:acter/features/profile/pages/my_profile_page.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/settings/widgets/settings_menu.dart';
@@ -128,7 +128,6 @@ void authTests() {
 
     await t.navigateTo([
       Keys.exploreBtn,
-      Keys.skipBtn,
       Keys.loginBtn,
       LoginPageKeys.forgotPassBtn,
     ]);

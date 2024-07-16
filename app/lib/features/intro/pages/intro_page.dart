@@ -83,21 +83,24 @@ class IntroPage extends StatelessWidget {
           children: [
             RichText(
               text: TextSpan(
-                text: L10n.of(context).introPageDescription1,
+                text: L10n.of(context).introPageDescriptionPre,
                 style: Theme.of(context).textTheme.bodyMedium,
                 children: <TextSpan>[
                   TextSpan(
-                    text: L10n.of(context).introPageDescription2,
+                    text: L10n.of(context).introPageDescriptionHl,
                     style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                           color: Theme.of(context).colorScheme.textHighlight,
                         ),
+                  ),
+                  TextSpan(
+                    text: L10n.of(context).introPageDescriptionPost,
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 10),
             Text(
-              L10n.of(context).introPageDescription3,
+              L10n.of(context).introPageDescription2ndLine,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ],
@@ -112,13 +115,13 @@ class IntroPage extends StatelessWidget {
         constraints: const BoxConstraints(maxWidth: 500),
         child: ActerPrimaryActionButton.icon(
           key: Keys.exploreBtn,
-          onPressed: () => context.goNamed(Routes.start.name),
+          onPressed: () => context.goNamed(Routes.introProfile.name),
           icon: const Icon(
             Icons.arrow_forward_ios,
             size: 18,
           ),
           label: Text(
-            L10n.of(context).letsExplore,
+            L10n.of(context).letsGetStarted,
             style: Theme.of(context).textTheme.titleSmall,
           ),
         ),

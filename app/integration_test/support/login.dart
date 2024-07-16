@@ -2,7 +2,7 @@ import 'package:acter/common/models/keys.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/onboarding/pages/link_email_page.dart';
-import 'package:acter/features/onboarding/pages/register_page.dart';
+import 'package:acter/features/auth/pages/register_page.dart';
 import 'package:acter/features/onboarding/pages/save_username_page.dart';
 import 'package:acter/features/onboarding/pages/upload_avatar_page.dart';
 import 'package:acter/features/search/model/keys.dart';
@@ -55,11 +55,6 @@ extension ActerLogin on ConvenientTest {
     await explore.should(findsOneWidget);
 
     await explore.tap();
-
-    Finder skip = find.byKey(Keys.skipBtn);
-    await skip.should(findsOneWidget);
-
-    await skip.tap();
 
     Finder login = find.byKey(LoginPageKeys.signUpBtn);
     await login.should(findsOneWidget);
@@ -133,7 +128,6 @@ extension ActerLogin on ConvenientTest {
   }) async {
     await navigateTo([
       Keys.exploreBtn,
-      Keys.skipBtn,
       Keys.loginBtn,
     ]);
     await loginFormSubmission(

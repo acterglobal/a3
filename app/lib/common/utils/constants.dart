@@ -30,7 +30,6 @@ class Keys {
   static const sidebarBtn = Key('sidebar-btn');
   static const logoutBtn = Key('login-btn');
   static const exploreBtn = Key('explore-btn');
-  static const skipBtn = Key('skip-btn');
   static const loginBtn = Key('login-btn');
   static const avatar = Key('user-avatar');
   static const usernameLabel = Key('username-lbl');
