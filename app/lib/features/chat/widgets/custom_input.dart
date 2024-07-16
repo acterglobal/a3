@@ -8,7 +8,6 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
-import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/features/attachments/widgets/attachment_container.dart';
 import 'package:acter/features/attachments/widgets/attachment_options.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
@@ -18,23 +17,21 @@ import 'package:acter/features/chat/widgets/image_message_builder.dart';
 import 'package:acter/features/chat/widgets/mention_profile_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fluttertagger/fluttertagger.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 import 'package:logging/logging.dart';
 import 'package:mime/mime.dart';
+import 'package:multi_trigger_autocomplete/multi_trigger_autocomplete.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 final _log = Logger('a3::chat::custom_input');
@@ -860,42 +857,21 @@ class _TextInputWidget extends ConsumerStatefulWidget {
 }
 
 class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
+  TextEditingController controller = TextEditingController();
   final FocusNode chatFocus = FocusNode();
-  late final controller = FlutterTaggerController(
-    //Initial text value with tag is formatted internally
-    //following the construction of FlutterTaggerController.
-    //After this controller is constructed, if you
-    //wish to update its text value with raw tag string,
-    //call (_controller.formatTags) after that.
-    text:
-        "Hey @11a27531b866ce0016f9e582#brad#. It's time to #11a27531b866ce0016f9e582#Flutter#!",
-  );
 
   @override
-  void initState() {
-    super.initState();
-    chatFocus.addListener(_focusListener);
-    _initialize();
-  }
-
-  @override
-  void dispose() {
-    chatFocus.removeListener(_focusListener);
-    chatFocus.dispose();
-    controller.dispose();
-    super.dispose();
-  }
-
-  void _initialize() {
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     controller.text = ref.read(
       chatInputProvider(widget.roomId).select((value) => value.message),
     );
   }
 
-  void _focusListener() {
-    if (!chatFocus.hasFocus) {
-      controller.dismissOverlay();
-    }
+  @override
+  void dispose() {
+    chatFocus.dispose();
+    super.dispose();
   }
 
   void onTextTap(bool emojiPickerVisible, WidgetRef ref) {
@@ -928,112 +904,67 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // ref.listen(chatInputProvider(widget.roomId), (prev, next) {
-    //   if (next.selectedMessageState == SelectedMessageState.edit &&
-    //       (prev?.selectedMessageState != next.selectedMessageState ||
-    //           next.selectedMessage != prev?.selectedMessage)) {
-    //     // a new message has been selected to be edited or switched from reply
-    //     // to edit, force refresh the inner text controller to reflect that
-    //     chatFocus.requestFocus();
-    //   } else if (next.selectedMessageState == SelectedMessageState.replyTo &&
-    //       (next.selectedMessage != prev?.selectedMessage ||
-    //           prev?.selectedMessageState != next.selectedMessageState)) {
-    //     chatFocus.requestFocus();
-    //   }
-    // });
+    ref.listen(chatInputProvider(widget.roomId), (prev, next) {
+      if (next.selectedMessageState == SelectedMessageState.edit &&
+          (prev?.selectedMessageState != next.selectedMessageState ||
+              next.selectedMessage != prev?.selectedMessage)) {
+        // a new message has been selected to be edited or switched from reply
+        // to edit, force refresh the inner text controller to reflect that
+        chatFocus.requestFocus();
+      } else if (next.selectedMessageState == SelectedMessageState.replyTo &&
+          (next.selectedMessage != prev?.selectedMessage ||
+              prev?.selectedMessageState != next.selectedMessageState)) {
+        chatFocus.requestFocus();
+      }
+    });
     return CallbackShortcuts(
       bindings: <ShortcutActivator, VoidCallback>{
         const SingleActivator(LogicalKeyboardKey.enter): () {
           widget.onSendButtonPressed();
         },
       },
-      child: FlutterTagger(
-        overlay: _overlayBuilder(),
-        controller: controller,
-        triggerCharacterAndStyles: {
-          '@': TextStyle(
-            height: 0.5,
-            background: Paint()
-              ..color = Theme.of(context).colorScheme.surface
-              ..strokeWidth = 13
-              ..strokeJoin = StrokeJoin.round
-              ..style = PaintingStyle.stroke,
+      child: MultiTriggerAutocomplete(
+        optionsAlignment: OptionsAlignment.top,
+        textEditingController: controller,
+        focusNode: chatFocus,
+        optionsWidthFactor: 3.0,
+        autocompleteTriggers: [
+          AutocompleteTrigger(
+            trigger: '@',
+            optionsViewBuilder: (ctx, autocompleteQuery, ctrl) {
+              return MentionProfileBuilder(
+                ctx: ctx,
+                roomQuery: (
+                  query: autocompleteQuery.query,
+                  roomId: widget.roomId
+                ),
+              );
+            },
           ),
-        },
-        onSearch: (query, char) {
-          final inputNotifier =
-              ref.read(chatInputProvider(widget.roomId).notifier);
-          if (char == '@') {
-            inputNotifier.searchUser(ref, query);
-          }
-        },
-        builder: (context, taggerKey) => _innerTextField(taggerKey),
-      ),
-    );
-  }
-
-  Widget _overlayBuilder() {
-    final users = ref.watch(
-      chatInputProvider(widget.roomId).select((input) => input.roomMembers),
-    );
-    final loading = ref.watch(
-      chatInputProvider(widget.roomId).select((input) => input.searchLoading),
-    );
-    if (loading && users.isEmpty) {
-      return Skeletonizer(
-        child: ListView(
-          children: const [],
-        ),
-      );
-    }
-    if (!loading && users.isEmpty) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text(L10n.of(context).noUserFoundTitle),
         ],
-      );
-    }
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(6),
-          topRight: Radius.circular(6),
-        ),
-        color: Theme.of(context).colorScheme.primaryContainer,
-      ),
-      child: ListView.builder(
-        itemCount: users.length,
-        shrinkWrap: true,
-        itemBuilder: (ctx, index) {
-          return MentionProfileBuilder(
-            roomId: widget.roomId,
-            authorId: users[index].userId,
-          );
-        },
+        fieldViewBuilder: (ctx, ctrl, focusNode) =>
+            _innerTextField(focusNode, ctrl),
       ),
     );
   }
 
-  Widget _innerTextField(Key? taggerKey) {
+  Widget _innerTextField(FocusNode chatFocus, TextEditingController ctrl) {
     return TextField(
-      key: taggerKey,
       onTap: () => onTextTap(
         ref.read(chatInputProvider(widget.roomId)).emojiPickerVisible,
         ref,
       ),
+      controller: controller,
       focusNode: chatFocus,
       enabled: ref.watch(_allowEdit(widget.roomId)),
-      onChanged: (String value) async {
-        ref
-            .read(chatInputProvider(widget.roomId).notifier)
-            .updateMessage(value);
+      onChanged: (val) {
+        ref.read(chatInputProvider(widget.roomId).notifier).updateMessage(val);
         if (widget.onTyping != null) {
-          widget.onTyping!(value.isNotEmpty);
+          widget.onTyping!(val.isNotEmpty);
         }
       },
       onSubmitted: (_) => widget.onSendButtonPressed(),
-      style: Theme.of(context).textTheme.bodyMedium,
+      style: Theme.of(context).textTheme.bodySmall,
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.all(15),
         isCollapsed: true,

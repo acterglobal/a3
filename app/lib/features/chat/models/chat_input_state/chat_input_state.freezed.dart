@@ -19,13 +19,9 @@ mixin _$ChatInputState {
   String get message => throw _privateConstructorUsedError;
   SelectedMessageState get selectedMessageState =>
       throw _privateConstructorUsedError;
-  SearchState get searchState => throw _privateConstructorUsedError;
   SendingState get sendingState => throw _privateConstructorUsedError;
   bool get emojiPickerVisible => throw _privateConstructorUsedError;
-  bool get searchLoading => throw _privateConstructorUsedError;
   types.Message? get selectedMessage => throw _privateConstructorUsedError;
-  List<({String? displayName, String userId})> get roomMembers =>
-      throw _privateConstructorUsedError;
   bool get editBtnVisible => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -42,12 +38,9 @@ abstract class $ChatInputStateCopyWith<$Res> {
   $Res call(
       {String message,
       SelectedMessageState selectedMessageState,
-      SearchState searchState,
       SendingState sendingState,
       bool emojiPickerVisible,
-      bool searchLoading,
       types.Message? selectedMessage,
-      List<({String? displayName, String userId})> roomMembers,
       bool editBtnVisible});
 }
 
@@ -66,12 +59,9 @@ class _$ChatInputStateCopyWithImpl<$Res, $Val extends ChatInputState>
   $Res call({
     Object? message = null,
     Object? selectedMessageState = null,
-    Object? searchState = null,
     Object? sendingState = null,
     Object? emojiPickerVisible = null,
-    Object? searchLoading = null,
     Object? selectedMessage = freezed,
-    Object? roomMembers = null,
     Object? editBtnVisible = null,
   }) {
     return _then(_value.copyWith(
@@ -83,10 +73,6 @@ class _$ChatInputStateCopyWithImpl<$Res, $Val extends ChatInputState>
           ? _value.selectedMessageState
           : selectedMessageState // ignore: cast_nullable_to_non_nullable
               as SelectedMessageState,
-      searchState: null == searchState
-          ? _value.searchState
-          : searchState // ignore: cast_nullable_to_non_nullable
-              as SearchState,
       sendingState: null == sendingState
           ? _value.sendingState
           : sendingState // ignore: cast_nullable_to_non_nullable
@@ -95,18 +81,10 @@ class _$ChatInputStateCopyWithImpl<$Res, $Val extends ChatInputState>
           ? _value.emojiPickerVisible
           : emojiPickerVisible // ignore: cast_nullable_to_non_nullable
               as bool,
-      searchLoading: null == searchLoading
-          ? _value.searchLoading
-          : searchLoading // ignore: cast_nullable_to_non_nullable
-              as bool,
       selectedMessage: freezed == selectedMessage
           ? _value.selectedMessage
           : selectedMessage // ignore: cast_nullable_to_non_nullable
               as types.Message?,
-      roomMembers: null == roomMembers
-          ? _value.roomMembers
-          : roomMembers // ignore: cast_nullable_to_non_nullable
-              as List<({String? displayName, String userId})>,
       editBtnVisible: null == editBtnVisible
           ? _value.editBtnVisible
           : editBtnVisible // ignore: cast_nullable_to_non_nullable
@@ -126,12 +104,9 @@ abstract class _$$ChatInputStateImplCopyWith<$Res>
   $Res call(
       {String message,
       SelectedMessageState selectedMessageState,
-      SearchState searchState,
       SendingState sendingState,
       bool emojiPickerVisible,
-      bool searchLoading,
       types.Message? selectedMessage,
-      List<({String? displayName, String userId})> roomMembers,
       bool editBtnVisible});
 }
 
@@ -148,12 +123,9 @@ class __$$ChatInputStateImplCopyWithImpl<$Res>
   $Res call({
     Object? message = null,
     Object? selectedMessageState = null,
-    Object? searchState = null,
     Object? sendingState = null,
     Object? emojiPickerVisible = null,
-    Object? searchLoading = null,
     Object? selectedMessage = freezed,
-    Object? roomMembers = null,
     Object? editBtnVisible = null,
   }) {
     return _then(_$ChatInputStateImpl(
@@ -165,10 +137,6 @@ class __$$ChatInputStateImplCopyWithImpl<$Res>
           ? _value.selectedMessageState
           : selectedMessageState // ignore: cast_nullable_to_non_nullable
               as SelectedMessageState,
-      searchState: null == searchState
-          ? _value.searchState
-          : searchState // ignore: cast_nullable_to_non_nullable
-              as SearchState,
       sendingState: null == sendingState
           ? _value.sendingState
           : sendingState // ignore: cast_nullable_to_non_nullable
@@ -177,18 +145,10 @@ class __$$ChatInputStateImplCopyWithImpl<$Res>
           ? _value.emojiPickerVisible
           : emojiPickerVisible // ignore: cast_nullable_to_non_nullable
               as bool,
-      searchLoading: null == searchLoading
-          ? _value.searchLoading
-          : searchLoading // ignore: cast_nullable_to_non_nullable
-              as bool,
       selectedMessage: freezed == selectedMessage
           ? _value.selectedMessage
           : selectedMessage // ignore: cast_nullable_to_non_nullable
               as types.Message?,
-      roomMembers: null == roomMembers
-          ? _value._roomMembers
-          : roomMembers // ignore: cast_nullable_to_non_nullable
-              as List<({String? displayName, String userId})>,
       editBtnVisible: null == editBtnVisible
           ? _value.editBtnVisible
           : editBtnVisible // ignore: cast_nullable_to_non_nullable
@@ -203,14 +163,10 @@ class _$ChatInputStateImpl implements _ChatInputState {
   const _$ChatInputStateImpl(
       {this.message = '',
       this.selectedMessageState = SelectedMessageState.none,
-      this.searchState = SearchState.none,
       this.sendingState = SendingState.preparing,
       this.emojiPickerVisible = false,
-      this.searchLoading = false,
       this.selectedMessage = null,
-      final List<({String? displayName, String userId})> roomMembers = const [],
-      this.editBtnVisible = false})
-      : _roomMembers = roomMembers;
+      this.editBtnVisible = false});
 
   @override
   @JsonKey()
@@ -220,35 +176,20 @@ class _$ChatInputStateImpl implements _ChatInputState {
   final SelectedMessageState selectedMessageState;
   @override
   @JsonKey()
-  final SearchState searchState;
-  @override
-  @JsonKey()
   final SendingState sendingState;
   @override
   @JsonKey()
   final bool emojiPickerVisible;
   @override
   @JsonKey()
-  final bool searchLoading;
-  @override
-  @JsonKey()
   final types.Message? selectedMessage;
-  final List<({String? displayName, String userId})> _roomMembers;
-  @override
-  @JsonKey()
-  List<({String? displayName, String userId})> get roomMembers {
-    if (_roomMembers is EqualUnmodifiableListView) return _roomMembers;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_roomMembers);
-  }
-
   @override
   @JsonKey()
   final bool editBtnVisible;
 
   @override
   String toString() {
-    return 'ChatInputState(message: $message, selectedMessageState: $selectedMessageState, searchState: $searchState, sendingState: $sendingState, emojiPickerVisible: $emojiPickerVisible, searchLoading: $searchLoading, selectedMessage: $selectedMessage, roomMembers: $roomMembers, editBtnVisible: $editBtnVisible)';
+    return 'ChatInputState(message: $message, selectedMessageState: $selectedMessageState, sendingState: $sendingState, emojiPickerVisible: $emojiPickerVisible, selectedMessage: $selectedMessage, editBtnVisible: $editBtnVisible)';
   }
 
   @override
@@ -259,34 +200,19 @@ class _$ChatInputStateImpl implements _ChatInputState {
             (identical(other.message, message) || other.message == message) &&
             (identical(other.selectedMessageState, selectedMessageState) ||
                 other.selectedMessageState == selectedMessageState) &&
-            (identical(other.searchState, searchState) ||
-                other.searchState == searchState) &&
             (identical(other.sendingState, sendingState) ||
                 other.sendingState == sendingState) &&
             (identical(other.emojiPickerVisible, emojiPickerVisible) ||
                 other.emojiPickerVisible == emojiPickerVisible) &&
-            (identical(other.searchLoading, searchLoading) ||
-                other.searchLoading == searchLoading) &&
             (identical(other.selectedMessage, selectedMessage) ||
                 other.selectedMessage == selectedMessage) &&
-            const DeepCollectionEquality()
-                .equals(other._roomMembers, _roomMembers) &&
             (identical(other.editBtnVisible, editBtnVisible) ||
                 other.editBtnVisible == editBtnVisible));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      message,
-      selectedMessageState,
-      searchState,
-      sendingState,
-      emojiPickerVisible,
-      searchLoading,
-      selectedMessage,
-      const DeepCollectionEquality().hash(_roomMembers),
-      editBtnVisible);
+  int get hashCode => Object.hash(runtimeType, message, selectedMessageState,
+      sendingState, emojiPickerVisible, selectedMessage, editBtnVisible);
 
   @JsonKey(ignore: true)
   @override
@@ -300,12 +226,9 @@ abstract class _ChatInputState implements ChatInputState {
   const factory _ChatInputState(
       {final String message,
       final SelectedMessageState selectedMessageState,
-      final SearchState searchState,
       final SendingState sendingState,
       final bool emojiPickerVisible,
-      final bool searchLoading,
       final types.Message? selectedMessage,
-      final List<({String? displayName, String userId})> roomMembers,
       final bool editBtnVisible}) = _$ChatInputStateImpl;
 
   @override
@@ -313,17 +236,11 @@ abstract class _ChatInputState implements ChatInputState {
   @override
   SelectedMessageState get selectedMessageState;
   @override
-  SearchState get searchState;
-  @override
   SendingState get sendingState;
   @override
   bool get emojiPickerVisible;
   @override
-  bool get searchLoading;
-  @override
   types.Message? get selectedMessage;
-  @override
-  List<({String? displayName, String userId})> get roomMembers;
   @override
   bool get editBtnVisible;
   @override

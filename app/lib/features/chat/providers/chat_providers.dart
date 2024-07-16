@@ -16,6 +16,7 @@ import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/providers/app_settings_provider.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -186,23 +187,19 @@ final isRoomEncryptedProvider =
 });
 
 final chatMentionsProvider = FutureProvider.autoDispose
-    .family<List<UserRoomProfile>, String>((ref, roomId) async {
+    .family<List<AvatarInfo>, String>((ref, roomId) async {
+  final client = ref.watch(alwaysClientProvider);
+  final myId = client.userId().toString();
   final activeMembers = await ref.read(membersIdsProvider(roomId).future);
-  List<UserRoomProfile> membersProfile = [];
+  List<AvatarInfo> membersProfile = [];
   for (final mId in activeMembers) {
-    final data = ref.watch(
-      memberAvatarInfoProvider((roomId: roomId, userId: mId)),
-    );
-    final displayName = data.displayName;
-    UserRoomProfile profile = (displayName: null, userId: mId);
-    if (displayName != null) {
-      profile = (displayName: displayName, userId: mId);
-    } else {
-      profile = (displayName: mId, userId: mId);
+    if (mId != myId) {
+      final data = ref.watch(
+        memberAvatarInfoProvider((roomId: roomId, userId: mId)),
+      );
+      membersProfile.add(data);
     }
-    membersProfile.add(profile);
   }
-  print('$membersProfile');
   return membersProfile;
 });
 

@@ -1,6 +1,6 @@
-import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/parser.dart';
@@ -24,7 +24,7 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
   }
 
   void setEditMessage(Message message) {
-    List<UserRoomProfile> roomMembers = [];
+    List<AvatarInfo> roomMembers = [];
     String messageBodyText = '';
 
     if (message is TextMessage) {
@@ -45,9 +45,9 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
 
           // Update mentions data
           roomMembers.add(
-            (
+            AvatarInfo(
               displayName: userMentionMessageData.displayName,
-              userId: userMentionMessageData.userName,
+              uniqueId: userMentionMessageData.userName,
             ),
           );
         }
@@ -60,7 +60,6 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
     state = state.copyWith(
       selectedMessage: message,
       selectedMessageState: SelectedMessageState.edit,
-      roomMembers: roomMembers,
       message: messageBodyText,
     );
   }
@@ -103,28 +102,6 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
       sendingState: SendingState.preparing,
       selectedMessage: null,
       selectedMessageState: SelectedMessageState.none,
-      roomMembers: [],
     );
-  }
-
-  Future<void> searchUser(WidgetRef ref, String query) async {
-    if (query.isEmpty) return;
-
-    query = query.toLowerCase().trim();
-
-    state = state.copyWith(roomMembers: [], searchLoading: true);
-
-    await Future.delayed(const Duration(milliseconds: 250));
-
-    final chatMentions = await ref.read(chatMentionsProvider(roomId).future);
-    final result = chatMentions
-        .where(
-          (user) =>
-              user.userId.toLowerCase().contains(query) ||
-              user.displayName!.toLowerCase().contains(query),
-        )
-        .toList();
-
-    state = state.copyWith(roomMembers: [...result], searchLoading: false);
   }
 }
