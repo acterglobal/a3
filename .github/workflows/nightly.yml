@@ -47,6 +47,7 @@ jobs:
     # Map a step output to a job output
     outputs:
       tag: ${{ steps.tag.outputs.tag }}
+      version: ${{ steps.version.outputs.version }}
       build_num: ${{ steps.build_num.outputs.build_num }}
       prev_tag: 'nightly-latest'
     steps:
@@ -54,7 +55,9 @@ jobs:
         run: echo "tag=`date +%F`" >> $GITHUB_OUTPUT
       - id: build_num
         run: echo "build_num=`date +%s`" >> $GITHUB_OUTPUT
-
+      - id: version
+        # the suffix 0 allows us to provide up to 9 more hotfixes on the same day
+        run: echo "version=`date +1.%y.%-m%d0`" >> $GITHUB_OUTPUT
   
   build:
     uses: ./.github/workflows/build-app.yml
@@ -63,9 +66,10 @@ jobs:
     with:
       artifacts_prefix: 'nightly-'
       build_num: ${{ needs.tags.outputs.build_num }}
-      version: ${{ needs.tags.outputs.tag }}
+      version: ${{ needs.tags.outputs.version }}
       release_title: "Nightly ${{ needs.tags.outputs.tag }}"
       release_tag: nightly-${{ needs.tags.outputs.tag }}
+      flutter_build_extra: "--dart-define IS_NIGHTLY=true"
     secrets: inherit
 
   changelog:
@@ -142,7 +146,7 @@ jobs:
           APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}
           APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
         run: |
-          mkdir private_keys  
+          mkdir private_keys
           echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output "private_keys/AuthKey_$APPLE_API_KEY_ID.p8"
           ls -ltas private_keys
 
@@ -153,7 +157,7 @@ jobs:
         shell: bash
         run: |
           app-store-connect publish --verbose --testflight --expire-build-submitted-for-review --platform=IOS --whats-new @file:CHANGELOG.md --path=*.ipa
-        
+
       - name: Clean up keychain and provisioning profile
         if: ${{ always() }}
         run: |
@@ -199,7 +203,7 @@ jobs:
           APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}
           APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
         run: |
-          mkdir private_keys  
+          mkdir private_keys
           echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output "private_keys/AuthKey_$APPLE_API_KEY_ID.p8"
           ls -ltas private_keys
 
@@ -210,7 +214,7 @@ jobs:
         shell: bash
         run: |
           app-store-connect publish --verbose --testflight --expire-build-submitted-for-review --platform=MAC_OS --whats-new @file:CHANGELOG.md --path=*.pkg
-        
+
       - name: Clean up keychain and provisioning profile
         if: ${{ always() }}
         run: |
@@ -246,7 +250,7 @@ jobs:
           sed -i "s/%{{VERSION}}%/$VERSION/g" PKGBUILD
           sed -i "s/%{{PKGREL}}%/1/g" PKGBUILD
           sed -i "s/%{{LINUX_MD5}}%/`md5sum acter-nightly-linux-x64-${{ needs.tags.outputs.tag }}.tar.bz2  | awk '{print $1}'`/g" PKGBUILD
-      - uses: KSXGitHub/github-actions-deploy-aur@v2.7.1
+      - uses: KSXGitHub/github-actions-deploy-aur@v2.7.2
         name: Publish to AUR
         with:
           pkgname: acter-nightly-bin
