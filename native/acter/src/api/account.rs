@@ -22,7 +22,7 @@ pub use three_pid::{ExternalId, ThreePidEmailTokenResponse};
 
 #[derive(Clone, Debug)]
 pub struct Account {
-    account: SdkAccount,
+    pub(crate) account: SdkAccount,
     client: Client,
     user_id: OwnedUserId,
 }

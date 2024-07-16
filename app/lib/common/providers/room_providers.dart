@@ -1,6 +1,8 @@
 /// Get the relations of the given SpaceId.  Throws
 library;
 
+import 'dart:typed_data';
+
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/notifiers/room_notifiers.dart';
@@ -174,7 +176,7 @@ final roomAvatarProvider =
 
   final avatar = (await room.avatar(thumbsize)).data();
   if (avatar != null) {
-    return MemoryImage(avatar.asTypedList());
+    return MemoryImage(Uint8List.fromList(avatar.asTypedList()));
   }
   return null;
 });
@@ -309,7 +311,7 @@ final _memberAvatarProvider = FutureProvider.autoDispose
     // comes back empty as the data was consumed.
     final avatar = (await profile.getAvatar(thumbsize)).data();
     if (avatar != null) {
-      return MemoryImage(avatar.asTypedList());
+      return MemoryImage(Uint8List.fromList(avatar.asTypedList()));
     }
     return null;
   } on RoomNotFound {

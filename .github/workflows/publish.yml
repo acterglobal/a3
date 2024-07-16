@@ -86,6 +86,7 @@ jobs:
       release_title: ${{ needs.tags.outputs.release_title }} ${{ needs.tags.outputs.tag }}
       release_tag: ${{ needs.tags.outputs.tag }}
       target: ${{ needs.tags.outputs.targets }}
+      prerelease: false
     secrets: inherit
 
   changelog:
@@ -205,23 +206,43 @@ jobs:
     environment: release
     needs:
       - tags
+      - changelog
       - build
     steps:
       - uses: actions/download-artifact@v3
         with:
           name: iOS
+      - uses: actions/download-artifact@v3
+        with:
+          name: Changelog
 
-      - name: Upload to App Store
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          architecture: x64
+      - run: pip3 install codemagic-cli-tools
+
+      - name: Install App Store Connect Auth
         env:
           APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}
           APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
-          APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
         run: |
           mkdir private_keys
           echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output "private_keys/AuthKey_$APPLE_API_KEY_ID.p8"
-          xcrun altool --upload-app --type ios --file *.ipa \
-              --apiKey "$APPLE_API_KEY_ID" --apiIssuer "$APPLE_ISSUER_ID"
+          ls -ltas private_keys
+
+      - name: Publish to AppStore
+        env:
+          APP_STORE_CONNECT_KEY_IDENTIFIER: ${{ secrets.APPLE_API_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
         shell: bash
+        run: |
+          app-store-connect publish --verbose --app-store --expire-build-submitted-for-review --platform=IOS --whats-new @file:CHANGELOG.md --path=*.ipa
+
+      - name: Clean up keychain and provisioning profile
+        if: ${{ always() }}
+        run: |
+          rm -rf private_keys
 
 
 ##     ##    ###     ######        ###    ########  ########   ######  ########  #######  ########  ######## 
@@ -233,78 +254,52 @@ jobs:
 ##     ## ##     ##  ######     ##     ## ##        ##         ######     ##     #######  ##     ## ######## 
 
 
+
   apple-store-mac:
     runs-on: macos-latest
     environment: release
     needs:
       - tags
       - build
+      - changelog
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v3
         with:
           name: MacOS
-      - name: Unlock git-crypt
-        run: |
-          brew install git-crypt
-          echo "${{ secrets.GIT_CRYPT_KEY }}" | base64 --decode > .github/assets/git-crypt-key
-          git-crypt unlock .github/assets/git-crypt-key
-          echo "Files found:"
-          git-crypt status -e
 
-      # Install the Apple certificate and provisioning profile
-      - name: Install the Apple certificates
-        env:
-          P12_PASSWORD: ${{ secrets.BUILD_CERTS_P12_PASSWORD }}
-          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
-        run: |
-          echo "starting in $RUNNER_TEMP"
-          # create variables
-          CERTIFICATE_PATH=".github/assets/build_certificates.p12"
-          KEYCHAIN_PATH="$RUNNER_TEMP/app-signing.keychain-db"
-          echo "vars set"
-          # import certificate and provisioning profile from secrets
-          # create temporary keychain
-          echo "creating keychain"
-          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-          echo "setting keychain"
-          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
-          echo "unlocking keychain"
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-          # import certificate to keychain
-          echo "importing certificate"
-          security import "$CERTIFICATE_PATH" -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
-          echo "listing keychains"
-          security list-keychain -d user -s "$KEYCHAIN_PATH"
+      - uses: actions/download-artifact@v3
+        with:
+          name: Changelog
 
-      - name: Install the Apple provisioning profile
-        run: |
-          echo "Installing provision profiles"
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles/
-          cp .github/assets/provision_profiles/* ~/Library/MobileDevice/Provisioning\ Profiles/
-          ls -ltas ~/Library/MobileDevice/Provisioning\ Profiles/
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          architecture: x64
 
-      - name: Upload to App Store
+      - run: pip3 install codemagic-cli-tools
+
+      - name: Install App Store Connect Auth
         env:
           APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}
           APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
-          APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
         run: |
           mkdir private_keys
           echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output "private_keys/AuthKey_$APPLE_API_KEY_ID.p8"
           ls -ltas private_keys
-          xcrun altool --upload-app --type macos --file acter-macosx-${{ needs.tags.outputs.version }}.pkg \
-              --bundle-id global.acter.a3 \
-              --apiKey "$APPLE_API_KEY_ID" \
-              --apiIssuer "$APPLE_ISSUER_ID"
+
+      - name: Publish to AppStore
+        env:
+          APP_STORE_CONNECT_KEY_IDENTIFIER: ${{ secrets.APPLE_API_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
         shell: bash
+        run: |
+          app-store-connect publish --verbose --app-store --expire-build-submitted-for-review --platform=MAC_OS --whats-new @file:CHANGELOG.md --path=*.pkg
 
       - name: Clean up keychain and provisioning profile
         if: ${{ always() }}
         run: |
-          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
-          rm ~/Library/MobileDevice/Provisioning\ Profiles/*
-          rm .github/assets/git-crypt-key
+          rm -rf private_keys
 
 
    ###    ########   ######  ##     ##       ###    ##     ## ########  
@@ -337,7 +332,7 @@ jobs:
           sed -i "s/%{{VERSION}}%/$VERSION/g" PKGBUILD
           sed -i "s/%{{PKGREL}}%/2/g" PKGBUILD
           sed -i "s/%{{LINUX_MD5}}%/`md5sum acter-linux-x64-${{ needs.tags.outputs.version }}.tar.bz2  | awk '{print $1}'`/g" PKGBUILD
-      - uses: KSXGitHub/github-actions-deploy-aur@v2.7.1
+      - uses: KSXGitHub/github-actions-deploy-aur@v2.7.2
         name: Publish to AUR
         with:
           pkgname: acter-bin
