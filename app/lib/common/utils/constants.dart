@@ -56,6 +56,11 @@ const isNightly = bool.fromEnvironment(
   defaultValue: false,
 );
 
+const isDemo = bool.fromEnvironment(
+  'IS_DEMO',
+  defaultValue: false,
+);
+
 const defaultServersStr = String.fromEnvironment(
   'DEFAULT_SEARCH_SERVER',
   defaultValue:
