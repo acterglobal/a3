@@ -43,22 +43,6 @@ final superInvitesForRoom = FutureProvider.autoDispose
       .toList();
 });
 
-/// Get SuperInviteToken that is associate with single roomId only
-final inviteCodeForSelectRoomOnly = FutureProvider.autoDispose
-    .family<SuperInviteToken?, String>((ref, roomId) async {
-  final allInvitesRelatedToRoomId =
-      await ref.watch(superInvitesForRoom(roomId).future);
-
-  // Get single token which is associate with single roomId only
-  final inviteCodeWhichHaveSelectedRoomIdOnly = allInvitesRelatedToRoomId
-      .where((invite) => invite.rooms().length == 1)
-      .toList();
-
-  return inviteCodeWhichHaveSelectedRoomIdOnly.isEmpty
-      ? null
-      : inviteCodeWhichHaveSelectedRoomIdOnly[0];
-});
-
 /// Given the list of rooms this creates a new token with a random key
 Future<String> newSuperInviteForRooms(
   WidgetRef ref,
