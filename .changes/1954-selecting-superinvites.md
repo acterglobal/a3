@@ -1,0 +1,3 @@
+- Fix to show invite code even after managing it
+- Show the number of additional rooms associated with an invite code (if any)
+- Allows you to select the invite code if more than one is possible
