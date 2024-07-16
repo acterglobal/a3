@@ -69,6 +69,7 @@ jobs:
       version: ${{ needs.tags.outputs.version }}
       release_title: "Nightly ${{ needs.tags.outputs.tag }}"
       release_tag: nightly-${{ needs.tags.outputs.tag }}
+      flutter_build_extra: "--dart-define IS_NIGHTLY=true"
     secrets: inherit
 
   changelog:
