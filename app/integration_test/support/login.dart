@@ -1,6 +1,7 @@
 import 'package:acter/common/models/keys.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/home/data/keys.dart';
+import 'package:acter/features/onboarding/pages/analytics_opt_in_page.dart';
 import 'package:acter/features/onboarding/pages/link_email_page.dart';
 import 'package:acter/features/auth/pages/register_page.dart';
 import 'package:acter/features/onboarding/pages/save_username_page.dart';
@@ -102,7 +103,7 @@ extension ActerLogin on ConvenientTest {
     await tester.ensureVisible(skipBtn);
     await skipBtn.tap();
 
-    Finder doneBtn = find.byKey(AnalyticsOptIn.skipBtn);
+    Finder doneBtn = find.byKey(AnalyticsOptInPage.skipBtn);
     await tester.ensureVisible(doneBtn);
     await doneBtn.tap();
 
