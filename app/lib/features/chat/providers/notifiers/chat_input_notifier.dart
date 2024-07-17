@@ -84,6 +84,7 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
 
   void unsetSelectedMessage() {
     state = state.copyWith(
+      message: '',
       selectedMessage: null,
       selectedMessageState: SelectedMessageState.none,
     );
@@ -101,6 +102,7 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
   void messageSent() {
     // reset the state;
     state = state.copyWith(
+      message: '',
       sendingState: SendingState.preparing,
       selectedMessage: null,
       selectedMessageState: SelectedMessageState.none,

@@ -43,9 +43,12 @@ class BubbleBuilder extends ConsumerWidget {
     final myId = ref.watch(myUserIdStrProvider);
     final isAuthor = (myId == message.author.id);
     final roomId = convo.getRoomIdStr();
-
+    final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
     String eventType = message.metadata?['eventType'] ?? '';
     bool isMemberEvent = eventType == 'm.room.member';
+    bool redactedOrEncrypted = (message is types.CustomMessage) &&
+        (message.metadata!.containsKey('eventType') ||
+            message.metadata!['eventType'] == 'm.room.redaction');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,19 +57,19 @@ class BubbleBuilder extends ConsumerWidget {
         isMemberEvent
             ? child
             : SwipeTo(
-                onRightSwipe: (DragUpdateDetails details) {
-                  ref
-                      .read(chatInputProvider(roomId).notifier)
-                      .setReplyToMessage(message);
-                },
+                onRightSwipe: redactedOrEncrypted
+                    ? null
+                    : (DragUpdateDetails details) {
+                        inputNotifier.setReplyToMessage(message);
+                      },
                 iconOnRightSwipe: Icons.reply_rounded,
-                onLeftSwipe: isAuthor
-                    ? (DragUpdateDetails details) {
-                        ref
-                            .read(chatInputProvider(roomId).notifier)
-                            .setEditMessage(message);
-                      }
-                    : null,
+                onLeftSwipe: redactedOrEncrypted
+                    ? null
+                    : isAuthor
+                        ? (DragUpdateDetails details) {
+                            inputNotifier.setEditMessage(message);
+                          }
+                        : null,
                 iconOnLeftSwipe: Atlas.pencil_edit_thin,
                 child: _ChatBubble(
                   convo: convo,

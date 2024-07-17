@@ -673,6 +673,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         const Spacer(),
         GestureDetector(
           onTap: () {
+            controller.clear();
             inputNotifier.unsetSelectedMessage();
             FocusScope.of(context).unfocus();
           },
@@ -695,7 +696,6 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
 
       final mentions = ref.read(chatInputProvider(roomId)).mentions;
       String markdownText = controller.text;
-      debugPrint(markdownText);
       final userMentions = [];
       mentions.forEach((key, value) {
         userMentions.add(value);
@@ -726,7 +726,9 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       } else {
         await stream.sendMessage(draft);
       }
+
       ref.read(chatInputProvider(roomId).notifier).messageSent();
+
       controller.clear();
     } catch (error, stackTrace) {
       _log.severe('Sending chat message failed', error, stackTrace);
@@ -902,9 +904,10 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
     ref.listen(chatInputProvider(widget.roomId), (prev, next) {
       if (next.selectedMessageState == SelectedMessageState.edit &&
           (prev?.selectedMessageState != next.selectedMessageState ||
-              next.selectedMessage != prev?.selectedMessage)) {
+              next.message != prev?.message)) {
         // a new message has been selected to be edited or switched from reply
         // to edit, force refresh the inner text controller to reflect that
+        widget.controller.text = next.message;
         chatFocus.requestFocus();
       } else if (next.selectedMessageState == SelectedMessageState.replyTo &&
           (next.selectedMessage != prev?.selectedMessage ||
