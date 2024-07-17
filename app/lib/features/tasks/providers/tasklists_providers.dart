@@ -31,6 +31,11 @@ typedef TasksListSearchParams = ({String? spaceId, String searchText});
 final tasksListSearchProvider = FutureProvider.autoDispose
     .family<List<TaskList>, TasksListSearchParams>((ref, params) async {
   final tasksList = await ref.watch(taskListProvider(params.spaceId).future);
+
+  //Return all task list if search text is empty
+  if (params.searchText.isEmpty) return tasksList;
+
+  //Return all task list filter if search text is given
   List<TaskList> filteredTaskList = [];
   for (final taskListItem in tasksList) {
     //Check search param in task list

@@ -102,15 +102,11 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
   Widget _buildBody() {
     AsyncValue<List<TaskList>> tasksList;
 
-    if (searchValue.isNotEmpty) {
-      tasksList = ref.watch(
-        tasksListSearchProvider(
-          (spaceId: widget.spaceId, searchText: searchValue),
-        ),
-      );
-    } else {
-      tasksList = ref.watch(taskListProvider(widget.spaceId));
-    }
+    tasksList = ref.watch(
+      tasksListSearchProvider(
+        (spaceId: widget.spaceId, searchText: searchValue),
+      ),
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
