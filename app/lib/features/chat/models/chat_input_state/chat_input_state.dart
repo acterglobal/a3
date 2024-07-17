@@ -3,8 +3,6 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 part 'chat_input_state.freezed.dart';
 
-typedef UserRoomProfile = ({String? displayName, String userId});
-
 enum SelectedMessageState {
   none,
   actions,
