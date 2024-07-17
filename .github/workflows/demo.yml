@@ -62,8 +62,10 @@ jobs:
      - tags
     if: ${{ needs.run_checker.outputs.should_run != 'false' }}
     with:
-      artifact_prefix: 'demo-'
+      artifacts_prefix: 'demo-'
       release_tag: demo-${{ needs.tags.outputs.tag }}
+      release_env: demo
       build_num: ${{ needs.tags.outputs.build_num }}
       version: ${{ needs.tags.outputs.tag }}
+      flutter_build_extra: "--dart-define IS_DEMO=true"
     secrets: inherit

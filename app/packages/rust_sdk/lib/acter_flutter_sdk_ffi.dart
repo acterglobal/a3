@@ -9799,6 +9799,97 @@ class Api {
     return tmp7;
   }
 
+  Categories? __spaceCategoriesFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceCategoriesFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_Categories");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = Categories._(this, tmp13_1);
+    return tmp7;
+  }
+
+  bool? __spaceSetCategoriesFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceSetCategoriesFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   bool? __memberIgnoreFuturePoll(
     int boxed,
     int postCobject,
@@ -23532,6 +23623,205 @@ class Api {
             int,
             int,
           )>();
+  late final _categoryIdPtr = _lookup<
+      ffi.NativeFunction<
+          _CategoryIdReturn Function(
+            ffi.Int64,
+          )>>("__Category_id");
+
+  late final _categoryId = _categoryIdPtr.asFunction<
+      _CategoryIdReturn Function(
+        int,
+      )>();
+  late final _categoryTitlePtr = _lookup<
+      ffi.NativeFunction<
+          _CategoryTitleReturn Function(
+            ffi.Int64,
+          )>>("__Category_title");
+
+  late final _categoryTitle = _categoryTitlePtr.asFunction<
+      _CategoryTitleReturn Function(
+        int,
+      )>();
+  late final _categoryEntriesPtr = _lookup<
+      ffi.NativeFunction<
+          _CategoryEntriesReturn Function(
+            ffi.Int64,
+          )>>("__Category_entries");
+
+  late final _categoryEntries = _categoryEntriesPtr.asFunction<
+      _CategoryEntriesReturn Function(
+        int,
+      )>();
+  late final _categoryIconTypeStrPtr = _lookup<
+      ffi.NativeFunction<
+          _CategoryIconTypeStrReturn Function(
+            ffi.Int64,
+          )>>("__Category_icon_type_str");
+
+  late final _categoryIconTypeStr = _categoryIconTypeStrPtr.asFunction<
+      _CategoryIconTypeStrReturn Function(
+        int,
+      )>();
+  late final _categoryIconStrPtr = _lookup<
+      ffi.NativeFunction<
+          _CategoryIconStrReturn Function(
+            ffi.Int64,
+          )>>("__Category_icon_str");
+
+  late final _categoryIconStr = _categoryIconStrPtr.asFunction<
+      _CategoryIconStrReturn Function(
+        int,
+      )>();
+  late final _categoryUpdateBuilderPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Category_update_builder");
+
+  late final _categoryUpdateBuilder = _categoryUpdateBuilderPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _categoryBuilderTitlePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__CategoryBuilder_title");
+
+  late final _categoryBuilderTitle = _categoryBuilderTitlePtr.asFunction<
+      void Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _categoryBuilderClearEntriesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+          )>>("__CategoryBuilder_clear_entries");
+
+  late final _categoryBuilderClearEntries =
+      _categoryBuilderClearEntriesPtr.asFunction<
+          void Function(
+            int,
+          )>();
+  late final _categoryBuilderAddEntryPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__CategoryBuilder_add_entry");
+
+  late final _categoryBuilderAddEntry = _categoryBuilderAddEntryPtr.asFunction<
+      void Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _categoryBuilderUnsetIconPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+          )>>("__CategoryBuilder_unset_icon");
+
+  late final _categoryBuilderUnsetIcon =
+      _categoryBuilderUnsetIconPtr.asFunction<
+          void Function(
+            int,
+          )>();
+  late final _categoryBuilderIconPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__CategoryBuilder_icon");
+
+  late final _categoryBuilderIcon = _categoryBuilderIconPtr.asFunction<
+      void Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _categoryBuilderBuildPtr = _lookup<
+      ffi.NativeFunction<
+          _CategoryBuilderBuildReturn Function(
+            ffi.Int64,
+          )>>("__CategoryBuilder_build");
+
+  late final _categoryBuilderBuild = _categoryBuilderBuildPtr.asFunction<
+      _CategoryBuilderBuildReturn Function(
+        int,
+      )>();
+  late final _categoriesCategoriesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Categories_categories");
+
+  late final _categoriesCategories = _categoriesCategoriesPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _categoriesNewCategoryBuilderPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Categories_new_category_builder");
+
+  late final _categoriesNewCategoryBuilder =
+      _categoriesNewCategoryBuilderPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _categoriesUpdateBuilderPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Categories_update_builder");
+
+  late final _categoriesUpdateBuilder = _categoriesUpdateBuilderPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _categoriesBuilderAddPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__CategoriesBuilder_add");
+
+  late final _categoriesBuilderAdd = _categoriesBuilderAddPtr.asFunction<
+      void Function(
+        int,
+        int,
+      )>();
+  late final _categoriesBuilderClearPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+          )>>("__CategoriesBuilder_clear");
+
+  late final _categoriesBuilderClear = _categoriesBuilderClearPtr.asFunction<
+      void Function(
+        int,
+      )>();
   late final _spaceSpaceRelationsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -24079,6 +24369,40 @@ class Api {
         int,
         int,
         int,
+        int,
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _spaceCategoriesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__Space_categories");
+
+  late final _spaceCategories = _spaceCategoriesPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _spaceSetCategoriesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+          )>>("__Space_set_categories");
+
+  late final _spaceSetCategories = _spaceSetCategoriesPtr.asFunction<
+      int Function(
         int,
         int,
         int,
@@ -30018,6 +30342,36 @@ class Api {
             int,
             int,
           )>();
+  late final _spaceCategoriesFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceCategoriesFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Space_categories_future_poll");
+
+  late final _spaceCategoriesFuturePoll =
+      _spaceCategoriesFuturePollPtr.asFunction<
+          _SpaceCategoriesFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _spaceSetCategoriesFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceSetCategoriesFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Space_set_categories_future_poll");
+
+  late final _spaceSetCategoriesFuturePoll =
+      _spaceSetCategoriesFuturePollPtr.asFunction<
+          _SpaceSetCategoriesFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _memberIgnoreFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _MemberIgnoreFuturePollReturn Function(
@@ -32248,6 +32602,55 @@ class Api {
 
   late final _ffiListCalendarEventInsert =
       _ffiListCalendarEventInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListCategory createFfiListCategory() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListCategoryCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListCategory");
+    return FfiListCategory._(this, list_box);
+  }
+
+  late final _ffiListCategoryCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListCategoryCreate");
+
+  late final _ffiListCategoryCreate =
+      _ffiListCategoryCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListCategoryLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListCategoryLen");
+
+  late final _ffiListCategoryLen =
+      _ffiListCategoryLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListCategoryElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListCategoryElementAt");
+
+  late final _ffiListCategoryElementAt =
+      _ffiListCategoryElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListCategoryRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListCategoryRemove");
+
+  late final _ffiListCategoryRemove =
+      _ffiListCategoryRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListCategoryAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListCategoryAdd");
+
+  late final _ffiListCategoryAdd =
+      _ffiListCategoryAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListCategoryInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListCategoryInsert");
+
+  late final _ffiListCategoryInsert =
+      _ffiListCategoryInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListComment createFfiListComment() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListCommentCreate());
@@ -47744,6 +48147,430 @@ class ActerAppSettingsBuilder {
   }
 }
 
+class Category {
+  final Api _api;
+  final _Box _box;
+
+  Category._(this._api, this._box);
+
+  String id() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._categoryId(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String title() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._categoryTitle(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String entries() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._categoryEntries(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? iconTypeStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._categoryIconTypeStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? iconStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._categoryIconStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  CategoryBuilder updateBuilder() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._categoryUpdateBuilder(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_CategoryBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = CategoryBuilder._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class CategoryBuilder {
+  final Api _api;
+  final _Box _box;
+
+  CategoryBuilder._(this._api, this._box);
+
+  void title(
+    String title,
+  ) {
+    final tmp1 = title;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._categoryBuilderTitle(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  void clearEntries() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._categoryBuilderClearEntries(
+      tmp0,
+    );
+    return;
+  }
+
+  void addEntry(
+    String entry,
+  ) {
+    final tmp1 = entry;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._categoryBuilderAddEntry(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  void unsetIcon() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._categoryBuilderUnsetIcon(
+      tmp0,
+    );
+    return;
+  }
+
+  void icon(
+    String type,
+    String key,
+  ) {
+    final tmp1 = type;
+    final tmp5 = key;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    _api._categoryBuilderIcon(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    return;
+  }
+
+  Category build() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._categoryBuilderBuild(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 =
+          utf8.decode(tmp4_0.asTypedList(tmp5), allowMalformed: true);
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_Category");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = Category._(_api, tmp7_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class Categories {
+  final Api _api;
+  final _Box _box;
+
+  Categories._(this._api, this._box);
+
+  FfiListCategory categories() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._categoriesCategories(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListCategory");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListCategory._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  CategoryBuilder newCategoryBuilder() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._categoriesNewCategoryBuilder(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_CategoryBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = CategoryBuilder._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  CategoriesBuilder updateBuilder() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._categoriesUpdateBuilder(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_CategoriesBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = CategoriesBuilder._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class CategoriesBuilder {
+  final Api _api;
+  final _Box _box;
+
+  CategoriesBuilder._(this._api, this._box);
+
+  void add(
+    Category cat,
+  ) {
+    final tmp1 = cat;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._categoriesBuilderAdd(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void clear() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._categoriesBuilderClear(
+      tmp0,
+    );
+    return;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 class Space {
   final Api _api;
   final _Box _box;
@@ -48843,6 +49670,76 @@ class Space {
     tmp13_1._finalizer = _api._registerFinalizer(tmp13_1);
     final tmp12 = _nativeFuture(tmp13_1, _api.__spaceRedactContentFuturePoll);
     return tmp12;
+  }
+
+  /// Get the categories for a specific key.
+  /// currently supported: spaces, chats
+  Future<Categories> categories(
+    String key,
+  ) {
+    final tmp1 = key;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._spaceCategories(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__Space_categories_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__spaceCategoriesFuturePoll);
+    return tmp6;
+  }
+
+  /// Set the categories for a specific key
+  Future<bool> setCategories(
+    String key,
+    CategoriesBuilder categories,
+  ) {
+    final tmp1 = key;
+    final tmp5 = categories;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    tmp6 = tmp5._box.move();
+    final tmp7 = _api._spaceSetCategories(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+    );
+    final tmp9 = tmp7;
+    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+    final tmp9_1 = _Box(_api, tmp9_0, "__Space_set_categories_future_drop");
+    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
+    final tmp8 = _nativeFuture(tmp9_1, _api.__spaceSetCategoriesFuturePoll);
+    return tmp8;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -58448,6 +59345,68 @@ class _TasksSettingsBuilderBuildReturn extends ffi.Struct {
   external int arg4;
 }
 
+class _CategoryIdReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _CategoryTitleReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _CategoryEntriesReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _CategoryIconTypeStrReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _CategoryIconStrReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _CategoryBuilderBuildReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Int64()
+  external int arg4;
+}
+
 class _SpaceTopicReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -61570,6 +62529,36 @@ class _SpaceRedactContentFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _SpaceCategoriesFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _SpaceSetCategoriesFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
 class _MemberIgnoreFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -63633,6 +64622,66 @@ class FfiListCalendarEvent extends Iterable<CalendarEvent>
   void insert(int index, CalendarEvent element) {
     _api._ffiListCalendarEventInsert(
         _box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListCategory extends Iterable<Category>
+    implements CustomIterable<Category> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListCategory._(this._api, this._box);
+
+  @override
+  Iterator<Category> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListCategoryLen(_box.borrow());
+  }
+
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  Category elementAt(int index) {
+    final address = _api._ffiListCategoryElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return Category._(_api, reference);
+  }
+
+  Category operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  Category remove(int index) {
+    final address = _api._ffiListCategoryRemove(_box.borrow(), index);
+    final reference =
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_Category");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return Category._(_api, reference);
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void add(Category element) {
+    _api._ffiListCategoryAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, Category element) {
+    _api._ffiListCategoryInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
   }
 

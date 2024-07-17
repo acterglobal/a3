@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -12,6 +14,8 @@ final searchItemProfileData = FutureProvider.autoDispose
   return AvatarInfo(
     uniqueId: publicSpace.roomIdStr(),
     displayName: publicSpace.name(),
-    avatar: avatar != null ? MemoryImage(avatar.asTypedList()) : null,
+    avatar: avatar != null
+        ? MemoryImage(Uint8List.fromList(avatar.asTypedList()))
+        : null,
   );
 });

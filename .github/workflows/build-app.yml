@@ -13,6 +13,15 @@ on:
         required: true
         type: string
 
+      release_env:
+        required: false
+        type: string
+        default: release
+
+      prerelease:
+        type: boolean
+        default: true
+
       artifacts_prefix:
         required: false
         type: string
@@ -20,6 +29,9 @@ on:
         required: false
         type: string
       target:
+        required: false
+        type: string
+      flutter_build_extra:
         required: false
         type: string
 
@@ -266,13 +278,16 @@ jobs:
         shell: bash
         run: |
           flutter ${{ matrix.flutter_build_args }} \
+            ${{ inputs.flutter_build_extra || '' }} \
             --build-name="${{ inputs.version }}" \
             --build-number="${{ inputs.build_num }}" \
-            --dart-define VERSION_NAME="${{ inputs.version }}" \
+            --dart-define SENTRY_DSN="${{ secrets.SENTRY_DSN }}" \
+            --dart-define SENTRY_RELEASE="${{ inputs.version }}" \
+            --dart-define SENTRY_ENVIRONMENT="${{inputs.release_env}}" \
             --dart-define PUSH_SERVER="${{ secrets.PUSH_SERVER }}" \
             --dart-define RAGESHAKE_URL="${{ secrets.RAGESHAKE_URL }}" \
             --dart-define RAGESHAKE_APP_NAME="${{ secrets.RAGESHAKE_APP_NAME }}" \
-            --dart-define RAGESHAKE_APP_VERSION="${{inputs.release_tag}}/${{ matrix.name }}" \
+            --dart-define RAGESHAKE_APP_VERSION="${{inputs.release_env}}/${{ matrix.name }}" \
             --dart-define DEFAULT_HOMESERVER_URL="${{vars.DEFAULT_HOMESERVER_URL}}" \
             --dart-define DEFAULT_HOMESERVER_NAME="${{vars.DEFAULT_HOMESERVER_NAME}}"
         working-directory: ./app
@@ -403,6 +418,7 @@ jobs:
           name: ${{ inputs.release_title }}
           tag_name: ${{inputs.release_tag}}
           generate_release_notes: false
+          prerelease: ${{ inputs.prerelease }}
           files: |
             ${{ matrix.artifact_prefix }}-${{ inputs.version }}.*
             ${{ matrix.specific_upload_artifacts }}

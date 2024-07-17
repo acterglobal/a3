@@ -5,8 +5,8 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/no_internet.dart';
-import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
-import 'package:acter/features/onboarding/widgets/logo_widget.dart';
+import 'package:acter/features/auth/providers/auth_providers.dart';
+import 'package:acter/features/auth/widgets/logo_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -233,7 +233,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     if (!context.mounted) return;
     if (loginSuccess == null) {
       // no message means, login was successful.
-      context.goNamed(Routes.main.name);
+      context.goNamed(Routes.analyticsOptIn.name);
     } else {
       EasyLoading.showError(
         loginSuccess,

@@ -169,7 +169,7 @@ class UploadAvatarPage extends ConsumerWidget {
   Widget _buildSkipActionButton(BuildContext context) {
     return OutlinedButton(
       key: UploadAvatarPage.skipBtn,
-      onPressed: () => context.goNamed(Routes.main.name),
+      onPressed: () => context.goNamed(Routes.analyticsOptIn.name),
       child: Text(
         L10n.of(context).skip,
         style: Theme.of(context).textTheme.bodyMedium,

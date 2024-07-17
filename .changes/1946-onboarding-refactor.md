@@ -1,0 +1,2 @@
+- Simplify onboarding, drop unnecessary screens
+- Automatic Crash analytics if you opt-in to that

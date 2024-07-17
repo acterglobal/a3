@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 
@@ -19,7 +21,7 @@ final userAvatarProvider =
     try {
       final data = (await user.getAvatar(null)).data();
       if (data != null) {
-        return MemoryImage(data.asTypedList());
+        return MemoryImage(Uint8List.fromList(data.asTypedList()));
       }
     } catch (e, s) {
       _log.severe('failure fetching avatar', e, s);

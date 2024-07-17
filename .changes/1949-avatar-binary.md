@@ -1,0 +1,2 @@
+- Fix: Avatars some time showed up weird, were broken or didn't show at all
+- Fix: Several instances in which the App failed or froze because of broken Avatars

@@ -3,11 +3,14 @@ import 'dart:convert';
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/constants.dart';
+import 'package:acter/common/utils/main.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/bug_report/const.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
+import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:crypto/crypto.dart';
@@ -39,6 +42,8 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
   Widget build(BuildContext context) {
     final deviceId =
         ref.watch(alwaysClientProvider.select((a) => a.deviceId().toString()));
+    final allowReportSending =
+        ref.watch(allowSentryReportingProvider).valueOrNull ?? isNightly;
     return WithSidebar(
       sidebar: const SettingsPage(),
       child: Scaffold(
@@ -91,6 +96,15 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                     .copyWith(color: Theme.of(context).colorScheme.primary),
               ),
               tiles: <SettingsTile>[
+                SettingsTile.switchTile(
+                  initialValue: allowReportSending,
+                  onToggle: (newVal) {
+                    setCanReportToSentry(newVal);
+                    ref.invalidate(allowSentryReportingProvider);
+                  },
+                  title: Text(L10n.of(context).sendCrashReportsTitle),
+                  description: Text(L10n.of(context).sendCrashReportsInfo),
+                ),
                 SettingsTile(
                   title: Text(
                     L10n.of(context).version,
