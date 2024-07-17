@@ -1,14 +1,13 @@
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/search/model/keys.dart';
-import 'package:acter/features/space/pages/space_tasks_page.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
 import 'package:acter/features/space/settings/widgets/space_settings_menu.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/features/space/widgets/space_toolbar.dart';
 import 'package:acter/features/tasks/pages/task_list_details_page.dart';
-import 'package:acter/features/tasks/pages/tasks_page.dart';
+import 'package:acter/features/tasks/pages/tasks_list_page.dart';
 import 'package:acter/features/tasks/sheets/create_update_task_list.dart';
 import 'package:acter/features/tasks/widgets/task_item.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
@@ -113,7 +112,7 @@ extension ActerTasks on ConvenientTest {
     await ensureTasksAreEnabled(spaceId);
     await gotoSpace(spaceId, appTab: TabEntry.tasks);
     await navigateTo([
-      SpaceTasksPage.createTaskKey,
+      TasksListPage.createNewTaskListKey,
     ]);
 
     final taskListId = await createTaskList(
@@ -175,7 +174,7 @@ void tasksTests() {
     await t.ensureTasksAreEnabled(spaceId);
     await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
     await t.navigateTo([
-      SpaceTasksPage.createTaskKey,
+      TasksListPage.createNewTaskListKey,
     ]);
 
     await t.createTaskList(
@@ -209,7 +208,7 @@ void tasksTests() {
     await t.navigateTo([
       MainNavKeys.quickJump,
       QuickJumpKeys.tasks,
-      TasksPage.createNewTaskListKey,
+      TasksListPage.createNewTaskListKey,
     ]);
 
     await t.createTaskList(
@@ -352,7 +351,7 @@ void tasksTests() {
 
     await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
     await t.navigateTo([
-      SpaceTasksPage.createTaskKey,
+      TasksListPage.createNewTaskListKey,
     ]);
 
     await t.createTaskList(
@@ -391,7 +390,7 @@ void tasksTests() {
       MainNavKeys.quickJump,
       MainNavKeys.quickJump,
       QuickJumpKeys.tasks,
-      TasksPage.createNewTaskListKey,
+      TasksListPage.createNewTaskListKey,
     ]);
 
     await t.createTaskList(
@@ -423,7 +422,7 @@ void tasksTests() {
     // we see our entry now
     await t.tester.dragUntilVisible(
       protestPrep,
-      find.byKey(SpaceTasksPage.scrollView),
+      find.byKey(TasksListPage.scrollView),
       const Offset(0, -500),
     );
     await find.text('Buy markers').should(findsOneWidget);

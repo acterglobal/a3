@@ -10,8 +10,8 @@ import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
-import 'package:acter/features/tasks/providers/tasklists.dart';
-import 'package:acter/features/tasks/providers/tasks.dart';
+import 'package:acter/features/tasks/providers/tasklists_providers.dart';
+import 'package:acter/features/tasks/providers/task_items_providers.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
 import 'package:acter/features/tasks/widgets/skeleton/task_item_detail_page_skeleton.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -39,7 +39,7 @@ class TaskItemDetailPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final task =
-        ref.watch(taskProvider((taskListId: taskListId, taskId: taskId)));
+        ref.watch(taskItemProvider((taskListId: taskListId, taskId: taskId)));
     return Scaffold(
       appBar: _buildAppBar(context, ref, task),
       body: _buildBody(context, ref, task),
@@ -150,8 +150,8 @@ class TaskItemDetailPage extends ConsumerWidget {
       builder: (context) => RedactContentWidget(
         title: L10n.of(context).deleteTaskItem,
         onSuccess: () {
-          ref.invalidate(tasksProvider);
-          ref.invalidate(taskListProvider);
+          ref.invalidate(taskItemsListProvider);
+          ref.invalidate(taskListItemProvider);
           Navigator.of(context, rootNavigator: true).pop();
         },
         eventId: task.eventIdStr(),
@@ -480,7 +480,7 @@ class TaskItemDetailPage extends ConsumerWidget {
     updater.title(newName);
     try {
       await updater.send();
-      ref.invalidate(spaceTasksListsProvider);
+      ref.invalidate(taskListProvider);
       EasyLoading.dismiss();
       if (!context.mounted) return;
       context.pop();
