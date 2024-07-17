@@ -1,4 +1,5 @@
 import 'package:acter/features/tasks/providers/notifiers.dart';
+import 'package:acter/features/tasks/providers/task_items_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -31,9 +32,24 @@ final tasksListSearchProvider = FutureProvider.autoDispose
     .family<List<TaskList>, TasksListSearchParams>((ref, params) async {
   final tasksList = await ref.watch(taskListProvider(params.spaceId).future);
   List<TaskList> filteredTaskList = [];
-  for (final task in tasksList) {
-    if (task.name().toLowerCase().contains(params.searchText.toLowerCase())) {
-      filteredTaskList.add(task);
+  for (final taskListItem in tasksList) {
+    //Check search param in task list
+    if (taskListItem
+        .name()
+        .toLowerCase()
+        .contains(params.searchText.toLowerCase())) {
+      filteredTaskList.add(taskListItem);
+    }
+
+    //Check search param in task list items data
+    final tasks = await ref.watch(taskItemsListProvider(taskListItem).future);
+    for (final openTaskItem in tasks.openTasks) {
+      if (openTaskItem
+          .title()
+          .toLowerCase()
+          .contains(params.searchText.toLowerCase())) {
+        filteredTaskList.add(taskListItem);
+      }
     }
   }
   return filteredTaskList;
