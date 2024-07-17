@@ -711,6 +711,8 @@
   "@moderator": {},
   "more": "More",
   "@more": {},
+  "moreRooms": "+{count} additional rooms",
+  "@moreRooms": {},
   "moreOptionsNotImplementedYet": "More options not implemented yet",
   "@moreOptionsNotImplementedYet": {},
   "muted": "Muted",
