@@ -93,13 +93,12 @@ class TaskItemNotifier extends FamilyAsyncNotifier<Task, Task> {
 
 //List of all task list
 //If space Id given then it will return list of space task list
-class AsyncTaskListsNotifier
-    extends FamilyAsyncNotifier<List<TaskList>, String?> {
+class AsyncAllTaskListsNotifier extends AsyncNotifier<List<TaskList>> {
   late Stream<bool> _listener;
   late StreamSubscription<bool> _poller;
 
   @override
-  Future<List<TaskList>> build(String? arg) async {
+  Future<List<TaskList>> build() async {
     final client = ref.watch(alwaysClientProvider);
 
     //GET ALL TASKS LIST
@@ -115,16 +114,6 @@ class AsyncTaskListsNotifier
 
   Future<List<TaskList>> _getTasksList(Client client) async {
     //GET ALL TASKS LIST
-    final tasksList = (await client.taskLists()).toList();
-    // this might throw internally
-
-    if (arg == null) {
-      return tasksList;
-    } else {
-      //GET SPACE TASKS LIST
-      return tasksList
-          .where((t) => t.spaceIdStr() == arg!)
-          .toList(); // this might throw internally
-    }
+    return (await client.taskLists()).toList();
   }
 }

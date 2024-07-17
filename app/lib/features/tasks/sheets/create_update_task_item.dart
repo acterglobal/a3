@@ -261,7 +261,7 @@ class _CreateUpdateItemListConsumerState
       if (!mounted) return;
       if (widget.cancel != null) widget.cancel!();
       context.pop();
-      ref.invalidate(tasksListsProvider);
+      ref.invalidate(taskListProvider);
     } catch (e) {
       EasyLoading.dismiss();
       if (!mounted) return;
@@ -292,7 +292,7 @@ class _CreateUpdateItemListConsumerState
       EasyLoading.dismiss();
       if (!mounted) return;
       context.pop();
-      ref.invalidate(tasksListsProvider);
+      ref.invalidate(taskListProvider);
     } catch (e) {
       EasyLoading.dismiss();
       if (!mounted) return;

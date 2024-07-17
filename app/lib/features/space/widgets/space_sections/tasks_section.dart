@@ -20,7 +20,7 @@ class TasksSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final taskList = ref.watch(tasksListsProvider(spaceId));
+    final taskList = ref.watch(taskListProvider(spaceId));
     return taskList.when(
       data: (tasks) => buildTasksSectionUI(context, tasks),
       error: (error, stack) =>

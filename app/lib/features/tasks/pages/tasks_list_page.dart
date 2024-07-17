@@ -109,7 +109,7 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
         ),
       );
     } else {
-      tasksList = ref.watch(tasksListsProvider(widget.spaceId));
+      tasksList = ref.watch(taskListProvider(widget.spaceId));
     }
 
     return Column(

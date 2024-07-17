@@ -9,16 +9,27 @@ final taskListItemProvider =
 );
 
 //List of all task list
-//If space Id given then it will return list of space task list
-final tasksListsProvider = AsyncNotifierProvider.family<AsyncTaskListsNotifier,
-    List<TaskList>, String?>(() => AsyncTaskListsNotifier());
+final allTasksListsProvider =
+    AsyncNotifierProvider<AsyncAllTaskListsNotifier, List<TaskList>>(
+  () => AsyncAllTaskListsNotifier(),
+);
+
+final taskListProvider =
+    FutureProvider.family<List<TaskList>, String?>((ref, spaceId) async {
+  final allTaskLists = await ref.watch(allTasksListsProvider.future);
+  if (spaceId == null) {
+    return allTaskLists;
+  } else {
+    return allTaskLists.where((t) => t.spaceIdStr() == spaceId).toList();
+  }
+});
 
 //Search any tasks list
 typedef TasksListSearchParams = ({String? spaceId, String searchText});
 
 final tasksListSearchProvider = FutureProvider.autoDispose
     .family<List<TaskList>, TasksListSearchParams>((ref, params) async {
-  final tasksList = await ref.watch(tasksListsProvider(params.spaceId).future);
+  final tasksList = await ref.watch(taskListProvider(params.spaceId).future);
   List<TaskList> filteredTaskList = [];
   for (final task in tasksList) {
     if (task.name().toLowerCase().contains(params.searchText.toLowerCase())) {

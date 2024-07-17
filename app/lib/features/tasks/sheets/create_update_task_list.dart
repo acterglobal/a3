@@ -203,7 +203,7 @@ class _CreateUpdateTaskListConsumerState
       EasyLoading.dismiss();
       if (!mounted) return;
       context.pop();
-      ref.invalidate(tasksListsProvider);
+      ref.invalidate(taskListProvider);
     } catch (e) {
       if (!mounted) {
         EasyLoading.dismiss();

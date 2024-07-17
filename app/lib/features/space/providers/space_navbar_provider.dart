@@ -50,7 +50,7 @@ final tabsProvider =
     }
 
     if (appSettings.tasks().active()) {
-      final taskList = await ref.watch(tasksListsProvider(spaceId).future);
+      final taskList = await ref.watch(taskListProvider(spaceId).future);
       if (taskList.isNotEmpty) {
         tabs.add(
           const TabEntry(key: TabEntry.tasks, label: 'Tasks'),
