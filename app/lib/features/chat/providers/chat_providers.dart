@@ -2,7 +2,6 @@ import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/network_provider.dart';
-import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
@@ -16,7 +15,6 @@ import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/providers/app_settings_provider.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
-import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -184,16 +182,6 @@ final isRoomEncryptedProvider =
     FutureProvider.family<bool, String>((ref, roomId) async {
   final convo = await ref.watch(chatProvider(roomId).future);
   return await convo.isEncrypted();
-});
-
-final chatMentionsProvider = FutureProvider.family
-    .autoDispose<List<AvatarInfo>, String>((ref, roomId) async {
-  final client = ref.watch(alwaysClientProvider);
-  final myId = client.userId().toString();
-  final activeMembers = await ref.watch(membersIdsProvider(roomId).future);
-  return activeMembers.where((mId) => mId != myId).map((mId) {
-    return ref.watch(memberAvatarInfoProvider((roomId: roomId, userId: mId)));
-  }).toList();
 });
 
 final chatTypingEventProvider = StreamProvider.autoDispose

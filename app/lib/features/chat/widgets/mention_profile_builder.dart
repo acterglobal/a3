@@ -1,4 +1,5 @@
 import 'package:acter/common/models/types.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
@@ -18,18 +19,29 @@ class MentionProfileBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    var mentions = ref.watch(chatMentionsProvider((roomQuery.roomId)));
+    var memberIds = ref.watch(membersIdsProvider((roomQuery.roomId)));
+    if (memberIds.valueOrNull != null) {
+      final data = memberIds.requireValue;
+      final users = data.fold<Map<String, AvatarInfo>>({}, (map, uId) {
+        // keeps avatar data updated with mention list
+        final profile = ref.watch(
+          memberAvatarInfoProvider(
+            (roomId: roomQuery.roomId, userId: uId),
+          ),
+        );
 
-    if (mentions.valueOrNull != null) {
-      final data = mentions.requireValue;
-      final users = data.where((u) {
-        final normalizedId = u.uniqueId.toLowerCase();
-        final normalizedName = u.displayName?.toLowerCase() ?? '';
+        final normalizedId = uId.toLowerCase();
+        final normalizedName = profile.displayName?.toLowerCase() ?? '';
         final normalizedQuery = roomQuery.query.toLowerCase();
-        return normalizedId.contains(normalizedQuery) ||
-            normalizedName.contains(normalizedQuery);
-      });
 
+        if (normalizedId.contains(normalizedQuery) ||
+            normalizedName.contains(normalizedQuery)) {
+          map[uId] = profile;
+        }
+
+        return map;
+      });
+      final userIds = users.keys.toList();
       if (users.isEmpty) {
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -53,7 +65,8 @@ class MentionProfileBuilder extends ConsumerWidget {
                 shrinkWrap: true,
                 itemCount: users.length,
                 itemBuilder: (_, index) {
-                  final user = users.elementAt(index);
+                  final userId = userIds.elementAt(index);
+                  final user = users[userId]!;
                   return ListTile(
                     onTap: () {
                       final autocomplete = MultiTriggerAutocomplete.of(ctx);
@@ -70,7 +83,7 @@ class MentionProfileBuilder extends ConsumerWidget {
                         size: 18,
                       ),
                     ),
-                    title: Text(user.displayName ?? data[index].uniqueId),
+                    title: Text(user.displayName ?? user.uniqueId),
                     titleTextStyle: Theme.of(context).textTheme.bodyMedium,
                     subtitleTextStyle: Theme.of(context).textTheme.labelMedium,
                     subtitle:
