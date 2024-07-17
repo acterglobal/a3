@@ -5,16 +5,20 @@ enum Routes {
   actionAddEvent('/actions/addEvent'),
   actionCreateSuperInvite('/actions/createSuperInvite'),
 
-  // --- Auth
+  // pre
   intro('/intro'),
-  start('/start'),
   introProfile('/introProfile'),
+
+  // --- Auth
   authLogin('/login'),
   forgotPassword('/forgotPassword'),
   authRegister('/register'),
+
+  // -- onboarding
   saveUsername('/saveUsername'),
   linkEmail('/linkEmail'),
   uploadAvatar('/uploadAvatar'),
+  analyticsOptIn('/analyticsOptIn'),
 
   // --- profile
   myProfile('/profile'),

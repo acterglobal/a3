@@ -2,7 +2,7 @@ import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/onboarding/widgets/logo_widget.dart';
+import 'package:acter/features/auth/widgets/logo_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
@@ -20,7 +20,7 @@ class IntroProfile extends StatelessWidget {
 
   Widget _buildBody(BuildContext context) {
     // limit the to always show the button even if the keyboard is opened
-    final imageSize = MediaQuery.of(context).size.height / 5;
+    final imageSize = MediaQuery.of(context).size.height / 6;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 30),
       child: Column(
