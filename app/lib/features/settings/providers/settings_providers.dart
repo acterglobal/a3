@@ -1,10 +1,14 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/feature_flagger.dart';
+import 'package:acter/common/utils/main.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/providers/notifiers/labs_features.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:riverpod/riverpod.dart';
+
+final allowSentryReportingProvider =
+    FutureProvider((ref) => getCanReportToSentry());
 
 final featuresProvider =
     StateNotifierProvider<SharedPrefFeaturesNotifier, Features<LabsFeature>>(

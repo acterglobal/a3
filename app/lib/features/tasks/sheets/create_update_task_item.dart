@@ -1,6 +1,6 @@
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/tasks/providers/tasklists.dart';
+import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
@@ -261,7 +261,7 @@ class _CreateUpdateItemListConsumerState
       if (!mounted) return;
       if (widget.cancel != null) widget.cancel!();
       context.pop();
-      ref.invalidate(spaceTasksListsProvider);
+      ref.invalidate(taskListProvider);
     } catch (e) {
       EasyLoading.dismiss();
       if (!mounted) return;
@@ -292,7 +292,7 @@ class _CreateUpdateItemListConsumerState
       EasyLoading.dismiss();
       if (!mounted) return;
       context.pop();
-      ref.invalidate(spaceTasksListsProvider);
+      ref.invalidate(taskListProvider);
     } catch (e) {
       EasyLoading.dismiss();
       if (!mounted) return;

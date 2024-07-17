@@ -1,6 +1,6 @@
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 
-import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
+import 'package:acter/features/auth/providers/auth_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

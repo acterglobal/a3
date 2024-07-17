@@ -75,6 +75,8 @@ final _accountAvatarProvider =
   final account = ref.watch(accountProvider);
   final thumbSize = sdk.api.newThumbSize(48, 48);
   final avatar = await account.avatar(thumbSize);
+  // Only call data() once as it will consume the value and any subsequent
+  // call will come back with `null`.
   final avatarData = avatar.data();
   if (avatarData != null) {
     return MemoryImage(Uint8List.fromList(avatarData.asTypedList()));

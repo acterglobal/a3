@@ -30,7 +30,6 @@ import 'package:acter/features/space/pages/chats_page.dart';
 import 'package:acter/features/space/pages/events_page.dart';
 import 'package:acter/features/space/pages/members_page.dart';
 import 'package:acter/features/space/pages/sub_spaces_page.dart';
-import 'package:acter/features/space/pages/space_tasks_page.dart';
 import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
 import 'package:acter/features/space/settings/pages/index_page.dart';
 import 'package:acter/features/space/settings/pages/notification_configuration_page.dart';
@@ -39,7 +38,7 @@ import 'package:acter/features/spaces/pages/create_space_page.dart';
 import 'package:acter/features/spaces/pages/spaces_page.dart';
 import 'package:acter/features/tasks/pages/task_item_detail_page.dart';
 import 'package:acter/features/tasks/pages/task_list_details_page.dart';
-import 'package:acter/features/tasks/pages/tasks_page.dart';
+import 'package:acter/features/tasks/pages/tasks_list_page.dart';
 import 'package:acter/router/router.dart';
 import 'package:go_router/go_router.dart';
 
@@ -284,8 +283,8 @@ List<RouteBase> makeHomeShellRoutes() {
       pageBuilder: (context, state) {
         return NoTransitionPage(
           key: state.pageKey,
-          child: SpaceTasksPage(
-            spaceIdOrAlias: state.pathParameters['spaceId']!,
+          child: TasksListPage(
+            spaceId: state.pathParameters['spaceId']!,
           ),
         );
       },
@@ -387,7 +386,7 @@ List<RouteBase> makeHomeShellRoutes() {
       pageBuilder: (context, state) {
         return NoTransitionPage(
           key: state.pageKey,
-          child: TasksPage(),
+          child: const TasksListPage(),
         );
       },
     ),
