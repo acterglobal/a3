@@ -843,12 +843,13 @@ packages:
     source: hosted
     version: "9.2.2"
   flutter_secure_storage_linux:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: flutter_secure_storage_linux
-      sha256: "4d91bfc23047422cbcd73ac684bc169859ee766482517c22172c86596bf1464b"
-      url: "https://pub.dev"
-    source: hosted
+      path: flutter_secure_storage_linux
+      ref: ben-fix-linux-secret-store-problem
+      resolved-ref: cfe44e6c58bd3410969b0ef08358371111fa0a28
+      url: "https://github.com/gnunicorn/flutter_secure_storage/"
+    source: git
     version: "1.2.1"
   flutter_secure_storage_macos:
     dependency: transitive

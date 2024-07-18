@@ -158,6 +158,13 @@ dev_dependencies:
   uuid: ^4.0.0
   enough_mail: ^2.1.6
 
+dependency_overrides:
+  flutter_secure_storage_linux:
+    git:
+      url: https://github.com/gnunicorn/flutter_secure_storage/
+      ref: ben-fix-linux-secret-store-problem
+      path: flutter_secure_storage_linux
+
 icons_launcher:
   image_path: "assets/icon/logo.png"
   platforms:
