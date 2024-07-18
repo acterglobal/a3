@@ -1,12 +1,13 @@
 import 'package:acter/features/tasks/models/tasks.dart';
 import 'package:acter/features/tasks/providers/notifiers.dart';
-import 'package:acter/features/tasks/providers/tasklists.dart';
+import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:riverpod/riverpod.dart';
 
-final tasksProvider =
-    AsyncNotifierProvider.family<TasksNotifier, TasksOverview, TaskList>(() {
-  return TasksNotifier();
+//List of task items based on the specified task list
+final taskItemsListProvider =
+    AsyncNotifierProvider.family<TaskItemsListNotifier, TasksOverview, TaskList>(() {
+  return TaskItemsListNotifier();
 });
 
 class TaskNotFound extends Error {}
@@ -14,13 +15,15 @@ class TaskNotFound extends Error {}
 typedef TaskQuery = ({String taskListId, String taskId});
 
 final notifierTaskProvider =
-    AsyncNotifierProvider.family<TaskNotifier, Task, Task>(() {
-  return TaskNotifier();
+    AsyncNotifierProvider.family<TaskItemNotifier, Task, Task>(() {
+  return TaskItemNotifier();
 });
 
-final taskProvider =
+//Single Task Item Details Provider based on the TaskList Id and Task Item Id
+final taskItemProvider =
     FutureProvider.autoDispose.family<Task, TaskQuery>((ref, query) async {
-  final taskList = await ref.watch(taskListProvider(query.taskListId).future);
+  final taskList =
+      await ref.watch(taskListItemProvider(query.taskListId).future);
   final task = await taskList.task(query.taskId);
   return await ref
       .watch(notifierTaskProvider(task).future); // ensure we stay updated
