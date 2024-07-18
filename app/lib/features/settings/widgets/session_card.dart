@@ -1,8 +1,8 @@
-
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/cross_signing/providers/verification_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/settings/providers/session_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:breadcrumbs/breadcrumbs.dart';
@@ -140,11 +140,12 @@ class SessionCard extends ConsumerWidget {
     }
     final client = ref.read(alwaysClientProvider);
     final manager = client.sessionManager();
-    await manager.deleteDevices(
-      [deviceRecord.deviceId().toString()] as FfiListFfiString,
+    await manager.deleteDevice(
+      deviceRecord.deviceId().toString(),
       client.userId().toString(),
       passwordController.text,
     );
+    ref.invalidate(allSessionsProvider);
   }
 
   Future<void> onVerify(BuildContext context, WidgetRef ref) async {
