@@ -1,3 +1,24 @@
+    <release version="1.24.7180" date="2024-07-18">
+        <url type="details">https://github.com/acterglobal/a3/releases/tag/v1.24.7180</url>
+        <description>
+- Fix: Avatars some time showed up weird, were broken or didn't show at all
+- Fix: Several instances in which the App failed or froze because of broken Avatars
+
+
+[Improvement] : Now you can view space and group chat avatar in full screen
+[Improvement] : If you have permission than you can have inline avatar change option instead of go to any detail screen
+[New] : You can zoom in and out avatar view for better visualisation
+- Fix to show invite code even after managing it
+- Show the number of additional rooms associated with an invite code (if any)
+- Allows you to select the invite code if more than one is possible
+
+- Simplify onboarding, drop unnecessary screens
+- Automatic Crash analytics if you opt-in to that
+
+- [Improvement] : Task list UI is now more consistent and robust
+- [New] : Now you can search any task list by it's title name
+        </description>
+    </release>
     <release version="1.24.7123" date="2024-07-12">
         <url type="details">https://github.com/acterglobal/a3/releases/tag/v1.24.7123</url>
         <description>
