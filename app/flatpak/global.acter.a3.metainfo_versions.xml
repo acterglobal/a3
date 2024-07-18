@@ -1,3 +1,10 @@
+    <release version="1.24.7181" date="2024-07-18">
+        <url type="details">https://github.com/acterglobal/a3/releases/tag/v1.24.7181</url>
+        <description>
+
+[bugfix] : Fix bug that force logout doesn't work in session card (issue#1239)
+        </description>
+    </release>
     <release version="1.24.7180" date="2024-07-18">
         <url type="details">https://github.com/acterglobal/a3/releases/tag/v1.24.7180</url>
         <description>
