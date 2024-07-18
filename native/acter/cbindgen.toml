@@ -32,4 +32,6 @@ features = [ "cbindgen" ]
 [defines]
 "target_os = ios" = "TARGET_OS_IOS"
 "target_os = macos" = "TARGET_OS_MACOS"
+"target_pointer_width = 32" = "__ACTER_32BITS__"
+"target_pointer_width = 64" = "__ACTER_64BITS__"
 # "target_os = linux" = "TARGET_OS_LINUX"
