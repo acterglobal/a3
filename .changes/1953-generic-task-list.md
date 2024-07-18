@@ -1,2 +1,0 @@
-- [Improvement] : Task list UI is now more consistent and robust
-- [New] : Now you can search any task list by it's title name
