@@ -56,8 +56,10 @@ Future<String?> createSpace(
 
     if (createDefaultChat) {
       final chatId = await createChat(
+        // ignore: use_build_context_synchronously
         context,
         ref,
+        // ignore: use_build_context_synchronously
         name: L10n.of(context).defaultChatName(name),
         parentId: roomId,
       );
