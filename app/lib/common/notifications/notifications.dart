@@ -469,7 +469,12 @@ Future<bool> onNewToken(String token) async {
     'Received the update information for the token. Updating all clients.',
   );
   // ignore: use_build_context_synchronously
-  final sdk = await rootNavKey.currentContext!.read(sdkProvider.future);
+  final currentContext = rootNavKey.currentContext;
+  if (currentContext == null) {
+    _log.warning('No currentContext found. skipping setting of new token');
+    return false;
+  }
+  final sdk = await currentContext.read(sdkProvider.future);
 
   for (final client in sdk.clients) {
     final deviceId = client.deviceId().toString();
@@ -477,7 +482,11 @@ Future<bool> onNewToken(String token) async {
       _log.info('$deviceId was ignored for token update');
       continue;
     }
-    await onToken(client, token);
+    try {
+      await onToken(client, token);
+    } catch (error, st) {
+      _log.severe('Setting token for $deviceId failed', error, st);
+    }
   }
   return true;
 }
