@@ -118,7 +118,7 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
     String? description,
     List<String> selectedUsers,
   ) async {
-    final convo = await createChat(
+    final roomIdStr = await createChat(
       context,
       ref,
       name: convoName,
@@ -127,14 +127,18 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
       description: description,
       avatarUri: ref.read(_avatarProvider),
     );
-
-    if (!mounted) {
-      return null;
+    if (roomIdStr != null) {
+      try {
+        final convo =
+            await ref.read(alwaysClientProvider).convoWithRetry(roomIdStr, 120);
+        EasyLoading.showToast(L10n.of(context).chatRoomCreated);
+        return convo;
+      } catch (error, stack) {
+        _log.severe(
+            'Room $roomIdStr created but fetching failed', error, stack,);
+      }
     }
-    if (convo != null) {
-      EasyLoading.showToast(L10n.of(context).chatRoomCreated);
-    }
-    return convo;
+    return null;
   }
 }
 

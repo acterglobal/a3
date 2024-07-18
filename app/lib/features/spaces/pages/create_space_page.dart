@@ -36,6 +36,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   final TextEditingController _spaceDescriptionController =
       TextEditingController();
   File? spaceAvatar;
+  bool createDefaultChat = false;
 
   @override
   void initState() {
@@ -43,6 +44,11 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
       final parentNotifier = ref.read(selectedSpaceIdProvider.notifier);
       parentNotifier.state = widget.initialParentsSpaceId;
+      setState(() {
+        // create default chats for highest level spaces, off by default
+        // for subspaces.
+        createDefaultChat = widget.initialParentsSpaceId == null;
+      });
 
       //Set default visibility based on the parent space selection
       // PRIVATE : If no parent is selected
@@ -99,6 +105,8 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
               _buildSpaceNameTextField(),
               const SizedBox(height: 20),
               _buildSpaceDescriptionTextField(),
+              const SizedBox(height: 10),
+              _buildDefaultChatField(),
               const SizedBox(height: 20),
               _buildParentSpace(),
               const SizedBox(height: 10),
@@ -167,6 +175,27 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
           style: Theme.of(context).textTheme.labelSmall!,
         ),
       ],
+    );
+  }
+
+  Widget _buildDefaultChatField() {
+    return InkWell(
+      onTap: () {
+        setState(() {
+          createDefaultChat = !createDefaultChat;
+        });
+      },
+      child: Row(
+        children: [
+          Switch(
+            value: createDefaultChat,
+            onChanged: (newValue) => setState(() {
+              createDefaultChat = newValue;
+            }),
+          ),
+          Text(L10n.of(context).createDefaultChat),
+        ],
+      ),
     );
   }
 
@@ -289,12 +318,13 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       name: _spaceNameController.text.trim(),
       description: _spaceDescriptionController.text.trim(),
       spaceAvatar: spaceAvatar,
+      createDefaultChat: createDefaultChat,
       parentRoomId: ref.read(selectedSpaceIdProvider),
       roomVisibility: ref.read(_selectedVisibilityProvider),
     );
     if (!mounted) return;
     if (newRoomId != null) {
-      context.pushNamed(
+      context.replaceNamed(
         Routes.spaceInvite.name,
         pathParameters: {'spaceId': newRoomId},
       );

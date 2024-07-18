@@ -1,14 +1,13 @@
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Create Room Method
-Future<Convo?> createChat(
+Future<String?> createChat(
   BuildContext context,
   WidgetRef ref, {
   String? name,
@@ -54,7 +53,7 @@ Future<Convo?> createChat(
       // spaceRelations come from the server and must be manually invalidated
       ref.invalidate(spaceRelationsOverviewProvider(parentId));
     }
-    return await client.convoWithRetry(roomIdStr, 120);
+    return roomIdStr;
   } catch (e) {
     if (context.mounted) {
       EasyLoading.showError(

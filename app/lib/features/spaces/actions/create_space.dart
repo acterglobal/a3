@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/chat/actions/create_chat.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,7 @@ Future<String?> createSpace(
   File? spaceAvatar,
   String? parentRoomId,
   RoomVisibility? roomVisibility,
+  bool createDefaultChat = false,
 }) async {
   EasyLoading.show(status: L10n.of(context).creatingSpace);
   try {
@@ -43,16 +45,29 @@ Future<String?> createSpace(
       config.setVisibility(roomVisibility.name);
     }
     final client = ref.read(alwaysClientProvider);
-    final roomId = await client.createActerSpace(config.build());
+    final roomId = (await client.createActerSpace(config.build())).toString();
     if (parentRoomId != null) {
       final space = await ref.read(spaceProvider(parentRoomId).future);
-      await space.addChildRoom(roomId.toString());
+      await space.addChildRoom(roomId);
       // spaceRelations come from the server and must be manually invalidated
       ref.invalidate(spaceRelationsOverviewProvider(parentRoomId));
     }
-
     EasyLoading.dismiss();
-    return roomId.toString();
+
+    if (createDefaultChat) {
+      final chatId = await createChat(
+        context,
+        ref,
+        name: L10n.of(context).defaultChatName(name),
+        parentId: roomId,
+      );
+      if (chatId != null) {
+        // close the UI if the chat successfully created
+        EasyLoading.dismiss();
+      }
+    }
+
+    return roomId;
   } catch (err) {
     if (context.mounted) {
       EasyLoading.showError(
