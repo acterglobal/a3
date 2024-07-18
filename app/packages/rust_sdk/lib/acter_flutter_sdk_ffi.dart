@@ -14526,7 +14526,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __sessionManagerDeleteDevicesFuturePoll(
+  bool? __sessionManagerDeleteDeviceFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -14540,7 +14540,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _sessionManagerDeleteDevicesFuturePoll(
+    final tmp6 = _sessionManagerDeleteDeviceFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -27661,22 +27661,26 @@ class Api {
           int Function(
             int,
           )>();
-  late final _sessionManagerDeleteDevicesPtr = _lookup<
+  late final _sessionManagerDeleteDevicePtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
             ffi.IntPtr,
             ffi.IntPtr,
-            ffi.IntPtr,
             ffi.UintPtr,
             ffi.UintPtr,
             ffi.IntPtr,
             ffi.UintPtr,
             ffi.UintPtr,
-          )>>("__SessionManager_delete_devices");
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+          )>>("__SessionManager_delete_device");
 
-  late final _sessionManagerDeleteDevices =
-      _sessionManagerDeleteDevicesPtr.asFunction<
+  late final _sessionManagerDeleteDevice =
+      _sessionManagerDeleteDevicePtr.asFunction<
           int Function(
+            int,
+            int,
             int,
             int,
             int,
@@ -31872,17 +31876,17 @@ class Api {
             int,
             int,
           )>();
-  late final _sessionManagerDeleteDevicesFuturePollPtr = _lookup<
+  late final _sessionManagerDeleteDeviceFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _SessionManagerDeleteDevicesFuturePollReturn Function(
+          _SessionManagerDeleteDeviceFuturePollReturn Function(
             ffi.IntPtr,
             ffi.IntPtr,
             ffi.Int64,
-          )>>("__SessionManager_delete_devices_future_poll");
+          )>>("__SessionManager_delete_device_future_poll");
 
-  late final _sessionManagerDeleteDevicesFuturePoll =
-      _sessionManagerDeleteDevicesFuturePollPtr.asFunction<
-          _SessionManagerDeleteDevicesFuturePollReturn Function(
+  late final _sessionManagerDeleteDeviceFuturePoll =
+      _sessionManagerDeleteDeviceFuturePollPtr.asFunction<
+          _SessionManagerDeleteDeviceFuturePollReturn Function(
             int,
             int,
             int,
@@ -56579,60 +56583,71 @@ class SessionManager {
     return tmp2;
   }
 
-  /// Force to logout another devices
+  /// Force to logout another device
   /// Authentication is required to do so
-  Future<bool> deleteDevices(
-    FfiListFfiString devIds,
+  Future<bool> deleteDevice(
+    String devId,
     String username,
     String password,
   ) {
-    final tmp1 = devIds;
-    final tmp3 = username;
-    final tmp7 = password;
+    final tmp1 = devId;
+    final tmp5 = username;
+    final tmp9 = password;
     var tmp0 = 0;
     var tmp2 = 0;
+    var tmp3 = 0;
     var tmp4 = 0;
-    var tmp5 = 0;
     var tmp6 = 0;
+    var tmp7 = 0;
     var tmp8 = 0;
-    var tmp9 = 0;
     var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
     tmp0 = _box.borrow();
-    tmp2 = tmp1._box.move();
-    final tmp3_0 = utf8.encode(tmp3);
-    tmp5 = tmp3_0.length;
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
 
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = _api.__allocate(tmp5 * 1, 1);
-    final Uint8List tmp4_1 = tmp4_0.asTypedList(tmp5);
-    tmp4_1.setAll(0, tmp3_0);
-    tmp4 = tmp4_0.address;
-    tmp6 = tmp5;
-    final tmp7_0 = utf8.encode(tmp7);
-    tmp9 = tmp7_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
 
-    final ffi.Pointer<ffi.Uint8> tmp8_0 = _api.__allocate(tmp9 * 1, 1);
-    final Uint8List tmp8_1 = tmp8_0.asTypedList(tmp9);
-    tmp8_1.setAll(0, tmp7_0);
-    tmp8 = tmp8_0.address;
-    tmp10 = tmp9;
-    final tmp11 = _api._sessionManagerDeleteDevices(
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    final tmp13 = _api._sessionManagerDeleteDevice(
       tmp0,
       tmp2,
+      tmp3,
       tmp4,
-      tmp5,
       tmp6,
+      tmp7,
       tmp8,
-      tmp9,
       tmp10,
+      tmp11,
+      tmp12,
     );
-    final tmp13 = tmp11;
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 =
-        _Box(_api, tmp13_0, "__SessionManager_delete_devices_future_drop");
-    tmp13_1._finalizer = _api._registerFinalizer(tmp13_1);
-    final tmp12 =
-        _nativeFuture(tmp13_1, _api.__sessionManagerDeleteDevicesFuturePoll);
-    return tmp12;
+    final tmp15 = tmp13;
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 =
+        _Box(_api, tmp15_0, "__SessionManager_delete_device_future_drop");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp14 =
+        _nativeFuture(tmp15_1, _api.__sessionManagerDeleteDeviceFuturePoll);
+    return tmp14;
   }
 
   /// Trigger verification of another device
@@ -64076,7 +64091,7 @@ class _SessionManagerAllSessionsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _SessionManagerDeleteDevicesFuturePollReturn extends ffi.Struct {
+class _SessionManagerDeleteDeviceFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

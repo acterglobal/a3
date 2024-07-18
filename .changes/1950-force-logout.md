@@ -1,0 +1,1 @@
+[bugfix] : Fix bug that force logout doesn't work in session card (issue#1239)

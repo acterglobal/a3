@@ -3041,9 +3041,9 @@ object VerificationEmoji {
 object SessionManager {
     fn all_sessions() -> Future<Result<Vec<DeviceRecord>>>;
 
-    /// Force to logout another devices
+    /// Force to logout another device
     /// Authentication is required to do so
-    fn delete_devices(dev_ids: Vec<string>, username: string, password: string) -> Future<Result<bool>>;
+    fn delete_device(dev_id: string, username: string, password: string) -> Future<Result<bool>>;
 
     /// Trigger verification of another device
     /// returns flow id of verification
