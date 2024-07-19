@@ -75,6 +75,9 @@ class ConvoHierarchyCard extends ConsumerWidget {
   /// the default border.
   final bool withBorder;
 
+  /// Custom trailing widget.
+  final Widget? trailing;
+
   const ConvoHierarchyCard({
     super.key,
     required this.roomInfo,
@@ -89,6 +92,7 @@ class ConvoHierarchyCard extends ConsumerWidget {
     this.contentPadding = const EdgeInsets.all(15),
     this.shape,
     this.withBorder = true,
+    this.trailing,
   });
 
   @override
@@ -109,17 +113,18 @@ class ConvoHierarchyCard extends ConsumerWidget {
       roomId: roomId,
       avatarInfo: avatarInfo,
       subtitle: subtitle,
-      trailing: RoomHierarchyJoinButton(
-        joinRule: roomInfo.joinRuleStr().toLowerCase(),
-        roomId: roomId,
-        roomName: roomInfo.name() ?? roomInfo.roomIdStr(),
-        viaServerName: roomInfo.viaServerName(),
-        forward: (roomId) {
-          goToChat(context, roomId);
-          // make sure the UI refreshes when the user comes back here
-          ref.invalidate(spaceRelationsOverviewProvider(parentId));
-        },
-      ),
+      trailing: trailing ??
+          RoomHierarchyJoinButton(
+            joinRule: roomInfo.joinRuleStr().toLowerCase(),
+            roomId: roomId,
+            roomName: roomInfo.name() ?? roomInfo.roomIdStr(),
+            viaServerName: roomInfo.viaServerName(),
+            forward: (roomId) {
+              goToChat(context, roomId);
+              // make sure the UI refreshes when the user comes back here
+              ref.invalidate(spaceRelationsOverviewProvider(parentId));
+            },
+          ),
       onTap: onTap,
       onFocusChange: onFocusChange,
       onLongPress: onLongPress,

@@ -341,3 +341,33 @@ final membersIdsProvider =
   final members = await room.activeMembersIds();
   return asDartStringList(members);
 });
+
+/// Caching the MemoryImage of each entry
+final roomHierarchyAvatarProvider =
+    FutureProvider.family<MemoryImage?, SpaceHierarchyRoomInfo>(
+        (ref, room) async {
+  final sdk = await ref.watch(sdkProvider.future);
+  final thumbsize = sdk.api.newThumbSize(48, 48);
+
+  final avatar = (await room.getAvatar(thumbsize)).data();
+  if (avatar != null) {
+    return MemoryImage(Uint8List.fromList(avatar.asTypedList()));
+  }
+  return null;
+});
+
+/// Fill the Profile data for the given space-hierarchy-info
+final roomHierarchyAvatarInfoProvider = Provider.autoDispose
+    .family<AvatarInfo, SpaceHierarchyRoomInfo>((ref, info) {
+  final roomId = info.roomIdStr();
+  final displayName = info.name();
+
+  // final displayName = ref.watch(roomDisplayNameProvider(roomId)).valueOrNull;
+  final avatarData = ref.watch(roomHierarchyAvatarProvider(info)).valueOrNull;
+
+  return AvatarInfo(
+    uniqueId: roomId,
+    displayName: displayName,
+    avatar: avatarData,
+  );
+});

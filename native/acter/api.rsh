@@ -1089,6 +1089,13 @@ object Room {
     /// set name of the room
     fn set_name(name: string) -> Future<Result<EventId>>;
 
+    /// whether or not the user has already seen the suggested
+    /// children
+    fn user_has_seen_suggested() -> Future<Result<bool>>;
+
+    /// Set the value of `user_has_seen_suggested` for this room
+    fn set_user_has_seen_suggested(newValue: bool) -> Future<Result<bool>>;
+
 }
 
 
@@ -1860,6 +1867,9 @@ object SpaceHierarchyRoomInfo {
     fn join_rule_str() -> string;
     /// whether to have avatar
     fn has_avatar() -> bool;
+    
+    /// is this a suggested room?
+    fn suggested() -> bool;
 
     /// get the binary data of avatar
     /// if thumb size is given, avatar thumbnail is returned

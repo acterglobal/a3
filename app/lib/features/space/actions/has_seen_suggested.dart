@@ -1,0 +1,18 @@
+import 'package:acter/common/providers/room_providers.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::space::actions::suggested');
+
+Future<void> mark_has_seen_suggested(WidgetRef ref, String roomId) async {
+  final room = await ref.read(maybeRoomProvider(roomId).future);
+  if (room == null) {
+    _log.warning("Could't mark $roomId suggested as seen. Room not found");
+    return;
+  }
+  try {
+    await room.setUserHasSeenSuggested(true);
+  } catch (error, stack) {
+    _log.severe("Could't mark $roomId suggested failed", error, stack);
+  }
+}

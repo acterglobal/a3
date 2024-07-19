@@ -78,6 +78,9 @@ class SpaceHierarchyCard extends ConsumerWidget {
   /// the default border.
   final bool withBorder;
 
+  /// Custom trailing widget.
+  final Widget? trailing;
+
   const SpaceHierarchyCard({
     super.key,
     required this.roomInfo,
@@ -92,6 +95,7 @@ class SpaceHierarchyCard extends ConsumerWidget {
     this.contentPadding = const EdgeInsets.all(15),
     this.shape,
     this.withBorder = true,
+    this.trailing,
   });
 
   @override
@@ -119,16 +123,17 @@ class SpaceHierarchyCard extends ConsumerWidget {
       avatarSize: avatarSize,
       contentPadding: contentPadding,
       shape: shape,
-      trailing: RoomHierarchyJoinButton(
-        joinRule: roomInfo.joinRuleStr().toLowerCase(),
-        roomId: roomInfo.roomIdStr(),
-        roomName: roomInfo.name() ?? roomInfo.roomIdStr(),
-        viaServerName: roomInfo.viaServerName(),
-        forward: (spaceId) {
-          goToSpace(context, spaceId);
-          ref.invalidate(relatedSpacesProvider(parentId));
-        },
-      ),
+      trailing: trailing ??
+          RoomHierarchyJoinButton(
+            joinRule: roomInfo.joinRuleStr().toLowerCase(),
+            roomId: roomInfo.roomIdStr(),
+            roomName: roomInfo.name() ?? roomInfo.roomIdStr(),
+            viaServerName: roomInfo.viaServerName(),
+            forward: (spaceId) {
+              goToSpace(context, spaceId);
+              ref.invalidate(relatedSpacesProvider(parentId));
+            },
+          ),
     );
   }
 }

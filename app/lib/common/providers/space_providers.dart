@@ -371,13 +371,6 @@ final remoteSubspaceRelationsProvider =
   }
 });
 
-/// Fill the Profile data for the given space-hierarchy-info
-final spaceHierarchyAvatarInfoProvider = Provider.autoDispose
-    .family<AvatarInfo, SpaceHierarchyRoomInfo>((ref, space) {
-  final roomId = space.roomIdStr();
-  return ref.watch(roomAvatarInfoProvider(roomId));
-});
-
 final acterAppSettingsProvider = FutureProvider.autoDispose
     .family<ActerAppSettings?, String>((ref, spaceId) async {
   final space = await ref.watch(maybeSpaceProvider(spaceId).future);
