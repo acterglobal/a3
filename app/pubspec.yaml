@@ -157,6 +157,7 @@ dev_dependencies:
   # mockito: ^5.4.2
   uuid: ^4.0.0
   enough_mail: ^2.1.6
+  sentry_dart_plugin: ^2.0.0
 
 dependency_overrides:
   flutter_secure_storage_linux:
@@ -164,6 +165,12 @@ dependency_overrides:
       url: https://github.com/gnunicorn/flutter_secure_storage/
       ref: ben-fix-linux-secret-store-problem
       path: flutter_secure_storage_linux
+sentry:
+  upload_debug_symbols: true
+  upload_source_maps: false
+  upload_sources: false
+  project: acter-app
+  org: acter
 
 icons_launcher:
   image_path: "assets/icon/logo.png"
