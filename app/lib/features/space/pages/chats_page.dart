@@ -105,6 +105,7 @@ class SpaceChatsPage extends ConsumerWidget {
         }
 
         return SliverList.builder(
+          itemCount: chats.length,
           itemBuilder: (context, idx) {
             final item = chats[idx];
             return ConvoHierarchyCard(

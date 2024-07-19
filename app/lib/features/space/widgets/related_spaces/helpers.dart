@@ -57,9 +57,14 @@ Widget renderMoreSubspaces(
         return const SizedBox.shrink();
       }
 
+      int itemCount = spaces.length;
+      if (maxLength != null && maxLength < itemCount) {
+        itemCount = maxLength;
+      }
+
       return GridView.builder(
         padding: padding,
-        itemCount: maxLength ?? spaces.length,
+        itemCount: itemCount,
         physics: const NeverScrollableScrollPhysics(),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 1,
