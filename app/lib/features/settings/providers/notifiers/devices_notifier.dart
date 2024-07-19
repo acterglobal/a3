@@ -2,17 +2,14 @@ import 'dart:async';
 
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
-final _log = Logger('a3::sessions::notifier');
-
 class AsyncDevicesNotifier extends AsyncNotifier<List<DeviceRecord>> {
-  Stream<String>? _newListener;
-  StreamSubscription<String>? _newPoller;
+  Stream<DeviceNewEvent>? _newListener;
+  StreamSubscription<DeviceNewEvent>? _newPoller;
 
-  Stream<String>? _changedListener;
-  StreamSubscription<String>? _changedPoller;
+  Stream<DeviceChangedEvent>? _changedListener;
+  StreamSubscription<DeviceChangedEvent>? _changedPoller;
 
   @override
   Future<List<DeviceRecord>> build() async {
@@ -21,8 +18,7 @@ class AsyncDevicesNotifier extends AsyncNotifier<List<DeviceRecord>> {
 
     _newListener = client.deviceNewEventRx();
     _newPoller = _newListener?.listen(
-      (devId) async {
-        _log.info('--------------------------------- new devices detected');
+      (evt) async {
         final sessions = (await manager.allSessions()).toList();
         state = AsyncValue.data(sessions);
       },
@@ -33,8 +29,7 @@ class AsyncDevicesNotifier extends AsyncNotifier<List<DeviceRecord>> {
 
     _changedListener = client.deviceChangedEventRx();
     _changedPoller = _changedListener?.listen(
-      (devId) async {
-        _log.info('----------------------------- changed devices detected');
+      (evt) async {
         final sessions = (await manager.allSessions()).toList();
         state = AsyncValue.data(sessions);
       },
