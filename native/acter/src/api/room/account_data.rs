@@ -35,16 +35,12 @@ impl Room {
         Ok(user_settings.has_seen_suggested)
     }
 
-    // pub async fn set_user_has_seen_suggested(&self, new_value: bool) -> Result<bool> {
-    //     let mut user_settings = self.user_settings().await?;
-    //     user_settings.has_seen_suggested = new_value;
-    //     let room = self.room.clone();
-    //     RUNTIME
-    //         .spawn(async move {
-    //             room.set_account_data_static::<UserSettingsEventContent>()
-    //                 .await?
-    //                 .unwrap_or_default()
-    //         })
-    //         .await?
-    // }
+    pub async fn set_user_has_seen_suggested(&self, new_value: bool) -> Result<bool> {
+        let mut user_settings = self.user_settings().await?;
+        user_settings.has_seen_suggested = new_value;
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move { room.set_account_data(user_settings).await?; Ok(true) })
+            .await?
+    }
 }

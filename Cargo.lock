@@ -3109,7 +3109,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk"
 version = "0.7.1"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk#d65e33ca6af52bbdb55e77f84bf650788486eb28"
+source = "git+https://github.com/gnunicorn/matrix-rust-sdk?branch=set-room-account-data#7fb90fecd7f2ceb0b149d2d9e0eb8bc0e5ff210b"
 dependencies = [
  "anyhow",
  "anymap2",
@@ -3157,7 +3157,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-base"
 version = "0.7.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk#d65e33ca6af52bbdb55e77f84bf650788486eb28"
+source = "git+https://github.com/gnunicorn/matrix-rust-sdk?branch=set-room-account-data#7fb90fecd7f2ceb0b149d2d9e0eb8bc0e5ff210b"
 dependencies = [
  "as_variant",
  "async-trait",
@@ -3181,7 +3181,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-common"
 version = "0.7.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk#d65e33ca6af52bbdb55e77f84bf650788486eb28"
+source = "git+https://github.com/gnunicorn/matrix-rust-sdk?branch=set-room-account-data#7fb90fecd7f2ceb0b149d2d9e0eb8bc0e5ff210b"
 dependencies = [
  "async-trait",
  "futures-core",
@@ -3203,7 +3203,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-crypto"
 version = "0.7.2"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk#d65e33ca6af52bbdb55e77f84bf650788486eb28"
+source = "git+https://github.com/gnunicorn/matrix-rust-sdk?branch=set-room-account-data#7fb90fecd7f2ceb0b149d2d9e0eb8bc0e5ff210b"
 dependencies = [
  "aes",
  "as_variant",
@@ -3243,7 +3243,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-indexeddb"
 version = "0.7.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk#d65e33ca6af52bbdb55e77f84bf650788486eb28"
+source = "git+https://github.com/gnunicorn/matrix-rust-sdk?branch=set-room-account-data#7fb90fecd7f2ceb0b149d2d9e0eb8bc0e5ff210b"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3271,7 +3271,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-sqlite"
 version = "0.7.1"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk#d65e33ca6af52bbdb55e77f84bf650788486eb28"
+source = "git+https://github.com/gnunicorn/matrix-rust-sdk?branch=set-room-account-data#7fb90fecd7f2ceb0b149d2d9e0eb8bc0e5ff210b"
 dependencies = [
  "async-trait",
  "deadpool-sqlite",
@@ -3293,7 +3293,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-store-encryption"
 version = "0.7.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk#d65e33ca6af52bbdb55e77f84bf650788486eb28"
+source = "git+https://github.com/gnunicorn/matrix-rust-sdk?branch=set-room-account-data#7fb90fecd7f2ceb0b149d2d9e0eb8bc0e5ff210b"
 dependencies = [
  "base64 0.22.1",
  "blake3",
@@ -3333,7 +3333,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-test"
 version = "0.7.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk#d65e33ca6af52bbdb55e77f84bf650788486eb28"
+source = "git+https://github.com/gnunicorn/matrix-rust-sdk?branch=set-room-account-data#7fb90fecd7f2ceb0b149d2d9e0eb8bc0e5ff210b"
 dependencies = [
  "ctor",
  "getrandom",
@@ -3351,7 +3351,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-test-macros"
 version = "0.7.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk#d65e33ca6af52bbdb55e77f84bf650788486eb28"
+source = "git+https://github.com/gnunicorn/matrix-rust-sdk?branch=set-room-account-data#7fb90fecd7f2ceb0b149d2d9e0eb8bc0e5ff210b"
 dependencies = [
  "quote",
  "syn 2.0.71",
@@ -3360,7 +3360,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-ui"
 version = "0.7.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk#d65e33ca6af52bbdb55e77f84bf650788486eb28"
+source = "git+https://github.com/gnunicorn/matrix-rust-sdk?branch=set-room-account-data#7fb90fecd7f2ceb0b149d2d9e0eb8bc0e5ff210b"
 dependencies = [
  "as_variant",
  "async-once-cell",

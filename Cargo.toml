@@ -8,35 +8,41 @@ members = [
 default-members = ["native/acter"]
 
 [workspace.dependencies.matrix-sdk]
-git = "https://github.com/matrix-org/matrix-rust-sdk"
+git = "https://github.com/gnunicorn/matrix-rust-sdk"
+branch = "set-room-account-data"
 # path = "../matrix-rust-sdk/crates/matrix-sdk"
 default-features = false
 features = ["experimental-sliding-sync"]
 
 [workspace.dependencies.matrix-sdk-base]
-git = "https://github.com/matrix-org/matrix-rust-sdk"
+git = "https://github.com/gnunicorn/matrix-rust-sdk"
+branch = "set-room-account-data"
 # path = "../matrix-rust-sdk/crates/matrix-sdk-base"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-sqlite]
-git = "https://github.com/matrix-org/matrix-rust-sdk"
+git = "https://github.com/gnunicorn/matrix-rust-sdk"
+branch = "set-room-account-data"
 # path = "../matrix-rust-sdk/crates/matrix-sdk-sqlite"
 default-features = false
 features = ["crypto-store", "state-store"]
 
 [workspace.dependencies.matrix-sdk-store-encryption]
-git = "https://github.com/matrix-org/matrix-rust-sdk"
+git = "https://github.com/gnunicorn/matrix-rust-sdk"
+branch = "set-room-account-data"
 # path = "../matrix-rust-sdk/crates/matrix-sdk-store-encryption"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-ui]
-git = "https://github.com/matrix-org/matrix-rust-sdk"
+git = "https://github.com/gnunicorn/matrix-rust-sdk"
+branch = "set-room-account-data"
 # path = "../matrix-rust-sdk/crates/matrix-sdk-ui"
 default-features = false
 features = ["e2e-encryption"]
 
 [workspace.dependencies.matrix-sdk-test]
-git = "https://github.com/matrix-org/matrix-rust-sdk"
+git = "https://github.com/gnunicorn/matrix-rust-sdk"
+branch = "set-room-account-data"
 # path = "../matrix-rust-sdk/testing/matrix-sdk-test"
 default-features = false
 
