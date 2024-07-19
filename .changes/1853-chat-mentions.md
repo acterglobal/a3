@@ -1,0 +1,1 @@
+- Chat mentions are much more optimized and efficient in bringing up users even on large rooms.
