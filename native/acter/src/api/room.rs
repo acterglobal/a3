@@ -48,6 +48,8 @@ use std::{io::Write, ops::Deref, path::PathBuf};
 use tokio_stream::{wrappers::BroadcastStream, StreamExt};
 use tracing::{info, warn};
 
+mod account_data;
+
 use crate::{OptionBuffer, OptionString, RoomMessage, ThumbnailSize, UserProfile, RUNTIME};
 
 use super::{
