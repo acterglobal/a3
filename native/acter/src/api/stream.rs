@@ -144,12 +144,12 @@ impl TimelineStream {
                     bail!("Unable to edit an event not sent by own user");
                 }
 
-                let edit_item = timeline
-                    .edit_info_from_event_id(&event_id)
+                let item = timeline
+                    .item_by_event_id(&event_id)
                     .await
                     .context("Not found which item would be edited")?;
                 let new_content = draft.into_room_msg(&room).await?;
-                timeline.edit(new_content, edit_item).await?;
+                timeline.edit(&item, new_content).await?;
                 Ok(true)
             })
             .await?
