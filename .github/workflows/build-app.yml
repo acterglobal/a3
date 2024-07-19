@@ -9,23 +9,25 @@ on:
       build_num:
         required: true
         type: string
-      release_tag:
-        required: true
-        type: string
 
+      release:
+        type: boolean
+        default: false
+      release_tag:
+        required: false
+        type: string
       release_env:
         required: false
         type: string
         default: release
-
       prerelease:
         type: boolean
-        default: true
-
-      artifacts_prefix:
+        default: false
+      release_title:
         required: false
         type: string
-      release_title:
+
+      artifacts_prefix:
         required: false
         type: string
       target:
@@ -410,8 +412,16 @@ jobs:
           name: ${{ matrix.name }}-debug-symbols
           path: app/debug_symbols/*
 
+      - name: "Upload debug artifacts to sentry"
+        if: ${{! matrix.with_debug_symbols && inputs.release }}
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_URL: ${{ secrets.SENTRY_DSN }}
+          SENTRY_RELEASE: ${{ inputs.version }}
+        run: flutter packages pub run sentry_dart_plugin
+
       - name: Release
-        if: ${{! matrix.exclude_from_release && inputs.release_title != null }}
+        if: ${{! matrix.exclude_from_release && inputs.release }}
         uses: softprops/action-gh-release@v1
         with:
           draft: true
