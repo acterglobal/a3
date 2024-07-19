@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/widgets/room/room_hierarchy_options_menu.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter/common/widgets/spaces/space_hierarchy_card.dart';
 import 'package:flutter/material.dart';
@@ -31,10 +32,18 @@ List<Widget>? _renderKnownSubspaces(
       shrinkWrap: true,
       itemBuilder: (context, index) {
         final space = spaces.knownSubspaces[index];
+        final roomId = space.getRoomIdStr();
+        final isSuggested = spaces.suggestedIds.contains(roomId);
         return SpaceCard(
-          key: Key('subspace-list-item-${space.getRoomIdStr()}'),
+          key: Key('subspace-list-item-$roomId'),
           space: space,
           showParents: false,
+          showSuggestedIcon: isSuggested,
+          trailing: RoomHierarchyOptionsMenu(
+            childId: roomId,
+            parentId: spaceIdOrAlias,
+            isSuggested: isSuggested,
+          ),
         );
       },
     ),
@@ -78,6 +87,7 @@ Widget renderMoreSubspaces(
             key: Key('subspace-list-item-${item.roomIdStr()}'),
             roomInfo: item,
             parentId: spaceIdOrAlias,
+            showIconIfSuggested: true,
           );
         },
       );

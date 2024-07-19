@@ -227,8 +227,15 @@ final relatedSpacesProvider =
       .knownSubspaces;
 });
 
-/// Get the user's membership for a specific space based off the spaceId
-/// will throw if the client doesn't kow the space
+/// The list of suggested RoomIDs
+final suggestedRelationsIdsProvider =
+    FutureProvider.family<List<String>, String>((ref, spaceId) async {
+  return (await ref.watch(spaceRelationsOverviewProvider(spaceId).future))
+      .suggestedIds;
+});
+
+/// Get the user's membership for a specific space based off the roomId
+/// will not throw if the client doesn't kow the room
 final roomMembershipProvider = FutureProvider.family<Member?, String>(
   (ref, roomId) async {
     final room = await ref.watch(maybeRoomProvider(roomId).future);

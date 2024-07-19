@@ -69,6 +69,10 @@ class SpaceWithAvatarInfoCard extends StatelessWidget {
   ///
   final bool showParents;
 
+  /// Whether or not to render the suggested icon
+  ///
+  final bool showSuggestedIcon;
+
   const SpaceWithAvatarInfoCard({
     super.key,
     required this.roomId,
@@ -85,6 +89,7 @@ class SpaceWithAvatarInfoCard extends StatelessWidget {
     this.shape,
     this.showParents = true,
     this.margin,
+    this.showSuggestedIcon = false,
     required this.avatarSize,
     required this.contentPadding,
   });
@@ -117,7 +122,18 @@ class SpaceWithAvatarInfoCard extends StatelessWidget {
         titleTextStyle: titleTextStyle,
         subtitleTextStyle: subtitleTextStyle,
         leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
-        title: Text(title),
+        title: showSuggestedIcon
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.star),
+                  Expanded(
+                    child: Text(title, overflow: TextOverflow.ellipsis),
+                  ),
+                ],
+              )
+            : Text(title, overflow: TextOverflow.ellipsis),
         subtitle: subtitle,
         leading: avatar,
         trailing: trailing,

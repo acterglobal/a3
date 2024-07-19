@@ -33,6 +33,10 @@ class ConvoWithAvatarInfoCard extends ConsumerWidget {
   ///
   final bool showParents;
 
+  /// Whether or not to render the suggested Icon
+  ///
+  final bool showSuggestedIcon;
+
   const ConvoWithAvatarInfoCard({
     super.key,
     required this.roomId,
@@ -43,13 +47,38 @@ class ConvoWithAvatarInfoCard extends ConsumerWidget {
     this.onFocusChange,
     this.subtitle,
     this.trailing,
+    this.showSuggestedIcon = false,
     this.showParents = true,
     this.showSelectedIndication = true,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final displayName = ref.watch(roomDisplayNameProvider(roomId));
+    final displayName = ref.watch(roomDisplayNameProvider(roomId)).when(
+          data: (dpl) => Text(
+            dpl ?? roomId,
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium!
+                .copyWith(fontWeight: FontWeight.w700),
+            overflow: TextOverflow.ellipsis,
+          ),
+          error: (error, stackTrace) => Text(
+            roomId,
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium!
+                .copyWith(fontWeight: FontWeight.w700),
+            overflow: TextOverflow.ellipsis,
+          ),
+          loading: () => Skeletonizer(
+            child: Text(
+              roomId,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        );
+
     return LayoutBuilder(
       builder: (context, constraints) {
         return Column(
@@ -65,30 +94,14 @@ class ConvoWithAvatarInfoCard extends ConsumerWidget {
                 onFocusChange: onFocusChange,
                 onLongPress: onLongPress,
                 leading: avatarWithIndicator(context, ref),
-                title: displayName.when(
-                  data: (dpl) => Text(
-                    dpl ?? roomId,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium!
-                        .copyWith(fontWeight: FontWeight.w700),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  error: (error, stackTrace) => Text(
-                    roomId,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium!
-                        .copyWith(fontWeight: FontWeight.w700),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  loading: () => Skeletonizer(
-                    child: Text(
-                      roomId,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ),
+                title: showSuggestedIcon
+                    ? Row(
+                        children: [
+                          const Icon(Icons.star),
+                          Expanded(child: displayName),
+                        ],
+                      )
+                    : displayName,
                 subtitle: constraints.maxWidth < 300 ? null : subtitle,
                 trailing: constraints.maxWidth < 300 ? null : trailing,
               ),

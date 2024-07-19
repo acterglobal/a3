@@ -114,6 +114,7 @@ class SpaceRelationsOverview {
   Member? membership;
   List<Space> knownSubspaces;
   List<Convo> knownChats;
+  List<String> suggestedIds;
   Space? mainParent;
   List<Space> parents;
   List<Space> otherRelations;
@@ -123,6 +124,7 @@ class SpaceRelationsOverview {
     required this.membership,
     required this.knownSubspaces,
     required this.knownChats,
+    required this.suggestedIds,
     required this.mainParent,
     required this.parents,
     required this.otherRelations,
@@ -236,10 +238,14 @@ final spaceRelationsOverviewProvider =
   bool hasMoreChats = false;
   final List<Space> knownSubspaces = [];
   final List<Convo> knownChats = [];
+  final List<String> suggested = [];
   List<Space> otherRelated = [];
   for (final related in relatedSpaces.children()) {
     String targetType = related.targetType();
     final roomId = related.roomId().toString();
+    if (related.suggested()) {
+      suggested.add(roomId);
+    }
     if (targetType == 'ChatRoom') {
       try {
         final chat = await ref.watch(chatProvider(roomId).future);
@@ -304,6 +310,7 @@ final spaceRelationsOverviewProvider =
     mainParent: mainParent,
     hasMoreSubspaces: hasMoreSubspaces,
     hasMoreChats: hasMoreChats,
+    suggestedIds: suggested,
   );
 });
 

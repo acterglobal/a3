@@ -7,6 +7,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
+import 'package:acter/common/widgets/room/room_hierarchy_options_menu.dart';
 import 'package:acter/router/utils.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -65,19 +66,33 @@ class SpaceChatsPage extends ConsumerWidget {
 
   Widget renderChats(BuildContext context, WidgetRef ref) {
     final chats = ref.watch(relatedChatsProvider(spaceIdOrAlias));
+    final related =
+        ref.watch(suggestedRelationsIdsProvider(spaceIdOrAlias)).valueOrNull ??
+            [];
 
     return chats.when(
       data: (rooms) {
         return SliverAnimatedList(
           initialItemCount: rooms.length,
-          itemBuilder: (context, index, animation) => SizeTransition(
-            sizeFactor: animation,
-            child: ConvoCard(
-              room: rooms[index],
-              showParents: false,
-              onTap: () => goToChat(context, rooms[index].getRoomIdStr()),
-            ),
-          ),
+          itemBuilder: (context, index, animation) {
+            final room = rooms[index];
+            final roomId = room.getRoomIdStr();
+            final isSuggested = related.contains(roomId);
+            return SizeTransition(
+              sizeFactor: animation,
+              child: ConvoCard(
+                room: room,
+                showParents: false,
+                showSuggestedIcon: isSuggested,
+                onTap: () => goToChat(context, roomId),
+                trailing: RoomHierarchyOptionsMenu(
+                  childId: roomId,
+                  parentId: spaceIdOrAlias,
+                  isSuggested: isSuggested,
+                ),
+              ),
+            );
+          },
         );
       },
       error: (error, stackTrace) => SliverToBoxAdapter(
@@ -110,6 +125,7 @@ class SpaceChatsPage extends ConsumerWidget {
           itemBuilder: (context, idx) {
             final item = chats[idx];
             return ConvoHierarchyCard(
+              showIconIfSuggested: true,
               parentId: spaceIdOrAlias,
               roomInfo: item,
             );

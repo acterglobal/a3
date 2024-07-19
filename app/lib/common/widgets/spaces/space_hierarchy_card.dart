@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_join_button.dart';
+import 'package:acter/common/widgets/room/room_hierarchy_options_menu.dart';
 
 import 'package:acter/common/widgets/spaces/space_with_profile_card.dart';
 import 'package:acter/router/utils.dart';
@@ -81,6 +81,9 @@ class SpaceHierarchyCard extends ConsumerWidget {
   /// Custom trailing widget.
   final Widget? trailing;
 
+  /// Whether to show the suggested icon if this is a suggested space
+  final bool showIconIfSuggested;
+
   const SpaceHierarchyCard({
     super.key,
     required this.roomInfo,
@@ -95,14 +98,16 @@ class SpaceHierarchyCard extends ConsumerWidget {
     this.contentPadding = const EdgeInsets.all(15),
     this.shape,
     this.withBorder = true,
+    this.showIconIfSuggested = false,
     this.trailing,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final roomId = roomInfo.roomIdStr();
-    final avatarInfo = ref.watch(spaceHierarchyAvatarInfoProvider(roomInfo));
+    final avatarInfo = ref.watch(roomHierarchyAvatarInfoProvider(roomInfo));
     final topic = roomInfo.topic();
+    bool showSuggested = showIconIfSuggested && roomInfo.suggested();
     final Widget? subtitle = topic?.isNotEmpty == true
         ? ExpandableText(
             topic!,
@@ -123,16 +128,26 @@ class SpaceHierarchyCard extends ConsumerWidget {
       avatarSize: avatarSize,
       contentPadding: contentPadding,
       shape: shape,
+      showSuggestedIcon: showSuggested,
       trailing: trailing ??
-          RoomHierarchyJoinButton(
-            joinRule: roomInfo.joinRuleStr().toLowerCase(),
-            roomId: roomInfo.roomIdStr(),
-            roomName: roomInfo.name() ?? roomInfo.roomIdStr(),
-            viaServerName: roomInfo.viaServerName(),
-            forward: (spaceId) {
-              goToSpace(context, spaceId);
-              ref.invalidate(relatedSpacesProvider(parentId));
-            },
+          Wrap(
+            children: [
+              RoomHierarchyJoinButton(
+                joinRule: roomInfo.joinRuleStr().toLowerCase(),
+                roomId: roomInfo.roomIdStr(),
+                roomName: roomInfo.name() ?? roomInfo.roomIdStr(),
+                viaServerName: roomInfo.viaServerName(),
+                forward: (spaceId) {
+                  goToSpace(context, spaceId);
+                  ref.invalidate(relatedSpacesProvider(parentId));
+                },
+              ),
+              RoomHierarchyOptionsMenu(
+                isSuggested: roomInfo.suggested(),
+                childId: roomId,
+                parentId: parentId,
+              ),
+            ],
           ),
     );
   }
