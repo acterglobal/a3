@@ -1,8 +1,8 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/spaces/space_info.dart';
-import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -37,7 +37,7 @@ class SpaceHeaderProfile extends ConsumerWidget {
                 uniqueId: spaceId,
                 displayName: spaceAvatarInfo.displayName,
                 avatar: spaceAvatarInfo.avatar,
-                onAvatarTap: () => goToSpace(context, spaceId),
+                onAvatarTap: () => openAvatar(context, ref, spaceId),
               ),
               parentBadges: parentBadges,
               size: 70,

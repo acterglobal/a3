@@ -459,32 +459,8 @@ impl SpaceHierarchyRoomInfo {
 }
 
 impl SpaceHierarchyRoomInfo {
-    pub(crate) async fn new(chunk: SpaceHierarchyRoomsChunk, core: CoreClient) -> Self {
+    pub(crate) fn new(chunk: SpaceHierarchyRoomsChunk, core: CoreClient) -> Self {
         SpaceHierarchyRoomInfo { chunk, core }
-    }
-}
-
-pub struct SpaceHierarchyListResult {
-    resp: get_hierarchy::v1::Response,
-    core: CoreClient,
-}
-
-impl SpaceHierarchyListResult {
-    pub fn next_batch(&self) -> Option<String> {
-        self.resp.next_batch.clone()
-    }
-
-    pub async fn rooms(&self) -> Result<Vec<SpaceHierarchyRoomInfo>> {
-        let core = self.core.clone();
-        let chunks = self.resp.rooms.clone();
-        RUNTIME
-            .spawn(async move {
-                let iter = chunks
-                    .into_iter()
-                    .map(|chunk| SpaceHierarchyRoomInfo::new(chunk, core.clone()));
-                Ok(futures::future::join_all(iter).await)
-            })
-            .await?
     }
 }
 
@@ -555,14 +531,29 @@ impl SpaceRelations {
         self.room.room_id().to_string()
     }
 
-    pub async fn query_hierarchy(&self, from: Option<String>) -> Result<SpaceHierarchyListResult> {
+    pub async fn query_hierarchy(&self) -> Result<Vec<SpaceHierarchyRoomInfo>> {
         let c = self.room.core.clone();
         let room_id = self.room.room_id().to_owned();
         RUNTIME
             .spawn(async move {
-                let request = assign!(get_hierarchy::v1::Request::new(room_id), { from, max_depth: Some(1u32.into()) });
-                let resp = c.client().send(request, None).await?;
-                Ok(SpaceHierarchyListResult { resp, core: c.clone() })
+                println!("query start");
+                let mut next : Option<String> = Some("".to_owned());
+                let mut rooms = Vec::new();
+                while next.is_some() {
+                    let request = assign!(get_hierarchy::v1::Request::new(room_id.clone()), { from: next.clone(), max_depth: Some(1u32.into()) });
+                    println!("sending query ");
+                    let resp = c.client().send(request, None).await?;
+                    println!("query receveived");
+                    if (resp.rooms.is_empty()) {
+                        break; // we are done
+                    }
+                    next = resp.next_batch;
+                    println!("going for next");
+                    rooms.extend(resp.rooms
+                        .into_iter()
+                        .map(|chunk| SpaceHierarchyRoomInfo::new(chunk, c.clone())));
+                    }
+                Ok(rooms)
             })
             .await?
     }

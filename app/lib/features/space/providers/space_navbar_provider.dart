@@ -1,9 +1,8 @@
-import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
-import 'package:acter/features/tasks/providers/tasklists.dart';
+import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -51,7 +50,7 @@ final tabsProvider =
     }
 
     if (appSettings.tasks().active()) {
-      final taskList = await ref.watch(spaceTasksListsProvider(spaceId).future);
+      final taskList = await ref.watch(taskListProvider(spaceId).future);
       if (taskList.isNotEmpty) {
         tabs.add(
           const TabEntry(key: TabEntry.tasks, label: 'Tasks'),
@@ -69,15 +68,15 @@ final tabsProvider =
     }
   }
 
-  final spacesList = await ref.watch(relatedSpacesProvider(spaceId).future);
-  if (spacesList.isNotEmpty) {
+  final hasSpaces = await ref.watch(hasSubSpacesProvider(spaceId).future);
+  if (hasSpaces) {
     tabs.add(
       const TabEntry(key: TabEntry.spacesKey, label: 'Spaces'),
     );
   }
 
-  final chatsList = await ref.watch(relatedChatsProvider(spaceId).future);
-  if (chatsList.isNotEmpty) {
+  final hasChats = await ref.watch(hasSubChatsProvider(spaceId).future);
+  if (hasChats) {
     tabs.add(
       const TabEntry(key: TabEntry.chatsKey, label: 'Chats'),
     );

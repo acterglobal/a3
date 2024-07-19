@@ -10,9 +10,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class InvitePage extends ConsumerWidget {
+  static const invitePageKey = Key('room-invite-page-key');
   final String roomId;
 
-  const InvitePage({super.key, required this.roomId});
+  const InvitePage({
+    required this.roomId,
+    super.key = invitePageKey,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -10,6 +10,10 @@ class RoomVisibilityItem extends StatelessWidget {
   final ValueChanged<RoomVisibility?>? onChanged;
   final bool isShowRadio;
 
+  static Key generateKey(RoomVisibility visibility) {
+    return Key('select-visibility-${visibility.name}');
+  }
+
   const RoomVisibilityItem({
     super.key,
     required this.iconData,
@@ -32,6 +36,9 @@ class RoomVisibilityItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       child: ListTile(
+        key: spaceVisibilityValue != null
+            ? generateKey(spaceVisibilityValue!)
+            : null,
         leading: Icon(iconData),
         title: Text(
           title,

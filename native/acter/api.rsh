@@ -1869,13 +1869,6 @@ object SpaceHierarchyRoomInfo {
     fn via_server_name() -> Option<string>;
 }
 
-object SpaceHierarchyListResult {
-    /// to be used for the next `since`
-    fn next_batch() -> Option<string>;
-    /// get the chunk of items in this response
-    fn rooms() -> Future<Result<Vec<SpaceHierarchyRoomInfo>>>;
-}
-
 object SpaceRelation {
     /// the room ID this Relation links to
     fn room_id() -> RoomId;
@@ -1897,7 +1890,7 @@ object SpaceRelations {
     /// children
     fn children() -> Vec<SpaceRelation>;
     /// query for children from the server
-    fn query_hierarchy(from: Option<string>) -> Future<Result<SpaceHierarchyListResult>>;
+    fn query_hierarchy() -> Future<Result<Vec<SpaceHierarchyRoomInfo>>>;
 }
 
 object RoomPowerLevels {
@@ -1967,6 +1960,45 @@ object ActerAppSettingsBuilder {
     fn tasks(tasks: Option<TasksSettings>);
 }
 
+
+//   ######     ###    ######## ########  ######    #######  ########  ##    ## 
+//  ##    ##   ## ##      ##    ##       ##    ##  ##     ## ##     ##  ##  ##  
+//  ##        ##   ##     ##    ##       ##        ##     ## ##     ##   ####   
+//  ##       ##     ##    ##    ######   ##   #### ##     ## ########     ##    
+//  ##       #########    ##    ##       ##    ##  ##     ## ##   ##      ##    
+//  ##    ## ##     ##    ##    ##       ##    ##  ##     ## ##    ##     ##    
+//   ######  ##     ##    ##    ########  ######    #######  ##     ##    ##    
+
+
+object Category {
+    fn id() -> string;
+    fn title() -> string;
+    fn entries() -> string;
+    fn icon_type_str() -> Option<string>;
+    fn icon_str() -> Option<string>;
+    fn update_builder() -> CategoryBuilder;
+}
+
+object CategoryBuilder {
+    fn title(title: string);
+    fn clear_entries();
+    fn add_entry(entry: string);
+    fn unset_icon();
+    fn icon(type: string, key: string);
+    fn build() -> Result<Category>;
+}
+
+
+object Categories {
+    fn categories() -> Vec<Category>;
+    fn new_category_builder() -> CategoryBuilder;
+    fn update_builder() -> CategoriesBuilder;
+}
+
+object CategoriesBuilder {
+    fn add(cat: Category);
+    fn clear();
+}
 
 //   ######  ########     ###     ######  ######## 
 //  ##    ## ##     ##   ## ##   ##    ## ##       
@@ -2113,6 +2145,14 @@ object Space {
     /// it's the callers job to ensure the person has the privileges to
     /// redact that content.
     fn redact_content(event_id: string, reason: Option<string>) -> Future<Result<EventId>>;
+
+
+    /// Get the categories for a specific key.
+    /// currently supported: spaces, chats
+    fn categories(key: string) -> Future<Result<Categories>>;
+
+    /// Set the categories for a specific key
+    fn set_categories(key: string, categories: CategoriesBuilder) -> Future<Result<bool>>;
 }
 
 enum MembershipStatus {
@@ -2297,6 +2337,9 @@ object Account {
 
     /// Remove email address from confirmed list or unconfirmed list
     fn remove_email_address(email_address: string) -> Future<Result<bool>>;
+
+    /// Get the Bookmarks manager
+    fn bookmarks() -> Future<Result<Bookmarks>>;
 }
 
 object ExternalId {
@@ -2323,6 +2366,27 @@ object ThreePidEmailTokenResponse {
 
     /// get client secret
     fn client_secret() -> string;
+}
+
+
+//  ########   #######   #######  ##    ## ##     ##    ###    ########  ##    ##  ######  
+//  ##     ## ##     ## ##     ## ##   ##  ###   ###   ## ##   ##     ## ##   ##  ##    ## 
+//  ##     ## ##     ## ##     ## ##  ##   #### ####  ##   ##  ##     ## ##  ##   ##       
+//  ########  ##     ## ##     ## #####    ## ### ## ##     ## ########  #####     ######  
+//  ##     ## ##     ## ##     ## ##  ##   ##     ## ######### ##   ##   ##  ##         ## 
+//  ##     ## ##     ## ##     ## ##   ##  ##     ## ##     ## ##    ##  ##   ##  ##    ## 
+//  ########   #######   #######  ##    ## ##     ## ##     ## ##     ## ##    ##  ######  
+
+
+object Bookmarks {
+    /// get the list of bookmarks for a specific key
+    fn entries(key: string) -> Vec<string>;
+
+    /// add the following entry to the bookmarks of key
+    fn add(key: string, entry: string) -> Future<Result<bool>>;
+
+    /// remove the following entry from the bookmarks of key
+    fn remove(key: string, entry: string) -> Future<Result<bool>>;
 }
 
 object SyncState {
@@ -2975,9 +3039,9 @@ object VerificationEmoji {
 object SessionManager {
     fn all_sessions() -> Future<Result<Vec<DeviceRecord>>>;
 
-    /// Force to logout another devices
+    /// Force to logout another device
     /// Authentication is required to do so
-    fn delete_devices(dev_ids: Vec<string>, username: string, password: string) -> Future<Result<bool>>;
+    fn delete_device(dev_id: string, username: string, password: string) -> Future<Result<bool>>;
 
     /// Trigger verification of another device
     /// returns flow id of verification

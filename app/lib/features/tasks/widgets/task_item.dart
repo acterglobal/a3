@@ -1,7 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/room/room_avatar_builder.dart';
-import 'package:acter/features/tasks/providers/tasklists.dart';
+import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -93,7 +93,7 @@ class TaskItem extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (showBreadCrumb)
-            ref.watch(taskListProvider(task.taskListIdStr())).when(
+            ref.watch(taskListItemProvider(task.taskListIdStr())).when(
                   data: (taskList) => Row(
                     children: [
                       const Icon(

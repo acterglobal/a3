@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:acter/common/providers/notifiers/notification_settings_notifier.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -73,8 +75,11 @@ final _accountAvatarProvider =
   final account = ref.watch(accountProvider);
   final thumbSize = sdk.api.newThumbSize(48, 48);
   final avatar = await account.avatar(thumbSize);
-  if (avatar.data() != null) {
-    return MemoryImage(avatar.data()!.asTypedList());
+  // Only call data() once as it will consume the value and any subsequent
+  // call will come back with `null`.
+  final avatarData = avatar.data();
+  if (avatarData != null) {
+    return MemoryImage(Uint8List.fromList(avatarData.asTypedList()));
   }
   return null;
 });

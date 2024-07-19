@@ -1,10 +1,9 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/chat/edit_room_description_sheet.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/edit_plain_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
@@ -16,7 +15,6 @@ import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -128,7 +126,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         padding: const EdgeInsets.symmetric(horizontal: 10.0),
         child: Column(
           children: [
-            _header(context, roomAvatarInfo, membership),
+            _header(context, roomAvatarInfo, membership, convo),
             _description(context, membership, convo),
             const SizedBox(height: 24),
             _actions(context),
@@ -144,21 +142,22 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     BuildContext context,
     AvatarInfo roomAvatarInfo,
     Member? membership,
+    Convo? convo,
   ) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        RoomAvatar(
-          roomId: widget.roomId,
-          avatarSize: 75,
-          showParents: true,
+        InkWell(
+          onTap: convo?.isDm() == true
+              ? null
+              : () => openAvatar(context, ref, widget.roomId),
+          child: RoomAvatar(
+            roomId: widget.roomId,
+            avatarSize: 75,
+            showParents: true,
+          ),
         ),
         const SizedBox(height: 10),
-        if (membership?.canString('CanUpdateAvatar') == true)
-          ActerInlineTextButton(
-            onPressed: () => _updateAvatar(),
-            child: Text(L10n.of(context).changeAvatar),
-          ),
         SelectionArea(
           child: GestureDetector(
             onTap: () {
@@ -203,26 +202,6 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     }
   }
 
-  Future<void> _updateAvatar() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      dialogTitle: L10n.of(context).uploadAvatar,
-      type: FileType.image,
-    );
-    if (result == null || result.files.isEmpty) return;
-    try {
-      if (!mounted) return;
-      EasyLoading.show(status: L10n.of(context).uploadAvatar);
-      final convo = await ref.read(chatProvider(widget.roomId).future);
-      final file = result.files.first;
-      if (file.path != null) await convo.uploadAvatar(file.path!);
-      // close loading
-      EasyLoading.dismiss();
-    } catch (e, st) {
-      _log.severe('Failed to edit chat', e, st);
-      EasyLoading.dismiss();
-    }
-  }
-
   Widget _description(BuildContext context, Member? membership, Convo? convo) {
     return SelectionArea(
       child: GestureDetector(
@@ -244,26 +223,6 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         ),
       ),
     );
-  }
-
-  Widget addDescriptionButton(data) {
-    return (data.topic() == null || data.topic().toString().isEmpty)
-        ? ActerInlineTextButton(
-            onPressed: () => showEditRoomDescriptionBottomSheet(
-              context: context,
-              description: data.topic() ?? '',
-              roomId: widget.roomId,
-            ),
-            child: Text(L10n.of(context).addDescription),
-          )
-        : IconButton(
-            onPressed: () => showEditRoomDescriptionBottomSheet(
-              context: context,
-              description: data.topic() ?? '',
-              roomId: widget.roomId,
-            ),
-            icon: const Icon(Icons.edit),
-          );
   }
 
   Widget _actions(BuildContext context) {

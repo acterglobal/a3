@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:acter/features/activities/providers/notifiers/invitation_list_notifier.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -19,11 +21,12 @@ final invitationUserProfileProvider = FutureProvider.autoDispose
   final displayName = user.getDisplayName();
   final fallback = AvatarInfo(uniqueId: userId, displayName: displayName);
   final avatar = await user.getAvatar(null);
+  final avatarData = avatar.data();
 
-  if (!user.hasAvatar() || avatar.data() == null) {
+  if (!user.hasAvatar() || avatarData == null) {
     return fallback;
   }
-  final data = MemoryImage(avatar.data()!.asTypedList());
+  final data = MemoryImage(Uint8List.fromList(avatarData.asTypedList()));
 
   return AvatarInfo(
     uniqueId: userId,

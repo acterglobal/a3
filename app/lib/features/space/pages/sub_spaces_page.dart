@@ -122,6 +122,7 @@ class SubSpacesPage extends ConsumerWidget {
               data: (spaces) {
                 return renderSubSpaces(
                       context,
+                      ref,
                       spaceIdOrAlias,
                       spaces,
                       crossAxisCount: crossAxisCount,

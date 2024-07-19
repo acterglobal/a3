@@ -22,7 +22,9 @@ mod account;
 mod attachments;
 mod auth;
 mod backup;
+mod bookmarks;
 mod calendar_events;
+mod categories;
 mod client;
 mod comments;
 mod common;
@@ -57,8 +59,8 @@ pub use uniffi_api::*;
 pub use account::{Account, ExternalId, ThreePidEmailTokenResponse};
 pub use acter_core::{
     events::{
-        calendar::EventLocationInfo, news::NewsContent, Colorize, ColorizeBuilder, ObjRef,
-        ObjRefBuilder, RefDetails, RefDetailsBuilder, UtcDateTime,
+        calendar::EventLocationInfo, news::NewsContent, Category, CategoryBuilder, Colorize,
+        ColorizeBuilder, ObjRef, ObjRefBuilder, RefDetails, RefDetailsBuilder, UtcDateTime,
     },
     models::{ActerModel, Tag, TextMessageContent},
 };
@@ -74,7 +76,9 @@ pub use auth::{
     register_under_config, register_with_token_under_config, sanitize_user,
 };
 pub use backup::BackupManager;
+pub use bookmarks::Bookmarks;
 pub use calendar_events::{CalendarEvent, CalendarEventDraft, CalendarEventUpdateBuilder};
+pub use categories::{Categories, CategoriesBuilder};
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};
 pub use common::{
@@ -99,7 +103,7 @@ pub use reactions::{Reaction, ReactionManager};
 pub use receipt::{ReceiptEvent, ReceiptRecord, ReceiptThread};
 pub use room::{
     new_join_rule_builder, JoinRuleBuilder, Member, MemberPermission, MembershipStatus, Room,
-    SpaceHierarchyListResult, SpaceHierarchyRoomInfo, SpaceRelation, SpaceRelations,
+    SpaceHierarchyRoomInfo, SpaceRelation, SpaceRelations,
 };
 pub use rsvp::{Rsvp, RsvpDraft, RsvpManager, RsvpStatus};
 pub use search::{PublicSearchResult, PublicSearchResultItem};

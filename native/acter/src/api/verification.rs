@@ -995,17 +995,14 @@ impl SessionManager {
             .await?
     }
 
-    pub async fn delete_devices(
+    pub async fn delete_device(
         &self,
-        dev_ids: &mut Vec<String>,
+        dev_id: String,
         username: String,
         password: String,
     ) -> Result<bool> {
         let client = self.client.clone();
-        let devices = (*dev_ids)
-            .iter()
-            .map(|x| x.as_str().into())
-            .collect::<Vec<OwnedDeviceId>>();
+        let devices = [OwnedDeviceId::from(dev_id)];
         RUNTIME
             .spawn(async move {
                 if let Err(e) = client.delete_devices(&devices, None).await {
