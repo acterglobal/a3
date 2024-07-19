@@ -23855,10 +23855,12 @@ class Api {
             ffi.IntPtr,
             ffi.UintPtr,
             ffi.UintPtr,
+            ffi.Uint8,
           )>>("__Space_add_child_room");
 
   late final _spaceAddChildRoom = _spaceAddChildRoomPtr.asFunction<
       int Function(
+        int,
         int,
         int,
         int,
@@ -48629,14 +48631,18 @@ class Space {
   }
 
   /// add the following as a child space and return event id of that event
+  /// flag as suggested or not
   Future<String> addChildRoom(
     String roomId,
+    bool suggested,
   ) {
     final tmp1 = roomId;
+    final tmp5 = suggested;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
     var tmp4 = 0;
+    var tmp6 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -48646,18 +48652,20 @@ class Space {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._spaceAddChildRoom(
+    tmp6 = tmp5 ? 1 : 0;
+    final tmp7 = _api._spaceAddChildRoom(
       tmp0,
       tmp2,
       tmp3,
       tmp4,
+      tmp6,
     );
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "__Space_add_child_room_future_drop");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(tmp7_1, _api.__spaceAddChildRoomFuturePoll);
-    return tmp6;
+    final tmp9 = tmp7;
+    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+    final tmp9_1 = _Box(_api, tmp9_0, "__Space_add_child_room_future_drop");
+    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
+    final tmp8 = _nativeFuture(tmp9_1, _api.__spaceAddChildRoomFuturePoll);
+    return tmp8;
   }
 
   /// remove a child space

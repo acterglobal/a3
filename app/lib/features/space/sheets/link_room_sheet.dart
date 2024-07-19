@@ -393,7 +393,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
 
     //Fetch selected parent space data and add given roomId as child
     final space = await ref.read(spaceProvider(selectedParentSpaceId).future);
-    space.addChildRoom(roomId);
+    space.addChildRoom(roomId, false);
 
     //Make subspace
     if (widget.childRoomType == ChildRoomType.space) {

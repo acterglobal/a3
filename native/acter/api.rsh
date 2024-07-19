@@ -2018,7 +2018,8 @@ object Space {
     fn is_child_space_of(room_id: string) -> Future<bool>;
 
     /// add the following as a child space and return event id of that event
-    fn add_child_room(room_id: string) -> Future<Result<string>>;
+    /// flag as suggested or not
+    fn add_child_room(room_id: string, suggested: bool) -> Future<Result<string>>;
 
     /// remove a child space
     fn remove_child_room(room_id: string, reason: Option<string>) -> Future<Result<bool>>;

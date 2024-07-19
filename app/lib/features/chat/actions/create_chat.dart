@@ -15,6 +15,7 @@ Future<String?> createChat(
   String? avatarUri,
   String? parentId,
   List<String>? selectedUsers,
+  bool suggested = false,
 }) async {
   EasyLoading.show(status: L10n.of(context).creatingChat);
   try {
@@ -49,7 +50,7 @@ Future<String?> createChat(
     // add room to child of space (if given)
     if (parentId != null) {
       final space = await ref.read(spaceProvider(parentId).future);
-      await space.addChildRoom(roomIdStr);
+      await space.addChildRoom(roomIdStr, suggested);
       // spaceRelations come from the server and must be manually invalidated
       ref.invalidate(spaceRelationsOverviewProvider(parentId));
     }
