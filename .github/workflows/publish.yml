@@ -86,8 +86,8 @@ jobs:
       release_title: ${{ needs.tags.outputs.release_title }} ${{ needs.tags.outputs.tag }}
       release_tag: ${{ needs.tags.outputs.tag }}
       target: ${{ needs.tags.outputs.targets }}
+      release: true
       release_env: 'release'
-      prerelease: false
     secrets: inherit
 
   changelog:

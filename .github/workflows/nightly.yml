@@ -70,6 +70,8 @@ jobs:
       release_title: "Nightly ${{ needs.tags.outputs.tag }}"
       release_tag: nightly-${{ needs.tags.outputs.tag }}
       release_env: 'nightly'
+      release: true
+      prerelease: true
       flutter_build_extra: "--dart-define IS_NIGHTLY=true"
     secrets: inherit
 
@@ -247,7 +249,7 @@ jobs:
         run: |
           cp app/linux/packaging/aur/PKGBUILD-nightly PKGBUILD
           sed -i "s/%{{TAG}}%/${{ needs.tags.outputs.tag }}/g" PKGBUILD
-          sed -i "s/%{{VERSION}}%/$${{ needs.tags.outputs.version }}/g" PKGBUILD
+          sed -i "s/%{{VERSION}}%/${{ needs.tags.outputs.version }}/g" PKGBUILD
           sed -i "s/%{{PKGREL}}%/1/g" PKGBUILD
           sed -i "s/%{{LINUX_MD5}}%/`md5sum acter-nightly-linux-x64-${{ needs.tags.outputs.version }}.tar.bz2  | awk '{print $1}'`/g" PKGBUILD
       - uses: KSXGitHub/github-actions-deploy-aur@v2.7.2
