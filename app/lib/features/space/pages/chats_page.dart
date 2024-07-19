@@ -31,7 +31,8 @@ class SpaceChatsPage extends ConsumerWidget {
     }
 
     final membership = ref.watch(roomMembershipProvider(spaceIdOrAlias));
-    bool canCreateSpace = membership.requireValue!.canString('CanLinkSpaces');
+    bool canCreateSpace =
+        membership.valueOrNull?.canString('CanLinkSpaces') == true;
 
     return Center(
       heightFactor: 1,
@@ -139,6 +140,10 @@ class SpaceChatsPage extends ConsumerWidget {
     final chatsList =
         ref.watch(spaceRelationsOverviewProvider(spaceIdOrAlias)).valueOrNull;
 
+    final membership = ref.watch(roomMembershipProvider(spaceIdOrAlias));
+    bool canCreateSpace =
+        membership.valueOrNull?.canString('CanLinkSpaces') == true;
+
     return Scaffold(
       appBar: AppBar(
         title: Column(
@@ -153,42 +158,43 @@ class SpaceChatsPage extends ConsumerWidget {
           ],
         ),
         actions: [
-          PopupMenuButton(
-            key: actionsMenuKey,
-            icon: const Icon(Atlas.plus_circle),
-            iconSize: 28,
-            color: Theme.of(context).colorScheme.surface,
-            itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-              PopupMenuItem(
-                key: createChatKey,
-                onTap: () => context.pushNamed(
-                  Routes.createChat.name,
-                  queryParameters: {'spaceId': spaceIdOrAlias},
-                  extra: 1,
+          if (canCreateSpace)
+            PopupMenuButton(
+              key: actionsMenuKey,
+              icon: const Icon(Atlas.plus_circle),
+              iconSize: 28,
+              color: Theme.of(context).colorScheme.surface,
+              itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                PopupMenuItem(
+                  key: createChatKey,
+                  onTap: () => context.pushNamed(
+                    Routes.createChat.name,
+                    queryParameters: {'spaceId': spaceIdOrAlias},
+                    extra: 1,
+                  ),
+                  child: Row(
+                    children: <Widget>[
+                      Text(L10n.of(context).createChat),
+                      const Spacer(),
+                      const Icon(Atlas.chats),
+                    ],
+                  ),
                 ),
-                child: Row(
-                  children: <Widget>[
-                    Text(L10n.of(context).createChat),
-                    const Spacer(),
-                    const Icon(Atlas.chats),
-                  ],
+                PopupMenuItem(
+                  onTap: () => context.pushNamed(
+                    Routes.linkChat.name,
+                    pathParameters: {'spaceId': spaceIdOrAlias},
+                  ),
+                  child: Row(
+                    children: <Widget>[
+                      Text(L10n.of(context).linkExistingChat),
+                      const Spacer(),
+                      const Icon(Atlas.chats),
+                    ],
+                  ),
                 ),
-              ),
-              PopupMenuItem(
-                onTap: () => context.pushNamed(
-                  Routes.linkChat.name,
-                  pathParameters: {'spaceId': spaceIdOrAlias},
-                ),
-                child: Row(
-                  children: <Widget>[
-                    Text(L10n.of(context).linkExistingChat),
-                    const Spacer(),
-                    const Icon(Atlas.chats),
-                  ],
-                ),
-              ),
-            ],
-          ),
+              ],
+            ),
         ],
       ),
       body: CustomScrollView(
