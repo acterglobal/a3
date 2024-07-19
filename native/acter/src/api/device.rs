@@ -16,67 +16,18 @@ use tracing::{error, info};
 use super::{client::Client, common::DeviceRecord, RUNTIME};
 
 #[derive(Clone, Debug)]
-pub struct DeviceNewEvent {
-    client: SdkClient,
-    device_id: OwnedDeviceId,
-}
-
-impl DeviceNewEvent {
-    pub(crate) fn new(client: &SdkClient, device_id: OwnedDeviceId) -> Self {
-        DeviceNewEvent {
-            client: client.clone(),
-            device_id,
-        }
-    }
-
-    pub(crate) fn client(&self) -> SdkClient {
-        self.client.clone()
-    }
-
-    pub fn device_id(&self) -> OwnedDeviceId {
-        self.device_id.clone()
-    }
-
-    pub(crate) fn user_id(&self) -> Result<OwnedUserId> {
-        self.client
-            .user_id()
-            .context("You must be logged in to do that")
-            .map(|x| x.to_owned())
-    }
-}
-
-#[derive(Clone, Debug)]
-pub struct DeviceChangedEvent {
-    client: SdkClient,
-    device_id: OwnedDeviceId,
-}
-
-impl DeviceChangedEvent {
-    pub(crate) fn new(client: &SdkClient, device_id: OwnedDeviceId) -> Self {
-        DeviceChangedEvent {
-            client: client.clone(),
-            device_id,
-        }
-    }
-
-    pub fn device_id(&self) -> OwnedDeviceId {
-        self.device_id.clone()
-    }
-}
-
-#[derive(Clone, Debug)]
 pub(crate) struct DeviceController {
-    new_event_tx: Sender<DeviceNewEvent>, // keep it resident in memory
-    new_event_rx: Arc<Mutex<Option<Receiver<DeviceNewEvent>>>>,
-    changed_event_tx: Sender<DeviceChangedEvent>, // keep it resident in memory
-    changed_event_rx: Arc<Mutex<Option<Receiver<DeviceChangedEvent>>>>,
+    new_event_tx: Sender<String>, // keep it resident in memory
+    new_event_rx: Arc<Mutex<Option<Receiver<String>>>>,
+    changed_event_tx: Sender<String>, // keep it resident in memory
+    changed_event_rx: Arc<Mutex<Option<Receiver<String>>>>,
     listener: Arc<JoinHandle<()>>, // keep it resident in memory
 }
 
 impl DeviceController {
     pub fn new(client: SdkClient) -> Self {
-        let (new_event_tx, new_event_rx) = channel::<DeviceNewEvent>(10); // dropping after more than 10 items queued
-        let (changed_event_tx, changed_event_rx) = channel::<DeviceChangedEvent>(10); // dropping after more than 10 items queued
+        let (new_event_tx, new_event_rx) = channel::<String>(10); // dropping after more than 10 items queued
+        let (changed_event_tx, changed_event_rx) = channel::<String>(10); // dropping after more than 10 items queued
 
         let mut new_tx = new_event_tx.clone();
         let mut changed_tx = changed_event_tx.clone();
@@ -97,8 +48,7 @@ impl DeviceController {
                 if let Some(user_devices) = device_updates.new.get(my_id) {
                     for (dev_id, dev) in user_devices {
                         info!("device-new device id: {}", dev_id);
-                        let evt = DeviceNewEvent::new(&client, dev_id.to_owned());
-                        if let Err(e) = new_event_tx.try_send(evt) {
+                        if let Err(e) = new_tx.try_send(dev_id.to_string()) {
                             error!("Dropping devices new event: {}", e);
                         }
                     }
@@ -106,8 +56,7 @@ impl DeviceController {
                 if let Some(user_devices) = device_updates.changed.get(my_id) {
                     for (dev_id, dev) in user_devices {
                         info!("device-changed device id: {}", dev_id);
-                        let evt = DeviceChangedEvent::new(&client, dev_id.to_owned());
-                        if let Err(e) = changed_event_tx.try_send(evt) {
+                        if let Err(e) = changed_tx.try_send(dev_id.to_string()) {
                             error!("Dropping devices changed event: {}", e);
                         }
                     }
@@ -126,14 +75,14 @@ impl DeviceController {
 }
 
 impl Client {
-    pub fn device_new_event_rx(&self) -> Option<Receiver<DeviceNewEvent>> {
+    pub fn device_new_event_rx(&self) -> Option<Receiver<String>> {
         match self.device_controller.new_event_rx.try_lock() {
             Ok(mut r) => r.take(),
             Err(e) => None,
         }
     }
 
-    pub fn device_changed_event_rx(&self) -> Option<Receiver<DeviceChangedEvent>> {
+    pub fn device_changed_event_rx(&self) -> Option<Receiver<String>> {
         match self.device_controller.changed_event_rx.try_lock() {
             Ok(mut r) => r.take(),
             Err(e) => None,

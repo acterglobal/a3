@@ -2630,10 +2630,10 @@ object Client {
     fn install_sas_event_handler(flow_id: string) -> Future<Result<bool>>;
 
     /// Return the event handler of device new
-    fn device_new_event_rx() -> Option<Stream<DeviceNewEvent>>;
+    fn device_new_event_rx() -> Option<Stream<string>>;
 
     /// Return the event handler of device changed
-    fn device_changed_event_rx() -> Option<Stream<DeviceChangedEvent>>;
+    fn device_changed_event_rx() -> Option<Stream<string>>;
 
     /// Return the typing event receiver
     fn subscribe_to_typing_event_stream(room_id: string) -> Stream<TypingEvent>;
@@ -2998,35 +2998,6 @@ object SessionManager {
 //  ########  ########    ###    ####  ######  ########  ######  
 
 
-
-/// Deliver devices new event from rust to flutter
-object DeviceNewEvent {
-    /// get device id
-    fn device_id() -> DeviceId;
-
-    /// Request verification to any devices of user
-    /// returns flow id of verification
-    fn request_verification_to_user() -> Future<Result<string>>;
-
-    /// Request verification to specific device
-    /// returns flow id of verification
-    fn request_verification_to_device(dev_id: string) -> Future<Result<string>>;
-
-    /// Request verification to any devices of user with methods
-    /// returns flow id of verification
-    fn request_verification_to_user_with_methods(methods: Vec<string>) -> Future<Result<string>>;
-
-    /// Request verification to specific device with methods
-    /// returns flow id of verification
-    fn request_verification_to_device_with_methods(dev_id: string, methods: Vec<string>) -> Future<Result<string>>;
-}
-
-/// Deliver devices changed event from rust to flutter
-object DeviceChangedEvent {
-    /// get device id
-    fn device_id() -> DeviceId;
-
-}
 
 /// Provide various device infos
 object DeviceRecord {
