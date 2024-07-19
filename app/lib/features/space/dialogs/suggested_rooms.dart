@@ -38,7 +38,6 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
       suggestedRoomsProvider(widget.spaceId),
       (prev, next) {
         if (next.hasValue) {
-          print('setting: $next');
           setState(() {
             chatsFound = next.valueOrNull?.chats ?? [];
             spacesFound = next.valueOrNull?.spaces ?? [];
@@ -98,7 +97,7 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
         OutlinedButton(
           onPressed: () {
             Navigator.of(context).pop();
-            mark_has_seen_suggested(ref, widget.spaceId);
+            markHasSeenSuggested(ref, widget.spaceId);
           },
           child: Text(L10n.of(context).skip),
         ),
@@ -137,14 +136,17 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
     } else {
       final casted = allRooms.cast<SpaceHierarchyRoomInfo?>();
       for (final roomId in selectedRooms!) {
-        final room = casted.firstWhere((s) => s!.roomIdStr() == roomId,
-            orElse: () => null,);
+        final room = casted.firstWhere(
+          (s) => s!.roomIdStr() == roomId,
+          orElse: () => null,
+        );
         if (room != null) {
           // it was found
           roomsToJoin.add(room);
         } else {
           _log.warning(
-              'Room $roomId not found in list. Not sure how that can ever be.',);
+            'Room $roomId not found in list. Not sure how that can ever be.',
+          );
         }
       }
     }
@@ -166,7 +168,7 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
     }
 
     if (!hadFailures) {
-      mark_has_seen_suggested(ref, widget.spaceId);
+      markHasSeenSuggested(ref, widget.spaceId);
     }
     if (context.mounted) {
       Navigator.of(context).pop();

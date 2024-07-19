@@ -40,7 +40,10 @@ impl Room {
         user_settings.has_seen_suggested = new_value;
         let room = self.room.clone();
         RUNTIME
-            .spawn(async move { room.set_account_data(user_settings).await?; Ok(true) })
+            .spawn(async move {
+                room.set_account_data(user_settings).await?;
+                Ok(true)
+            })
             .await?
     }
 }
