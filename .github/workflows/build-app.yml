@@ -413,7 +413,8 @@ jobs:
           path: app/debug_symbols/*
 
       - name: "Upload debug artifacts to sentry"
-        if: ${{! matrix.with_debug_symbols && inputs.release }}
+        if: ${{matrix.with_debug_symbols && inputs.release }}
+        working-directory: app
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_URL: ${{ secrets.SENTRY_DSN }}
