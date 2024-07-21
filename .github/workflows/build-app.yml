@@ -451,7 +451,7 @@ jobs:
             ${{ matrix.specific_upload_artifacts }}
 
       - name: Report issue
-        if: ${{ github.event.schedule && failure() && !steps.skipper.outputs.skipped }}
+        if: ${{ inputs.release && failure() && !steps.skipper.outputs.skipped }}
         uses: JasonEtco/create-an-issue@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
