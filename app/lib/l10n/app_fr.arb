@@ -878,5 +878,15 @@
   "failedToConfirmToken": "Échec de confirmation du token : {error}",
   "@failedToConfirmToken": {},
   "failedToLeaveSpace": "Échec de quitter l'espace : {error}",
-  "@failedToLeaveSpace": {}
+  "@failedToLeaveSpace": {},
+  "powerLevelSubmitted": "Mise à jour du niveau de permission pour {module} soumise",
+  "@powerLevelSubmitted": {},
+  "seeAllMyChats": "Voir tous mes {count} chats",
+  "@seeAllMyChats": {},
+  "seeAllMySpaces": "Voir tous mes {count} espaces",
+  "@seeAllMySpaces": {},
+  "changedPushNotificationSettingsSuccessfully": "Modification réussie des paramètres de notification push",
+  "@changedPushNotificationSettingsSuccessfully": {},
+  "seeAllMyEvents": "Voir tous mes {count} événements",
+  "@seeAllMyEvents": {}
 }
