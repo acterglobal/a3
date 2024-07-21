@@ -904,5 +904,19 @@
   "reportedBugSuccessful": "Le bug a été signalé avec succès ! (#{issueId})",
   "@reportedBugSuccessful": {},
   "includePrevLog": "Inclure les logs de l'exécution précédente",
-  "@includePrevLog": {}
+  "@includePrevLog": {},
+  "changedPowerLevelOf": "Changement du niveau de permission de {module}",
+  "@changedPowerLevelOf": {},
+  "saveUsernameTitle": "Avez-vous sauvegardé votre nom d'utilisateur ?",
+  "@saveUsernameTitle": {},
+  "inviteCopiedToClipboard": "Code d'invitation copié dans le presse-papiers",
+  "@inviteCopiedToClipboard": {},
+  "inviteSpaceMembersSubtitle": "Inviter les utilisateurs de l'espace sélectionné",
+  "@inviteSpaceMembersSubtitle": {},
+  "cancelInviteError": "L'utilisateur {userId} n'a pas été trouvé : {error}",
+  "@cancelInviteError": {},
+  "invitingSpaceMembersError": "Erreur d'invitation des Membres de l'Espace : {error}",
+  "@invitingSpaceMembersError": {},
+  "publicVisibilitySubtitle": "Tout le monde peut trouver et rejoindre",
+  "@publicVisibilitySubtitle": {}
 }
