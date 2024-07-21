@@ -132,6 +132,7 @@ jobs:
 
     steps:
       - id: skipper
+        name: "Check whether we build this target"
         env:
           TARGET: ${{matrix.target}}
           TARGETS: ${{inputs.targets || 'all'}}
