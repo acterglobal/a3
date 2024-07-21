@@ -30,7 +30,7 @@ on:
       artifacts_prefix:
         required: false
         type: string
-      target:
+      targets:
         required: false
         type: string
       flutter_build_extra:
@@ -134,7 +134,7 @@ jobs:
       - id: skipper
         env:
           TARGET: ${{matrix.target}}
-          TARGETS: ${{inputs.target || 'all'}}
+          TARGETS: ${{inputs.targets || 'all'}}
         run: |
 
           if [ "$TARGETS" = "all" ]; then
