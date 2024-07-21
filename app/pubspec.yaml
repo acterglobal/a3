@@ -158,6 +158,7 @@ dev_dependencies:
   uuid: ^4.0.0
   enough_mail: ^2.1.6
   sentry_dart_plugin: ^2.0.0
+  translations_cleaner: ^0.0.5
 
 dependency_overrides:
   flutter_secure_storage_linux:
