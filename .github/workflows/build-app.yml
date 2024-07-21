@@ -131,8 +131,25 @@ jobs:
             with_debug_symbols: true
 
     steps:
-      - if: ${{ inputs.target != null && inputs.target != 'all' && matrix.target != inputs.target }}
+      - id: skipper
+        env:
+          TARGET: ${{matrix.target}}
+          TARGETS: ${{inputs.target || 'all'}}
         run: |
+
+          if [ "$TARGETS" = "all" ]; then
+            echo "Should build all";
+            echo "skipped=false"  >> $GITHUB_OUTPUT;
+            exit 0
+          fi
+
+          if echo $TARGET | tr "," "\n" | grep -Fxq $TARGET; then
+            echo "target among selected";
+            echo "skipped=false"  >> $GITHUB_OUTPUT;
+            exit 0
+          fi
+
+          echo "skipped=true" >> $GITHUB_OUTPUT ;
           echo "Skipping build app for ${{ matrix.name }}"
           exit 1
     
@@ -435,7 +452,7 @@ jobs:
             ${{ matrix.specific_upload_artifacts }}
 
       - name: Report issue
-        if: ${{ github.event.schedule && failure() }}
+        if: ${{ github.event.schedule && failure() && !steps.skipper.outputs.skipped }}
         uses: JasonEtco/create-an-issue@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

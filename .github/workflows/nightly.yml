@@ -64,6 +64,7 @@ jobs:
     needs:
      - tags
     with:
+      targets: android,linux,ios,macos,windows-exe # skip: windows-msix
       artifacts_prefix: 'nightly-'
       build_num: ${{ needs.tags.outputs.build_num }}
       version: ${{ needs.tags.outputs.version }}
