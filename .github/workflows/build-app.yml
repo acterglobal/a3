@@ -135,6 +135,7 @@ jobs:
         env:
           TARGET: ${{matrix.target}}
           TARGETS: ${{inputs.targets || 'all'}}
+        shell: bash
         run: |
 
           if [ "$TARGETS" = "all" ]; then
