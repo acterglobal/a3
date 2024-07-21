@@ -888,5 +888,21 @@
   "changedPushNotificationSettingsSuccessfully": "Modification réussie des paramètres de notification push",
   "@changedPushNotificationSettingsSuccessfully": {},
   "seeAllMyEvents": "Voir tous mes {count} événements",
-  "@seeAllMyEvents": {}
+  "@seeAllMyEvents": {},
+  "errorUnverifiedSessions": "Impossible de charger les sessions non vérifiées : {error}",
+  "@errorUnverifiedSessions": {},
+  "noActivityTitle": "Pas encore d'activité pour vous",
+  "@noActivityTitle": {},
+  "thanksForReport": "Merci d'avoir signalé ce bogue !",
+  "@thanksForReport": {},
+  "bugReportDescription": "Brève description du problème",
+  "@bugReportDescription": {},
+  "noMatchingSpacesFound": "Pas de concordance. Recherche dans l'annuaire public",
+  "@noMatchingSpacesFound": {},
+  "changingPowerLevelOf": "Modifier le niveau d'autorisation de {module}",
+  "@changingPowerLevelOf": {},
+  "reportedBugSuccessful": "Le bug a été signalé avec succès ! (#{issueId})",
+  "@reportedBugSuccessful": {},
+  "includePrevLog": "Inclure les logs de l'exécution précédente",
+  "@includePrevLog": {}
 }
