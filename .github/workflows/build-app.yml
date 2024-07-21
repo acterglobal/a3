@@ -434,7 +434,6 @@ jobs:
         working-directory: app
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_URL: ${{ secrets.SENTRY_DSN }}
           SENTRY_RELEASE: ${{ inputs.version }}
         run: flutter packages pub run sentry_dart_plugin
 
