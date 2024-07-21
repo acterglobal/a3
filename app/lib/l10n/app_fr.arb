@@ -918,5 +918,9 @@
   "invitingSpaceMembersError": "Erreur d'invitation des Membres de l'Espace : {error}",
   "@invitingSpaceMembersError": {},
   "publicVisibilitySubtitle": "Tout le monde peut trouver et rejoindre",
-  "@publicVisibilitySubtitle": {}
+  "@publicVisibilitySubtitle": {},
+  "privateVisibilitySubtitle": "Seules les personnes invitées peuvent rejoindre",
+  "@privateVisibilitySubtitle": {},
+  "emptyTaskList": "Aucune liste de tâches n'a encore été créée",
+  "@emptyTaskList": {}
 }
