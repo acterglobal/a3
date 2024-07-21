@@ -306,7 +306,7 @@ jobs:
             --dart-define PUSH_SERVER="${{ secrets.PUSH_SERVER }}" \
             --dart-define RAGESHAKE_URL="${{ secrets.RAGESHAKE_URL }}" \
             --dart-define RAGESHAKE_APP_NAME="${{ secrets.RAGESHAKE_APP_NAME }}" \
-            --dart-define RAGESHAKE_APP_VERSION="${{inputs.release_env}}/${{ matrix.name }}" \
+            --dart-define RAGESHAKE_APP_VERSION="${{inputs.release_env}}/${{inputs.version}}/${{ matrix.name }}" \
             --dart-define DEFAULT_HOMESERVER_URL="${{vars.DEFAULT_HOMESERVER_URL}}" \
             --dart-define DEFAULT_HOMESERVER_NAME="${{vars.DEFAULT_HOMESERVER_NAME}}"
         working-directory: ./app
