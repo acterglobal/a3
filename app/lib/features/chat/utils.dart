@@ -113,7 +113,7 @@ UserMentionMessageData parseUserMentionMessage(
     // Replace displayName with @displayName
     msg = msg.replaceAll(
       aTagElement.outerHtml,
-      '@$displayName',
+      displayName,
     );
   }
   return UserMentionMessageData(

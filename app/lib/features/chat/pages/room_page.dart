@@ -191,7 +191,6 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
   void showMessageOptions(
     BuildContext context,
     types.Message message,
-    String roomId,
   ) async {
     if (message is types.CustomMessage) {
       if (message.metadata!.containsKey('eventType') &&
@@ -199,7 +198,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
         return;
       }
     }
-    final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
+    final inputNotifier = ref.read(chatInputProvider.notifier);
     inputNotifier.setActionsMessage(message);
   }
 
@@ -251,9 +250,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
           required bool nextMessageInGroup,
         }) =>
             GestureDetector(
-          onSecondaryTap: () {
-            showMessageOptions(context, message, roomId);
-          },
+          onSecondaryTap: () => showMessageOptions(context, message),
           child: BubbleBuilder(
             convo: widget.convo,
             message: message,
@@ -303,15 +300,14 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
         onMessageLongPress: (
           BuildContext context,
           types.Message message,
-        ) async {
-          showMessageOptions(context, message, roomId);
-        },
+        ) async =>
+            showMessageOptions(context, message),
+
         onEndReached:
             ref.read(chatStateProvider(widget.convo).notifier).handleEndReached,
         onEndReachedThreshold: 0.75,
-        onBackgroundTap: () {
-          ref.read(chatInputProvider(roomId).notifier).unsetActions();
-        },
+        onBackgroundTap: () =>
+            ref.read(chatInputProvider.notifier).unsetActions(),
         typingIndicatorOptions: TypingIndicatorOptions(
           typingMode: TypingIndicatorMode.name,
           typingUsers:

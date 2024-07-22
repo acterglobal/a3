@@ -2,7 +2,6 @@ import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/network_provider.dart';
-import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
@@ -35,8 +34,8 @@ final autoDownloadMediaProvider =
 
 // keep track of text controller values across rooms.
 final chatInputProvider =
-    StateNotifierProvider.family<ChatInputNotifier, ChatInputState, String>(
-  (ref, roomId) => ChatInputNotifier(),
+    StateNotifierProvider<ChatInputNotifier, ChatInputState>(
+  (ref) => ChatInputNotifier(),
 );
 
 final chatStateProvider =
@@ -137,9 +136,8 @@ final chatMessagesProvider =
   return [...messages, ...moreMessages];
 });
 
-final isAuthorOfSelectedMessage =
-    StateProvider.family<bool, String>((ref, roomId) {
-  final chatInputState = ref.watch(chatInputProvider(roomId));
+final isAuthorOfSelectedMessage = StateProvider<bool>((ref) {
+  final chatInputState = ref.watch(chatInputProvider);
   final myUserId = ref.watch(myUserIdStrProvider);
   return chatInputState.selectedMessage?.author.id == myUserId;
 });
@@ -183,31 +181,6 @@ final isRoomEncryptedProvider =
     FutureProvider.family<bool, String>((ref, roomId) async {
   final convo = await ref.watch(chatProvider(roomId).future);
   return await convo.isEncrypted();
-});
-
-typedef Mentions = List<Map<String, String>>;
-
-final chatMentionsProvider =
-    FutureProvider.autoDispose.family<Mentions, String>((ref, roomId) async {
-  final activeMembers = await ref.read(membersIdsProvider(roomId).future);
-  List<Map<String, String>> mentionRecords = [];
-  for (final mId in activeMembers) {
-    final data = ref.watch(
-      memberAvatarInfoProvider((roomId: roomId, userId: mId)),
-    );
-    Map<String, String> record = {};
-    final displayName = data.displayName;
-    record['id'] = mId;
-    if (displayName != null) {
-      record['displayName'] = displayName;
-      // all of our search terms:
-      record['display'] = displayName;
-    } else {
-      record['display'] = mId;
-    }
-    mentionRecords.add(record);
-  }
-  return mentionRecords;
 });
 
 final chatTypingEventProvider = StreamProvider.autoDispose
