@@ -33,7 +33,7 @@ class MentionProfileBuilder extends ConsumerWidget {
       ),
       error: (error, st) => ErrorWidget(L10n.of(context).failedToLoad(error)),
       data: (data) {
-        final users = data.fold<Map<String, String?>>({}, (map, uId) {
+        final users = data.fold<Map<String, String>>({}, (map, uId) {
           if (uId != userId) {
             final displayName = ref
                 .watch(
@@ -76,9 +76,9 @@ class MentionProfileBuilder extends ConsumerWidget {
                     final autocomplete = MultiTriggerAutocomplete.of(ctx);
                     ref
                         .read(chatInputProvider.notifier)
-                        .addMention(displayName ?? '', id);
+                        .addMention(displayName, id);
                     return autocomplete.acceptAutocompleteOption(
-                      displayName ?? id.substring(1),
+                      displayName.isNotEmpty ? displayName : id.substring(1),
                     );
                   },
                   leading: Consumer(
@@ -96,10 +96,10 @@ class MentionProfileBuilder extends ConsumerWidget {
                       );
                     },
                   ),
-                  title: Text(displayName ?? ''),
+                  title: Text(displayName),
                   titleTextStyle: Theme.of(context).textTheme.bodyMedium,
                   subtitleTextStyle: Theme.of(context).textTheme.labelMedium,
-                  subtitle: displayName != null ? Text(id) : null,
+                  subtitle: displayName.isNotEmpty ? Text(id) : null,
                 );
               },
             ),
