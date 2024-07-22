@@ -31,7 +31,8 @@ class SpaceChatsPage extends ConsumerWidget {
     }
 
     final membership = ref.watch(roomMembershipProvider(spaceIdOrAlias));
-    bool canCreateSpace = membership.requireValue!.canString('CanLinkSpaces');
+    bool canCreateSpace =
+        membership.valueOrNull?.canString('CanLinkSpaces') == true;
 
     return Center(
       heightFactor: 1,
