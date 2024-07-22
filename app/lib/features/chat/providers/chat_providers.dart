@@ -34,8 +34,8 @@ final autoDownloadMediaProvider =
 
 // keep track of text controller values across rooms.
 final chatInputProvider =
-    StateNotifierProvider.family<ChatInputNotifier, ChatInputState, String>(
-  (ref, roomId) => ChatInputNotifier(roomId),
+    StateNotifierProvider<ChatInputNotifier, ChatInputState>(
+  (ref) => ChatInputNotifier(),
 );
 
 final chatStateProvider =
@@ -136,9 +136,8 @@ final chatMessagesProvider =
   return [...messages, ...moreMessages];
 });
 
-final isAuthorOfSelectedMessage =
-    StateProvider.family<bool, String>((ref, roomId) {
-  final chatInputState = ref.watch(chatInputProvider(roomId));
+final isAuthorOfSelectedMessage = StateProvider<bool>((ref) {
+  final chatInputState = ref.watch(chatInputProvider);
   final myUserId = ref.watch(myUserIdStrProvider);
   return chatInputState.selectedMessage?.author.id == myUserId;
 });

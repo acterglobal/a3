@@ -42,8 +42,7 @@ class BubbleBuilder extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final myId = ref.watch(myUserIdStrProvider);
     final isAuthor = (myId == message.author.id);
-    final roomId = convo.getRoomIdStr();
-    final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
+    final inputNotifier = ref.read(chatInputProvider.notifier);
     String eventType = message.metadata?['eventType'] ?? '';
     bool isMemberEvent = eventType == 'm.room.member';
     bool redactedOrEncrypted = (message is types.CustomMessage) &&
@@ -105,7 +104,7 @@ class _ChatBubble extends ConsumerWidget {
     final isAuthor = (myId == message.author.id);
     final roomId = convo.getRoomIdStr();
     final actionsVisible = ref.watch(
-      chatInputProvider(roomId).select(
+      chatInputProvider.select(
         (state) => // only when showing actions and this is the selected message
             state.selectedMessageState == SelectedMessageState.actions &&
             state.selectedMessage?.id == message.id,
@@ -118,7 +117,7 @@ class _ChatBubble extends ConsumerWidget {
           roomId: roomId,
           isAuthor: isAuthor,
           onEmojiTap: (String eventId, String emoji) {
-            ref.read(chatInputProvider(roomId).notifier).unsetSelectedMessage();
+            ref.read(chatInputProvider.notifier).unsetSelectedMessage();
             toggleReaction(ref, eventId, emoji);
           },
           message: message,

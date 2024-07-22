@@ -71,7 +71,7 @@ class MentionProfileBuilder extends ConsumerWidget {
                 onTap: () {
                   final autocomplete = MultiTriggerAutocomplete.of(ctx);
                   ref
-                      .read(chatInputProvider(roomQuery.roomId).notifier)
+                      .read(chatInputProvider.notifier)
                       .addMention(user.displayName ?? '', user.uniqueId);
                   return autocomplete.acceptAutocompleteOption(
                     user.displayName ?? user.uniqueId.substring(1),

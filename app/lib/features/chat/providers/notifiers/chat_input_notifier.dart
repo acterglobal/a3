@@ -5,8 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/parser.dart';
 
 class ChatInputNotifier extends StateNotifier<ChatInputState> {
-  final String roomId;
-  ChatInputNotifier(this.roomId) : super(const ChatInputState());
+  ChatInputNotifier() : super(const ChatInputState());
 
   void emojiPickerVisible(bool value) =>
       state = state.copyWith(emojiPickerVisible: value);

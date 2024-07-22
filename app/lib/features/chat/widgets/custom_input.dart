@@ -39,13 +39,13 @@ final _log = Logger('a3::chat::custom_input');
 
 final _sendButtonVisible = StateProvider.family<bool, String>(
   (ref, roomId) => ref.watch(
-    chatInputProvider(roomId).select((value) => value.message.isNotEmpty),
+    chatInputProvider.select((value) => value.message.isNotEmpty),
   ),
 );
 
 final _allowEdit = StateProvider.family<bool, String>(
   (ref, roomId) => ref.watch(
-    chatInputProvider(roomId)
+    chatInputProvider
         .select((state) => state.sendingState == SendingState.preparing),
   ),
 );
@@ -227,9 +227,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
 
   @override
   Widget build(BuildContext context) {
-    final roomId = widget.roomId;
     final selectedMessage = ref.watch(
-      chatInputProvider(roomId).select(
+      chatInputProvider.select(
         (value) => value.selectedMessage,
       ),
     );
@@ -239,7 +238,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     }
 
     return switch (ref.watch(
-      chatInputProvider(roomId).select(
+      chatInputProvider.select(
         (value) => value.selectedMessageState,
       ),
     )) {
@@ -305,7 +304,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           ),
         ),
         if (ref.watch(
-          chatInputProvider(roomId).select((value) => value.emojiPickerVisible),
+          chatInputProvider.select((value) => value.emojiPickerVisible),
         ))
           EmojiPickerWidget(
             size: Size(
@@ -537,9 +536,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     List<File> files,
     AttachmentType attachmentType,
   ) async {
-    final roomId = widget.roomId;
     final client = ref.read(alwaysClientProvider);
-    final inputState = ref.read(chatInputProvider(roomId));
+    final inputState = ref.read(chatInputProvider);
     final lang = L10n.of(context);
     final stream = await ref.read(
       timelineStreamProviderForId(widget.roomId).future,
@@ -610,14 +608,14 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       _log.severe('error occurred', e, s);
     }
 
-    ref.read(chatInputProvider(roomId).notifier).unsetSelectedMessage();
+    ref.read(chatInputProvider.notifier).unsetSelectedMessage();
   }
 
   Widget replyBuilder(String roomId, Message repliedToMessage) {
     final authorId = repliedToMessage.author.id;
     final memberAvatar =
         ref.watch(memberAvatarInfoProvider((userId: authorId, roomId: roomId)));
-    final inputNotifier = ref.watch(chatInputProvider(roomId).notifier);
+    final inputNotifier = ref.watch(chatInputProvider.notifier);
     return Row(
       children: [
         const SizedBox(width: 1),
@@ -655,8 +653,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     WidgetRef ref,
     Widget? child,
   ) {
-    final roomId = widget.roomId;
-    final inputNotifier = ref.watch(chatInputProvider(roomId).notifier);
+    final inputNotifier = ref.watch(chatInputProvider.notifier);
     return Row(
       children: [
         const SizedBox(width: 1),
@@ -686,15 +683,14 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
   Future<void> onSendButtonPressed(WidgetRef ref) async {
     if (controller.text.isEmpty) return;
     final lang = L10n.of(context);
-    final roomId = widget.roomId;
-    ref.read(chatInputProvider(roomId).notifier).startSending();
+    ref.read(chatInputProvider.notifier).startSending();
     try {
       // end the typing notification
       if (widget.onTyping != null) {
         widget.onTyping!(false);
       }
 
-      final mentions = ref.read(chatInputProvider(roomId)).mentions;
+      final mentions = ref.read(chatInputProvider).mentions;
       String markdownText = controller.text;
       final userMentions = [];
       mentions.forEach((key, value) {
@@ -714,7 +710,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       }
 
       // actually send it out
-      final inputState = ref.read(chatInputProvider(roomId));
+      final inputState = ref.read(chatInputProvider);
       final stream = await ref.read(
         timelineStreamProviderForId(widget.roomId).future,
       );
@@ -727,7 +723,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         await stream.sendMessage(draft);
       }
 
-      ref.read(chatInputProvider(roomId).notifier).messageSent();
+      ref.read(chatInputProvider.notifier).messageSent();
 
       controller.clear();
     } catch (error, stackTrace) {
@@ -736,7 +732,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         lang.failedToSend(error),
         duration: const Duration(seconds: 3),
       );
-      ref.read(chatInputProvider(roomId).notifier).sendingFailed();
+      ref.read(chatInputProvider.notifier).sendingFailed();
     }
   }
 }
@@ -860,7 +856,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.controller.text = ref.read(
-        chatInputProvider(widget.roomId).select((value) => value.message),
+        chatInputProvider.select((value) => value.message),
       );
     });
   }
@@ -872,8 +868,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
   }
 
   void onTextTap(bool emojiPickerVisible, WidgetRef ref) {
-    final chatInputNotifier =
-        ref.read(chatInputProvider(widget.roomId).notifier);
+    final chatInputNotifier = ref.read(chatInputProvider.notifier);
 
     ///Hide emoji picker before input field get focus if
     ///Platform is mobile & Emoji picker is visible
@@ -887,8 +882,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
     BuildContext context,
     WidgetRef ref,
   ) {
-    final chatInputNotifier =
-        ref.read(chatInputProvider(widget.roomId).notifier);
+    final chatInputNotifier = ref.read(chatInputProvider.notifier);
     if (!emojiPickerVisible) {
       //Hide soft keyboard and then show Emoji Picker
       FocusScope.of(context).unfocus();
@@ -901,7 +895,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(chatInputProvider(widget.roomId), (prev, next) {
+    ref.listen(chatInputProvider, (prev, next) {
       if (next.selectedMessageState == SelectedMessageState.edit &&
           (prev?.selectedMessageState != next.selectedMessageState ||
               next.message != prev?.message)) {
@@ -952,14 +946,14 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
   ) {
     return TextField(
       onTap: () => onTextTap(
-        ref.read(chatInputProvider(widget.roomId)).emojiPickerVisible,
+        ref.read(chatInputProvider).emojiPickerVisible,
         ref,
       ),
       controller: widget.controller,
       focusNode: chatFocus,
       enabled: ref.watch(_allowEdit(widget.roomId)),
       onChanged: (val) {
-        ref.read(chatInputProvider(widget.roomId).notifier).updateMessage(val);
+        ref.read(chatInputProvider.notifier).updateMessage(val);
         if (widget.onTyping != null) {
           widget.onTyping!(val.isNotEmpty);
         }
@@ -978,7 +972,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
             : null,
         suffixIcon: InkWell(
           onTap: () => onSuffixTap(
-            ref.read(chatInputProvider(widget.roomId)).emojiPickerVisible,
+            ref.read(chatInputProvider).emojiPickerVisible,
             ctx,
             ref,
           ),
