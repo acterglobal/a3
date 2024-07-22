@@ -1,6 +1,7 @@
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SpaceWithAvatarInfoCard extends StatelessWidget {
   final String roomId;
@@ -69,6 +70,10 @@ class SpaceWithAvatarInfoCard extends StatelessWidget {
   ///
   final bool showParents;
 
+  /// Whether or not to render the suggested icon
+  ///
+  final bool showSuggestedMark;
+
   const SpaceWithAvatarInfoCard({
     super.key,
     required this.roomId,
@@ -85,6 +90,7 @@ class SpaceWithAvatarInfoCard extends StatelessWidget {
     this.shape,
     this.showParents = true,
     this.margin,
+    this.showSuggestedMark = false,
     required this.avatarSize,
     required this.contentPadding,
   });
@@ -117,11 +123,35 @@ class SpaceWithAvatarInfoCard extends StatelessWidget {
         titleTextStyle: titleTextStyle,
         subtitleTextStyle: subtitleTextStyle,
         leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
-        title: Text(title),
-        subtitle: subtitle,
+        title: Text(title, overflow: TextOverflow.ellipsis),
+        subtitle: buildSubtitle(context),
         leading: avatar,
         trailing: trailing,
       ),
+    );
+  }
+
+  Widget? buildSubtitle(BuildContext context) {
+    if (!showSuggestedMark) {
+      return subtitle;
+    }
+
+    if (subtitle != null) {
+      return Row(
+        children: [
+          Text(
+            L10n.of(context).suggested,
+            style: Theme.of(context).textTheme.labelSmall,
+          ),
+          const SizedBox(width: 2),
+          Expanded(child: subtitle!),
+        ],
+      );
+    }
+
+    return Text(
+      L10n.of(context).suggested,
+      style: Theme.of(context).textTheme.labelSmall,
     );
   }
 }

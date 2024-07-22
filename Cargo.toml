@@ -8,58 +8,63 @@ members = [
 default-members = ["native/acter"]
 
 [workspace.dependencies.matrix-sdk]
-git = "https://github.com/matrix-org/matrix-rust-sdk"
+git = "https://github.com/gnunicorn/matrix-rust-sdk"
+branch = "set-room-account-data"
 # path = "../matrix-rust-sdk/crates/matrix-sdk"
 default-features = false
 features = ["experimental-sliding-sync"]
 
 [workspace.dependencies.matrix-sdk-base]
-git = "https://github.com/matrix-org/matrix-rust-sdk"
+git = "https://github.com/gnunicorn/matrix-rust-sdk"
+branch = "set-room-account-data"
 # path = "../matrix-rust-sdk/crates/matrix-sdk-base"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-sqlite]
-git = "https://github.com/matrix-org/matrix-rust-sdk"
+git = "https://github.com/gnunicorn/matrix-rust-sdk"
+branch = "set-room-account-data"
 # path = "../matrix-rust-sdk/crates/matrix-sdk-sqlite"
 default-features = false
 features = ["crypto-store", "state-store"]
 
 [workspace.dependencies.matrix-sdk-store-encryption]
-git = "https://github.com/matrix-org/matrix-rust-sdk"
+git = "https://github.com/gnunicorn/matrix-rust-sdk"
+branch = "set-room-account-data"
 # path = "../matrix-rust-sdk/crates/matrix-sdk-store-encryption"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-ui]
-git = "https://github.com/matrix-org/matrix-rust-sdk"
+git = "https://github.com/gnunicorn/matrix-rust-sdk"
+branch = "set-room-account-data"
 # path = "../matrix-rust-sdk/crates/matrix-sdk-ui"
 default-features = false
 features = ["e2e-encryption"]
 
 [workspace.dependencies.matrix-sdk-test]
-git = "https://github.com/matrix-org/matrix-rust-sdk"
+git = "https://github.com/gnunicorn/matrix-rust-sdk"
+branch = "set-room-account-data"
 # path = "../matrix-rust-sdk/testing/matrix-sdk-test"
 default-features = false
 
 [workspace.dependencies.ruma]
-git = "https://github.com/ruma/ruma"
-rev = "e5a370f7e5fcebb0da6e4945e51c5fafba9aa5f0"
-features = ["client-api-c", "compat-upload-signatures", "compat-user-id", "compat-arbitrary-length-ids", "unstable-msc3401"]
+git = "https://github.com/matrix-org/ruma"
+rev = "f25b3220d0c3ece7720020ed180af4955a855402"
 
 [workspace.dependencies.ruma-client-api]
-git = "https://github.com/ruma/ruma"
-rev = "e5a370f7e5fcebb0da6e4945e51c5fafba9aa5f0"
+git = "https://github.com/matrix-org/ruma"
+rev = "f25b3220d0c3ece7720020ed180af4955a855402"
 
 [workspace.dependencies.ruma-common]
-git = "https://github.com/ruma/ruma"
-rev = "e5a370f7e5fcebb0da6e4945e51c5fafba9aa5f0"
+git = "https://github.com/matrix-org/ruma"
+rev = "f25b3220d0c3ece7720020ed180af4955a855402"
 
 [workspace.dependencies.ruma-events]
-git = "https://github.com/ruma/ruma"
-rev = "e5a370f7e5fcebb0da6e4945e51c5fafba9aa5f0"
+git = "https://github.com/matrix-org/ruma"
+rev = "f25b3220d0c3ece7720020ed180af4955a855402"
 
 [workspace.dependencies.ruma-macros]
-git = "https://github.com/ruma/ruma"
-rev = "e5a370f7e5fcebb0da6e4945e51c5fafba9aa5f0"
+git = "https://github.com/matrix-org/ruma"
+rev = "f25b3220d0c3ece7720020ed180af4955a855402"
 
 [workspace.dependencies.url]
 version = "2.5.0"

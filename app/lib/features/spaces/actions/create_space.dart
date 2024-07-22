@@ -48,7 +48,7 @@ Future<String?> createSpace(
     final roomId = (await client.createActerSpace(config.build())).toString();
     if (parentRoomId != null) {
       final space = await ref.read(spaceProvider(parentRoomId).future);
-      await space.addChildRoom(roomId);
+      await space.addChildRoom(roomId, false);
       // spaceRelations come from the server and must be manually invalidated
       ref.invalidate(spaceRelationsOverviewProvider(parentRoomId));
     }
@@ -62,6 +62,7 @@ Future<String?> createSpace(
         // ignore: use_build_context_synchronously
         name: L10n.of(context).defaultChatName(name),
         parentId: roomId,
+        suggested: true,
       );
       if (chatId != null) {
         // close the UI if the chat successfully created

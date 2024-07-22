@@ -31,6 +31,7 @@ use matrix_sdk::{
     room::{Messages, MessagesOptions, Room as SdkRoom},
 };
 use matrix_sdk_ui::timeline::RoomExt;
+use ruma::assign;
 use ruma_client_api::state::send_state_event;
 use ruma_common::{
     serde::Raw, OwnedRoomAliasId, OwnedRoomId, RoomAliasId, RoomId, RoomOrAliasId, ServerName,
@@ -598,7 +599,7 @@ impl Space {
             .await?
     }
 
-    pub async fn add_child_room(&self, room_id: String) -> Result<String> {
+    pub async fn add_child_room(&self, room_id: String, suggested: bool) -> Result<String> {
         if !self.inner.is_joined() {
             bail!("Unable to update a space you aren't part of");
         }
@@ -629,7 +630,7 @@ impl Space {
                 let response = room
                     .send_state_event_for_key(
                         &room_id,
-                        SpaceChildEventContent::new(vec![homeserver]),
+                        assign!(SpaceChildEventContent::new(vec![homeserver]), { suggested }),
                     )
                     .await?;
                 Ok(response.event_id.to_string())

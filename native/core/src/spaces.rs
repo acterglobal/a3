@@ -161,7 +161,7 @@ impl SpaceRelation {
 pub struct SpaceRelations {
     main_parent: Option<SpaceRelation>,
     other_parents: Vec<SpaceRelation>,
-    children: Vec<SpaceRelation>,
+    pub children: Vec<SpaceRelation>,
 }
 
 impl SpaceRelations {

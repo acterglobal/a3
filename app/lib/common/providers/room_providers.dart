@@ -227,8 +227,15 @@ final relatedSpacesProvider =
       .knownSubspaces;
 });
 
-/// Get the user's membership for a specific space based off the spaceId
-/// will throw if the client doesn't kow the space
+/// The list of suggested RoomIDs
+final suggestedRelationsIdsProvider =
+    FutureProvider.family<List<String>, String>((ref, spaceId) async {
+  return (await ref.watch(spaceRelationsOverviewProvider(spaceId).future))
+      .suggestedIds;
+});
+
+/// Get the user's membership for a specific space based off the roomId
+/// will not throw if the client doesn't kow the room
 final roomMembershipProvider = FutureProvider.family<Member?, String>(
   (ref, roomId) async {
     final room = await ref.watch(maybeRoomProvider(roomId).future);
@@ -340,4 +347,34 @@ final membersIdsProvider =
   }
   final members = await room.activeMembersIds();
   return asDartStringList(members);
+});
+
+/// Caching the MemoryImage of each entry
+final roomHierarchyAvatarProvider =
+    FutureProvider.family<MemoryImage?, SpaceHierarchyRoomInfo>(
+        (ref, room) async {
+  final sdk = await ref.watch(sdkProvider.future);
+  final thumbsize = sdk.api.newThumbSize(48, 48);
+
+  final avatar = (await room.getAvatar(thumbsize)).data();
+  if (avatar != null) {
+    return MemoryImage(Uint8List.fromList(avatar.asTypedList()));
+  }
+  return null;
+});
+
+/// Fill the Profile data for the given space-hierarchy-info
+final roomHierarchyAvatarInfoProvider = Provider.autoDispose
+    .family<AvatarInfo, SpaceHierarchyRoomInfo>((ref, info) {
+  final roomId = info.roomIdStr();
+  final displayName = info.name();
+
+  // final displayName = ref.watch(roomDisplayNameProvider(roomId)).valueOrNull;
+  final avatarData = ref.watch(roomHierarchyAvatarProvider(info)).valueOrNull;
+
+  return AvatarInfo(
+    uniqueId: roomId,
+    displayName: displayName,
+    avatar: avatarData,
+  );
 });

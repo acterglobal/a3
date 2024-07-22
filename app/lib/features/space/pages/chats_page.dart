@@ -7,6 +7,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
+import 'package:acter/common/widgets/room/room_hierarchy_options_menu.dart';
 import 'package:acter/router/utils.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -65,19 +66,33 @@ class SpaceChatsPage extends ConsumerWidget {
 
   Widget renderChats(BuildContext context, WidgetRef ref) {
     final chats = ref.watch(relatedChatsProvider(spaceIdOrAlias));
+    final related =
+        ref.watch(suggestedRelationsIdsProvider(spaceIdOrAlias)).valueOrNull ??
+            [];
 
     return chats.when(
       data: (rooms) {
         return SliverAnimatedList(
           initialItemCount: rooms.length,
-          itemBuilder: (context, index, animation) => SizeTransition(
-            sizeFactor: animation,
-            child: ConvoCard(
-              room: rooms[index],
-              showParents: false,
-              onTap: () => goToChat(context, rooms[index].getRoomIdStr()),
-            ),
-          ),
+          itemBuilder: (context, index, animation) {
+            final room = rooms[index];
+            final roomId = room.getRoomIdStr();
+            final isSuggested = related.contains(roomId);
+            return SizeTransition(
+              sizeFactor: animation,
+              child: ConvoCard(
+                room: room,
+                showParents: false,
+                showSuggestedMark: isSuggested,
+                onTap: () => goToChat(context, roomId),
+                trailing: RoomHierarchyOptionsMenu(
+                  childId: roomId,
+                  parentId: spaceIdOrAlias,
+                  isSuggested: isSuggested,
+                ),
+              ),
+            );
+          },
         );
       },
       error: (error, stackTrace) => SliverToBoxAdapter(
@@ -106,9 +121,11 @@ class SpaceChatsPage extends ConsumerWidget {
         }
 
         return SliverList.builder(
+          itemCount: chats.length,
           itemBuilder: (context, idx) {
             final item = chats[idx];
             return ConvoHierarchyCard(
+              showIconIfSuggested: true,
               parentId: spaceIdOrAlias,
               roomInfo: item,
             );
@@ -139,6 +156,10 @@ class SpaceChatsPage extends ConsumerWidget {
     final chatsList =
         ref.watch(spaceRelationsOverviewProvider(spaceIdOrAlias)).valueOrNull;
 
+    final membership = ref.watch(roomMembershipProvider(spaceIdOrAlias));
+    bool canCreateSpace =
+        membership.valueOrNull?.canString('CanLinkSpaces') == true;
+
     return Scaffold(
       appBar: AppBar(
         title: Column(
@@ -161,42 +182,43 @@ class SpaceChatsPage extends ConsumerWidget {
               ref.invalidate(spaceRelationsProvider);
             },
           ),
-          PopupMenuButton(
-            key: actionsMenuKey,
-            icon: const Icon(Atlas.plus_circle),
-            iconSize: 28,
-            color: Theme.of(context).colorScheme.surface,
-            itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-              PopupMenuItem(
-                key: createChatKey,
-                onTap: () => context.pushNamed(
-                  Routes.createChat.name,
-                  queryParameters: {'spaceId': spaceIdOrAlias},
-                  extra: 1,
+          if (canCreateSpace)
+            PopupMenuButton(
+              key: actionsMenuKey,
+              icon: const Icon(Atlas.plus_circle),
+              iconSize: 28,
+              color: Theme.of(context).colorScheme.surface,
+              itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                PopupMenuItem(
+                  key: createChatKey,
+                  onTap: () => context.pushNamed(
+                    Routes.createChat.name,
+                    queryParameters: {'spaceId': spaceIdOrAlias},
+                    extra: 1,
+                  ),
+                  child: Row(
+                    children: <Widget>[
+                      Text(L10n.of(context).createChat),
+                      const Spacer(),
+                      const Icon(Atlas.chats),
+                    ],
+                  ),
                 ),
-                child: Row(
-                  children: <Widget>[
-                    Text(L10n.of(context).createChat),
-                    const Spacer(),
-                    const Icon(Atlas.chats),
-                  ],
+                PopupMenuItem(
+                  onTap: () => context.pushNamed(
+                    Routes.linkChat.name,
+                    pathParameters: {'spaceId': spaceIdOrAlias},
+                  ),
+                  child: Row(
+                    children: <Widget>[
+                      Text(L10n.of(context).linkExistingChat),
+                      const Spacer(),
+                      const Icon(Atlas.chats),
+                    ],
+                  ),
                 ),
-              ),
-              PopupMenuItem(
-                onTap: () => context.pushNamed(
-                  Routes.linkChat.name,
-                  pathParameters: {'spaceId': spaceIdOrAlias},
-                ),
-                child: Row(
-                  children: <Widget>[
-                    Text(L10n.of(context).linkExistingChat),
-                    const Spacer(),
-                    const Icon(Atlas.chats),
-                  ],
-                ),
-              ),
-            ],
-          ),
+              ],
+            ),
         ],
       ),
       body: CustomScrollView(
