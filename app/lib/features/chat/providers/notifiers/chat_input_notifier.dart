@@ -1,8 +1,8 @@
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/parser.dart';
-import 'package:riverpod/riverpod.dart';
 
 class ChatInputNotifier extends StateNotifier<ChatInputState> {
   ChatInputNotifier() : super(const ChatInputState());
@@ -83,6 +83,7 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
 
   void unsetSelectedMessage() {
     state = state.copyWith(
+      message: '',
       selectedMessage: null,
       selectedMessageState: SelectedMessageState.none,
     );
@@ -100,6 +101,7 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
   void messageSent() {
     // reset the state;
     state = state.copyWith(
+      message: '',
       sendingState: SendingState.preparing,
       selectedMessage: null,
       selectedMessageState: SelectedMessageState.none,
