@@ -6,6 +6,8 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:multi_trigger_autocomplete/multi_trigger_autocomplete.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class MentionProfileBuilder extends ConsumerWidget {
   final BuildContext ctx;
@@ -22,77 +24,88 @@ class MentionProfileBuilder extends ConsumerWidget {
     final client = ref.watch(alwaysClientProvider);
     final userId = client.userId().toString();
     var memberIds = ref.watch(membersIdsProvider((roomQuery.roomId)));
-    if (memberIds.valueOrNull != null) {
-      final data = memberIds.requireValue;
-      final users = data.fold<Map<String, AvatarInfo>>({}, (map, uId) {
-        if (uId != userId) {
-          // keeps avatar data updated with mention list
-          final profile = ref.watch(
-            memberAvatarInfoProvider(
-              (roomId: roomQuery.roomId, userId: uId),
-            ),
-          );
-
-          final normalizedId = uId.toLowerCase();
-          final normalizedName = profile.displayName?.toLowerCase() ?? '';
-          final normalizedQuery = roomQuery.query.toLowerCase();
-
-          if (normalizedId.contains(normalizedQuery) ||
-              normalizedName.contains(normalizedQuery)) {
-            map[uId] = profile;
-          }
-        }
-        return map;
-      });
-
-      if (users.isEmpty) {
-        return const SizedBox.shrink();
-      }
-
-      final userIds = users.keys.toList();
-      return SizedBox(
-        height: MediaQuery.of(context).size.height * 0.3,
-        child: Card(
-          margin: const EdgeInsets.symmetric(horizontal: 8),
-          elevation: 2,
-          clipBehavior: Clip.hardEdge,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: ListView.builder(
-            shrinkWrap: true,
-            padding: const EdgeInsets.all(0),
-            itemCount: users.length,
-            itemBuilder: (_, index) {
-              final userId = userIds.elementAt(index);
-              final user = users[userId]!;
-              return ListTile(
-                dense: true,
-                onTap: () {
-                  final autocomplete = MultiTriggerAutocomplete.of(ctx);
-                  ref
-                      .read(chatInputProvider.notifier)
-                      .addMention(user.displayName ?? '', user.uniqueId);
-                  return autocomplete.acceptAutocompleteOption(
-                    user.displayName ?? user.uniqueId.substring(1),
-                  );
-                },
-                leading: ActerAvatar(
-                  options: AvatarOptions.DM(
-                    user,
-                    size: 18,
-                  ),
-                ),
-                title: Text(user.displayName ?? user.uniqueId),
-                titleTextStyle: Theme.of(context).textTheme.bodyMedium,
-                subtitleTextStyle: Theme.of(context).textTheme.labelMedium,
-                subtitle: user.displayName != null ? Text(user.uniqueId) : null,
-              );
-            },
-          ),
+    return memberIds.when(
+      loading: () => Skeletonizer(
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.3,
+          child: Card(child: ListView()),
         ),
-      );
-    }
-    return ErrorWidget('Couldn\'t fetch members of room');
+      ),
+      error: (error, st) => ErrorWidget(L10n.of(context).failedToLoad(error)),
+      data: (data) {
+        final users = data.fold<Map<String, String?>>({}, (map, uId) {
+          if (uId != userId) {
+            final displayName = ref
+                .watch(
+                  memberDisplayNameProvider(
+                    (roomId: roomQuery.roomId, userId: uId),
+                  ),
+                )
+                .valueOrNull;
+
+            final normalizedId = uId.toLowerCase();
+            final normalizedName = displayName ?? '';
+            final normalizedQuery = roomQuery.query.toLowerCase();
+
+            if (normalizedId.contains(normalizedQuery) ||
+                normalizedName.contains(normalizedQuery)) {
+              map[uId] = normalizedName;
+            }
+          }
+          return map;
+        });
+        return SizedBox(
+          height: MediaQuery.of(context).size.height * 0.3,
+          child: Card(
+            margin: const EdgeInsets.symmetric(horizontal: 8),
+            elevation: 2,
+            clipBehavior: Clip.hardEdge,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: ListView.builder(
+              shrinkWrap: true,
+              padding: const EdgeInsets.all(0),
+              itemCount: users.length,
+              itemBuilder: (_, index) {
+                final id = users.keys.elementAt(index);
+                final displayName = users.values.elementAt(index);
+                return ListTile(
+                  dense: true,
+                  onTap: () {
+                    final autocomplete = MultiTriggerAutocomplete.of(ctx);
+                    ref
+                        .read(chatInputProvider.notifier)
+                        .addMention(displayName ?? '', id);
+                    return autocomplete.acceptAutocompleteOption(
+                      displayName ?? id.substring(1),
+                    );
+                  },
+                  leading: Consumer(
+                    builder: (context, ref, child) {
+                      final avatarInfo = ref.watch(
+                        memberAvatarInfoProvider(
+                          (roomId: roomQuery.roomId, userId: id),
+                        ),
+                      );
+                      return ActerAvatar(
+                        options: AvatarOptions.DM(
+                          avatarInfo,
+                          size: 18,
+                        ),
+                      );
+                    },
+                  ),
+                  title: Text(displayName ?? ''),
+                  titleTextStyle: Theme.of(context).textTheme.bodyMedium,
+                  subtitleTextStyle: Theme.of(context).textTheme.labelMedium,
+                  subtitle: displayName != null ? Text(id) : null,
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
   }
 }
