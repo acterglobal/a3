@@ -129,6 +129,7 @@ dependencies:
   scrolls_to_top: ^2.1.1
   scrollable_positioned_list: ^0.3.8
   secure_application: ^4.0.1
+  flutter_simple_calculator: ^2.3.0
 
 dev_dependencies:
   flutter_test:

@@ -21,6 +21,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:multi_trigger_autocomplete/multi_trigger_autocomplete.dart';
 import 'package:secure_application/secure_application.dart';
+import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
 import 'package:video_player_media_kit/video_player_media_kit.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
@@ -128,23 +129,16 @@ class _ActerState extends ConsumerState<Acter> with WidgetsBindingObserver {
       return SecureApplication(
         nativeRemoveDelay: 800,
         secureApplicationController: secureApplicationController,
-        onNeedUnlock: (secureApplicationController) async {
-          var authResult = await askValidation(context);
-          if (authResult ?? false) {
-            secureApplicationController!.authSuccess(unlock: true);
-          } else {
-            secureApplicationController!.authFailed(unlock: true);
-            secureApplicationController!.open();
-          }
-          return null;
-        },
         child: SecureGate(
-          blurr: 5,
-          lockedBuilder: (context, secureNotifier) => Center(
-            child: OutlinedButton(
-              child: const Text('test'),
-              onPressed: () => secureNotifier!.unlock(),
-            ),
+          opacity: 1,
+          lockedBuilder: (context, secureNotifier) => SimpleCalculator(
+            onChanged: (key, value, expression) {
+              print("key $key, value $value, expression: $expression");
+              if (value.toString() == '1984.0') {
+                print('unlocking');
+                secureNotifier!.unlock();
+              }
+            },
           ),
           child: inner,
         ),
