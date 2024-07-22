@@ -25,7 +25,7 @@ use std::{
     sync::{Arc, RwLock},
 };
 use tokio_retry::{strategy::FixedInterval, Retry};
-use tracing::{error, info, trace, warn};
+use tracing::{error, trace, warn};
 
 use crate::TimelineStream;
 
@@ -102,7 +102,6 @@ async fn set_latest_msg(
     }
 
     client.store().set_raw(&key, &new_msg).await;
-    info!("******************** changed latest msg: {:?}", key.clone());
     client.executor().notify(vec![key]);
 }
 

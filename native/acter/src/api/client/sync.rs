@@ -360,10 +360,6 @@ impl Client {
 
             updated
         };
-        info!(
-            "******************** refreshed room: {:?}",
-            update_keys.clone()
-        );
         self.executor().notify(update_keys);
     }
 }
