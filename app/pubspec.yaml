@@ -128,6 +128,7 @@ dependencies:
   firebase_core: ^3.1.0
   scrolls_to_top: ^2.1.1
   scrollable_positioned_list: ^0.3.8
+  secure_application: ^4.0.1
 
 dev_dependencies:
   flutter_test:

@@ -1896,6 +1896,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  secure_application:
+    dependency: "direct main"
+    description:
+      name: secure_application
+      sha256: b8e34b4bc2467a3a3c0a649e46ae6a442df7ca27aeaddebb8a53c40656da0385
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.1"
   sensors_plus:
     dependency: transitive
     description:

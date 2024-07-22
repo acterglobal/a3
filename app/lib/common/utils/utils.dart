@@ -372,6 +372,7 @@ enum LabsFeature {
 
   // specific features
   chatUnread,
+  obfuscatedApp,
 
   // not a lab anymore but needs to stay for backwards compat
   tasks,
