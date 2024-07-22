@@ -1,0 +1,1 @@
+- You can now use the cool share feature right from the super-invites list in your settings
