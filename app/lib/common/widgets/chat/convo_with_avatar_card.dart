@@ -54,7 +54,41 @@ class ConvoWithAvatarInfoCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final displayName = ref.watch(roomDisplayNameProvider(roomId)).when(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Material(
+              color: Colors.transparent,
+              child: ListTile(
+                onTap: onTap,
+                selected: showSelectedIndication &&
+                    roomId == ref.watch(selectedChatIdProvider),
+                selectedTileColor: Theme.of(context).colorScheme.primary,
+                onFocusChange: onFocusChange,
+                onLongPress: onLongPress,
+                leading: avatarWithIndicator(context, ref),
+                title: showSuggestedIcon
+                    ? Row(
+                        children: [
+                          const Icon(Icons.star),
+                          Expanded(child: buildDisplayName(context, ref)),
+                        ],
+                      )
+                    : buildDisplayName(context, ref),
+                subtitle: constraints.maxWidth < 300 ? null : subtitle,
+                trailing: constraints.maxWidth < 300 ? null : trailing,
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget buildDisplayName(BuildContext context, WidgetRef ref) {
+    return ref.watch(roomDisplayNameProvider(roomId)).when(
           data: (dpl) => Text(
             dpl ?? roomId,
             style: Theme.of(context)
@@ -78,38 +112,6 @@ class ConvoWithAvatarInfoCard extends ConsumerWidget {
             ),
           ),
         );
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Material(
-              color: Colors.transparent,
-              child: ListTile(
-                onTap: onTap,
-                selected: showSelectedIndication &&
-                    roomId == ref.watch(selectedChatIdProvider),
-                selectedTileColor: Theme.of(context).colorScheme.primary,
-                onFocusChange: onFocusChange,
-                onLongPress: onLongPress,
-                leading: avatarWithIndicator(context, ref),
-                title: showSuggestedIcon
-                    ? Row(
-                        children: [
-                          const Icon(Icons.star),
-                          Expanded(child: displayName),
-                        ],
-                      )
-                    : displayName,
-                subtitle: constraints.maxWidth < 300 ? null : subtitle,
-                trailing: constraints.maxWidth < 300 ? null : trailing,
-              ),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   Widget avatarWithIndicator(BuildContext context, WidgetRef ref) {

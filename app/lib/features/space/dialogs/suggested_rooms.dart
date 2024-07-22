@@ -96,8 +96,8 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
       actions: <Widget>[
         OutlinedButton(
           onPressed: () {
-            Navigator.of(context).pop();
             markHasSeenSuggested(ref, widget.spaceId);
+            Navigator.of(context).pop();
           },
           child: Text(L10n.of(context).skip),
         ),

@@ -35,40 +35,24 @@ class RoomHierarchyOptionsMenu extends ConsumerWidget {
 
   List<PopupMenuEntry> _menu(BuildContext context, WidgetRef ref) {
     return [
-      if (!isSuggested)
-        PopupMenuItem(
-          onTap: () => setChildRoomSuggested(
-            context,
-            ref,
-            parentId: parentId,
-            roomId: childId,
-            suggested: true,
-          ),
-          child: Row(
-            children: [
-              const Icon(Icons.star),
-              const SizedBox(width: 4),
-              Text(L10n.of(context).addSuggested),
-            ],
-          ),
-        )
-      else
-        PopupMenuItem(
-          onTap: () => setChildRoomSuggested(
-            context,
-            ref,
-            parentId: parentId,
-            roomId: childId,
-            suggested: false,
-          ),
-          child: Row(
-            children: [
-              const Icon(Icons.star_border_rounded),
-              const SizedBox(width: 4),
-              Text(L10n.of(context).removeSuggested),
-            ],
-          ),
+      PopupMenuItem(
+        onTap: () => setChildRoomSuggested(
+          context,
+          ref,
+          parentId: parentId,
+          roomId: childId,
+          suggested: !isSuggested,
         ),
+        child: Row(
+          children: [
+            Icon(isSuggested ? Icons.star : Icons.star_border_rounded),
+            const SizedBox(width: 4),
+            Text(isSuggested
+                ? L10n.of(context).removeSuggested
+                : L10n.of(context).addSuggested,),
+          ],
+        ),
+      ),
       const PopupMenuDivider(),
       PopupMenuItem(
         onTap: () => unlinkChildRoom(
