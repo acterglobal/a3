@@ -119,7 +119,7 @@ class ConvoHierarchyCard extends ConsumerWidget {
       ),
       roomId: roomId,
       avatarInfo: avatarInfo,
-      showSuggestedIcon: showSuggested,
+      showSuggestedMark: showSuggested,
       subtitle: subtitle,
       trailing: trailing ??
           Wrap(

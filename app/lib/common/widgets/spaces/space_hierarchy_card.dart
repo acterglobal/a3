@@ -128,7 +128,7 @@ class SpaceHierarchyCard extends ConsumerWidget {
       avatarSize: avatarSize,
       contentPadding: contentPadding,
       shape: shape,
-      showSuggestedIcon: showSuggested,
+      showSuggestedMark: showSuggested,
       trailing: trailing ??
           Wrap(
             children: [

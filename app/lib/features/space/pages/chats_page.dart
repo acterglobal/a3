@@ -83,7 +83,7 @@ class SpaceChatsPage extends ConsumerWidget {
               child: ConvoCard(
                 room: room,
                 showParents: false,
-                showSuggestedIcon: isSuggested,
+                showSuggestedMark: isSuggested,
                 onTap: () => goToChat(context, roomId),
                 trailing: RoomHierarchyOptionsMenu(
                   childId: roomId,

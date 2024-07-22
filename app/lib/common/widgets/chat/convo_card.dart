@@ -24,7 +24,7 @@ class ConvoCard extends ConsumerStatefulWidget {
   /// Custom Trailing Widget
   final Widget? trailing;
   final bool showSelectedIndication;
-  final bool showSuggestedIcon;
+  final bool showSuggestedMark;
 
   const ConvoCard({
     super.key,
@@ -33,7 +33,7 @@ class ConvoCard extends ConsumerStatefulWidget {
     this.showParents = true,
     this.trailing,
     this.showSelectedIndication = true,
-    this.showSuggestedIcon = false,
+    this.showSuggestedMark = false,
   });
 
   @override
@@ -58,7 +58,7 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
     return ConvoWithAvatarInfoCard(
       roomId: roomId,
       showParents: widget.showParents,
-      showSuggestedIcon: widget.showSuggestedIcon,
+      showSuggestedMark: widget.showSuggestedMark,
       avatarInfo: roomAvatarInfo,
       onTap: widget.onTap,
       showSelectedIndication: widget.showSelectedIndication,

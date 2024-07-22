@@ -1194,6 +1194,8 @@
   "@subspaces": {},
   "successfullyUpgradedToActerSpace": "Successfully upgraded to Acter space. Enjoy!",
   "@successfullyUpgradedToActerSpace": {},
+  "suggested": "Suggested",
+  "@suggested": {},
   "suggestedUsers": "Suggested Users",
   "@suggestedUsers": {},
   "joiningSuggested": "Joining suggested",

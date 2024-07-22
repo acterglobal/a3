@@ -38,7 +38,7 @@ List<Widget>? _renderKnownSubspaces(
           key: Key('subspace-list-item-$roomId'),
           space: space,
           showParents: false,
-          showSuggestedIcon: isSuggested,
+          showSuggestedMark: isSuggested,
           trailing: RoomHierarchyOptionsMenu(
             childId: roomId,
             parentId: spaceIdOrAlias,
