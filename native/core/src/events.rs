@@ -5,6 +5,7 @@ pub mod comments;
 mod common;
 pub mod news;
 pub mod pins;
+pub mod room;
 pub mod rsvp;
 pub mod settings;
 pub mod tasks;

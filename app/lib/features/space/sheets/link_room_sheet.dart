@@ -9,6 +9,7 @@ import 'package:acter/common/widgets/room/brief_room_list_entry.dart';
 import 'package:acter/common/widgets/search.dart';
 import 'package:acter/common/widgets/sliver_scaffold.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
+import 'package:acter/features/space/actions/unlink_child_room.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -393,7 +394,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
 
     //Fetch selected parent space data and add given roomId as child
     final space = await ref.read(spaceProvider(selectedParentSpaceId).future);
-    space.addChildRoom(roomId);
+    space.addChildRoom(roomId, false);
 
     //Make subspace
     if (widget.childRoomType == ChildRoomType.space) {
@@ -420,28 +421,17 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     final selectedParentSpaceId = ref.read(selectedSpaceIdProvider);
     if (selectedParentSpaceId == null) return;
 
-    //Fetch selected parent space data and add given roomId as child
-    final space = await ref.read(spaceProvider(selectedParentSpaceId).future);
-    if (!mounted) return;
-    space.removeChildRoom(roomId, L10n.of(context).unlinkRoom);
-
-    if (widget.childRoomType == ChildRoomType.space) {
-      //Fetch selected room data and add given parentSpaceId as parent
-      final room = await ref.read(maybeRoomProvider(roomId).future);
-      if (room != null && mounted) {
-        room.removeParentRoom(
-          selectedParentSpaceId,
-          L10n.of(context).unlinkRoom,
-        );
-      }
-    }
+    await unlinkChildRoom(
+      context,
+      ref,
+      parentId: selectedParentSpaceId,
+      roomId: roomId,
+    );
 
     if (widget.childRoomType == ChildRoomType.recommendedSpace) {
       recommendedChildSpaceIds.remove(roomId);
     } else {
       childRoomsIds.remove(roomId);
     }
-    // spaceRelations come from the server and must be manually invalidated
-    ref.invalidate(spaceRelationsOverviewProvider(selectedParentSpaceId));
   }
 }

@@ -79,6 +79,10 @@ class SpaceCard extends ConsumerWidget {
   ///
   final bool showParents;
 
+  /// Whether or not to render the suggested Icon
+  ///
+  final bool showSuggestedMark;
+
   const SpaceCard({
     super.key,
     required this.space,
@@ -95,6 +99,7 @@ class SpaceCard extends ConsumerWidget {
     this.shape,
     this.withBorder = true,
     this.showParents = true,
+    this.showSuggestedMark = false,
     this.trailing,
   });
 
@@ -114,6 +119,7 @@ class SpaceCard extends ConsumerWidget {
     this.shape,
     this.withBorder = false,
     this.showParents = false,
+    this.showSuggestedMark = false,
     this.trailing,
   });
 
@@ -137,6 +143,7 @@ class SpaceCard extends ConsumerWidget {
       contentPadding: contentPadding,
       shape: shape,
       showParents: showParents,
+      showSuggestedMark: showSuggestedMark,
       trailing: trailing,
     );
   }

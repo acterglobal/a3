@@ -1,6 +1,8 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/scrollable_list_tab_scroller.dart';
+import 'package:acter/features/space/dialogs/suggested_rooms.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
+import 'package:acter/features/space/providers/suggested_provider.dart';
 import 'package:acter/features/space/widgets/skeletons/space_details_skeletons.dart';
 import 'package:acter/features/space/widgets/space_sections/about_section.dart';
 import 'package:acter/features/space/widgets/space_sections/chats_section.dart';
@@ -32,6 +34,8 @@ class SpaceDetailsPage extends ConsumerStatefulWidget {
 
 class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   ValueNotifier<bool> showHeader = ValueNotifier<bool>(true);
+  bool showedSuggested = false;
+  ProviderSubscription<AsyncValue<bool>>? suggestionsShowerListener;
   final ItemPositionsListener itemPositionsListener =
       ItemPositionsListener.create();
 
@@ -39,6 +43,38 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   void initState() {
     super.initState();
     menuScrollingListeners();
+    listenForSuggestions();
+  }
+
+  @override
+  void didUpdateWidget(SpaceDetailsPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.spaceId != widget.spaceId) {
+      showedSuggested = false;
+      suggestionsShowerListener?.close();
+      listenForSuggestions();
+    }
+  }
+
+  void listenForSuggestions() {
+    suggestionsShowerListener = ref.listenManual(
+      shouldShowSuggestedProvider(widget.spaceId),
+      (asyncPrev, asyncNext) {
+        final prev = asyncPrev?.valueOrNull ?? false;
+        final next = asyncNext.valueOrNull ?? false;
+
+        if (prev == next || !next) {
+          // nothing to do
+          return;
+        }
+
+        if (!showedSuggested) {
+          // only show once per room.
+          showedSuggested = true;
+          showSuggestRoomsDialog(context, ref, widget.spaceId);
+        }
+      },
+    );
   }
 
   void menuScrollingListeners() {

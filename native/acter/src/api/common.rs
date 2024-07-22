@@ -5,7 +5,7 @@ use acter_core::events::{
 };
 use anyhow::{Context, Result};
 use core::time::Duration;
-use matrix_sdk::media::{MediaFormat, MediaThumbnailSize};
+use matrix_sdk::media::{MediaFormat, MediaThumbnailSettings, MediaThumbnailSize};
 use ruma::UInt;
 use ruma_client_api::media::get_content_thumbnail;
 use ruma_common::{EventId, MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedMxcUri, OwnedUserId};
@@ -577,11 +577,11 @@ impl ThumbnailSize {
 
 impl From<Box<ThumbnailSize>> for MediaFormat {
     fn from(val: Box<ThumbnailSize>) -> Self {
-        MediaFormat::Thumbnail(MediaThumbnailSize {
-            method: get_content_thumbnail::v3::Method::Scale,
-            width: val.width,
-            height: val.height,
-        })
+        MediaFormat::Thumbnail(MediaThumbnailSettings::new(
+            get_content_thumbnail::v3::Method::Scale,
+            val.width,
+            val.height,
+        ))
     }
 }
 

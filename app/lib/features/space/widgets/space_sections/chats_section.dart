@@ -102,6 +102,7 @@ class ChatsSection extends ConsumerWidget {
           itemBuilder: (context, idx) {
             final item = chats[idx];
             return ConvoHierarchyCard(
+              showIconIfSuggested: true,
               parentId: spaceId,
               roomInfo: item,
             );

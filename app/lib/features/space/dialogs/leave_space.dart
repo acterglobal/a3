@@ -38,7 +38,7 @@ void showLeaveSpaceDialog(
       ),
       actions: <Widget>[
         OutlinedButton(
-          onPressed: () => context.pop(),
+          onPressed: () => Navigator.of(context).pop(),
           child: Text(L10n.of(context).noIStay),
         ),
         ActerDangerActionButton(
@@ -55,7 +55,7 @@ void showLeaveSpaceDialog(
                 return;
               }
               EasyLoading.showToast(lang.leavingSpaceSuccessful);
-              context.pop();
+              Navigator.of(context).pop();
               context.goNamed(Routes.dashboard.name);
             } catch (error, stack) {
               _log.severe('Error leaving space', error, stack);
