@@ -290,7 +290,6 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
         updater.name(newName);
         try {
           await updater.send();
-          ref.invalidate(taskListProvider);
           EasyLoading.dismiss();
           if (!context.mounted) return;
           context.pop();
