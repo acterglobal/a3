@@ -109,7 +109,6 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
             .watch(roomListFilterProvider.select((value) => value.searchTerm))
             ?.isNotEmpty ==
         true;
-    final hasFilters = ref.watch(hasRoomFilters);
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
