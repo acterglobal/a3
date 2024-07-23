@@ -1,17 +1,10 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/spaces/space_info.dart';
+import 'package:acter/features/space/actions/set_space_title.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:logging/logging.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
-
-final _log = Logger('a3::space::space_header');
 
 class SpaceHeaderProfile extends ConsumerWidget {
   static const headerKey = Key('space-header');
@@ -54,9 +47,8 @@ class SpaceHeaderProfile extends ConsumerWidget {
                     if (membership?.canString('CanSetName') == true) {
                       showEditSpaceNameBottomSheet(
                         context: context,
-                        titleValue: spaceAvatarInfo.displayName ?? '',
-                        spaceId: spaceId,
                         ref: ref,
+                        spaceId: spaceId,
                       );
                     }
                   },
@@ -77,34 +69,6 @@ class SpaceHeaderProfile extends ConsumerWidget {
           ),
         ],
       ),
-    );
-  }
-
-  void showEditSpaceNameBottomSheet({
-    required BuildContext context,
-    required String titleValue,
-    required String spaceId,
-    required WidgetRef ref,
-  }) {
-    showEditTitleBottomSheet(
-      context: context,
-      bottomSheetTitle: L10n.of(context).editName,
-      titleValue: titleValue,
-      onSave: (newName) async {
-        try {
-          EasyLoading.show(status: L10n.of(context).updateName);
-          final space = await ref.read(spaceProvider(spaceId).future);
-          await space.setName(newName);
-          EasyLoading.dismiss();
-          if (!context.mounted) return;
-          context.pop();
-        } catch (e, st) {
-          _log.severe('Failed to edit space name', e, st);
-          EasyLoading.dismiss();
-          if (!context.mounted) return;
-          EasyLoading.showError(L10n.of(context).updateNameFailed(e));
-        }
-      },
     );
   }
 }
