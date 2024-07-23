@@ -20,7 +20,6 @@ import 'package:acter/features/onboarding/pages/upload_avatar_page.dart';
 import 'package:acter/features/pins/pages/create_pin_page.dart';
 import 'package:acter/features/search/pages/quick_jump.dart';
 import 'package:acter/features/super_invites/pages/create.dart';
-import 'package:acter/features/space/sheets/edit_space_sheet.dart';
 import 'package:acter/features/space/sheets/link_room_sheet.dart';
 import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -273,28 +272,6 @@ List<RouteBase> makeGeneralRoutes() {
         return NoTransitionPage(
           key: state.pageKey,
           child: const AddNewsPage(),
-        );
-      },
-    ),
-    GoRoute(
-      parentNavigatorKey: rootNavKey,
-      name: Routes.editSpace.name,
-      path: Routes.editSpace.route,
-      pageBuilder: (context, state) {
-        return SideSheetPage(
-          key: state.pageKey,
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return SlideTransition(
-              position: Tween(
-                begin: const Offset(1, 0),
-                end: const Offset(0, 0),
-              ).animate(
-                animation,
-              ),
-              child: child,
-            );
-          },
-          child: EditSpacePage(spaceId: state.uri.queryParameters['spaceId']),
         );
       },
     ),
