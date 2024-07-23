@@ -1971,5 +1971,6 @@
   "failedToUploadAvatar": "Failed to upload avatar: {error}",
   "noMatchingTasksListFound": "No matching tasks list found",
   "noTasksListAvailableYet": "No tasks list available yet",
-  "noTasksListAvailableDescription": "Share and manage important task with your community such as any TO-DO list so everyone is updated."
+  "noTasksListAvailableDescription": "Share and manage important task with your community such as any TO-DO list so everyone is updated.",
+  "loadingMembersFailed": "Loading members failed: {error}"
 }

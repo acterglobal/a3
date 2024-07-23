@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/widgets/visibility/visibility_chip.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -30,12 +29,12 @@ class SpaceInfo extends ConsumerWidget {
     return space.when(
       data: (space) {
         return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             VisibilityChip(roomId: spaceId),
             const SizedBox(width: 5),
             acterSpaceInfoUI(context, ref, space),
-            encryptedInfoUI(context, ref, space),
+            const Spacer(),
           ],
         );
       },
@@ -89,32 +88,6 @@ class SpaceInfo extends ConsumerWidget {
                           size: size,
                           color: Theme.of(context).colorScheme.error,
                         ),
-                      ),
-                    ),
-            )
-            .valueOrNull ??
-        const SizedBox.shrink();
-  }
-
-  Widget encryptedInfoUI(BuildContext context, WidgetRef ref, Space space) {
-    final isEncrypted = ref.watch(isEncryptedForSpace(space));
-    return isEncrypted
-            .whenData(
-              (isEnc) => isEnc
-                  ? Tooltip(
-                      message: L10n.of(context).thisApaceIsEndToEndEncrypted,
-                      child: Icon(
-                        Atlas.lock_clipboard_thin,
-                        size: size,
-                        color: Theme.of(context).colorScheme.success,
-                      ),
-                    )
-                  : Tooltip(
-                      message: L10n.of(context).thisApaceIsNotEndToEndEncrypted,
-                      child: Icon(
-                        Atlas.unlock_keyhole_thin,
-                        size: size,
-                        color: Theme.of(context).colorScheme.error,
                       ),
                     ),
             )
