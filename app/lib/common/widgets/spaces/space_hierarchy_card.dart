@@ -139,7 +139,7 @@ class SpaceHierarchyCard extends ConsumerWidget {
                 viaServerName: roomInfo.viaServerName(),
                 forward: (spaceId) {
                   goToSpace(context, spaceId);
-                  ref.invalidate(relatedSpacesProvider(parentId));
+                  ref.invalidate(spaceRelationsProvider(parentId));
                 },
               ),
               RoomHierarchyOptionsMenu(

@@ -73,11 +73,11 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     childRoomsIds.clear();
     if (widget.childRoomType == ChildRoomType.chat) {
       for (int i = 0; i < space.knownChats.length; i++) {
-        childRoomsIds.add(space.knownChats[i].getRoomIdStr());
+        childRoomsIds.add(space.knownChats[i]);
       }
     } else {
       for (int i = 0; i < space.knownSubspaces.length; i++) {
-        childRoomsIds.add(space.knownSubspaces[i].getRoomIdStr());
+        childRoomsIds.add(space.knownSubspaces[i]);
       }
       //Add recommended child spaces ids
       recommendedChildSpaceIds.clear();

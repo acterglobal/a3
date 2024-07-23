@@ -218,15 +218,6 @@ final joinRulesAllowedRoomsProvider = FutureProvider.autoDispose
   return room.restrictedRoomIdsStr().map((e) => e.toDartString()).toList();
 });
 
-/// Get the List of related of the spaces for the space. Errors if the space or any
-/// related space isn't found. Stays up  to date with underlying client data if
-/// a space was found.
-final relatedSpacesProvider =
-    FutureProvider.family<List<Space>, String>((ref, spaceId) async {
-  return (await ref.watch(spaceRelationsOverviewProvider(spaceId).future))
-      .knownSubspaces;
-});
-
 /// The list of suggested RoomIDs
 final suggestedRelationsIdsProvider =
     FutureProvider.family<List<String>, String>((ref, spaceId) async {

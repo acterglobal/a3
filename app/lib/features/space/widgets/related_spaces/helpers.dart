@@ -32,12 +32,11 @@ List<Widget>? _renderKnownSubspaces(
       ),
       shrinkWrap: true,
       itemBuilder: (context, index) {
-        final space = spaces.knownSubspaces[index];
-        final roomId = space.getRoomIdStr();
+        final roomId = spaces.knownSubspaces[index];
         final isSuggested = spaces.suggestedIds.contains(roomId);
         return SpaceCard(
           key: Key('subspace-list-item-$roomId'),
-          space: space,
+          roomId: roomId,
           showParents: false,
           showSuggestedMark: isSuggested,
           trailing: RoomHierarchyOptionsMenu(
@@ -134,7 +133,7 @@ Widget? renderSubSpaces(
     // crossAxisCount: crossAxisCount,
   );
 
-  final moreSubspaces = spaces.hasMoreSubspaces
+  final moreSubspaces = spaces.hasMore
       ? renderMoreSubspaces(
           context,
           ref,

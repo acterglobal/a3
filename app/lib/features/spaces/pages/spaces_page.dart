@@ -81,7 +81,7 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
                   pathParameters: {'spaceId': roomId},
                 ),
                 key: Key('space-list-item-$roomId'),
-                space: space,
+                roomId: roomId,
               );
             },
           ),
