@@ -216,7 +216,10 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         },
         child: Padding(
           padding: EdgeInsets.only(
-              bottom: topic.isEmpty ? 0 : 16, left: 16, right: 16),
+            bottom: topic.isEmpty ? 0 : 16,
+            left: 16,
+            right: 16,
+          ),
           child: Text(
             topic,
             style: Theme.of(context).textTheme.bodySmall,
