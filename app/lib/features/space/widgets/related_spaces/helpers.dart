@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_options_menu.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
@@ -119,7 +120,11 @@ Widget? renderSubSpaces(
   int crossAxisCount = 1,
   Widget? Function()? titleBuilder,
 }) {
-  final canLinkSpace = spaces.membership?.canString('CanLinkSpaces') ?? false;
+  final canLinkSpace = ref
+          .watch(roomMembershipProvider(spaceIdOrAlias))
+          .valueOrNull
+          ?.canString('CanLinkSpaces') ??
+      false;
 
   final knownSubspaces = _renderKnownSubspaces(
     context,

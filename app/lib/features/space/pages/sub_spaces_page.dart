@@ -83,6 +83,9 @@ class SubSpacesPage extends ConsumerWidget {
     final crossAxisCount = max(1, min(widthCount, minCount));
     final spaceName =
         ref.watch(roomDisplayNameProvider(spaceIdOrAlias)).valueOrNull;
+    final membership = ref.watch(roomMembershipProvider(spaceIdOrAlias));
+    bool canLinkSpace =
+        membership.valueOrNull?.canString('CanLinkSpaces') == true;
     // get platform of context.
     return Scaffold(
       appBar: AppBar(
@@ -108,7 +111,7 @@ class SubSpacesPage extends ConsumerWidget {
           ),
           spaces.when(
             data: (spaces) {
-              if (spaces.membership?.canString('CanLinkSpaces') ?? false) {
+              if (canLinkSpace) {
                 return _renderTools(context);
               } else {
                 return const SizedBox.shrink();
@@ -135,7 +138,7 @@ class SubSpacesPage extends ConsumerWidget {
                     ) ??
                     renderFallback(
                       context,
-                      spaces.membership?.canString('CanLinkSpaces') ?? false,
+                      canLinkSpace,
                     );
               },
               error: (error, stack) => Center(

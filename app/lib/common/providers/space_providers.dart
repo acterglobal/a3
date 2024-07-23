@@ -111,7 +111,6 @@ class SpaceRelationsOverview {
   bool hasMoreSubspaces;
   bool hasMoreChats;
   SpaceRelations rel;
-  Member? membership;
   List<Space> knownSubspaces;
   List<Convo> knownChats;
   List<String> suggestedIds;
@@ -121,7 +120,6 @@ class SpaceRelationsOverview {
 
   SpaceRelationsOverview({
     required this.rel,
-    required this.membership,
     required this.knownSubspaces,
     required this.knownChats,
     required this.suggestedIds,
@@ -196,7 +194,7 @@ final searchedSpacesProvider =
   return foundSpaces;
 });
 
-/// Get the SpaceItem of the given sapceId filled in brief form
+/// Get the SpaceItem of the given spaceId filled in brief form
 /// (only spaceProfileData, no activeMembers). Stays up to date with underlying
 /// client info
 final briefSpaceItemProvider =
@@ -233,7 +231,6 @@ final spaceRelationsOverviewProvider =
   if (relatedSpaces == null) {
     throw SpaceNotFound;
   }
-  final membership = await ref.watch(roomMembershipProvider(spaceId).future);
   bool hasMoreSubspaces = false;
   bool hasMoreChats = false;
   final List<Space> knownSubspaces = [];
@@ -302,7 +299,6 @@ final spaceRelationsOverviewProvider =
   }
   return SpaceRelationsOverview(
     rel: relatedSpaces,
-    membership: membership,
     parents: parents,
     knownChats: knownChats,
     knownSubspaces: knownSubspaces,
