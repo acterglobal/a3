@@ -221,6 +221,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       mandatory: false,
       title: L10n.of(context).parentSpace,
       selectTitle: L10n.of(context).selectParentSpace,
+      emptyText: L10n.of(context).optionalParentSpace,
     );
   }
 
