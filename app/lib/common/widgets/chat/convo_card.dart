@@ -218,29 +218,21 @@ class _SubtitleWidget extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Flexible(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: Text(
-                      '${simplifyUserId(sender)}: ',
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall!
-                          .copyWith(fontWeight: FontWeight.w700),
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                  child: Text(
+                    '${simplifyUserId(sender)}: ',
+                    style: Theme.of(context)
+                        .textTheme
+                        .labelMedium!
+                        .copyWith(fontWeight: FontWeight.w700),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 Flexible(
                   child: Html(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
                     // ignore: unnecessary_string_interpolations
                     data: '''$body''',
                     maxLines: 1,
-                    defaultTextStyle: const TextStyle(
-                      overflow: TextOverflow.ellipsis,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                    ),
+                    defaultTextStyle: Theme.of(context).textTheme.labelMedium!,
                     onLinkTap: (url) => {},
                   ),
                 ),
@@ -261,28 +253,21 @@ class _SubtitleWidget extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Flexible(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Text(
-                  '${simplifyUserId(sender)}: ',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall!
-                      .copyWith(fontWeight: FontWeight.w700),
-                  overflow: TextOverflow.ellipsis,
-                ),
+              child: Text(
+                '${simplifyUserId(sender)}: ',
+                style: Theme.of(context)
+                    .textTheme
+                    .labelMedium!
+                    .copyWith(fontWeight: FontWeight.w700),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
             Flexible(
               child: Html(
-                padding: const EdgeInsets.symmetric(vertical: 10),
                 // ignore: unnecessary_string_interpolations
                 data: '''$body''',
                 maxLines: 1,
-                defaultTextStyle: const TextStyle(
-                  overflow: TextOverflow.ellipsis,
-                  fontSize: 14,
-                ),
+                defaultTextStyle: Theme.of(context).textTheme.labelMedium!,
                 onLinkTap: (url) => {},
               ),
             ),
@@ -293,22 +278,19 @@ class _SubtitleWidget extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Flexible(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Text(
-                  '${simplifyUserId(sender)}: ',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall!
-                      .copyWith(fontWeight: FontWeight.w700),
-                  overflow: TextOverflow.ellipsis,
-                ),
+              child: Text(
+                '${simplifyUserId(sender)}: ',
+                style: Theme.of(context)
+                    .textTheme
+                    .labelMedium!
+                    .copyWith(fontWeight: FontWeight.w700),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
             Flexible(
               child: Text(
                 eventItem.msgContent()!.body(),
-                style: Theme.of(context).textTheme.bodySmall,
+                style: Theme.of(context).textTheme.labelMedium,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -319,22 +301,19 @@ class _SubtitleWidget extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Flexible(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Text(
-                  '${simplifyUserId(sender)}: ',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall!
-                      .copyWith(fontWeight: FontWeight.w700),
-                  overflow: TextOverflow.ellipsis,
-                ),
+              child: Text(
+                '${simplifyUserId(sender)}: ',
+                style: Theme.of(context)
+                    .textTheme
+                    .labelMedium!
+                    .copyWith(fontWeight: FontWeight.w700),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
             Flexible(
               child: Text(
                 L10n.of(context).thisMessageHasBeenDeleted,
-                style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                style: Theme.of(context).textTheme.labelMedium!.copyWith(
                       fontStyle: FontStyle.italic,
                       fontWeight: FontWeight.w700,
                     ),
@@ -348,22 +327,19 @@ class _SubtitleWidget extends ConsumerWidget {
           mainAxisSize: MainAxisSize.max,
           children: [
             Flexible(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Text(
-                  '${simplifyUserId(sender)}: ',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall!
-                      .copyWith(fontWeight: FontWeight.w700),
-                  overflow: TextOverflow.ellipsis,
-                ),
+              child: Text(
+                '${simplifyUserId(sender)}: ',
+                style: Theme.of(context)
+                    .textTheme
+                    .labelMedium!
+                    .copyWith(fontWeight: FontWeight.w700),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
             Expanded(
               child: Text(
                 L10n.of(context).failedToDecryptMessage,
-                style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                style: Theme.of(context).textTheme.labelMedium!.copyWith(
                       fontStyle: FontStyle.italic,
                     ),
                 overflow: TextOverflow.ellipsis,
@@ -385,28 +361,20 @@ class _SubtitleWidget extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Flexible(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Text(
-                  '${simplifyUserId(sender)} ',
-                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                        fontStyle: FontStyle.italic,
-                      ),
-                  overflow: TextOverflow.ellipsis,
-                ),
+              child: Text(
+                '${simplifyUserId(sender)} ',
+                style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                      fontStyle: FontStyle.italic,
+                    ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
             Flexible(
               child: Html(
-                padding: const EdgeInsets.symmetric(vertical: 10),
                 // ignore: unnecessary_string_interpolations
                 data: '''$body''',
                 maxLines: 1,
-                defaultTextStyle: const TextStyle(
-                  overflow: TextOverflow.ellipsis,
-                  fontStyle: FontStyle.italic,
-                  fontSize: 14,
-                ),
+                defaultTextStyle: Theme.of(context).textTheme.labelMedium!,
                 onLinkTap: (url) => {},
               ),
             ),
@@ -417,22 +385,19 @@ class _SubtitleWidget extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Flexible(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Text(
-                  '${simplifyUserId(sender)}: ',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall!
-                      .copyWith(fontWeight: FontWeight.w700),
-                  overflow: TextOverflow.ellipsis,
-                ),
+              child: Text(
+                '${simplifyUserId(sender)}: ',
+                style: Theme.of(context)
+                    .textTheme
+                    .labelMedium!
+                    .copyWith(fontWeight: FontWeight.w700),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
             Flexible(
               child: Text(
                 eventItem.msgContent()!.body(),
-                style: Theme.of(context).textTheme.bodySmall,
+                style: Theme.of(context).textTheme.labelMedium,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -450,28 +415,19 @@ class _SubtitleWidget extends ConsumerWidget {
     final textStyle = Theme.of(context).textTheme.bodySmall!;
     if (userIds.length == 1) {
       final userName = simplifyUserId(userIds[0].id.toString());
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Text(L10n.of(context).typingUser1(userName!), style: textStyle),
-      );
+      return Text(L10n.of(context).typingUser1(userName!), style: textStyle);
     } else if (userIds.length == 2) {
       final u1 = simplifyUserId(userIds[0].id.toString());
       final u2 = simplifyUserId(userIds[1].id.toString());
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Text(
-          L10n.of(context).typingUser2(u1!, u2!),
-          style: textStyle,
-        ),
+      return Text(
+        L10n.of(context).typingUser2(u1!, u2!),
+        style: textStyle,
       );
     } else {
       final u1 = simplifyUserId(userIds[0].id.toString());
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Text(
-          L10n.of(context).typingUser3(u1!, {userIds.length - 1}),
-          style: textStyle,
-        ),
+      return Text(
+        L10n.of(context).typingUser3(u1!, {userIds.length - 1}),
+        style: textStyle,
       );
     }
   }

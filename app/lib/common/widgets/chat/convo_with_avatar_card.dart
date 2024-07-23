@@ -61,6 +61,7 @@ class ConvoWithAvatarInfoCard extends ConsumerWidget {
             Material(
               color: Colors.transparent,
               child: ListTile(
+                dense: true,
                 onTap: onTap,
                 selected: showSelectedIndication &&
                     roomId == ref.watch(selectedChatIdProvider),
