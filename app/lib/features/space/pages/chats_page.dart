@@ -6,6 +6,7 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
+import 'package:acter/common/widgets/chat/loading_convo_card.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_options_menu.dart';
 import 'package:acter/router/utils.dart';
@@ -24,9 +25,13 @@ class SpaceChatsPage extends ConsumerWidget {
   const SpaceChatsPage({super.key, required this.spaceIdOrAlias});
 
   Widget _renderEmpty(BuildContext context, WidgetRef ref) {
-    final chats = ref.watch(relatedChatsProvider(spaceIdOrAlias));
+    final chats = ref
+            .watch(spaceRelationsOverviewProvider(spaceIdOrAlias))
+            .valueOrNull
+            ?.knownChats ??
+        [];
 
-    if ((chats.valueOrNull?.isNotEmpty ?? true)) {
+    if (chats.isEmpty) {
       // we are still loading or chats has been found locally
       return Container();
     }
@@ -64,50 +69,44 @@ class SpaceChatsPage extends ConsumerWidget {
     );
   }
 
-  Widget renderChats(BuildContext context, WidgetRef ref) {
-    final chats = ref.watch(relatedChatsProvider(spaceIdOrAlias));
-    final related =
-        ref.watch(suggestedRelationsIdsProvider(spaceIdOrAlias)).valueOrNull ??
-            [];
+  Widget renderConvoCard(
+      BuildContext context, WidgetRef ref, String roomId, bool isSuggested,) {
+    return ref.watch(chatProvider(roomId)).when(
+          data: (room) => ConvoCard(
+            room: room,
+            showParents: false,
+            showSuggestedMark: isSuggested,
+            onTap: () => goToChat(context, roomId),
+            trailing: RoomHierarchyOptionsMenu(
+              childId: roomId,
+              parentId: spaceIdOrAlias,
+              isSuggested: isSuggested,
+            ),
+          ),
+          error: (error, stack) => ListTile(
+            title: Text(roomId),
+            subtitle: Text(L10n.of(context).loadingFailed(error)),
+          ),
+          loading: () => LoadingConvoCard(roomId: roomId),
+        );
+  }
 
-    return chats.when(
-      data: (rooms) {
-        return SliverAnimatedList(
-          initialItemCount: rooms.length,
-          itemBuilder: (context, index, animation) {
-            final room = rooms[index];
-            final roomId = room.getRoomIdStr();
-            final isSuggested = related.contains(roomId);
-            return SizeTransition(
-              sizeFactor: animation,
-              child: ConvoCard(
-                room: room,
-                showParents: false,
-                showSuggestedMark: isSuggested,
-                onTap: () => goToChat(context, roomId),
-                trailing: RoomHierarchyOptionsMenu(
-                  childId: roomId,
-                  parentId: spaceIdOrAlias,
-                  isSuggested: isSuggested,
-                ),
-              ),
-            );
-          },
+  Widget renderChats(BuildContext context, WidgetRef ref) {
+    final relations =
+        ref.watch(spaceRelationsOverviewProvider(spaceIdOrAlias)).valueOrNull;
+    final chats = relations?.knownChats ?? [];
+    final suggested = relations?.suggestedIds ?? [];
+
+    return SliverAnimatedList(
+      initialItemCount: chats.length,
+      itemBuilder: (context, index, animation) {
+        final roomId = chats[index];
+        final isSuggested = suggested.contains(roomId);
+        return SizeTransition(
+          sizeFactor: animation,
+          child: renderConvoCard(context, ref, roomId, isSuggested),
         );
       },
-      error: (error, stackTrace) => SliverToBoxAdapter(
-        child: Center(
-          child: Text(L10n.of(context).failedToLoadChatsDueTo(error)),
-        ),
-      ),
-      loading: () => SliverToBoxAdapter(
-        child: Skeletonizer(
-          child: ListTile(
-            title: Text(L10n.of(context).roomId),
-            subtitle: Text(L10n.of(context).loading),
-          ),
-        ),
-      ),
     );
   }
 
@@ -225,8 +224,8 @@ class SpaceChatsPage extends ConsumerWidget {
         slivers: <Widget>[
           if (chatsList?.knownChats.isNotEmpty == true)
             renderChats(context, ref),
-          if (chatsList?.hasMoreChats == true) renderFurther(context, ref),
-          if (chatsList?.hasMoreChats == false &&
+          if (chatsList?.hasMore == true) renderFurther(context, ref),
+          if (chatsList?.hasMore == false &&
               chatsList?.knownChats.isEmpty == true)
             _renderEmpty(context, ref),
         ],

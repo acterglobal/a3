@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 typedef SubtitleFn = Widget? Function(Space);
 
 class SpaceCard extends ConsumerWidget {
-  final Space space;
+  final String roomId;
   final SubtitleFn? subtitleFn;
   final double avatarSize;
 
@@ -85,7 +85,7 @@ class SpaceCard extends ConsumerWidget {
 
   const SpaceCard({
     super.key,
-    required this.space,
+    required this.roomId,
     this.subtitleFn,
     this.onTap,
     this.onLongPress,
@@ -105,7 +105,7 @@ class SpaceCard extends ConsumerWidget {
 
   const SpaceCard.small({
     super.key,
-    required this.space,
+    required this.roomId,
     this.subtitleFn,
     this.onTap,
     this.onLongPress,
@@ -125,9 +125,7 @@ class SpaceCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final roomId = space.getRoomIdStr();
     final avatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
-    final subtitle = subtitleFn != null ? subtitleFn!(space) : null;
     final parents = ref.watch(parentAvatarInfosProvider(roomId)).valueOrNull;
 
     return SpaceWithAvatarInfoCard(
@@ -135,7 +133,6 @@ class SpaceCard extends ConsumerWidget {
       roomId: roomId,
       avatarInfo: avatarInfo,
       parents: parents,
-      subtitle: subtitle,
       onTap: onTap,
       onFocusChange: onFocusChange,
       onLongPress: onLongPress,

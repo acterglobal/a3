@@ -100,7 +100,7 @@ class _RenderSpacesSection extends ConsumerWidget {
           physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (context, index) {
             return SpaceCard(
-              space: spaces[index],
+              roomId: spaces[index].getRoomIdStr(),
               margin: const EdgeInsets.only(bottom: 14),
             );
           },

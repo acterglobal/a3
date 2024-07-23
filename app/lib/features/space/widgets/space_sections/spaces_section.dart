@@ -3,7 +3,6 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter/features/space/widgets/related_spaces/helpers.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -27,7 +26,6 @@ class SpacesSection extends ConsumerWidget {
         context,
         ref,
         spaceRelationsOverview.knownSubspaces,
-        spaceRelationsOverview.hasMoreSubspaces,
       ),
       error: (error, stack) =>
           Center(child: Text(L10n.of(context).loadingFailed(error))),
@@ -40,12 +38,36 @@ class SpacesSection extends ConsumerWidget {
   Widget buildSpacesSectionUI(
     BuildContext context,
     WidgetRef ref,
-    List<Space> spaces,
-    bool hasMore,
+    List<String> spaces,
   ) {
-    int spacesLimit = (spaces.length > limit) ? limit : spaces.length;
-    int renderMoreCount = limit > spaces.length ? limit - spaces.length : 0;
-    bool isShowSeeAllButton = (spaces.length > spacesLimit) || hasMore;
+    int spacesLimit;
+    bool isShowSeeAllButton = false;
+    bool renderRemote = false;
+    int moreCount;
+    if (spaces.length > limit) {
+      spacesLimit = limit;
+      isShowSeeAllButton = true;
+      moreCount = 0;
+    } else {
+      spacesLimit = spaces.length;
+      moreCount = limit - spaces.length;
+      if (moreCount > 0) {
+        // we have space for more
+        final remoteCount =
+            (ref.watch(remoteSubspaceRelationsProvider(spaceId)).valueOrNull ??
+                    [])
+                .length;
+        if (remoteCount > 0) {
+          renderRemote = true;
+          if (remoteCount < moreCount) {
+            moreCount = remoteCount;
+          }
+          if (remoteCount > moreCount) {
+            isShowSeeAllButton = true;
+          }
+        }
+      }
+    }
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,29 +81,29 @@ class SpacesSection extends ConsumerWidget {
           ),
         ),
         spacesListUI(spaces, spacesLimit),
-        if (renderMoreCount > 0 && hasMore)
+        if (renderRemote)
           renderMoreSubspaces(
             context,
             ref,
             spaceId,
-            maxLength: renderMoreCount,
+            maxLength: moreCount,
             padding: EdgeInsets.zero,
           ),
       ],
     );
   }
 
-  Widget spacesListUI(List<Space> spaces, int spacesLimit) {
+  Widget spacesListUI(List<String> spaces, int spacesLimit) {
     return ListView.builder(
       shrinkWrap: true,
       itemCount: spacesLimit,
       padding: EdgeInsets.zero,
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
-        final space = spaces[index];
+        final roomId = spaces[index];
         return SpaceCard(
-          key: Key('subspace-list-item-${space.getRoomIdStr()}'),
-          space: space,
+          key: Key('subspace-list-item-$roomId}'),
+          roomId: roomId,
           showParents: false,
         );
       },

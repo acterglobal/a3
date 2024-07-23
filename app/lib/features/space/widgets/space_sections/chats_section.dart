@@ -1,10 +1,11 @@
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
+import 'package:acter/common/widgets/chat/loading_convo_card.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter/router/utils.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -29,7 +30,6 @@ class ChatsSection extends ConsumerWidget {
         context,
         ref,
         spaceRelationsOverview.knownChats,
-        spaceRelationsOverview.hasMoreChats,
       ),
       error: (error, stack) =>
           Center(child: Text(L10n.of(context).loadingFailed(error))),
@@ -44,12 +44,34 @@ class ChatsSection extends ConsumerWidget {
   Widget buildChatsSectionUI(
     BuildContext context,
     WidgetRef ref,
-    List<Convo> chats,
-    bool hasMore,
+    List<String> chats,
   ) {
-    int chatsLimit = (chats.length > limit) ? limit : chats.length;
-    int moreCount = limit > chats.length ? limit - chats.length : 0;
-    bool isShowSeeAllButton = (chats.length > chatsLimit) || hasMore;
+    int chatsLimit;
+    bool isShowSeeAllButton = false;
+    bool renderRemote = false;
+    int moreCount;
+    if (chats.length > limit) {
+      chatsLimit = limit;
+      isShowSeeAllButton = true;
+      moreCount = 0;
+    } else {
+      chatsLimit = chats.length;
+      moreCount = limit - chats.length;
+      if (moreCount > 0) {
+        final remoteCount =
+            (ref.watch(remoteChatRelationsProvider(spaceId)).valueOrNull ?? [])
+                .length;
+        if (remoteCount > 0) {
+          renderRemote = true;
+          if (remoteCount < moreCount) {
+            moreCount = remoteCount;
+          }
+          if (remoteCount > moreCount) {
+            isShowSeeAllButton = true;
+          }
+        }
+      }
+    }
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,25 +84,33 @@ class ChatsSection extends ConsumerWidget {
             pathParameters: {'spaceId': spaceId},
           ),
         ),
-        chatsListUI(chats, chatsLimit),
-        if (moreCount > 0 && hasMore) renderFurther(context, ref, moreCount),
+        chatsListUI(ref, chats, chatsLimit),
+        if (renderRemote) renderFurther(context, ref, moreCount),
       ],
     );
   }
 
-  Widget chatsListUI(List<Convo> chats, int chatsLimit) {
+  Widget chatsListUI(WidgetRef ref, List<String> chats, int chatsLimit) {
     return ListView.builder(
       shrinkWrap: true,
       itemCount: chatsLimit,
       padding: EdgeInsets.zero,
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
-        return ConvoCard(
-          room: chats[index],
-          showParents: false,
-          showSelectedIndication: false,
-          onTap: () => goToChat(context, chats[index].getRoomIdStr()),
-        );
+        final roomId = chats[index];
+        return ref.watch(chatProvider(roomId)).when(
+              data: (room) => ConvoCard(
+                room: room,
+                showParents: false,
+                showSelectedIndication: false,
+                onTap: () => goToChat(context, roomId),
+              ),
+              error: (error, stack) => ListTile(
+                title: Text(roomId),
+                subtitle: Text(L10n.of(context).loadingFailed(error)),
+              ),
+              loading: () => LoadingConvoCard(roomId: roomId),
+            );
       },
     );
   }

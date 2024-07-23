@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HasSubSpacesNotifier extends FamilyAsyncNotifier<bool, String> {
+  late ProviderSubscription<AsyncValue<List<SpaceHierarchyRoomInfo>>> listener;
   @override
   FutureOr<bool> build(String arg) async {
     final spaceId = arg;
@@ -12,9 +14,10 @@ class HasSubSpacesNotifier extends FamilyAsyncNotifier<bool, String> {
     if (relatedSpaces.knownSubspaces.isNotEmpty) {
       return true; // we have subspaces and know it
     }
-    if (relatedSpaces.hasMoreSubspaces) {
+    if (relatedSpaces.hasMore) {
       // there might be some, but we need to confirm remotely. We do that without blocking
-      ref.listen(remoteSubspaceRelationsProvider(spaceId), (previous, next) {
+      listener = ref.listen(remoteSubspaceRelationsProvider(spaceId),
+          (previous, next) {
         state = next.whenData((data) => data.isNotEmpty);
       });
     }
@@ -23,6 +26,7 @@ class HasSubSpacesNotifier extends FamilyAsyncNotifier<bool, String> {
 }
 
 class HasSubChatsNotifier extends FamilyAsyncNotifier<bool, String> {
+  late ProviderSubscription<AsyncValue<List<SpaceHierarchyRoomInfo>>> listener;
   @override
   FutureOr<bool> build(String arg) async {
     final spaceId = arg;
@@ -31,9 +35,10 @@ class HasSubChatsNotifier extends FamilyAsyncNotifier<bool, String> {
     if (relatedSpaces.knownChats.isNotEmpty) {
       return true; // we have subspaces and know it
     }
-    if (relatedSpaces.hasMoreChats) {
+    if (relatedSpaces.hasMore) {
       // there might be some, but we need to confirm remotely. We do that without blocking
-      ref.listen(remoteChatRelationsProvider(spaceId), (previous, next) {
+      listener =
+          ref.listen(remoteChatRelationsProvider(spaceId), (previous, next) {
         state = next.whenData((data) => data.isNotEmpty);
       });
     }

@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/notifiers/chat_notifiers.dart';
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:riverpod/riverpod.dart';
@@ -39,16 +38,6 @@ final chatProvider =
     roomIdOrAlias,
     120,
   ); // retrying for up to 30seconds before failing
-});
-
-final relatedChatsProvider =
-    FutureProvider.family<List<Convo>, String>((ref, spaceId) async {
-  final chats = List.of(
-    (await ref.watch(spaceRelationsOverviewProvider(spaceId).future))
-        .knownChats,
-  );
-  chats.sort((a, b) => b.latestMessageTs().compareTo(a.latestMessageTs()));
-  return chats;
 });
 
 final selectedChatIdProvider =
