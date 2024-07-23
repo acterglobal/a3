@@ -1,1 +1,0 @@
-- Create a default sub-chat with just the toggle of a button at Space creation

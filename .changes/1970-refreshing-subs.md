@@ -1,1 +1,0 @@
-- Missing a subspace or subchat? You can now click the refresh button on the sub screens and we will fetch teh latest version from the server.

@@ -1,1 +1,0 @@
-- [Improvement] : Better inline edit features for space topic, description and avatar without going through edit space screen
