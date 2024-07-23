@@ -83,6 +83,7 @@ class _ConvosListConsumerState extends ConsumerState<ConvosList> {
 
   Widget renderList(BuildContext context, List<Convo> chats) {
     return ListView.builder(
+      padding: EdgeInsets.zero,
       itemCount: chats.length,
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,

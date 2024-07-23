@@ -118,10 +118,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
         SearchBar(
           shape: WidgetStateProperty.all<RoundedRectangleBorder>(
             const RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(16),
-                topRight: Radius.circular(16),
-              ),
+              borderRadius: BorderRadius.all(Radius.circular(16)),
             ),
           ),
           focusNode: searchFocus,
@@ -149,31 +146,6 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
           },
         ),
         filterChipsButtons(),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            if (hasFilters)
-              TextButton(
-                onPressed: () {
-                  searchTextController.clear();
-                  ref.read(roomListFilterProvider.notifier).clear();
-                  setState(() {
-                    _isSearchVisible = false;
-                  });
-                },
-                child: Text(L10n.of(context).clear),
-              ),
-            if (!hasFilters)
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    _isSearchVisible = false;
-                  });
-                },
-                child: Text(L10n.of(context).close),
-              ),
-          ],
-        ),
       ],
     );
   }
@@ -182,15 +154,8 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
     final selected =
         ref.watch(roomListFilterProvider.select((value) => value.selection));
     return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(16),
-          bottomRight: Radius.circular(16),
-        ),
-      ),
       padding: const EdgeInsets.all(10),
-      child: Row(
+      child: Wrap(
         children: [
           FilterChip(
             selected: selected == FilterSelection.all,
@@ -250,7 +215,38 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
                 ),
                 leadingWidth: double.infinity,
                 actions: _isSearchVisible
-                    ? []
+                    ? [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              if (hasFilters)
+                                TextButton(
+                                  onPressed: () {
+                                    searchTextController.clear();
+                                    ref
+                                        .read(roomListFilterProvider.notifier)
+                                        .clear();
+                                    setState(() {
+                                      _isSearchVisible = false;
+                                    });
+                                  },
+                                  child: Text(L10n.of(context).clear),
+                                ),
+                              if (!hasFilters)
+                                TextButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _isSearchVisible = false;
+                                    });
+                                  },
+                                  child: Text(L10n.of(context).close),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ]
                     : [
                         if (!hasFilters)
                           IconButton(
