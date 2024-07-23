@@ -14,6 +14,7 @@ class TabEntry {
   static const chatsKey = Key('chat');
   static const spacesKey = Key('spaces');
   static const membersKey = Key('members');
+  static const budgetKey = Key('budget');
   static const actionsKey = Key('quickActionsKey');
 
   final Key key;
@@ -79,6 +80,13 @@ final tabsProvider =
   if (hasChats) {
     tabs.add(
       const TabEntry(key: TabEntry.chatsKey, label: 'Chats'),
+    );
+  }
+
+  if (spaceId == '!zilohxsfEQOWAoqfxr:m-1.acter.global') {
+    print('in kigis');
+    tabs.add(
+      const TabEntry(key: TabEntry.budgetKey, label: 'Budget'),
     );
   }
 

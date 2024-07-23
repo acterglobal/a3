@@ -5,6 +5,7 @@ import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/space/providers/suggested_provider.dart';
 import 'package:acter/features/space/widgets/skeletons/space_details_skeletons.dart';
 import 'package:acter/features/space/widgets/space_sections/about_section.dart';
+import 'package:acter/features/space/widgets/space_sections/budget_section.dart';
 import 'package:acter/features/space/widgets/space_sections/chats_section.dart';
 import 'package:acter/features/space/widgets/space_sections/events_section.dart';
 import 'package:acter/features/space/widgets/space_sections/members_section.dart';
@@ -220,6 +221,8 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
         return SpacesSection(spaceId: widget.spaceId);
       case TabEntry.membersKey:
         return MembersSection(spaceId: widget.spaceId);
+      case TabEntry.budgetKey:
+        return BudgetSection(spaceId: widget.spaceId);
       case TabEntry.actionsKey:
         return SpaceActionsSection(spaceId: widget.spaceId);
       default:

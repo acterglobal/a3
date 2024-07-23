@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SpaceActionsSection extends ConsumerWidget {
   final String spaceId;
@@ -118,6 +119,16 @@ class SpaceActionsSection extends ConsumerWidget {
             Routes.linkSubspace.name,
             pathParameters: {'spaceId': spaceId},
           ),
+        ),
+        spaceActionButton(
+          context: context,
+          iconData: Atlas.globe_plant_thin,
+          title: 'Integrate Climate 2025',
+          isShow: canLinkSpaces,
+          onPressed: () {
+            final Uri url = Uri.parse('https://www.climate2025.org');
+            launchUrl(url);
+          },
         ),
       ],
     );
