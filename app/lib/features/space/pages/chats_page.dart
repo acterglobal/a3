@@ -174,6 +174,14 @@ class SpaceChatsPage extends ConsumerWidget {
           ],
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Atlas.arrows_rotating_right_thin),
+            iconSize: 28,
+            color: Theme.of(context).colorScheme.surface,
+            onPressed: () async {
+              ref.invalidate(spaceRelationsProvider);
+            },
+          ),
           if (canCreateSpace)
             PopupMenuButton(
               key: actionsMenuKey,

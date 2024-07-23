@@ -37,6 +37,7 @@ class EditSpacePage extends ConsumerStatefulWidget {
 class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _topicController = TextEditingController();
+  String? errorLoading;
 
   @override
   void initState() {
@@ -46,25 +47,32 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
 
   // apply existing data to fields
   Future<void> _editSpaceData() async {
-    final space = ref.read(spaceProvider(widget.spaceId!)).requireValue;
-    final spaceId = space.getRoomIdStr();
-    final avatarInfo = ref.read(roomAvatarInfoProvider(spaceId));
-    final titleNotifier = ref.read(editTitleProvider.notifier);
-    final topicNotifier = ref.read(editTopicProvider.notifier);
-    final avatarNotifier = ref.read(editAvatarProvider.notifier);
+    try {
+      final space = await ref.read(spaceProvider(widget.spaceId!).future);
+      final spaceId = widget.spaceId!;
+      final avatarInfo = ref.read(roomAvatarInfoProvider(spaceId));
+      final titleNotifier = ref.read(editTitleProvider.notifier);
+      final topicNotifier = ref.read(editTopicProvider.notifier);
+      final avatarNotifier = ref.read(editAvatarProvider.notifier);
 
-    titleNotifier.update((state) => avatarInfo.displayName ?? '');
-    topicNotifier.update((state) => space.topic() ?? '');
+      titleNotifier.update((state) => avatarInfo.displayName ?? '');
+      topicNotifier.update((state) => space.topic() ?? '');
 
-    Directory appDocDir = await getApplicationDocumentsDirectory();
-    final dirPath = p.join(appDocDir.path, 'dir');
-    await Directory(dirPath).create(recursive: true);
-    String filePath = p.join(appDocDir.path, '${widget.spaceId}.jpg');
-    final imageFile = File(filePath);
-    avatarNotifier.update((state) => imageFile.path);
+      Directory appDocDir = await getApplicationDocumentsDirectory();
+      final dirPath = p.join(appDocDir.path, 'dir');
+      await Directory(dirPath).create(recursive: true);
+      String filePath = p.join(appDocDir.path, '${widget.spaceId}.jpg');
+      final imageFile = File(filePath);
+      avatarNotifier.update((state) => imageFile.path);
 
-    _titleController.text = ref.read(editTitleProvider);
-    _topicController.text = ref.read(editTopicProvider);
+      _titleController.text = ref.read(editTitleProvider);
+      _topicController.text = ref.read(editTopicProvider);
+    } catch (error, stack) {
+      _log.severe('Failure loading space data', error, stack);
+      setState(() {
+        errorLoading = error.toString();
+      });
+    }
   }
 
   @override
@@ -72,6 +80,11 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
     final titleInput = ref.watch(editTitleProvider);
     final avatarUpload = ref.watch(editAvatarProvider);
     ref.watch(editTopicProvider);
+
+    if (errorLoading != null) {
+      return renderError(context);
+    }
+
     return SliverScaffold(
       header: L10n.of(context).editSpace,
       addActions: true,
@@ -158,6 +171,19 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
       confirmActionTitle: L10n.of(context).saveChanges,
       cancelActionTitle: L10n.of(context).cancel,
       confirmActionOnPressed: () async => await _handleConfirm(titleInput),
+      cancelActionOnPressed: _handleCancel,
+    );
+  }
+
+  Widget renderError(BuildContext context) {
+    return SliverScaffold(
+      header: L10n.of(context).editSpace,
+      addActions: true,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        child: Text(errorLoading!),
+      ),
+      cancelActionTitle: L10n.of(context).cancel,
       cancelActionOnPressed: _handleCancel,
     );
   }

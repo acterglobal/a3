@@ -31,7 +31,18 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
 
   @override
   Widget build(BuildContext context) {
-    final sdk = ref.watch(sdkProvider).requireValue;
+    final sdk = ref.watch(sdkProvider).valueOrNull;
+    if (sdk == null) {
+      return SingleChildScrollView(
+        child: Center(
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 500),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Text(L10n.of(context).loading),
+          ),
+        ),
+      );
+    }
     if (tokenResponse != null) {
       return _NewPassword(tokenResponse: tokenResponse!, sdk: sdk);
     }

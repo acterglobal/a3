@@ -68,7 +68,7 @@ class SpaceEventsPage extends ConsumerWidget {
                 final membership =
                     ref.watch(roomMembershipProvider(spaceIdOrAlias));
                 bool canCreateEvent =
-                    membership.requireValue!.canString('CanPostEvent');
+                    membership.valueOrNull?.canString('CanPostEvent') == true;
                 return SliverToBoxAdapter(
                   child: Center(
                     heightFactor: 1,
@@ -135,7 +135,7 @@ class SpaceEventsPage extends ConsumerWidget {
                 final membership =
                     ref.watch(roomMembershipProvider(spaceIdOrAlias));
                 bool canCreateEvent =
-                    membership.requireValue!.canString('CanPostEvent');
+                    membership.valueOrNull?.canString('CanPostEvent') == true;
                 return SliverToBoxAdapter(
                   child: Center(
                     heightFactor: 1,

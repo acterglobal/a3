@@ -98,6 +98,14 @@ class SubSpacesPage extends ConsumerWidget {
           ],
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Atlas.arrows_rotating_right_thin),
+            iconSize: 28,
+            color: Theme.of(context).colorScheme.surface,
+            onPressed: () async {
+              ref.invalidate(spaceRelationsProvider);
+            },
+          ),
           spaces.when(
             data: (spaces) {
               if (spaces.membership?.canString('CanLinkSpaces') ?? false) {
@@ -109,9 +117,7 @@ class SubSpacesPage extends ConsumerWidget {
             error: (error, stack) => Center(
               child: Text(L10n.of(context).loadingFailed(error)),
             ),
-            loading: () => Center(
-              child: Text(L10n.of(context).loading),
-            ),
+            loading: () => const SizedBox.shrink(),
           ),
         ],
       ),

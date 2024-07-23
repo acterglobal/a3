@@ -101,33 +101,29 @@ class _PinListItemConsumerState extends ConsumerState<PinListItem> {
 
   // handler for gesture interaction on pin
   Future<void> onTap(BuildContext context) async {
-      await openItem(context);
+    await openItem(context);
   }
 
   @override
   Widget build(BuildContext context) {
     final isLink = widget.pin.isLink();
     final spaceId = widget.pin.roomIdStr();
-    final asyncManager =
-        ref.watch(attachmentsManagerProvider(widget.pin.attachments()));
+    final manager = ref
+        .watch(attachmentsManagerProvider(widget.pin.attachments()))
+        .valueOrNull;
     final attachmentsWidget = [];
 
-    if (asyncManager.valueOrNull != null) {
-      final attachments =
-          ref.watch(attachmentsProvider(asyncManager.requireValue));
-      if (attachments.valueOrNull != null) {
-        final list = attachments.requireValue;
-
-        if (list.isNotEmpty) {
-          final attachmentId = list[0].attachmentIdStr();
-          attachmentsWidget.add(
-            AttachmentItem(
-              key: Key(attachmentId),
-              attachment: list[0],
-              openView: false,
-            ),
-          );
-        }
+    if (manager != null) {
+      final list = ref.watch(attachmentsProvider(manager)).valueOrNull;
+      if (list != null && list.isNotEmpty) {
+        final attachmentId = list[0].attachmentIdStr();
+        attachmentsWidget.add(
+          AttachmentItem(
+            key: Key(attachmentId),
+            attachment: list[0],
+            openView: false,
+          ),
+        );
       }
     }
 
