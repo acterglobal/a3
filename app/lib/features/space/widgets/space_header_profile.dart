@@ -9,10 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-
-final _log = Logger('a3::space::space_header');
 
 class SpaceHeaderProfile extends ConsumerWidget {
   static const headerKey = Key('space-header');
