@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:multi_trigger_autocomplete/src/autocomplete_query.dart';
+import 'package:multi_trigger_autocomplete/multi_trigger_autocomplete.dart';
 
 /// The type of the [AutocompleteTrigger] callback which returns a [Widget] that
 /// displays the specified [options].
 typedef AutocompleteTriggerOptionsViewBuilder = Widget Function(
   BuildContext context,
   AutocompleteQuery autocompleteQuery,
-  TextEditingController textEditingController,
+  AutocompleteTextController textEditingController,
 );
 
 class AutocompleteTrigger {
