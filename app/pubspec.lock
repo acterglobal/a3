@@ -1426,11 +1426,10 @@ packages:
   multi_trigger_autocomplete:
     dependency: "direct main"
     description:
-      name: multi_trigger_autocomplete
-      sha256: a38b1f0f68eaa34fe81847844167e60c6e793d7b620c5f818457ac6f9f8c31ab
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0"
+      path: "packages/multi_trigger_autocomplete"
+      relative: true
+    source: path
+    version: "0.0.1"
   multiavatar:
     dependency: transitive
     description:
