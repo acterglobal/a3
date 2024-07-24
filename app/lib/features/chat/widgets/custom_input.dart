@@ -196,7 +196,29 @@ class _ChatInput extends ConsumerStatefulWidget {
 }
 
 class __ChatInputState extends ConsumerState<_ChatInput> {
-  TextEditingController controller = TextEditingController();
+  late AutocompleteTextController controller;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _initController();
+  }
+
+  void _initController() {
+    final Map<String, TextStyle> triggerStyles = {
+      '@': TextStyle(
+        color: Theme.of(context).colorScheme.onSecondary,
+        height: 0.5,
+        background: Paint()
+          ..color = Theme.of(context).colorScheme.secondary
+          ..strokeWidth = 10
+          ..strokeJoin = StrokeJoin.round
+          ..style = PaintingStyle.stroke,
+      ),
+    };
+    controller = AutocompleteTextController(triggerStyles);
+    setState(() {});
+  }
 
   void handleEmojiSelected(Category? category, Emoji emoji) {
     // Get cursor current position
@@ -830,7 +852,7 @@ class _FileWidget extends ConsumerWidget {
 
 class _TextInputWidget extends ConsumerStatefulWidget {
   final String roomId;
-  final TextEditingController controller;
+  final AutocompleteTextController controller;
   final Function() onSendButtonPressed;
   final bool isEncrypted;
   final void Function(bool)? onTyping;
