@@ -1,4 +1,5 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
@@ -41,8 +42,7 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
 
   AppBar _buildAppbar() {
     return AppBar(
-      backgroundColor: const AppBarTheme().backgroundColor,
-      elevation: 0.0,
+      automaticallyImplyLeading: !isLargeScreen(context),
       title: Text(L10n.of(context).changePassword),
       centerTitle: true,
     );

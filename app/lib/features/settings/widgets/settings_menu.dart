@@ -21,8 +21,12 @@ class SettingsMenu extends ConsumerWidget {
   static Key emailAddresses = const Key('settings-email-addresses');
   static Key chat = const Key('settings-chat');
   static Key labs = const Key('settings-labs');
+  final bool isFullPage;
 
-  const SettingsMenu({super.key = defaultSettingsMenuKey});
+  const SettingsMenu({
+    this.isFullPage = false,
+    super.key = defaultSettingsMenuKey,
+  });
 
   Color? routedColor(
     BuildContext context,
@@ -39,9 +43,7 @@ class SettingsMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final size = MediaQuery.of(context).size;
-
-    final shouldGoNotNamed = size.width > 770;
+    final replacementRouting = !isFullPage && isLargeScreen(context);
 
     final isSuperInviteEnable =
         ref.watch(hasSuperTokensAccess).valueOrNull == true;
@@ -65,8 +67,9 @@ class SettingsMenu extends ConsumerWidget {
                   Routes.settingNotifications,
                 ),
               ),
-              onTap: () => shouldGoNotNamed
-                  ? context.goNamed(Routes.settingNotifications.name)
+              onTap: () => replacementRouting
+                  ? context
+                      .pushReplacementNamed(Routes.settingNotifications.name)
                   : context.pushNamed(Routes.settingNotifications.name),
             ),
             MenuItemWidget(
@@ -82,8 +85,8 @@ class SettingsMenu extends ConsumerWidget {
                   Routes.emailAddresses,
                 ),
               ),
-              onTap: () => shouldGoNotNamed
-                  ? context.goNamed(Routes.emailAddresses.name)
+              onTap: () => replacementRouting
+                  ? context.pushReplacementNamed(Routes.emailAddresses.name)
                   : context.pushNamed(Routes.emailAddresses.name),
             ),
           ],
@@ -104,8 +107,8 @@ class SettingsMenu extends ConsumerWidget {
                   Routes.settingSessions,
                 ),
               ),
-              onTap: () => shouldGoNotNamed
-                  ? context.goNamed(Routes.settingSessions.name)
+              onTap: () => replacementRouting
+                  ? context.pushReplacementNamed(Routes.settingSessions.name)
                   : context.pushNamed(Routes.settingSessions.name),
             ),
             if (ref
@@ -123,8 +126,8 @@ class SettingsMenu extends ConsumerWidget {
                     Routes.settingBackup,
                   ),
                 ),
-                onTap: () => shouldGoNotNamed
-                    ? context.goNamed(Routes.settingBackup.name)
+                onTap: () => replacementRouting
+                    ? context.pushReplacementNamed(Routes.settingBackup.name)
                     : context.pushNamed(Routes.settingBackup.name),
               ),
             MenuItemWidget(
@@ -139,8 +142,8 @@ class SettingsMenu extends ConsumerWidget {
                   Routes.blockedUsers,
                 ),
               ),
-              onTap: () => shouldGoNotNamed
-                  ? context.goNamed(Routes.blockedUsers.name)
+              onTap: () => replacementRouting
+                  ? context.pushReplacementNamed(Routes.blockedUsers.name)
                   : context.pushNamed(Routes.blockedUsers.name),
             ),
             MenuItemWidget(
@@ -155,8 +158,8 @@ class SettingsMenu extends ConsumerWidget {
                   Routes.changePassword,
                 ),
               ),
-              onTap: () => shouldGoNotNamed
-                  ? context.goNamed(Routes.changePassword.name)
+              onTap: () => replacementRouting
+                  ? context.pushReplacementNamed(Routes.changePassword.name)
                   : context.pushNamed(Routes.changePassword.name),
             ),
           ],
@@ -180,8 +183,9 @@ class SettingsMenu extends ConsumerWidget {
                 ),
               ),
               onTap: isSuperInviteEnable
-                  ? () => shouldGoNotNamed
-                      ? context.goNamed(Routes.settingsSuperInvites.name)
+                  ? () => replacementRouting
+                      ? context.pushReplacementNamed(
+                          Routes.settingsSuperInvites.name)
                       : context.pushNamed(Routes.settingsSuperInvites.name)
                   : null,
             ),
@@ -204,8 +208,8 @@ class SettingsMenu extends ConsumerWidget {
                   Routes.settingsChat,
                 ),
               ),
-              onTap: () => shouldGoNotNamed
-                  ? context.goNamed(Routes.settingsChat.name)
+              onTap: () => replacementRouting
+                  ? context.pushReplacementNamed(Routes.settingsChat.name)
                   : context.pushNamed(Routes.settingsChat.name),
             ),
             MenuItemWidget(
@@ -220,8 +224,8 @@ class SettingsMenu extends ConsumerWidget {
                   Routes.settingLanguage,
                 ),
               ),
-              onTap: () => shouldGoNotNamed
-                  ? context.goNamed(Routes.settingLanguage.name)
+              onTap: () => replacementRouting
+                  ? context.pushReplacementNamed(Routes.settingLanguage.name)
                   : context.pushNamed(Routes.settingLanguage.name),
             ),
             MenuItemWidget(
@@ -237,8 +241,8 @@ class SettingsMenu extends ConsumerWidget {
                   Routes.settingsLabs,
                 ),
               ),
-              onTap: () => shouldGoNotNamed
-                  ? context.goNamed(Routes.settingsLabs.name)
+              onTap: () => replacementRouting
+                  ? context.pushReplacementNamed(Routes.settingsLabs.name)
                   : context.pushNamed(Routes.settingsLabs.name),
             ),
             MenuItemWidget(
@@ -252,8 +256,8 @@ class SettingsMenu extends ConsumerWidget {
                   Routes.info,
                 ),
               ),
-              onTap: () => shouldGoNotNamed
-                  ? context.goNamed(Routes.info.name)
+              onTap: () => replacementRouting
+                  ? context.pushReplacementNamed(Routes.info.name)
                   : context.pushNamed(Routes.info.name),
             ),
           ],

@@ -64,7 +64,7 @@ List<RouteBase> makeHomeShellRoutes() {
       pageBuilder: (context, state) {
         return NoTransitionPage(
           key: state.pageKey,
-          child: const SettingsPage(),
+          child: const SettingsPage(isFullPage: true),
         );
       },
     ),

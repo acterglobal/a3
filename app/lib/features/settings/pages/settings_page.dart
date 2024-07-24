@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,8 @@ import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class SettingsPage extends ConsumerWidget {
-  const SettingsPage({super.key});
+  final bool isFullPage;
+  const SettingsPage({this.isFullPage = false, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,7 +25,7 @@ class SettingsPage extends ConsumerWidget {
 
   AppBar _buildAppbar(BuildContext context) {
     return AppBar(
-      backgroundColor: Colors.transparent,
+      automaticallyImplyLeading: !isLargeScreen(context),
       title: Text(L10n.of(context).settings),
     );
   }
@@ -33,7 +35,7 @@ class SettingsPage extends ConsumerWidget {
       child: Column(
         children: [
           _userProfileUI(context, ref),
-          const SettingsMenu(),
+          SettingsMenu(isFullPage: isFullPage),
         ],
       ),
     );
@@ -42,8 +44,7 @@ class SettingsPage extends ConsumerWidget {
   Widget _userProfileUI(BuildContext context, WidgetRef ref) {
     final account = ref.watch(accountProvider);
     final accountInfo = ref.watch(accountAvatarInfoProvider);
-    final size = MediaQuery.of(context).size;
-    final shouldGoNotNamed = size.width > 770;
+    final shouldGoReplacement = isLargeScreen(context);
     final userId = account.userId().toString();
     return Card(
       shape: RoundedRectangleBorder(
@@ -52,8 +53,8 @@ class SettingsPage extends ConsumerWidget {
       child: Column(
         children: [
           ListTile(
-            onTap: () => shouldGoNotNamed
-                ? context.goNamed(Routes.myProfile.name)
+            onTap: () => shouldGoReplacement
+                ? context.pushReplacementNamed(Routes.myProfile.name)
                 : context.pushNamed(Routes.myProfile.name),
             leading: ActerAvatar(
               options: AvatarOptions.DM(accountInfo),

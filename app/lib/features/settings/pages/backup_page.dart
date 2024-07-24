@@ -1,3 +1,4 @@
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/backups/widgets/backup_state_widget.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
@@ -14,8 +15,7 @@ class BackupPage extends ConsumerWidget {
       sidebar: const SettingsPage(),
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: const AppBarTheme().backgroundColor,
-          elevation: 0.0,
+          automaticallyImplyLeading: !isLargeScreen(context),
           title: Text(L10n.of(context).encryptionBackupKeyBackup),
           centerTitle: true,
         ),
