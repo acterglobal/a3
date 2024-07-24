@@ -232,7 +232,10 @@ class _SubtitleWidget extends ConsumerWidget {
                     // ignore: unnecessary_string_interpolations
                     data: '''$body''',
                     maxLines: 1,
-                    defaultTextStyle: Theme.of(context).textTheme.labelMedium!,
+                    defaultTextStyle:
+                        Theme.of(context).textTheme.labelMedium!.copyWith(
+                              overflow: TextOverflow.ellipsis,
+                            ),
                     onLinkTap: (url) => {},
                   ),
                 ),
@@ -267,7 +270,10 @@ class _SubtitleWidget extends ConsumerWidget {
                 // ignore: unnecessary_string_interpolations
                 data: '''$body''',
                 maxLines: 1,
-                defaultTextStyle: Theme.of(context).textTheme.labelMedium!,
+                defaultTextStyle:
+                    Theme.of(context).textTheme.labelMedium!.copyWith(
+                          overflow: TextOverflow.ellipsis,
+                        ),
                 onLinkTap: (url) => {},
               ),
             ),
@@ -374,7 +380,10 @@ class _SubtitleWidget extends ConsumerWidget {
                 // ignore: unnecessary_string_interpolations
                 data: '''$body''',
                 maxLines: 1,
-                defaultTextStyle: Theme.of(context).textTheme.labelMedium!,
+                defaultTextStyle:
+                    Theme.of(context).textTheme.labelMedium!.copyWith(
+                          overflow: TextOverflow.ellipsis,
+                        ),
                 onLinkTap: (url) => {},
               ),
             ),
