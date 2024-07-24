@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:acter/features/events/providers/notifiers/event_notifiers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
@@ -222,4 +223,69 @@ final myRsvpStatusProvider = FutureProvider.family
     .autoDispose<ffi.OptionRsvpStatus, String>((ref, calendarId) async {
   final event = await ref.watch(calendarEventProvider(calendarId).future);
   return await event.respondedByMe();
+});
+
+//Get list of all events
+final eventListProvider = AsyncNotifierProvider.autoDispose<EventListNotifier,
+    List<ffi.CalendarEvent>>(() => EventListNotifier());
+
+//Event Filter Provider
+enum EventFilters {
+  all,
+  bookmarked,
+  upcoming,
+  past,
+}
+
+final eventFilerProvider =
+    StateProvider.autoDispose<EventFilters>((ref) => EventFilters.all);
+
+//Search any event
+typedef EventListSearchParams = ({String? spaceId, String searchText});
+
+final eventListSearchProvider = FutureProvider.autoDispose
+    .family<List<ffi.CalendarEvent>, EventListSearchParams>(
+        (ref, params) async {
+  final allEventList = await ref.watch(eventListProvider.future);
+  final eventFilter = ref.watch(eventFilerProvider);
+
+  List<ffi.CalendarEvent> filteredEventList = [];
+
+  if (params.searchText.isNotEmpty) {
+    for (final event in allEventList) {
+      bool isContainSearchTerm =
+          event.title().toLowerCase().contains(params.searchText.toLowerCase());
+      if (isContainSearchTerm) {
+        filteredEventList.add(event);
+      }
+    }
+  } else {
+    filteredEventList = allEventList;
+  }
+  switch (eventFilter) {
+    case EventFilters.bookmarked:
+      return allEventList;
+    case EventFilters.upcoming:
+      List<ffi.CalendarEvent> upcomingEventList = [];
+      for (final event in filteredEventList) {
+        DateTime eventDateTime = toDartDatetime(event.utcStart());
+        DateTime currentDateTime = DateTime.now();
+        if (eventDateTime.isAfter(currentDateTime)) {
+          upcomingEventList.add(event);
+        }
+      }
+      return upcomingEventList;
+    case EventFilters.past:
+      List<ffi.CalendarEvent> pastEventList = [];
+      for (final event in filteredEventList) {
+        DateTime eventDateTime = toDartDatetime(event.utcStart());
+        DateTime currentDateTime = DateTime.now();
+        if (eventDateTime.isBefore(currentDateTime)) {
+          pastEventList.add(event);
+        }
+      }
+      return pastEventList;
+    default:
+      return filteredEventList;
+  }
 });
