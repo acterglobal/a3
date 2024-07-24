@@ -1,3 +1,4 @@
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
 import 'package:acter/features/space/settings/widgets/space_settings_menu.dart';
@@ -18,7 +19,10 @@ class SpaceNotificationConfigurationPage extends ConsumerWidget {
         spaceId: spaceId,
       ),
       child: Scaffold(
-        appBar: AppBar(title: Text(L10n.of(context).spaceNotifications)),
+        appBar: AppBar(
+          title: Text(L10n.of(context).spaceNotifications),
+          automaticallyImplyLeading: !isLargeScreen(context),
+        ),
         body: SettingsList(
           sections: [
             SettingsSection(

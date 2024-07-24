@@ -9,6 +9,7 @@ class SpaceSettingsMenuIndexPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SpaceSettingsMenu(
       spaceId: spaceId,
+      isFullPage: true,
     );
   }
 }

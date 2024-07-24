@@ -5,6 +5,8 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/spaces/has_space_permission.dart';
 import 'package:acter/common/widgets/visibility/room_visibilty_type.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
+import 'package:acter/common/widgets/with_sidebar.dart';
+import 'package:acter/features/space/settings/widgets/space_settings_menu.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -36,9 +38,14 @@ class _VisibilityAccessibilityPageState
     extends ConsumerState<VisibilityAccessibilityPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppbar(),
-      body: _buildBody(),
+    return WithSidebar(
+      sidebar: SpaceSettingsMenu(
+        spaceId: widget.roomId,
+      ),
+      child: Scaffold(
+        appBar: _buildAppbar(),
+        body: _buildBody(),
+      ),
     );
   }
 
@@ -46,13 +53,7 @@ class _VisibilityAccessibilityPageState
     return AppBar(
       title: Text(L10n.of(context).visibilityAndAccessibility),
       centerTitle: true,
-      // custom x-circle when we are in widescreen mode;
-      leading: widget.showCloseX
-          ? IconButton(
-              onPressed: () => context.pop(),
-              icon: const Icon(Atlas.xmark_circle_thin),
-            )
-          : null,
+      automaticallyImplyLeading: !isLargeScreen(context),
     );
   }
 
