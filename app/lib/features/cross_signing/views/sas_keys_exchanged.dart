@@ -53,7 +53,7 @@ class SasKeysExchangedView extends StatelessWidget {
               margin: const EdgeInsets.symmetric(horizontal: 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
-                color: Theme.of(context).colorScheme.neutral2,
+                color: Theme.of(context).colorScheme.surface,
               ),
               child: buildEmojis(context),
             ),

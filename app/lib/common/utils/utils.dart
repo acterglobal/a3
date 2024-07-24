@@ -3,8 +3,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
+import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -41,7 +44,7 @@ extension Context on BuildContext {
   // Incase if you face any issue using this then please wrap your widget
   // with consumer and then call your provider
 
-  T read<T>(ProviderBase<T> provider) {
+  T read<T>(ProviderListenable<T> provider) {
     return ProviderScope.containerOf(this, listen: false).read(provider);
   }
 }
@@ -157,8 +160,10 @@ Future<bool> openLink(String target, BuildContext context) async {
   }
 }
 
-Future<void> shareTextToWhatsApp(BuildContext context,
-    {required String text,}) async {
+Future<void> shareTextToWhatsApp(
+  BuildContext context, {
+  required String text,
+}) async {
   final url = 'whatsapp://send?text=$text';
   final encodedUri = Uri.parse(url);
   if (await canLaunchUrl(encodedUri)) {
@@ -180,6 +185,56 @@ String randomString() {
   final random = Random.secure();
   final values = List<int>.generate(16, (i) => random.nextInt(255));
   return base64UrlEncode(values);
+}
+
+Future<void> openAvatar(
+  BuildContext context,
+  WidgetRef ref,
+  String roomId,
+) async {
+  final membership = await ref.read(roomMembershipProvider(roomId).future);
+  final canUpdateAvatar = membership?.canString('CanUpdateAvatar') == true;
+  final avatarInfo = ref.read(roomAvatarInfoProvider(roomId));
+
+  if (avatarInfo.avatar != null && context.mounted) {
+    //Open avatar in full screen if avatar data available
+    context.pushNamed(
+      Routes.fullScreenAvatar.name,
+      queryParameters: {'roomId': roomId},
+    );
+  } else if (avatarInfo.avatar == null && canUpdateAvatar && context.mounted) {
+    //Change avatar if avatar is null and have relevant permission
+    uploadAvatar(ref, context, roomId);
+  }
+}
+
+Future<void> uploadAvatar(
+  WidgetRef ref,
+  BuildContext context,
+  String roomId,
+) async {
+  final room = await ref.read(maybeRoomProvider(roomId).future);
+  if (room == null || !context.mounted) return;
+  FilePickerResult? result = await FilePicker.platform.pickFiles(
+    type: FileType.image,
+  );
+  if (result == null || result.files.isEmpty) return;
+  try {
+    if (!context.mounted) return;
+    EasyLoading.show(status: L10n.of(context).avatarUploading);
+    final file = result.files.first;
+    if (file.path != null) await room.uploadAvatar(file.path!);
+    // close loading
+    EasyLoading.dismiss();
+  } catch (e, st) {
+    _log.severe('Failed to upload avatar', e, st);
+    if (context.mounted) {
+      EasyLoading.showError(
+        L10n.of(context).failedToUploadAvatar(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
+  }
 }
 
 T getRandomElement<T>(List<T> list) {
@@ -309,7 +364,6 @@ enum RoomVisibility { Public, Private, SpaceVisible }
 
 enum LabsFeature {
   // apps in general
-  tasks,
   notes,
   cobudget,
   polls,
@@ -320,6 +374,7 @@ enum LabsFeature {
   chatUnread,
 
   // not a lab anymore but needs to stay for backwards compat
+  tasks,
   events,
   pins,
 

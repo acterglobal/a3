@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
 
@@ -10,6 +9,10 @@ class RoomVisibilityItem extends StatelessWidget {
   final RoomVisibility? spaceVisibilityValue;
   final ValueChanged<RoomVisibility?>? onChanged;
   final bool isShowRadio;
+
+  static Key generateKey(RoomVisibility visibility) {
+    return Key('select-visibility-${visibility.name}');
+  }
 
   const RoomVisibilityItem({
     super.key,
@@ -28,11 +31,14 @@ class RoomVisibilityItem extends StatelessWidget {
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
         side: BorderSide(
-          color: Theme.of(context).colorScheme.neutral5,
+          color: Theme.of(context).colorScheme.onSurface,
         ),
         borderRadius: BorderRadius.circular(10),
       ),
       child: ListTile(
+        key: spaceVisibilityValue != null
+            ? generateKey(spaceVisibilityValue!)
+            : null,
         leading: Icon(iconData),
         title: Text(
           title,
@@ -40,10 +46,7 @@ class RoomVisibilityItem extends StatelessWidget {
         ),
         subtitle: Text(
           subtitle,
-          style: Theme.of(context)
-              .textTheme
-              .labelMedium!
-              .copyWith(color: Theme.of(context).colorScheme.neutral4),
+          style: Theme.of(context).textTheme.labelMedium,
         ),
         onTap: isShowRadio && spaceVisibilityValue != null && onChanged != null
             ? () => onChange(spaceVisibilityValue, context)

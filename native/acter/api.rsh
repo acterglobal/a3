@@ -35,6 +35,15 @@ fn guest_client(base_path: string, media_cache_base_path: string, default_homese
 /// Create a new client from the registration token
 fn register_with_token(base_path: string, media_cache_base_path: string, username: string, password: string, registration_token: string, default_homeserver_name: string, default_homeserver_url: string, device_name: string) -> Future<Result<Client>>;
 
+/// Request the registration token via email
+fn request_registration_token_via_email(base_path: string, media_cache_base_path: string, username: string, default_homeserver_name: string, default_homeserver_url: string, email: string) -> Future<Result<RegistrationTokenViaEmailResponse>>;
+
+/// Request the password change token via email
+fn request_password_change_token_via_email(default_homeserver_url: string, email: string) -> Future<Result<PasswordChangeEmailTokenResponse>>;
+
+/// Finish password reset without login
+fn reset_password(default_homeserver_url: string, sid: string, client_secret: string, new_val: string) -> Future<Result<bool>>;
+
 /// destroy the local data of a session
 fn destroy_local_data(base_path: string, media_cache_base_path: Option<string>, username: string, default_homeserver_name: string) -> Future<Result<bool>>;
 
@@ -241,25 +250,6 @@ object UserProfile {
     fn get_display_name() -> Option<string>;
 }
 
-object RoomProfile {
-    /// get room id
-    fn room_id() -> RoomId;
-
-    /// get room id as String
-    fn room_id_str() -> string;
-
-    /// whether to have avatar
-    fn has_avatar() -> bool;
-
-    /// get the binary data of avatar
-    /// if thumb size is given, avatar thumbnail is returned
-    /// if thumb size is not given, avatar file is returned
-    fn get_avatar(thumb_size: Option<ThumbnailSize>) -> Future<Result<OptionBuffer>>;
-
-    /// get the display name
-    fn get_display_name() -> Future<Result<OptionString>>;
-}
-
 
 /// Deliver receipt event from rust to flutter
 object ReceiptEvent {
@@ -346,6 +336,17 @@ object RoomId {
 
 object UserId {
     fn to_string() -> string;
+}
+
+object RegistrationTokenViaEmailResponse {
+    fn sid() -> string;
+    fn submit_url() -> Option<string>;
+}
+
+object PasswordChangeEmailTokenResponse {
+    fn client_secret() -> string;
+    fn sid() -> string;
+    fn submit_url() -> Option<string>;
 }
 
 
@@ -592,6 +593,9 @@ object CalendarEvent {
     fn responded_by_me() -> Future<Result<OptionRsvpStatus>>;
     /// get the user id list who have responded with `Yes` on this event
     fn participants() -> Future<Result<Vec<string>>>;
+
+    /// whether or not this user can redact this item
+    fn can_redact() -> Future<Result<bool>>;
 
     /// get the comments manager
     fn comments() -> Future<Result<CommentsManager>>;
@@ -995,6 +999,17 @@ object Room {
     /// the RoomId as a String
     fn room_id_str() -> string;
 
+    /// whether to have avatar
+    fn has_avatar() -> bool;
+
+    /// get the binary data of avatar
+    /// if thumb size is given, avatar thumbnail is returned
+    /// if thumb size is not given, avatar file is returned
+    fn avatar(thumb_size: Option<ThumbnailSize>) -> Future<Result<OptionBuffer>>;
+
+    /// get the display name
+    fn display_name() -> Future<Result<OptionString>>;
+
     /// Whether new updates have been received for this room
     fn subscribe_to_updates() -> Stream<bool>;
 
@@ -1012,9 +1027,6 @@ object Room {
 
     /// whether we are part of this room
     fn is_joined() -> bool;
-
-    /// get the room profile that contains avatar and display name
-    fn get_profile() -> RoomProfile;
 
     /// get the room profile that contains avatar and display name
     fn space_relations() -> Future<Result<SpaceRelations>>;
@@ -1061,6 +1073,28 @@ object Room {
 
     /// update the power levels of specified member
     fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;
+
+    /// Change the avatar of the room
+    fn upload_avatar(uri: string) -> Future<Result<MxcUri>>;
+
+    /// Remove the avatar of the room
+    fn remove_avatar() -> Future<Result<EventId>>;
+
+    /// what is the description / topic
+    fn topic() -> Option<string>;
+
+    /// set description / topic of the room
+    fn set_topic(topic: string) -> Future<Result<EventId>>;
+
+    /// set name of the room
+    fn set_name(name: string) -> Future<Result<EventId>>;
+
+    /// whether or not the user has already seen the suggested
+    /// children
+    fn user_has_seen_suggested() -> Future<Result<bool>>;
+
+    /// Set the value of `user_has_seen_suggested` for this room
+    fn set_user_has_seen_suggested(newValue: bool) -> Future<Result<bool>>;
 
 }
 
@@ -1167,11 +1201,6 @@ object TimelineStream {
     /// if sent twice, reaction is redacted
     fn toggle_reaction(event_id: string, key: string) -> Future<Result<bool>>;
 
-    /// retry local echo message send
-    fn retry_send(txn_id: string) -> Future<Result<bool>>;
-
-    /// cancel local echo message
-    fn cancel_send(txn_id: string) -> Future<Result<bool>>;
 }
 
 
@@ -1186,8 +1215,6 @@ object TimelineStream {
 
 
 object Convo {
-    /// get the room profile that contains avatar and display name
-    fn get_profile() -> RoomProfile;
 
     /// get the room profile that contains avatar and display name
     fn space_relations() -> Future<Result<SpaceRelations>>;
@@ -1358,6 +1385,9 @@ object Comment {
     fn msg_content() -> MsgContent;
     /// create a draft builder to reply to this comment
     fn reply_builder() -> CommentDraft;
+
+    /// whether or not this user can redact this item
+    fn can_redact() -> Future<Result<bool>>;
 }
 
 /// Reference to the comments section of a particular item
@@ -1424,6 +1454,9 @@ object Attachment {
     /// get the path that media (image/audio/video/file) was saved
     /// return None when never downloaded
     fn media_path(is_thumb: bool) -> Future<Result<OptionString>>;
+
+    /// whether or not this user can redact this item
+    fn can_redact() -> Future<Result<bool>>;
 }
 
 /// Reference to the attachments section of a particular item
@@ -1565,6 +1598,9 @@ object TaskUpdateBuilder {
 
     /// set the description for this task list
     fn description_text(text: string);
+    /// set description html text
+    fn description_html(body: string, html_body: string);
+
     fn unset_description();
     fn unset_description_update();
 
@@ -1628,6 +1664,9 @@ object TaskDraft {
 
     /// set the description for this task
     fn description_text(text: string);
+    /// set description html text
+    fn description_html(body: string, html_body: string);
+
     fn unset_description();
 
     /// set the sort order for this task
@@ -1737,6 +1776,9 @@ object TaskListDraft {
     /// set the description for this task list
     fn description_text(text: string);
     fn description_markdown(text: string);
+    /// set description html text
+    fn description_html(body: string, html_body: string);
+
     fn unset_description();
 
     /// set the sort order for this task list
@@ -1764,6 +1806,9 @@ object TaskListUpdateBuilder {
 
     /// set the description for this task list
     fn description_text(text: string);
+    /// set description html text
+    fn description_html(body: string, html_body: string);
+
     fn unset_description();
     fn unset_description_update();
 
@@ -1822,6 +1867,9 @@ object SpaceHierarchyRoomInfo {
     fn join_rule_str() -> string;
     /// whether to have avatar
     fn has_avatar() -> bool;
+    
+    /// is this a suggested room?
+    fn suggested() -> bool;
 
     /// get the binary data of avatar
     /// if thumb size is given, avatar thumbnail is returned
@@ -1829,13 +1877,6 @@ object SpaceHierarchyRoomInfo {
     fn get_avatar(thumb_size: Option<ThumbnailSize>) -> Future<Result<OptionBuffer>>;
     // recommended server to try to join via
     fn via_server_name() -> Option<string>;
-}
-
-object SpaceHierarchyListResult {
-    /// to be used for the next `since`
-    fn next_batch() -> Option<string>;
-    /// get the chunk of items in this response
-    fn rooms() -> Future<Result<Vec<SpaceHierarchyRoomInfo>>>;
 }
 
 object SpaceRelation {
@@ -1859,7 +1900,7 @@ object SpaceRelations {
     /// children
     fn children() -> Vec<SpaceRelation>;
     /// query for children from the server
-    fn query_hierarchy(from: Option<string>) -> Future<Result<SpaceHierarchyListResult>>;
+    fn query_hierarchy() -> Future<Result<Vec<SpaceHierarchyRoomInfo>>>;
 }
 
 object RoomPowerLevels {
@@ -1930,6 +1971,45 @@ object ActerAppSettingsBuilder {
 }
 
 
+//   ######     ###    ######## ########  ######    #######  ########  ##    ## 
+//  ##    ##   ## ##      ##    ##       ##    ##  ##     ## ##     ##  ##  ##  
+//  ##        ##   ##     ##    ##       ##        ##     ## ##     ##   ####   
+//  ##       ##     ##    ##    ######   ##   #### ##     ## ########     ##    
+//  ##       #########    ##    ##       ##    ##  ##     ## ##   ##      ##    
+//  ##    ## ##     ##    ##    ##       ##    ##  ##     ## ##    ##     ##    
+//   ######  ##     ##    ##    ########  ######    #######  ##     ##    ##    
+
+
+object Category {
+    fn id() -> string;
+    fn title() -> string;
+    fn entries() -> string;
+    fn icon_type_str() -> Option<string>;
+    fn icon_str() -> Option<string>;
+    fn update_builder() -> CategoryBuilder;
+}
+
+object CategoryBuilder {
+    fn title(title: string);
+    fn clear_entries();
+    fn add_entry(entry: string);
+    fn unset_icon();
+    fn icon(type: string, key: string);
+    fn build() -> Result<Category>;
+}
+
+
+object Categories {
+    fn categories() -> Vec<Category>;
+    fn new_category_builder() -> CategoryBuilder;
+    fn update_builder() -> CategoriesBuilder;
+}
+
+object CategoriesBuilder {
+    fn add(cat: Category);
+    fn clear();
+}
+
 //   ######  ########     ###     ######  ######## 
 //  ##    ## ##     ##   ## ##   ##    ## ##       
 //  ##       ##     ##  ##   ##  ##       ##       
@@ -1940,8 +2020,6 @@ object ActerAppSettingsBuilder {
 
 
 object Space {
-    /// get the room profile that contains avatar and display name
-    fn get_profile() -> RoomProfile;
 
     /// get the room profile that contains avatar and display name
     fn space_relations() -> Future<Result<SpaceRelations>>;
@@ -1950,7 +2028,8 @@ object Space {
     fn is_child_space_of(room_id: string) -> Future<bool>;
 
     /// add the following as a child space and return event id of that event
-    fn add_child_room(room_id: string) -> Future<Result<string>>;
+    /// flag as suggested or not
+    fn add_child_room(room_id: string, suggested: bool) -> Future<Result<string>>;
 
     /// remove a child space
     fn remove_child_room(room_id: string, reason: Option<string>) -> Future<Result<bool>>;
@@ -2077,6 +2156,14 @@ object Space {
     /// it's the callers job to ensure the person has the privileges to
     /// redact that content.
     fn redact_content(event_id: string, reason: Option<string>) -> Future<Result<EventId>>;
+
+
+    /// Get the categories for a specific key.
+    /// currently supported: spaces, chats
+    fn categories(key: string) -> Future<Result<Categories>>;
+
+    /// Set the categories for a specific key
+    fn set_categories(key: string, categories: CategoriesBuilder) -> Future<Result<bool>>;
 }
 
 enum MembershipStatus {
@@ -2232,9 +2319,14 @@ object Account {
 
     /// listen to updates to the app settings
     fn subscribe_app_settings_stream() -> Stream<bool>;
-}
 
-object ThreePidManager {
+    // deactivate the account. This can not be reversed. The username will
+    // be blocked from any future usage, all personal data will be removed.
+    fn deactivate(password: string) -> Future<Result<bool>>;
+
+    /// change password
+    fn change_password(old_val: string, new_val: string) -> Future<Result<bool>>;
+
     /// get email addresses from third party identifier
     fn confirmed_email_addresses() -> Future<Result<Vec<string>>>;
 
@@ -2243,16 +2335,69 @@ object ThreePidManager {
 
     /// Requests token via email and add email address to third party identifier.
     /// If password is not enough complex, homeserver may reject this request.
-    fn request_token_via_email(email_address: string) -> Future<Result<bool>>;
+    fn request_3pid_management_token_via_email(email_address: string) -> Future<Result<ThreePidEmailTokenResponse>>;
+
+    /// get the array of registered 3pid on the homeserver for this account
+    fn external_ids() -> Future<Result<Vec<ExternalId>>>;
+
+    /// find out session id that is related with email address and add email address to account using session id & password
+    fn try_confirm_email_status(email_address: string, password: string) -> Future<Result<bool>>;
 
     /// Submit token to finish email register
     fn submit_token_from_email(email_address: string, token: string, password: string) -> Future<Result<bool>>;
 
-    /// Submit token to finish email register
-    fn try_confirm_email_status(email_address: string, password: string) -> Future<Result<bool>>;
-
     /// Remove email address from confirmed list or unconfirmed list
     fn remove_email_address(email_address: string) -> Future<Result<bool>>;
+
+    /// Get the Bookmarks manager
+    fn bookmarks() -> Future<Result<Bookmarks>>;
+}
+
+object ExternalId {
+    /// get address of 3pid
+    fn address() -> string;
+
+    /// get medium of 3pid
+    /// one of [email, msisdn]
+    fn medium() -> string;
+
+    /// get time when the homeserver associated the third party identifier with the user
+    fn added_at() -> u64;
+
+    /// get time when the identifier was validated by the identity server
+    fn validated_at() -> u64;
+}
+
+object ThreePidEmailTokenResponse {
+    /// get session id
+    fn sid() -> string;
+
+    /// get submit url
+    fn submit_url() -> Option<string>;
+
+    /// get client secret
+    fn client_secret() -> string;
+}
+
+
+//  ########   #######   #######  ##    ## ##     ##    ###    ########  ##    ##  ######  
+//  ##     ## ##     ## ##     ## ##   ##  ###   ###   ## ##   ##     ## ##   ##  ##    ## 
+//  ##     ## ##     ## ##     ## ##  ##   #### ####  ##   ##  ##     ## ##  ##   ##       
+//  ########  ##     ## ##     ## #####    ## ### ## ##     ## ########  #####     ######  
+//  ##     ## ##     ## ##     ## ##  ##   ##     ## ######### ##   ##   ##  ##         ## 
+//  ##     ## ##     ## ##     ## ##   ##  ##     ## ##     ## ##    ##  ##   ##  ##    ## 
+//  ########   #######   #######  ##    ## ##     ## ##     ## ##     ## ##    ##  ######  
+
+
+object Bookmarks {
+    /// get the list of bookmarks for a specific key
+    fn entries(key: string) -> Vec<string>;
+
+    /// add the following entry to the bookmarks of key
+    fn add(key: string, entry: string) -> Future<Result<bool>>;
+
+    /// remove the following entry from the bookmarks of key
+    fn remove(key: string, entry: string) -> Future<Result<bool>>;
 }
 
 object SyncState {
@@ -2456,16 +2601,6 @@ object CreateSpaceSettings {}
 
 /// Main entry point for `acter`.
 object Client {
-
-    // deactivate the account. This can not be reversed. The username will
-    // be blocked from any future usage, all personal data will be removed.
-    fn deactivate(password: string) -> Future<Result<bool>>;
-
-    /// change password
-    fn change_password(old_val: string, new_val: string) -> Future<Result<bool>>;
-
-    // Special
-
     /// start the sync
     fn start_sync() -> SyncState;
 
@@ -2664,9 +2799,6 @@ object Client {
 
     /// get only past events that I responded as rsvp
     fn my_past_events(secs_from_now: Option<u32>) -> Future<Result<Vec<CalendarEvent>>>;
-
-    /// get intermediate info of login (via email and phone) from account data
-    fn three_pid_manager() -> Result<ThreePidManager>;
 
     /// super invites interface
     fn super_invites() -> SuperInvites;
@@ -2920,9 +3052,9 @@ object VerificationEmoji {
 object SessionManager {
     fn all_sessions() -> Future<Result<Vec<DeviceRecord>>>;
 
-    /// Force to logout another devices
+    /// Force to logout another device
     /// Authentication is required to do so
-    fn delete_devices(dev_ids: Vec<string>, username: string, password: string) -> Future<Result<bool>>;
+    fn delete_device(dev_id: string, username: string, password: string) -> Future<Result<bool>>;
 
     /// Trigger verification of another device
     /// returns flow id of verification

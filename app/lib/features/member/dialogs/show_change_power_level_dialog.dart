@@ -23,7 +23,8 @@ class _ChangePowerLevelDialog extends StatefulWidget {
 
 class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
   final TextEditingController dropDownMenuCtrl = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey =
+      GlobalKey<FormState>(debugLabel: 'change power level form');
 
   String? currentMemberStatus;
   int? customValue;

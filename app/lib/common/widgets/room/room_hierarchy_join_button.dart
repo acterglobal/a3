@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/rooms.dart';
+import 'package:acter/features/room/actions/join_room.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';

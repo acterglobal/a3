@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:dart_date/dart_date.dart';
@@ -72,7 +71,7 @@ class _DueChipState extends State<DueChip> {
     } else if (dueDate!.isPast) {
       label = dueDate!.timeago();
       dueTheme = textStyle.copyWith(
-        color: Theme.of(context).colorScheme.taskOverdueFG,
+        color: Theme.of(context).colorScheme.error,
       );
     }
     final dateText =
@@ -89,7 +88,7 @@ class _DueChipState extends State<DueChip> {
   }
 
   Future<void> duePickerAction(BuildContext context) async {
-    final newDue = await DuePicker.showPicker(
+    final newDue = await showDuePicker(
       context: context,
       initialDate: dueDate,
     ); // FIXME: add unsetting support

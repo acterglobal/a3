@@ -40,6 +40,7 @@ dependencies:
   scroll_to_index: ^3.0.1
   flutter_staggered_grid_view: ^0.7.0
   flutter_svg: ">=1.0.0"
+  sentry_flutter: ^8.4.0
   flutter_link_previewer: ^3.0.1
   bubble: ^1.2.1
   swipe_to: ^1.0.5
@@ -48,20 +49,16 @@ dependencies:
   flutter_keyboard_visibility: ^6.0.0
   expandable_text: ^2.3.0
   cached_network_image: ^3.2.1
-  fc_native_video_thumbnail: ^0.8.0
-  flutter_mentions:
-    git:
-      url: https://github.com/acterglobal/flutter_mentions.git
+  fc_native_video_thumbnail: ^0.9.0
   flutter_matrix_html:
+    # path: "../../flutter_matrix_html"
     git:
       url: https://github.com/acterglobal/flutter_matrix_html.git
   flutter_slidable: ^3.0.0
   quds_popup_menu: ^0.0.1+1
-  acter_avatar: 2.0.0+5
-  table_calendar: ^3.0.9
-  omni_datetime_picker: ^1.0.9
+  acter_avatar: ^2.0.1+1
   flutter_easyloading: ^3.0.5
-  appflowy_editor: ^2.4.0
+  appflowy_editor: ^3.0.0
 
   # Code Generation
   flutter_localizations:
@@ -70,10 +67,11 @@ dependencies:
   freezed: ^2.3.3
   acter_flutter_sdk:
     path: packages/rust_sdk
+  multi_trigger_autocomplete: ^1.0.0
 
   # State Management
-  flutter_riverpod: ^2.4.4
-  riverpod: ^2.3.6
+  flutter_riverpod: ^2.5.1
+  riverpod: ^2.5.1
   # Routing
   go_router: ^14.1.4
 
@@ -106,7 +104,7 @@ dependencies:
       url: https://github.com/acterglobal/riverpod_infinite_scroll.git
   infinite_scroll_pagination: ^4.0.0
   convert: ^3.1.1
-  push: ^2.1.0
+  push: ^2.3.0
   logging: ^1.2.0
   args: ^2.4.2
   breadcrumbs: ^0.1.0
@@ -127,48 +125,9 @@ dependencies:
   flutter_typeahead: ^5.2.0
   zoom_hover_pinch_image: ^1.0.3
   dotted_border: ^2.1.0
-
-# FIXME keep until a new version has been published
-dependency_overrides:
-  flutter_secure_storage:
-    git:
-      url: https://github.com/mogol/flutter_secure_storage
-      path: flutter_secure_storage
-      ref: develop
-  flutter_secure_storage_linux:
-    git:
-      url: https://github.com/mogol/flutter_secure_storage
-      path: flutter_secure_storage_linux
-      ref: develop
-
-  flutter_secure_storage_web:
-    git:
-      url: https://github.com/mogol/flutter_secure_storage
-      path: flutter_secure_storage_web
-      ref: develop
-
-  flutter_secure_storage_windows:
-    git:
-      url: https://github.com/mogol/flutter_secure_storage
-      path: flutter_secure_storage_windows
-      ref: develop
-  flutter_secure_storage_macos:
-    # path: ../../flutter_secure_storage/flutter_secure_storage_macos
-    git:
-      url: https://github.com/gnunicorn/flutter_secure_storage
-      path: flutter_secure_storage_macos
-      ref: ben-fix-macos-reading-non-shared
-
-  flutter_secure_storage_platform_interface:
-    git:
-      url: https://github.com/mogol/flutter_secure_storage
-      path: flutter_secure_storage_platform_interface
-      ref: develop
-
-  omni_datetime_picker:
-    git:
-      url: https://github.com/acterglobal/OmniDateTimePicker
-    # path: ../../OmniDateTimePicker
+  firebase_core: ^3.1.0
+  scrolls_to_top: ^2.1.1
+  scrollable_positioned_list: ^0.3.8
 
 dev_dependencies:
   flutter_test:
@@ -178,15 +137,39 @@ dev_dependencies:
   icons_launcher: ^2.0.7
   flutter_lints: ^4.0.0
   build_runner: ^2.4.6
-  convenient_test: ^1.3.2
-  convenient_test_dev: ^1.3.2
+  convenient_test: ^1.3.7
+  convenient_test_dev: ^1.3.7
   convenient_test_manager_dart:
     git:
-      url: https://github.com/fzyzcjy/flutter_convenient_test/
+      url: https://github.com/gnunicorn/flutter_convenient_test/
+      ref: ben-cli-limit-tests
       path: packages/convenient_test_manager_dart
-  msix: ^3.7.0
+  msix: #^3.7.0
+    # FIXME mainline `msix` comes with outdated VS redistribution libs
+    # that make our app crash. We already copy over the proper ones in the
+    # CI job, it we need a msix-version that doesn't copy over its own bad ones
+    # see https://github.com/YehudaKremer/msix/issues/272#issuecomment-2181634105
+    git:
+      url: https://github.com/insertjokehere/msix.git
+      ref: msvc_redist
   # mockito: ^5.4.2
   uuid: ^4.0.0
+  enough_mail: ^2.1.6
+  sentry_dart_plugin: ^2.0.0
+  translations_cleaner: ^0.0.5
+
+dependency_overrides:
+  flutter_secure_storage_linux:
+    git:
+      url: https://github.com/gnunicorn/flutter_secure_storage/
+      ref: ben-fix-linux-secret-store-problem
+      path: flutter_secure_storage_linux
+sentry:
+  upload_debug_symbols: true
+  upload_source_maps: false
+  upload_sources: false
+  project: acter-app
+  org: acter
 
 icons_launcher:
   image_path: "assets/icon/logo.png"

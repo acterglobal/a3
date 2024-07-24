@@ -5,6 +5,7 @@ target
 .idea
 .local
 .DS_Store
+app/firebase.json
 Changes.md
 nightly-changes.md
 app/packages/rust_sdk/**/libacter.a

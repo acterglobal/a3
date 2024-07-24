@@ -1,6 +1,7 @@
+import 'package:acter/common/toolkit/menu_item_widget.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:dart_date/dart_date.dart';
-import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class PickedDue {
@@ -10,161 +11,133 @@ class PickedDue {
   const PickedDue(this.due, this.includeTime);
 }
 
-typedef OnSelect = Function(PickedDue);
+const quickSelectToday = Key('due-action-today');
+const quickSelectTomorrow = Key('due-action-tomorrow');
 
-class DuePicker extends StatefulWidget {
-  static const quickSelectToday = Key('due-action-today');
-  static const quickSelectTomorrow = Key('due-action-tomorrow');
+class _DueQuickPickerDrawer extends StatelessWidget {
+  final DateTime? currentDue;
 
-  final Widget? title;
-  final Widget? separator;
-  final DateTime? initialDate;
-  final DateTime? firstDate;
-  final DateTime? lastDate;
-  final bool? is24HourMode;
-  final bool? isForce2Digits;
-  final BorderRadiusGeometry? borderRadius;
-  final BoxConstraints? constraints;
-  final bool Function(DateTime)? selectableDayPredicate;
-  final OnSelect onSelect;
-
-  const DuePicker({
+  const _DueQuickPickerDrawer({
     super.key,
-    this.title,
-    this.separator,
-    this.initialDate,
-    this.firstDate,
-    this.lastDate,
-    this.is24HourMode,
-    this.isForce2Digits,
-    this.borderRadius,
-    this.constraints,
-    this.selectableDayPredicate,
-    required this.onSelect,
+    this.currentDue,
   });
 
   @override
-  State<DuePicker> createState() => _DuePickerState();
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          title(context),
+          MenuItemWidget(
+            key: quickSelectToday,
+            title: L10n.of(context).today,
+            visualDensity: VisualDensity.compact,
+            iconData: Icons.today,
+            withMenu: false,
+            onTap: () => _submit(context, DateTime.now()),
+          ),
+          MenuItemWidget(
+            key: quickSelectTomorrow,
+            title: L10n.of(context).tomorrow,
+            visualDensity: VisualDensity.compact,
+            iconData: Icons.calendar_today,
+            withMenu: false,
+            onTap: () => _submit(context, DateTime.now()),
+          ),
+          ...renderPostponing(context),
+          const SizedBox(height: 10),
+          MenuItemWidget(
+            title: L10n.of(context).selectCustomDate,
+            iconData: Icons.calendar_month_outlined,
+            withMenu: false,
+            onTap: () async {
+              final date = await showDatePicker(
+                context: context,
+                initialDate: currentDue,
+                firstDate: DateTime.now(),
+                lastDate: DateTime.now().addYears(1),
+              );
+              if (!context.mounted) {
+                return;
+              }
+              _submit(context, date);
+            },
+          ),
+        ],
+      ),
+    );
+  }
 
-  static Future<PickedDue?> showPicker({
-    required BuildContext context,
-    Widget? title,
-    Widget? separator,
-    DateTime? initialDate,
-    DateTime? firstDate,
-    DateTime? lastDate,
-    bool? is24HourMode,
-    bool? isShowSeconds,
-    int? minutesInterval,
-    int? secondsInterval,
-    bool? isForce2Digits,
-    BorderRadiusGeometry? borderRadius,
-    BoxConstraints? constraints,
-    Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
-        transitionBuilder,
-    Duration? transitionDuration,
-    ThemeData? theme,
+  List<Widget> renderPostponing(BuildContext context) {
+    if (currentDue == null) {
+      return [];
+    }
+    return [
+      const SizedBox(height: 10),
+      MenuItemWidget(
+        visualDensity: VisualDensity.compact,
+        title: L10n.of(context).postpone,
+        iconData: Icons.plus_one_rounded,
+        withMenu: false,
+        onTap: () => _submit(context, currentDue! + const Duration(days: 1)),
+      ),
+      MenuItemWidget(
+        visualDensity: VisualDensity.compact,
+        title: L10n.of(context).postponeN(2),
+        iconData: Atlas.plus_thin,
+        withMenu: false,
+        onTap: () => _submit(context, currentDue! + const Duration(days: 2)),
+      ),
+    ];
+  }
+
+  void _submit(
+    BuildContext context,
+    DateTime? newValue, {
+    bool includeTime = false,
   }) {
-    return showGeneralDialog(
-      context: context,
-      transitionBuilder: transitionBuilder ??
-          (context, anim1, anim2, child) {
-            return FadeTransition(
-              opacity: anim1.drive(
-                Tween(
-                  begin: 0,
-                  end: 1,
-                ),
-              ),
-              child: child,
-            );
-          },
-      transitionDuration:
-          transitionDuration ?? const Duration(milliseconds: 200),
-      barrierDismissible: true,
-      barrierLabel: L10n.of(context).selectDue,
-      pageBuilder: (BuildContext context, anim1, anim2) {
-        return DuePicker(
-          separator: separator,
-          title: title,
-          initialDate: initialDate,
-          firstDate: firstDate,
-          lastDate: lastDate,
-          is24HourMode: is24HourMode,
-          isForce2Digits: isForce2Digits,
-          borderRadius: borderRadius,
-          constraints: constraints,
-          onSelect: (res) {
-            Navigator.pop<PickedDue>(context, res);
-          },
-        );
-      },
+    Navigator.pop<PickedDue?>(
+      context,
+      newValue != null ? PickedDue(newValue, includeTime) : null,
+    );
+  }
+
+  Widget title(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      automaticallyImplyLeading: false,
+      title: const Text('Due date'),
+      actions: [
+        if (currentDue != null)
+          TextButton.icon(
+            icon: const Icon(Atlas.minus_circle_thin),
+            onPressed: () => _submit(context, null),
+            label: Text(L10n.of(context).unset),
+          ),
+      ],
     );
   }
 }
 
-class _DuePickerState extends State<DuePicker> {
-  bool selectTime = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Theme(
-          data: Theme.of(context),
-          child: OmniDateTimePicker(
-            separator: widget.separator,
-            title: widget.title,
-            type: selectTime
-                ? OmniDateTimePickerType.dateAndTime
-                : OmniDateTimePickerType.date,
-            initialDate: DateTime.now(),
-            firstDate: widget.firstDate,
-            lastDate: widget.lastDate,
-            is24HourMode: widget.is24HourMode,
-            isShowSeconds: false,
-            minutesInterval: 1,
-            isForce2Digits: widget.isForce2Digits,
-            borderRadius: widget.borderRadius,
-            constraints: widget.constraints,
-            selectableDayPredicate: widget.selectableDayPredicate,
-            onSelect: (dt) {
-              widget.onSelect(PickedDue(dt, selectTime));
-            },
-          ),
-        ),
-        selectTime
-            ? const SizedBox()
-            : Wrap(
-                children: [
-                  Text(L10n.of(context).quickSelect),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  ActionChip(
-                    key: DuePicker.quickSelectToday,
-                    label: Text(L10n.of(context).today),
-                    onPressed: () {
-                      widget.onSelect(
-                        PickedDue(DateTime.now(), false),
-                      );
-                    },
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  ActionChip(
-                    key: DuePicker.quickSelectTomorrow,
-                    label: Text(L10n.of(context).tomorrow),
-                    onPressed: () {
-                      widget.onSelect(
-                        PickedDue(DateTime.now().nextDay, false),
-                      );
-                    },
-                  ),
-                ],
-              ),
-      ],
-    );
-  }
+Future<PickedDue?> showDuePicker({
+  required BuildContext context,
+  Key? key,
+  DateTime? initialDate,
+}) async {
+  return await showModalBottomSheet(
+    showDragHandle: true,
+    enableDrag: true,
+    useSafeArea: true,
+    context: context,
+    isScrollControlled: true,
+    isDismissible: true,
+    builder: (context) => _DueQuickPickerDrawer(
+      key: key,
+      currentDue: initialDate,
+    ),
+  );
 }

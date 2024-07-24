@@ -8,21 +8,23 @@ import 'package:acter/common/tutorial_dialogs/space_overview_tutorials/create_or
 import 'package:acter/common/tutorial_dialogs/space_overview_tutorials/space_overview_tutorials.dart';
 import 'package:acter/common/utils/language.dart';
 import 'package:acter/common/utils/logging.dart';
+import 'package:acter/common/utils/main.dart';
 import 'package:acter/features/cli/main.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:multi_trigger_autocomplete/multi_trigger_autocomplete.dart';
 import 'package:video_player_media_kit/video_player_media_kit.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 void main(List<String> args) async {
   if (args.isNotEmpty) {
     await cliMain(args);
   } else {
-    await _startAppInner(makeApp());
+    await _startAppInner(makeApp(), true);
   }
 }
 
@@ -35,10 +37,10 @@ Future<void> startAppForTesting(Widget app) async {
   setCreateOrJoinSpaceTutorialAsViewed();
   setBottomNavigationTutorialsAsViewed();
   setSpaceOverviewTutorialsAsViewed();
-  return await _startAppInner(app);
+  return await _startAppInner(app, false);
 }
 
-Future<void> _startAppInner(Widget app) async {
+Future<void> _startAppInner(Widget app, bool withSentry) async {
   WidgetsFlutterBinding.ensureInitialized();
   VideoPlayerMediaKit.ensureInitialized(
     android: true,
@@ -49,7 +51,28 @@ Future<void> _startAppInner(Widget app) async {
   );
   await initializeNotifications();
   await initLogging();
-  runApp(app);
+  if (withSentry) {
+    await SentryFlutter.init(
+      (options) {
+        // we use the dart-define default env for the default stuff.
+        options.dsn =
+            const String.fromEnvironment('SENTRY_DSN', defaultValue: '');
+        options.environment = const String.fromEnvironment(
+          'SENTRY_ENVIRONMENT',
+          defaultValue: '',
+        );
+        options.release =
+            const String.fromEnvironment('SENTRY_RELEASE', defaultValue: '');
+
+        // allows us to check whether the user has activated tracing
+        // and prevent reporting otherwise.
+        options.beforeSend = sentryBeforeSend;
+      },
+      appRunner: () => runApp(app),
+    );
+  } else {
+    runApp(app);
+  }
 }
 
 class Acter extends ConsumerStatefulWidget {

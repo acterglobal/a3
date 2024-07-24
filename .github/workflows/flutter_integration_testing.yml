@@ -1,0 +1,646 @@
+on:
+  # pull_request:
+  #   branches: [ main ]
+  # push:
+  workflow_dispatch:
+
+name: Flutter Integration Tests
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  run_checker:
+    runs-on: ubuntu-latest
+    name: Check legibility
+    outputs:
+      should_run_all: ${{steps.PR.outputs.pr_found == 'true' && contains(steps.PR.outputs.pr_labels, 'ci-test-ui-all')}}
+      should_run_desktop: ${{steps.PR.outputs.pr_found == 'true' && contains(steps.PR.outputs.pr_labels, 'ci-test-ui-desktop')}}
+      should_run_emulator: ${{steps.PR.outputs.pr_found == 'true' && contains(steps.PR.outputs.pr_labels, 'ci-test-ui-emulators')}}
+      should_run_ios: ${{steps.PR.outputs.pr_found == 'true' && contains(steps.PR.outputs.pr_labels, 'ci-test-ui-ios')}}
+      should_run_android: ${{steps.PR.outputs.pr_found == 'true' && contains(steps.PR.outputs.pr_labels, 'ci-test-ui-android')}}
+    steps:
+      - uses: 8BitJonny/gh-get-current-pr@2.2.0
+        id: PR
+        with:
+          # Only return if PR is still open. (By default it returns PRs in any state.)
+          filterOutClosed: true
+          # Only return if PR is not in draft state. (By default it returns PRs in any state.)
+          # filterOutDraft: true
+
+      - run: echo "PR $prNumber $prTitle at $prUrl is labeled $prLabels. It should run a demo build; $contains"
+        if: steps.PR.outputs.pr_found == 'true'
+        env:
+          # Direct access to common PR properties
+          prNumber: ${{ steps.PR.outputs.number }}
+          prUrl: ${{ steps.PR.outputs.pr_url }}
+          prTitle: ${{ steps.PR.outputs.pr_title }}
+          prBody: ${{ steps.PR.outputs.pr_body }}
+          prCreatedAt: ${{ steps.PR.outputs.pr_created_at }}
+          prMergedAt: ${{ steps.PR.outputs.pr_merged_at }}
+          prClosedAt: ${{ steps.PR.outputs.pr_closed_at }}
+          prLabels: ${{ steps.PR.outputs.pr_labels }}
+          contains: ${{ contains(steps.PR.outputs.pr_labels, 'ci-test-ui') }}
+  # flutter-desktop:
+  #   runs-on: ubuntu-latest
+  #   name: Flutter Desktop
+  #   continue-on-error: true
+  #   needs:
+  #    - run_checker
+     
+  #   if: ${{ github.ref == 'refs/heads/main' || needs.run_checker.outputs.should_run_all != 'false' || needs.run_checker.outputs.should_run_desktop != 'false' }}
+
+  #   steps:
+  #     - uses: actions/checkout@v4
+
+  #     - name: Install extra deps
+  #       run: |
+  #         sudo apt-get update -y
+  #         sudo apt-get install -y libgtk-3-dev libx11-dev pkg-config cmake ninja-build libblkid-dev liblzma-dev
+  #         sudo apt install -y dbus-x11 network-manager upower mpv libmpv-dev
+
+  #     - name: Install supported toolchain
+  #       uses: actions-rs/toolchain@v1
+  #       with:
+  #         toolchain: nightly
+  #         override: true
+
+  #     - uses: Swatinem/rust-cache@v1
+
+  #     - name: Install cargo-make
+  #       uses: davidB/rust-cargo-make@v1
+
+  #     - uses: subosito/flutter-action@v2
+  #       name: Set up flutter
+  #       with:
+  #         flutter-version: '3.22'
+  #         channel: 'stable'
+
+  #     - uses: actions/setup-python@v4
+  #       with:
+  #         python-version: 3.8
+
+  #     - uses: michaelkaye/setup-matrix-synapse@main
+  #       with:
+  #         installer: poetry
+  #         uploadLogs: true
+  #         httpPort: 8118
+  #         disableRateLimiting: true
+  #         customModules: synapse_super_invites
+  #         customConfig: |
+  #           modules:
+  #             - module: "synapse_super_invites.SynapseSuperInvites"
+  #               config:
+  #                 sql_url: "sqlite://"
+  #                 generate_registration_token: true
+
+  #     - name: Install & Run MailHog
+  #       run: |
+  #         wget -q https://github.com/mailhog/MailHog/releases/download/v1.0.1/MailHog_linux_amd64
+  #         sudo chmod +x MailHog_linux_amd64
+  #         ./MailHog_linux_amd64 &
+
+  #     - name: Enable Linux Desktop
+  #       run: flutter config --enable-linux-desktop
+
+  #     - name: Build Native
+  #       run: cargo make desktop
+
+  #     - name: Flutter setup
+  #       working-directory: app
+  #       run: flutter pub get
+
+  #     - name: Open Keyring
+  #       uses: t1m0thyj/unlock-keyring@v1
+
+  #     - name: Run flutter integration tests
+  #       working-directory: app
+  #       run: |
+  #         export DISPLAY=:99
+  #         sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
+  #         xvfb_pid=$!
+  #         flutter run integration_test/main_test.dart  \
+  #             -d linux \
+  #             --hot \
+  #             --host-vmservice-port 9753 \
+  #             --disable-service-auth-codes \
+  #             --dart-define CI=true \
+  #             --dart-define CONVENIENT_TEST_APP_CODE_DIR=lib \
+  #             --dart-define DEFAULT_HOMESERVER_URL=http://localhost:8118/ \
+  #             --dart-define DEFAULT_HOMESERVER_NAME=localhost \
+  #             --dart-define RAGESHAKE_URL=http://localhost:9110/api/submit \
+  #             --dart-define MAILHOG_URL=http://localhost:8025 \
+  #             --dart-define RAGESHAKE_LISTING_URL=http://localhost:9110/api/listing \
+  #             --dart-define DEFAULT_HOMESERVER_URL=http://localhost:8118 \
+  #             --dart-define DEFAULT_HOMESERVER_NAME=localhost \
+  #             &
+  #         subscript_pid=$!
+
+  #         # actual manager runner
+  #         dart run convenient_test_manager_dart --enable-report-saver
+  #         exit_status=$?
+  #         kill "$xvfb_pid" "$subscript_pid"
+  #         exit exit_status
+
+  #     - name: Upload artifacts
+  #       uses: actions/upload-artifact@v1
+  #       if: failure()
+  #       with:
+  #         name: linux-desktop-convtest-report
+  #         path: /tmp/ConvenientTest/
+
+  #     # file an error if this failed on `main` post-merge
+  #     - name: Report issue
+  #       if: ${{ github.ref == 'refs/heads/main' && failure() }}
+  #       uses: JasonEtco/create-an-issue@v2
+  #       env:
+  #         GITHUB_TOKEN: ${{ github.token }}
+  #         TITLE: "Desktop integration tests failed on main"
+  #         FAILED_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job }}
+  #         ARTIFACT_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+  #       with:
+  #         assignees: gnunicorn
+  #         filename: .github/templates/failure-report-template.md.tmpl
+  #         update_existing: true
+
+  # flutter-ios:
+  #   runs-on: macos-latest
+  #   environment: release
+
+  #   name: iOS
+  #   needs:
+  #    - run_checker
+  #   if: ${{ github.ref == 'refs/heads/main' || needs.run_checker.outputs.should_run_ios != 'false' || needs.run_checker.outputs.should_run_emulator != 'false' || needs.run_checker.outputs.should_run_all != 'false' }}
+  #   continue-on-error: true
+  #   steps:
+  #     - uses: actions/checkout@v4
+
+  #     - name: Install supported toolchain
+  #       uses: actions-rs/toolchain@v1
+  #       with:
+  #         toolchain: nightly
+  #         override: true
+
+  #     - uses: Swatinem/rust-cache@v1
+
+  #     - name: Install cargo-make
+  #       uses: davidB/rust-cargo-make@v1
+
+  #     - name: Rust iOS Setup
+  #       run: cargo make setup-ios
+
+  #     - name: Unlock git-crypt
+  #       run: |
+  #         brew install git-crypt
+  #         echo "${{ secrets.GIT_CRYPT_KEY }}" | base64 --decode > .github/assets/git-crypt-key
+  #         git-crypt unlock .github/assets/git-crypt-key
+  #         echo "Files found:"
+  #         git-crypt status -e
+
+  #     # Install the Apple certificate and provisioning profile
+  #     - name: Install the Apple certificates
+  #       env:
+  #         P12_PASSWORD: ${{ secrets.BUILD_CERTS_P12_PASSWORD }}
+  #         KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+  #       run: |
+  #         echo "starting in $RUNNER_TEMP"
+  #         # create variables
+  #         CERTIFICATE_PATH=".github/assets/build_certificates.p12"
+  #         KEYCHAIN_PATH="$RUNNER_TEMP/app-signing.keychain-db"
+  #         echo "vars set"
+  #         # import certificate and provisioning profile from secrets
+  #         # create temporary keychain
+  #         echo "creating keychain"
+  #         security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+  #         echo "setting keychain"
+  #         security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+  #         echo "unlocking keychain"
+  #         security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+  #         # import certificate to keychain
+  #         echo "importing certificate"
+  #         security import "$CERTIFICATE_PATH" -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+  #         echo "listing keychains"
+  #         security list-keychain -d user -s "$KEYCHAIN_PATH"
+  #     - name: Install the Apple provisioning profile
+  #       run: |
+  #         echo "Installing provision profiles"
+  #         mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles/
+  #         cp .github/assets/provision_profiles/* ~/Library/MobileDevice/Provisioning\ Profiles/
+  #         ls -ltas ~/Library/MobileDevice/Provisioning\ Profiles/
+
+  #     - uses: subosito/flutter-action@v2
+  #       name: Set up flutter
+  #       with:
+  #         flutter-version: '3.22'
+  #         channel: 'stable'
+
+  #     - uses: actions/setup-python@v4
+  #       with:
+  #         python-version: 3.8
+
+  #     - uses: michaelkaye/setup-matrix-synapse@main
+  #       with:
+  #         uploadLogs: true
+  #         httpPort: 8118
+  #         disableRateLimiting: true
+  #         customModules: synapse_super_invites
+  #         customConfig: |
+  #           modules:
+  #             - module: "synapse_super_invites.SynapseSuperInvites"
+  #               config:
+  #                 sql_url: "sqlite://"
+  #                 generate_registration_token: true
+
+  #     - name: Install & Run MailHog
+  #       run: |
+  #         wget -q https://github.com/mailhog/MailHog/releases/download/v1.0.1/MailHog_linux_amd64
+  #         sudo chmod +x MailHog_linux_amd64
+  #         ./MailHog_linux_amd64 &
+
+  #     - name: Build Native
+  #       run: cargo make --profile release ios-sim
+ 
+  #     - uses: futureware-tech/simulator-action@v3
+  #       id: ios_simulator
+  #       timeout-minutes: 30
+  #       with:
+  #         model: 'iPhone 14'
+
+  #     - name: Flutter setup
+  #       working-directory: app
+  #       run: |
+  #         flutter pub get
+
+  #     - name: Run flutter integration tests
+  #       timeout-minutes: 30
+  #       run: .github/scripts/flutter-integration-tests.sh
+
+  #     - name: Upload artifacts
+  #       uses: actions/upload-artifact@v1
+  #       if: failure()
+  #       with:
+  #         name: ios-convtest-report
+  #         path: /tmp/ConvenientTest/
+
+  #     # file an error if this failed on `main` post-merge
+  #     - name: Report issue
+  #       if: ${{ github.ref == 'refs/heads/main' && failure() }}
+  #       uses: JasonEtco/create-an-issue@v2
+  #       env:
+  #         GITHUB_TOKEN: ${{ github.token }}
+  #         TITLE: "iOS integration tests failed on main"
+  #         FAILED_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job }}
+  #         ARTIFACT_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+  #       with:
+  #         assignees: gnunicorn
+  #         filename: .github/templates/failure-report-template.md.tmpl
+  #         update_existing: true
+
+  #     - name: Clean up keychain and provisioning profile
+  #       if: ${{ always() }}
+  #       run: |
+  #         security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
+  #         rm ~/Library/MobileDevice/Provisioning\ Profiles/*
+  #         rm .github/assets/git-crypt-key
+
+  android-build:
+    # added to build the android only once and then cache it for the actual tests runs
+    runs-on: ubuntu-latest
+    name: Android build
+    if: ${{ github.ref == 'refs/heads/main' || needs.run_checker.outputs.should_run_android != 'false' || needs.run_checker.outputs.should_run_emulator != 'false' || needs.run_checker.outputs.should_run_all != 'false' }}
+    needs:
+     - run_checker
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install supported toolchain
+        id: rust_toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      - uses: subosito/flutter-action@v2
+        name: Set up flutter
+        with:
+          flutter-version: '3.22'
+          channel: 'stable'
+
+      - name: Cache Cargo
+        id: cache-cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo
+          key: ubuntu-latest-cargo-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
+
+      - name: Cache Rust
+        uses: actions/cache@v4
+        with:
+          path: |
+            target
+          key: ubuntu-latest-android-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install cargo-make
+        if: steps.cache-cargo.outputs.cache-hit != 'true'
+        uses: davidB/rust-cargo-make@v1
+
+      - name: Rust Android Setup
+        run: cargo make setup-android
+
+      - uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r25
+
+      - name: Build Native
+        run: cargo make android-dev
+
+
+  android:
+    runs-on: ubuntu-latest
+    name: Android
+    needs:
+     - android-build
+    continue-on-error: true
+    strategy:
+      matrix:
+        api_level: [34]
+        tests: ["Auth", "Updates", "Events", "Subspace", "SuperInvites", "Tasks", "Pins", "Attachments"] # "Bug Reporting", disabled as it needs a rageshake server
+        include:
+         - api_level: 23    # MinimalSDK version Smoke Test
+           tests: "Smoke"    
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install supported toolchain
+        id: rust_toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      - uses: jlumbroso/free-disk-space@main
+        name: Free Disk Space (Ubuntu)
+        with:
+          tool-cache: true
+          android: false
+
+      - name: Cache Cargo
+        id: cache-cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo
+          key: ubuntu-latest-cargo-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
+
+      - name: Cache Rust
+        uses: actions/cache@v4
+        with:
+          path: |
+            target
+          key: ubuntu-latest-android-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install cargo-make
+        if: steps.cache-cargo.outputs.cache-hit != 'true'
+        uses: davidB/rust-cargo-make@v1
+
+      - name: Rust Android Setup
+        run: cargo make setup-android
+
+      - uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r25
+
+      - uses: subosito/flutter-action@v2
+        name: Set up flutter
+        with:
+          flutter-version: '3.22'
+          channel: 'stable'
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+
+      - uses: michaelkaye/setup-matrix-synapse@main
+        with:
+          uploadLogs: true
+          httpPort: 8118
+          disableRateLimiting: true
+          customModules: synapse_super_invites
+          customConfig: |
+            email:
+              smtp_host: localhost
+              smtp_port: 1025
+              force_tls: false
+              require_transport_security: false
+              enable_tls: false
+              notif_from: "Your Friendly %(app)s homeserver <noreply@example.org>"
+              can_verify_email: true
+            modules:
+              - module: "synapse_super_invites.SynapseSuperInvites"
+                config:
+                  sql_url: "sqlite://"
+                  generate_registration_token: true
+
+      - name: Install & Run MailHog
+        run: |
+          wget -q https://github.com/mailhog/MailHog/releases/download/v1.0.1/MailHog_linux_amd64
+          sudo chmod +x MailHog_linux_amd64
+          ./MailHog_linux_amd64 &
+
+      - name: Build Native
+        run: cargo make android-dev
+
+      - name: Flutter setup
+        working-directory: app
+        run: flutter pub get
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Gradle cache
+        uses: gradle/actions/setup-gradle@v3
+        
+      - name: AVD cache
+        uses: actions/cache@v4
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-${{matrix.api_level}}
+
+      # - name: create AVD and generate snapshot for caching
+      #   if: steps.avd-cache.outputs.cache-hit != 'true'
+      #   uses: reactivecircus/android-emulator-runner@v2
+      #   with:
+      #     api-level: 28
+      #     arch: x86_64
+      #     profile: Nexus 6
+      #     force-avd-creation: false
+      #     emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+      #     disable-animations: false
+      #     script: echo "Generated AVD snapshot for caching."
+
+      - name: Run integration tests on android
+        uses: reactivecircus/android-emulator-runner@v2
+        timeout-minutes: 60
+        with:
+          api-level: ${{matrix.api_level}}
+          arch: x86_64
+          profile: Nexus 6
+          force-avd-creation: false
+          # emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          script: .github/scripts/flutter-integration-tests.sh --run-only "${{matrix.tests}}"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: android-convtest-report-${{matrix.api_level}}-${{matrix.tests}}
+          path: /tmp/ConvenientTest/
+
+      # file an error if this failed on `main` post-merge
+      - name: Report issue
+        if: ${{ github.ref == 'refs/heads/main' && failure() }}
+        uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TITLE: "Android integration tests failed on main"
+          FAILED_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job }}
+          ARTIFACT_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        with:
+          assignees: gnunicorn
+          filename: .github/templates/failure-report-template.md.tmpl
+          update_existing: true
+
+
+  # flutter-android:
+  #   runs-on: macos-latest
+  #   name: Android
+  #   needs:
+  #    - run_checker
+  #   if: ${{ github.ref == 'refs/heads/main' || needs.run_checker.outputs.should_run_android != 'false' || needs.run_checker.outputs.should_run_emulator != 'false' || needs.run_checker.outputs.should_run_all != 'false' }}
+  #   continue-on-error: true
+  #   steps:
+  #     - uses: actions/checkout@v4
+
+  #     - name: Install supported toolchain
+  #       id: rust_toolchain
+  #       uses: actions-rs/toolchain@v1
+  #       with:
+  #         toolchain: stable
+
+  #     - name: Cache Cargo
+  #       id: cache-cargo
+  #       uses: actions/cache@v4
+  #       with:
+  #         path: |
+  #           ~/.cargo
+  #         key: macos-latest-cargo-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
+
+  #     - uses: actions/setup-java@v4
+  #       with:
+  #         distribution: 'temurin'
+  #         java-version: '17'
+
+  #     - uses: Swatinem/rust-cache@v1
+
+  #     - name: Install cargo-make
+  #       if: steps.cache-cargo.outputs.cache-hit != 'true'
+  #       uses: davidB/rust-cargo-make@v1
+
+  #     - name: Rust Android Setup
+  #       run: cargo make setup-android
+
+  #     - uses: nttld/setup-ndk@v1
+  #       id: setup-ndk
+  #       with:
+  #         ndk-version: r25
+
+  #     - uses: subosito/flutter-action@v2
+  #       name: Set up flutter
+  #       with:
+  #         flutter-version: '3.22'
+  #         channel: 'stable'
+
+  #     - uses: actions/setup-python@v4
+  #       with:
+  #         python-version: 3.8
+
+  #     - uses: michaelkaye/setup-matrix-synapse@main
+  #       with:
+  #         uploadLogs: true
+  #         httpPort: 8118
+  #         disableRateLimiting: true
+  #         customModules: synapse_super_invites
+  #         customConfig: |
+  #           modules:
+  #             - module: "synapse_super_invites.SynapseSuperInvites"
+  #               config:
+  #                 sql_url: "sqlite://"
+  #                 generate_registration_token: true
+
+  #     - name: Install & Run MailHog
+  #       run: |
+  #         wget -q https://github.com/mailhog/MailHog/releases/download/v1.0.1/MailHog_linux_amd64
+  #         sudo chmod +x MailHog_linux_amd64
+  #         ./MailHog_linux_amd64 &
+
+  #     - name: Build Native
+  #       run: cargo make android-dev
+
+  #     - name: Flutter setup
+  #       working-directory: app
+  #       run: flutter pub get
+
+  #     - name: Run integration tests on android
+  #       uses: reactivecircus/android-emulator-runner@v2
+  #       timeout-minutes: 30
+  #       with:
+  #         api-level: 28
+  #         arch: x86
+  #         profile: Nexus 5X
+  #         force-avd-creation: false
+  #         emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+  #         disable-animations: true
+  #         emulator-build: 7425822
+  #         script: .github/scripts/flutter-integration-tests.sh
+
+  #     - name: Upload artifacts
+  #       uses: actions/upload-artifact@v1
+  #       if: failure()
+  #       with:
+  #         name: android-convtest-report
+  #         path: /tmp/ConvenientTest/
+
+  #     # file an error if this failed on `main` post-merge
+  #     - name: Report issue
+  #       if: ${{ github.ref == 'refs/heads/main' && failure() }}
+  #       uses: JasonEtco/create-an-issue@v2
+  #       env:
+  #         GITHUB_TOKEN: ${{ github.token }}
+  #         TITLE: "Android integration tests failed on main"
+  #         FAILED_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job }}
+  #         ARTIFACT_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+  #       with:
+  #         assignees: gnunicorn
+  #         filename: .github/templates/failure-report-template.md.tmpl
+  #         update_existing: true

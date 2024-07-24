@@ -2,7 +2,6 @@ import 'package:acter/common/providers/common_providers.dart';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
-import 'package:acter/features/profile/widgets/skeletons/my_profile_skeletons_widget.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -14,11 +13,11 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ChangeDisplayName extends StatefulWidget {
-  final AccountProfile account;
+  final String? currentName;
 
   const ChangeDisplayName({
     super.key,
-    required this.account,
+    required this.currentName,
   });
 
   @override
@@ -27,18 +26,19 @@ class ChangeDisplayName extends StatefulWidget {
 
 class _ChangeDisplayNameState extends State<ChangeDisplayName> {
   final TextEditingController newUsername = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey =
+      GlobalKey<FormState>(debugLabel: 'display name form');
 
   @override
   void initState() {
     super.initState();
-    newUsername.text = widget.account.profile.displayName ?? '';
+    newUsername.text = widget.currentName ?? '';
   }
 
   @override
   Widget build(BuildContext context) {
-    final account = widget.account;
     return AlertDialog(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       title: Text(L10n.of(context).changeYourDisplayName),
       content: Form(
         key: _formKey,
@@ -61,7 +61,7 @@ class _ChangeDisplayNameState extends State<ChangeDisplayName> {
         ActerPrimaryActionButton(
           onPressed: () {
             if (!_formKey.currentState!.validate()) return;
-            final currentUserName = account.profile.displayName;
+            final currentUserName = widget.currentName;
             final newDisplayName = newUsername.text;
             if (currentUserName != newDisplayName) {
               Navigator.pop(context, newDisplayName);
@@ -82,24 +82,25 @@ class MyProfilePage extends StatelessWidget {
   const MyProfilePage({super.key});
 
   Future<void> updateDisplayName(
-    AccountProfile profile,
     BuildContext context,
     WidgetRef ref,
   ) async {
     final TextEditingController newName = TextEditingController();
-    newName.text = profile.profile.displayName ?? '';
+    final avatarInfo = ref.read(accountAvatarInfoProvider);
+    newName.text = avatarInfo.displayName ?? '';
 
     final newText = await showDialog<String>(
       context: context,
-      builder: (BuildContext context) => ChangeDisplayName(account: profile),
+      builder: (BuildContext context) =>
+          ChangeDisplayName(currentName: avatarInfo.displayName),
     );
 
     if (!context.mounted) return;
     if (newText == null) return;
 
     EasyLoading.show(status: L10n.of(context).updatingDisplayName);
-    await profile.account.setDisplayName(newText);
-    ref.invalidate(accountProfileProvider);
+    await ref.read(accountProvider).setDisplayName(newText);
+    ref.invalidate(accountProvider);
 
     if (!context.mounted) {
       EasyLoading.dismiss();
@@ -109,7 +110,6 @@ class MyProfilePage extends StatelessWidget {
   }
 
   Future<void> updateAvatar(
-    AccountProfile profile,
     BuildContext context,
     WidgetRef ref,
   ) async {
@@ -121,8 +121,8 @@ class MyProfilePage extends StatelessWidget {
     if (result != null) {
       EasyLoading.show(status: L10n.of(context).updatingProfileImage);
       final file = result.files.first;
-      await profile.account.uploadAvatar(file.path!);
-      ref.invalidate(accountProfileProvider);
+      await ref.read(accountProvider).uploadAvatar(file.path!);
+      ref.invalidate(accountProvider);
       // close loading
       EasyLoading.dismiss();
     } else {
@@ -153,54 +153,49 @@ class MyProfilePage extends StatelessWidget {
   Widget _buildBody(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
-        final account = ref.watch(accountProfileProvider);
+        final accountInfo = ref.watch(accountAvatarInfoProvider);
 
-        return account.when(
-          data: (data) {
-            final userId = data.account.userId().toString();
-            final displayName = data.profile.displayName ?? '';
+        final userId = accountInfo.uniqueId;
+        final displayName = accountInfo.displayName ?? '';
 
-            return SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const SizedBox(height: 20),
-                    _buildAvatarUI(context, ref, data),
-                    const SizedBox(height: 20),
-                    _profileItem(
-                      key: MyProfilePage.displayNameKey,
-                      context: context,
-                      title: L10n.of(context).displayName,
-                      subTitle: displayName,
-                      trailingIcon: Atlas.pencil_edit,
-                      onPressed: () => updateDisplayName(data, context, ref),
-                    ),
-                    const SizedBox(height: 20),
-                    _profileItem(
-                      context: context,
-                      title: L10n.of(context).username,
-                      subTitle: userId,
-                      trailingIcon: Atlas.pages,
-                      onPressed: () => _onCopy(userId, context),
-                    ),
-                    const SizedBox(height: 25),
-                  ],
+        return SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 20),
+                _buildAvatarUI(context, ref),
+                const SizedBox(height: 20),
+                _profileItem(
+                  key: MyProfilePage.displayNameKey,
+                  context: context,
+                  title: L10n.of(context).displayName,
+                  subTitle: displayName,
+                  trailingIcon: Atlas.pencil_edit,
+                  onPressed: () => updateDisplayName(context, ref),
                 ),
-              ),
-            );
-          },
-          error: (e, trace) => Text('${L10n.of(context).error}: $e'),
-          loading: () => const MyProfileSkeletonWidget(),
+                const SizedBox(height: 20),
+                _profileItem(
+                  context: context,
+                  title: L10n.of(context).username,
+                  subTitle: userId,
+                  trailingIcon: Atlas.pages,
+                  onPressed: () => _onCopy(userId, context),
+                ),
+                const SizedBox(height: 25),
+              ],
+            ),
+          ),
         );
       },
     );
   }
 
-  Widget _buildAvatarUI(BuildContext context, WidgetRef ref, data) {
+  Widget _buildAvatarUI(BuildContext context, WidgetRef ref) {
+    final avatarInfo = ref.watch(accountAvatarInfoProvider);
     return GestureDetector(
-      onTap: () => updateAvatar(data, context, ref),
+      onTap: () => updateAvatar(context, ref),
       child: Center(
         child: Container(
           decoration: BoxDecoration(
@@ -214,11 +209,7 @@ class MyProfilePage extends StatelessWidget {
             children: [
               ActerAvatar(
                 options: AvatarOptions.DM(
-                  AvatarInfo(
-                    uniqueId: data.account.userId().toString(),
-                    avatar: data.profile.getAvatarImage(),
-                    displayName: data.profile.displayName,
-                  ),
+                  avatarInfo,
                   size: 50,
                 ),
               ),
@@ -259,6 +250,7 @@ class MyProfilePage extends StatelessWidget {
       child: ListTile(
         title: Text(
           title,
+          key: key,
           style: Theme.of(context).textTheme.labelMedium,
         ),
         subtitle: Padding(

@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -24,8 +23,9 @@ class SpaceSettingsMenu extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final size = MediaQuery.of(context).size;
-    final spaceProfile = ref.watch(spaceProfileDataForSpaceIdProvider(spaceId));
-    final canonicalParent = ref.watch(canonicalParentProvider(spaceId));
+    final spaceAvatarInfo = ref.watch(roomAvatarInfoProvider(spaceId));
+    final parentBadges =
+        ref.watch(parentAvatarInfosProvider(spaceId)).valueOrNull;
 
     final notificationStatus =
         ref.watch(roomNotificationStatusProvider(spaceId));
@@ -38,53 +38,20 @@ class SpaceSettingsMenu extends ConsumerWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              ...spaceProfile.when(
-                data: (spaceProfile) => [
-                  ActerAvatar(
-                    options: AvatarOptions(
-                      AvatarInfo(
-                        uniqueId: spaceId,
-                        displayName: spaceProfile.profile.displayName,
-                        avatar: spaceProfile.profile.getAvatarImage(),
-                      ),
-                      parentBadges: canonicalParent.valueOrNull != null
-                          ? [
-                              AvatarInfo(
-                                uniqueId: canonicalParent.valueOrNull!.space
-                                    .getRoomIdStr(),
-                                displayName: canonicalParent
-                                    .valueOrNull!.profile.displayName,
-                                avatar: canonicalParent.valueOrNull!.profile
-                                    .getAvatarImage(),
-                              ),
-                            ]
-                          : [],
-                      badgesSize: 18,
-                    ),
+              ActerAvatar(
+                options: AvatarOptions(
+                  AvatarInfo(
+                    uniqueId: spaceId,
+                    displayName: spaceAvatarInfo.displayName,
+                    avatar: spaceAvatarInfo.avatar,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 15),
-                    child: Text(spaceProfile.profile.displayName ?? spaceId),
-                  ),
-                ],
-                error: (e, s) => [
-                  Text(L10n.of(context).loadingFailed(e)),
-                ],
-                loading: () => [
-                  ActerAvatar(
-                    options: AvatarOptions(
-                      AvatarInfo(
-                        uniqueId: spaceId,
-                        tooltip: TooltipStyle.None,
-                      ),
-                      size: 35,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 15),
-                    child: Text(spaceId),
-                  ),
-                ],
+                  parentBadges: parentBadges,
+                  badgesSize: 18,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 15),
+                child: Text(spaceAvatarInfo.displayName ?? spaceId),
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 15),

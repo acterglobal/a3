@@ -11,6 +11,10 @@
             "type": "dart",
             "flutterMode": "debug",
             "toolArgs": [
+                // "--dart-define",
+                // "PUSH_SERVER=sygnal.XXX",
+                // "--dart-define",
+                // "DEFAULT_ACTER_SESSION=DEV1",
                 "--dart-define",
                 "RAGESHAKE_URL=http://localhost/api/submit"
             ]

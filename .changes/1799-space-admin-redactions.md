@@ -1,1 +1,0 @@
-- As an admin of a space you are now able to redact any space item as well (e.g. Pin, Event) not only as the author.

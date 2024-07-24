@@ -1,15 +1,13 @@
 import 'dart:io';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/features/chat/actions/create_chat.dart';
 import 'package:acter/common/widgets/user_builder.dart';
 import 'package:acter/features/invite_members/providers/invite_providers.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/base_body_widget.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/chat/providers/create_chat_providers.dart';
@@ -98,7 +96,6 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
             onPanDown: (_) => FocusScope.of(context).requestFocus(FocusNode()),
             child: DecoratedBox(
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.neutral,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: PageView.builder(
@@ -121,61 +118,31 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
     String? description,
     List<String> selectedUsers,
   ) async {
-    EasyLoading.show(status: L10n.of(context).creatingChat);
-    try {
-      final sdk = await ref.read(sdkProvider.future);
-      final config = sdk.api.newConvoSettingsBuilder();
-      // add the users
-      for (final userId in selectedUsers) {
-        config.addInvitee(userId);
+    final roomCreated = L10n.of(context).chatRoomCreated;
+    final roomIdStr = await createChat(
+      context,
+      ref,
+      name: convoName,
+      selectedUsers: selectedUsers,
+      parentId: ref.read(selectedSpaceIdProvider),
+      description: description,
+      avatarUri: ref.read(_avatarProvider),
+    );
+    if (roomIdStr != null) {
+      try {
+        final convo =
+            await ref.read(alwaysClientProvider).convoWithRetry(roomIdStr, 120);
+        EasyLoading.showToast(roomCreated);
+        return convo;
+      } catch (error, stack) {
+        _log.severe(
+          'Room $roomIdStr created but fetching failed',
+          error,
+          stack,
+        );
       }
-
-      if (convoName != null && convoName.isNotEmpty) {
-        // set the name
-        config.setName(convoName);
-      }
-
-      if (description != null && description.isNotEmpty) {
-        // and an optional description
-        config.setTopic(description);
-      }
-
-      final avatarUri = ref.read(_avatarProvider);
-      if (avatarUri.isNotEmpty) {
-        config.setAvatarUri(avatarUri); // convo creation will upload it
-      }
-
-      final parentId = ref.read(selectedSpaceIdProvider);
-      if (parentId != null) {
-        config.setParent(parentId);
-      }
-      final client = ref.read(alwaysClientProvider);
-      final roomIdStr = (await client.createConvo(config.build())).toString();
-      // add room to child of space (if given)
-      if (parentId != null) {
-        final space = await ref.read(spaceProvider(parentId).future);
-        await space.addChildRoom(roomIdStr);
-        // spaceRelations come from the server and must be manually invalidated
-        ref.invalidate(spaceRelationsOverviewProvider(parentId));
-      }
-      final convo = await client.convoWithRetry(roomIdStr, 120);
-      if (!mounted) {
-        EasyLoading.dismiss();
-        return null;
-      }
-      EasyLoading.showToast(L10n.of(context).chatRoomCreated);
-      return convo;
-    } catch (e) {
-      if (!mounted) {
-        EasyLoading.dismiss();
-        return null;
-      }
-      EasyLoading.showError(
-        L10n.of(context).errorCreatingChat(e),
-        duration: const Duration(seconds: 3),
-      );
-      return null;
     }
+    return null;
   }
 }
 
@@ -213,19 +180,17 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
       appBar: AppBar(
         title: Text(L10n.of(context).newChat),
       ),
-      body: BaseBody(
-        child: ListView(
-          controller: scrollController,
-          children: <Widget>[
-            const SizedBox(height: 15),
-            renderSearchField(context),
-            const SizedBox(height: 15),
-            renderSelectedUsers(context),
-            renderPrimaryAction(context),
-            const SizedBox(height: 15),
-            renderFoundUsers(context),
-          ],
-        ),
+      body: ListView(
+        controller: scrollController,
+        children: <Widget>[
+          const SizedBox(height: 15),
+          renderSearchField(context),
+          const SizedBox(height: 15),
+          renderSelectedUsers(context),
+          renderPrimaryAction(context),
+          const SizedBox(height: 15),
+          renderFoundUsers(context),
+        ],
       ),
     );
   }
@@ -344,12 +309,9 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
             )
           : selectedUsers.length > 1
               ? CircleAvatar(
-                  backgroundColor: Theme.of(context).colorScheme.neutral4,
+                  backgroundColor: Theme.of(context).colorScheme.surface,
                   radius: 28,
-                  child: Icon(
-                    Atlas.team_group,
-                    color: Theme.of(context).colorScheme.neutral,
-                  ),
+                  child: const Icon(Atlas.team_group),
                 )
               : ActerAvatar(
                   options: AvatarOptions.DM(
@@ -594,10 +556,7 @@ class _CreateRoomFormWidgetConsumerState
                               File(avatarUpload),
                               fit: BoxFit.cover,
                             )
-                          : Icon(
-                              Atlas.up_arrow_from_bracket_thin,
-                              color: Theme.of(context).colorScheme.neutral4,
-                            ),
+                          : const Icon(Atlas.up_arrow_from_bracket_thin),
                     ),
                   ),
                 ],
@@ -742,9 +701,7 @@ class _UserWidget extends ConsumerWidget {
           ? null
           : Text(
               userId,
-              style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                    color: Theme.of(context).colorScheme.neutral5,
-                  ),
+              style: Theme.of(context).textTheme.labelMedium,
             ),
       leading: avatarProv.when(
         data: (data) {

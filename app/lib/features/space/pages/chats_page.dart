@@ -1,25 +1,19 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
+import 'package:acter/common/widgets/chat/loading_convo_card.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
-import 'package:acter/features/space/providers/notifiers/space_hierarchy_notifier.dart';
-import 'package:acter/features/space/providers/space_providers.dart';
-import 'package:acter/features/space/widgets/space_header.dart';
+import 'package:acter/common/widgets/room/room_hierarchy_options_menu.dart';
 import 'package:acter/router/utils.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
@@ -30,81 +24,21 @@ class SpaceChatsPage extends ConsumerWidget {
 
   const SpaceChatsPage({super.key, required this.spaceIdOrAlias});
 
-  Widget renderRelated(BuildContext context, WidgetRef ref) {
-    final related = ref.watch(spaceRelationsOverviewProvider(spaceIdOrAlias));
-    return related.maybeWhen(
-      data: (spaces) {
-        bool checkPermission(String permission) {
-          return spaces.membership?.canString(permission) ?? false;
-        }
-
-        final canLinkSpace = checkPermission('CanLinkSpaces');
-
-        if (!canLinkSpace) {
-          return const SliverToBoxAdapter(child: SizedBox.shrink());
-        }
-
-        return SliverToBoxAdapter(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              PopupMenuButton(
-                key: actionsMenuKey,
-                icon: Icon(
-                  Atlas.plus_circle,
-                  color: Theme.of(context).colorScheme.neutral5,
-                ),
-                iconSize: 28,
-                color: Theme.of(context).colorScheme.surface,
-                itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                  PopupMenuItem(
-                    key: createChatKey,
-                    onTap: () => context.pushNamed(
-                      Routes.createChat.name,
-                      queryParameters: {'spaceId': spaceIdOrAlias},
-                      extra: 1,
-                    ),
-                    child: Row(
-                      children: <Widget>[
-                        Text(L10n.of(context).createChat),
-                        const Spacer(),
-                        const Icon(Atlas.chats),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    onTap: () => context.pushNamed(
-                      Routes.linkChat.name,
-                      pathParameters: {'spaceId': spaceIdOrAlias},
-                    ),
-                    child: Row(
-                      children: <Widget>[
-                        Text(L10n.of(context).linkExistingChat),
-                        const Spacer(),
-                        const Icon(Atlas.chats),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-      orElse: () => const SliverToBoxAdapter(child: SizedBox.shrink()),
-    );
-  }
-
   Widget _renderEmpty(BuildContext context, WidgetRef ref) {
-    final chats = ref.watch(relatedChatsProvider(spaceIdOrAlias));
+    final chats = ref
+            .watch(spaceRelationsOverviewProvider(spaceIdOrAlias))
+            .valueOrNull
+            ?.knownChats ??
+        [];
 
-    if ((chats.valueOrNull?.isNotEmpty ?? true)) {
+    if (chats.isEmpty) {
       // we are still loading or chats has been found locally
       return Container();
     }
 
     final membership = ref.watch(roomMembershipProvider(spaceIdOrAlias));
-    bool canCreateSpace = membership.requireValue!.canString('CanLinkSpaces');
+    bool canCreateSpace =
+        membership.valueOrNull?.canString('CanLinkSpaces') == true;
 
     return Center(
       heightFactor: 1,
@@ -135,87 +69,165 @@ class SpaceChatsPage extends ConsumerWidget {
     );
   }
 
-  Widget renderChats(BuildContext context, WidgetRef ref) {
-    final chats = ref.watch(relatedChatsProvider(spaceIdOrAlias));
-
-    return chats.when(
-      data: (rooms) {
-        return SliverAnimatedList(
-          initialItemCount: rooms.length,
-          itemBuilder: (context, index, animation) => SizeTransition(
-            sizeFactor: animation,
-            child: ConvoCard(
-              room: rooms[index],
-              showParent: false,
-              onTap: () => goToChat(context, rooms[index].getRoomIdStr()),
+  Widget renderConvoCard(
+      BuildContext context, WidgetRef ref, String roomId, bool isSuggested,) {
+    return ref.watch(chatProvider(roomId)).when(
+          data: (room) => ConvoCard(
+            room: room,
+            showParents: false,
+            showSuggestedMark: isSuggested,
+            onTap: () => goToChat(context, roomId),
+            trailing: RoomHierarchyOptionsMenu(
+              childId: roomId,
+              parentId: spaceIdOrAlias,
+              isSuggested: isSuggested,
             ),
           ),
+          error: (error, stack) => ListTile(
+            title: Text(roomId),
+            subtitle: Text(L10n.of(context).loadingFailed(error)),
+          ),
+          loading: () => LoadingConvoCard(roomId: roomId),
+        );
+  }
+
+  Widget renderChats(BuildContext context, WidgetRef ref) {
+    final relations =
+        ref.watch(spaceRelationsOverviewProvider(spaceIdOrAlias)).valueOrNull;
+    final chats = relations?.knownChats ?? [];
+    final suggested = relations?.suggestedIds ?? [];
+
+    return SliverAnimatedList(
+      initialItemCount: chats.length,
+      itemBuilder: (context, index, animation) {
+        final roomId = chats[index];
+        final isSuggested = suggested.contains(roomId);
+        return SizeTransition(
+          sizeFactor: animation,
+          child: renderConvoCard(context, ref, roomId, isSuggested),
         );
       },
-      error: (error, stackTrace) => SliverToBoxAdapter(
-        child: Center(
-          child: Text(L10n.of(context).failedToLoadChatsDueTo(error)),
-        ),
-      ),
-      loading: () => SliverToBoxAdapter(
-        child: Skeletonizer(
-          child: ListTile(
-            title: Text(L10n.of(context).roomId),
-            subtitle: Text(L10n.of(context).loading),
-          ),
-        ),
-      ),
     );
   }
 
-  AsyncValue<
-      AutoDisposeStateNotifierProvider<FilteredSpaceHierarchyNotifier,
-          PagedState<Next?, SpaceHierarchyRoomInfo>>> relatedProvider(
-    WidgetRef ref,
-  ) {
-    return ref
-        .watch(spaceRelationsOverviewProvider(spaceIdOrAlias))
-        .whenData((spaces) => remoteChatHierarchyProvider(spaces));
-  }
-
   Widget renderFurther(BuildContext context, WidgetRef ref) {
-    return relatedProvider(ref).when(
-      data: (provider) =>
-          RiverPagedBuilder<Next?, SpaceHierarchyRoomInfo>.autoDispose(
-        firstPageKey: const Next(isStart: true),
-        provider: provider,
-        itemBuilder: (context, item, index) => ConvoHierarchyCard(
-          parentId: spaceIdOrAlias,
-          roomInfo: item,
-        ),
-        noItemsFoundIndicatorBuilder: (context, controller) =>
-            _renderEmpty(context, ref),
-        pagedBuilder: (controller, builder) => PagedSliverList(
-          pagingController: controller,
-          builderDelegate: builder,
-        ),
-      ),
+    final remoteChats = ref.watch(remoteChatRelationsProvider(spaceIdOrAlias));
+
+    return remoteChats.when(
+      data: (chats) {
+        if (chats.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        return SliverList.builder(
+          itemCount: chats.length,
+          itemBuilder: (context, idx) {
+            final item = chats[idx];
+            return ConvoHierarchyCard(
+              showIconIfSuggested: true,
+              parentId: spaceIdOrAlias,
+              roomInfo: item,
+            );
+          },
+        );
+      },
       error: (e, s) => SliverToBoxAdapter(
         child: Text(L10n.of(context).errorLoadingRelatedChats(e)),
       ),
       loading: () => SliverToBoxAdapter(
-        child: Text(L10n.of(context).loadingOtherChats),
+        child: Skeletonizer(
+          child: Card(
+            child: ListTile(
+              title: Text(L10n.of(context).loadingOtherChats),
+            ),
+          ),
+        ),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return DecoratedBox(
-      decoration: const BoxDecoration(gradient: primaryGradient),
-      child: CustomScrollView(
-        slivers: <Widget>[
-          SliverToBoxAdapter(
-            child: SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
+    final spaceName =
+        ref.watch(roomDisplayNameProvider(spaceIdOrAlias)).valueOrNull ??
+            spaceIdOrAlias;
+
+    final chatsList =
+        ref.watch(spaceRelationsOverviewProvider(spaceIdOrAlias)).valueOrNull;
+
+    final membership = ref.watch(roomMembershipProvider(spaceIdOrAlias));
+    bool canCreateSpace =
+        membership.valueOrNull?.canString('CanLinkSpaces') == true;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(L10n.of(context).chat),
+            Text(
+              '($spaceName)',
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+          ],
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Atlas.arrows_rotating_right_thin),
+            iconSize: 28,
+            color: Theme.of(context).colorScheme.surface,
+            onPressed: () async {
+              ref.invalidate(spaceRelationsProvider);
+            },
           ),
-          renderRelated(context, ref),
-          renderChats(context, ref),
-          renderFurther(context, ref),
+          if (canCreateSpace)
+            PopupMenuButton(
+              key: actionsMenuKey,
+              icon: const Icon(Atlas.plus_circle),
+              iconSize: 28,
+              color: Theme.of(context).colorScheme.surface,
+              itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                PopupMenuItem(
+                  key: createChatKey,
+                  onTap: () => context.pushNamed(
+                    Routes.createChat.name,
+                    queryParameters: {'spaceId': spaceIdOrAlias},
+                    extra: 1,
+                  ),
+                  child: Row(
+                    children: <Widget>[
+                      Text(L10n.of(context).createChat),
+                      const Spacer(),
+                      const Icon(Atlas.chats),
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  onTap: () => context.pushNamed(
+                    Routes.linkChat.name,
+                    pathParameters: {'spaceId': spaceIdOrAlias},
+                  ),
+                  child: Row(
+                    children: <Widget>[
+                      Text(L10n.of(context).linkExistingChat),
+                      const Spacer(),
+                      const Icon(Atlas.chats),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+        ],
+      ),
+      body: CustomScrollView(
+        slivers: <Widget>[
+          if (chatsList?.knownChats.isNotEmpty == true)
+            renderChats(context, ref),
+          if (chatsList?.hasMore == true) renderFurther(context, ref),
+          if (chatsList?.hasMore == false &&
+              chatsList?.knownChats.isEmpty == true)
+            _renderEmpty(context, ref),
         ],
       ),
     );

@@ -20,21 +20,19 @@ class DirectInvite extends ConsumerWidget {
     final invited =
         ref.watch(roomInvitedMembersProvider(roomId)).valueOrNull ?? [];
     final joined = ref.watch(membersIdsProvider(roomId)).valueOrNull ?? [];
-    final room = ref.watch(briefRoomItemWithMembershipProvider(roomId));
+    final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
 
     return Card(
       child: ListTile(
         title: !isInvited(userId, invited) && !isJoined(userId, joined)
             ? Text(L10n.of(context).directInviteUser(userId))
             : Text(userId),
-        trailing: room.when(
-          data: (data) => UserStateButton(
-            userId: userId,
-            room: data.room!,
-          ),
-          error: (err, stackTrace) => Text('Error: $err'),
-          loading: () => const Skeletonizer(child: Text('Loading room')),
-        ),
+        trailing: room != null
+            ? UserStateButton(
+                userId: userId,
+                room: room,
+              )
+            : const Skeletonizer(child: Text('Loading room')),
       ),
     );
   }

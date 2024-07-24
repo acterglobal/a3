@@ -1,8 +1,9 @@
 import 'package:acter/common/models/keys.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/home/data/keys.dart';
+import 'package:acter/features/onboarding/pages/analytics_opt_in_page.dart';
 import 'package:acter/features/onboarding/pages/link_email_page.dart';
-import 'package:acter/features/onboarding/pages/register_page.dart';
+import 'package:acter/features/auth/pages/register_page.dart';
 import 'package:acter/features/onboarding/pages/save_username_page.dart';
 import 'package:acter/features/onboarding/pages/upload_avatar_page.dart';
 import 'package:acter/features/search/model/keys.dart';
@@ -56,11 +57,6 @@ extension ActerLogin on ConvenientTest {
 
     await explore.tap();
 
-    Finder skip = find.byKey(Keys.skipBtn);
-    await skip.should(findsOneWidget);
-
-    await skip.tap();
-
     Finder login = find.byKey(LoginPageKeys.signUpBtn);
     await login.should(findsOneWidget);
 
@@ -97,7 +93,7 @@ extension ActerLogin on ConvenientTest {
 
     Finder email = find.byKey(LinkEmailPage.emailField);
     await email.should(findsOneWidget);
-    await email.enterTextWithoutReplace('acter@example.org');
+    await email.enterTextWithoutReplace('$username@example.org');
 
     Finder linkEmailBtn = find.byKey(LinkEmailPage.linkEmailBtn);
     await tester.ensureVisible(linkEmailBtn);
@@ -106,6 +102,10 @@ extension ActerLogin on ConvenientTest {
     Finder skipBtn = find.byKey(UploadAvatarPage.skipBtn);
     await tester.ensureVisible(skipBtn);
     await skipBtn.tap();
+
+    Finder doneBtn = find.byKey(AnalyticsOptInPage.skipBtn);
+    await tester.ensureVisible(doneBtn);
+    await doneBtn.tap();
 
     // we should see a main navigation, either at the side (desktop) or the bottom (mobile/tablet)
     await find.byKey(Keys.mainNav).should(findsOneWidget);
@@ -116,6 +116,7 @@ extension ActerLogin on ConvenientTest {
     await find.byKey(Keys.mainNav).should(findsOneWidget);
     await navigateTo([
       MainNavKeys.quickJump,
+      MainNavKeys.quickJump,
       QuickJumpKeys.settings,
       SettingsMenu.logoutAccount,
       LogoutDialogKeys.confirm,
@@ -125,42 +126,48 @@ extension ActerLogin on ConvenientTest {
     await find.byKey(Keys.mainNav).should(findsNothing);
   }
 
-  Future<void> tryLogin(String username, {String? registrationToken}) async {
+  Future<void> tryLogin(
+    String username, {
+    String? password,
+    String? registrationToken,
+  }) async {
+    await navigateTo([
+      Keys.exploreBtn,
+      Keys.loginBtn,
+    ]);
+    await loginFormSubmission(
+      username,
+      password: password,
+      registrationToken: registrationToken,
+    );
+  }
+
+  Future<void> loginFormSubmission(
+    String username, {
+    String? password,
+    String? registrationToken,
+  }) async {
     String passwordText =
-        passwordFor(username, registrationToken: registrationToken);
-
-    Finder explore = find.byKey(Keys.exploreBtn);
-    await explore.should(findsOneWidget);
-
-    await explore.tap();
-
-    Finder skip = find.byKey(Keys.skipBtn);
-    await skip.should(findsOneWidget);
-
-    await skip.tap();
-
-    Finder login = find.byKey(Keys.loginBtn);
-    await login.should(findsOneWidget);
-
-    await login.tap();
+        password ?? passwordFor(username, registrationToken: registrationToken);
 
     Finder user = find.byKey(LoginPageKeys.usernameField);
     await user.should(findsOneWidget);
 
     await user.enterTextWithoutReplace(username);
 
-    Finder password = find.byKey(LoginPageKeys.passwordField);
-    await password.should(findsOneWidget);
+    Finder passwordField = find.byKey(LoginPageKeys.passwordField);
+    await passwordField.should(findsOneWidget);
 
-    await password.enterTextWithoutReplace(passwordText);
+    await passwordField.enterTextWithoutReplace(passwordText);
 
     Finder submitBtn = find.byKey(LoginPageKeys.submitBtn);
+    await tester.ensureVisible(submitBtn);
     await submitBtn.should(findsOneWidget);
     await submitBtn.tap();
   }
 
-  Future<void> login(String username) async {
-    await tryLogin(username);
+  Future<void> login(String username, {String? password}) async {
+    await tryLogin(username, password: password);
     // we should see a main navigation, either at the side (desktop) or the bottom (mobile/tablet)
     await find.byKey(Keys.mainNav).should(findsOneWidget);
   }

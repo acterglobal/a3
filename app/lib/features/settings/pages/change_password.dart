@@ -20,7 +20,7 @@ class ChangePasswordPage extends ConsumerStatefulWidget {
 }
 
 class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
-  final formKey = GlobalKey<FormState>();
+  final formKey = GlobalKey<FormState>(debugLabel: 'change password form');
   final TextEditingController oldPassword = TextEditingController();
   final TextEditingController newPassword = TextEditingController();
   final TextEditingController confirmPassword = TextEditingController();
@@ -189,7 +189,11 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
     EasyLoading.show(status: L10n.of(context).changingYourPassword);
     try {
       final client = ref.read(alwaysClientProvider);
-      await client.changePassword(oldPassword.text.trim(), newPassword.text.trim());
+      final account = client.account();
+      await account.changePassword(
+        oldPassword.text.trim(),
+        newPassword.text.trim(),
+      );
       oldPassword.clear();
       newPassword.clear();
       confirmPassword.clear();

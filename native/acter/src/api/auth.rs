@@ -3,20 +3,26 @@ use anyhow::{bail, Context, Result};
 use lazy_static::lazy_static;
 use matrix_sdk::{
     matrix_auth::{MatrixSession, MatrixSessionTokens},
-    Client as SdkClient, ClientBuilder, SessionMeta,
+    reqwest::{ClientBuilder as ReqClientBuilder, StatusCode},
+    Client as SdkClient, ClientBuilder as SdkClientBuilder, SessionMeta,
 };
-use ruma::assign;
+use ruma::{assign, uint};
 use ruma_client_api::{
-    account::register,
+    account::{
+        register, request_password_change_token_via_email, request_registration_token_via_email,
+    },
     uiaa::{AuthData, Dummy, Password, RegistrationToken},
 };
-use ruma_common::{OwnedUserId, UserId};
-use std::sync::RwLock;
+use ruma_common::{ClientSecret, OwnedClientSecret, OwnedUserId, UserId};
+use serde::Deserialize;
+use std::{ops::Deref, sync::RwLock};
 use tracing::{error, info};
+use url::Url;
 use uuid::Uuid;
 
 use super::{
     client::{Client, ClientStateBuilder},
+    common::clearify_error,
     RUNTIME,
 };
 use crate::platform;
@@ -68,7 +74,7 @@ pub async fn make_client_config(
     default_homeserver_name: &str,
     default_homeserver_url: &str,
     reset_if_existing: bool,
-) -> Result<(ClientBuilder, OwnedUserId)> {
+) -> Result<(SdkClientBuilder, OwnedUserId)> {
     let (user_id, fallback) = sanitize_user(username, default_homeserver_name).await?;
     let mut builder = platform::new_client_config(
         base_path,
@@ -144,7 +150,7 @@ pub async fn guest_client(
 
 pub async fn login_with_token_under_config(
     restore_token: RestoreToken,
-    config: ClientBuilder,
+    config: SdkClientBuilder,
 ) -> Result<Client> {
     let RestoreToken {
         session,
@@ -227,7 +233,7 @@ async fn login_client(
 }
 
 pub async fn login_new_client_under_config(
-    config: ClientBuilder,
+    config: SdkClientBuilder,
     user_id: OwnedUserId,
     password: String,
     db_passphrase: Option<String>,
@@ -295,43 +301,8 @@ pub async fn register(
     register_under_config(config, user_id, password, Some(db_passphrase), user_agent).await
 }
 
-fn clearify_error(err: matrix_sdk::Error) -> anyhow::Error {
-    if let matrix_sdk::Error::Http(matrix_sdk::HttpError::Api(api_error)) = &err {
-        match api_error {
-            matrix_sdk::ruma::api::error::FromHttpResponseError::Deserialization(des) => {
-                return anyhow::anyhow!("Deserialization failed: {des}");
-            }
-            matrix_sdk::ruma::api::error::FromHttpResponseError::Server(inner) => match inner {
-                matrix_sdk::RumaApiError::ClientApi(error) => {
-                    if let matrix_sdk::ruma::api::client::error::ErrorBody::Standard {
-                        kind,
-                        message,
-                    } = &error.body
-                    {
-                        return anyhow::anyhow!("{message} [{kind}]");
-                    }
-                    return anyhow::anyhow!("{0:?} [{1}]", error.body, error.status_code);
-                }
-                matrix_sdk::RumaApiError::Uiaa(uiaa_error) => {
-                    if let Some(err) = &uiaa_error.auth_error {
-                        return anyhow::anyhow!("{0} [{1}]", err.message, err.kind);
-                    }
-
-                    error!(?uiaa_error, "Other UIAA response");
-                    return anyhow::anyhow!("Unsupported User Interaction needed.");
-                }
-                matrix_sdk::RumaApiError::Other(err) => {
-                    return anyhow::anyhow!("{0:?} [{1}]", err.body, err.status_code);
-                }
-            },
-            _ => {}
-        }
-    }
-    err.into()
-}
-
 pub async fn register_under_config(
-    config: ClientBuilder,
+    config: SdkClientBuilder,
     user_id: OwnedUserId,
     password: String,
     db_passphrase: Option<String>,
@@ -366,7 +337,7 @@ pub async fn register_under_config(
                 "Successfully registered user {user_id}, device {:?}",
                 client.device_id(),
             );
-            if (client.logged_in()) {
+            if client.logged_in() {
                 let state = ClientStateBuilder::default()
                     .is_guest(false)
                     .db_passphrase(db_passphrase)
@@ -414,7 +385,7 @@ pub async fn register_with_token(
 }
 
 pub async fn register_with_token_under_config(
-    config: ClientBuilder,
+    config: SdkClientBuilder,
     user_id: OwnedUserId,
     password: String,
     db_passphrase: Option<String>,
@@ -459,7 +430,7 @@ pub async fn register_with_token_under_config(
                 "Successfully registered user {user_id}, device {:?}",
                 client.device_id(),
             );
-            if (client.logged_in()) {
+            if client.logged_in() {
                 let state = ClientStateBuilder::default()
                     .is_guest(false)
                     .db_passphrase(db_passphrase)
@@ -473,53 +444,139 @@ pub async fn register_with_token_under_config(
         .await?
 }
 
-impl Client {
-    pub async fn deactivate(&self, password: String) -> Result<bool> {
-        let account = self.account()?;
-        RUNTIME
-            .spawn(async move {
-                if let Err(e) = account.deactivate(None, None).await {
-                    if let Some(resp) = e.as_uiaa_response() {
-                        let pswd = assign!(Password::new(account.user_id().into(), password), {
-                            session: resp.session.clone(),
-                        });
-                        let auth_data = AuthData::Password(pswd);
-                        account.deactivate(None, Some(auth_data)).await?;
-                        // FIXME: remove local data, too!
-                    } else {
-                        error!(?e, "Not a UIAA response");
-                        bail!("No a uiaa response");
-                    }
-                }
-                Ok(true)
-            })
-            .await?
+pub async fn request_registration_token_via_email(
+    base_path: String,
+    media_cache_base_path: String,
+    username: String,
+    default_homeserver_name: String,
+    default_homeserver_url: String,
+    email: String,
+) -> Result<RegistrationTokenViaEmailResponse> {
+    let homeserver_url = Url::parse(&default_homeserver_url)?;
+    let db_passphrase = Uuid::new_v4().to_string();
+    let (config, user_id) = make_client_config(
+        base_path,
+        &username,
+        media_cache_base_path,
+        Some(db_passphrase.clone()),
+        &default_homeserver_name,
+        &default_homeserver_url,
+        true,
+    )
+    .await?;
+
+    RUNTIME
+        .spawn(async move {
+            let client = SdkClient::new(homeserver_url).await?;
+            let client_secret = ClientSecret::new();
+            let request = request_registration_token_via_email::v3::Request::new(
+                client_secret,
+                email,
+                uint!(0),
+            );
+            let inner = client.send(request, None).await?;
+            Ok(RegistrationTokenViaEmailResponse { inner })
+        })
+        .await?
+}
+
+#[derive(Clone)]
+pub struct RegistrationTokenViaEmailResponse {
+    inner: request_registration_token_via_email::v3::Response,
+}
+
+impl RegistrationTokenViaEmailResponse {
+    pub fn sid(&self) -> String {
+        self.inner.sid.to_string()
     }
 
-    pub async fn change_password(&self, old_val: String, new_val: String) -> Result<bool> {
-        let client = self.core.client().clone();
-        let account = self.account()?;
-        RUNTIME
-            .spawn(async move {
-                let capabilities = client.get_capabilities().await?;
-                if !capabilities.change_password.enabled {
-                    bail!("Server doesn't support password change");
-                }
-                if let Err(e) = account.change_password(&new_val, None).await {
-                    let Some(inf) = e.as_uiaa_response() else {
-                        return Err(clearify_error(e));
-                    };
-                    let pswd = assign!(Password::new(account.user_id().into(), old_val), {
-                        session: inf.session.clone(),
-                    });
-                    let auth_data = AuthData::Password(pswd);
-                    account
-                        .change_password(&new_val, Some(auth_data))
-                        .await
-                        .map_err(clearify_error)?;
-                }
-                Ok(true)
-            })
-            .await?
+    pub fn submit_url(&self) -> Option<String> {
+        self.inner.submit_url.clone()
     }
+}
+
+pub async fn request_password_change_token_via_email(
+    default_homeserver_url: String,
+    email: String,
+) -> Result<PasswordChangeEmailTokenResponse> {
+    let homeserver_url = Url::parse(&default_homeserver_url)?;
+
+    RUNTIME
+        .spawn(async move {
+            let client = SdkClient::new(homeserver_url).await?;
+            let client_secret = ClientSecret::new();
+            let request = request_password_change_token_via_email::v3::Request::new(
+                client_secret.clone(),
+                email,
+                uint!(0),
+            );
+            let inner = client.send(request, None).await?;
+            Ok(PasswordChangeEmailTokenResponse {
+                client_secret,
+                inner,
+            })
+        })
+        .await?
+}
+
+#[derive(Clone)]
+pub struct PasswordChangeEmailTokenResponse {
+    client_secret: OwnedClientSecret,
+    inner: request_password_change_token_via_email::v3::Response,
+}
+
+impl PasswordChangeEmailTokenResponse {
+    pub fn client_secret(&self) -> String {
+        self.client_secret.to_string()
+    }
+
+    pub fn sid(&self) -> String {
+        self.inner.sid.to_string()
+    }
+
+    pub fn submit_url(&self) -> Option<String> {
+        self.inner.submit_url.clone()
+    }
+}
+
+pub async fn reset_password(
+    default_homeserver_url: String,
+    sid: String,
+    client_secret: String,
+    new_val: String,
+) -> Result<bool> {
+    RUNTIME
+        .spawn(async move {
+            let http_client = ReqClientBuilder::new().build()?;
+            let homeserver_url = Url::parse(&default_homeserver_url)?;
+            let submit_url = homeserver_url.join("/_matrix/client/v3/account/password")?;
+
+            let body = serde_json::json!({
+                "new_password": new_val,
+                "logout_devices": false,
+                "auth": { // [ref] https://spec.matrix.org/v1.10/client-server-api/#email-based-identity--homeserver
+                    "type": "m.login.email.identity".to_owned(),
+                    "threepid_creds": {
+                        "sid": sid,
+                        "client_secret": client_secret
+                    }
+                }
+            });
+
+            let resp = http_client
+                .post(submit_url.to_string())
+                .body(body.to_string())
+                .send()
+                .await?;
+
+            info!("reset_password: {:?}", resp);
+
+            if resp.status() != StatusCode::OK {
+                let text = resp.text().await?;
+                bail!("reset_password failed: {}", text);
+            }
+
+            Ok(true)
+        })
+        .await?
 }

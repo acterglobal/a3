@@ -1,1 +1,0 @@
-- You can now bookmark spaces, too. If you have bookmarked spaces they will show on your home screen rather than the full list.

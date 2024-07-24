@@ -1,32 +1,20 @@
 use anyhow::{bail, Context, Result};
-use core::time::Duration;
 use futures::stream::{Stream, StreamExt};
-use matrix_sdk::{
-    attachment::{
-        AttachmentConfig, AttachmentInfo, BaseAudioInfo, BaseFileInfo, BaseImageInfo, BaseVideoInfo,
-    },
-    room::{Receipts, Room as SdkRoom},
-    Client as SdkClient, RoomState,
-};
+use matrix_sdk::{room::Receipts, RoomState};
 use matrix_sdk_ui::timeline::Timeline;
-use ruma::{assign, UInt};
-use ruma_client_api::{receipt::create_receipt, sync::sync_events::v3::Rooms};
+use ruma::assign;
+use ruma_client_api::receipt::create_receipt;
 use ruma_common::{EventId, OwnedEventId, OwnedTransactionId};
 use ruma_events::{
     receipt::ReceiptThread,
     relation::Annotation,
     room::{
-        message::{
-            AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent, ForwardThread,
-            ImageMessageEventContent, LocationInfo, LocationMessageEventContent, MessageType,
-            RoomMessageEvent, RoomMessageEventContent, RoomMessageEventContentWithoutRelation,
-            VideoInfo, VideoMessageEventContent,
-        },
+        message::{AudioInfo, FileInfo, ForwardThread, LocationInfo, RoomMessageEvent, VideoInfo},
         ImageInfo,
     },
-    Mentions, MessageLikeEventType,
+    MessageLikeEventType,
 };
-use std::{ops::Deref, path::PathBuf, sync::Arc};
+use std::{ops::Deref, sync::Arc};
 use tracing::info;
 
 use crate::{Client, Room, RoomMessage, RUNTIME};
@@ -156,15 +144,12 @@ impl TimelineStream {
                     bail!("Unable to edit an event not sent by own user");
                 }
 
-                let edit_item = timeline
+                let item = timeline
                     .item_by_event_id(&event_id)
                     .await
                     .context("Not found which item would be edited")?;
-                if !edit_item.can_be_edited() {
-                    bail!("This event item cannot be edited");
-                }
                 let new_content = draft.into_room_msg(&room).await?;
-                timeline.edit(new_content, &edit_item).await?;
+                timeline.edit(&item, new_content).await?;
                 Ok(true)
             })
             .await?
@@ -189,17 +174,14 @@ impl TimelineStream {
                     bail!("No permissions to send message in this room");
                 }
                 let reply_item = timeline
-                    .item_by_event_id(&event_id)
+                    .replied_to_info_from_event_id(&event_id)
                     .await
                     .context("Not found which item would be replied to")?;
-                if !reply_item.can_be_replied_to() {
-                    bail!("This event item cannot be replied to");
-                }
                 let content = draft.into_room_msg(&room).await?;
                 timeline
                     .send_reply(
                         content.with_relation(None).into(),
-                        &reply_item,
+                        reply_item,
                         ForwardThread::Yes,
                     )
                     .await?;
@@ -321,48 +303,6 @@ impl TimelineStream {
                 }
                 let annotation = Annotation::new(event_id, key);
                 timeline.toggle_reaction(&annotation).await?;
-                Ok(true)
-            })
-            .await?
-    }
-
-    pub async fn retry_send(&self, txn_id: String) -> Result<bool> {
-        let timeline = self.timeline.clone();
-        let txn_id = OwnedTransactionId::from(txn_id);
-
-        let room = self.room.clone();
-        let my_id = self.room.user_id()?;
-
-        RUNTIME
-            .spawn(async move {
-                let permitted = room
-                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
-                    .await?;
-                if !permitted {
-                    bail!("No permissions to send message in this room");
-                }
-                timeline.retry_send(&txn_id).await?;
-                Ok(true)
-            })
-            .await?
-    }
-
-    pub async fn cancel_send(&self, txn_id: String) -> Result<bool> {
-        let timeline = self.timeline.clone();
-        let txn_id = OwnedTransactionId::from(txn_id);
-
-        let room = self.room.clone();
-        let my_id = self.room.user_id()?;
-
-        RUNTIME
-            .spawn(async move {
-                let permitted = room
-                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
-                    .await?;
-                if !permitted {
-                    bail!("No permissions to send message in this room");
-                }
-                timeline.cancel_send(&txn_id).await;
                 Ok(true)
             })
             .await?

@@ -25,7 +25,7 @@ class MessageActions extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final message = ref.watch(
-      chatInputProvider(roomId).select((state) => state.selectedMessage),
+      chatInputProvider.select((state) => state.selectedMessage),
     );
     if (message == null) {
       // shouldn't ever happen in reality
@@ -54,9 +54,8 @@ class MessageActions extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           makeMenuItem(
-            pressed: () => ref
-                .read(chatInputProvider(roomId).notifier)
-                .setReplyToMessage(message),
+            pressed: () =>
+                ref.read(chatInputProvider.notifier).setReplyToMessage(message),
             text: Text(L10n.of(context).reply),
             icon: const Icon(Icons.reply_rounded, size: 18),
           ),
@@ -135,7 +134,7 @@ class MessageActions extends ConsumerWidget {
       ClipboardData(text: msg),
     );
     EasyLoading.showToast(L10n.of(context).messageCopiedToClipboard);
-    ref.read(chatInputProvider(roomId).notifier).unsetActions();
+    ref.read(chatInputProvider.notifier).unsetActions();
   }
 
   void onReportMessage(BuildContext context, Message message, String roomId) {
@@ -157,7 +156,7 @@ class MessageActions extends ConsumerWidget {
     String messageId,
     String roomId,
   ) {
-    final chatInputNotifier = ref.watch(chatInputProvider(roomId).notifier);
+    final chatInputNotifier = ref.watch(chatInputProvider.notifier);
     showAdaptiveDialog(
       context: context,
       builder: (context) => DefaultDialog(
@@ -201,6 +200,6 @@ class MessageActions extends ConsumerWidget {
     String roomId,
     Message message,
   ) {
-    ref.read(chatInputProvider(roomId).notifier).setEditMessage(message);
+    ref.read(chatInputProvider.notifier).setEditMessage(message);
   }
 }

@@ -1,8 +1,8 @@
-import 'package:acter/common/themes/app_theme.dart';
-
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/cross_signing/providers/verification_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/settings/providers/session_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:breadcrumbs/breadcrumbs.dart';
@@ -91,12 +91,13 @@ class SessionCard extends ConsumerWidget {
     );
   }
 
-  Future<void> onLogout(BuildContext context, WidgetRef ref) async {
+  Future<void> onLogout(BuildContext ctx, WidgetRef ref) async {
     TextEditingController passwordController = TextEditingController();
     final result = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext ctx) {
+      context: ctx,
+      builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Theme.of(context).colorScheme.surface,
           title: Text(L10n.of(context).authenticationRequired),
           content: Wrap(
             children: [
@@ -139,11 +140,12 @@ class SessionCard extends ConsumerWidget {
     }
     final client = ref.read(alwaysClientProvider);
     final manager = client.sessionManager();
-    await manager.deleteDevices(
-      [deviceRecord.deviceId().toString()] as FfiListFfiString,
+    await manager.deleteDevice(
+      deviceRecord.deviceId().toString(),
       client.userId().toString(),
       passwordController.text,
     );
+    ref.invalidate(allSessionsProvider);
   }
 
   Future<void> onVerify(BuildContext context, WidgetRef ref) async {

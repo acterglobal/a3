@@ -1,9 +1,10 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/edit_html_description_sheet.dart';
+import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/report_content.dart';
@@ -23,11 +24,11 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:logging/logging.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:path/path.dart' show join;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -51,7 +52,6 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   Widget build(BuildContext context) {
     final event = ref.watch(calendarEventProvider(widget.calendarId));
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
       body: event.when(
         data: (calendarEvent) {
           // Update event participants list
@@ -89,7 +89,6 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       ],
       flexibleSpace: Container(
         padding: const EdgeInsets.only(top: 20),
-        decoration: const BoxDecoration(gradient: primaryGradient),
         child: const FlexibleSpaceBar(
           background: Icon(Atlas.calendar_dots, size: 80),
         ),
@@ -101,16 +100,15 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     //Get membership details
     final spaceId = event.roomIdStr();
     final canRedact = ref.watch(canRedactProvider(event));
-    final membership = ref.watch(roomMembershipProvider(spaceId));
+    final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
+    final canPostEvent = membership?.canString('CanPostEvent') == true;
 
     //Create event actions
     List<PopupMenuEntry> actions = [];
 
-    if (membership.valueOrNull != null) {
-      final member = membership.requireValue!;
-
+    if (membership != null) {
       //Edit Event Action
-      if (member.canString('CanPostEvent')) {
+      if (canPostEvent) {
         actions.add(
           PopupMenuItem(
             key: EventsKeys.eventEditBtn,
@@ -144,12 +142,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
               eventId: event.eventId().toString(),
               onSuccess: () {
                 ref.invalidate(calendarEventProvider);
-                if (context.canPop()) context.pop();
-                if (context.mounted) {
-                  context.goNamed(
-                    Routes.spaceEvents.name,
-                    pathParameters: {'spaceId': roomId},
-                  );
+                if (context.canPop()) {
+                  Navigator.of(context, rootNavigator: true).pop();
                 }
               },
               senderId: event.sender().toString(),
@@ -231,6 +225,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   Widget _buildEventBasicDetails(CalendarEvent calendarEvent) {
     final month = getMonthFromDate(calendarEvent.utcStart());
     final day = getDayFromDate(calendarEvent.utcStart());
+    final membership = ref
+        .watch(roomMembershipProvider(calendarEvent.roomIdStr()))
+        .valueOrNull;
+    final canPostEvent = membership?.canString('CanPostEvent') == true;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -251,11 +249,20 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  calendarEvent.title(),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleMedium,
+                SelectionArea(
+                  child: GestureDetector(
+                    onTap: () {
+                      if (canPostEvent) {
+                        showEditEventTitleBottomSheet(calendarEvent.title());
+                      }
+                    },
+                    child: Text(
+                      calendarEvent.title(),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
                 ),
                 SpaceChip(spaceId: calendarEvent.roomIdStr()),
                 const SizedBox(height: 5),
@@ -280,6 +287,38 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         ],
       ),
     );
+  }
+
+  void showEditEventTitleBottomSheet(String titleValue) {
+    showEditTitleBottomSheet(
+      context: context,
+      titleValue: titleValue,
+      onSave: (newName) {
+        _editEventTitle(newName);
+      },
+    );
+  }
+
+  Future<void> _editEventTitle(String newName) async {
+    try {
+      EasyLoading.show(status: L10n.of(context).updateName);
+      // We always have calendar object at this stage.
+      final calendarEvent =
+          await ref.read(calendarEventProvider(widget.calendarId).future);
+      final updateBuilder = calendarEvent.updateBuilder();
+      updateBuilder.title(newName);
+      final eventId = await updateBuilder.send();
+      _log.info('Calendar Event Title Updated $eventId');
+
+      EasyLoading.dismiss();
+      if (!mounted) return;
+      context.pop();
+    } catch (e, st) {
+      _log.severe('Failed to edit event name', e, st);
+      EasyLoading.dismiss();
+      if (!mounted) return;
+      EasyLoading.showError(L10n.of(context).updateNameFailed(e));
+    }
   }
 
   Future<void> onRsvp(RsvpStatusTag status, WidgetRef ref) async {
@@ -584,18 +623,59 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             style: Theme.of(context).textTheme.titleSmall,
           ),
           const SizedBox(height: 10),
-          if (formattedText != null)
-            RenderHtml(
-              text: formattedText,
-              defaultTextStyle: Theme.of(context).textTheme.labelMedium,
-            )
-          else
-            Text(
-              bodyText,
-              style: Theme.of(context).textTheme.labelMedium,
+          SelectionArea(
+            child: GestureDetector(
+              onTap: () => showEditDescriptionSheet(formattedText, bodyText),
+              child: formattedText != null
+                  ? RenderHtml(
+                      text: formattedText,
+                      defaultTextStyle: Theme.of(context).textTheme.labelMedium,
+                    )
+                  : Text(
+                      bodyText,
+                      style: Theme.of(context).textTheme.labelMedium,
+                    ),
             ),
+          ),
         ],
       ),
     );
+  }
+
+  void showEditDescriptionSheet(String? formattedText, String? bodyText) {
+    showEditHtmlDescriptionBottomSheet(
+      context: context,
+      descriptionHtmlValue: formattedText,
+      descriptionMarkdownValue: bodyText,
+      onSave: (htmlBodyDescription, plainDescription) {
+        _saveDescription(htmlBodyDescription, plainDescription);
+      },
+    );
+  }
+
+  Future<void> _saveDescription(
+    String htmlBodyDescription,
+    String plainDescription,
+  ) async {
+    EasyLoading.show(status: L10n.of(context).updatingDescription);
+    try {
+      // We always have calendar object at this stage.
+      final calendarEvent =
+          await ref.read(calendarEventProvider(widget.calendarId).future);
+
+      final updateBuilder = calendarEvent.updateBuilder();
+      updateBuilder.descriptionHtml(plainDescription, htmlBodyDescription);
+      await updateBuilder.send();
+      EasyLoading.dismiss();
+      if (mounted) context.pop();
+    } catch (e, st) {
+      _log.severe('Failed to update event description', e, st);
+      EasyLoading.dismiss();
+      if (!mounted) return;
+      EasyLoading.showError(
+        L10n.of(context).errorUpdatingDescription(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 }

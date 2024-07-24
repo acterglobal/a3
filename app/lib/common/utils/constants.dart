@@ -30,7 +30,6 @@ class Keys {
   static const sidebarBtn = Key('sidebar-btn');
   static const logoutBtn = Key('login-btn');
   static const exploreBtn = Key('explore-btn');
-  static const skipBtn = Key('skip-btn');
   static const loginBtn = Key('login-btn');
   static const avatar = Key('user-avatar');
   static const usernameLabel = Key('username-lbl');
@@ -51,9 +50,14 @@ const autoGuestLogin = bool.fromEnvironment(
   defaultValue: false,
 );
 
-const giphyKey = String.fromEnvironment(
-  'GIPHY_KEY',
-  defaultValue: 'C4dMA7Q19nqEGdpfj82T8ssbOeZIylD4',
+const isNightly = bool.fromEnvironment(
+  'IS_NIGHTLY',
+  defaultValue: false,
+);
+
+const isDemo = bool.fromEnvironment(
+  'IS_DEMO',
+  defaultValue: false,
 );
 
 const defaultServersStr = String.fromEnvironment(

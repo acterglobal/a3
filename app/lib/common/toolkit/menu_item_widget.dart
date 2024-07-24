@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class MenuItemWidget extends StatelessWidget {
-  final IconData iconData;
+  final IconData? iconData;
   final Color? iconColor;
   final String title;
   final TextStyle? titleStyles;
@@ -10,13 +10,15 @@ class MenuItemWidget extends StatelessWidget {
   final bool enabled;
   final bool withMenu;
   final Key? innerKey;
+  final VisualDensity? visualDensity;
 
   const MenuItemWidget({
     super.key,
     this.innerKey,
-    required this.iconData,
+    this.iconData,
     this.iconColor,
     required this.title,
+    this.visualDensity,
     this.titleStyles,
     this.subTitle,
     this.onTap,
@@ -30,10 +32,13 @@ class MenuItemWidget extends StatelessWidget {
       child: ListTile(
         key: innerKey,
         onTap: onTap,
-        leading: Icon(
-          iconData,
-          color: enabled ? iconColor : Theme.of(context).disabledColor,
-        ),
+        visualDensity: visualDensity,
+        leading: iconData != null
+            ? Icon(
+                iconData,
+                color: enabled ? iconColor : Theme.of(context).disabledColor,
+              )
+            : null,
         title: Text(
           title,
           style: titleStyles?.copyWith(

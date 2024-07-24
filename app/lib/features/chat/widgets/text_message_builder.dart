@@ -1,18 +1,27 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/toolkit/buttons/room_chip.dart';
+import 'package:acter/common/toolkit/buttons/user_chip.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/member/dialogs/show_member_info_drawer.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
+import 'package:flutter_matrix_html/text_parser.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+
+// removes all matrix custom links
+String _cleanMessage(String input) {
+  final cleaned = simplifyBody(input).replaceAll(matrixLinks, '');
+  return cleaned;
+}
 
 class TextMessageBuilder extends ConsumerStatefulWidget {
   final Convo convo;
@@ -37,8 +46,6 @@ class _TextMessageBuilderConsumerState
     extends ConsumerState<TextMessageBuilder> {
   @override
   Widget build(BuildContext context) {
-    final client = ref.watch(alwaysClientProvider);
-    final userId = client.userId().toString();
     String msgType = '';
     final metadata = widget.message.metadata;
     if (metadata?.containsKey('msgType') == true) {
@@ -54,58 +61,33 @@ class _TextMessageBuilderConsumerState
     if (metadata?.containsKey('was_edited') == true) {
       wasEdited = metadata!['was_edited'];
     }
-    final authorId = widget.message.author.id;
+    final isAuthor = widget.message.author.id == ref.watch(myUserIdStrProvider);
 
-    //remove mx-reply tags.
-    String parsedString = simplifyBody(widget.message.text);
-    final urlRegexp = RegExp(
-      r'https://matrix\.to/#/[@!#][A-Za-z0-9\-]+:[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+',
-      caseSensitive: false,
-    );
-    final matches = urlRegexp.allMatches(parsedString);
     //will return empty if link is other than mention
-    if (matches.isEmpty) {
-      return LinkPreview(
-        metadataTitleStyle: userId == authorId
-            ? Theme.of(context).chatTheme.sentMessageLinkTitleTextStyle
-            : Theme.of(context).chatTheme.receivedMessageLinkTitleTextStyle,
-        metadataTextStyle: userId == authorId
-            ? Theme.of(context).chatTheme.sentMessageLinkDescriptionTextStyle
-            : Theme.of(context)
-                .chatTheme
-                .receivedMessageLinkDescriptionTextStyle,
-        enableAnimation: true,
-        imageBuilder: (image) {
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: CachedNetworkImage(
-                imageUrl: image,
-                maxHeightDiskCache: 256,
-              ),
+    return LinkPreview(
+      metadataTitleStyle: isAuthor
+          ? Theme.of(context).chatTheme.sentMessageLinkTitleTextStyle
+          : Theme.of(context).chatTheme.receivedMessageLinkTitleTextStyle,
+      metadataTextStyle: isAuthor
+          ? Theme.of(context).chatTheme.sentMessageLinkDescriptionTextStyle
+          : Theme.of(context).chatTheme.receivedMessageLinkDescriptionTextStyle,
+      enableAnimation: true,
+      imageBuilder: (image) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: CachedNetworkImage(
+              imageUrl: image,
+              maxHeightDiskCache: 256,
             ),
-          );
-        },
-        previewData: widget.message.previewData,
-        text: parsedString,
-        onPreviewDataFetched: onPreviewDataFetched,
-        textWidget: _TextWidget(
-          message: widget.message,
-          messageWidth: widget.messageWidth,
-          enlargeEmoji: enlargeEmoji,
-          isNotice: isNotice,
-          isReply: widget.isReply,
-          wasEdited: wasEdited,
-          roomId: widget.convo.getRoomIdStr(),
-        ),
-        width: widget.messageWidth.toDouble(),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      );
-    }
-    return Padding(
-      padding: const EdgeInsets.all(18),
-      child: _TextWidget(
+          ),
+        );
+      },
+      previewData: widget.message.previewData,
+      text: _cleanMessage(widget.message.text),
+      onPreviewDataFetched: onPreviewDataFetched,
+      textWidget: _TextWidget(
         message: widget.message,
         messageWidth: widget.messageWidth,
         enlargeEmoji: enlargeEmoji,
@@ -114,6 +96,8 @@ class _TextMessageBuilderConsumerState
         wasEdited: wasEdited,
         roomId: widget.convo.getRoomIdStr(),
       ),
+      width: widget.messageWidth.toDouble(),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
     );
   }
 
@@ -163,9 +147,14 @@ class _TextWidget extends ConsumerWidget {
                 )
               : Html(
                   onLinkTap: (url) => onLinkTap(url, context, ref),
-                  onPillTap: (id) => onPillTap(context, id),
                   backgroundColor: Colors.transparent,
                   data: message.text,
+                  pillBuilder: ({
+                    required String identifier,
+                    required String url,
+                    OnPillTap? onTap,
+                  }) =>
+                      _pillBuilder(context, ref, identifier, url),
                   shrinkToFit: true,
                   defaultTextStyle:
                       Theme.of(context).textTheme.bodySmall!.copyWith(
@@ -173,7 +162,7 @@ class _TextWidget extends ConsumerWidget {
                             color: isNotice
                                 ? Theme.of(context)
                                     .colorScheme
-                                    .neutral5
+                                    .onSurface
                                     .withOpacity(0.5)
                                 : null,
                           ),
@@ -194,17 +183,23 @@ class _TextWidget extends ConsumerWidget {
     );
   }
 
-  Future<void> onPillTap(BuildContext context, String identifier) async {
-    if (identifier.isEmpty) return;
-    final userId = extractUserIdFromUri(identifier);
-    if (userId != null) {
-      return await showMemberInfoDrawer(
-        context: context,
-        roomId: roomId,
-        memberId: userId,
-        // isShowActions: false,
-      );
-    }
+  Widget _pillBuilder(
+    BuildContext context,
+    WidgetRef ref,
+    String identifier,
+    String uri,
+  ) {
+    return switch (identifier.characters.first) {
+      '@' => UserChip(
+          roomId: roomId,
+          memberId: identifier,
+        ),
+      '!' => RoomChip(roomId: identifier),
+      _ => InkWell(
+          child: Text(identifier),
+          onTap: () => onLinkTap(Uri.parse(uri), context, ref),
+        ),
+    };
   }
 
   Future<void> onLinkTap(Uri uri, BuildContext context, WidgetRef ref) async {
@@ -212,7 +207,6 @@ class _TextWidget extends ConsumerWidget {
 
     ///If link is type of matrix room link
     if (roomId != null) {
-      await navigateToRoomOrAskToJoin(context, ref, roomId);
     }
 
     ///If link is other than matrix room link

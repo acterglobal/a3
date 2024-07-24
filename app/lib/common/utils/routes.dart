@@ -5,16 +5,20 @@ enum Routes {
   actionAddEvent('/actions/addEvent'),
   actionCreateSuperInvite('/actions/createSuperInvite'),
 
-  // --- Auth
+  // pre
   intro('/intro'),
-  start('/start'),
   introProfile('/introProfile'),
+
+  // --- Auth
   authLogin('/login'),
   forgotPassword('/forgotPassword'),
   authRegister('/register'),
+
+  // -- onboarding
   saveUsername('/saveUsername'),
   linkEmail('/linkEmail'),
   uploadAvatar('/uploadAvatar'),
+  analyticsOptIn('/analyticsOptIn'),
 
   // --- profile
   myProfile('/profile'),
@@ -32,6 +36,9 @@ enum Routes {
   // --- search
   searchPublicDirectory('/search/public'),
 
+  // --- Full Screen Avatar
+  fullScreenAvatar('/fullScreenAvatar'),
+
   // --- chat
   chat('/chat'),
   // show as dialog
@@ -43,8 +50,8 @@ enum Routes {
 
   // --- tasks
   tasks('/tasks'),
-  task('/tasks/:taskListId([^/]+)/:taskId([^/]+)'),
-  taskList('/tasks/:taskListId([^/]+)'),
+  taskListDetails('/tasks/:taskListId([^/]+)'),
+  taskItemDetails('/tasks/:taskListId([^/]+)/:taskId([^/]+)'),
 
   // --- Invite
   inviteIndividual('/inviteIndividual'),
@@ -58,7 +65,6 @@ enum Routes {
   linkSubspace('/:spaceId([!#][^/]+)/linkSubspace'),
   linkChat('/:spaceId([!#][^/]+)/linkChat'),
   linkRecommended('/:spaceId([!#][^/]+)/linkRecommended'),
-  editSpace('/:spaceId([!#][^/]+)/edit'),
   spaceInvite('/:spaceId([!#][^/]+)/invite'),
   space('/:spaceId([!#][^/]+)'), // !spaceId, #spaceName
   spaceRelatedSpaces('/:spaceId([!#][^/]+)/spaces'),
@@ -99,7 +105,6 @@ enum Routes {
 
   // -- super invites
   settingsSuperInvites('/settings/super_invites'),
-  settingsSuperInvitesUpdate('/settings/super_invites/:token/update'),
   // -- utils
   bugReport('/bug-report'),
   quickJump('/quick-jump'),

@@ -1,9 +1,7 @@
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
-
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -57,6 +55,7 @@ class EmailAddressCard extends ConsumerWidget {
                 child: Wrap(
                   children: [
                     IconButton(
+                      key: Key('$emailAddress-already-confirmed-btn'),
                       onPressed: () => alreadyConfirmedAddress(context, ref),
                       icon: const Icon(Atlas.envelope_check_thin),
                     ),
@@ -129,9 +128,8 @@ class EmailAddressCard extends ConsumerWidget {
           ),
           ActerPrimaryActionButton(
             onPressed: () async {
-              final client = ref.read(alwaysClientProvider);
-              final manager = client.threePidManager();
-              await manager.removeEmailAddress(emailAddress);
+              final account = ref.read(accountProvider);
+              await account.removeEmailAddress(emailAddress);
               ref.invalidate(emailAddressesProvider);
 
               if (!context.mounted) return;
@@ -148,8 +146,7 @@ class EmailAddressCard extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) async {
-    final client = ref.read(alwaysClientProvider);
-    final manager = client.threePidManager();
+    final account = ref.read(accountProvider);
     final newValue = await showDialog<String>(
       context: context,
       builder: (BuildContext context) => const PasswordConfirm(),
@@ -158,7 +155,7 @@ class EmailAddressCard extends ConsumerWidget {
     if (newValue == null) return;
     EasyLoading.show(status: L10n.of(context).tryingToConfirmToken);
     try {
-      await manager.tryConfirmEmailStatus(emailAddress, newValue);
+      await account.tryConfirmEmailStatus(emailAddress, newValue);
       ref.invalidate(emailAddressesProvider);
       if (!context.mounted) {
         EasyLoading.dismiss();
@@ -181,8 +178,7 @@ class EmailAddressCard extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) async {
-    final client = ref.read(alwaysClientProvider);
-    final manager = client.threePidManager();
+    final account = ref.read(accountProvider);
     final newValue = await showDialog<EmailConfirm>(
       context: context,
       builder: (BuildContext context) => const TokenConfirm(),
@@ -191,7 +187,7 @@ class EmailAddressCard extends ConsumerWidget {
     if (newValue == null) return;
     EasyLoading.show(status: L10n.of(context).tryingToConfirmToken);
     try {
-      final result = await manager.submitTokenFromEmail(
+      final result = await account.submitTokenFromEmail(
         emailAddress,
         newValue.token,
         newValue.password,
@@ -230,6 +226,8 @@ class EmailConfirm {
 }
 
 class PasswordConfirm extends StatefulWidget {
+  static Key passwordConfirmTxt = const Key('password-confirm-txt');
+  static Key passwordConfirmBtn = const Key('password-confirm-btn');
   const PasswordConfirm({super.key});
 
   @override
@@ -238,7 +236,8 @@ class PasswordConfirm extends StatefulWidget {
 
 class _PasswordConfirmState extends State<PasswordConfirm> {
   final TextEditingController newPassword = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey =
+      GlobalKey<FormState>(debugLabel: 'password confirm form');
   bool passwordVisible = false;
 
   @override
@@ -254,6 +253,7 @@ class _PasswordConfirmState extends State<PasswordConfirm> {
             Padding(
               padding: const EdgeInsets.all(5),
               child: TextFormField(
+                key: PasswordConfirm.passwordConfirmTxt,
                 controller: newPassword,
                 decoration: InputDecoration(
                   hintText: L10n.of(context).yourPassword,
@@ -278,6 +278,7 @@ class _PasswordConfirmState extends State<PasswordConfirm> {
           child: Text(L10n.of(context).cancel),
         ),
         ActerPrimaryActionButton(
+          key: PasswordConfirm.passwordConfirmBtn,
           onPressed: () => onSubmit(context),
           child: Text(L10n.of(context).submit),
         ),
@@ -307,7 +308,8 @@ class TokenConfirm extends StatefulWidget {
 class _TokenConfirmState extends State<TokenConfirm> {
   final TextEditingController tokenField = TextEditingController();
   final TextEditingController newPassword = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey =
+      GlobalKey<FormState>(debugLabel: 'token confirm form');
   bool passwordVisible = false;
 
   @override

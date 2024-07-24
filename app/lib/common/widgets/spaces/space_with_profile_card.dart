@@ -1,13 +1,12 @@
-import 'package:acter/common/models/profile_data.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
-class SpaceWithProfileCard extends StatelessWidget {
+class SpaceWithAvatarInfoCard extends StatelessWidget {
   final String roomId;
-  final String? parentRoomId;
-  final ProfileData profile;
-  final ProfileData? parentProfile;
+  final AvatarInfo avatarInfo;
+  final List<AvatarInfo>? parents;
   final Widget? subtitle;
   final Widget? trailing;
   final double avatarSize;
@@ -55,6 +54,9 @@ class SpaceWithProfileCard extends StatelessWidget {
   /// If null, `EdgeInsets.symmetric(horizontal: 16.0)` is used.
   final EdgeInsetsGeometry? contentPadding;
 
+  /// If null, `EdgeInsets.symmetric(horizontal: 16.0)` is used.
+  final EdgeInsetsGeometry? margin;
+
   /// The shape of the card's [Material].
   ///
   /// Defines the card's [Material.shape].
@@ -64,22 +66,19 @@ class SpaceWithProfileCard extends StatelessWidget {
   /// with a circular corner radius of 4.0.
   final ShapeBorder? shape;
 
-  /// Whether or not to render a border around that element.
+  /// Whether or not to render the parent(s) Icon
   ///
-  /// Overwritten if you provider a `shape`. Otherwise, if set to true renders
-  /// the default border.
-  final bool withBorder;
+  final bool showParents;
 
-  /// Whether or not to render the parent Icon
+  /// Whether or not to render the suggested icon
   ///
-  final bool showParent;
+  final bool showSuggestedMark;
 
-  const SpaceWithProfileCard({
+  const SpaceWithAvatarInfoCard({
     super.key,
     required this.roomId,
-    this.parentRoomId,
-    required this.profile,
-    this.parentProfile,
+    required this.avatarInfo,
+    this.parents,
     this.subtitle,
     this.trailing,
     this.onTap,
@@ -89,15 +88,16 @@ class SpaceWithProfileCard extends StatelessWidget {
     this.subtitleTextStyle,
     this.leadingAndTrailingTextStyle,
     this.shape,
-    this.withBorder = true,
-    this.showParent = true,
+    this.showParents = true,
+    this.margin,
+    this.showSuggestedMark = false,
     required this.avatarSize,
     required this.contentPadding,
   });
 
   @override
   Widget build(BuildContext context) {
-    final displayName = profile.displayName;
+    final displayName = avatarInfo.displayName;
     final title = displayName?.isNotEmpty == true ? displayName! : roomId;
 
     final avatar = ActerAvatar(
@@ -105,24 +105,16 @@ class SpaceWithProfileCard extends StatelessWidget {
         AvatarInfo(
           uniqueId: roomId,
           displayName: title,
-          avatar: profile.getAvatarImage(),
+          avatar: avatarInfo.avatar,
         ),
-        parentBadges: showParent && parentRoomId != null
-            ? [
-                AvatarInfo(
-                  uniqueId: parentRoomId!,
-                  displayName: parentProfile?.displayName ?? parentRoomId,
-                  avatar: parentProfile?.getAvatarImage(),
-                ),
-              ]
-            : [],
+        parentBadges: showParents ? parents : [],
         size: avatarSize,
         badgesSize: avatarSize / 2,
       ),
     );
 
     return Card(
-      shape: renderShape(context),
+      margin: margin,
       child: ListTile(
         contentPadding: contentPadding,
         onTap: onTap ?? () => context.push('/$roomId'),
@@ -131,27 +123,35 @@ class SpaceWithProfileCard extends StatelessWidget {
         titleTextStyle: titleTextStyle,
         subtitleTextStyle: subtitleTextStyle,
         leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
-        title: Text(title),
-        subtitle: subtitle,
+        title: Text(title, overflow: TextOverflow.ellipsis),
+        subtitle: buildSubtitle(context),
         leading: avatar,
         trailing: trailing,
       ),
     );
   }
 
-  ShapeBorder? renderShape(BuildContext context) {
-    if (shape != null) {
-      return shape;
+  Widget? buildSubtitle(BuildContext context) {
+    if (!showSuggestedMark) {
+      return subtitle;
     }
-    if (withBorder) {
-      return RoundedRectangleBorder(
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.primary,
-          width: 1.5,
-        ),
-        borderRadius: BorderRadius.circular(6),
+
+    if (subtitle != null) {
+      return Row(
+        children: [
+          Text(
+            L10n.of(context).suggested,
+            style: Theme.of(context).textTheme.labelSmall,
+          ),
+          const SizedBox(width: 2),
+          Expanded(child: subtitle!),
+        ],
       );
     }
-    return null;
+
+    return Text(
+      L10n.of(context).suggested,
+      style: Theme.of(context).textTheme.labelSmall,
+    );
   }
 }

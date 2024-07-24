@@ -126,24 +126,23 @@ class InviteIndividualUsers extends ConsumerWidget {
   }
 
   Widget _buildSuggestedUserItem(WidgetRef ref, FoundUser user) {
-    final room = ref.watch(briefRoomItemWithMembershipProvider(roomId));
+    final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
     return Card(
       child: ListTile(
-        title: Text(user.profile.displayName ?? user.userId),
-        subtitle: user.profile.displayName != null ? Text(user.userId) : null,
+        title: Text(user.avatarInfo.displayName ?? user.userId),
+        subtitle:
+            user.avatarInfo.displayName != null ? Text(user.userId) : null,
         leading: ActerAvatar(
           options: AvatarOptions.DM(
-            AvatarInfo(
-              uniqueId: user.userId,
-              displayName: user.profile.displayName,
-              avatar: user.profile.getAvatarImage(),
-            ),
+            user.avatarInfo,
           ),
         ),
-        trailing: UserStateButton(
-          userId: user.userId,
-          room: room.valueOrNull!.room!,
-        ),
+        trailing: room != null
+            ? UserStateButton(
+                userId: user.userId,
+                room: room,
+              )
+            : null,
       ),
     );
   }
@@ -170,7 +169,7 @@ class InviteIndividualUsers extends ConsumerWidget {
                 itemBuilder: (context, index) {
                   return foundUsers.when(
                     data: (data) => UserBuilder(
-                      profile: data[index],
+                      userId: data[index].userId().toString(),
                       roomId: roomId,
                     ),
                     error: (err, stackTrace) =>

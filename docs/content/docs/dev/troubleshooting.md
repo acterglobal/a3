@@ -129,3 +129,14 @@ sudo snap remove flutter
 ```
 
 And install it using the native system tools or [install flutter manually](https://docs.flutter.dev/get-started/install/linux#method-2-manual-installation).
+
+## When docker-compose is used for local test, `synapse` seems to be died
+
+If `matrix` client failed to connect to `synapse` server, `synapse` has issue at startup.
+
+1. use `docker ps` to check if some port was assigned to `synapse`
+2. if not, use `docker-compose logs synapse` to find out what happened at its startup
+3. stop the service with `docker-compose stop`
+4. remove the data at `rm -rf .local`
+5. if you changed something in config like `ci-start.sh` and it should update `homeserver.yaml`, clear cache and rebuild config using `docker-compose build`
+6. start the service with `docker-compose up -d`

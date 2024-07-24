@@ -2,13 +2,14 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/room/brief_room_list_entry.dart';
 import 'package:acter/common/widgets/search.dart';
 import 'package:acter/common/widgets/sliver_scaffold.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
+import 'package:acter/features/space/actions/unlink_child_room.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -72,11 +73,11 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     childRoomsIds.clear();
     if (widget.childRoomType == ChildRoomType.chat) {
       for (int i = 0; i < space.knownChats.length; i++) {
-        childRoomsIds.add(space.knownChats[i].getRoomIdStr());
+        childRoomsIds.add(space.knownChats[i]);
       }
     } else {
       for (int i = 0; i < space.knownSubspaces.length; i++) {
-        childRoomsIds.add(space.knownSubspaces[i].getRoomIdStr());
+        childRoomsIds.add(space.knownSubspaces[i]);
       }
       //Add recommended child spaces ids
       recommendedChildSpaceIds.clear();
@@ -329,17 +330,14 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     }
 
     if (!parentCanSee) {
-      final spaceProfile = await ref
-          .read(spaceProfileDataForSpaceIdProvider(parentSpaceId).future);
-      final roomProfile =
-          await ref.read(roomProfileDataProvider(room.roomIdStr()).future);
+      final spaceAvatarInfo = ref.read(roomAvatarInfoProvider(parentSpaceId));
       if (!mounted) return;
       final parentSpaceName =
           // ignore: use_build_context_synchronously
-          spaceProfile.profile.displayName ?? L10n.of(context).theParentSpace;
+          spaceAvatarInfo.displayName ?? L10n.of(context).theParentSpace;
       final roomName =
           // ignore: use_build_context_synchronously
-          roomProfile.displayName ?? L10n.of(context).theSelectedRooms;
+          spaceAvatarInfo.displayName ?? L10n.of(context).theSelectedRooms;
       bool shouldChange = await showDialog(
         // ignore: use_build_context_synchronously
         context: context,
@@ -396,7 +394,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
 
     //Fetch selected parent space data and add given roomId as child
     final space = await ref.read(spaceProvider(selectedParentSpaceId).future);
-    space.addChildRoom(roomId);
+    space.addChildRoom(roomId, false);
 
     //Make subspace
     if (widget.childRoomType == ChildRoomType.space) {
@@ -423,28 +421,17 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     final selectedParentSpaceId = ref.read(selectedSpaceIdProvider);
     if (selectedParentSpaceId == null) return;
 
-    //Fetch selected parent space data and add given roomId as child
-    final space = await ref.read(spaceProvider(selectedParentSpaceId).future);
-    if (!mounted) return;
-    space.removeChildRoom(roomId, L10n.of(context).unlinkRoom);
-
-    if (widget.childRoomType == ChildRoomType.space) {
-      //Fetch selected room data and add given parentSpaceId as parent
-      final room = await ref.read(maybeRoomProvider(roomId).future);
-      if (room != null && mounted) {
-        room.removeParentRoom(
-          selectedParentSpaceId,
-          L10n.of(context).unlinkRoom,
-        );
-      }
-    }
+    await unlinkChildRoom(
+      context,
+      ref,
+      parentId: selectedParentSpaceId,
+      roomId: roomId,
+    );
 
     if (widget.childRoomType == ChildRoomType.recommendedSpace) {
       recommendedChildSpaceIds.remove(roomId);
     } else {
       childRoomsIds.remove(roomId);
     }
-    // spaceRelations come from the server and must be manually invalidated
-    ref.invalidate(spaceRelationsOverviewProvider(selectedParentSpaceId));
   }
 }

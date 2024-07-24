@@ -27,11 +27,13 @@ class BriefRoomEntry extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final roomData = ref.watch(briefRoomItemWithMembershipProvider(roomId));
-    final canLink = roomData.maybeWhen(
-      data: (roomData) => roomData.membership!.canString(canCheck),
+    final roomMembership = ref.watch(roomMembershipProvider(roomId));
+    final canLink = roomMembership.maybeWhen(
+      data: (membership) => membership?.canString(canCheck) == true,
       orElse: () => false,
     );
+    final roomName =
+        ref.watch(roomDisplayNameProvider(roomId)).valueOrNull ?? roomId;
     Widget? trailing;
     if (trailingBuilder != null) {
       trailing = trailingBuilder!(canLink);
@@ -42,11 +44,7 @@ class BriefRoomEntry extends ConsumerWidget {
       key: Key('$keyPrefix-$roomId'),
       enabled: canLink,
       leading: RoomAvatarBuilder(roomId: roomId, avatarSize: 24),
-      title: roomData.maybeWhen(
-        data: (roomData) =>
-            Text(roomData.roomProfileData.displayName ?? roomId),
-        orElse: () => Text(roomId),
-      ),
+      title: Text(roomName),
       subtitle: subtitle,
       trailing: trailing,
       onTap: canLink && onSelect != null ? () => onSelect!(roomId) : null,

@@ -40,52 +40,41 @@ class SettingsPage extends ConsumerWidget {
   }
 
   Widget _userProfileUI(BuildContext context, WidgetRef ref) {
-    final account = ref.watch(accountProfileProvider);
+    final account = ref.watch(accountProvider);
+    final accountInfo = ref.watch(accountAvatarInfoProvider);
     final size = MediaQuery.of(context).size;
     final shouldGoNotNamed = size.width > 770;
-    return account.when(
-      data: (data) {
-        final userId = data.account.userId().toString();
-        return Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+    final userId = account.userId().toString();
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        children: [
+          ListTile(
+            onTap: () => shouldGoNotNamed
+                ? context.goNamed(Routes.myProfile.name)
+                : context.pushNamed(Routes.myProfile.name),
+            leading: ActerAvatar(
+              options: AvatarOptions.DM(accountInfo),
+            ),
+            title: Text(
+              accountInfo.displayName ?? '',
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            subtitle: Text(
+              userId,
+              overflow: TextOverflow.ellipsis,
+            ),
+            trailing: const Icon(Icons.arrow_forward_ios),
           ),
-          child: Column(
-            children: [
-              ListTile(
-                onTap: () => shouldGoNotNamed
-                    ? context.goNamed(Routes.myProfile.name)
-                    : context.pushNamed(Routes.myProfile.name),
-                leading: ActerAvatar(
-                  options: AvatarOptions.DM(
-                    AvatarInfo(
-                      uniqueId: userId,
-                      avatar: data.profile.getAvatarImage(),
-                      displayName: data.profile.displayName,
-                    ),
-                  ),
-                ),
-                title: Text(
-                  data.profile.displayName ?? '',
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                subtitle: Text(
-                  userId,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                trailing: const Icon(Icons.arrow_forward_ios),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Text(L10n.of(context).editProfile),
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Text(L10n.of(context).editProfile),
           ),
-        );
-      },
-      error: (e, trace) => Text('error: $e'),
-      loading: () => userProfileMenuSkeletonUI(context),
+        ],
+      ),
     );
   }
 

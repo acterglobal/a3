@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
-final createNewSpaceKey = GlobalKey();
-final joinExistingSpaceKey = GlobalKey();
+final createNewSpaceKey = GlobalKey(debugLabel: 'create new space');
+final joinExistingSpaceKey = GlobalKey(debugLabel: 'join existing space');
 
 const createOrJoinSpacePrefKey = 'createOrJoinSpacePrefKey';
 

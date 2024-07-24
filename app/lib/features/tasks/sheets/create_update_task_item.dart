@@ -1,6 +1,6 @@
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/tasks/providers/tasklists.dart';
+import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
@@ -8,11 +8,13 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
+import 'package:acter/features/tasks/widgets/due_picker.dart';
 
 void showCreateUpdateTaskItemBottomSheet(
   BuildContext context, {
   required TaskList taskList,
   required String taskName,
+  Task? task,
   Function()? cancel,
 }) {
   showModalBottomSheet(
@@ -24,6 +26,7 @@ void showCreateUpdateTaskItemBottomSheet(
       return CreateUpdateTaskItemList(
         taskList: taskList,
         taskName: taskName,
+        task: task,
         cancel: cancel,
       );
     },
@@ -33,12 +36,14 @@ void showCreateUpdateTaskItemBottomSheet(
 class CreateUpdateTaskItemList extends ConsumerStatefulWidget {
   final TaskList taskList;
   final String taskName;
+  final Task? task;
   final Function()? cancel;
 
   const CreateUpdateTaskItemList({
     super.key,
     required this.taskList,
     required this.taskName,
+    this.task,
     this.cancel,
   });
 
@@ -49,7 +54,8 @@ class CreateUpdateTaskItemList extends ConsumerStatefulWidget {
 
 class _CreateUpdateItemListConsumerState
     extends ConsumerState<CreateUpdateTaskItemList> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey =
+      GlobalKey<FormState>(debugLabel: 'update task list form');
   final TextEditingController _taskNameController = TextEditingController();
   final TextEditingController _taskDescriptionController =
       TextEditingController();
@@ -60,6 +66,20 @@ class _CreateUpdateItemListConsumerState
   void initState() {
     super.initState();
     _taskNameController.text = widget.taskName;
+    setUpdateData();
+  }
+
+  void setUpdateData() {
+    if (widget.task == null) return;
+    if (widget.task!.description() != null) {
+      _taskDescriptionController.text = widget.task!.description()!.body();
+    }
+    if (widget.task!.dueDate() != null) {
+      selectedDate = DateTime.parse(widget.task!.dueDate()!);
+      if (selectedDate != null) {
+        _taskDueDateController.text = taskDueDateFormat(selectedDate!);
+      }
+    }
   }
 
   @override
@@ -85,7 +105,9 @@ class _CreateUpdateItemListConsumerState
               ),
               const SizedBox(height: 20),
               Text(
-                L10n.of(context).addTask,
+                widget.task == null
+                    ? L10n.of(context).addTask
+                    : L10n.of(context).updateTask,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
@@ -195,13 +217,12 @@ class _CreateUpdateItemListConsumerState
   }
 
   Future<void> selectDueDate() async {
-    final date = await showDatePicker(
+    final due = await showDuePicker(
       context: context,
       initialDate: selectedDate,
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().addYears(1),
     );
-    if (date == null || !mounted) return;
+    if (due == null || !mounted) return;
+    final date = due.due;
     setState(() {
       selectedDate = date;
       _taskDueDateController.text = taskDueDateFormat(date);
@@ -210,12 +231,16 @@ class _CreateUpdateItemListConsumerState
 
   Widget _widgetAddButton() {
     return ElevatedButton(
-      onPressed: submitForm,
-      child: Text(L10n.of(context).addTask),
+      onPressed: widget.task == null ? addTask : updateTask,
+      child: Text(
+        widget.task == null
+            ? L10n.of(context).addTask
+            : L10n.of(context).updateTask,
+      ),
     );
   }
 
-  Future<void> submitForm() async {
+  Future<void> addTask() async {
     if (!_formKey.currentState!.validate()) return;
     EasyLoading.show(status: L10n.of(context).addingTask);
     final taskDraft = widget.taskList.taskBuilder();
@@ -236,12 +261,43 @@ class _CreateUpdateItemListConsumerState
       if (!mounted) return;
       if (widget.cancel != null) widget.cancel!();
       context.pop();
-      ref.invalidate(spaceTasksListsProvider);
+      ref.invalidate(taskListProvider);
     } catch (e) {
       EasyLoading.dismiss();
       if (!mounted) return;
       EasyLoading.showError(
         L10n.of(context).creatingTaskFailed(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
+  }
+
+  Future<void> updateTask() async {
+    if (!_formKey.currentState!.validate() || widget.task == null) return;
+    EasyLoading.show(status: L10n.of(context).updatingTask);
+    final updater = widget.task!.updateBuilder();
+    updater.title(_taskNameController.text);
+    if (_taskDescriptionController.text.isNotEmpty) {
+      updater.descriptionText(_taskDescriptionController.text);
+    }
+    if (selectedDate != null) {
+      updater.dueDate(
+        selectedDate!.year,
+        selectedDate!.month,
+        selectedDate!.day,
+      );
+    }
+    try {
+      await updater.send();
+      EasyLoading.dismiss();
+      if (!mounted) return;
+      context.pop();
+      ref.invalidate(taskListProvider);
+    } catch (e) {
+      EasyLoading.dismiss();
+      if (!mounted) return;
+      EasyLoading.showError(
+        L10n.of(context).updatingTaskFailed(e),
         duration: const Duration(seconds: 3),
       );
     }
