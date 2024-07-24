@@ -23,7 +23,7 @@ class AutocompleteTextController extends TextEditingController {
       final trigger = entry.key;
       final triggerStyle = entry.value;
 
-      final regex = RegExp('\\$trigger\\S+');
+      final regex = RegExp('\\$trigger\\S+(?: \\S+)*');
       final matches = regex.allMatches(text);
 
       for (final match in matches) {
