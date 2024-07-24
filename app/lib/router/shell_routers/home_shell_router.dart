@@ -1,4 +1,5 @@
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/invite_members/pages/invite_indicidual_users.dart';
 import 'package:acter/features/invite_members/pages/invite_page.dart';
 import 'package:acter/features/events/pages/create_edit_event_page.dart';
@@ -25,6 +26,7 @@ import 'package:acter/features/settings/pages/notifications_page.dart';
 import 'package:acter/features/settings/pages/sessions_page.dart';
 import 'package:acter/features/space/pages/space_details_page.dart';
 import 'package:acter/features/space/settings/pages/visibility_accessibility_page.dart';
+import 'package:acter/features/space/settings/widgets/space_settings_menu.dart';
 import 'package:acter/features/super_invites/pages/super_invites.dart';
 import 'package:acter/features/space/pages/chats_page.dart';
 import 'package:acter/features/space/pages/events_page.dart';
@@ -358,10 +360,16 @@ List<RouteBase> makeHomeShellRoutes() {
       path: Routes.spaceSettingsVisibility.route,
       redirect: authGuardRedirect,
       pageBuilder: (context, state) {
+        final roomId = state.pathParameters['spaceId']!;
         return NoTransitionPage(
           key: state.pageKey,
-          child: VisibilityAccessibilityPage(
-            roomId: state.pathParameters['spaceId']!,
+          child: WithSidebar(
+            sidebar: SpaceSettingsMenu(
+              spaceId: roomId,
+            ),
+            child: VisibilityAccessibilityPage(
+              roomId: roomId,
+            ),
           ),
         );
       },

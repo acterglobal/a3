@@ -185,7 +185,7 @@ class SettingsMenu extends ConsumerWidget {
               onTap: isSuperInviteEnable
                   ? () => replacementRouting
                       ? context.pushReplacementNamed(
-                          Routes.settingsSuperInvites.name)
+                          Routes.settingsSuperInvites.name,)
                       : context.pushNamed(Routes.settingsSuperInvites.name)
                   : null,
             ),

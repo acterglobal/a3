@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -29,11 +28,9 @@ final _log = Logger('a3::chat::room_profile_page');
 
 class RoomProfilePage extends ConsumerStatefulWidget {
   final String roomId;
-  final bool inSidebar;
 
   const RoomProfilePage({
     required this.roomId,
-    required this.inSidebar,
     super.key,
   });
 
@@ -97,7 +94,8 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
 
     return AppBar(
       // custom x-circle when we are in widescreen mode;
-      leading: widget.inSidebar
+      automaticallyImplyLeading: !isLargeScreen(context),
+      leading: isLargeScreen(context)
           ? IconButton(
               onPressed: () => context.pop(),
               icon: const Icon(Atlas.xmark_circle_thin),
@@ -338,7 +336,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
   }
 
   Widget _optionsBody(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    final isLarge = isLargeScreen(context);
     return Column(
       children: [
         // Notification section
@@ -365,17 +363,10 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
                     title: Text(L10n.of(context).accessAndVisibility),
                     description: VisibilityChip(roomId: widget.roomId),
                     leading: const Icon(Atlas.lab_appliance_thin),
-                    onPressed: (context) {
-                      isDesktop || size.width > 770
-                          ? context.goNamed(
-                              Routes.chatSettingsVisibility.name,
-                              pathParameters: {'roomId': widget.roomId},
-                            )
-                          : context.pushNamed(
-                              Routes.chatSettingsVisibility.name,
-                              pathParameters: {'roomId': widget.roomId},
-                            );
-                    },
+                    onPressed: (context) => context.pushNamed(
+                      Routes.chatSettingsVisibility.name,
+                      pathParameters: {'roomId': widget.roomId},
+                    ),
                   ),
                 ],
               ),
