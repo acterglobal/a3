@@ -1,0 +1,34 @@
+name: multi_trigger_autocomplete
+description: A new flutter plugin project.
+version: 0.0.1
+homepage: 'https://doc.acter.global/'
+publish_to: "none"
+
+environment:
+  sdk: ">=2.18.0 <4.0.0"
+  flutter: ">=3.3.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_portal: ^1.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+topics:
+  - mentions
+  - autocomplete
+  - autocomplete-search
+  - autocomplete-textfield
+  - autocomplete-suggestions
+
+screenshots:
+  - description: 'Emoji Autocomplete Demo'
+    path: asset/emoji_demo.gif
+  - description: 'Hashtag Autocomplete Demo'
+    path: asset/hashtag_demo.gif
+  - description: 'Mention Autocomplete Demo'
+    path: asset/mention_demo.gif
