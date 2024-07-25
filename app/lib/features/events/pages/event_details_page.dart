@@ -12,6 +12,7 @@ import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/events/model/keys.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/events/widgets/event_date_widget.dart';
 import 'package:acter/features/events/widgets/participants_list.dart';
 import 'package:acter/features/events/widgets/skeletons/event_details_skeleton_widget.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -216,69 +217,60 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   Widget _buildEventBasicDetails(CalendarEvent calendarEvent) {
-    final month = getMonthFromDate(calendarEvent.utcStart());
-    final day = getDayFromDate(calendarEvent.utcStart());
     final membership = ref
         .watch(roomMembershipProvider(calendarEvent.roomIdStr()))
         .valueOrNull;
     final canPostEvent = membership?.canString('CanPostEvent') == true;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Date and Month
-          Column(
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Date and Month
+        EventDateWidget(
+          calendarEvent: calendarEvent,
+          size: 80,
+        ),
+        // Title, Space, User counts, comments counts and like counts
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(month, style: Theme.of(context).textTheme.titleLarge!),
-              Text(day, style: Theme.of(context).textTheme.displayLarge),
-            ],
-          ),
-          // Space
-          const SizedBox(width: 30),
-          // Title, Space, User counts, comments counts and like counts
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SelectionArea(
-                  child: GestureDetector(
-                    onTap: () {
-                      if (canPostEvent) {
-                        showEditEventTitleBottomSheet(calendarEvent.title());
-                      }
-                    },
-                    child: Text(
-                      calendarEvent.title(),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
+              SelectionArea(
+                child: GestureDetector(
+                  onTap: () {
+                    if (canPostEvent) {
+                      showEditEventTitleBottomSheet(calendarEvent.title());
+                    }
+                  },
+                  child: Text(
+                    calendarEvent.title(),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
-                SpaceChip(spaceId: calendarEvent.roomIdStr()),
-                const SizedBox(height: 5),
-                Row(
-                  children: [
-                    const Icon(Atlas.accounts_group_people),
-                    const SizedBox(width: 10),
-                    ValueListenableBuilder(
-                      valueListenable: eventParticipantsList,
-                      builder: (context, eventParticipantsList, child) {
-                        return Text(
-                          L10n.of(context)
-                              .peopleGoing(eventParticipantsList.length),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            ),
+              ),
+              SpaceChip(spaceId: calendarEvent.roomIdStr()),
+              const SizedBox(height: 5),
+              Row(
+                children: [
+                  const Icon(Atlas.accounts_group_people),
+                  const SizedBox(width: 10),
+                  ValueListenableBuilder(
+                    valueListenable: eventParticipantsList,
+                    builder: (context, eventParticipantsList, child) {
+                      return Text(
+                        L10n.of(context)
+                            .peopleGoing(eventParticipantsList.length),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
