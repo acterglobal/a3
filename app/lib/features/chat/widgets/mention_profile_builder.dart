@@ -10,12 +10,12 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class MentionProfileBuilder extends ConsumerWidget {
-  final BuildContext ctx;
+  final BuildContext context;
   final RoomQuery roomQuery;
 
   const MentionProfileBuilder({
     super.key,
-    required this.ctx,
+    required this.context,
     required this.roomQuery,
   });
 
@@ -73,7 +73,7 @@ class MentionProfileBuilder extends ConsumerWidget {
                 return ListTile(
                   dense: true,
                   onTap: () {
-                    final autocomplete = MultiTriggerAutocomplete.of(ctx);
+                    final autocomplete = MultiTriggerAutocomplete.of(context);
                     ref
                         .read(chatInputProvider.notifier)
                         .addMention(displayName, id);

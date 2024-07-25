@@ -142,9 +142,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
               eventId: event.eventId().toString(),
               onSuccess: () {
                 ref.invalidate(calendarEventProvider);
-                if (context.canPop()) {
-                  Navigator.of(context, rootNavigator: true).pop();
-                }
+                Navigator.pop(context);
               },
               senderId: event.sender().toString(),
               roomId: roomId,
@@ -170,7 +168,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       PopupMenuItem(
         onTap: () => showAdaptiveDialog(
           context: context,
-          builder: (ctx) => ReportContentWidget(
+          builder: (context) => ReportContentWidget(
             title: L10n.of(context).reportThisEvent,
             description: L10n.of(context).reportThisContent,
             eventId: widget.calendarId,
@@ -194,7 +192,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
 
     return PopupMenuButton(
       key: EventsKeys.appbarMenuActionBtn,
-      itemBuilder: (ctx) => actions,
+      itemBuilder: (context) => actions,
     );
   }
 
@@ -312,7 +310,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
 
       EasyLoading.dismiss();
       if (!mounted) return;
-      context.closeDialog();
+      Navigator.pop(context);
     } catch (e, st) {
       _log.severe('Failed to edit event name', e, st);
       EasyLoading.dismiss();
@@ -416,7 +414,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   Widget _buildShareAction(CalendarEvent calendarEvent) {
     return PopupMenuButton(
       icon: const Icon(Icons.share),
-      itemBuilder: (ctx) => [
+      itemBuilder: (context) => [
         PopupMenuItem(
           onTap: () => onShareEvent(calendarEvent),
           child: Row(
@@ -667,7 +665,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       updateBuilder.descriptionHtml(plainDescription, htmlBodyDescription);
       await updateBuilder.send();
       EasyLoading.dismiss();
-      if (mounted) context.closeDialog();
+      if (mounted) Navigator.pop(context);
     } catch (e, st) {
       _log.severe('Failed to update event description', e, st);
       EasyLoading.dismiss();

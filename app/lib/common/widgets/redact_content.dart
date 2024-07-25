@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::common::redact');
@@ -75,7 +74,7 @@ class RedactContentWidget extends ConsumerWidget {
       actions: <Widget>[
         OutlinedButton(
           key: cancelBtnKey,
-          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+          onPressed: () => Navigator.pop(context),
           child: Text(L10n.of(context).close),
         ),
         ActerPrimaryActionButton(
@@ -88,8 +87,8 @@ class RedactContentWidget extends ConsumerWidget {
     );
   }
 
-  void redactContent(BuildContext ctx, WidgetRef ref, String reason) async {
-    EasyLoading.show(status: L10n.of(ctx).removingContent);
+  void redactContent(BuildContext context, WidgetRef ref, String reason) async {
+    EasyLoading.show(status: L10n.of(context).removingContent);
     try {
       if (isSpace) {
         final space = await ref.read(spaceProvider(roomId).future);
@@ -107,22 +106,22 @@ class RedactContentWidget extends ConsumerWidget {
         );
       }
 
-      if (!ctx.mounted) {
+      if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
-      EasyLoading.showToast(L10n.of(ctx).contentSuccessfullyRemoved);
-      if (ctx.canPop()) ctx.pop();
+      EasyLoading.showToast(L10n.of(context).contentSuccessfullyRemoved);
+      Navigator.pop(context);
       if (onSuccess != null) {
         onSuccess!();
       }
     } catch (e) {
-      if (!ctx.mounted) {
+      if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
       EasyLoading.showError(
-        '${L10n.of(ctx).redactionFailed} $e',
+        '${L10n.of(context).redactionFailed} $e',
         duration: const Duration(seconds: 3),
       );
     }

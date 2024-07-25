@@ -1,4 +1,3 @@
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/redact_content.dart';
@@ -106,7 +105,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
       context: context,
       builder: (context) => RedactContentWidget(
         title: L10n.of(context).deleteTaskList,
-        onSuccess: () => Navigator.of(context, rootNavigator: true).pop(),
+        onSuccess: () => Navigator.pop(context),
         eventId: taskList.eventIdStr(),
         senderId: taskList.role() ?? '',
         roomId: taskList.spaceIdStr(),
@@ -119,7 +118,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   void showReportDialog(TaskList taskList) {
     showAdaptiveDialog(
       context: context,
-      builder: (ctx) => ReportContentWidget(
+      builder: (context) => ReportContentWidget(
         title: L10n.of(context).reportTaskList,
         description: L10n.of(context).reportThisContent,
         eventId: taskList.eventIdStr(),
@@ -207,7 +206,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
       updater.descriptionHtml(plainDescription, htmlBodyDescription);
       await updater.send();
       EasyLoading.dismiss();
-      if (mounted) context.closeDialog();
+      if (mounted) Navigator.pop(context);
     } catch (e, st) {
       _log.severe('Failed to update event description', e, st);
       EasyLoading.dismiss();
@@ -293,7 +292,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
           ref.invalidate(taskListProvider);
           EasyLoading.dismiss();
           if (!context.mounted) return;
-          context.closeDialog();
+          Navigator.pop(context);
         } catch (e) {
           EasyLoading.dismiss();
           if (!context.mounted) return;

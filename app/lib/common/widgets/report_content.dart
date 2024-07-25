@@ -90,7 +90,7 @@ class ReportContentWidget extends ConsumerWidget {
       ),
       actions: <Widget>[
         OutlinedButton(
-          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+          onPressed: () => Navigator.pop(context),
           child: Text(L10n.of(context).close),
         ),
         ActerPrimaryActionButton(
@@ -101,10 +101,10 @@ class ReportContentWidget extends ConsumerWidget {
     );
   }
 
-  void reportContent(BuildContext ctx, WidgetRef ref, String reason) async {
+  void reportContent(BuildContext context, WidgetRef ref, String reason) async {
     bool res = false;
     final ignoreFlag = ref.read(_ignoreUserProvider);
-    EasyLoading.show(status: L10n.of(ctx).sendingReport);
+    EasyLoading.show(status: L10n.of(context).sendingReport);
     try {
       if (isSpace) {
         final space = await ref.read(spaceProvider(roomId).future);
@@ -126,26 +126,26 @@ class ReportContentWidget extends ConsumerWidget {
         }
       }
 
-      if (!ctx.mounted) {
+      if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
       if (res) {
-        EasyLoading.showToast(L10n.of(ctx).reportSent);
-        Navigator.of(ctx, rootNavigator: true).pop();
+        EasyLoading.showToast(L10n.of(context).reportSent);
+        Navigator.pop(context);
       } else {
         EasyLoading.showError(
-          L10n.of(ctx).reportSendingFailed,
+          L10n.of(context).reportSendingFailed,
           duration: const Duration(seconds: 3),
         );
       }
     } catch (e) {
-      if (!ctx.mounted) {
+      if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
       EasyLoading.showError(
-        L10n.of(ctx).reportSendingFailedDueTo(e),
+        L10n.of(context).reportSendingFailedDueTo(e),
         duration: const Duration(seconds: 3),
       );
     }

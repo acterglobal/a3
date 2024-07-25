@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -29,7 +28,7 @@ void showEditSpaceNameBottomSheet({
         await space.setName(newName);
         EasyLoading.dismiss();
         if (!context.mounted) return;
-        context.closeDialog();
+        Navigator.pop(context);
       } catch (e, st) {
         _log.severe('Failed to edit space name', e, st);
         EasyLoading.dismiss();

@@ -1,6 +1,5 @@
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
@@ -93,7 +92,7 @@ class _EditHtmlDescriptionSheetState
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               OutlinedButton(
-                onPressed: () => context.closeDialog(),
+                onPressed: () => Navigator.pop(context),
                 child: Text(L10n.of(context).cancel),
               ),
               const SizedBox(width: 20),
@@ -104,7 +103,7 @@ class _EditHtmlDescriptionSheetState
                   final plainDescription = textEditorState.intoMarkdown();
                   if (htmlBodyDescription == widget.descriptionHtmlValue ||
                       plainDescription == widget.descriptionMarkdownValue) {
-                    context.closeDialog();
+                    Navigator.pop(context);
                     return;
                   }
                   widget.onSave(htmlBodyDescription, plainDescription);

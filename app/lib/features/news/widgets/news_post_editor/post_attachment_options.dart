@@ -27,7 +27,7 @@ class PostAttachmentOptions extends StatelessWidget {
         ListTile(
           key: NewsUpdateKeys.addTextSlide,
           onTap: () {
-            Navigator.of(context).pop();
+            Navigator.pop(context);
             if (onTapAddText != null) onTapAddText!();
           },
           leading: const Icon(Atlas.size_text),
@@ -36,7 +36,7 @@ class PostAttachmentOptions extends StatelessWidget {
         ListTile(
           key: NewsUpdateKeys.addImageSlide,
           onTap: () {
-            Navigator.of(context).pop();
+            Navigator.pop(context);
             if (onTapImage != null) onTapImage!();
           },
           leading: const Icon(Atlas.file_image),
@@ -45,7 +45,7 @@ class PostAttachmentOptions extends StatelessWidget {
         ListTile(
           key: NewsUpdateKeys.addVideoSlide,
           onTap: () {
-            Navigator.of(context).pop();
+            Navigator.pop(context);
             if (onTapVideo != null) onTapVideo!();
           },
           leading: const Icon(Atlas.file_video),
@@ -53,7 +53,7 @@ class PostAttachmentOptions extends StatelessWidget {
         ),
         ListTile(
           key: NewsUpdateKeys.cancelButton,
-          onTap: () => Navigator.of(context).pop(),
+          onTap: () => Navigator.pop(context),
           contentPadding: const EdgeInsets.all(0),
           title: Text(L10n.of(context).cancel, textAlign: TextAlign.center),
         ),

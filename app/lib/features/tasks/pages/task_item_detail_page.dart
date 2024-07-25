@@ -151,7 +151,7 @@ class TaskItemDetailPage extends ConsumerWidget {
         onSuccess: () {
           ref.invalidate(taskItemsListProvider);
           ref.invalidate(taskListItemProvider);
-          Navigator.of(context, rootNavigator: true).pop();
+          Navigator.pop(context);
         },
         eventId: task.eventIdStr(),
         senderId: task.authorStr(),
@@ -168,7 +168,7 @@ class TaskItemDetailPage extends ConsumerWidget {
   }) {
     showAdaptiveDialog(
       context: context,
-      builder: (ctx) => ReportContentWidget(
+      builder: (context) => ReportContentWidget(
         title: L10n.of(context).reportTaskItem,
         description: L10n.of(context).reportThisContent,
         eventId: task.eventIdStr(),
@@ -276,7 +276,7 @@ class TaskItemDetailPage extends ConsumerWidget {
       updater.descriptionHtml(plainDescription, htmlBodyDescription);
       await updater.send();
       EasyLoading.dismiss();
-      if (context.mounted) context.closeDialog();
+      if (context.mounted) Navigator.pop(context);
     } catch (e, st) {
       _log.severe('Failed to update event description', e, st);
       EasyLoading.dismiss();
@@ -482,7 +482,7 @@ class TaskItemDetailPage extends ConsumerWidget {
       ref.invalidate(taskListProvider);
       EasyLoading.dismiss();
       if (!context.mounted) return;
-      context.closeDialog();
+      Navigator.pop(context);
     } catch (e) {
       EasyLoading.dismiss();
       if (!context.mounted) return;

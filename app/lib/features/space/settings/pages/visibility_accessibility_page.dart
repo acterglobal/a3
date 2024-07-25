@@ -48,7 +48,7 @@ class _VisibilityAccessibilityPageState
       automaticallyImplyLeading: !context.isLargeScreen,
       leading: widget.impliedClose
           ? IconButton(
-              onPressed: () => context.closeDialog(),
+              onPressed: () => Navigator.pop(context),
               icon: const Icon(Atlas.xmark_circle_thin),
             )
           : null,

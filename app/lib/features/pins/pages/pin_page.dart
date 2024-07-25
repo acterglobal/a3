@@ -14,7 +14,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
@@ -141,7 +140,7 @@ class PinPage extends ConsumerWidget {
     return PopupMenuButton<String>(
       key: PinPage.actionMenuKey,
       icon: const Icon(Atlas.dots_vertical_thin),
-      itemBuilder: (ctx) => actions,
+      itemBuilder: (context) => actions,
     );
   }
 
@@ -157,7 +156,7 @@ class PinPage extends ConsumerWidget {
         title: L10n.of(context).removeThisPin,
         eventId: pin.eventIdStr(),
         onSuccess: () {
-          if (context.canPop()) Navigator.of(context, rootNavigator: true).pop();
+          Navigator.pop(context);
         },
         senderId: pin.sender().toString(),
         roomId: roomId,
@@ -170,7 +169,7 @@ class PinPage extends ConsumerWidget {
   void showReportDialog(BuildContext context, ActerPin pin) {
     showAdaptiveDialog(
       context: context,
-      builder: (ctx) => ReportContentWidget(
+      builder: (context) => ReportContentWidget(
         title: L10n.of(context).reportThisPin,
         description: L10n.of(context).reportThisContent,
         eventId: pinId,

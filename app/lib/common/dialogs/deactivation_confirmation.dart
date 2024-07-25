@@ -19,7 +19,7 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
   final theme = Theme.of(context).colorScheme;
   showDialog(
     context: context,
-    builder: (BuildContext ctx) {
+    builder: (BuildContext context) {
       return AlertDialog(
         backgroundColor: Theme.of(context).colorScheme.surface,
         title: Text(
@@ -83,7 +83,7 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
         actions: <Widget>[
           OutlinedButton(
             key: deactivateCancelBtn,
-            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+            onPressed: () => Navigator.pop(context),
             child: Text(L10n.of(context).cancel),
           ),
           ActerDangerActionButton(

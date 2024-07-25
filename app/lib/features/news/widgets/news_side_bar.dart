@@ -2,7 +2,6 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_bottom_sheet.dart';
 import 'package:acter/common/widgets/like_button.dart';
 import 'package:acter/common/widgets/redact_content.dart';
@@ -15,6 +14,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -181,9 +181,14 @@ class ActionBox extends ConsumerWidget {
             builder: (context) => RedactContentWidget(
               title: L10n.of(context).removeThisPost,
               eventId: news.eventId().toString(),
-              onSuccess: () {
-                context.closeDialog(orGo: Routes.main);
+              onSuccess: () async {
                 ref.invalidate(newsListProvider);
+                if (!await Navigator.maybePop(context)) {
+                  if (context.mounted) {
+                    // fallback to go to home
+                    context.goNamed(Routes.main.name);
+                  }
+                }
               },
               senderId: senderId,
               roomId: roomId,

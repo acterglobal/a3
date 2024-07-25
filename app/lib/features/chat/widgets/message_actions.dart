@@ -163,7 +163,7 @@ class MessageActions extends ConsumerWidget {
         title: Text(L10n.of(context).areYouSureYouWantToDeleteThisMessage),
         actions: <Widget>[
           OutlinedButton(
-            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+            onPressed: () => Navigator.pop(context),
             child: Text(L10n.of(context).no),
           ),
           ActerPrimaryActionButton(
@@ -177,12 +177,12 @@ class MessageActions extends ConsumerWidget {
                 );
                 chatInputNotifier.unsetSelectedMessage();
                 if (context.mounted) {
-                  Navigator.of(context, rootNavigator: true).pop();
+                  Navigator.pop(context);
                 }
               } catch (error, stackTrace) {
                 _log.severe('Redacting message failed', error, stackTrace);
                 if (context.mounted) {
-                  Navigator.of(context, rootNavigator: true).pop();
+                  Navigator.pop(context);
                 }
                 EasyLoading.showError(error.toString());
               }

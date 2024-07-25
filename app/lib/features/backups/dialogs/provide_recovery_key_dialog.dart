@@ -62,7 +62,7 @@ class __RecoveryKeyDialogState extends ConsumerState<_RecoveryKeyDialog> {
         actionsAlignment: MainAxisAlignment.spaceEvenly,
         actions: <Widget>[
           OutlinedButton(
-            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+            onPressed: () => Navigator.pop(context),
             child: Text(L10n.of(context).cancel),
           ),
           ActerPrimaryActionButton(
@@ -94,7 +94,7 @@ class __RecoveryKeyDialogState extends ConsumerState<_RecoveryKeyDialog> {
           L10n.of(context).encryptionBackupRecoverRecoveringSuccess,
         );
         if (context.mounted) {
-          Navigator.of(context, rootNavigator: true).pop();
+          Navigator.pop(context);
         }
       } else {
         if (!context.mounted) {
@@ -120,6 +120,6 @@ class __RecoveryKeyDialogState extends ConsumerState<_RecoveryKeyDialog> {
 void showProviderRecoveryKeyDialog(BuildContext context, WidgetRef ref) {
   showDialog(
     context: context,
-    builder: (BuildContext ctx) => const _RecoveryKeyDialog(),
+    builder: (BuildContext context) => const _RecoveryKeyDialog(),
   );
 }

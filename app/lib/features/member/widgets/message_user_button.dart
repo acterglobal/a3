@@ -1,5 +1,4 @@
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/providers/create_chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/router/utils.dart';
@@ -21,7 +20,7 @@ class MessageUserButton extends ConsumerWidget {
         child: OutlinedButton.icon(
           icon: const Icon(Atlas.chats_thin),
           onPressed: () async {
-            context.closeDialog();
+            Navigator.pop(context);
             goToChat(context, dmId);
           },
           label: const Text('Message'),
@@ -36,9 +35,11 @@ class MessageUserButton extends ConsumerWidget {
             ref.read(createChatSelectedUsersProvider.notifier).state = [
               profile,
             ];
-            context.closeDialog().pushNamed(
-                  Routes.createChat.name,
-                );
+            Navigator.pop(context);
+            Navigator.pushNamed(
+              context,
+              Routes.createChat.name,
+            );
           },
           label: const Text('Start DM'),
         ),

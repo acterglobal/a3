@@ -55,7 +55,7 @@ class AttachmentOptions extends StatelessWidget {
           title: Text(L10n.of(context).file),
         ),
         ListTile(
-          onTap: () => Navigator.of(context).pop(),
+          onTap: () => Navigator.pop(context),
           contentPadding: const EdgeInsets.all(0),
           title: Text(L10n.of(context).cancel, textAlign: TextAlign.center),
         ),

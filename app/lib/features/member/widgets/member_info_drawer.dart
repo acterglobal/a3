@@ -1,7 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/menu_item_widget.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/room/room_avatar_builder.dart';
 import 'package:acter/features/member/dialogs/show_block_user_dialog.dart';
 import 'package:acter/features/member/dialogs/show_change_power_level_dialog.dart';
@@ -177,7 +176,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
                   () async {
                     await changePowerLevel(context, ref);
                     if (context.mounted) {
-                      context.closeDialog();
+                      Navigator.pop(context);
                     }
                   },
                 ),
@@ -195,7 +194,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
                   onTap: () async {
                     await showKickUserDialog(context, member);
                     if (context.mounted) {
-                      context.closeDialog();
+                      Navigator.pop(context);
                     }
                   },
                 ),
@@ -210,7 +209,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
                     onTap: () async {
                       await showKickAndBanUserDialog(context, member);
                       if (context.mounted) {
-                        context.closeDialog();
+                        Navigator.pop(context);
                       }
                     },
                   ),
@@ -279,7 +278,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
   Widget _buildUserName(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        context.closeDialog(); // close the drawer
+        Navigator.pop(context); // close the drawer
         Clipboard.setData(ClipboardData(text: memberId));
         EasyLoading.showToast(L10n.of(context).usernameCopiedToClipboard);
       },

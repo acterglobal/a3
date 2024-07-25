@@ -89,7 +89,7 @@ class ActivitiesPage extends ConsumerWidget {
       ),
       SliverList(
         delegate: SliverChildBuilderDelegate(
-          (BuildContext ctx, int index) {
+          (BuildContext context, int index) {
             return InvitationCard(
               invitation: invitations[index],
             );
