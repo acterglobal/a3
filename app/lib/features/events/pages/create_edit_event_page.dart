@@ -59,7 +59,8 @@ class CreateEditEventPageConsumerState
         _setEditEventData();
       }
       // if calendarId is null that means Create Event
-      else if (widget.initialSelectedSpace != null) {
+      else if (widget.initialSelectedSpace != null &&
+          widget.initialSelectedSpace!.isNotEmpty) {
         final parentNotifier = ref.read(selectedSpaceIdProvider.notifier);
         parentNotifier.state = widget.initialSelectedSpace;
       }
