@@ -413,10 +413,10 @@ jobs:
           # publish this full release now
           draft: true
           generate_release_notes: false
-          name: ${{ needs.tags.outputs.release_title }} ${{ needs.tags.outputs.version }}
+          name: ${{ needs.tags.outputs.release_title }} ${{ needs.tags.outputs.tag }}
           tag_name: ${{ needs.tags.outputs.tag }}
           body_path: CHANGELOG.md
-          make_latest: true
+          prerelease: false
           files: CHANGELOG.md
       - uses: eregon/publish-release@v1
         env:
