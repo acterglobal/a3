@@ -10,6 +10,7 @@ import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
+import 'package:acter/features/events/event_utils/event_utils.dart';
 import 'package:acter/features/events/model/keys.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_date_widget.dart';
@@ -492,9 +493,9 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   Widget _buildEventDataSet(CalendarEvent ev) {
-    final inDays =
+    final agoTime =
         Jiffy.parseFromDateTime(toDartDatetime(ev.utcStart()).toLocal())
-            .endOf(Unit.day)
+            .endOf(Unit.hour)
             .fromNow();
     final startDate =
         Jiffy.parseFromDateTime(toDartDatetime(ev.utcStart()).toLocal())
@@ -503,13 +504,22 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         Jiffy.parseFromDateTime(toDartDatetime(ev.utcEnd()).toLocal())
             .format(pattern: 'EEE, MMM dd, yyyy AT hh:mm');
 
+    String eventTimingTitle = '';
+    if (getEventType(ev) == EventFilters.ongoing) {
+      eventTimingTitle = 'Started $agoTime';
+    } else if (getEventType(ev) == EventFilters.upcoming) {
+      eventTimingTitle = 'Starts $agoTime';
+    } else if (getEventType(ev) == EventFilters.past) {
+      eventTimingTitle = 'Completed $agoTime';
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
       child: Column(
         children: [
           ListTile(
             leading: const Icon(Atlas.calendar_dots),
-            title: Text(inDays),
+            title: Text(eventTimingTitle),
             subtitle: Text('$startDate - $endDate'),
           ),
           ListTile(
