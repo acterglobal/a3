@@ -41,9 +41,9 @@ EventFilters getEventType(ffi.CalendarEvent event) {
 
 Color getColorBasedOnEventType(ffi.CalendarEvent event) {
   if (getEventType(event) == EventFilters.ongoing) {
-    return Colors.green.shade800;
+    return const Color(0xff446e40);
   } else if (getEventType(event) == EventFilters.upcoming) {
-    return Colors.yellow.shade800;
+    return const Color(0xffa88851);
   } else if (getEventType(event) == EventFilters.past) {
     return Colors.grey.shade600;
   } else {
