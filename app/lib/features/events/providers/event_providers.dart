@@ -24,23 +24,23 @@ final allEventListProvider = AsyncNotifierProvider.family<EventListNotifier,
 );
 
 //ALL ONGOING EVENTS
-final ongoingEventListProvider = FutureProvider.autoDispose
-    .family<List<ffi.CalendarEvent>, String?>((ref, params) async {
-  final allEventList = await ref.watch(allEventListProvider(params).future);
-  List<ffi.CalendarEvent> ongoingEventList = [];
+final allOngoingEventListProvider = FutureProvider.autoDispose
+    .family<List<ffi.CalendarEvent>, String?>((ref, spaceId) async {
+  final allEventList = await ref.watch(allEventListProvider(spaceId).future);
+  List<ffi.CalendarEvent> allOngoingEventList = [];
   for (final event in allEventList) {
     if (getEventType(event) == EventFilters.ongoing) {
-      ongoingEventList.add(event);
+      allOngoingEventList.add(event);
     }
   }
-  return sortEventListAscTime(ongoingEventList);
+  return sortEventListAscTime(allOngoingEventList);
 });
 
 //MY ONGOING EVENTS
 final myOngoingEventListProvider = FutureProvider.autoDispose
-    .family<List<ffi.CalendarEvent>, String?>((ref, params) async {
+    .family<List<ffi.CalendarEvent>, String?>((ref, spaceId) async {
   List<ffi.CalendarEvent> allOngoingEventList =
-      await ref.watch(ongoingEventListProvider(params).future);
+      await ref.watch(allOngoingEventListProvider(spaceId).future);
   List<ffi.CalendarEvent> myOngoingEventList = [];
   for (final event in allOngoingEventList) {
     final myRsvpStatus = await ref
@@ -49,27 +49,27 @@ final myOngoingEventListProvider = FutureProvider.autoDispose
       myOngoingEventList.add(event);
     }
   }
-  return sortEventListAscTime(myOngoingEventList);
+  return myOngoingEventList;
 });
 
 //ALL UPCOMING EVENTS
-final upcomingEventListProvider = FutureProvider.autoDispose
-    .family<List<ffi.CalendarEvent>, String?>((ref, params) async {
-  final allEventList = await ref.watch(allEventListProvider(params).future);
-  List<ffi.CalendarEvent> upcomingEventList = [];
+final allUpcomingEventListProvider = FutureProvider.autoDispose
+    .family<List<ffi.CalendarEvent>, String?>((ref, spaceId) async {
+  final allEventList = await ref.watch(allEventListProvider(spaceId).future);
+  List<ffi.CalendarEvent> allUpcomingEventList = [];
   for (final event in allEventList) {
     if (getEventType(event) == EventFilters.upcoming) {
-      upcomingEventList.add(event);
+      allUpcomingEventList.add(event);
     }
   }
-  return sortEventListAscTime(upcomingEventList);
+  return sortEventListAscTime(allUpcomingEventList);
 });
 
 //MY UPCOMING EVENTS
 final myUpcomingEventListProvider = FutureProvider.autoDispose
-    .family<List<ffi.CalendarEvent>, String?>((ref, params) async {
+    .family<List<ffi.CalendarEvent>, String?>((ref, spaceId) async {
   List<ffi.CalendarEvent> allUpcomingEventList =
-      await ref.watch(upcomingEventListProvider(params).future);
+      await ref.watch(allUpcomingEventListProvider(spaceId).future);
   List<ffi.CalendarEvent> myUpcomingEventList = [];
   for (final event in allUpcomingEventList) {
     final myRsvpStatus = await ref
@@ -78,27 +78,27 @@ final myUpcomingEventListProvider = FutureProvider.autoDispose
       myUpcomingEventList.add(event);
     }
   }
-  return sortEventListAscTime(myUpcomingEventList);
+  return myUpcomingEventList;
 });
 
 //ALL PAST EVENTS
-final pastEventListProvider = FutureProvider.autoDispose
-    .family<List<ffi.CalendarEvent>, String?>((ref, params) async {
-  final allEventList = await ref.watch(allEventListProvider(params).future);
-  List<ffi.CalendarEvent> paseEventList = [];
+final allPastEventListProvider = FutureProvider.autoDispose
+    .family<List<ffi.CalendarEvent>, String?>((ref, spaceId) async {
+  final allEventList = await ref.watch(allEventListProvider(spaceId).future);
+  List<ffi.CalendarEvent> allPastEventList = [];
   for (final event in allEventList) {
     if (getEventType(event) == EventFilters.past) {
-      paseEventList.add(event);
+      allPastEventList.add(event);
     }
   }
-  return sortEventListDscTime(paseEventList);
+  return sortEventListDscTime(allPastEventList);
 });
 
 //MY PAST EVENTS
 final myPastEventListProvider = FutureProvider.autoDispose
-    .family<List<ffi.CalendarEvent>, String?>((ref, params) async {
+    .family<List<ffi.CalendarEvent>, String?>((ref, spaceId) async {
   List<ffi.CalendarEvent> allPastEventList =
-      await ref.watch(pastEventListProvider(params).future);
+      await ref.watch(allPastEventListProvider(spaceId).future);
   List<ffi.CalendarEvent> myPastEventList = [];
   for (final event in allPastEventList) {
     final myRsvpStatus = await ref
@@ -107,16 +107,16 @@ final myPastEventListProvider = FutureProvider.autoDispose
       myPastEventList.add(event);
     }
   }
-  return sortEventListDscTime(myPastEventList);
+  return myPastEventList;
 });
 
 //MY EVENTS (ONGOING+UPCOMING)
 final myEventsList = FutureProvider.autoDispose
-    .family<List<ffi.CalendarEvent>, String?>((ref, params) async {
+    .family<List<ffi.CalendarEvent>, String?>((ref, spaceId) async {
   final myOngoingEvents =
-      await ref.watch(myOngoingEventListProvider(params).future);
+      await ref.watch(myOngoingEventListProvider(spaceId).future);
   final myUpcomingEvents =
-      await ref.watch(myUpcomingEventListProvider(params).future);
+      await ref.watch(myUpcomingEventListProvider(spaceId).future);
   List<ffi.CalendarEvent> myEventsList = [];
   myEventsList.addAll(myOngoingEvents);
   myEventsList.addAll(myUpcomingEvents);
@@ -143,25 +143,38 @@ final eventListSearchFilterProvider = FutureProvider.autoDispose
   //Declare filtered event list
   List<ffi.CalendarEvent> filteredEventList = [];
 
-  //Get different event list
-  List<ffi.CalendarEvent> ongoingEventList =
-      await ref.watch(ongoingEventListProvider(params.spaceId).future);
-  List<ffi.CalendarEvent> upcomingEventList =
-      await ref.watch(upcomingEventListProvider(params.spaceId).future);
-  List<ffi.CalendarEvent> pastEventList =
-      await ref.watch(pastEventListProvider(params.spaceId).future);
-
   //Filter events based on the selection
   EventFilters eventFilter = ref.watch(eventFilerProvider);
   switch (eventFilter) {
     case EventFilters.ongoing:
-      filteredEventList = ongoingEventList;
+      {
+        List<ffi.CalendarEvent> ongoingEventList =
+            await ref.watch(allOngoingEventListProvider(params.spaceId).future);
+        filteredEventList = ongoingEventList;
+      }
     case EventFilters.upcoming:
-      filteredEventList = upcomingEventList;
+      {
+        List<ffi.CalendarEvent> upcomingEventList = await ref
+            .watch(allUpcomingEventListProvider(params.spaceId).future);
+        filteredEventList = upcomingEventList;
+      }
     case EventFilters.past:
-      filteredEventList = pastEventList;
+      {
+        List<ffi.CalendarEvent> pastEventList =
+            await ref.watch(allPastEventListProvider(params.spaceId).future);
+        filteredEventList = pastEventList;
+      }
     default:
       {
+        //Get all events
+        List<ffi.CalendarEvent> ongoingEventList =
+            await ref.watch(allOngoingEventListProvider(params.spaceId).future);
+        List<ffi.CalendarEvent> upcomingEventList = await ref
+            .watch(allUpcomingEventListProvider(params.spaceId).future);
+        List<ffi.CalendarEvent> pastEventList =
+            await ref.watch(allPastEventListProvider(params.spaceId).future);
+
+        //Set all events
         filteredEventList.addAll(ongoingEventList);
         filteredEventList.addAll(upcomingEventList);
         filteredEventList.addAll(pastEventList);
