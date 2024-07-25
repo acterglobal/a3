@@ -59,7 +59,7 @@ final tabsProvider =
     }
 
     if (appSettings.events().active()) {
-      final eventList = await ref.watch(spaceEventsProvider(spaceId).future);
+      final eventList = await ref.watch(allEventListProvider(spaceId).future);
       if (eventList.isNotEmpty) {
         tabs.add(
           const TabEntry(key: TabEntry.events, label: 'Events'),

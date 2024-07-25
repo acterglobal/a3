@@ -126,7 +126,7 @@ class _RedactContentWidget extends ConsumerWidget {
       } else {
         final room = await ref.read(chatProvider(roomId).future);
         final redactedId = await room.redactContent(eventId, reason);
-        ref.invalidate(spaceEventsProvider(roomId));
+        ref.invalidate(allEventListProvider(roomId));
         _log.info(
           'Content from $redactedId reason:$reason}',
         );

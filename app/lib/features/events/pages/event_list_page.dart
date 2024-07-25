@@ -78,7 +78,7 @@ class _EventListPageState extends ConsumerState<EventListPage> {
   Widget _buildBody() {
     AsyncValue<List<CalendarEvent>> eventList;
     eventList = ref.watch(
-      eventListSearchProvider(
+      eventListSearchFilterProvider(
         (spaceId: widget.spaceId, searchText: searchValue),
       ),
     );
@@ -141,6 +141,14 @@ class _EventListPageState extends ConsumerState<EventListPage> {
               onSelected: (value) => ref
                   .read(eventFilerProvider.notifier)
                   .state = EventFilters.all,
+            ),
+            const SizedBox(width: 10),
+            FilterChip(
+              selected: eventFilterValue == EventFilters.ongoing,
+              label: Text(L10n.of(context).ongoing),
+              onSelected: (value) => ref
+                  .read(eventFilerProvider.notifier)
+                  .state = EventFilters.ongoing,
             ),
             const SizedBox(width: 10),
             FilterChip(

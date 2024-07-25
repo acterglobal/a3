@@ -14,7 +14,7 @@ class MyEventsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final upcoming = ref.watch(allUpcomingEventsProvider);
+    final upcoming = ref.watch(myUpcomingEventsProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[

@@ -1,238 +1,86 @@
-import 'dart:async';
-
 import 'package:acter/features/events/providers/notifiers/event_notifiers.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
+import 'package:dart_date/dart_date.dart';
 import 'package:riverpod/riverpod.dart';
 
-final spaceEventsProvider = AsyncNotifierProvider.family<
-    AsyncSpaceEventsNotifier, List<ffi.CalendarEvent>, String>(
-  () => AsyncSpaceEventsNotifier(),
-);
-
-class AsyncSpaceEventsNotifier
-    extends FamilyAsyncNotifier<List<ffi.CalendarEvent>, String> {
-  late Stream<bool> _listener;
-
-  Future<List<ffi.CalendarEvent>> _getEvents(ffi.Space space) async {
-    final events = await space.calendarEvents(); // this might throw internally
-    return events.toList();
-  }
-
-  @override
-  Future<List<ffi.CalendarEvent>> build(String arg) async {
-    final client = ref.watch(alwaysClientProvider);
-    final space = await client.space(arg);
-    _listener =
-        client.subscribeStream('$arg::calendar'); // keep it resident in memory
-    _listener.forEach((e) async {
-      state = await AsyncValue.guard(() => _getEvents(space));
-    });
-    return await _getEvents(space);
-  }
-}
-
-final spaceUpcomingEventsProvider = AsyncNotifierProvider.autoDispose
-    .family<AsyncSpaceUpcomingEventsNotifier, List<ffi.CalendarEvent>, String>(
-  () => AsyncSpaceUpcomingEventsNotifier(),
-);
-
-class AsyncSpaceUpcomingEventsNotifier
-    extends AutoDisposeFamilyAsyncNotifier<List<ffi.CalendarEvent>, String> {
-  late Stream<bool> _listener;
-
-  Future<List<ffi.CalendarEvent>> _getEvents(String spaceID) async {
-    final events = await ref.watch(spaceEventsProvider(spaceID).future);
-    final upcomingEventList = events.where((event) {
-      final eventStartTime = toDartDatetime(event.utcStart()).toLocal();
-      final currentTime = DateTime.now().toLocal();
-      return eventStartTime.isAfter(currentTime);
-    }).toList();
-    return upcomingEventList;
-  }
-
-  @override
-  Future<List<ffi.CalendarEvent>> build(String arg) async {
-    final client = ref.watch(alwaysClientProvider);
-    _listener = client.subscribeStream(arg); // keep it resident in memory
-    _listener.forEach((e) async {
-      state = await AsyncValue.guard(() => _getEvents(arg));
-    });
-    final eventsList = await _getEvents(arg);
-    return _sortEventListAscTime(eventsList);
-  }
-}
-
-final spacePastEventsProvider = AsyncNotifierProvider.autoDispose
-    .family<AsyncSpacePastEventsNotifier, List<ffi.CalendarEvent>, String>(
-  () => AsyncSpacePastEventsNotifier(),
-);
-
-class AsyncSpacePastEventsNotifier
-    extends AutoDisposeFamilyAsyncNotifier<List<ffi.CalendarEvent>, String> {
-  late Stream<bool> _listener;
-
-  Future<List<ffi.CalendarEvent>> _getEvents(String spaceID) async {
-    final events = await ref.watch(spaceEventsProvider(spaceID).future);
-    final pastEventList = events.where((event) {
-      final eventStartTime = toDartDatetime(event.utcStart()).toLocal();
-      final currentTime = DateTime.now().toLocal();
-      return eventStartTime.isBefore(currentTime);
-    }).toList();
-    return pastEventList;
-  }
-
-  @override
-  Future<List<ffi.CalendarEvent>> build(String arg) async {
-    final client = ref.watch(alwaysClientProvider);
-    _listener = client.subscribeStream(arg); // keep it resident in memory
-    _listener.forEach((e) async {
-      state = await AsyncValue.guard(() => _getEvents(arg));
-    });
-    final eventsList = await _getEvents(arg);
-    return _sortEventListDscTime(eventsList);
-  }
-}
-
+//SINGLE CALENDER EVENT DETAILS PROVIDER
 final calendarEventProvider = AsyncNotifierProvider.autoDispose
     .family<AsyncCalendarEventNotifier, ffi.CalendarEvent, String>(
   () => AsyncCalendarEventNotifier(),
 );
 
-class AsyncCalendarEventNotifier
-    extends AutoDisposeFamilyAsyncNotifier<ffi.CalendarEvent, String> {
-  late Stream<bool> _listener;
-
-  Future<ffi.CalendarEvent> _getCalendarEvent() async {
-    final client = ref.read(alwaysClientProvider);
-    return await client.waitForCalendarEvent(arg, null);
-  }
-
-  @override
-  Future<ffi.CalendarEvent> build(String arg) async {
-    final client = ref.watch(alwaysClientProvider);
-    _listener = client.subscribeStream(arg); // keep it resident in memory
-    _listener.forEach((e) async {
-      state = await AsyncValue.guard(_getCalendarEvent);
-    });
-    return await _getCalendarEvent();
-  }
-}
-
-final allUpcomingEventsProvider = AsyncNotifierProvider.autoDispose<
-    AsyncUpcomingEventsNotifier,
-    List<ffi.CalendarEvent>>(() => AsyncUpcomingEventsNotifier());
-
-class AsyncUpcomingEventsNotifier
-    extends AutoDisposeAsyncNotifier<List<ffi.CalendarEvent>> {
-  late Stream<bool> _listener;
-
-  Future<List<ffi.CalendarEvent>> _getAllUpcoming() async {
-    final client = ref.read(alwaysClientProvider);
-    final events =
-        await client.allUpcomingEvents(null); // this might throw internally
-    return _sortEventListAscTime(events.toList());
-  }
-
-  @override
-  Future<List<ffi.CalendarEvent>> build() async {
-    final client = ref.watch(alwaysClientProvider);
-    _listener =
-        client.subscribeStream('calendar'); // keep it resident in memory
-    _listener.forEach((e) async {
-      state = await AsyncValue.guard(_getAllUpcoming);
-    });
-    return await _getAllUpcoming();
-  }
-}
-
+//MY UPCOMING EVENT LIST PROVIDER
 final myUpcomingEventsProvider = AsyncNotifierProvider.autoDispose<
     AsyncMyUpcomingEventsNotifier,
     List<ffi.CalendarEvent>>(() => AsyncMyUpcomingEventsNotifier());
 
-class AsyncMyUpcomingEventsNotifier
-    extends AutoDisposeAsyncNotifier<List<ffi.CalendarEvent>> {
-  late Stream<bool> _listener;
-
-  Future<List<ffi.CalendarEvent>> _getMyUpcoming() async {
-    final client = ref.read(alwaysClientProvider);
-    final events =
-        await client.myUpcomingEvents(null); // this might throw internally
-    return _sortEventListAscTime(events.toList());
-  }
-
-  @override
-  Future<List<ffi.CalendarEvent>> build() async {
-    final client = ref.watch(alwaysClientProvider);
-    _listener =
-        client.subscribeStream('calendar'); // keep it resident in memory
-    _listener.forEach((e) async {
-      state = await AsyncValue.guard(_getMyUpcoming);
-    });
-    return await _getMyUpcoming();
-  }
-}
-
-final myPastEventsProvider = AsyncNotifierProvider.autoDispose<
-    AsyncMyPastEventsNotifier,
-    List<ffi.CalendarEvent>>(() => AsyncMyPastEventsNotifier());
-
-class AsyncMyPastEventsNotifier
-    extends AutoDisposeAsyncNotifier<List<ffi.CalendarEvent>> {
-  late Stream<bool> _listener;
-
-  Future<List<ffi.CalendarEvent>> _getMyPast() async {
-    final client = ref.read(alwaysClientProvider);
-    final events =
-        await client.myPastEvents(null); // this might throw internally
-    return _sortEventListDscTime(events.toList());
-  }
-
-  @override
-  Future<List<ffi.CalendarEvent>> build() async {
-    final client = ref.watch(alwaysClientProvider);
-    _listener =
-        client.subscribeStream('calendar'); // keep it resident in memory
-    _listener.forEach((e) async {
-      state = await AsyncValue.guard(_getMyPast);
-    });
-    return await _getMyPast();
-  }
-}
-
-Future<List<ffi.CalendarEvent>> _sortEventListAscTime(
-  List<ffi.CalendarEvent> eventsList,
-) async {
-  eventsList.sort(
-    (a, b) => a.utcStart().timestamp().compareTo(b.utcStart().timestamp()),
-  );
-  return eventsList;
-}
-
-Future<List<ffi.CalendarEvent>> _sortEventListDscTime(
-  List<ffi.CalendarEvent> eventsList,
-) async {
-  eventsList.sort(
-    (a, b) => b.utcStart().timestamp().compareTo(a.utcStart().timestamp()),
-  );
-  return eventsList;
-}
-
+//MY RSVP STATUS PROVIDER
 final myRsvpStatusProvider = FutureProvider.family
     .autoDispose<ffi.OptionRsvpStatus, String>((ref, calendarId) async {
   final event = await ref.watch(calendarEventProvider(calendarId).future);
   return await event.respondedByMe();
 });
 
-//Get list of all events
-final eventListProvider = AsyncNotifierProvider.autoDispose<EventListNotifier,
-    List<ffi.CalendarEvent>>(() => EventListNotifier());
+//SpaceId == null : GET LIST OF ALL PINs
+//SpaceId != null : GET LIST OF SPACE PINs
+final allEventListProvider = AsyncNotifierProvider.family<EventListNotifier,
+    List<ffi.CalendarEvent>, String?>(
+  () => EventListNotifier(),
+);
 
-//Event Filter Provider
+//ALL ONGOING EVENTS
+final ongoingEventListProvider = FutureProvider.autoDispose
+    .family<List<ffi.CalendarEvent>, String?>((ref, params) async {
+  final allEventList = await ref.watch(allEventListProvider(params).future);
+  List<ffi.CalendarEvent> ongoingEventList = [];
+  for (final event in allEventList) {
+    DateTime eventStartDateTime = toDartDatetime(event.utcStart());
+    DateTime eventEndDateTime = toDartDatetime(event.utcEnd());
+    DateTime currentDateTime = DateTime.now().toUTC;
+    if (eventStartDateTime.isBefore(currentDateTime) &&
+        eventEndDateTime.isAfter(currentDateTime)) {
+      ongoingEventList.add(event);
+    }
+  }
+  return sortEventListAscTime(ongoingEventList);
+});
+
+//ALL UPCOMING EVENTS
+final upcomingEventListProvider = FutureProvider.autoDispose
+    .family<List<ffi.CalendarEvent>, String?>((ref, params) async {
+  final allEventList = await ref.watch(allEventListProvider(params).future);
+  List<ffi.CalendarEvent> upcomingEventList = [];
+  for (final event in allEventList) {
+    DateTime eventStartDateTime = toDartDatetime(event.utcStart());
+    DateTime currentDateTime = DateTime.now().toUTC;
+    if (eventStartDateTime.isAfter(currentDateTime)) {
+      upcomingEventList.add(event);
+    }
+  }
+  return sortEventListAscTime(upcomingEventList);
+});
+
+
+//ALL PAST EVENTS
+final pastEventListProvider = FutureProvider.autoDispose
+    .family<List<ffi.CalendarEvent>, String?>((ref, params) async {
+  final allEventList = await ref.watch(allEventListProvider(params).future);
+  List<ffi.CalendarEvent> upcomingEventList = [];
+  for (final event in allEventList) {
+    DateTime eventEndDateTime = toDartDatetime(event.utcEnd());
+    DateTime currentDateTime = DateTime.now().toUTC;
+    if (eventEndDateTime.isBefore(currentDateTime)) {
+      upcomingEventList.add(event);
+    }
+  }
+  return sortEventListDscTime(upcomingEventList);
+});
+
+//EVENT FILTERS
 enum EventFilters {
   all,
-  bookmarked,
+  ongoing,
   upcoming,
   past,
 }
@@ -240,52 +88,52 @@ enum EventFilters {
 final eventFilerProvider =
     StateProvider.autoDispose<EventFilters>((ref) => EventFilters.all);
 
-//Search any event
+//SEARCH EVENTS
 typedef EventListSearchParams = ({String? spaceId, String searchText});
 
-final eventListSearchProvider = FutureProvider.autoDispose
+final eventListSearchFilterProvider = FutureProvider.autoDispose
     .family<List<ffi.CalendarEvent>, EventListSearchParams>(
         (ref, params) async {
-  final allEventList = await ref.watch(eventListProvider.future);
-  final eventFilter = ref.watch(eventFilerProvider);
-
+  //Declare filtered event list
   List<ffi.CalendarEvent> filteredEventList = [];
 
+  //Get different event list
+  List<ffi.CalendarEvent> ongoingEventList =
+      await ref.watch(ongoingEventListProvider(params.spaceId).future);
+  List<ffi.CalendarEvent> upcomingEventList =
+      await ref.watch(upcomingEventListProvider(params.spaceId).future);
+  List<ffi.CalendarEvent> pastEventList =
+      await ref.watch(pastEventListProvider(params.spaceId).future);
+
+  //Filter events based on the selection
+  EventFilters eventFilter = ref.watch(eventFilerProvider);
+  switch (eventFilter) {
+    case EventFilters.ongoing:
+      filteredEventList = ongoingEventList;
+    case EventFilters.upcoming:
+      filteredEventList = upcomingEventList;
+    case EventFilters.past:
+      filteredEventList = pastEventList;
+    default:
+      {
+        filteredEventList.addAll(ongoingEventList);
+        filteredEventList.addAll(upcomingEventList);
+        filteredEventList.addAll(pastEventList);
+      }
+  }
+
+  //Apply search on filtered event list
+  List<ffi.CalendarEvent> searchedFilteredEventList = [];
   if (params.searchText.isNotEmpty) {
-    for (final event in allEventList) {
+    for (final event in filteredEventList) {
       bool isContainSearchTerm =
           event.title().toLowerCase().contains(params.searchText.toLowerCase());
       if (isContainSearchTerm) {
-        filteredEventList.add(event);
+        searchedFilteredEventList.add(event);
       }
     }
-  } else {
-    filteredEventList = allEventList;
+    return searchedFilteredEventList;
   }
-  switch (eventFilter) {
-    case EventFilters.bookmarked:
-      return allEventList;
-    case EventFilters.upcoming:
-      List<ffi.CalendarEvent> upcomingEventList = [];
-      for (final event in filteredEventList) {
-        DateTime eventDateTime = toDartDatetime(event.utcStart());
-        DateTime currentDateTime = DateTime.now();
-        if (eventDateTime.isAfter(currentDateTime)) {
-          upcomingEventList.add(event);
-        }
-      }
-      return upcomingEventList;
-    case EventFilters.past:
-      List<ffi.CalendarEvent> pastEventList = [];
-      for (final event in filteredEventList) {
-        DateTime eventDateTime = toDartDatetime(event.utcStart());
-        DateTime currentDateTime = DateTime.now();
-        if (eventDateTime.isBefore(currentDateTime)) {
-          pastEventList.add(event);
-        }
-      }
-      return pastEventList;
-    default:
-      return filteredEventList;
-  }
+
+  return filteredEventList;
 });

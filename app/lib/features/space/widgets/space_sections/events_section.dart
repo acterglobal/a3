@@ -20,7 +20,7 @@ class EventsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final eventsList = ref.watch(spaceEventsProvider(spaceId));
+    final eventsList = ref.watch(allEventListProvider(spaceId));
     return eventsList.when(
       data: (events) => buildEventsSectionUI(context, events),
       error: (error, stack) =>
