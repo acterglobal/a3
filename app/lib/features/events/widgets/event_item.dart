@@ -1,5 +1,6 @@
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/events/event_utils/event_utils.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show CalendarEvent;
@@ -66,7 +67,7 @@ class EventItem extends StatelessWidget {
 
     return Card(
       margin: const EdgeInsets.all(12),
-      color: Theme.of(context).colorScheme.primary,
+      color: getColorBasedOnType(context),
       child: Container(
         height: 70,
         width: 70,
@@ -137,5 +138,17 @@ class EventItem extends StatelessWidget {
       }
     }
     return L10n.of(context).pending;
+  }
+
+  Color getColorBasedOnType(BuildContext context) {
+    if (getEventType(event) == EventFilters.ongoing) {
+      return Colors.green;
+    } else if (getEventType(event) == EventFilters.upcoming) {
+      return Colors.yellow.shade800;
+    } else if (getEventType(event) == EventFilters.past) {
+      return Colors.grey.shade600;
+    } else {
+      return Theme.of(context).primaryColor;
+    }
   }
 }

@@ -1,7 +1,6 @@
+import 'package:acter/features/events/event_utils/event_utils.dart';
 import 'package:acter/features/events/providers/notifiers/event_notifiers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
-import 'package:dart_date/dart_date.dart';
 import 'package:riverpod/riverpod.dart';
 
 //SINGLE CALENDER EVENT DETAILS PROVIDER
@@ -35,11 +34,7 @@ final ongoingEventListProvider = FutureProvider.autoDispose
   final allEventList = await ref.watch(allEventListProvider(params).future);
   List<ffi.CalendarEvent> ongoingEventList = [];
   for (final event in allEventList) {
-    DateTime eventStartDateTime = toDartDatetime(event.utcStart());
-    DateTime eventEndDateTime = toDartDatetime(event.utcEnd());
-    DateTime currentDateTime = DateTime.now().toUTC;
-    if (eventStartDateTime.isBefore(currentDateTime) &&
-        eventEndDateTime.isAfter(currentDateTime)) {
+    if (getEventType(event) == EventFilters.ongoing) {
       ongoingEventList.add(event);
     }
   }
@@ -52,29 +47,24 @@ final upcomingEventListProvider = FutureProvider.autoDispose
   final allEventList = await ref.watch(allEventListProvider(params).future);
   List<ffi.CalendarEvent> upcomingEventList = [];
   for (final event in allEventList) {
-    DateTime eventStartDateTime = toDartDatetime(event.utcStart());
-    DateTime currentDateTime = DateTime.now().toUTC;
-    if (eventStartDateTime.isAfter(currentDateTime)) {
+    if (getEventType(event) == EventFilters.upcoming) {
       upcomingEventList.add(event);
     }
   }
   return sortEventListAscTime(upcomingEventList);
 });
 
-
 //ALL PAST EVENTS
 final pastEventListProvider = FutureProvider.autoDispose
     .family<List<ffi.CalendarEvent>, String?>((ref, params) async {
   final allEventList = await ref.watch(allEventListProvider(params).future);
-  List<ffi.CalendarEvent> upcomingEventList = [];
+  List<ffi.CalendarEvent> paseEventList = [];
   for (final event in allEventList) {
-    DateTime eventEndDateTime = toDartDatetime(event.utcEnd());
-    DateTime currentDateTime = DateTime.now().toUTC;
-    if (eventEndDateTime.isBefore(currentDateTime)) {
-      upcomingEventList.add(event);
+    if (getEventType(event) == EventFilters.past) {
+      paseEventList.add(event);
     }
   }
-  return sortEventListDscTime(upcomingEventList);
+  return sortEventListDscTime(paseEventList);
 });
 
 //EVENT FILTERS

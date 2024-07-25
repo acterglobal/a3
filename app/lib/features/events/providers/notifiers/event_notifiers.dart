@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:acter/features/events/event_utils/event_utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:riverpod/riverpod.dart';
@@ -81,22 +82,4 @@ class AsyncCalendarEventNotifier
     });
     return await _getCalendarEvent();
   }
-}
-
-Future<List<ffi.CalendarEvent>> sortEventListAscTime(
-  List<ffi.CalendarEvent> eventsList,
-) async {
-  eventsList.sort(
-    (a, b) => a.utcStart().timestamp().compareTo(b.utcStart().timestamp()),
-  );
-  return eventsList;
-}
-
-Future<List<ffi.CalendarEvent>> sortEventListDscTime(
-  List<ffi.CalendarEvent> eventsList,
-) async {
-  eventsList.sort(
-    (a, b) => b.utcStart().timestamp().compareTo(a.utcStart().timestamp()),
-  );
-  return eventsList;
 }
