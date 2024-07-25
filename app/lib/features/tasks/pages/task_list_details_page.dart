@@ -1,3 +1,4 @@
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/redact_content.dart';
@@ -12,7 +13,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::tasks::task_list_details_page');
@@ -207,7 +207,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
       updater.descriptionHtml(plainDescription, htmlBodyDescription);
       await updater.send();
       EasyLoading.dismiss();
-      if (mounted) context.pop();
+      if (mounted) context.closeDialog();
     } catch (e, st) {
       _log.severe('Failed to update event description', e, st);
       EasyLoading.dismiss();
@@ -293,7 +293,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
           ref.invalidate(taskListProvider);
           EasyLoading.dismiss();
           if (!context.mounted) return;
-          context.pop();
+          context.closeDialog();
         } catch (e) {
           EasyLoading.dismiss();
           if (!context.mounted) return;

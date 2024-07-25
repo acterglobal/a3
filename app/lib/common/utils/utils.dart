@@ -17,6 +17,7 @@ import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 final _log = Logger('a3::common::util');
@@ -73,6 +74,15 @@ const largeScreenBreakPoint = 770;
 extension ActerContextUtils on BuildContext {
   bool get isLargeScreen =>
       MediaQuery.of(this).size.width >= largeScreenBreakPoint;
+
+  Future<void> closeDialog<T>([T? result]) async {
+    try {
+      Navigator.of(this).pop(result);
+    } catch (error, stackTrace) {
+      _log.severe('Routing failed', error, stackTrace);
+      await Sentry.captureException(error, stackTrace: stackTrace);
+    }
+  }
 }
 
 DateTime kFirstDay = DateTime.utc(2010, 10, 16);

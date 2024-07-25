@@ -4,6 +4,7 @@ import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
@@ -99,7 +100,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
         onPressed: () {
           // Hide Keyboard
           SystemChannels.textInput.invokeMethod('TextInput.hide');
-          context.pop();
+          context.closeDialog();
         },
         icon: const Icon(Atlas.xmark_circle),
       ),
@@ -462,7 +463,8 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       // Navigate back to update screen.
       Navigator.of(context).pop();
       context.pushReplacementNamed(
-          Routes.main.name,); // go to the home / main updates
+        Routes.main.name,
+      ); // go to the home / main updates
     } catch (err) {
       if (!context.mounted) {
         EasyLoading.dismiss();

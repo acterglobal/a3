@@ -97,7 +97,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
       automaticallyImplyLeading: !context.isLargeScreen,
       leading: context.isLargeScreen
           ? IconButton(
-              onPressed: () => context.pop(),
+              onPressed: () => context.closeDialog(),
               icon: const Icon(Atlas.xmark_circle_thin),
             )
           : null,
@@ -191,7 +191,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
       await convo.setName(newName.trim());
       EasyLoading.dismiss();
       if (!mounted) return;
-      context.pop();
+      context.closeDialog();
     } catch (e, st) {
       _log.severe('Failed to edit chat name', e, st);
       EasyLoading.dismiss();
@@ -532,7 +532,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
           await convo?.setTopic(newDescription);
           EasyLoading.dismiss();
           if (!context.mounted) return;
-          context.pop();
+          context.closeDialog();
         } catch (e) {
           EasyLoading.dismiss();
           if (!context.mounted) return;

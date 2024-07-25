@@ -20,7 +20,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::tasks::task_item_details_page');
@@ -277,7 +276,7 @@ class TaskItemDetailPage extends ConsumerWidget {
       updater.descriptionHtml(plainDescription, htmlBodyDescription);
       await updater.send();
       EasyLoading.dismiss();
-      if (context.mounted) context.pop();
+      if (context.mounted) context.closeDialog();
     } catch (e, st) {
       _log.severe('Failed to update event description', e, st);
       EasyLoading.dismiss();
@@ -483,7 +482,7 @@ class TaskItemDetailPage extends ConsumerWidget {
       ref.invalidate(taskListProvider);
       EasyLoading.dismiss();
       if (!context.mounted) return;
-      context.pop();
+      context.closeDialog();
     } catch (e) {
       EasyLoading.dismiss();
       if (!context.mounted) return;

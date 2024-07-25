@@ -141,9 +141,7 @@ class QuickActionsBuilder extends ConsumerWidget {
               style: Theme.of(context).textTheme.labelMedium,
             ),
             onPressed: () async {
-              if (context.canPop()) {
-                context.pop();
-              }
+              context.closeDialog();
               await openBugReport(context);
             },
           ),

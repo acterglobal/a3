@@ -312,7 +312,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
 
       EasyLoading.dismiss();
       if (!mounted) return;
-      context.pop();
+      context.closeDialog();
     } catch (e, st) {
       _log.severe('Failed to edit event name', e, st);
       EasyLoading.dismiss();
@@ -667,7 +667,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       updateBuilder.descriptionHtml(plainDescription, htmlBodyDescription);
       await updateBuilder.send();
       EasyLoading.dismiss();
-      if (mounted) context.pop();
+      if (mounted) context.closeDialog();
     } catch (e, st) {
       _log.severe('Failed to update event description', e, st);
       EasyLoading.dismiss();
