@@ -1,11 +1,11 @@
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:go_router/go_router.dart';
 
 void showEditHtmlDescriptionBottomSheet({
   required BuildContext context,
@@ -93,7 +93,7 @@ class _EditHtmlDescriptionSheetState
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               OutlinedButton(
-                onPressed: () => context.pop(),
+                onPressed: () => context.closeDialog(),
                 child: Text(L10n.of(context).cancel),
               ),
               const SizedBox(width: 20),
@@ -104,7 +104,7 @@ class _EditHtmlDescriptionSheetState
                   final plainDescription = textEditorState.intoMarkdown();
                   if (htmlBodyDescription == widget.descriptionHtmlValue ||
                       plainDescription == widget.descriptionMarkdownValue) {
-                    context.pop();
+                    context.closeDialog();
                     return;
                   }
                   widget.onSave(htmlBodyDescription, plainDescription);

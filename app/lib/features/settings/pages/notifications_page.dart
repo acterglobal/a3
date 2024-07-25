@@ -2,6 +2,7 @@ import 'package:acter/common/notifications/notifications.dart';
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
@@ -83,8 +84,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
       sidebar: const SettingsPage(),
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: const AppBarTheme().backgroundColor,
-          elevation: 0.0,
+          automaticallyImplyLeading: !context.isLargeScreen,
           title: Text(L10n.of(context).notifications),
         ),
         body: SettingsList(

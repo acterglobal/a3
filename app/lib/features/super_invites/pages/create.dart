@@ -2,6 +2,7 @@ import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/chat/chat_selector_drawer.dart';
 import 'package:acter/common/widgets/checkbox_form_field.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
@@ -193,9 +194,7 @@ class _CreateSuperInviteTokenPageConsumerState
                 ButtonBar(
                   children: [
                     OutlinedButton(
-                      onPressed: () => context.canPop()
-                          ? context.pop()
-                          : context.goNamed(Routes.main.name),
+                      onPressed: () => context.closeDialog(orGo: Routes.main),
                       child: Text(
                         L10n.of(context).cancel,
                       ),

@@ -1,15 +1,14 @@
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:go_router/go_router.dart';
-
 
 Future<void> savePinTitle(
-    BuildContext context,
-    ActerPin pin,
-    String newTitle,
-    ) async {
+  BuildContext context,
+  ActerPin pin,
+  String newTitle,
+) async {
   try {
     EasyLoading.show(status: L10n.of(context).updateName);
     final updateBuilder = pin.updateBuilder();
@@ -17,7 +16,7 @@ Future<void> savePinTitle(
     await updateBuilder.send();
     EasyLoading.dismiss();
     if (!context.mounted) return;
-    context.pop();
+    context.closeDialog();
   } catch (e) {
     EasyLoading.dismiss();
     if (!context.mounted) return;
@@ -26,10 +25,10 @@ Future<void> savePinTitle(
 }
 
 Future<void> savePinLink(
-    BuildContext context,
-    ActerPin pin,
-    String newLink,
-    ) async {
+  BuildContext context,
+  ActerPin pin,
+  String newLink,
+) async {
   try {
     EasyLoading.show(status: L10n.of(context).updatingLinking);
     final updateBuilder = pin.updateBuilder();
@@ -37,7 +36,7 @@ Future<void> savePinLink(
     await updateBuilder.send();
     EasyLoading.dismiss();
     if (!context.mounted) return;
-    context.pop();
+    context.closeDialog();
   } catch (e) {
     EasyLoading.dismiss();
     if (!context.mounted) return;
@@ -59,7 +58,7 @@ Future<void> saveDescription(
     await updateBuilder.send();
     EasyLoading.dismiss();
     if (!context.mounted) return;
-    context.pop();
+    context.closeDialog();
   } catch (e) {
     EasyLoading.dismiss();
     if (!context.mounted) return;

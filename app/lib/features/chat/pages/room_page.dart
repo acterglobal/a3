@@ -5,6 +5,7 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/avatar_builder.dart';
@@ -34,11 +35,9 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 class RoomPage extends ConsumerWidget {
   static const roomPageKey = Key('chat-room-page');
   final String roomId;
-  final bool inSidebar;
 
   const RoomPage({
     required this.roomId,
-    required this.inSidebar,
     super.key = roomPageKey,
   });
 
@@ -47,7 +46,7 @@ class RoomPage extends ConsumerWidget {
     final activeMembers = ref.watch(membersIdsProvider(roomId));
     return AppBar(
       elevation: 0,
-      automaticallyImplyLeading: inSidebar ? false : true,
+      automaticallyImplyLeading: !context.isLargeScreen,
       centerTitle: true,
       toolbarHeight: 70,
       flexibleSpace: FrostEffect(
@@ -114,7 +113,7 @@ class RoomPage extends ConsumerWidget {
           children: [
             appBar(context, ref),
             ref.watch(chatProvider(roomId)).when(
-                  data: (convo) => ChatRoom(convo: convo, inSidebar: inSidebar),
+                  data: (convo) => ChatRoom(convo: convo),
                   error: (e, s) => Center(
                     child: Text(L10n.of(context).loadingRoomFailed(e)),
                   ),
@@ -148,11 +147,9 @@ class RoomPage extends ConsumerWidget {
 
 class ChatRoom extends ConsumerStatefulWidget {
   final Convo convo;
-  final bool inSidebar;
 
   const ChatRoom({
     required this.convo,
-    required this.inSidebar,
     super.key,
   });
 

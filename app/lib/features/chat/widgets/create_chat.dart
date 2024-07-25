@@ -73,7 +73,7 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return isLargeScreen(context)
+    return context.isLargeScreen
         ? Container(
             width: size.width * 0.5,
             decoration: BoxDecoration(

@@ -241,7 +241,7 @@ class _BugReportState extends ConsumerState<BugReportPage> {
                           if (!await reportBug(context)) return;
                           if (!context.mounted) return;
                           if (context.canPop()) {
-                            context.pop();
+                            context.closeDialog();
                           }
                         },
                         child: Text(L10n.of(context).submit),

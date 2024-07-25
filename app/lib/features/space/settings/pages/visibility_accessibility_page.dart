@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -19,12 +18,12 @@ final _log = Logger('a3::space::settings::visibility_accessibility_settings');
 
 class VisibilityAccessibilityPage extends ConsumerStatefulWidget {
   final String roomId;
-  final bool showCloseX;
+  final bool impliedClose;
 
   const VisibilityAccessibilityPage({
     super.key,
     required this.roomId,
-    this.showCloseX = false,
+    this.impliedClose = false,
   });
 
   @override
@@ -46,10 +45,10 @@ class _VisibilityAccessibilityPageState
     return AppBar(
       title: Text(L10n.of(context).visibilityAndAccessibility),
       centerTitle: true,
-      // custom x-circle when we are in widescreen mode;
-      leading: widget.showCloseX
+      automaticallyImplyLeading: !context.isLargeScreen,
+      leading: widget.impliedClose
           ? IconButton(
-              onPressed: () => context.pop(),
+              onPressed: () => context.closeDialog(),
               icon: const Icon(Atlas.xmark_circle_thin),
             )
           : null,

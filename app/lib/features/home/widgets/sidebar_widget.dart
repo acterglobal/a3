@@ -26,7 +26,7 @@ class _MyUserAvatar extends ConsumerWidget {
       key: Keys.avatar,
       margin: const EdgeInsets.only(top: 8),
       child: InkWell(
-        onTap: () => context.goNamed(Routes.settings.name),
+        onTap: () => context.pushNamed(Routes.settings.name),
         child: const UserAvatarWidget(size: 20),
       ),
     );

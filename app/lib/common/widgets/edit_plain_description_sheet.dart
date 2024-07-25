@@ -1,7 +1,7 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:go_router/go_router.dart';
 
 void showEditPlainDescriptionBottomSheet({
   required BuildContext context,
@@ -71,7 +71,7 @@ class _EditPlainDescriptionSheetState extends State<EditPlainDescriptionSheet> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 OutlinedButton(
-                  onPressed: () => context.pop(),
+                  onPressed: () => context.closeDialog(),
                   child: Text(L10n.of(context).cancel),
                 ),
                 const SizedBox(width: 20),
@@ -80,7 +80,7 @@ class _EditPlainDescriptionSheetState extends State<EditPlainDescriptionSheet> {
                     final newDescription = _descriptionController.text.trim();
                     // No need to change
                     if (newDescription == widget.descriptionValue.trim()) {
-                      context.pop();
+                      context.closeDialog();
                       return;
                     }
 

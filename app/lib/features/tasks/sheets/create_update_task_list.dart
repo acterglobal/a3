@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
@@ -8,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 void showCreateUpdateTaskListBottomSheet(
   BuildContext context, {
@@ -202,7 +202,7 @@ class _CreateUpdateTaskListConsumerState
 
       EasyLoading.dismiss();
       if (!mounted) return;
-      context.pop();
+      context.closeDialog();
       ref.invalidate(taskListProvider);
     } catch (e) {
       if (!mounted) {

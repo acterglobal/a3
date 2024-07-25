@@ -17,6 +17,7 @@ import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 final _log = Logger('a3::common::util');
@@ -70,8 +71,27 @@ extension RefDebounceExtension on Ref {
 
 const largeScreenBreakPoint = 770;
 
-bool isLargeScreen(BuildContext context) {
-  return MediaQuery.of(context).size.width >= largeScreenBreakPoint;
+extension ActerContextUtils on BuildContext {
+  bool get isLargeScreen =>
+      MediaQuery.of(this).size.width >= largeScreenBreakPoint;
+
+  NavigatorState closeDialog({Routes? orGo, bool ignorePopFailure = false}) {
+    final navigator = Navigator.of(this);
+    try {
+      if (orGo != null && !navigator.canPop()) {
+        navigator.pushReplacementNamed(orGo.name);
+      } else {
+        navigator.pop();
+      }
+    } catch (error, stackTrace) {
+      if (!ignorePopFailure) {
+        // track if we failed to pop so we can fix that.
+        _log.severe('Routing failed', error, stackTrace);
+        Sentry.captureException(error, stackTrace: stackTrace);
+      }
+    }
+    return navigator;
+  }
 }
 
 DateTime kFirstDay = DateTime.utc(2010, 10, 16);
