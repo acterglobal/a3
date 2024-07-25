@@ -27,9 +27,12 @@ class VisibilityChip extends ConsumerWidget {
 
   Widget renderLoading() {
     return Skeletonizer(
-      child: Chip(
-        avatar: const Icon(Icons.language),
-        label: Text(roomId),
+      child: SizedBox(
+        width: 100,
+        child: Chip(
+          avatar: const Icon(Icons.language),
+          label: Text(roomId),
+        ),
       ),
     );
   }
@@ -49,7 +52,6 @@ class VisibilityChip extends ConsumerWidget {
         break;
     }
     return Chip(
-      padding: const EdgeInsets.symmetric(horizontal: 2),
       visualDensity: VisualDensity.compact,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(5)),

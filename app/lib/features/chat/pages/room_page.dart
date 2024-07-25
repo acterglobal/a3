@@ -293,7 +293,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
           messageWidth: messageWidth,
         ),
         systemMessageBuilder: (msg) => renderSystemMessage(context, msg),
-        showUserAvatars: true,
+        showUserAvatars: !widget.convo.isDm(),
         onMessageLongPress: (
           BuildContext context,
           types.Message message,

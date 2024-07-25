@@ -427,6 +427,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       ),
       builder: (ctx) => AttachmentOptions(
         onTapCamera: () async {
+          Navigator.of(context).pop();
           XFile? imageFile =
               await ImagePicker().pickImage(source: ImageSource.camera);
           if (imageFile != null) {
@@ -442,6 +443,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           }
         },
         onTapImage: () async {
+          Navigator.of(context).pop();
           XFile? imageFile =
               await ImagePicker().pickImage(source: ImageSource.gallery);
           if (imageFile != null) {
@@ -457,6 +459,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           }
         },
         onTapVideo: () async {
+          Navigator.of(context).pop();
           XFile? imageFile =
               await ImagePicker().pickVideo(source: ImageSource.gallery);
           if (imageFile != null) {
@@ -472,6 +475,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           }
         },
         onTapFile: () async {
+          Navigator.of(context).pop();
           final selectedFiles = await handleFileSelection(ctx);
 
           if (context.mounted) {

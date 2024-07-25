@@ -126,10 +126,9 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
           children: [
             _header(context, roomAvatarInfo, membership, convo),
             _description(context, membership, convo),
-            const SizedBox(height: 24),
-            _actions(context),
+            _actions(context, convo),
             const SizedBox(height: 20),
-            _optionsBody(context),
+            _optionsBody(context, convo),
           ],
         ),
       ),
@@ -201,6 +200,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
   }
 
   Widget _description(BuildContext context, Member? membership, Convo? convo) {
+    String topic = convo?.topic() ?? '';
     return SelectionArea(
       child: GestureDetector(
         onTap: () {
@@ -213,9 +213,13 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
           }
         },
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.only(
+            bottom: topic.isEmpty ? 0 : 16,
+            left: 16,
+            right: 16,
+          ),
           child: Text(
-            convo?.topic() ?? '',
+            topic,
             style: Theme.of(context).textTheme.bodySmall,
           ),
         ),
@@ -223,7 +227,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     );
   }
 
-  Widget _actions(BuildContext context) {
+  Widget _actions(BuildContext context, Convo? convo) {
     final convoLoader = ref.watch(chatProvider(widget.roomId));
     final myMembership = ref.watch(roomMembershipProvider(widget.roomId));
 
@@ -259,7 +263,9 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         // Invite
         myMembership.when(
           data: (membership) {
-            if (membership == null) return const SizedBox();
+            if (membership == null || (convo?.isDm() == true)) {
+              return const SizedBox();
+            }
             return _actionItem(
               context: context,
               iconData: Atlas.user_plus_thin,
@@ -335,8 +341,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     );
   }
 
-  Widget _optionsBody(BuildContext context) {
-    final isLarge = context.isLargeScreen;
+  Widget _optionsBody(BuildContext context, Convo? convo) {
     return Column(
       children: [
         // Notification section
@@ -376,7 +381,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         const SizedBox(height: 20),
 
         // Room members list section
-        _convoMembersList(),
+        if (convo?.isDm() == false) _convoMembersList(),
       ],
     );
   }
