@@ -1974,5 +1974,6 @@
   "noMatchingTasksListFound": "No matching tasks list found",
   "noTasksListAvailableYet": "No tasks list available yet",
   "noTasksListAvailableDescription": "Share and manage important task with your community such as any TO-DO list so everyone is updated.",
-  "loadingMembersFailed": "Loading members failed: {error}"
+  "loadingMembersFailed": "Loading members failed: {error}",
+  "ongoing": "Ongoing"
 }
