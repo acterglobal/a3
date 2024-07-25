@@ -1,10 +1,10 @@
+import 'package:acter/common/actions/redact_content.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_link_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
-import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/pins/Utils/pins_utils.dart';
@@ -150,18 +150,15 @@ class PinPage extends ConsumerWidget {
     required ActerPin pin,
     required String roomId,
   }) {
-    showAdaptiveDialog(
-      context: context,
-      builder: (context) => RedactContentWidget(
-        title: L10n.of(context).removeThisPin,
-        eventId: pin.eventIdStr(),
-        onSuccess: () {
-          Navigator.pop(context);
-        },
-        senderId: pin.sender().toString(),
-        roomId: roomId,
-        isSpace: true,
-      ),
+    openRedactContentDialog(
+      context,
+      title: L10n.of(context).removeThisPin,
+      eventId: pin.eventIdStr(),
+      onSuccess: () {
+        Navigator.pop(context);
+      },
+      roomId: roomId,
+      isSpace: true,
     );
   }
 

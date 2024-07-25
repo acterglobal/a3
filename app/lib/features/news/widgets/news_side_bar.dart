@@ -1,10 +1,10 @@
+import 'package:acter/common/actions/redact_content.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_bottom_sheet.dart';
 import 'package:acter/common/widgets/like_button.dart';
-import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
@@ -176,25 +176,22 @@ class ActionBox extends ConsumerWidget {
       actions.add(
         TextButton.icon(
           key: NewsUpdateKeys.newsSidebarActionRemoveBtn,
-          onPressed: () => showAdaptiveDialog(
-            context: context,
-            builder: (context) => RedactContentWidget(
-              title: L10n.of(context).removeThisPost,
-              eventId: news.eventId().toString(),
-              onSuccess: () async {
-                ref.invalidate(newsListProvider);
-                if (!await Navigator.maybePop(context)) {
-                  if (context.mounted) {
-                    // fallback to go to home
-                    context.goNamed(Routes.main.name);
-                  }
+          onPressed: () => openRedactContentDialog(
+            context,
+            title: L10n.of(context).removeThisPost,
+            eventId: news.eventId().toString(),
+            onSuccess: () async {
+              ref.invalidate(newsListProvider);
+              if (!await Navigator.maybePop(context)) {
+                if (context.mounted) {
+                  // fallback to go to home
+                  context.goNamed(Routes.main.name);
                 }
-              },
-              senderId: senderId,
-              roomId: roomId,
-              isSpace: true,
-              removeBtnKey: NewsUpdateKeys.removeButton,
-            ),
+              }
+            },
+            roomId: roomId,
+            isSpace: true,
+            removeBtnKey: NewsUpdateKeys.removeButton,
           ),
           icon: const Icon(Atlas.trash_thin),
           label: Text(L10n.of(context).remove),

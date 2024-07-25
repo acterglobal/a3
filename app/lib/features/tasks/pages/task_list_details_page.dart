@@ -1,6 +1,6 @@
+import 'package:acter/common/actions/redact_content.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
-import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
@@ -101,16 +101,13 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
 
   // Redact Task List Dialog
   void showRedactDialog({required TaskList taskList}) {
-    showAdaptiveDialog(
-      context: context,
-      builder: (context) => RedactContentWidget(
-        title: L10n.of(context).deleteTaskList,
-        onSuccess: () => Navigator.pop(context),
-        eventId: taskList.eventIdStr(),
-        senderId: taskList.role() ?? '',
-        roomId: taskList.spaceIdStr(),
-        isSpace: true,
-      ),
+    openRedactContentDialog(
+      context,
+      title: L10n.of(context).deleteTaskList,
+      onSuccess: () => Navigator.pop(context),
+      eventId: taskList.eventIdStr(),
+      roomId: taskList.spaceIdStr(),
+      isSpace: true,
     );
   }
 

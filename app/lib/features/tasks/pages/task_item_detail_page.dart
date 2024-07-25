@@ -1,11 +1,11 @@
 import 'dart:async';
 
+import 'package:acter/common/actions/redact_content.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
-import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
@@ -144,20 +144,17 @@ class TaskItemDetailPage extends ConsumerWidget {
     required WidgetRef ref,
     required Task task,
   }) {
-    showAdaptiveDialog(
-      context: context,
-      builder: (context) => RedactContentWidget(
-        title: L10n.of(context).deleteTaskItem,
-        onSuccess: () {
-          ref.invalidate(taskItemsListProvider);
-          ref.invalidate(taskListItemProvider);
-          Navigator.pop(context);
-        },
-        eventId: task.eventIdStr(),
-        senderId: task.authorStr(),
-        roomId: task.roomIdStr(),
-        isSpace: true,
-      ),
+    openRedactContentDialog(
+      context,
+      title: L10n.of(context).deleteTaskItem,
+      onSuccess: () {
+        ref.invalidate(taskItemsListProvider);
+        ref.invalidate(taskListItemProvider);
+        Navigator.pop(context);
+      },
+      eventId: task.eventIdStr(),
+      roomId: task.roomIdStr(),
+      isSpace: true,
     );
   }
 

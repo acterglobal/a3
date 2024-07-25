@@ -14,27 +14,53 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::common::redact');
 
+Future<bool> openRedactContentDialog(
+  BuildContext context, {
+  final String? title,
+  final String? description,
+  required final String eventId,
+  required final String roomId,
+  final bool? isSpace,
+  final void Function()? onRemove,
+  final Function()? onSuccess,
+  final Key? cancelBtnKey,
+  final Key? removeBtnKey,
+}) async {
+  return await showAdaptiveDialog(
+    context: context,
+    useRootNavigator: false,
+    builder: (context) => _RedactContentWidget(
+      title: title,
+      description: description,
+      eventId: eventId,
+      roomId: roomId,
+      isSpace: isSpace ?? false,
+      onRemove: onRemove,
+      onSuccess: onSuccess,
+      cancelBtnKey: cancelBtnKey,
+      removeBtnKey: removeBtnKey,
+    ),
+  );
+}
+
 /// Reusable reporting acter content widget.
-class RedactContentWidget extends ConsumerWidget {
+class _RedactContentWidget extends ConsumerWidget {
   final String? title;
   final String? description;
   final String eventId;
-  final String senderId;
   final String roomId;
   final bool isSpace;
   final void Function()? onRemove;
   final Function()? onSuccess;
-  final TextEditingController reasonController = TextEditingController();
   final Key? cancelBtnKey;
   final Key? removeBtnKey;
+  final TextEditingController reasonController = TextEditingController();
 
-  RedactContentWidget({
-    super.key,
+  _RedactContentWidget({
     this.title,
     this.description,
     required this.eventId,
     required this.roomId,
-    required this.senderId,
     this.isSpace = false,
     this.onSuccess,
     this.onRemove,
@@ -74,7 +100,7 @@ class RedactContentWidget extends ConsumerWidget {
       actions: <Widget>[
         OutlinedButton(
           key: cancelBtnKey,
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.pop(context, false),
           child: Text(L10n.of(context).close),
         ),
         ActerPrimaryActionButton(
@@ -95,14 +121,14 @@ class RedactContentWidget extends ConsumerWidget {
         final redactedId = await space.redactContent(eventId, reason);
         ref.invalidate(pinListProvider(roomId));
         _log.info(
-          'Content from user:{$senderId redacted $redactedId reason:$reason}',
+          'Content from $redactedId reason:$reason}',
         );
       } else {
         final room = await ref.read(chatProvider(roomId).future);
         final redactedId = await room.redactContent(eventId, reason);
         ref.invalidate(spaceEventsProvider(roomId));
         _log.info(
-          'Content from user:{$senderId redacted $redactedId reason:$reason}',
+          'Content from $redactedId reason:$reason}',
         );
       }
 
@@ -111,7 +137,7 @@ class RedactContentWidget extends ConsumerWidget {
         return;
       }
       EasyLoading.showToast(L10n.of(context).contentSuccessfullyRemoved);
-      Navigator.pop(context);
+      Navigator.pop(context, true);
       if (onSuccess != null) {
         onSuccess!();
       }
