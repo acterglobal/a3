@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/events/event_utils/event_utils.dart';
@@ -14,6 +15,7 @@ class EventItem extends StatelessWidget {
   final EdgeInsetsGeometry? margin;
   final Function(String)? onTapEventItem;
   final bool isShowRsvp;
+  final bool isShowSpaceName;
 
   const EventItem({
     super.key,
@@ -21,6 +23,7 @@ class EventItem extends StatelessWidget {
     this.margin,
     this.onTapEventItem,
     this.isShowRsvp = true,
+    this.isShowSpaceName = false,
   });
 
   @override
@@ -48,7 +51,7 @@ class EventItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildEventTitle(context),
-                  _buildEventSubtitle(context),
+                  Consumer(builder: _buildEventSubtitle),
                 ],
               ),
             ),
@@ -93,10 +96,18 @@ class EventItem extends StatelessWidget {
     );
   }
 
-  Widget _buildEventSubtitle(BuildContext context) {
+  Widget _buildEventSubtitle(
+    BuildContext context,
+    WidgetRef ref,
+    Widget? child,
+  ) {
+    String eventSpaceName =
+        ref.watch(roomDisplayNameProvider(event.roomIdStr())).valueOrNull ??
+            L10n.of(context).unknown;
+    String eventDateTime = '${formatDate(event)} (${formatTime(event)})';
     return Text(
-      '${formatDate(event)} (${formatTime(event)})',
-      style: Theme.of(context).textTheme.labelMedium,
+      isShowSpaceName ? eventSpaceName : eventDateTime,
+      style: Theme.of(context).textTheme.labelLarge,
       maxLines: 2,
       overflow: TextOverflow.ellipsis,
     );
