@@ -74,7 +74,7 @@ class BlockedUsersPage extends ConsumerWidget {
       sidebar: const SettingsPage(),
       child: Scaffold(
         appBar: AppBar(
-          automaticallyImplyLeading: !isLargeScreen(context),
+          automaticallyImplyLeading: !context.isLargeScreen,
           title: Text(L10n.of(context).blockedUsers),
           centerTitle: true,
           actions: [

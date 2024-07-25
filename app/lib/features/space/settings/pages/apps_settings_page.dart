@@ -274,7 +274,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
           return Scaffold(
             appBar: AppBar(
               title: const Text('Apps Settings'),
-              automaticallyImplyLeading: !isLargeScreen(context),
+              automaticallyImplyLeading: !context.isLargeScreen,
             ),
             body: SettingsList(
               sections: [

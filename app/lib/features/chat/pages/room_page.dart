@@ -46,7 +46,7 @@ class RoomPage extends ConsumerWidget {
     final activeMembers = ref.watch(membersIdsProvider(roomId));
     return AppBar(
       elevation: 0,
-      automaticallyImplyLeading: !isLargeScreen(context),
+      automaticallyImplyLeading: !context.isLargeScreen,
       centerTitle: true,
       toolbarHeight: 70,
       flexibleSpace: FrostEffect(

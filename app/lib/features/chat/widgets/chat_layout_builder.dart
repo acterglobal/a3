@@ -16,7 +16,7 @@ class ChatLayoutBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!isLargeScreen(context)) {
+    if (!context.isLargeScreen) {
       // we only have space to show the deepest child:
       if (expandedChild != null) {
         return expandedChild!;

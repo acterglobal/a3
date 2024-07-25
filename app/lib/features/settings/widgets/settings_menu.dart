@@ -43,7 +43,7 @@ class SettingsMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final replacementRouting = !isFullPage && isLargeScreen(context);
+    final replacementRouting = !isFullPage && context.isLargeScreen;
 
     final isSuperInviteEnable =
         ref.watch(hasSuperTokensAccess).valueOrNull == true;
@@ -185,7 +185,8 @@ class SettingsMenu extends ConsumerWidget {
               onTap: isSuperInviteEnable
                   ? () => replacementRouting
                       ? context.pushReplacementNamed(
-                          Routes.settingsSuperInvites.name,)
+                          Routes.settingsSuperInvites.name,
+                        )
                       : context.pushNamed(Routes.settingsSuperInvites.name)
                   : null,
             ),

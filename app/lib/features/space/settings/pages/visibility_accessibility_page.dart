@@ -46,7 +46,7 @@ class _VisibilityAccessibilityPageState
     return AppBar(
       title: Text(L10n.of(context).visibilityAndAccessibility),
       centerTitle: true,
-      automaticallyImplyLeading: !isLargeScreen(context),
+      automaticallyImplyLeading: !context.isLargeScreen,
       leading: widget.impliedClose
           ? IconButton(
               onPressed: () => context.pop(),

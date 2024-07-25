@@ -19,7 +19,7 @@ class SessionsPage extends ConsumerWidget {
       sidebar: const SettingsPage(),
       child: Scaffold(
         appBar: AppBar(
-          automaticallyImplyLeading: !isLargeScreen(context),
+          automaticallyImplyLeading: !context.isLargeScreen,
           title: Text(L10n.of(context).sessions),
           centerTitle: true,
           actions: [

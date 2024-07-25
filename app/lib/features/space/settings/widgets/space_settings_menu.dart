@@ -31,7 +31,7 @@ class SpaceSettingsMenu extends ConsumerWidget {
     final notificationStatus =
         ref.watch(roomNotificationStatusProvider(spaceId));
     final curNotifStatus = notificationStatus.valueOrNull;
-    final replaceRoute = !isFullPage && isLargeScreen(context);
+    final replaceRoute = !isFullPage && context.isLargeScreen;
 
     final spaceName = spaceAvatarInfo.displayName ?? spaceId;
 

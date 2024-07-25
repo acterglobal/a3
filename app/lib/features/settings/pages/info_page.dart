@@ -49,7 +49,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
       sidebar: const SettingsPage(),
       child: Scaffold(
         appBar: AppBar(
-          automaticallyImplyLeading: !isLargeScreen(context),
+          automaticallyImplyLeading: !context.isLargeScreen,
           title: Text(
             '${L10n.of(context).acterApp} ${L10n.of(context).info}',
             style: Theme.of(context).textTheme.titleLarge,

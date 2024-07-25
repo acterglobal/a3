@@ -508,7 +508,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
   ) {
     final size = MediaQuery.of(context).size;
     if (selectedFiles != null && selectedFiles.isNotEmpty) {
-      isLargeScreen(context)
+      context.isLargeScreen
           ? showAdaptiveDialog(
               context: context,
               builder: (context) => Dialog(

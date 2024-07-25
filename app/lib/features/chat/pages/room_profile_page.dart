@@ -94,8 +94,8 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
 
     return AppBar(
       // custom x-circle when we are in widescreen mode;
-      automaticallyImplyLeading: !isLargeScreen(context),
-      leading: isLargeScreen(context)
+      automaticallyImplyLeading: !context.isLargeScreen,
+      leading: context.isLargeScreen
           ? IconButton(
               onPressed: () => context.pop(),
               icon: const Icon(Atlas.xmark_circle_thin),
@@ -336,7 +336,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
   }
 
   Widget _optionsBody(BuildContext context) {
-    final isLarge = isLargeScreen(context);
+    final isLarge = context.isLargeScreen;
     return Column(
       children: [
         // Notification section

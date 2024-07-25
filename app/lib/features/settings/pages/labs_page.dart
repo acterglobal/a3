@@ -21,7 +21,7 @@ class SettingsLabsPage extends ConsumerWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Text(L10n.of(context).labs),
-          automaticallyImplyLeading: !isLargeScreen(context),
+          automaticallyImplyLeading: !context.isLargeScreen,
         ),
         body: SettingsList(
           sections: [

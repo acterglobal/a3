@@ -25,7 +25,7 @@ class SettingsPage extends ConsumerWidget {
 
   AppBar _buildAppbar(BuildContext context) {
     return AppBar(
-      automaticallyImplyLeading: !isLargeScreen(context),
+      automaticallyImplyLeading: !context.isLargeScreen,
       title: Text(L10n.of(context).settings),
     );
   }
@@ -44,7 +44,7 @@ class SettingsPage extends ConsumerWidget {
   Widget _userProfileUI(BuildContext context, WidgetRef ref) {
     final account = ref.watch(accountProvider);
     final accountInfo = ref.watch(accountAvatarInfoProvider);
-    final shouldGoReplacement = isLargeScreen(context);
+    final shouldGoReplacement = context.isLargeScreen;
     final userId = account.userId().toString();
     return Card(
       shape: RoundedRectangleBorder(

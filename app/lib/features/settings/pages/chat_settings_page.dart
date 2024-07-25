@@ -124,7 +124,7 @@ class ChatSettingsPage extends ConsumerWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Text(L10n.of(context).chat),
-          automaticallyImplyLeading: !isLargeScreen(context),
+          automaticallyImplyLeading: !context.isLargeScreen,
         ),
         body: SettingsList(
           sections: [

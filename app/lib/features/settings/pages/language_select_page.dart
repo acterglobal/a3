@@ -24,7 +24,7 @@ class LanguageSelectPage extends ConsumerWidget {
 
   AppBar _buildAppbar(BuildContext context) {
     return AppBar(
-      automaticallyImplyLeading: !isLargeScreen(context),
+      automaticallyImplyLeading: !context.isLargeScreen,
       title: Text(L10n.of(context).selectLanguage),
       centerTitle: true,
     );

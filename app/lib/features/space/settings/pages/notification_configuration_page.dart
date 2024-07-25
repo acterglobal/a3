@@ -21,7 +21,7 @@ class SpaceNotificationConfigurationPage extends ConsumerWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Text(L10n.of(context).spaceNotifications),
-          automaticallyImplyLeading: !isLargeScreen(context),
+          automaticallyImplyLeading: !context.isLargeScreen,
         ),
         body: SettingsList(
           sections: [

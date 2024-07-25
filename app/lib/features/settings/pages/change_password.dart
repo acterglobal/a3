@@ -42,7 +42,7 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
 
   AppBar _buildAppbar() {
     return AppBar(
-      automaticallyImplyLeading: !isLargeScreen(context),
+      automaticallyImplyLeading: !context.isLargeScreen,
       title: Text(L10n.of(context).changePassword),
       centerTitle: true,
     );

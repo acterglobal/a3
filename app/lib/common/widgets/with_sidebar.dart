@@ -12,7 +12,7 @@ class WithSidebar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLarge = isLargeScreen(context);
+    final isLarge = context.isLargeScreen;
     if (isLarge) {
       return Row(
         mainAxisSize: MainAxisSize.min,
