@@ -1975,5 +1975,8 @@
   "noTasksListAvailableYet": "No tasks list available yet",
   "noTasksListAvailableDescription": "Share and manage important task with your community such as any TO-DO list so everyone is updated.",
   "loadingMembersFailed": "Loading members failed: {error}",
-  "ongoing": "Ongoing"
+  "ongoing": "Ongoing",
+  "noMatchingEventsFound": "No matching events found",
+  "noEventsFound": "No events found",
+  "noEventAvailableDescription": "Create new event and bring your community together."
 }

@@ -201,17 +201,17 @@ class _EventListPageState extends ConsumerState<EventListPage> {
       heightFactor: 1,
       child: EmptyState(
         title: searchValue.isNotEmpty
-            ? L10n.of(context).noMatchingPinsFound
-            : L10n.of(context).noPinsAvailableYet,
-        subtitle: L10n.of(context).noPinsAvailableDescription,
-        image: 'assets/images/empty_pin.svg',
+            ? L10n.of(context).noMatchingEventsFound
+            : L10n.of(context).noEventsFound,
+        subtitle: L10n.of(context).noEventAvailableDescription,
+        image: 'assets/images/empty_event.svg',
         primaryButton: canAdd && searchValue.isEmpty
             ? ActerPrimaryActionButton(
                 onPressed: () => context.pushNamed(
-                  Routes.actionAddPin.name,
+                  Routes.createEvent.name,
                   queryParameters: {'spaceId': widget.spaceId},
                 ),
-                child: Text(L10n.of(context).createPin),
+                child: Text(L10n.of(context).addEvent),
               )
             : null,
       ),
