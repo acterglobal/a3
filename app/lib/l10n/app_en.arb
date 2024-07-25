@@ -1978,5 +1978,6 @@
   "ongoing": "Ongoing",
   "noMatchingEventsFound": "No matching events found",
   "noEventsFound": "No events found",
-  "noEventAvailableDescription": "Create new event and bring your community together."
+  "noEventAvailableDescription": "Create new event and bring your community together.",
+  "myEvents": "My Events"
 }

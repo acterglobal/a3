@@ -9,11 +9,6 @@ final calendarEventProvider = AsyncNotifierProvider.autoDispose
   () => AsyncCalendarEventNotifier(),
 );
 
-//MY UPCOMING EVENT LIST PROVIDER
-final myUpcomingEventsProvider = AsyncNotifierProvider.autoDispose<
-    AsyncMyUpcomingEventsNotifier,
-    List<ffi.CalendarEvent>>(() => AsyncMyUpcomingEventsNotifier());
-
 //MY RSVP STATUS PROVIDER
 final myRsvpStatusProvider = FutureProvider.family
     .autoDispose<ffi.OptionRsvpStatus, String>((ref, calendarId) async {
@@ -41,6 +36,22 @@ final ongoingEventListProvider = FutureProvider.autoDispose
   return sortEventListAscTime(ongoingEventList);
 });
 
+//MY ONGOING EVENTS
+final myOngoingEventListProvider = FutureProvider.autoDispose
+    .family<List<ffi.CalendarEvent>, String?>((ref, params) async {
+  List<ffi.CalendarEvent> allOngoingEventList =
+      await ref.watch(ongoingEventListProvider(params).future);
+  List<ffi.CalendarEvent> myOngoingEventList = [];
+  for (final event in allOngoingEventList) {
+    final myRsvpStatus = await ref
+        .watch(myRsvpStatusProvider(event.eventId().toString()).future);
+    if (myRsvpStatus.statusStr() != null && myRsvpStatus.statusStr() == 'yes') {
+      myOngoingEventList.add(event);
+    }
+  }
+  return sortEventListAscTime(myOngoingEventList);
+});
+
 //ALL UPCOMING EVENTS
 final upcomingEventListProvider = FutureProvider.autoDispose
     .family<List<ffi.CalendarEvent>, String?>((ref, params) async {
@@ -54,6 +65,22 @@ final upcomingEventListProvider = FutureProvider.autoDispose
   return sortEventListAscTime(upcomingEventList);
 });
 
+//MY UPCOMING EVENTS
+final myUpcomingEventListProvider = FutureProvider.autoDispose
+    .family<List<ffi.CalendarEvent>, String?>((ref, params) async {
+  List<ffi.CalendarEvent> allUpcomingEventList =
+      await ref.watch(upcomingEventListProvider(params).future);
+  List<ffi.CalendarEvent> myUpcomingEventList = [];
+  for (final event in allUpcomingEventList) {
+    final myRsvpStatus = await ref
+        .watch(myRsvpStatusProvider(event.eventId().toString()).future);
+    if (myRsvpStatus.statusStr() != null && myRsvpStatus.statusStr() == 'yes') {
+      myUpcomingEventList.add(event);
+    }
+  }
+  return sortEventListAscTime(myUpcomingEventList);
+});
+
 //ALL PAST EVENTS
 final pastEventListProvider = FutureProvider.autoDispose
     .family<List<ffi.CalendarEvent>, String?>((ref, params) async {
@@ -65,6 +92,35 @@ final pastEventListProvider = FutureProvider.autoDispose
     }
   }
   return sortEventListDscTime(paseEventList);
+});
+
+//MY PAST EVENTS
+final myPastEventListProvider = FutureProvider.autoDispose
+    .family<List<ffi.CalendarEvent>, String?>((ref, params) async {
+  List<ffi.CalendarEvent> allPastEventList =
+      await ref.watch(pastEventListProvider(params).future);
+  List<ffi.CalendarEvent> myPastEventList = [];
+  for (final event in allPastEventList) {
+    final myRsvpStatus = await ref
+        .watch(myRsvpStatusProvider(event.eventId().toString()).future);
+    if (myRsvpStatus.statusStr() != null && myRsvpStatus.statusStr() == 'yes') {
+      myPastEventList.add(event);
+    }
+  }
+  return sortEventListDscTime(myPastEventList);
+});
+
+//MY EVENTS (ONGOING+UPCOMING)
+final myEventsList = FutureProvider.autoDispose
+    .family<List<ffi.CalendarEvent>, String?>((ref, params) async {
+  final myOngoingEvents =
+      await ref.watch(myOngoingEventListProvider(params).future);
+  final myUpcomingEvents =
+      await ref.watch(myUpcomingEventListProvider(params).future);
+  List<ffi.CalendarEvent> myEventsList = [];
+  myEventsList.addAll(myOngoingEvents);
+  myEventsList.addAll(myUpcomingEvents);
+  return myEventsList;
 });
 
 //EVENT FILTERS

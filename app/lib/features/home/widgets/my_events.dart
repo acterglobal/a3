@@ -14,14 +14,14 @@ class MyEventsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final upcoming = ref.watch(myUpcomingEventsProvider);
+    final upcoming = ref.watch(myEventsList(null));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Row(
           children: [
             Text(
-              L10n.of(context).upcomingEvents,
+              L10n.of(context).myEvents,
               style: Theme.of(context).textTheme.titleSmall,
             ),
             const Spacer(),
