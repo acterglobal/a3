@@ -1,6 +1,0 @@
-- [Improvement] : Space Details : Space Header now also show members list UI
-- [Enhancement] : Space Details : Click on section Header labels now lead you to relevant detail page
-- [Improvement] : Hide unwanted avatar UI on message thread if it is DM
-- [Fixes] : Disable invite button in Room Details page if it is DM
-- [Improvement] : Couple of UI fixes on chat listing and Filters Area
-- [Fixes] : Close attachment selection option dialog upon tab
