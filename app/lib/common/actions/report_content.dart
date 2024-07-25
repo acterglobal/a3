@@ -47,7 +47,6 @@ class _ReportContentWidget extends ConsumerWidget {
   final bool isSpace;
 
   const _ReportContentWidget({
-    super.key,
     required this.title,
     required this.description,
     required this.eventId,

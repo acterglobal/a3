@@ -242,7 +242,7 @@ void showSuggestRoomsDialog(
   showAdaptiveDialog(
     barrierDismissible: true,
     context: context,
-    useRootNavigator: true,
+    useRootNavigator: false,
     builder: (context) => _SuggestedRooms(
       spaceId: spaceId,
     ),

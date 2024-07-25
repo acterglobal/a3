@@ -21,7 +21,7 @@ void showLeaveSpaceDialog(
   showAdaptiveDialog(
     barrierDismissible: true,
     context: context,
-    useRootNavigator: true,
+    useRootNavigator: false,
     builder: (context) => DefaultDialog(
       title: Column(
         children: <Widget>[

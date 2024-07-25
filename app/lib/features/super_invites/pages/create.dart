@@ -265,6 +265,7 @@ class _CreateSuperInviteTokenPageConsumerState
   Future<void> _deleteIt(BuildContext context) async {
     final bool? confirm = await showAdaptiveDialog(
       context: context,
+      useRootNavigator: false,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(L10n.of(context).deleteCode),

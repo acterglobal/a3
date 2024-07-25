@@ -427,6 +427,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
   Future<void> showLeaveRoomDialog() async {
     showAdaptiveDialog(
       context: context,
+      useRootNavigator: false,
       builder: (context) => DefaultDialog(
         title: Text(
           L10n.of(context).leaveRoom,
