@@ -1979,5 +1979,8 @@
   "noMatchingEventsFound": "No matching events found",
   "noEventsFound": "No events found",
   "noEventAvailableDescription": "Create new event and bring your community together.",
-  "myEvents": "My Events"
+  "myEvents": "My Events",
+  "started": "Started",
+  "starts": "Starts",
+  "completed": "Completed"
 }

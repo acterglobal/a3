@@ -506,11 +506,11 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
 
     String eventTimingTitle = '';
     if (getEventType(ev) == EventFilters.ongoing) {
-      eventTimingTitle = 'Started $agoTime';
+      eventTimingTitle = '${L10n.of(context).started} $agoTime';
     } else if (getEventType(ev) == EventFilters.upcoming) {
-      eventTimingTitle = 'Starts $agoTime';
+      eventTimingTitle = '${L10n.of(context).starts} $agoTime';
     } else if (getEventType(ev) == EventFilters.past) {
-      eventTimingTitle = 'Completed $agoTime';
+      eventTimingTitle = '${L10n.of(context).completed} $agoTime';
     }
 
     return Padding(
