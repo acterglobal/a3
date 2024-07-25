@@ -20,6 +20,7 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SpaceDetailsPage extends ConsumerStatefulWidget {
+  static const headerKey = Key('space-menus-header');
   final String spaceId;
 
   const SpaceDetailsPage({
@@ -118,6 +119,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
       skipLoadingOnReload: true,
       data: (tabsList) {
         return ScrollableListTabScroller(
+          headerKey: SpaceDetailsPage.headerKey,
           itemCount: tabsList.length,
           itemPositionsListener: itemPositionsListener,
 
