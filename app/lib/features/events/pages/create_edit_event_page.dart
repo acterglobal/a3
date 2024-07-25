@@ -487,7 +487,7 @@ class CreateEditEventPageConsumerState
       ref.invalidate(spaceEventsProvider(spaceId)); // events page in space
 
       if (mounted) {
-        context.pop();
+        context.closeDialog();
         context.pushNamed(
           Routes.calendarEvent.name,
           pathParameters: {'calendarId': eventId.toString()},
@@ -544,7 +544,7 @@ class CreateEditEventPageConsumerState
       final spaceId = calendarEvent.roomIdStr();
       ref.invalidate(spaceEventsProvider(spaceId)); // events page in space
 
-      if (mounted) context.pop();
+      if (mounted) context.closeDialog();
     } catch (e, st) {
       _log.severe('Failed to update calendar event', e, st);
       if (!mounted) {

@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -49,7 +48,7 @@ class _VisibilityAccessibilityPageState
       automaticallyImplyLeading: !context.isLargeScreen,
       leading: widget.impliedClose
           ? IconButton(
-              onPressed: () => context.pop(),
+              onPressed: () => context.closeDialog(),
               icon: const Icon(Atlas.xmark_circle_thin),
             )
           : null,

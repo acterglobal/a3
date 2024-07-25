@@ -75,13 +75,22 @@ extension ActerContextUtils on BuildContext {
   bool get isLargeScreen =>
       MediaQuery.of(this).size.width >= largeScreenBreakPoint;
 
-  Future<void> closeDialog<T>([T? result]) async {
+  NavigatorState closeDialog({Routes? orGo, bool ignorePopFailure = false}) {
+    final navigator = Navigator.of(this);
     try {
-      Navigator.of(this).pop(result);
+      if (orGo != null && !navigator.canPop()) {
+        navigator.pushReplacementNamed(orGo.name);
+      } else {
+        navigator.pop();
+      }
     } catch (error, stackTrace) {
-      _log.severe('Routing failed', error, stackTrace);
-      await Sentry.captureException(error, stackTrace: stackTrace);
+      if (!ignorePopFailure) {
+        // track if we failed to pop so we can fix that.
+        _log.severe('Routing failed', error, stackTrace);
+        Sentry.captureException(error, stackTrace: stackTrace);
+      }
     }
+    return navigator;
   }
 }
 

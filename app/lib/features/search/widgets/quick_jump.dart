@@ -1,4 +1,5 @@
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/icons/tasks_icon.dart';
 import 'package:acter/features/public_room_search/widgets/maybe_direct_room_action_widget.dart';
 import 'package:acter/features/search/model/keys.dart';
@@ -10,7 +11,6 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:go_router/go_router.dart';
 
 class QuickJump extends ConsumerStatefulWidget {
   final bool expand;
@@ -146,8 +146,7 @@ class _QuickJumpState extends ConsumerState<QuickJump> {
   }
 
   void routeTo(Routes route) {
-    if (context.canPop()) context.pop();
-    context.pushNamed(route.name);
+    context.closeDialog(ignorePopFailure: true).pushNamed(route.name);
   }
 
   @override

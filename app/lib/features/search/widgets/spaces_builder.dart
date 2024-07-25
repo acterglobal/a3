@@ -1,5 +1,6 @@
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/search/providers/search.dart';
 import 'package:acter/features/search/providers/spaces.dart';
 import 'package:acter/router/utils.dart';
@@ -78,7 +79,7 @@ class SpacesBuilder extends ConsumerWidget {
                     ),
                   ),
                   onTap: () {
-                    if (context.canPop()) context.pop();
+                    context.closeDialog(ignorePopFailure: true);
                     goToSpace(context, e.navigationTargetId);
                   },
                 ),

@@ -1,4 +1,5 @@
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/providers/create_chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/router/utils.dart';
@@ -6,7 +7,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class MessageUserButton extends ConsumerWidget {
   final Member member;
@@ -21,7 +21,7 @@ class MessageUserButton extends ConsumerWidget {
         child: OutlinedButton.icon(
           icon: const Icon(Atlas.chats_thin),
           onPressed: () async {
-            context.pop();
+            context.closeDialog();
             goToChat(context, dmId);
           },
           label: const Text('Message'),
@@ -36,10 +36,9 @@ class MessageUserButton extends ConsumerWidget {
             ref.read(createChatSelectedUsersProvider.notifier).state = [
               profile,
             ];
-            context.pop();
-            context.pushNamed(
-              Routes.createChat.name,
-            );
+            context.closeDialog().pushNamed(
+                  Routes.createChat.name,
+                );
           },
           label: const Text('Start DM'),
         ),
