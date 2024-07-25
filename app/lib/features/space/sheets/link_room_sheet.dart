@@ -199,7 +199,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
           roomId: roomId,
           canCheck: 'CanLinkSpaces',
           onSelect: null,
-          keyPrefix: 'room-list-link-',
+          keyPrefix: 'chat-list-link',
           avatarDisplayMode: DisplayMode.GroupChat,
           trailingBuilder: (canLink) =>
               roomTrailing(roomId, isLinked(roomId), canLink),
@@ -261,6 +261,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
           avatarDisplayMode: DisplayMode.Space,
           roomId: roomId,
           canCheck: 'CanLinkSpaces',
+          keyPrefix: 'space-list-link',
           subtitle: subtitle,
           trailingBuilder: (canLink) => roomTrailing(
             roomId,
