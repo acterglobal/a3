@@ -498,10 +498,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             .fromNow();
     final startDate =
         Jiffy.parseFromDateTime(toDartDatetime(ev.utcStart()).toLocal())
-            .format(pattern: 'EEE, MMM dd AT hh:mm');
+            .format(pattern: 'EEE, MMM dd, yyyy AT hh:mm');
     final endDate =
         Jiffy.parseFromDateTime(toDartDatetime(ev.utcEnd()).toLocal())
-            .format(pattern: 'EEE, MMM dd AT hh:mm');
+            .format(pattern: 'EEE, MMM dd, yyyy AT hh:mm');
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
