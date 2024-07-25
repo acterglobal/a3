@@ -2,7 +2,7 @@ import 'package:acter/common/actions/redact_content.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
-import 'package:acter/common/widgets/report_content.dart';
+import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
@@ -113,16 +113,14 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
 
   // Report Task List Dialog
   void showReportDialog(TaskList taskList) {
-    showAdaptiveDialog(
-      context: context,
-      builder: (context) => ReportContentWidget(
-        title: L10n.of(context).reportTaskList,
-        description: L10n.of(context).reportThisContent,
-        eventId: taskList.eventIdStr(),
-        senderId: taskList.role() ?? '',
-        roomId: taskList.spaceIdStr(),
-        isSpace: true,
-      ),
+    openReportContentDialog(
+      context,
+      title: L10n.of(context).reportTaskList,
+      description: L10n.of(context).reportThisContent,
+      eventId: taskList.eventIdStr(),
+      senderId: taskList.role() ?? '',
+      roomId: taskList.spaceIdStr(),
+      isSpace: true,
     );
   }
 

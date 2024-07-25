@@ -5,7 +5,7 @@ import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_bottom_sheet.dart';
 import 'package:acter/common/widgets/like_button.dart';
-import 'package:acter/common/widgets/report_content.dart';
+import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/router/utils.dart';
@@ -201,16 +201,14 @@ class ActionBox extends ConsumerWidget {
       actions.add(
         TextButton.icon(
           key: NewsUpdateKeys.newsSidebarActionReportBtn,
-          onPressed: () => showAdaptiveDialog(
-            context: context,
-            builder: (context) => ReportContentWidget(
-              title: L10n.of(context).reportThisPost,
-              eventId: news.eventId().toString(),
-              description: L10n.of(context).reportPostContent,
-              senderId: senderId,
-              roomId: roomId,
-              isSpace: true,
-            ),
+          onPressed: () => openReportContentDialog(
+            context,
+            title: L10n.of(context).reportThisPost,
+            eventId: news.eventId().toString(),
+            description: L10n.of(context).reportPostContent,
+            senderId: senderId,
+            roomId: roomId,
+            isSpace: true,
           ),
           icon: const Icon(Atlas.exclamation_chat_thin),
           label: Text(L10n.of(context).reportThis),

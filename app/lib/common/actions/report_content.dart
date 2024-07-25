@@ -14,8 +14,31 @@ final _log = Logger('a3::common::report');
 
 final _ignoreUserProvider = StateProvider.autoDispose<bool>((ref) => false);
 
+Future<bool> openReportContentDialog(
+  BuildContext context, {
+  required String title,
+  required String description,
+  required final String eventId,
+  required final String roomId,
+  required final String senderId,
+  final bool? isSpace,
+}) async {
+  return await showAdaptiveDialog(
+    context: context,
+    useRootNavigator: false,
+    builder: (context) => _ReportContentWidget(
+      title: title,
+      description: description,
+      eventId: eventId,
+      senderId: senderId,
+      roomId: roomId,
+      isSpace: isSpace ?? false,
+    ),
+  );
+}
+
 /// Reusable reporting acter content widget.
-class ReportContentWidget extends ConsumerWidget {
+class _ReportContentWidget extends ConsumerWidget {
   final String title;
   final String description;
   final String eventId;
@@ -23,7 +46,7 @@ class ReportContentWidget extends ConsumerWidget {
   final String roomId;
   final bool isSpace;
 
-  const ReportContentWidget({
+  const _ReportContentWidget({
     super.key,
     required this.title,
     required this.description,

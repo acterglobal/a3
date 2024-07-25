@@ -5,7 +5,7 @@ import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_link_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
-import 'package:acter/common/widgets/report_content.dart';
+import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/pins/Utils/pins_utils.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
@@ -164,16 +164,14 @@ class PinPage extends ConsumerWidget {
 
   // report pin dialog
   void showReportDialog(BuildContext context, ActerPin pin) {
-    showAdaptiveDialog(
-      context: context,
-      builder: (context) => ReportContentWidget(
-        title: L10n.of(context).reportThisPin,
-        description: L10n.of(context).reportThisContent,
-        eventId: pinId,
-        roomId: pin.roomIdStr(),
-        senderId: pin.sender().toString(),
-        isSpace: true,
-      ),
+    openReportContentDialog(
+      context,
+      title: L10n.of(context).reportThisPin,
+      description: L10n.of(context).reportThisContent,
+      eventId: pinId,
+      roomId: pin.roomIdStr(),
+      senderId: pin.sender().toString(),
+      isSpace: true,
     );
   }
 

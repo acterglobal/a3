@@ -7,7 +7,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
-import 'package:acter/common/widgets/report_content.dart';
+import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
@@ -163,16 +163,14 @@ class TaskItemDetailPage extends ConsumerWidget {
     required BuildContext context,
     required Task task,
   }) {
-    showAdaptiveDialog(
-      context: context,
-      builder: (context) => ReportContentWidget(
-        title: L10n.of(context).reportTaskItem,
-        description: L10n.of(context).reportThisContent,
-        eventId: task.eventIdStr(),
-        senderId: task.authorStr(),
-        roomId: task.roomIdStr(),
-        isSpace: true,
-      ),
+    openReportContentDialog(
+      context,
+      title: L10n.of(context).reportTaskItem,
+      description: L10n.of(context).reportThisContent,
+      eventId: task.eventIdStr(),
+      senderId: task.authorStr(),
+      roomId: task.roomIdStr(),
+      isSpace: true,
     );
   }
 

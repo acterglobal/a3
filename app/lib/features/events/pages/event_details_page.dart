@@ -7,7 +7,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
-import 'package:acter/common/widgets/report_content.dart';
+import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/events/model/keys.dart';
@@ -163,16 +163,14 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     //Report Event Action
     actions.add(
       PopupMenuItem(
-        onTap: () => showAdaptiveDialog(
-          context: context,
-          builder: (context) => ReportContentWidget(
-            title: L10n.of(context).reportThisEvent,
-            description: L10n.of(context).reportThisContent,
-            eventId: widget.calendarId,
-            roomId: event.roomIdStr(),
-            senderId: event.sender().toString(),
-            isSpace: true,
-          ),
+        onTap: () => openReportContentDialog(
+          context,
+          title: L10n.of(context).reportThisEvent,
+          description: L10n.of(context).reportThisContent,
+          eventId: widget.calendarId,
+          roomId: event.roomIdStr(),
+          senderId: event.sender().toString(),
+          isSpace: true,
         ),
         child: Row(
           children: <Widget>[
