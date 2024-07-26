@@ -97,7 +97,7 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
         OutlinedButton(
           onPressed: () {
             markHasSeenSuggested(ref, widget.spaceId);
-            Navigator.of(context).pop();
+            Navigator.pop(context);
           },
           child: Text(L10n.of(context).skip),
         ),
@@ -171,7 +171,7 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
       markHasSeenSuggested(ref, widget.spaceId);
     }
     if (context.mounted) {
-      Navigator.of(context).pop();
+      Navigator.pop(context);
     }
   }
 
@@ -242,7 +242,7 @@ void showSuggestRoomsDialog(
   showAdaptiveDialog(
     barrierDismissible: true,
     context: context,
-    useRootNavigator: true,
+    useRootNavigator: false,
     builder: (context) => _SuggestedRooms(
       spaceId: spaceId,
     ),

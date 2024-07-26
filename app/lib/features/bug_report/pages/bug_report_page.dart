@@ -222,7 +222,7 @@ class _BugReportState extends ConsumerState<BugReportPage> {
                     key: BugReportPage.screenshot,
                     width: MediaQuery.of(context).size.width * 0.8,
                     errorBuilder: (
-                      BuildContext ctx,
+                      BuildContext context,
                       Object error,
                       StackTrace? stackTrace,
                     ) {
@@ -241,7 +241,7 @@ class _BugReportState extends ConsumerState<BugReportPage> {
                           if (!await reportBug(context)) return;
                           if (!context.mounted) return;
                           if (context.canPop()) {
-                            context.closeDialog();
+                            Navigator.pop(context);
                           }
                         },
                         child: Text(L10n.of(context).submit),

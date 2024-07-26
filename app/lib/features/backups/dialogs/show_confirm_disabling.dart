@@ -32,7 +32,7 @@ class _ShowConfirmResetDialog extends ConsumerWidget {
       actionsAlignment: MainAxisAlignment.spaceEvenly,
       actions: <Widget>[
         ActerPrimaryActionButton(
-          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+          onPressed: () => Navigator.pop(context),
           child: Text(L10n.of(context).encryptionBackupDisableActionKeepIt),
         ),
         ActerDangerActionButton(
@@ -57,7 +57,7 @@ class _ShowConfirmResetDialog extends ConsumerWidget {
         toastPosition: EasyLoadingToastPosition.bottom,
       );
       if (context.mounted) {
-        Navigator.of(context, rootNavigator: true).pop();
+        Navigator.pop(context);
         showRecoveryKeyDialog(context, ref, newKey);
       }
     } catch (error) {
@@ -75,6 +75,6 @@ class _ShowConfirmResetDialog extends ConsumerWidget {
 void showConfirmResetDialog(BuildContext context, WidgetRef ref) {
   showDialog(
     context: context,
-    builder: (BuildContext ctx) => const _ShowConfirmResetDialog(),
+    builder: (BuildContext context) => const _ShowConfirmResetDialog(),
   );
 }

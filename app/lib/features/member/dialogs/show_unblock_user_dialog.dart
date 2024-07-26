@@ -27,7 +27,7 @@ Future<void> showUnblockUserDialog(BuildContext context, Member member) async {
         actionsAlignment: MainAxisAlignment.spaceEvenly,
         actions: <Widget>[
           OutlinedButton(
-            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+            onPressed: () => Navigator.pop(context),
             child: Text(L10n.of(context).no),
           ),
           ActerPrimaryActionButton(
@@ -50,7 +50,7 @@ Future<void> showUnblockUserDialog(BuildContext context, Member member) async {
                   duration: const Duration(seconds: 3),
                 );
               }
-              Navigator.of(context, rootNavigator: true).pop();
+              Navigator.pop(context);
             },
             child: Text(L10n.of(context).yes),
           ),

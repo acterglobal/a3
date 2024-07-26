@@ -1,4 +1,3 @@
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -16,7 +15,7 @@ Future<void> savePinTitle(
     await updateBuilder.send();
     EasyLoading.dismiss();
     if (!context.mounted) return;
-    context.closeDialog();
+    Navigator.pop(context);
   } catch (e) {
     EasyLoading.dismiss();
     if (!context.mounted) return;
@@ -36,7 +35,7 @@ Future<void> savePinLink(
     await updateBuilder.send();
     EasyLoading.dismiss();
     if (!context.mounted) return;
-    context.closeDialog();
+    Navigator.pop(context);
   } catch (e) {
     EasyLoading.dismiss();
     if (!context.mounted) return;
@@ -58,7 +57,7 @@ Future<void> saveDescription(
     await updateBuilder.send();
     EasyLoading.dismiss();
     if (!context.mounted) return;
-    context.closeDialog();
+    Navigator.pop(context);
   } catch (e) {
     EasyLoading.dismiss();
     if (!context.mounted) return;

@@ -14,8 +14,31 @@ final _log = Logger('a3::common::report');
 
 final _ignoreUserProvider = StateProvider.autoDispose<bool>((ref) => false);
 
+Future<bool> openReportContentDialog(
+  BuildContext context, {
+  required String title,
+  required String description,
+  required final String eventId,
+  required final String roomId,
+  required final String senderId,
+  final bool? isSpace,
+}) async {
+  return await showAdaptiveDialog(
+    context: context,
+    useRootNavigator: false,
+    builder: (context) => _ReportContentWidget(
+      title: title,
+      description: description,
+      eventId: eventId,
+      senderId: senderId,
+      roomId: roomId,
+      isSpace: isSpace ?? false,
+    ),
+  );
+}
+
 /// Reusable reporting acter content widget.
-class ReportContentWidget extends ConsumerWidget {
+class _ReportContentWidget extends ConsumerWidget {
   final String title;
   final String description;
   final String eventId;
@@ -23,8 +46,7 @@ class ReportContentWidget extends ConsumerWidget {
   final String roomId;
   final bool isSpace;
 
-  const ReportContentWidget({
-    super.key,
+  const _ReportContentWidget({
     required this.title,
     required this.description,
     required this.eventId,
@@ -90,7 +112,7 @@ class ReportContentWidget extends ConsumerWidget {
       ),
       actions: <Widget>[
         OutlinedButton(
-          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+          onPressed: () => Navigator.pop(context),
           child: Text(L10n.of(context).close),
         ),
         ActerPrimaryActionButton(
@@ -101,10 +123,10 @@ class ReportContentWidget extends ConsumerWidget {
     );
   }
 
-  void reportContent(BuildContext ctx, WidgetRef ref, String reason) async {
+  void reportContent(BuildContext context, WidgetRef ref, String reason) async {
     bool res = false;
     final ignoreFlag = ref.read(_ignoreUserProvider);
-    EasyLoading.show(status: L10n.of(ctx).sendingReport);
+    EasyLoading.show(status: L10n.of(context).sendingReport);
     try {
       if (isSpace) {
         final space = await ref.read(spaceProvider(roomId).future);
@@ -126,26 +148,26 @@ class ReportContentWidget extends ConsumerWidget {
         }
       }
 
-      if (!ctx.mounted) {
+      if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
       if (res) {
-        EasyLoading.showToast(L10n.of(ctx).reportSent);
-        Navigator.of(ctx, rootNavigator: true).pop();
+        EasyLoading.showToast(L10n.of(context).reportSent);
+        Navigator.pop(context);
       } else {
         EasyLoading.showError(
-          L10n.of(ctx).reportSendingFailed,
+          L10n.of(context).reportSendingFailed,
           duration: const Duration(seconds: 3),
         );
       }
     } catch (e) {
-      if (!ctx.mounted) {
+      if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
       EasyLoading.showError(
-        L10n.of(ctx).reportSendingFailedDueTo(e),
+        L10n.of(context).reportSendingFailedDueTo(e),
         duration: const Duration(seconds: 3),
       );
     }

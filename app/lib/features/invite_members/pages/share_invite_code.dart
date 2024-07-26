@@ -193,7 +193,7 @@ class ShareInviteCode extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
       child: ActerPrimaryActionButton(
-        onPressed: () => context.closeDialog(),
+        onPressed: () => Navigator.pop(context),
         child: Text(L10n.of(context).done),
       ),
     );

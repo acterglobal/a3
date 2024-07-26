@@ -76,8 +76,7 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
       actionsAlignment: MainAxisAlignment.spaceEvenly,
       actions: <Widget>[
         OutlinedButton(
-          onPressed: () =>
-              Navigator.of(context, rootNavigator: true).pop(false),
+          onPressed: () => Navigator.pop(context, false),
           child: Text(L10n.of(context).cancel),
         ),
         ActerPrimaryActionButton(
@@ -153,7 +152,7 @@ Future<bool> showReedemTokenDialog(
 ) async {
   return await showDialog(
     context: context,
-    builder: (BuildContext ctx) =>
+    builder: (BuildContext context) =>
         _ShowRedeemTokenDialog(token: superInviteToken),
   );
 }

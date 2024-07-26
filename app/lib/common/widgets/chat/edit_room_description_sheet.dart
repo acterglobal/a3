@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -76,7 +75,7 @@ class _EditRoomDescriptionSheetState
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 OutlinedButton(
-                  onPressed: () => context.closeDialog(),
+                  onPressed: () => Navigator.pop(context),
                   child: Text(L10n.of(context).cancel),
                 ),
                 const SizedBox(width: 20),
@@ -95,7 +94,7 @@ class _EditRoomDescriptionSheetState
   Future<void> _editDescription(BuildContext context, WidgetRef ref) async {
     final newDesc = _descriptionController.text.trim();
     if (newDesc == widget.description.trim()) {
-      context.closeDialog();
+      Navigator.pop(context);
       return; // no changes to submit
     }
 
@@ -105,7 +104,7 @@ class _EditRoomDescriptionSheetState
       await convo.setTopic(_descriptionController.text.trim());
       EasyLoading.dismiss();
       if (!context.mounted) return;
-      context.closeDialog();
+      Navigator.pop(context);
     } catch (e, st) {
       _log.severe('Failed to edit chat description', e, st);
       if (!context.mounted) {

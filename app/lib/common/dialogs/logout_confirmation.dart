@@ -12,7 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 void logoutConfirmationDialog(BuildContext context, WidgetRef ref) {
   showDialog(
     context: context,
-    builder: (BuildContext ctx) {
+    builder: (BuildContext context) {
       return AlertDialog(
         backgroundColor: Theme.of(context).colorScheme.surface,
         title: Column(
@@ -46,7 +46,7 @@ void logoutConfirmationDialog(BuildContext context, WidgetRef ref) {
         actionsAlignment: MainAxisAlignment.spaceEvenly,
         actions: <Widget>[
           OutlinedButton(
-            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+            onPressed: () => Navigator.pop(context),
             child: Text(
               L10n.of(context).no,
               key: LogoutDialogKeys.cancel,
@@ -54,7 +54,7 @@ void logoutConfirmationDialog(BuildContext context, WidgetRef ref) {
           ),
           ActerDangerActionButton(
             onPressed: () async {
-              await ref.read(authStateProvider.notifier).logout(ctx);
+              await ref.read(authStateProvider.notifier).logout(context);
             },
             child: Text(
               L10n.of(context).yes,

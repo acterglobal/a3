@@ -365,7 +365,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Consumer(
-                  builder: (ctx, ref, child) =>
+                  builder: (context, ref, child) =>
                       replyBuilder(roomId, repliedToMessage),
                 ),
                 _ReplyContentWidget(
@@ -425,9 +425,9 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           topLeft: Radius.circular(20),
         ),
       ),
-      builder: (ctx) => AttachmentOptions(
+      builder: (context) => AttachmentOptions(
         onTapCamera: () async {
-          Navigator.of(context).pop();
+          Navigator.pop(context);
           XFile? imageFile =
               await ImagePicker().pickImage(source: ImageSource.camera);
           if (imageFile != null) {
@@ -443,7 +443,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           }
         },
         onTapImage: () async {
-          Navigator.of(context).pop();
+          Navigator.pop(context);
           XFile? imageFile =
               await ImagePicker().pickImage(source: ImageSource.gallery);
           if (imageFile != null) {
@@ -459,7 +459,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           }
         },
         onTapVideo: () async {
-          Navigator.of(context).pop();
+          Navigator.pop(context);
           XFile? imageFile =
               await ImagePicker().pickVideo(source: ImageSource.gallery);
           if (imageFile != null) {
@@ -475,8 +475,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           }
         },
         onTapFile: () async {
-          Navigator.of(context).pop();
-          final selectedFiles = await handleFileSelection(ctx);
+          Navigator.pop(context);
+          final selectedFiles = await handleFileSelection(context);
 
           if (context.mounted) {
             attachmentConfirmation(
@@ -528,7 +528,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
             )
           : showModalBottomSheet(
               context: context,
-              builder: (ctx) => Padding(
+              builder: (context) => Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: _FileWidget(selectedFiles, type, handleFileUpload),
               ),
@@ -782,13 +782,13 @@ class _FileWidget extends ConsumerWidget {
         children: <Widget>[
           OutlinedButton(
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.pop(context);
             },
             child: Text(L10n.of(context).cancel),
           ),
           ActerPrimaryActionButton(
             onPressed: () async {
-              Navigator.of(context).pop();
+              Navigator.pop(context);
               handleFileUpload(selectedFiles, type);
             },
             child: Text(L10n.of(context).send),
@@ -926,9 +926,9 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         autocompleteTriggers: [
           AutocompleteTrigger(
             trigger: '@',
-            optionsViewBuilder: (ctx, autocompleteQuery, ctrl) {
+            optionsViewBuilder: (context, autocompleteQuery, ctrl) {
               return MentionProfileBuilder(
-                ctx: ctx,
+                context: context,
                 roomQuery: (
                   query: autocompleteQuery.query,
                   roomId: widget.roomId
@@ -937,14 +937,14 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
             },
           ),
         ],
-        fieldViewBuilder: (ctx, ctrl, focusNode) =>
-            _innerTextField(ctx, focusNode, ctrl),
+        fieldViewBuilder: (context, ctrl, focusNode) =>
+            _innerTextField(context, focusNode, ctrl),
       ),
     );
   }
 
   Widget _innerTextField(
-    BuildContext ctx,
+    BuildContext context,
     FocusNode chatFocus,
     TextEditingController ctrl,
   ) {
@@ -977,7 +977,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         suffixIcon: InkWell(
           onTap: () => onSuffixTap(
             ref.read(chatInputProvider).emojiPickerVisible,
-            ctx,
+            context,
             ref,
           ),
           child: const Icon(Icons.emoji_emotions),

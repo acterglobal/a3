@@ -6,15 +6,15 @@ import 'package:flutter/material.dart';
 
 // reusable attachment confirmation dialog
 void attachmentConfirmationDialog(
-  BuildContext ctx,
+  BuildContext context,
   AttachmentsManager manager,
   List<AttachmentInfo>? selectedAttachments,
 ) {
-  final size = MediaQuery.of(ctx).size;
+  final size = MediaQuery.of(context).size;
   if (selectedAttachments != null && selectedAttachments.isNotEmpty) {
     showAdaptiveDialog(
-      context: ctx,
-      builder: (ctx) => Dialog(
+      context: context,
+      builder: (context) => Dialog(
         insetPadding: const EdgeInsets.all(8),
         child: ConstrainedBox(
           constraints: BoxConstraints(

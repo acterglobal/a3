@@ -95,7 +95,7 @@ List<RouteBase> makeGeneralRoutes() {
       name: Routes.bugReport.name,
       path: Routes.bugReport.route,
       pageBuilder: (context, state) => DialogPage(
-        builder: (BuildContext ctx) => BugReportPage(
+        builder: (BuildContext context) => BugReportPage(
           imagePath: state.uri.queryParameters['screenshot'],
         ),
       ),
@@ -114,7 +114,7 @@ List<RouteBase> makeGeneralRoutes() {
       name: Routes.quickJump.name,
       path: Routes.quickJump.route,
       pageBuilder: (context, state) => DialogPage(
-        builder: (BuildContext ctx) => const QuickjumpDialog(),
+        builder: (BuildContext context) => const QuickjumpDialog(),
       ),
     ),
     GoRoute(

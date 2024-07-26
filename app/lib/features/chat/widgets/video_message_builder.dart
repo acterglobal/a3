@@ -59,7 +59,7 @@ class VideoMessageBuilder extends ConsumerWidget {
             context: context,
             barrierDismissible: false,
             useRootNavigator: false,
-            builder: (ctx) => VideoDialog(
+            builder: (context) => VideoDialog(
               title: message.name,
               videoFile: mediaState.mediaFile!,
             ),
@@ -122,7 +122,7 @@ class VideoMessageBuilder extends ConsumerWidget {
           context: context,
           barrierDismissible: false,
           useRootNavigator: false,
-          builder: (ctx) => VideoDialog(
+          builder: (context) => VideoDialog(
             title: message.name,
             videoFile: mediaState.mediaFile!,
           ),

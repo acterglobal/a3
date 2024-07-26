@@ -415,7 +415,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
         final convo = await widget.onCreateConvo(null, null, userIds);
         EasyLoading.dismiss();
         if (!mounted) return;
-        Navigator.of(context).pop();
+        Navigator.pop(context);
         if (convo == null) return;
         context.pushNamed(
           Routes.chatroom.name,
@@ -429,7 +429,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
       String? id = checkUserDMExists(othersUserId, client);
       if (id != null) {
         EasyLoading.dismiss();
-        Navigator.of(context).pop();
+        Navigator.pop(context);
         context.pushNamed(
           Routes.chatroom.name,
           pathParameters: {'roomId': id},
@@ -440,7 +440,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
       final convo = await widget.onCreateConvo(null, null, [othersUserId]);
       EasyLoading.dismiss();
       if (!mounted) return;
-      Navigator.of(context).pop();
+      Navigator.pop(context);
       if (convo == null) return;
       context.pushNamed(
         Routes.chatroom.name,
@@ -606,7 +606,7 @@ class _CreateRoomFormWidgetConsumerState
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
               OutlinedButton(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () => Navigator.pop(context),
                 child: Text(L10n.of(context).cancel),
               ),
               const SizedBox(width: 10),

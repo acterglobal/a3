@@ -4,7 +4,6 @@ import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
@@ -100,7 +99,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
         onPressed: () {
           // Hide Keyboard
           SystemChannels.textInput.invokeMethod('TextInput.hide');
-          context.closeDialog();
+          Navigator.pop(context);
         },
         icon: const Icon(Atlas.xmark_circle),
       ),
@@ -151,7 +150,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           title: Text(L10n.of(context).addActionWidget),
           content: SelectActionItem(
             onShareEventSelected: () async {
-              Navigator.of(context, rootNavigator: true).pop();
+              Navigator.pop(context);
               if (ref.read(newsStateProvider).newsPostSpaceId == null) {
                 EasyLoading.showToast(L10n.of(context).pleaseFirstSelectASpace);
                 return;
@@ -461,7 +460,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       ref.invalidate(newsListProvider);
       ref.invalidate(newsStateProvider);
       // Navigate back to update screen.
-      Navigator.of(context).pop();
+      Navigator.pop(context);
       context.pushReplacementNamed(
         Routes.main.name,
       ); // go to the home / main updates

@@ -34,7 +34,7 @@ class DefaultBottomSheet extends ConsumerWidget {
         : GestureDetector(
             onTap: () {
               // Close the bottom sheet when tapping outside of it.
-              Navigator.of(context).pop();
+              Navigator.pop(context);
             },
             child: Container(
               height: sheetHeight,

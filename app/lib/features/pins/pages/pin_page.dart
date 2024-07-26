@@ -1,11 +1,11 @@
+import 'package:acter/common/actions/redact_content.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_link_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
-import 'package:acter/common/widgets/redact_content.dart';
-import 'package:acter/common/widgets/report_content.dart';
+import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/pins/Utils/pins_utils.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
@@ -14,7 +14,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
@@ -141,7 +140,7 @@ class PinPage extends ConsumerWidget {
     return PopupMenuButton<String>(
       key: PinPage.actionMenuKey,
       icon: const Icon(Atlas.dots_vertical_thin),
-      itemBuilder: (ctx) => actions,
+      itemBuilder: (context) => actions,
     );
   }
 
@@ -151,33 +150,28 @@ class PinPage extends ConsumerWidget {
     required ActerPin pin,
     required String roomId,
   }) {
-    showAdaptiveDialog(
-      context: context,
-      builder: (context) => RedactContentWidget(
-        title: L10n.of(context).removeThisPin,
-        eventId: pin.eventIdStr(),
-        onSuccess: () {
-          if (context.canPop()) Navigator.of(context, rootNavigator: true).pop();
-        },
-        senderId: pin.sender().toString(),
-        roomId: roomId,
-        isSpace: true,
-      ),
+    openRedactContentDialog(
+      context,
+      title: L10n.of(context).removeThisPin,
+      eventId: pin.eventIdStr(),
+      onSuccess: () {
+        Navigator.pop(context);
+      },
+      roomId: roomId,
+      isSpace: true,
     );
   }
 
   // report pin dialog
   void showReportDialog(BuildContext context, ActerPin pin) {
-    showAdaptiveDialog(
-      context: context,
-      builder: (ctx) => ReportContentWidget(
-        title: L10n.of(context).reportThisPin,
-        description: L10n.of(context).reportThisContent,
-        eventId: pinId,
-        roomId: pin.roomIdStr(),
-        senderId: pin.sender().toString(),
-        isSpace: true,
-      ),
+    openReportContentDialog(
+      context,
+      title: L10n.of(context).reportThisPin,
+      description: L10n.of(context).reportThisContent,
+      eventId: pinId,
+      roomId: pin.roomIdStr(),
+      senderId: pin.sender().toString(),
+      isSpace: true,
     );
   }
 

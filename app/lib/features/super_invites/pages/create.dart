@@ -2,7 +2,6 @@ import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/chat/chat_selector_drawer.dart';
 import 'package:acter/common/widgets/checkbox_form_field.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
@@ -194,7 +193,14 @@ class _CreateSuperInviteTokenPageConsumerState
                 ButtonBar(
                   children: [
                     OutlinedButton(
-                      onPressed: () => context.closeDialog(orGo: Routes.main),
+                      onPressed: () async {
+                        if (!await Navigator.maybePop(context)) {
+                          if (context.mounted) {
+                            // fallback to go to home
+                            context.go(Routes.main.name);
+                          }
+                        }
+                      },
                       child: Text(
                         L10n.of(context).cancel,
                       ),
@@ -243,7 +249,7 @@ class _CreateSuperInviteTokenPageConsumerState
       ref.invalidate(superInvitesTokensProvider);
       EasyLoading.dismiss();
       if (!mounted) return;
-      Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
+      Navigator.pop(context); // pop the create sheet
     } catch (err) {
       if (!context.mounted) {
         EasyLoading.dismiss();
@@ -259,7 +265,8 @@ class _CreateSuperInviteTokenPageConsumerState
   Future<void> _deleteIt(BuildContext context) async {
     final bool? confirm = await showAdaptiveDialog(
       context: context,
-      builder: (BuildContext ctx) {
+      useRootNavigator: false,
+      builder: (BuildContext context) {
         return AlertDialog(
           title: Text(L10n.of(context).deleteCode),
           content: Text(
@@ -268,7 +275,7 @@ class _CreateSuperInviteTokenPageConsumerState
           actionsAlignment: MainAxisAlignment.spaceEvenly,
           actions: <Widget>[
             OutlinedButton(
-              onPressed: () => ctx.pop(),
+              onPressed: () => Navigator.pop(context),
               child: Text(
                 L10n.of(context).no,
               ),
@@ -276,7 +283,7 @@ class _CreateSuperInviteTokenPageConsumerState
             ActerDangerActionButton(
               key: CreateSuperInviteTokenPage.deleteConfirm,
               onPressed: () async {
-                ctx.pop(true);
+                Navigator.pop(context, true);
               },
               child: Text(
                 L10n.of(context).delete,
@@ -299,7 +306,7 @@ class _CreateSuperInviteTokenPageConsumerState
       ref.invalidate(superInvitesTokensProvider);
       EasyLoading.dismiss();
       if (!context.mounted) return;
-      Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
+      Navigator.pop(context); // pop the create sheet
     } catch (err) {
       if (!context.mounted) {
         EasyLoading.dismiss();

@@ -21,7 +21,7 @@ void showLeaveSpaceDialog(
   showAdaptiveDialog(
     barrierDismissible: true,
     context: context,
-    useRootNavigator: true,
+    useRootNavigator: false,
     builder: (context) => DefaultDialog(
       title: Column(
         children: <Widget>[
@@ -38,7 +38,7 @@ void showLeaveSpaceDialog(
       ),
       actions: <Widget>[
         OutlinedButton(
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => Navigator.pop(context),
           child: Text(L10n.of(context).noIStay),
         ),
         ActerDangerActionButton(
@@ -55,7 +55,7 @@ void showLeaveSpaceDialog(
                 return;
               }
               EasyLoading.showToast(lang.leavingSpaceSuccessful);
-              Navigator.of(context).pop();
+              Navigator.pop(context);
               context.goNamed(Routes.dashboard.name);
             } catch (error, stack) {
               _log.severe('Error leaving space', error, stack);

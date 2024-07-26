@@ -57,7 +57,7 @@ class ImageMessageBuilder extends ConsumerWidget {
             context: context,
             barrierDismissible: false,
             useRootNavigator: false,
-            builder: (ctx) => ImageDialog(
+            builder: (context) => ImageDialog(
               title: message.name,
               imageFile: mediaState.mediaFile!,
             ),
@@ -118,7 +118,7 @@ class ImageMessageBuilder extends ConsumerWidget {
           context: context,
           barrierDismissible: false,
           useRootNavigator: false,
-          builder: (ctx) => ImageDialog(
+          builder: (context) => ImageDialog(
             title: message.name,
             imageFile: mediaState.mediaFile!,
           ),

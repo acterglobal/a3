@@ -5,7 +5,6 @@ import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/auth/providers/auth_providers.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
@@ -336,7 +335,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     ),
                     IconButton(
                       onPressed: () async {
-                        context.closeDialog(); // close the drawer
+                        Navigator.pop(context); // close the drawer
                         EasyLoading.showToast(
                           L10n.of(context).inviteCopiedToClipboard,
                           toastPosition: EasyLoadingToastPosition.bottom,
@@ -356,7 +355,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             OutlinedButton(
               child: Text(L10n.of(context).ok),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.pop(context);
               },
             ),
           ],

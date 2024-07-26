@@ -1,13 +1,13 @@
 import 'dart:async';
 
+import 'package:acter/common/actions/redact_content.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
-import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/render_html.dart';
-import 'package:acter/common/widgets/report_content.dart';
+import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
@@ -144,20 +144,17 @@ class TaskItemDetailPage extends ConsumerWidget {
     required WidgetRef ref,
     required Task task,
   }) {
-    showAdaptiveDialog(
-      context: context,
-      builder: (context) => RedactContentWidget(
-        title: L10n.of(context).deleteTaskItem,
-        onSuccess: () {
-          ref.invalidate(taskItemsListProvider);
-          ref.invalidate(taskListItemProvider);
-          Navigator.of(context, rootNavigator: true).pop();
-        },
-        eventId: task.eventIdStr(),
-        senderId: task.authorStr(),
-        roomId: task.roomIdStr(),
-        isSpace: true,
-      ),
+    openRedactContentDialog(
+      context,
+      title: L10n.of(context).deleteTaskItem,
+      onSuccess: () {
+        ref.invalidate(taskItemsListProvider);
+        ref.invalidate(taskListItemProvider);
+        Navigator.pop(context);
+      },
+      eventId: task.eventIdStr(),
+      roomId: task.roomIdStr(),
+      isSpace: true,
     );
   }
 
@@ -166,16 +163,14 @@ class TaskItemDetailPage extends ConsumerWidget {
     required BuildContext context,
     required Task task,
   }) {
-    showAdaptiveDialog(
-      context: context,
-      builder: (ctx) => ReportContentWidget(
-        title: L10n.of(context).reportTaskItem,
-        description: L10n.of(context).reportThisContent,
-        eventId: task.eventIdStr(),
-        senderId: task.authorStr(),
-        roomId: task.roomIdStr(),
-        isSpace: true,
-      ),
+    openReportContentDialog(
+      context,
+      title: L10n.of(context).reportTaskItem,
+      description: L10n.of(context).reportThisContent,
+      eventId: task.eventIdStr(),
+      senderId: task.authorStr(),
+      roomId: task.roomIdStr(),
+      isSpace: true,
     );
   }
 
@@ -276,7 +271,7 @@ class TaskItemDetailPage extends ConsumerWidget {
       updater.descriptionHtml(plainDescription, htmlBodyDescription);
       await updater.send();
       EasyLoading.dismiss();
-      if (context.mounted) context.closeDialog();
+      if (context.mounted) Navigator.pop(context);
     } catch (e, st) {
       _log.severe('Failed to update event description', e, st);
       EasyLoading.dismiss();
@@ -482,7 +477,7 @@ class TaskItemDetailPage extends ConsumerWidget {
       ref.invalidate(taskListProvider);
       EasyLoading.dismiss();
       if (!context.mounted) return;
-      context.closeDialog();
+      Navigator.pop(context);
     } catch (e) {
       EasyLoading.dismiss();
       if (!context.mounted) return;

@@ -299,7 +299,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         OutlinedButton(
-          onPressed: () => context.closeDialog(),
+          onPressed: () => Navigator.pop(context),
           child: Text(L10n.of(context).cancel),
         ),
         const SizedBox(width: 20),

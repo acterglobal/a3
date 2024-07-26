@@ -193,7 +193,7 @@ void askToJoinRoom(
         topLeft: Radius.circular(20),
       ),
     ),
-    builder: (ctx) => Container(
+    builder: (context) => Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -207,7 +207,7 @@ void askToJoinRoom(
           const SizedBox(height: 20),
           ActerPrimaryActionButton(
             onPressed: () async {
-              Navigator.of(context).pop();
+              Navigator.pop(context);
               final server = roomId.split(':').last;
               await joinRoom(
                 context,
