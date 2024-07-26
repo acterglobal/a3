@@ -3,7 +3,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/plus_icon_widget.dart';
 import 'package:acter/features/chat/models/room_list_filter_state/room_list_filter_state.dart';
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
-import 'package:acter/features/chat/widgets/convo_list.dart';
+import 'package:acter/features/chat/widgets/chats_list.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -300,7 +300,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
           SliverToBoxAdapter(
             child: client.isGuest()
                 ? empty
-                : ConvosList(
+                : ChatsList(
                     onSelected: widget.onSelected,
                   ),
           ),

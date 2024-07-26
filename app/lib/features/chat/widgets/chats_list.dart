@@ -11,16 +11,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
-class ConvosList extends ConsumerStatefulWidget {
+class ChatsList extends ConsumerStatefulWidget {
   final Function(String)? onSelected;
 
-  const ConvosList({this.onSelected, super.key});
+  const ChatsList({this.onSelected, super.key});
 
   @override
-  ConsumerState<ConvosList> createState() => _ConvosListConsumerState();
+  ConsumerState<ChatsList> createState() => _ChatsListConsumerState();
 }
 
-class _ConvosListConsumerState extends ConsumerState<ConvosList> {
+class _ChatsListConsumerState extends ConsumerState<ChatsList> {
   @override
   Widget build(BuildContext context) {
     final hasSearchFilter = ref.watch(hasRoomFilters);
