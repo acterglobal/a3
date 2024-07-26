@@ -3,9 +3,9 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_link_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
-import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/report_content.dart';
+import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/pins/Utils/pins_utils.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
@@ -13,10 +13,10 @@ import 'package:acter/features/pins/widgets/pin_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class PinPage extends ConsumerWidget {
   static const pinPageKey = Key('pin-page');
@@ -157,7 +157,9 @@ class PinPage extends ConsumerWidget {
         title: L10n.of(context).removeThisPin,
         eventId: pin.eventIdStr(),
         onSuccess: () {
-          if (context.canPop()) Navigator.of(context, rootNavigator: true).pop();
+          if (context.canPop()) {
+            Navigator.of(context, rootNavigator: true).pop();
+          }
         },
         senderId: pin.sender().toString(),
         roomId: roomId,

@@ -4,10 +4,10 @@ import 'package:acter/common/widgets/room/room_hierarchy_options_menu.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter/common/widgets/spaces/space_hierarchy_card.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:skeletonizer/skeletonizer.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 final _log = Logger('a3::space::widget::related_spaces::helpers');
 

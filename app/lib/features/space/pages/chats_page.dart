@@ -12,10 +12,10 @@ import 'package:acter/common/widgets/room/room_hierarchy_options_menu.dart';
 import 'package:acter/router/utils.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SpaceChatsPage extends ConsumerWidget {
   static const createChatKey = Key('space-chat-create');
@@ -70,7 +70,11 @@ class SpaceChatsPage extends ConsumerWidget {
   }
 
   Widget renderConvoCard(
-      BuildContext context, WidgetRef ref, String roomId, bool isSuggested,) {
+    BuildContext context,
+    WidgetRef ref,
+    String roomId,
+    bool isSuggested,
+  ) {
     return ref.watch(chatProvider(roomId)).when(
           data: (room) => ConvoCard(
             room: room,

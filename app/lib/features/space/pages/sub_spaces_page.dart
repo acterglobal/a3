@@ -9,9 +9,9 @@ import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/space/widgets/related_spaces/helpers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SubSpacesPage extends ConsumerWidget {
   static const moreOptionKey = Key('related-spaces-more-actions');
@@ -22,9 +22,7 @@ class SubSpacesPage extends ConsumerWidget {
 
   const SubSpacesPage({super.key, required this.spaceIdOrAlias});
 
-  Widget _renderTools(
-    BuildContext context,
-  ) {
+  Widget _renderTools(BuildContext context) {
     return PopupMenuButton(
       icon: const Icon(Atlas.plus_circle, key: moreOptionKey),
       iconSize: 28,

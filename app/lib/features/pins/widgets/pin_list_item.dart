@@ -1,16 +1,16 @@
-import 'package:acter/features/attachments/providers/attachment_providers.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/attachments/providers/attachment_providers.dart';
 import 'package:acter/features/attachments/widgets/attachment_item.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class PinListItemById extends ConsumerWidget {
   final String pinId;

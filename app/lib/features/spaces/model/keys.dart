@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 class SpacesKeys {
   static const mainActions = Key('spaces-actions');

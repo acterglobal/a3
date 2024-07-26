@@ -15,9 +15,9 @@ import 'package:acter/features/space/widgets/space_sections/tasks_section.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/features/space/widgets/space_toolbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SpaceDetailsPage extends ConsumerStatefulWidget {
   static const headerKey = Key('space-menus-header');

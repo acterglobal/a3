@@ -2,18 +2,17 @@ import 'dart:io';
 
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
-
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/events/widgets/skeletons/event_item_skeleton_widget.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/news/widgets/news_post_editor/news_slide_options.dart';
