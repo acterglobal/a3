@@ -113,11 +113,7 @@ impl RoomEventItem {
                             group
                                 .iter()
                                 .map(|(e, r)| {
-                                    ReactionRecord::new(
-                                        r.sender_id.clone(),
-                                        r.timestamp,
-                                        r.sender_id == my_id,
-                                    )
+                                    ReactionRecord::new(e.clone(), r.timestamp, *e == my_id)
                                 })
                                 .collect::<Vec<_>>(),
                         )
