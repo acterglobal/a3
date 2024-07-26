@@ -5,10 +5,12 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   testWidgets('should render fine', (tester) async {
     const multiTriggerAutocompleteKey = Key('multiTriggerAutocomplete');
-    const multiTriggerAutocomplete = Boilerplate(
+    final multiTriggerAutocomplete = Boilerplate(
       child: MultiTriggerAutocomplete(
         key: multiTriggerAutocompleteKey,
-        autocompleteTriggers: [],
+        autocompleteTriggers: const [],
+        textEditingController: ActerTextController(),
+        focusNode: FocusNode(),
       ),
     );
 
@@ -16,90 +18,6 @@ void main() {
 
     expect(find.byKey(multiTriggerAutocompleteKey), findsOneWidget);
   });
-
-  testWidgets(
-    'should render fine if both `textEditingController` and `focusNode` is provided',
-    (tester) async {
-      const multiTriggerAutocompleteKey = Key('multiTriggerAutocomplete');
-      final multiTriggerAutocomplete = Boilerplate(
-        child: MultiTriggerAutocomplete(
-          key: multiTriggerAutocompleteKey,
-          autocompleteTriggers: const [],
-          textEditingController: ActerTextController(),
-          focusNode: FocusNode(),
-        ),
-      );
-
-      await tester.pumpWidget(multiTriggerAutocomplete);
-
-      expect(find.byKey(multiTriggerAutocompleteKey), findsOneWidget);
-    },
-  );
-
-  testWidgets(
-    "should throw assertion if `textEditingController` is provided but `focusNode` isn't",
-    (tester) async {
-      expect(
-        () => Boilerplate(
-          child: MultiTriggerAutocomplete(
-            autocompleteTriggers: const [],
-            textEditingController: ActerTextController(),
-          ),
-        ),
-        throwsAssertionError,
-      );
-    },
-  );
-
-  testWidgets(
-    "should throw assertion if `focusNode` is provided but `textEditingController` isn't",
-    (tester) async {
-      expect(
-        () => Boilerplate(
-          child: MultiTriggerAutocomplete(
-            autocompleteTriggers: const [],
-            focusNode: FocusNode(),
-          ),
-        ),
-        throwsAssertionError,
-      );
-    },
-  );
-
-  testWidgets(
-    "should render fine if `initialValue` is defined without `textEditingController`",
-    (tester) async {
-      const multiTriggerAutocompleteKey = Key('multiTriggerAutocomplete');
-      const multiTriggerAutocomplete = Boilerplate(
-        child: MultiTriggerAutocomplete(
-          key: multiTriggerAutocompleteKey,
-          autocompleteTriggers: [],
-          initialValue: TextEditingValue(text: 'initialValue'),
-        ),
-      );
-
-      await tester.pumpWidget(multiTriggerAutocomplete);
-
-      expect(find.byKey(multiTriggerAutocompleteKey), findsOneWidget);
-    },
-  );
-
-  testWidgets(
-    "should throw assertion if `initialValue` is defined along with `textEditingController`",
-    (tester) async {
-      expect(
-        () => Boilerplate(
-          child: MultiTriggerAutocomplete(
-            autocompleteTriggers: const [],
-            initialValue: const TextEditingValue(text: 'initialValue'),
-            textEditingController: ActerTextController(),
-            focusNode: FocusNode(),
-          ),
-        ),
-        throwsAssertionError,
-      );
-    },
-  );
 
   group('MultiTriggerAutocomplete', () {
     const kUsers = [
@@ -145,6 +63,8 @@ void main() {
             child: MultiTriggerAutocomplete(
               debounceDuration: kDebounceDuration,
               autocompleteTriggers: [mentionTrigger],
+              textEditingController: ActerTextController(),
+              focusNode: FocusNode(),
             ),
           ),
         );
@@ -205,6 +125,8 @@ void main() {
                   optionsAlignment: alignment,
                   debounceDuration: kDebounceDuration,
                   autocompleteTriggers: [mentionTrigger],
+                  textEditingController: ActerTextController(),
+                  focusNode: FocusNode(),
                 );
               },
             ),
@@ -237,48 +159,6 @@ void main() {
       },
     );
 
-    testWidgets(
-      'initialValue sets initial text field value',
-      (WidgetTester tester) async {
-        await tester.pumpWidget(
-          Boilerplate(
-            child: MultiTriggerAutocomplete(
-              // Should initialize text field with '@sa'.
-              initialValue: const TextEditingValue(text: '@sa'),
-              debounceDuration: kDebounceDuration,
-              autocompleteTriggers: [mentionTrigger],
-            ),
-          ),
-        );
-
-        // The field is always rendered, but the options are not unless needed.
-        expect(find.byType(TextFormField), findsOneWidget);
-        expect(find.byType(ListView), findsNothing);
-
-        // The text editing controller value starts off with initialized value.
-        final TextFormField field =
-            find.byType(TextFormField).evaluate().first.widget as TextFormField;
-        expect(field.controller!.text, '@sa');
-
-        // Focus the empty field. All the options are displayed.
-        await tester.tap(find.byType(TextFormField));
-        await tester.pumpAndSettle(kDebounceDuration);
-        expect(find.byType(ListView), findsOneWidget);
-        ListView list =
-            find.byType(ListView).evaluate().first.widget as ListView;
-        // '@Sahil kumar' and '@Avni Saxena' are displayed.
-        expect(list.semanticChildCount, 2);
-
-        // Select an option. The options hide and the field updates to show the
-        // selection.
-        await tester.tap(find.byType(InkWell).first);
-        await tester.pump();
-        expect(find.byType(TextFormField), findsOneWidget);
-        expect(find.byType(ListView), findsNothing);
-        expect(field.controller!.text, '@Sahil Kumar ');
-      },
-    );
-
     testWidgets('can build a custom field', (WidgetTester tester) async {
       const fieldKey = Key('fieldKey');
       await tester.pumpWidget(
@@ -288,6 +168,8 @@ void main() {
             fieldViewBuilder: (context, controller, focusNode) {
               return Container(key: fieldKey);
             },
+            textEditingController: ActerTextController(),
+            focusNode: FocusNode(),
           ),
         ),
       );

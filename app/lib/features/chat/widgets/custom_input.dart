@@ -887,12 +887,6 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
     });
   }
 
-  @override
-  void dispose() {
-    chatFocus.dispose();
-    super.dispose();
-  }
-
   void onTextTap(bool emojiPickerVisible, WidgetRef ref) {
     final chatInputNotifier = ref.read(chatInputProvider.notifier);
 

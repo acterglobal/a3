@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:acter_trigger_auto_complete/acter_trigger_autocomplete.dart';
-import 'package:acter_trigger_auto_complete/src/acter_text_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 
@@ -89,18 +88,13 @@ class MultiTriggerAutocomplete extends StatefulWidget {
   const MultiTriggerAutocomplete({
     super.key,
     required this.autocompleteTriggers,
+    required this.textEditingController,
+    required this.focusNode,
     this.fieldViewBuilder = _defaultFieldViewBuilder,
-    this.focusNode,
-    this.textEditingController,
-    this.initialValue,
     this.optionsAlignment = OptionsAlignment.bottom,
     this.optionsWidthFactor = 1.0,
     this.debounceDuration = const Duration(milliseconds: 300),
-  })  : assert((focusNode == null) == (textEditingController == null)),
-        assert(
-          !(textEditingController != null && initialValue != null),
-          'textEditingController and initialValue cannot be simultaneously defined.',
-        );
+  });
 
   /// The triggers that trigger autocomplete.
   final Iterable<AutocompleteTrigger> autocompleteTriggers;
@@ -135,24 +129,12 @@ class MultiTriggerAutocomplete extends StatefulWidget {
   /// {@end-tool}
   /// {@endtemplate}
   ///
-  /// If this parameter is not null, then [textEditingController] must also be
-  /// not null.
-  final FocusNode? focusNode;
+  /// Focus object for [ActerTextController].
+  final FocusNode focusNode;
 
   /// The [TextEditingController] that is used for the text field.
-  ///
-  /// If this parameter is not null, then [focusNode] must also be not null.
-  final ActerTextController? textEditingController;
-
-  /// {@template flutter.widgets.RawAutocomplete.initialValue}
-  /// The initial value to use for the text field.
-  /// {@endtemplate}
-  ///
-  /// Setting the initial value does not notify [textEditingController]'s
-  /// listeners, and thus will not cause the options UI to appear.
-  ///
-  /// This parameter is ignored if [textEditingController] is defined.
-  final TextEditingValue? initialValue;
+  /// Supports [triggerStyles] to style trigger inputs.
+  final ActerTextController textEditingController;
 
   /// The alignment of the options.
   ///
@@ -375,10 +357,9 @@ class MultiTriggerAutocompleteState extends State<MultiTriggerAutocomplete> {
   @override
   void initState() {
     super.initState();
-    // _textEditingController = widget.textEditingController ??
-    //     TextEditingController.fromValue(widget.initialValue);
+    _textEditingController = widget.textEditingController;
     _textEditingController.addListener(_onChangedField);
-    _focusNode = widget.focusNode ?? FocusNode();
+    _focusNode = widget.focusNode;
     _focusNode.addListener(_onChangedFocus);
   }
 
@@ -395,13 +376,11 @@ class MultiTriggerAutocompleteState extends State<MultiTriggerAutocomplete> {
   @override
   void dispose() {
     _textEditingController.removeListener(_onChangedField);
-    if (widget.textEditingController == null) {
-      _textEditingController.dispose();
-    }
+    _textEditingController.dispose();
+
     _focusNode.removeListener(_onChangedFocus);
-    if (widget.focusNode == null) {
-      _focusNode.dispose();
-    }
+    _focusNode.dispose();
+
     _debounceTimer?.cancel();
     _currentTrigger = null;
     _currentQuery = null;
