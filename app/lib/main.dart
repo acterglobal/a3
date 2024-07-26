@@ -12,11 +12,11 @@ import 'package:acter/common/utils/main.dart';
 import 'package:acter/features/cli/main.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/router/providers/router_providers.dart';
+import 'package:acter_trigger_auto_complete/acter_trigger_autocomplete.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:multi_trigger_autocomplete/multi_trigger_autocomplete.dart';
 import 'package:video_player_media_kit/video_player_media_kit.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 

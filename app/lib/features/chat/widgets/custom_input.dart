@@ -18,6 +18,7 @@ import 'package:acter/features/chat/widgets/mention_profile_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgDraft;
+import 'package:acter_trigger_auto_complete/acter_trigger_autocomplete.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:file_picker/file_picker.dart';
@@ -32,7 +33,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 import 'package:logging/logging.dart';
 import 'package:mime/mime.dart';
-import 'package:multi_trigger_autocomplete/multi_trigger_autocomplete.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 final _log = Logger('a3::chat::custom_input');
