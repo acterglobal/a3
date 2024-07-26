@@ -336,7 +336,10 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
           child: Divider(color: Theme.of(context).indicatorColor),
         ),
       '_encryptedInfo' => const EncryptedInfoWidget(),
-      _ => SystemMessage(key: Key(message.id), message: message.text)
+      _ => SystemMessage(
+          key: Key('chat-room-${message.id}'),
+          message: message.text,
+        )
     };
   }
 }

@@ -328,7 +328,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       alignment: Alignment.center,
       color: selectedNewsPost!.backgroundColor,
       child: ActerVideoPlayer(
-        key: Key(videoFile.name),
+        key: Key('add-news-slide-video-${videoFile.name}'),
         videoFile: File(videoFile.path),
       ),
     );

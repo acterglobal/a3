@@ -106,6 +106,7 @@ class _PinListItemConsumerState extends ConsumerState<PinListItem> {
 
   @override
   Widget build(BuildContext context) {
+    final eventId = widget.pin.eventIdStr();
     final isLink = widget.pin.isLink();
     final spaceId = widget.pin.roomIdStr();
     final manager = ref
@@ -119,7 +120,7 @@ class _PinListItemConsumerState extends ConsumerState<PinListItem> {
         final attachmentId = list[0].attachmentIdStr();
         attachmentsWidget.add(
           AttachmentItem(
-            key: Key(attachmentId),
+            key: Key('pin-attachment-$attachmentId'),
             attachment: list[0],
             openView: false,
           ),
@@ -128,7 +129,7 @@ class _PinListItemConsumerState extends ConsumerState<PinListItem> {
     }
 
     return InkWell(
-      key: Key(widget.pin.eventIdStr()),
+      key: Key('pin-item-$eventId'),
       onTap: () => onTap(context),
       child: Card(
         child: Padding(

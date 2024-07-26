@@ -26,7 +26,6 @@ import 'package:logging/logging.dart';
 final _log = Logger('a3::tasks::task_item_details_page');
 
 class TaskItemDetailPage extends ConsumerWidget {
-  static const taskListTitleKey = Key('task-list-title');
   final String taskListId;
   final String taskId;
 

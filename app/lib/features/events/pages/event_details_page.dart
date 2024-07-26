@@ -202,7 +202,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     return SliverToBoxAdapter(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        key: Key(widget.calendarId),
+        key: Key('cal-event-${widget.calendarId}'),
         children: [
           const SizedBox(height: 20),
           _buildEventBasicDetails(calendarEvent),

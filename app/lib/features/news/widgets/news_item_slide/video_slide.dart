@@ -50,7 +50,7 @@ class VideoSlide extends StatelessWidget {
           if (snapshot.hasData &&
               snapshot.connectionState == ConnectionState.done) {
             return ActerVideoPlayer(
-              key: Key(snapshot.data!.path),
+              key: Key('news-slide-video-${snapshot.data!.path}'),
               videoFile: snapshot.data!,
             );
           }

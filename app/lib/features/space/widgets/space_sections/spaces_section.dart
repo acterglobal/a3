@@ -102,7 +102,7 @@ class SpacesSection extends ConsumerWidget {
       itemBuilder: (context, index) {
         final roomId = spaces[index];
         return SpaceCard(
-          key: Key('subspace-list-item-$roomId}'),
+          key: Key('subspace-list-item-$roomId'),
           roomId: roomId,
           showParents: false,
         );
