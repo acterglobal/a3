@@ -1,1 +1,0 @@
-- Fix UI bug - '_dependents.isEmpty': is not true. We can see this error in red screen at chat room page.
