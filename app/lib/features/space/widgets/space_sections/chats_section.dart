@@ -1,9 +1,7 @@
-import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
-import 'package:acter/common/widgets/chat/loading_convo_card.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter/router/utils.dart';
 import 'package:flutter/material.dart';
@@ -98,19 +96,12 @@ class ChatsSection extends ConsumerWidget {
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
         final roomId = chats[index];
-        return ref.watch(chatProvider(roomId)).when(
-              data: (room) => ConvoCard(
-                room: room,
-                showParents: false,
-                showSelectedIndication: false,
-                onTap: () => goToChat(context, roomId),
-              ),
-              error: (error, stack) => ListTile(
-                title: Text(roomId),
-                subtitle: Text(L10n.of(context).loadingFailed(error)),
-              ),
-              loading: () => LoadingConvoCard(roomId: roomId),
-            );
+        return ConvoCard(
+          roomId: roomId,
+          showParents: false,
+          showSelectedIndication: false,
+          onTap: () => goToChat(context, roomId),
+        );
       },
     );
   }

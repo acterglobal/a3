@@ -6,7 +6,6 @@ import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -24,7 +23,6 @@ class ConvosList extends ConsumerStatefulWidget {
 class _ConvosListConsumerState extends ConsumerState<ConvosList> {
   @override
   Widget build(BuildContext context) {
-    final chats = ref.watch(chatsProvider);
     final hasSearchFilter = ref.watch(hasRoomFilters);
     if (hasSearchFilter) {
       return ref.watch(filteredChatsProvider).when(
@@ -35,7 +33,10 @@ class _ConvosListConsumerState extends ConsumerState<ConvosList> {
                   child: Text(L10n.of(context).noChatsFoundMatchingYourFilter),
                 );
               }
-              return renderList(context, chats);
+              return renderList(
+                context,
+                chats.map((e) => e.getRoomIdStr()).toList(),
+              );
             },
             loading: () => const Center(
               heightFactor: 10,
@@ -47,8 +48,10 @@ class _ConvosListConsumerState extends ConsumerState<ConvosList> {
                 '${L10n.of(context).searchingFailed}: $e',
               ),
             ),
+            skipLoadingOnReload: true,
           );
     }
+    final chats = ref.watch(chatIdsProvider);
 
     if (chats.isEmpty) {
       final hasFirstSynced =
@@ -81,17 +84,17 @@ class _ConvosListConsumerState extends ConsumerState<ConvosList> {
     return renderList(context, chats);
   }
 
-  Widget renderList(BuildContext context, List<Convo> chats) {
+  Widget renderList(BuildContext context, List<String> chats) {
     return ListView.builder(
       padding: EdgeInsets.zero,
       itemCount: chats.length,
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemBuilder: (context, index) {
-        final roomId = chats[index].getRoomIdStr();
+        final roomId = chats[index];
         return ConvoCard(
           key: Key('convo-card-$roomId'),
-          room: chats[index],
+          roomId: roomId,
           onTap: () =>
               widget.onSelected != null ? widget.onSelected!(roomId) : null,
         );

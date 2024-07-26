@@ -1,4 +1,3 @@
-import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
@@ -6,7 +5,6 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
-import 'package:acter/common/widgets/chat/loading_convo_card.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_options_menu.dart';
 import 'package:acter/router/utils.dart';
@@ -70,25 +68,22 @@ class SpaceChatsPage extends ConsumerWidget {
   }
 
   Widget renderConvoCard(
-      BuildContext context, WidgetRef ref, String roomId, bool isSuggested,) {
-    return ref.watch(chatProvider(roomId)).when(
-          data: (room) => ConvoCard(
-            room: room,
-            showParents: false,
-            showSuggestedMark: isSuggested,
-            onTap: () => goToChat(context, roomId),
-            trailing: RoomHierarchyOptionsMenu(
-              childId: roomId,
-              parentId: spaceIdOrAlias,
-              isSuggested: isSuggested,
-            ),
-          ),
-          error: (error, stack) => ListTile(
-            title: Text(roomId),
-            subtitle: Text(L10n.of(context).loadingFailed(error)),
-          ),
-          loading: () => LoadingConvoCard(roomId: roomId),
-        );
+    BuildContext context,
+    WidgetRef ref,
+    String roomId,
+    bool isSuggested,
+  ) {
+    return ConvoCard(
+      roomId: roomId,
+      showParents: false,
+      showSuggestedMark: isSuggested,
+      onTap: () => goToChat(context, roomId),
+      trailing: RoomHierarchyOptionsMenu(
+        childId: roomId,
+        parentId: spaceIdOrAlias,
+        isSuggested: isSuggested,
+      ),
+    );
   }
 
   Widget renderChats(BuildContext context, WidgetRef ref) {

@@ -45,7 +45,7 @@ final chatStateProvider =
 
 final chatIsEncrypted =
     FutureProvider.autoDispose.family<bool, Convo>((ref, convo) async {
-  final c = await ref.watch(convoProvider(convo).future);
+  final c = await ref.watch(convoProvider(convo.getRoomIdStr()).future);
   if (c == null) {
     return false;
   }
@@ -54,7 +54,7 @@ final chatIsEncrypted =
 
 final chatTopic =
     FutureProvider.autoDispose.family<String?, Convo>((ref, convo) async {
-  final c = await ref.watch(convoProvider(convo).future);
+  final c = await ref.watch(convoProvider(convo.getRoomIdStr()).future);
   return c?.topic();
 });
 
@@ -207,10 +207,10 @@ final chatTypingEventProvider = StreamProvider.autoDispose
 // unread notifications, unread mentions, unread messages
 typedef UnreadCounters = (int, int, int);
 
-final unreadCountersProvider = FutureProvider.autoDispose
-    .family<UnreadCounters, String>((ref, roomId) async {
+final unreadCountersProvider =
+    FutureProvider.family<UnreadCounters, String>((ref, roomId) async {
   final convo = await ref.watch(
-    convoProvider(await ref.watch(chatProvider(roomId).future)).future,
+    convoProvider(roomId).future,
   );
   if (convo == null) {
     return (0, 0, 0);
