@@ -138,7 +138,8 @@ class VideoMessageBuilder extends ConsumerWidget {
           child: Stack(
             alignment: Alignment.center,
             children: [
-              videoThumbFileView(context, mediaState),
+              if (mediaState.videoThumbnailFile != null)
+                videoThumbFileView(context, mediaState),
               Container(
                 decoration: BoxDecoration(
                   color: Colors.black26,

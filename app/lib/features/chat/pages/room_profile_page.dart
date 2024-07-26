@@ -46,6 +46,8 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     final membership =
         ref.watch(roomMembershipProvider(widget.roomId)).valueOrNull;
     final convo = ref.watch(chatProvider(widget.roomId)).valueOrNull;
+    final isDirectChat =
+        ref.watch(isDirectChatProvider(widget.roomId)).valueOrNull ?? false;
 
     return Column(
       children: [
@@ -56,6 +58,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
             roomAvatarInfo,
             membership,
             convo,
+            isDirectChat,
           ),
         ),
       ],
@@ -118,6 +121,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     AvatarInfo roomAvatarInfo,
     Member? membership,
     Convo? convo,
+    bool isDirectChat,
   ) {
     return SingleChildScrollView(
       child: Padding(
@@ -126,9 +130,17 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
           children: [
             _header(context, roomAvatarInfo, membership, convo),
             _description(context, membership, convo),
-            _actions(context, convo),
+            _actions(
+              context,
+              convo,
+              isDirectChat,
+            ),
             const SizedBox(height: 20),
-            _optionsBody(context, convo),
+            _optionsBody(
+              context,
+              convo,
+              isDirectChat,
+            ),
           ],
         ),
       ),
@@ -230,7 +242,11 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     );
   }
 
-  Widget _actions(BuildContext context, Convo? convo) {
+  Widget _actions(
+    BuildContext context,
+    Convo? convo,
+    bool isDirectChat,
+  ) {
     final convoLoader = ref.watch(chatProvider(widget.roomId));
     final myMembership = ref.watch(roomMembershipProvider(widget.roomId));
 
@@ -266,7 +282,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         // Invite
         myMembership.when(
           data: (membership) {
-            if (membership == null || (convo?.isDm() == true)) {
+            if (membership == null || (isDirectChat)) {
               return const SizedBox();
             }
             return _actionItem(
@@ -344,7 +360,11 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     );
   }
 
-  Widget _optionsBody(BuildContext context, Convo? convo) {
+  Widget _optionsBody(
+    BuildContext context,
+    Convo? convo,
+    bool isDirectChat,
+  ) {
     return Column(
       children: [
         // Notification section
@@ -384,7 +404,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         const SizedBox(height: 20),
 
         // Room members list section
-        if (convo?.isDm() == false) _convoMembersList(),
+        if (!isDirectChat) _convoMembersList(),
       ],
     );
   }

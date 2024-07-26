@@ -112,7 +112,7 @@ class SpaceHeaderProfile extends ConsumerWidget {
                     height: 30,
                     width: 30,
                     child: CircleAvatar(
-                      backgroundColor: Theme.of(context).colorScheme.secondary,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                       child: Text(
                         '+${membersCount - 5}',
                         textAlign: TextAlign.center,
