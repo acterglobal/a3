@@ -14,6 +14,7 @@ class ConvoWithAvatarInfoCard extends ConsumerWidget {
   final Widget? trailing;
   final Widget? avatar;
   final bool showSelectedIndication;
+  final Animation<double>? animation;
 
   /// Called when the user long-presses on this list tile.
   ///
@@ -40,6 +41,7 @@ class ConvoWithAvatarInfoCard extends ConsumerWidget {
     super.key,
     required this.roomId,
     required this.avatarInfo,
+    this.animation,
     this.avatar,
     this.onTap,
     this.onLongPress,
@@ -53,6 +55,16 @@ class ConvoWithAvatarInfoCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    if (animation != null) {
+      return SizeTransition(
+        sizeFactor: animation!,
+        child: buildInner(context, ref),
+      );
+    }
+    return buildInner(context, ref);
+  }
+
+  Widget buildInner(BuildContext context, WidgetRef ref) {
     return LayoutBuilder(
       builder: (context, constraints) {
         return Column(

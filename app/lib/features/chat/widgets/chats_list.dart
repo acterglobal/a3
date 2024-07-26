@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:diffutil_dart/diffutil.dart';
 
 class ChatsList extends ConsumerStatefulWidget {
   final Function(String)? onSelected;
@@ -85,20 +86,111 @@ class _ChatsListConsumerState extends ConsumerState<ChatsList> {
   }
 
   Widget renderList(BuildContext context, List<String> chats) {
-    return ListView.builder(
-      padding: EdgeInsets.zero,
-      itemCount: chats.length,
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemBuilder: (context, index) {
-        final roomId = chats[index];
-        return ConvoCard(
-          key: Key('convo-card-$roomId'),
-          roomId: roomId,
-          onTap: () =>
-              widget.onSelected != null ? widget.onSelected!(roomId) : null,
-        );
-      },
+    return _AnimatedChatsList(
+      entries: chats,
+      onSelected: widget.onSelected,
+    );
+  }
+}
+
+class _AnimatedChatsList extends StatefulWidget {
+  final Function(String)? onSelected;
+  final List<String> entries;
+
+  const _AnimatedChatsList({
+    required this.entries,
+    this.onSelected,
+  });
+
+  @override
+  __AnimatedChatsListState createState() => __AnimatedChatsListState();
+}
+
+class __AnimatedChatsListState extends State<_AnimatedChatsList> {
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
+  late List<String> _currentList;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentList = widget.entries;
+  }
+
+  @override
+  void didUpdateWidget(_AnimatedChatsList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    refreshList();
+  }
+
+  void refreshList() {
+    final diffResult = calculateListDiff<String>(_currentList, widget.entries,
+        detectMoves: false,);
+    for (final update in diffResult.getUpdatesWithData()) {
+      update.when(
+        insert: _insert,
+        remove: _remove,
+        change: (pos, oldData, newData) {
+          _remove(pos, oldData);
+          _insert(pos, newData);
+        },
+        move: (from, to, item) {
+          _remove(from, item);
+          _insert(to, item);
+        },
+      );
+    }
+  }
+
+  void _insert(int pos, String data) {
+    _currentList.insert(pos, data);
+    _listKey.currentState?.insertItem(pos);
+  }
+
+  void _remove(int pos, String data) {
+    _currentList.removeAt(pos);
+    _listKey.currentState?.removeItem(pos,
+        (context, animation) => _removedItemBuilder(data, context, animation),);
+  }
+
+  Widget _removedItemBuilder(
+    String roomId,
+    BuildContext context,
+    Animation<double> animation,
+  ) {
+    return ConvoCard(
+      animation: animation,
+      key: Key('convo-card-$roomId-removed'),
+      roomId: roomId,
+      onTap: () =>
+          widget.onSelected != null ? widget.onSelected!(roomId) : null,
+    );
+  }
+
+  Widget buildItem(
+      BuildContext context, int index, Animation<double> animation,) {
+    final roomId = _currentList[index];
+    return ConvoCard(
+      animation: animation,
+      key: Key('convo-card-$roomId'),
+      roomId: roomId,
+      onTap: () =>
+          widget.onSelected != null ? widget.onSelected!(roomId) : null,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MediaQuery.removePadding(
+      context: context,
+      removeTop: true,
+      removeBottom: true,
+      child: AnimatedList(
+        key: _listKey,
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        initialItemCount: _currentList.length,
+        itemBuilder: buildItem,
+      ),
     );
   }
 }

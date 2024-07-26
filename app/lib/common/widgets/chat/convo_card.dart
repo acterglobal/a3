@@ -25,9 +25,12 @@ class ConvoCard extends ConsumerWidget {
   final bool showSelectedIndication;
   final bool showSuggestedMark;
 
+  final Animation<double>? animation;
+
   const ConvoCard({
     super.key,
     required this.roomId,
+    this.animation,
     this.onTap,
     this.showParents = true,
     this.trailing,
@@ -40,6 +43,7 @@ class ConvoCard extends ConsumerWidget {
     final roomAvatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
     // ToDo: UnreadCounter
     return ConvoWithAvatarInfoCard(
+      animation: animation,
       roomId: roomId,
       showParents: showParents,
       showSuggestedMark: showSuggestedMark,
