@@ -2,7 +2,7 @@ import 'package:acter/common/providers/common_providers.dart';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
-import 'package:acter/common/widgets/report_content.dart';
+import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -138,15 +138,13 @@ class MessageActions extends ConsumerWidget {
   }
 
   void onReportMessage(BuildContext context, Message message, String roomId) {
-    showAdaptiveDialog(
-      context: context,
-      builder: (context) => ReportContentWidget(
-        title: L10n.of(context).reportThisMessage,
-        description: L10n.of(context).reportMessageContent,
-        senderId: message.author.id,
-        roomId: roomId,
-        eventId: message.id,
-      ),
+    openReportContentDialog(
+      context,
+      title: L10n.of(context).reportThisMessage,
+      description: L10n.of(context).reportMessageContent,
+      senderId: message.author.id,
+      roomId: roomId,
+      eventId: message.id,
     );
   }
 
@@ -163,7 +161,7 @@ class MessageActions extends ConsumerWidget {
         title: Text(L10n.of(context).areYouSureYouWantToDeleteThisMessage),
         actions: <Widget>[
           OutlinedButton(
-            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+            onPressed: () => Navigator.pop(context),
             child: Text(L10n.of(context).no),
           ),
           ActerPrimaryActionButton(
@@ -177,12 +175,12 @@ class MessageActions extends ConsumerWidget {
                 );
                 chatInputNotifier.unsetSelectedMessage();
                 if (context.mounted) {
-                  Navigator.of(context, rootNavigator: true).pop();
+                  Navigator.pop(context);
                 }
               } catch (error, stackTrace) {
                 _log.severe('Redacting message failed', error, stackTrace);
                 if (context.mounted) {
-                  Navigator.of(context, rootNavigator: true).pop();
+                  Navigator.pop(context);
                 }
                 EasyLoading.showError(error.toString());
               }

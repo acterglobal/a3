@@ -33,9 +33,8 @@ List<RouteBase> makeChatShellRoutes(ref) {
         return NoTransitionPage(
           key: state.pageKey,
           child: ChatLayoutBuilder(
-            centerBuilder: (inSidebar) => RoomPage(
+            centerChild: RoomPage(
               roomId: roomId,
-              inSidebar: inSidebar,
             ),
           ),
         );
@@ -51,13 +50,11 @@ List<RouteBase> makeChatShellRoutes(ref) {
         return NoTransitionPage(
           key: state.pageKey,
           child: ChatLayoutBuilder(
-            centerBuilder: (inSidebar) => RoomPage(
+            centerChild: RoomPage(
               roomId: roomId,
-              inSidebar: inSidebar,
             ),
-            expandedBuilder: (inSidebar) => RoomProfilePage(
+            expandedChild: RoomProfilePage(
               roomId: roomId,
-              inSidebar: inSidebar,
             ),
           ),
         );
@@ -75,13 +72,12 @@ List<RouteBase> makeChatShellRoutes(ref) {
         return NoTransitionPage(
           key: state.pageKey,
           child: ChatLayoutBuilder(
-            centerBuilder: (inSidebar) => RoomPage(
+            centerChild: RoomPage(
               roomId: roomId,
-              inSidebar: inSidebar,
             ),
-            expandedBuilder: (inSidebar) => VisibilityAccessibilityPage(
+            expandedChild: VisibilityAccessibilityPage(
               roomId: roomId,
-              showCloseX: inSidebar,
+              impliedClose: true,
             ),
           ),
         );

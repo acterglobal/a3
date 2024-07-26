@@ -222,6 +222,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       mandatory: false,
       title: L10n.of(context).parentSpace,
       selectTitle: L10n.of(context).selectParentSpace,
+      emptyText: L10n.of(context).optionalParentSpace,
     );
   }
 
@@ -299,7 +300,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         OutlinedButton(
-          onPressed: () => context.pop(),
+          onPressed: () => Navigator.pop(context),
           child: Text(L10n.of(context).cancel),
         ),
         const SizedBox(width: 20),

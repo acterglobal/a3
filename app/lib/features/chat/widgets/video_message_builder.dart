@@ -59,7 +59,7 @@ class VideoMessageBuilder extends ConsumerWidget {
             context: context,
             barrierDismissible: false,
             useRootNavigator: false,
-            builder: (ctx) => VideoDialog(
+            builder: (context) => VideoDialog(
               title: message.name,
               videoFile: mediaState.mediaFile!,
             ),
@@ -122,7 +122,7 @@ class VideoMessageBuilder extends ConsumerWidget {
           context: context,
           barrierDismissible: false,
           useRootNavigator: false,
-          builder: (ctx) => VideoDialog(
+          builder: (context) => VideoDialog(
             title: message.name,
             videoFile: mediaState.mediaFile!,
           ),
@@ -140,7 +140,8 @@ class VideoMessageBuilder extends ConsumerWidget {
           child: Stack(
             alignment: Alignment.center,
             children: [
-              videoThumbFileView(context, mediaState),
+              if (mediaState.videoThumbnailFile != null)
+                videoThumbFileView(context, mediaState),
               Container(
                 decoration: BoxDecoration(
                   color: Colors.black26,

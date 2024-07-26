@@ -33,7 +33,7 @@ Future<void> showKickUserDialog(BuildContext context, Member member) async {
         actionsAlignment: MainAxisAlignment.spaceEvenly,
         actions: <Widget>[
           OutlinedButton(
-            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+            onPressed: () => Navigator.pop(context),
             child: Text(L10n.of(context).no),
           ),
           ActerPrimaryActionButton(
@@ -47,7 +47,7 @@ Future<void> showKickUserDialog(BuildContext context, Member member) async {
                   return;
                 }
                 EasyLoading.showToast(L10n.of(context).kickSuccess);
-                Navigator.of(context, rootNavigator: true).pop();
+                Navigator.pop(context);
               } catch (error) {
                 if (!context.mounted) {
                   EasyLoading.dismiss();

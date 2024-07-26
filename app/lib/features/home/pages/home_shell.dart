@@ -255,7 +255,7 @@ class HomeShellState extends ConsumerState<HomeShell> {
       config: <Breakpoint, SlotLayoutConfig?>{
         Breakpoints.large: SlotLayout.from(
           key: const Key('primaryNavigation'),
-          builder: (BuildContext ctx) => SidebarWidget(
+          builder: (BuildContext context) => SidebarWidget(
             navigationShell: widget.navigationShell,
           ),
         ),
@@ -268,7 +268,7 @@ class HomeShellState extends ConsumerState<HomeShell> {
       config: <Breakpoint, SlotLayoutConfig>{
         Breakpoints.standard: SlotLayout.from(
           key: const Key('Body Small'),
-          builder: (BuildContext ctx) => widget.navigationShell,
+          builder: (BuildContext context) => widget.navigationShell,
         ),
       },
     );

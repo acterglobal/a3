@@ -335,7 +335,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     ),
                     IconButton(
                       onPressed: () async {
-                        context.pop(); // close the drawer
+                        Navigator.pop(context); // close the drawer
                         EasyLoading.showToast(
                           L10n.of(context).inviteCopiedToClipboard,
                           toastPosition: EasyLoadingToastPosition.bottom,
@@ -355,7 +355,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             OutlinedButton(
               child: Text(L10n.of(context).ok),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.pop(context);
               },
             ),
           ],

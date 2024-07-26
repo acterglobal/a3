@@ -3,7 +3,6 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:go_router/go_router.dart';
 
 void showEditLinkBottomSheet({
   required BuildContext context,
@@ -81,7 +80,7 @@ class _EditTitleSheetState extends ConsumerState<EditLinkSheet> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               OutlinedButton(
-                onPressed: () => context.pop(),
+                onPressed: () => Navigator.pop(context),
                 child: Text(L10n.of(context).cancel),
               ),
               const SizedBox(width: 20),
@@ -89,7 +88,7 @@ class _EditTitleSheetState extends ConsumerState<EditLinkSheet> {
                 onPressed: () {
                   // no changes to submit
                   if (_linkController.text.trim() == widget.linkValue.trim()) {
-                    context.pop();
+                    Navigator.pop(context);
                     return;
                   }
 

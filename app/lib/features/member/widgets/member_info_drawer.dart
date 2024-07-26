@@ -17,7 +17,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class _MemberInfoDrawerInner extends ConsumerWidget {
@@ -177,7 +176,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
                   () async {
                     await changePowerLevel(context, ref);
                     if (context.mounted) {
-                      context.pop();
+                      Navigator.pop(context);
                     }
                   },
                 ),
@@ -195,7 +194,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
                   onTap: () async {
                     await showKickUserDialog(context, member);
                     if (context.mounted) {
-                      context.pop();
+                      Navigator.pop(context);
                     }
                   },
                 ),
@@ -210,7 +209,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
                     onTap: () async {
                       await showKickAndBanUserDialog(context, member);
                       if (context.mounted) {
-                        context.pop();
+                        Navigator.pop(context);
                       }
                     },
                   ),
@@ -279,7 +278,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
   Widget _buildUserName(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        context.pop(); // close the drawer
+        Navigator.pop(context); // close the drawer
         Clipboard.setData(ClipboardData(text: memberId));
         EasyLoading.showToast(L10n.of(context).usernameCopiedToClipboard);
       },

@@ -19,7 +19,10 @@ class SettingsLabsPage extends ConsumerWidget {
     return WithSidebar(
       sidebar: const SettingsPage(),
       child: Scaffold(
-        appBar: AppBar(title: Text(L10n.of(context).labs)),
+        appBar: AppBar(
+          title: Text(L10n.of(context).labs),
+          automaticallyImplyLeading: !context.isLargeScreen,
+        ),
         body: SettingsList(
           sections: [
             SettingsSection(

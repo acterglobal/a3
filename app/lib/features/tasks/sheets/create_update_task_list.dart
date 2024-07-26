@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 void showCreateUpdateTaskListBottomSheet(
   BuildContext context, {
@@ -202,7 +201,7 @@ class _CreateUpdateTaskListConsumerState
 
       EasyLoading.dismiss();
       if (!mounted) return;
-      context.pop();
+      Navigator.pop(context);
       ref.invalidate(taskListProvider);
     } catch (e) {
       if (!mounted) {

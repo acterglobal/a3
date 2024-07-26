@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 void showEditDescriptionBottomSheet({
   required BuildContext context,
@@ -22,7 +21,7 @@ void showEditDescriptionBottomSheet({
         await space.setTopic(newDescription);
         EasyLoading.dismiss();
         if (!context.mounted) return;
-        context.pop();
+        Navigator.pop(context);
       } catch (e) {
         EasyLoading.dismiss();
         if (!context.mounted) return;

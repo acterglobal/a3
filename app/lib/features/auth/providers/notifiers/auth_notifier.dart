@@ -15,13 +15,9 @@ class AuthStateNotifier extends StateNotifier<bool> {
 
   AuthStateNotifier(this.ref) : super(false);
 
-  Future<void> nuke(BuildContext context) async {
+  Future<void> nuke() async {
     await ActerSdk.nuke();
     ref.invalidate(spacesProvider);
-
-    if (context.mounted) {
-      context.goNamed(Routes.main.name);
-    }
   }
 
   Future<String?> login(String username, String password) async {

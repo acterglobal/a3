@@ -28,12 +28,12 @@ class SideSheetPage<T> extends CustomTransitionPage<T> {
   Route<T> createRoute(BuildContext context) {
     return RawDialogRoute<T>(
       pageBuilder: (
-        BuildContext ctx,
+        BuildContext context,
         Animation<double> animation,
         Animation<double> secondaryAnimation,
       ) {
-        final totalWidth = MediaQuery.of(ctx).size.width;
-        double width = MediaQuery.of(ctx).size.width / 1.4;
+        final totalWidth = MediaQuery.of(context).size.width;
+        double width = MediaQuery.of(context).size.width / 1.4;
         if (width < 300) {
           width = totalWidth * 0.95;
         } else if (width > 450) {

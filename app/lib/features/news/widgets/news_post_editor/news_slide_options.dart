@@ -191,7 +191,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
           topLeft: Radius.circular(20),
         ),
       ),
-      builder: (ctx) => PostAttachmentOptions(
+      builder: (context) => PostAttachmentOptions(
         onTapAddText: () => NewsUtils.addTextSlide(ref),
         onTapImage: () async => await NewsUtils.addImageSlide(ref),
         onTapVideo: () async => await NewsUtils.addVideoSlide(ref),

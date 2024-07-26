@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/settings/widgets/email_address_card.dart';
@@ -79,8 +80,7 @@ class EmailAddressesPage extends ConsumerWidget {
       sidebar: const SettingsPage(),
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: const AppBarTheme().backgroundColor,
-          elevation: 0.0,
+          automaticallyImplyLeading: !context.isLargeScreen,
           title: Text(L10n.of(context).emailAddresses),
           centerTitle: true,
           actions: [

@@ -95,7 +95,7 @@ List<RouteBase> makeGeneralRoutes() {
       name: Routes.bugReport.name,
       path: Routes.bugReport.route,
       pageBuilder: (context, state) => DialogPage(
-        builder: (BuildContext ctx) => BugReportPage(
+        builder: (BuildContext context) => BugReportPage(
           imagePath: state.uri.queryParameters['screenshot'],
         ),
       ),
@@ -114,7 +114,7 @@ List<RouteBase> makeGeneralRoutes() {
       name: Routes.quickJump.name,
       path: Routes.quickJump.route,
       pageBuilder: (context, state) => DialogPage(
-        builder: (BuildContext ctx) => const QuickjumpDialog(),
+        builder: (BuildContext context) => const QuickjumpDialog(),
       ),
     ),
     GoRoute(
@@ -122,7 +122,7 @@ List<RouteBase> makeGeneralRoutes() {
       name: Routes.actionAddPin.name,
       path: Routes.actionAddPin.route,
       pageBuilder: (context, state) {
-        return isLargeScreen(context)
+        return context.isLargeScreen
             ? SideSheetPage(
                 key: state.pageKey,
                 transitionsBuilder:
@@ -280,7 +280,7 @@ List<RouteBase> makeGeneralRoutes() {
       name: Routes.createChat.name,
       path: Routes.createChat.route,
       pageBuilder: (context, state) {
-        return isLargeScreen(context)
+        return context.isLargeScreen
             ? DialogPage(
                 barrierDismissible: false,
                 builder: (context) => CreateChatPage(

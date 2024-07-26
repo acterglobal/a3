@@ -6,7 +6,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class MessageUserButton extends ConsumerWidget {
   final Member member;
@@ -21,7 +20,7 @@ class MessageUserButton extends ConsumerWidget {
         child: OutlinedButton.icon(
           icon: const Icon(Atlas.chats_thin),
           onPressed: () async {
-            context.pop();
+            Navigator.pop(context);
             goToChat(context, dmId);
           },
           label: const Text('Message'),
@@ -36,8 +35,9 @@ class MessageUserButton extends ConsumerWidget {
             ref.read(createChatSelectedUsersProvider.notifier).state = [
               profile,
             ];
-            context.pop();
-            context.pushNamed(
+            Navigator.pop(context);
+            Navigator.pushNamed(
+              context,
               Routes.createChat.name,
             );
           },

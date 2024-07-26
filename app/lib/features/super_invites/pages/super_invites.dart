@@ -21,7 +21,6 @@ class SuperInvitesPage extends ConsumerWidget {
       sidebar: const SettingsPage(),
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: const AppBarTheme().backgroundColor,
           elevation: 0.0,
           title: Text(L10n.of(context).superInvites),
           centerTitle: true,

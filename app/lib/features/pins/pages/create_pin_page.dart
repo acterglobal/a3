@@ -188,7 +188,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
         return;
       }
       EasyLoading.showToast(L10n.of(context).pinCreatedSuccessfully);
-      Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
+      Navigator.pop(context); // pop the create sheet
       context.pushNamed(
         Routes.pin.name,
         pathParameters: {'pinId': pinId.toString()},

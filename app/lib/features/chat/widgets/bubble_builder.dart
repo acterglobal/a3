@@ -185,7 +185,7 @@ class _ChatBubble extends ConsumerWidget {
                     top: 15,
                   ),
                   child: Consumer(
-                    builder: (ctx, ref, child) => replyProfileBuilder(
+                    builder: (context, ref, child) => replyProfileBuilder(
                       context,
                       ref,
                     ),

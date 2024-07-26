@@ -30,10 +30,10 @@ class DialogPage<T> extends Page<T> {
     return DialogRoute<T>(
       context: context,
       settings: this,
-      builder: (BuildContext ctx) {
+      builder: (BuildContext context) {
         Widget dialogChild = IntrinsicWidth(
           stepWidth: 56,
-          child: builder(ctx),
+          child: builder(context),
         );
         if (label != null) {
           dialogChild = Semantics(
