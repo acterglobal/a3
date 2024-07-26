@@ -29,9 +29,12 @@ class _ChatsListConsumerState extends ConsumerState<ChatsList> {
       return ref.watch(filteredChatsProvider).when(
             data: (chats) {
               if (chats.isEmpty) {
-                return Center(
-                  heightFactor: 10,
-                  child: Text(L10n.of(context).noChatsFoundMatchingYourFilter),
+                return SliverToBoxAdapter(
+                  child: Center(
+                    heightFactor: 10,
+                    child:
+                        Text(L10n.of(context).noChatsFoundMatchingYourFilter),
+                  ),
                 );
               }
               return renderList(
@@ -39,14 +42,18 @@ class _ChatsListConsumerState extends ConsumerState<ChatsList> {
                 chats.map((e) => e.getRoomIdStr()).toList(),
               );
             },
-            loading: () => const Center(
-              heightFactor: 10,
-              child: CircularProgressIndicator(),
+            loading: () => const SliverToBoxAdapter(
+              child: Center(
+                heightFactor: 10,
+                child: CircularProgressIndicator(),
+              ),
             ),
-            error: (e, s) => Center(
-              heightFactor: 10,
-              child: Text(
-                '${L10n.of(context).searchingFailed}: $e',
+            error: (e, s) => SliverToBoxAdapter(
+              child: Center(
+                heightFactor: 10,
+                child: Text(
+                  '${L10n.of(context).searchingFailed}: $e',
+                ),
               ),
             ),
             skipLoadingOnReload: true,
@@ -58,26 +65,30 @@ class _ChatsListConsumerState extends ConsumerState<ChatsList> {
       final hasFirstSynced =
           ref.watch(syncStateProvider.select((x) => !x.initialSync));
       if (!hasFirstSynced) {
-        return Center(
-          heightFactor: 1.5,
-          child: EmptyState(
-            title: L10n.of(context).noChatsStillSyncing,
-            subtitle: L10n.of(context).noChatsStillSyncingSubtitle,
-            image: 'assets/images/empty_chat.svg',
+        return SliverToBoxAdapter(
+          child: Center(
+            heightFactor: 1.5,
+            child: EmptyState(
+              title: L10n.of(context).noChatsStillSyncing,
+              subtitle: L10n.of(context).noChatsStillSyncingSubtitle,
+              image: 'assets/images/empty_chat.svg',
+            ),
           ),
         );
       }
-      return Center(
-        heightFactor: 1.5,
-        child: EmptyState(
-          title: L10n.of(context).youHaveNoDMsAtTheMoment,
-          subtitle: L10n.of(context).getInTouchWithOtherChangeMakers,
-          image: 'assets/images/empty_chat.svg',
-          primaryButton: ActerPrimaryActionButton(
-            onPressed: () async => context.pushNamed(
-              Routes.createChat.name,
+      return SliverToBoxAdapter(
+        child: Center(
+          heightFactor: 1.5,
+          child: EmptyState(
+            title: L10n.of(context).youHaveNoDMsAtTheMoment,
+            subtitle: L10n.of(context).getInTouchWithOtherChangeMakers,
+            image: 'assets/images/empty_chat.svg',
+            primaryButton: ActerPrimaryActionButton(
+              onPressed: () async => context.pushNamed(
+                Routes.createChat.name,
+              ),
+              child: Text(L10n.of(context).sendDM),
             ),
-            child: Text(L10n.of(context).sendDM),
           ),
         ),
       );
@@ -123,8 +134,11 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
   }
 
   void refreshList() {
-    final diffResult = calculateListDiff<String>(_currentList, widget.entries,
-        detectMoves: false,);
+    final diffResult = calculateListDiff<String>(
+      _currentList,
+      widget.entries,
+      detectMoves: false,
+    );
     for (final update in diffResult.getUpdatesWithData()) {
       update.when(
         insert: _insert,
@@ -148,8 +162,10 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
 
   void _remove(int pos, String data) {
     _currentList.removeAt(pos);
-    _listKey.currentState?.removeItem(pos,
-        (context, animation) => _removedItemBuilder(data, context, animation),);
+    _listKey.currentState?.removeItem(
+      pos,
+      (context, animation) => _removedItemBuilder(data, context, animation),
+    );
   }
 
   Widget _removedItemBuilder(
@@ -167,7 +183,10 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
   }
 
   Widget buildItem(
-      BuildContext context, int index, Animation<double> animation,) {
+    BuildContext context,
+    int index,
+    Animation<double> animation,
+  ) {
     final roomId = _currentList[index];
     return ConvoCard(
       animation: animation,
@@ -180,17 +199,10 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
 
   @override
   Widget build(BuildContext context) {
-    return MediaQuery.removePadding(
-      context: context,
-      removeTop: true,
-      removeBottom: true,
-      child: AnimatedList(
-        key: _listKey,
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        initialItemCount: _currentList.length,
-        itemBuilder: buildItem,
-      ),
+    return SliverAnimatedList(
+      key: _listKey,
+      initialItemCount: _currentList.length,
+      itemBuilder: buildItem,
     );
   }
 }

@@ -297,19 +297,21 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
           SliverToBoxAdapter(
             child: searchTerms(context),
           ),
-          SliverToBoxAdapter(
-            child: client.isGuest()
-                ? empty
-                : ChatsList(
-                    onSelected: widget.onSelected,
-                  ),
-          ),
+          client.isGuest()
+              ? empty
+              : ChatsList(
+                  onSelected: widget.onSelected,
+                ),
         ],
       ),
     );
   }
 
-  SvgPicture get empty {
-    return SvgPicture.asset('assets/images/empty_messages.svg');
+  Widget get empty {
+    return SliverToBoxAdapter(
+      child: Center(
+        child: SvgPicture.asset('assets/images/empty_messages.svg'),
+      ),
+    );
   }
 }
