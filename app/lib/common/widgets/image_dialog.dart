@@ -19,7 +19,6 @@ class ImageDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final width = MediaQuery.of(context).size.width;
     final canShare = !isDesktop;
     return Dialog(
       insetPadding: EdgeInsets.zero,
@@ -50,7 +49,6 @@ class ImageDialog extends ConsumerWidget {
         body: Center(
           child: Zoom(
             clipBehavior: false,
-            width: isDesktop ? width / 3 : width,
             child: Image.file(
               imageFile,
               frameBuilder: (
