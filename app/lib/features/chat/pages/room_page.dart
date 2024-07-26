@@ -21,7 +21,6 @@ import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
 import 'package:acter/features/chat/widgets/video_message_builder.dart';
 import 'package:acter/features/settings/providers/app_settings_provider.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -112,13 +111,7 @@ class RoomPage extends ConsumerWidget {
         body: Column(
           children: [
             appBar(context, ref),
-            ref.watch(chatProvider(roomId)).when(
-                  data: (convo) => ChatRoom(convo: convo),
-                  error: (e, s) => Center(
-                    child: Text(L10n.of(context).loadingRoomFailed(e)),
-                  ),
-                  loading: () => Center(child: Text(L10n.of(context).loading)),
-                ),
+            ChatRoom(roomId: roomId),
             chatInput(context, ref),
           ],
         ),
@@ -137,8 +130,8 @@ class RoomPage extends ConsumerWidget {
       roomId: roomId,
       onTyping: sendTypingNotice
           ? (typing) async {
-              (await ref.read(chatProvider(roomId).future))
-                  .typingNotice(typing);
+              final chat = await ref.read(chatProvider(roomId).future);
+              chat?.typingNotice(typing);
             }
           : null,
     );
@@ -146,10 +139,10 @@ class RoomPage extends ConsumerWidget {
 }
 
 class ChatRoom extends ConsumerStatefulWidget {
-  final Convo convo;
+  final String roomId;
 
   const ChatRoom({
-    required this.convo,
+    required this.roomId,
     super.key,
   });
 
@@ -166,12 +159,12 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
     scrollController.addListener(() async {
       // debounce
       await Future.delayed(const Duration(milliseconds: 300), () async {
+        final roomId = widget.roomId;
         // this might be a bit too simple ...
         if (scrollController.offset == 0) {
-          final message = ref.read(latestTrackableMessageId(widget.convo));
+          final message = ref.read(latestTrackableMessageId(roomId));
           if (message != null) {
-            await ref
-                .read(timelineStreamProvider(widget.convo))
+            await (await ref.read(timelineStreamProvider(roomId).future))
                 .sendSingleReceipt('Read', 'Main', message);
           }
 
@@ -201,11 +194,11 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
 
   @override
   Widget build(BuildContext context) {
+    final roomId = widget.roomId;
     final endReached =
-        ref.watch(chatStateProvider(widget.convo).select((c) => !c.hasMore));
+        ref.watch(chatStateProvider(roomId).select((c) => !c.hasMore));
     final userId = ref.watch(myUserIdStrProvider);
-    final roomId = widget.convo.getRoomIdStr();
-    final messages = ref.watch(chatMessagesProvider(widget.convo));
+    final messages = ref.watch(chatMessagesProvider(roomId));
 
     return Expanded(
       child: Chat(
@@ -220,7 +213,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
           required bool showName,
         }) =>
             TextMessageBuilder(
-          convo: widget.convo,
+          roomId: widget.roomId,
           message: m,
           messageWidth: messageWidth,
         ),
@@ -249,7 +242,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
             GestureDetector(
           onSecondaryTap: () => showMessageOptions(context, message),
           child: BubbleBuilder(
-            convo: widget.convo,
+            roomId: widget.roomId,
             message: message,
             nextMessageInGroup: nextMessageInGroup,
             enlargeEmoji: message.metadata!['enlargeEmoji'] ?? false,
@@ -261,7 +254,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
           required int messageWidth,
         }) =>
             ImageMessageBuilder(
-          roomId: widget.convo.getRoomIdStr(),
+          roomId: widget.roomId,
           message: message,
           messageWidth: messageWidth,
         ),
@@ -270,7 +263,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
           required int messageWidth,
         }) =>
             VideoMessageBuilder(
-          convo: widget.convo,
+          roomId: widget.roomId,
           message: message,
           messageWidth: messageWidth,
         ),
@@ -279,7 +272,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
           required messageWidth,
         }) {
           return FileMessageBuilder(
-            convo: widget.convo,
+            roomId: widget.roomId,
             message: message,
             messageWidth: messageWidth,
           );
@@ -293,15 +286,16 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
           messageWidth: messageWidth,
         ),
         systemMessageBuilder: (msg) => renderSystemMessage(context, msg),
-        showUserAvatars: !widget.convo.isDm(),
+        // showUserAvatars: !widget.convo.isDm(),
         onMessageLongPress: (
           BuildContext context,
           types.Message message,
         ) async =>
             showMessageOptions(context, message),
 
-        onEndReached:
-            ref.read(chatStateProvider(widget.convo).notifier).handleEndReached,
+        onEndReached: ref
+            .read(chatStateProvider(widget.roomId).notifier)
+            .handleEndReached,
         onEndReachedThreshold: 0.75,
         onBackgroundTap: () =>
             ref.read(chatInputProvider.notifier).unsetActions(),
@@ -323,11 +317,11 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
     return switch (message.metadata?['type']) {
       '_invite' => InviteSystemMessageWidget(
           message: message,
-          roomId: widget.convo.getRoomIdStr(),
+          roomId: widget.roomId,
         ),
       '_topic' => TopicSystemMessageWidget(
           message: message,
-          roomId: widget.convo.getRoomIdStr(),
+          roomId: widget.roomId,
         ),
       '_read_marker' => Center(
           child: Divider(color: Theme.of(context).indicatorColor),

@@ -33,7 +33,10 @@ class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, String> {
       },
     );
     ref.onDispose(() => _poller.cancel());
-    return await client.convo(convoId);
+    return await client.convoWithRetry(
+      convoId,
+      120,
+    );
   }
 }
 
@@ -50,7 +53,7 @@ class AsyncLatestMsgNotifier extends FamilyAsyncNotifier<RoomMessage?, String> {
       (e) {
         _log.info('received new latest message call for $roomId');
         state = ref
-            .watch(convoProvider(roomId))
+            .watch(chatProvider(roomId))
             .whenData((cb) => cb?.latestMessage());
       },
       onError: (e, stack) {
@@ -61,7 +64,7 @@ class AsyncLatestMsgNotifier extends FamilyAsyncNotifier<RoomMessage?, String> {
       },
     );
     ref.onDispose(() => _poller.cancel());
-    return ref.watch(convoProvider(roomId)).valueOrNull?.latestMessage();
+    return ref.watch(chatProvider(roomId)).valueOrNull?.latestMessage();
   }
 }
 

@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
@@ -125,6 +126,9 @@ class _RedactContentWidget extends ConsumerWidget {
         );
       } else {
         final room = await ref.read(chatProvider(roomId).future);
+        if (room == null) {
+          throw RoomNotFound();
+        }
         final redactedId = await room.redactContent(eventId, reason);
         ref.invalidate(spaceEventsProvider(roomId));
         _log.info(

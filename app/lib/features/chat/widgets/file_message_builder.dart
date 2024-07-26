@@ -3,7 +3,6 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/download_button.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -15,11 +14,11 @@ class FileMessageBuilder extends ConsumerWidget {
   final types.FileMessage message;
   final int messageWidth;
   final bool isReplyContent;
-  final Convo convo;
+  final String roomId;
 
   const FileMessageBuilder({
     super.key,
-    required this.convo,
+    required this.roomId,
     required this.message,
     required this.messageWidth,
     this.isReplyContent = false,
@@ -27,8 +26,7 @@ class FileMessageBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ChatMessageInfo messageInfo =
-        (messageId: message.id, roomId: convo.getRoomIdStr());
+    final ChatMessageInfo messageInfo = (messageId: message.id, roomId: roomId);
     final mediaState = ref.watch(mediaChatStateProvider(messageInfo));
     return InkWell(
       onTap: () async {

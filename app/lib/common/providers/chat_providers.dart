@@ -3,7 +3,7 @@ import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:riverpod/riverpod.dart';
 
-final convoProvider =
+final chatProvider =
     AsyncNotifierProvider.family<AsyncConvoNotifier, Convo?, String>(
   () => AsyncConvoNotifier(),
 );
@@ -30,17 +30,8 @@ final chatsProvider = Provider<List<Convo>>((ref) {
 });
 
 final chatIdsProvider = Provider<List<String>>(
-    (ref) => ref.watch(chatsProvider).map((e) => e.getRoomIdStr()).toList(),);
-
-final chatProvider =
-    FutureProvider.family<Convo, String>((ref, roomIdOrAlias) async {
-  final client = ref.watch(alwaysClientProvider);
-  // FIXME: fallback to fetching a public data, if not found
-  return await client.convoWithRetry(
-    roomIdOrAlias,
-    120,
-  ); // retrying for up to 30seconds before failing
-});
+  (ref) => ref.watch(chatsProvider).map((e) => e.getRoomIdStr()).toList(),
+);
 
 final selectedChatIdProvider =
     NotifierProvider<SelectedChatIdNotifier, String?>(
