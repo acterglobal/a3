@@ -9,7 +9,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::space::widget::related_spaces::helpers');
+final _log = Logger('a3::space::widget::related::spaces_helpers');
 
 List<Widget>? _renderKnownSubspaces(
   BuildContext context,
