@@ -25,7 +25,7 @@ class ActerTextController extends TextEditingController {
       final trigger = entry.key;
       final triggerStyle = entry.value;
 
-      final regex = RegExp('\\$trigger\\S+(?: \\S+)*');
+      final regex = RegExp('\\$trigger\\S+(?: \\S+)*(?=\\s)');
       final matches = regex.allMatches(text);
 
       for (final match in matches) {
