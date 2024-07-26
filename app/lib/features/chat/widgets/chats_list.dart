@@ -187,6 +187,11 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
     int index,
     Animation<double> animation,
   ) {
+    if (index >= _currentList.length) {
+      // due to this updating with animations, we sometimes run out of the index
+      // while still manipulating it. Ignore that case with just some empty boxes.
+      return const SizedBox.shrink();
+    }
     final roomId = _currentList[index];
     return ConvoCard(
       animation: animation,
