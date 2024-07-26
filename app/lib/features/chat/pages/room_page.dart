@@ -216,14 +216,15 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
   @override
   Widget build(BuildContext context) {
     final roomId = widget.roomId;
-    final endReached =
-        ref.watch(chatStateProvider(roomId).select((c) => !c.hasMore));
-    final userId = ref.watch(myUserIdStrProvider);
     final messages = ref.watch(chatMessagesProvider(roomId));
 
     if (messages.isEmpty) {
       return _renderLoading(context);
     }
+
+    final endReached =
+        ref.watch(chatStateProvider(roomId).select((c) => !c.hasMore));
+    final userId = ref.watch(myUserIdStrProvider);
     final isDirectChat =
         ref.watch(isDirectChatProvider(roomId)).valueOrNull ?? false;
 
