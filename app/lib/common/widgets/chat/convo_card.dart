@@ -11,6 +11,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class ConvoCard extends ConsumerWidget {
   final String roomId;
@@ -40,6 +41,7 @@ class ConvoCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final titleIsLoading = !ref.watch(roomDisplayNameProvider(roomId)).hasValue;
     final roomAvatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
     // ToDo: UnreadCounter
     return ConvoWithAvatarInfoCard(
@@ -49,6 +51,7 @@ class ConvoCard extends ConsumerWidget {
       showSuggestedMark: showSuggestedMark,
       avatarInfo: roomAvatarInfo,
       onTap: onTap,
+      title: titleIsLoading ? Skeletonizer(child: Text(roomId)) : null,
       showSelectedIndication: showSelectedIndication,
       subtitle: _SubtitleWidget(
         roomId: roomId,
