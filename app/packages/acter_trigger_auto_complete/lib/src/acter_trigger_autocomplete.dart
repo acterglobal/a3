@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:acter_trigger_auto_complete/acter_trigger_autocomplete.dart';
+import 'package:acter_trigger_auto_complete/src/acter_text_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 
@@ -10,9 +11,9 @@ import 'package:flutter_portal/flutter_portal.dart';
 /// See also:
 ///
 ///   * [RawAutocomplete.fieldViewBuilder], which is of this type.
-typedef MultiTriggerAutocompleteFieldViewBuilder = Widget Function(
+typedef ActerTriggerFieldViewBuilder = Widget Function(
   BuildContext context,
-  TextEditingController textEditingController,
+  ActerTextController textEditingController,
   FocusNode focusNode,
 );
 
@@ -107,10 +108,10 @@ class MultiTriggerAutocomplete extends StatefulWidget {
   /// {@template flutter.widgets.RawAutocomplete.fieldViewBuilder}
   /// Builds the field whose input is used to get the options.
   ///
-  /// Pass the provided [TextEditingController] to the field built here so that
+  /// Pass the provided [ActerTextController] to the field built here so that
   /// RawAutocomplete can listen for changes.
   /// {@endtemplate}
-  final MultiTriggerAutocompleteFieldViewBuilder fieldViewBuilder;
+  final ActerTriggerFieldViewBuilder fieldViewBuilder;
 
   /// The [FocusNode] that is used for the text field.
   ///
@@ -141,7 +142,7 @@ class MultiTriggerAutocomplete extends StatefulWidget {
   /// The [TextEditingController] that is used for the text field.
   ///
   /// If this parameter is not null, then [focusNode] must also be not null.
-  final TextEditingController? textEditingController;
+  final ActerTextController? textEditingController;
 
   /// {@template flutter.widgets.RawAutocomplete.initialValue}
   /// The initial value to use for the text field.
@@ -195,7 +196,7 @@ class MultiTriggerAutocomplete extends StatefulWidget {
 }
 
 class MultiTriggerAutocompleteState extends State<MultiTriggerAutocomplete> {
-  late TextEditingController _textEditingController;
+  late ActerTextController _textEditingController;
   late FocusNode _focusNode;
 
   AutocompleteQuery? _currentQuery;
@@ -333,7 +334,7 @@ class MultiTriggerAutocompleteState extends State<MultiTriggerAutocomplete> {
   // Handle a potential change in textEditingController by properly disposing of
   // the old one and setting up the new one, if needed.
   void _updateTextEditingController(
-      TextEditingController? old, TextEditingController? current) {
+      ActerTextController? old, ActerTextController? current) {
     if ((old == null && current == null) || old == current) {
       return;
     }
@@ -343,7 +344,7 @@ class MultiTriggerAutocompleteState extends State<MultiTriggerAutocomplete> {
       _textEditingController = current!;
     } else if (current == null) {
       _textEditingController.removeListener(_onChangedField);
-      _textEditingController = TextEditingController();
+      _textEditingController = ActerTextController();
     } else {
       _textEditingController.removeListener(_onChangedField);
       _textEditingController = current;
@@ -374,8 +375,8 @@ class MultiTriggerAutocompleteState extends State<MultiTriggerAutocomplete> {
   @override
   void initState() {
     super.initState();
-    _textEditingController = widget.textEditingController ??
-        TextEditingController.fromValue(widget.initialValue);
+    // _textEditingController = widget.textEditingController ??
+    //     TextEditingController.fromValue(widget.initialValue);
     _textEditingController.addListener(_onChangedField);
     _focusNode = widget.focusNode ?? FocusNode();
     _focusNode.addListener(_onChangedFocus);

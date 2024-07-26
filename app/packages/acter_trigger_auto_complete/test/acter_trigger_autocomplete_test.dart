@@ -25,7 +25,7 @@ void main() {
         child: MultiTriggerAutocomplete(
           key: multiTriggerAutocompleteKey,
           autocompleteTriggers: const [],
-          textEditingController: TextEditingController(),
+          textEditingController: ActerTextController(),
           focusNode: FocusNode(),
         ),
       );
@@ -43,7 +43,7 @@ void main() {
         () => Boilerplate(
           child: MultiTriggerAutocomplete(
             autocompleteTriggers: const [],
-            textEditingController: TextEditingController(),
+            textEditingController: ActerTextController(),
           ),
         ),
         throwsAssertionError,
@@ -92,7 +92,7 @@ void main() {
           child: MultiTriggerAutocomplete(
             autocompleteTriggers: const [],
             initialValue: const TextEditingValue(text: 'initialValue'),
-            textEditingController: TextEditingController(),
+            textEditingController: ActerTextController(),
             focusNode: FocusNode(),
           ),
         ),
