@@ -192,6 +192,27 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
     inputNotifier.setActionsMessage(message);
   }
 
+  Widget _renderLoading(BuildContext context) {
+    return Expanded(
+      child: SingleChildScrollView(
+        child: ListView.builder(
+          itemCount: 5,
+          shrinkWrap: true,
+          itemBuilder: (context, index) => const Skeletonizer.zone(
+            child: Card(
+              child: ListTile(
+                leading: Bone.circle(size: 48),
+                title: Bone.text(words: 2),
+                subtitle: Bone.text(),
+                trailing: Bone.icon(),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final roomId = widget.roomId;
@@ -199,6 +220,10 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
         ref.watch(chatStateProvider(roomId).select((c) => !c.hasMore));
     final userId = ref.watch(myUserIdStrProvider);
     final messages = ref.watch(chatMessagesProvider(roomId));
+
+    if (messages.isEmpty) {
+      return _renderLoading(context);
+    }
 
     return Expanded(
       child: Chat(
