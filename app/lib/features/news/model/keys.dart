@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 class NewsUpdateKeys {
   // News Slide Post Button
@@ -30,9 +30,12 @@ class NewsUpdateKeys {
   static const newsSubmitBtn = Key('news-submit-btn');
 
   // News Side Bar Actions
-  static const newsSidebarActionBottomSheet = Key('news-sidebar-action-bottom-sheet');
-  static const newsSidebarActionRemoveBtn = Key('news-sidebar-action-remove-btn');
-  static const newsSidebarActionReportBtn = Key('news-sidebar-action-report-btn');
+  static const newsSidebarActionBottomSheet =
+      Key('news-sidebar-action-bottom-sheet');
+  static const newsSidebarActionRemoveBtn =
+      Key('news-sidebar-action-remove-btn');
+  static const newsSidebarActionReportBtn =
+      Key('news-sidebar-action-report-btn');
 
   // Remove Button
   static const removeButton = Key('news-remove-btn');

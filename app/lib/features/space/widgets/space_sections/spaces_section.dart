@@ -4,8 +4,8 @@ import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter/features/space/widgets/related/spaces_helpers.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class SpacesSection extends ConsumerWidget {
@@ -102,7 +102,7 @@ class SpacesSection extends ConsumerWidget {
       itemBuilder: (context, index) {
         final roomId = spaces[index];
         return SpaceCard(
-          key: Key('subspace-list-item-$roomId}'),
+          key: Key('subspace-list-item-$roomId'),
           roomId: roomId,
           showParents: false,
         );

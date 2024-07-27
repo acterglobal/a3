@@ -17,7 +17,6 @@ class LoginPageKeys {
   static const forgotPassBtn = Key('forgot-pass-btn');
   static const usernameField = Key('login-username-txt');
   static const passwordField = Key('login-password-txt');
-  static const nameField = Key('login-username-txt');
   static const snackbarSuccess = Key('login-snackbar-success');
   static const snackbarFailed = Key('login-snackbar-failed');
 }
@@ -28,7 +27,7 @@ class Keys {
   static const bottomBar = Key('bottom-bar');
   static const newsSectionBtn = Key('news-section-btn');
   static const sidebarBtn = Key('sidebar-btn');
-  static const logoutBtn = Key('login-btn');
+  static const logoutBtn = Key('logout-btn');
   static const exploreBtn = Key('explore-btn');
   static const loginBtn = Key('login-btn');
   static const avatar = Key('user-avatar');

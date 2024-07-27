@@ -29,8 +29,8 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class RoomPage extends ConsumerWidget {
   static const roomPageKey = Key('chat-room-page');
@@ -335,7 +335,10 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
           child: Divider(color: Theme.of(context).indicatorColor),
         ),
       '_encryptedInfo' => const EncryptedInfoWidget(),
-      _ => SystemMessage(key: Key(message.id), message: message.text)
+      _ => SystemMessage(
+          key: Key('chat-room-${message.id}'),
+          message: message.text,
+        )
     };
   }
 }

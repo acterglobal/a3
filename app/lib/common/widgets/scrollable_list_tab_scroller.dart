@@ -21,6 +21,7 @@ typedef BodyContainerBuilder = Widget Function(
 );
 
 class ScrollableListTabScroller extends StatefulWidget {
+  final Key headerKey;
   final int itemCount;
   final IndexedWidgetBuilder itemBuilder;
   final IndexedActiveStatusWidgetBuilder tabBuilder;
@@ -34,6 +35,7 @@ class ScrollableListTabScroller extends StatefulWidget {
 
   const ScrollableListTabScroller({
     super.key,
+    required this.headerKey,
     required this.itemCount,
     required this.itemBuilder,
     required this.tabBuilder,
@@ -272,7 +274,7 @@ class ScrollableListTabScrollerState extends State<ScrollableListTabScroller> {
         buildCustomHeaderContainerOrDefault(
           context: context,
           child: DefaultHeaderWidget(
-            key: Key(widget.itemCount.toString()),
+            key: widget.headerKey,
             itemCount: widget.itemCount,
             onTapTab: (i) => _triggerScrollInPositionedListIfNeeded(i),
             //TODO: implement callback to handle tab click ,
