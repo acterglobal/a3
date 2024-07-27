@@ -1,7 +1,7 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
-import 'package:acter/features/space/widgets/related_spaces/helpers.dart';
+import 'package:acter/features/space/widgets/related/spaces_helpers.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';

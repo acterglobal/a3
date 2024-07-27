@@ -340,6 +340,14 @@ final membersIdsProvider =
   return asDartStringList(members);
 });
 
+//FIXME : This need to be handle from rust side
+final isDirectChatProvider =
+    FutureProvider.family<bool, String>((ref, roomIdOrAlias) async {
+  final convo = await ref.watch(chatProvider(roomIdOrAlias).future);
+  final members = await ref.watch(membersIdsProvider(roomIdOrAlias).future);
+  return convo.isDm() && members.length == 2;
+});
+
 /// Caching the MemoryImage of each entry
 final roomHierarchyAvatarProvider =
     FutureProvider.family<MemoryImage?, SpaceHierarchyRoomInfo>(

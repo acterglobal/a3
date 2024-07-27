@@ -1,0 +1,1 @@
+- Fix issue in displaying chats of a space if there aren't any further to show

@@ -206,6 +206,8 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
     final userId = ref.watch(myUserIdStrProvider);
     final roomId = widget.convo.getRoomIdStr();
     final messages = ref.watch(chatMessagesProvider(widget.convo));
+    final isDirectChat =
+        ref.watch(isDirectChatProvider(roomId)).valueOrNull ?? false;
 
     return Expanded(
       child: Chat(
@@ -293,7 +295,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
           messageWidth: messageWidth,
         ),
         systemMessageBuilder: (msg) => renderSystemMessage(context, msg),
-        showUserAvatars: !widget.convo.isDm(),
+        showUserAvatars: !isDirectChat,
         onMessageLongPress: (
           BuildContext context,
           types.Message message,

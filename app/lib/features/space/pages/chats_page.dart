@@ -1,15 +1,12 @@
-import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
 import 'package:acter/common/widgets/chat/loading_convo_card.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
-import 'package:acter/common/widgets/room/room_hierarchy_options_menu.dart';
-import 'package:acter/router/utils.dart';
+import 'package:acter/features/space/widgets/related/chats_helpers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -24,18 +21,14 @@ class SpaceChatsPage extends ConsumerWidget {
 
   const SpaceChatsPage({super.key, required this.spaceIdOrAlias});
 
+  Widget _renderLoading(BuildContext context) {
+    return ListView.builder(
+      itemCount: 3,
+      itemBuilder: (context, idx) => const LoadingConvoCard(roomId: 'fake'),
+    );
+  }
+
   Widget _renderEmpty(BuildContext context, WidgetRef ref) {
-    final chats = ref
-            .watch(spaceRelationsOverviewProvider(spaceIdOrAlias))
-            .valueOrNull
-            ?.knownChats ??
-        [];
-
-    if (chats.isEmpty) {
-      // we are still loading or chats has been found locally
-      return Container();
-    }
-
     final membership = ref.watch(roomMembershipProvider(spaceIdOrAlias));
     bool canCreateSpace =
         membership.valueOrNull?.canString('CanLinkSpaces') == true;
@@ -66,51 +59,6 @@ class SpaceChatsPage extends ConsumerWidget {
               )
             : null,
       ),
-    );
-  }
-
-  Widget renderConvoCard(
-    BuildContext context,
-    WidgetRef ref,
-    String roomId,
-    bool isSuggested,
-  ) {
-    return ref.watch(chatProvider(roomId)).when(
-          data: (room) => ConvoCard(
-            room: room,
-            showParents: false,
-            showSuggestedMark: isSuggested,
-            onTap: () => goToChat(context, roomId),
-            trailing: RoomHierarchyOptionsMenu(
-              childId: roomId,
-              parentId: spaceIdOrAlias,
-              isSuggested: isSuggested,
-            ),
-          ),
-          error: (error, stack) => ListTile(
-            title: Text(roomId),
-            subtitle: Text(L10n.of(context).loadingFailed(error)),
-          ),
-          loading: () => LoadingConvoCard(roomId: roomId),
-        );
-  }
-
-  Widget renderChats(BuildContext context, WidgetRef ref) {
-    final relations =
-        ref.watch(spaceRelationsOverviewProvider(spaceIdOrAlias)).valueOrNull;
-    final chats = relations?.knownChats ?? [];
-    final suggested = relations?.suggestedIds ?? [];
-
-    return SliverAnimatedList(
-      initialItemCount: chats.length,
-      itemBuilder: (context, index, animation) {
-        final roomId = chats[index];
-        final isSuggested = suggested.contains(roomId);
-        return SizeTransition(
-          sizeFactor: animation,
-          child: renderConvoCard(context, ref, roomId, isSuggested),
-        );
-      },
     );
   }
 
@@ -156,8 +104,15 @@ class SpaceChatsPage extends ConsumerWidget {
         ref.watch(roomDisplayNameProvider(spaceIdOrAlias)).valueOrNull ??
             spaceIdOrAlias;
 
-    final chatsList =
-        ref.watch(spaceRelationsOverviewProvider(spaceIdOrAlias)).valueOrNull;
+    final chatListAsync =
+        ref.watch(spaceRelationsOverviewProvider(spaceIdOrAlias));
+    final chatList = chatListAsync.valueOrNull?.knownChats ?? [];
+    final remoteChatsAsync =
+        ref.watch(remoteChatRelationsProvider(spaceIdOrAlias));
+    final remoteChats = remoteChatsAsync.valueOrNull ?? [];
+    final isLoading = chatListAsync.isLoading || remoteChatsAsync.isLoading;
+    final isEmpty = (chatListAsync.hasValue ? chatList.isEmpty : false) &&
+        (remoteChatsAsync.hasValue ? remoteChats.isEmpty : false);
 
     final membership = ref.watch(roomMembershipProvider(spaceIdOrAlias));
     bool canCreateSpace =
@@ -224,15 +179,16 @@ class SpaceChatsPage extends ConsumerWidget {
             ),
         ],
       ),
-      body: CustomScrollView(
-        slivers: <Widget>[
-          if (chatsList?.knownChats.isNotEmpty == true)
-            renderChats(context, ref),
-          if (chatsList?.hasMore == true) renderFurther(context, ref),
-          if (chatsList?.hasMore == false &&
-              chatsList?.knownChats.isEmpty == true)
-            _renderEmpty(context, ref),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            if (chatList.isNotEmpty)
+              chatsListUI(ref, chatList, chatList.length),
+            if (isLoading) _renderLoading(context),
+            if (remoteChats.isNotEmpty) renderFurther(context, ref),
+            if (isEmpty) _renderEmpty(context, ref),
+          ],
+        ),
       ),
     );
   }

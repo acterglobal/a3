@@ -102,18 +102,8 @@ class _PinItemState extends ConsumerState<PinItem> {
   Widget _buildPinLink() {
     return SelectionArea(
       child: GestureDetector(
-        onTap: () {
-          showEditLinkBottomSheet(
-            context: context,
-            bottomSheetTitle: L10n.of(context).editLink,
-            linkValue: widget.pin.url() ?? '',
-            onSave: (newLink) async {
-              final pinEditNotifier =
-                  ref.watch(pinEditProvider(widget.pin).notifier);
-              pinEditNotifier.setLink(newLink);
-              savePinLink(context, widget.pin, newLink);
-            },
-          );
+        onTap: () async {
+          await openLink(widget.pin.url() ?? '', context);
         },
         child: Card(
           child: Padding(
@@ -123,19 +113,28 @@ class _PinItemState extends ConsumerState<PinItem> {
               children: [
                 const Icon(Atlas.link_chain_thin, size: 18),
                 const SizedBox(width: 16),
-                Flexible(
+                Expanded(
                   child: Text(
                     widget.pin.url() ?? '',
                     softWrap: false,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                const SizedBox(width: 16),
                 GestureDetector(
-                  onTap: () async {
-                    await openLink(widget.pin.url() ?? '', context);
+                  onTap: () {
+                    showEditLinkBottomSheet(
+                      context: context,
+                      bottomSheetTitle: L10n.of(context).editLink,
+                      linkValue: widget.pin.url() ?? '',
+                      onSave: (newLink) async {
+                        final pinEditNotifier =
+                            ref.watch(pinEditProvider(widget.pin).notifier);
+                        pinEditNotifier.setLink(newLink);
+                        savePinLink(context, widget.pin, newLink);
+                      },
+                    );
                   },
-                  child: const Icon(Atlas.arrow_right, size: 18),
+                  child: const Icon(Atlas.pencil_edit, size: 18),
                 ),
               ],
             ),
