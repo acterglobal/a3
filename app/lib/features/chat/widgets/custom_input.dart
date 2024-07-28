@@ -427,13 +427,13 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       ),
       builder: (context) => AttachmentOptions(
         onTapCamera: () async {
-          Navigator.pop(context);
           XFile? imageFile =
               await ImagePicker().pickImage(source: ImageSource.camera);
           if (imageFile != null) {
             List<File> files = [File(imageFile.path)];
 
             if (context.mounted) {
+              Navigator.pop(context);
               attachmentConfirmation(
                 files,
                 AttachmentType.camera,
@@ -443,13 +443,13 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           }
         },
         onTapImage: () async {
-          Navigator.pop(context);
           XFile? imageFile =
               await ImagePicker().pickImage(source: ImageSource.gallery);
           if (imageFile != null) {
             List<File> files = [File(imageFile.path)];
 
             if (context.mounted) {
+              Navigator.pop(context);
               attachmentConfirmation(
                 files,
                 AttachmentType.image,
@@ -459,13 +459,13 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           }
         },
         onTapVideo: () async {
-          Navigator.pop(context);
           XFile? imageFile =
               await ImagePicker().pickVideo(source: ImageSource.gallery);
           if (imageFile != null) {
             List<File> files = [File(imageFile.path)];
 
             if (context.mounted) {
+              Navigator.pop(context);
               attachmentConfirmation(
                 files,
                 AttachmentType.video,
@@ -475,10 +475,10 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           }
         },
         onTapFile: () async {
-          Navigator.pop(context);
           final selectedFiles = await handleFileSelection(context);
 
           if (context.mounted) {
+            Navigator.pop(context);
             attachmentConfirmation(
               selectedFiles,
               AttachmentType.file,
