@@ -42,23 +42,25 @@ class _InviteSpaceMembersConsumerState
   }
 
   Widget _buildBody() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      constraints: const BoxConstraints(maxWidth: 500),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            L10n.of(context).inviteSpaceMembersSubtitle,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 10),
-          _buildParentSpaces(),
-          const SizedBox(height: 20),
-          _buildOtherSpace(),
-          _buildDoneButton(),
-          const SizedBox(height: 10),
-        ],
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        constraints: const BoxConstraints(maxWidth: 500),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              L10n.of(context).inviteSpaceMembersSubtitle,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            _buildParentSpaces(),
+            const SizedBox(height: 20),
+            _buildOtherSpace(),
+            _buildDoneButton(),
+            const SizedBox(height: 10),
+          ],
+        ),
       ),
     );
   }
@@ -164,7 +166,6 @@ class _InviteSpaceMembersConsumerState
 
     EasyLoading.show(
       status: L10n.of(context).invitingSpaceMembersLoading,
-      dismissOnTap: false,
     );
 
     try {
@@ -184,16 +185,26 @@ class _InviteSpaceMembersConsumerState
               .toList();
       final joined =
           ref.read(membersIdsProvider(widget.roomId)).valueOrNull ?? [];
+      var total = 0;
       var inviteCount = 0;
       for (final roomId in selectedSpaces) {
         final members =
-            (await ref.watch(membersIdsProvider(roomId).future)).toList();
+            (await ref.read(membersIdsProvider(roomId).future)).toList();
+        total += members.length;
+
         for (final member in members) {
           final isInvited = invited.contains(member);
           final isJoined = joined.contains(member);
           if (!isInvited && !isJoined) {
+            EasyLoading.showProgress(
+              inviteCount / total,
+              status: L10n.of(context)
+                  .invitingSpaceMembersProgress(inviteCount, total),
+            );
             await room.inviteUser(member);
             inviteCount++;
+          } else {
+            total -= 1; // we substract from the total.
           }
         }
       }
