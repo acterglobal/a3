@@ -1,16 +1,16 @@
-import 'package:acter/features/attachments/providers/attachment_providers.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/attachments/providers/attachment_providers.dart';
 import 'package:acter/features/attachments/widgets/attachment_item.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class PinListItemById extends ConsumerWidget {
   final String pinId;
@@ -106,6 +106,7 @@ class _PinListItemConsumerState extends ConsumerState<PinListItem> {
 
   @override
   Widget build(BuildContext context) {
+    final eventId = widget.pin.eventIdStr();
     final isLink = widget.pin.isLink();
     final spaceId = widget.pin.roomIdStr();
     final manager = ref
@@ -119,7 +120,7 @@ class _PinListItemConsumerState extends ConsumerState<PinListItem> {
         final attachmentId = list[0].attachmentIdStr();
         attachmentsWidget.add(
           AttachmentItem(
-            key: Key(attachmentId),
+            key: Key('pin-attachment-$attachmentId'),
             attachment: list[0],
             openView: false,
           ),
@@ -128,7 +129,7 @@ class _PinListItemConsumerState extends ConsumerState<PinListItem> {
     }
 
     return InkWell(
-      key: Key(widget.pin.eventIdStr()),
+      key: Key('pin-item-$eventId'),
       onTap: () => onTap(context),
       child: Card(
         child: Padding(

@@ -22,8 +22,9 @@ class TaskListItemCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final taskListId = taskList.eventIdStr();
     return Card(
-      key: Key('task-list-card-${taskList.eventIdStr()}'),
+      key: Key('task-list-card-$taskListId'),
       child: ExpansionTile(
         initiallyExpanded: initiallyExpanded,
         shape: RoundedRectangleBorder(

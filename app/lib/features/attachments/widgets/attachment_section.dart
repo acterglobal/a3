@@ -128,7 +128,7 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
     return Stack(
       children: [
         AttachmentItem(
-          key: Key(eventId),
+          key: Key('$eventId-attachment'),
           attachment: item,
         ),
         Positioned(

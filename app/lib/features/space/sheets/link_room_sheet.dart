@@ -3,7 +3,6 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
-
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/room/brief_room_list_entry.dart';
 import 'package:acter/common/widgets/search.dart';
@@ -13,8 +12,8 @@ import 'package:acter/features/space/actions/unlink_child_room.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // ChildRoomType configures the sub child type of the `Spaces`
 enum ChildRoomType {
@@ -199,7 +198,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
           roomId: roomId,
           canCheck: 'CanLinkSpaces',
           onSelect: null,
-          keyPrefix: 'room-list-link-',
+          keyPrefix: 'chat-list-link',
           avatarDisplayMode: DisplayMode.GroupChat,
           trailingBuilder: (canLink) =>
               roomTrailing(roomId, isLinked(roomId), canLink),
@@ -261,6 +260,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
           avatarDisplayMode: DisplayMode.Space,
           roomId: roomId,
           canCheck: 'CanLinkSpaces',
+          keyPrefix: 'space-list-link',
           subtitle: subtitle,
           trailingBuilder: (canLink) => roomTrailing(
             roomId,
