@@ -1,9 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:acter/common/actions/redact_content.dart';
 import 'package:acter/common/models/types.dart';
-import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
-import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/features/attachments/actions/select_attachment.dart';
 import 'package:acter/features/attachments/providers/attachment_providers.dart';
 import 'package:acter/features/attachments/widgets/attachment_item.dart';
@@ -130,7 +129,6 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
   ) {
     final eventId = item.attachmentIdStr();
     final roomId = item.roomIdStr();
-    final sender = item.sender();
     return Stack(
       children: [
         AttachmentItem(
@@ -144,11 +142,15 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
             visible: canEdit,
             child: IconButton(
               key: AttachmentSectionWidget.redactBtnKey,
-              onPressed: () => showRedactionWidget(
+              onPressed: () => openRedactContentDialog(
                 context,
-                eventId,
-                roomId,
-                sender,
+                eventId: eventId,
+                roomId: roomId,
+                title: L10n.of(context).deleteAttachment,
+                description:
+                    L10n.of(context).areYouSureYouWantToRemoveAttachmentFromPin,
+                isSpace: true,
+                removeBtnKey: AttachmentSectionWidget.confirmRedactKey,
               ),
               icon: const Icon(
                 Atlas.minus_circle_thin,
@@ -159,100 +161,6 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
         ),
       ],
     );
-  }
-
-  Future<void> showRedactionWidget(
-    BuildContext context,
-    String eventId,
-    String roomId,
-    String senderId,
-  ) async {
-    final titleTextStyle = Theme.of(context).textTheme.titleMedium;
-    final descriptionTextStyle = Theme.of(context).textTheme.bodyMedium;
-    final TextEditingController reasonController = TextEditingController();
-    await showAdaptiveDialog(
-      context: context,
-      builder: (context) => Dialog(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width * 0.5,
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(L10n.of(context).deleteAttachment, style: titleTextStyle),
-                const SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    L10n.of(context).areYouSureYouWantToRemoveAttachmentFromPin,
-                    style: descriptionTextStyle,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: InputTextField(
-                    controller: reasonController,
-                    hintText: L10n.of(context).reason,
-                    textInputType: TextInputType.multiline,
-                    maxLines: 5,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    OutlinedButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text(L10n.of(context).no),
-                    ),
-                    const SizedBox(width: 10),
-                    ActerDangerActionButton(
-                      key: AttachmentSectionWidget.confirmRedactKey,
-                      onPressed: () {
-                        Navigator.pop(context);
-                        _handleRedactAttachment(
-                          eventId,
-                          reasonController.text.trim(),
-                          context,
-                        );
-                      },
-                      child: Text(L10n.of(context).yes),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _handleRedactAttachment(
-    String eventId,
-    String reason,
-    BuildContext context,
-  ) async {
-    EasyLoading.show(status: L10n.of(context).removingAttachment);
-    try {
-      await attachmentManager.redact(eventId, reason, null);
-      _log.info('attachment redacted: $eventId');
-      EasyLoading.dismiss();
-    } catch (e) {
-      _log.severe('attachment redaction failed', e, null);
-      if (!context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-      EasyLoading.showError(
-        L10n.of(context).failedToDeleteAttachment(e),
-        duration: const Duration(seconds: 3),
-      );
-    }
   }
 
   Widget _buildAddAttachment(BuildContext context, WidgetRef ref) {
