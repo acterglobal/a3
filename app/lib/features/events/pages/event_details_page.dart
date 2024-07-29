@@ -510,7 +510,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     } else if (getEventType(ev) == EventFilters.upcoming) {
       eventTimingTitle = '${L10n.of(context).starts} $agoTime';
     } else if (getEventType(ev) == EventFilters.past) {
-      eventTimingTitle = '${L10n.of(context).completed} $agoTime';
+      eventTimingTitle = '${L10n.of(context).ended} $agoTime';
     }
 
     return Padding(

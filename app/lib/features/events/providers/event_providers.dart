@@ -110,19 +110,6 @@ final myPastEventListProvider = FutureProvider.autoDispose
   return myPastEventList;
 });
 
-//MY EVENTS (ONGOING+UPCOMING)
-final myEventsList = FutureProvider.autoDispose
-    .family<List<ffi.CalendarEvent>, String?>((ref, spaceId) async {
-  final myOngoingEvents =
-      await ref.watch(myOngoingEventListProvider(spaceId).future);
-  final myUpcomingEvents =
-      await ref.watch(myUpcomingEventListProvider(spaceId).future);
-  List<ffi.CalendarEvent> myEventsList = [];
-  myEventsList.addAll(myOngoingEvents);
-  myEventsList.addAll(myUpcomingEvents);
-  return myEventsList;
-});
-
 //EVENT FILTERS
 enum EventFilters {
   all,

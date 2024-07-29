@@ -1982,5 +1982,8 @@
   "myEvents": "My Events",
   "started": "Started",
   "starts": "Starts",
-  "completed": "Completed"
+  "ended": "Ended",
+  "myOngoingEvents": "My Ongoing Events",
+  "myUpcomingEvents": "My Upcoming Events",
+  "happening": "Happening"
 }

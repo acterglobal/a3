@@ -4,6 +4,7 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
+import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/in_dashboard.dart';
 import 'package:acter/features/home/widgets/my_events.dart';
@@ -39,9 +40,15 @@ class Dashboard extends ConsumerWidget {
                         searchWidget(context),
                         featuresNav(context),
                         const SizedBox(height: 20),
+                        const MyEventsSection(
+                          eventFilters: EventFilters.ongoing,
+                        ),
+                        const SizedBox(height: 12),
+                        const MyEventsSection(
+                          limit: 3,
+                          eventFilters: EventFilters.upcoming,
+                        ),
                         const MyTasksSection(limit: 5),
-                        const SizedBox(height: 28),
-                        const MyEventsSection(limit: 5),
                         const SizedBox(height: 20),
                         const MySpacesSection(limit: 5),
                       ],
