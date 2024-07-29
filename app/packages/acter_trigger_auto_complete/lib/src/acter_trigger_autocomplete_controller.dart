@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 /// Extended [TextEditingController] which takes up trigger styles as optional.
 /// Styles the trigger inputs based on map for mentions, hashtags or emojis etc.
-/// If provided empty, will
+/// If provided empty, will use default [TextStyle].
 class ActerTriggerAutoCompleteTextController extends TextEditingController {
   ActerTriggerAutoCompleteTextController({super.text, this.triggerStyles});
 
@@ -24,7 +24,10 @@ class ActerTriggerAutoCompleteTextController extends TextEditingController {
     for (final entry in triggerStyles!.entries) {
       final trigger = entry.key;
       final triggerStyle = entry.value;
-
+      // This regex matches a string that starts with trigger followed by one or more non-whitespace characters.
+      // It can be optionally followed by additional groups of one or more non-whitespace characters separated by spaces.
+      // The match stops at a trailing last word whitespace character.
+      /// Example: @John, @John Doe etc.
       final regex = RegExp('\\$trigger\\S+(?: \\S+)*(?=\\s)');
       final matches = regex.allMatches(text);
 
