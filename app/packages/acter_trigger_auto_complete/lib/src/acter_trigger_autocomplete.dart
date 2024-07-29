@@ -316,7 +316,7 @@ class MultiTriggerAutocompleteState extends State<MultiTriggerAutocomplete> {
   // Handle a potential change in textEditingController by properly disposing of
   // the old one and setting up the new one, if needed.
   void _updateTextEditingController(
-      ActerTextController? old, ActerTextController? current) {
+      ActerTextController? old, ActerTextController? current,) {
     if ((old == null && current == null) || old == current) {
       return;
     }
@@ -431,10 +431,9 @@ class _AutocompleteInvokedTriggerWithQuery {
 // The default Material-style Autocomplete text field.
 class _MultiTriggerAutocompleteField extends StatelessWidget {
   const _MultiTriggerAutocompleteField({
-    Key? key,
     required this.focusNode,
     required this.textEditingController,
-  }) : super(key: key);
+  });
 
   final FocusNode focusNode;
 

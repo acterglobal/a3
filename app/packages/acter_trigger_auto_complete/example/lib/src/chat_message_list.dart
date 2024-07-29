@@ -5,9 +5,9 @@ import 'package:google_fonts/google_fonts.dart';
 
 class ChatMessageList extends StatelessWidget {
   const ChatMessageList({
-    Key? key,
+    super.key,
     required this.messages,
-  }) : super(key: key);
+  });
 
   final List<ChatMessage> messages;
 
@@ -44,11 +44,11 @@ class ChatMessageList extends StatelessWidget {
                   ),
                   parse: <MatchText>[
                     MatchText(
-                      pattern: r"@[A-Za-z0-9_.-]*",
+                      pattern: r'@[A-Za-z0-9_.-]*',
                       style: const TextStyle(color: Colors.green),
                     ),
                     MatchText(
-                      pattern: r"\B#+([\w]+)\b",
+                      pattern: r'\B#+([\w]+)\b',
                       style: const TextStyle(color: Colors.blue),
                     ),
                   ],

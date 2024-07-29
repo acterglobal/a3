@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 /// Styles the trigger inputs based on map for mentions, hashtags or emojis etc.
 /// If provided empty, will
 class ActerTextController extends TextEditingController {
-  ActerTextController({String? text, this.triggerStyles}) : super(text: text);
+  ActerTextController({super.text, this.triggerStyles});
 
   final Map<String, TextStyle>? triggerStyles;
   @override
@@ -33,12 +33,12 @@ class ActerTextController extends TextEditingController {
           children.add(TextSpan(
             text: text.substring(lastIndex, match.start),
             style: style ?? const TextStyle(),
-          ));
+          ),);
         }
         children.add(TextSpan(
           text: match.group(0),
           style: (style ?? const TextStyle()).merge(triggerStyle),
-        ));
+        ),);
         lastIndex = match.end;
       }
     }
@@ -47,7 +47,7 @@ class ActerTextController extends TextEditingController {
       children.add(TextSpan(
         text: text.substring(lastIndex),
         style: style ?? const TextStyle(),
-      ));
+      ),);
     }
 
     return TextSpan(children: children);

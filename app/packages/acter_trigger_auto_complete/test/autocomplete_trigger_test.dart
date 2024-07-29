@@ -12,7 +12,7 @@ void main() {
           textEditingController,
         ) {
           return const SizedBox.shrink();
-        });
+        },);
 
     test('should return null if `@` is not found', () {
       const text = 'Hello There';
@@ -179,7 +179,7 @@ void main() {
     );
 
     test(
-      "should return null if `@` is found but the word is less than 3 characters long",
+      'should return null if `@` is found but the word is less than 3 characters long',
       () {
         const text = 'Hey @Sahil';
         final invoked = trigger.invokingTrigger(
