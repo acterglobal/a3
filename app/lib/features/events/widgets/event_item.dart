@@ -56,17 +56,18 @@ class EventItem extends StatelessWidget {
                     children: [
                       _buildEventTitle(context),
                       Consumer(builder: _buildEventSubtitle),
+                      const SizedBox(height: 4),
+                      if (isShowRsvp) _buildRsvpStatus(context),
                     ],
                   ),
                 ),
                 const SizedBox(width: 10),
-                if (isShowRsvp) _buildRsvpStatus(context),
+                if (getEventType(event) == EventFilters.ongoing)
+                  _buildHappeningIndication(context),
                 const SizedBox(width: 10),
               ],
             ),
           ),
-          if (getEventType(event) == EventFilters.ongoing)
-            _buildHappeningIndication(context),
         ],
       ),
     );
@@ -106,7 +107,16 @@ class EventItem extends StatelessWidget {
         return myRsvpStatus.when(
           data: (data) {
             final status = data.statusStr(); // kebab-case
-            return _getRsvpStatus(context, status) ?? const SizedBox.shrink();
+            final rsvpStatusWidget =
+                _getRsvpStatus(context, status); // kebab-case
+            return (rsvpStatusWidget != null)
+                ? Row(
+                    children: [
+                      Text('${L10n.of(context).going}? : '),
+                      rsvpStatusWidget,
+                    ],
+                  )
+                : const SizedBox.shrink();
           },
           error: (e, st) => Chip(
             label: Text(
@@ -130,7 +140,7 @@ class EventItem extends StatelessWidget {
             children: [
               const Icon(Icons.check_circle, color: Colors.green),
               const SizedBox(width: 4),
-              Text(L10n.of(context).going),
+              Text(L10n.of(context).yes),
             ],
           );
         case 'no':
@@ -138,15 +148,15 @@ class EventItem extends StatelessWidget {
             children: [
               const Icon(Icons.cancel, color: Colors.red),
               const SizedBox(width: 4),
-              Text(L10n.of(context).notGoing),
+              Text(L10n.of(context).no),
             ],
           );
-        default:
+        case 'maybe':
           return Row(
             children: [
-              const Icon(Icons.question_mark_rounded, color: Colors.grey),
+              const Icon(Icons.cancel, color: Colors.red),
               const SizedBox(width: 4),
-              Text(L10n.of(context).maybe),
+              Text(L10n.of(context).no),
             ],
           );
       }
