@@ -1,9 +1,9 @@
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
+import 'package:acter/features/events/pages/event_list_page.dart';
 import 'package:acter/features/invite_members/pages/invite_individual_users.dart';
 import 'package:acter/features/invite_members/pages/invite_page.dart';
 import 'package:acter/features/events/pages/create_edit_event_page.dart';
-import 'package:acter/features/events/pages/events_page.dart';
 import 'package:acter/features/events/pages/event_details_page.dart';
 import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/invite_members/pages/invite_pending.dart';
@@ -453,7 +453,7 @@ List<RouteBase> makeHomeShellRoutes() {
       pageBuilder: (context, state) {
         return NoTransitionPage(
           key: state.pageKey,
-          child: const EventsPage(),
+          child: const EventListPage(),
         );
       },
     ),
