@@ -2,7 +2,6 @@ import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:dart_date/dart_date.dart';
-import 'package:flutter/material.dart';
 
 Future<List<ffi.CalendarEvent>> sortEventListAscTime(
   List<ffi.CalendarEvent> eventsList,
@@ -37,16 +36,4 @@ EventFilters getEventType(ffi.CalendarEvent event) {
     return EventFilters.past;
   }
   return EventFilters.all;
-}
-
-Color getColorBasedOnEventType(ffi.CalendarEvent event) {
-  if (getEventType(event) == EventFilters.ongoing) {
-    return const Color(0x91446e40);
-  } else if (getEventType(event) == EventFilters.upcoming) {
-    return const Color(0x91a88851);
-  } else if (getEventType(event) == EventFilters.past) {
-    return const Color(0x916C6C6C);
-  } else {
-    return Colors.blueGrey;
-  }
 }

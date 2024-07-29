@@ -1,5 +1,6 @@
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/events/event_utils/event_utils.dart';
+import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 
@@ -23,7 +24,7 @@ class EventDateWidget extends StatelessWidget {
     final month = getMonthFromDate(calendarEvent.utcStart());
 
     return Card(
-      color: getColorBasedOnEventType(calendarEvent),
+      color: getColorBasedOnEventType(context),
       child: Container(
         height: size,
         width: size,
@@ -38,5 +39,13 @@ class EventDateWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Color getColorBasedOnEventType(BuildContext context) {
+    if (getEventType(calendarEvent) == EventFilters.past) {
+      return Colors.grey.shade800;
+    } else {
+      return Theme.of(context).primaryColor;
+    }
   }
 }
