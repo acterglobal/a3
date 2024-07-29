@@ -154,9 +154,9 @@ class EventItem extends StatelessWidget {
         case 'maybe':
           return Row(
             children: [
-              const Icon(Icons.cancel, color: Colors.red),
+              const Icon(Icons.question_mark_rounded, color: Colors.grey),
               const SizedBox(width: 4),
-              Text(L10n.of(context).no),
+              Text(L10n.of(context).maybe),
             ],
           );
       }
