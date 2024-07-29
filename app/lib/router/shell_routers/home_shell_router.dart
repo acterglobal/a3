@@ -1,6 +1,6 @@
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
-import 'package:acter/features/invite_members/pages/invite_indicidual_users.dart';
+import 'package:acter/features/invite_members/pages/invite_individual_users.dart';
 import 'package:acter/features/invite_members/pages/invite_page.dart';
 import 'package:acter/features/events/pages/create_edit_event_page.dart';
 import 'package:acter/features/events/pages/events_page.dart';
