@@ -9,7 +9,7 @@ void main() {
       child: MultiTriggerAutocomplete(
         key: multiTriggerAutocompleteKey,
         autocompleteTriggers: const [],
-        textEditingController: ActerTextController(),
+        textEditingController: ActerTriggerAutoCompleteTextController(),
         focusNode: FocusNode(),
       ),
     );
@@ -63,7 +63,7 @@ void main() {
             child: MultiTriggerAutocomplete(
               debounceDuration: kDebounceDuration,
               autocompleteTriggers: [mentionTrigger],
-              textEditingController: ActerTextController(),
+              textEditingController: ActerTriggerAutoCompleteTextController(),
               focusNode: FocusNode(),
             ),
           ),
@@ -125,7 +125,8 @@ void main() {
                   optionsAlignment: alignment,
                   debounceDuration: kDebounceDuration,
                   autocompleteTriggers: [mentionTrigger],
-                  textEditingController: ActerTextController(),
+                  textEditingController:
+                      ActerTriggerAutoCompleteTextController(),
                   focusNode: FocusNode(),
                 );
               },
@@ -168,7 +169,7 @@ void main() {
             fieldViewBuilder: (context, controller, focusNode) {
               return Container(key: fieldKey);
             },
-            textEditingController: ActerTextController(),
+            textEditingController: ActerTriggerAutoCompleteTextController(),
             focusNode: FocusNode(),
           ),
         ),

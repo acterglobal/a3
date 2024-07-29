@@ -196,7 +196,7 @@ class _ChatInput extends ConsumerStatefulWidget {
 }
 
 class __ChatInputState extends ConsumerState<_ChatInput> {
-  late ActerTextController textController;
+  late ActerTriggerAutoCompleteTextController textController;
 
   @override
   void didChangeDependencies() {
@@ -216,7 +216,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           ..style = PaintingStyle.stroke,
       ),
     };
-    textController = ActerTextController(triggerStyles: triggerStyles);
+    textController =
+        ActerTriggerAutoCompleteTextController(triggerStyles: triggerStyles);
     setState(() {});
   }
 
@@ -856,7 +857,7 @@ class _FileWidget extends ConsumerWidget {
 
 class _TextInputWidget extends ConsumerStatefulWidget {
   final String roomId;
-  final ActerTextController controller;
+  final ActerTriggerAutoCompleteTextController controller;
   final Function() onSendButtonPressed;
   final bool isEncrypted;
   final void Function(bool)? onTyping;

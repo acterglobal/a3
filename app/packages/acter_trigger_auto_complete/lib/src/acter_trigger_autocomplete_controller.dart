@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 /// Extended [TextEditingController] which takes up trigger styles as optional.
 /// Styles the trigger inputs based on map for mentions, hashtags or emojis etc.
 /// If provided empty, will
-class ActerTextController extends TextEditingController {
-  ActerTextController({super.text, this.triggerStyles});
+class ActerTriggerAutoCompleteTextController extends TextEditingController {
+  ActerTriggerAutoCompleteTextController({super.text, this.triggerStyles});
 
   final Map<String, TextStyle>? triggerStyles;
   @override
@@ -30,24 +30,30 @@ class ActerTextController extends TextEditingController {
 
       for (final match in matches) {
         if (match.start > lastIndex) {
-          children.add(TextSpan(
-            text: text.substring(lastIndex, match.start),
-            style: style ?? const TextStyle(),
-          ),);
+          children.add(
+            TextSpan(
+              text: text.substring(lastIndex, match.start),
+              style: style ?? const TextStyle(),
+            ),
+          );
         }
-        children.add(TextSpan(
-          text: match.group(0),
-          style: (style ?? const TextStyle()).merge(triggerStyle),
-        ),);
+        children.add(
+          TextSpan(
+            text: match.group(0),
+            style: (style ?? const TextStyle()).merge(triggerStyle),
+          ),
+        );
         lastIndex = match.end;
       }
     }
 
     if (lastIndex < text.length) {
-      children.add(TextSpan(
-        text: text.substring(lastIndex),
-        style: style ?? const TextStyle(),
-      ),);
+      children.add(
+        TextSpan(
+          text: text.substring(lastIndex),
+          style: style ?? const TextStyle(),
+        ),
+      );
     }
 
     return TextSpan(children: children);

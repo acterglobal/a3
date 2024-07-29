@@ -12,7 +12,7 @@ import 'package:flutter_portal/flutter_portal.dart';
 ///   * [RawAutocomplete.fieldViewBuilder], which is of this type.
 typedef ActerTriggerFieldViewBuilder = Widget Function(
   BuildContext context,
-  ActerTextController textEditingController,
+  ActerTriggerAutoCompleteTextController textEditingController,
   FocusNode focusNode,
 );
 
@@ -134,7 +134,7 @@ class MultiTriggerAutocomplete extends StatefulWidget {
 
   /// The [TextEditingController] that is used for the text field.
   /// Supports [triggerStyles] to style trigger inputs.
-  final ActerTextController textEditingController;
+  final ActerTriggerAutoCompleteTextController textEditingController;
 
   /// The alignment of the options.
   ///
@@ -178,7 +178,7 @@ class MultiTriggerAutocomplete extends StatefulWidget {
 }
 
 class MultiTriggerAutocompleteState extends State<MultiTriggerAutocomplete> {
-  late ActerTextController _textEditingController;
+  late ActerTriggerAutoCompleteTextController _textEditingController;
   late FocusNode _focusNode;
 
   AutocompleteQuery? _currentQuery;
@@ -316,7 +316,9 @@ class MultiTriggerAutocompleteState extends State<MultiTriggerAutocomplete> {
   // Handle a potential change in textEditingController by properly disposing of
   // the old one and setting up the new one, if needed.
   void _updateTextEditingController(
-      ActerTextController? old, ActerTextController? current,) {
+    ActerTriggerAutoCompleteTextController? old,
+    ActerTriggerAutoCompleteTextController? current,
+  ) {
     if ((old == null && current == null) || old == current) {
       return;
     }
@@ -326,7 +328,7 @@ class MultiTriggerAutocompleteState extends State<MultiTriggerAutocomplete> {
       _textEditingController = current!;
     } else if (current == null) {
       _textEditingController.removeListener(_onChangedField);
-      _textEditingController = ActerTextController();
+      _textEditingController = ActerTriggerAutoCompleteTextController();
     } else {
       _textEditingController.removeListener(_onChangedField);
       _textEditingController = current;

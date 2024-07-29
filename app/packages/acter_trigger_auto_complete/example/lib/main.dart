@@ -66,7 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Expanded(child: ChatMessageList(messages: messages)),
           MultiTriggerAutocomplete(
             optionsAlignment: OptionsAlignment.topStart,
-            textEditingController: ActerTextController(),
+            textEditingController: ActerTriggerAutoCompleteTextController(),
             focusNode: FocusNode(),
             autocompleteTriggers: [
               AutocompleteTrigger(
