@@ -202,7 +202,6 @@ class EventItem extends StatelessWidget {
         style: Theme.of(context).textTheme.labelLarge,
         beginColor: Colors.white,
         endColor: Colors.red,
-        times: 5,
       ),
     );
   }
