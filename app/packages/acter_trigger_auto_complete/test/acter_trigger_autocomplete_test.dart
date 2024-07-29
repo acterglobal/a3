@@ -180,6 +180,39 @@ void main() {
       expect(find.byType(TextFormField), findsNothing);
     });
   });
+
+  group('Regex tests', () {
+    final regex = RegExp('\\@\\S+(?: \\S+)*(?=\\s)');
+
+    test(
+        'should match strings starting with trigger word followed by one or more non-whitespace characters',
+        () {
+      expect(regex.hasMatch('@John '), isTrue);
+      expect(regex.hasMatch('@JohnDoe '), isTrue);
+      expect(regex.hasMatch('@John_Doe '), isTrue);
+    });
+
+    test(
+        'should match strings starting with trigger word followed by multiple groups of non-whitespace characters separated by spaces',
+        () {
+      expect(regex.hasMatch('@John Doe '), isTrue);
+      expect(regex.hasMatch('@John Doe Smith '), isTrue);
+    });
+
+    test('should not match strings without trigger word', () {
+      expect(regex.hasMatch('John '), isFalse);
+      expect(regex.hasMatch('John Doe '), isFalse);
+    });
+
+    test('should not match strings with only trigger word', () {
+      expect(regex.hasMatch('@ '), isFalse);
+    });
+
+    test('should match strings with trailing non-whitespace characters', () {
+      expect(regex.hasMatch('@John '), isTrue);
+      expect(regex.hasMatch('@John Doe '), isTrue);
+    });
+  });
 }
 
 class User {
