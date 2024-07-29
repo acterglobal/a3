@@ -1064,15 +1064,15 @@
   "suggestedUsers": "Suggested Users",
   "@suggestedUsers": {},
   "joiningSuggested": "Joining suggested",
-  "@joiningSuggested" : {},
+  "@joiningSuggested": {},
   "suggestedRoomsTitle": "Suggested to join",
   "@suggestedRoomsTitle": {},
   "suggestedRoomsSubtitle": "We suggest you also join the following",
-  "@suggestedRoomsSubtitle":  {},
+  "@suggestedRoomsSubtitle": {},
   "addSuggested": "Mark as suggested",
   "@addSuggested": {},
   "removeSuggested": "Remove suggestion",
-  "@removeSuggested" : {},
+  "@removeSuggested": {},
   "superInvitations": "Super Invitations",
   "@superInvitations": {},
   "superInvites": "Super Invites",
@@ -1985,5 +1985,5 @@
   "ended": "Ended",
   "myOngoingEvents": "My Ongoing Events",
   "myUpcomingEvents": "My Upcoming Events",
-  "happening": "Happening"
+  "live": "Live"
 }

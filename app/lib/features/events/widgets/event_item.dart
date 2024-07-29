@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/events/event_utils/event_utils.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_date_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
@@ -39,27 +40,34 @@ class EventItem extends StatelessWidget {
           pathParameters: {'calendarId': event.eventId().toString()},
         );
       },
-      child: Card(
-        margin: margin,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            EventDateWidget(calendarEvent: event),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildEventTitle(context),
-                  Consumer(builder: _buildEventSubtitle),
-                ],
-              ),
+      child: Stack(
+        alignment: Alignment.topLeft,
+        children: [
+          Card(
+            margin: margin,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                EventDateWidget(calendarEvent: event),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildEventTitle(context),
+                      Consumer(builder: _buildEventSubtitle),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 10),
+                if (isShowRsvp) _buildRsvpStatus(context),
+                const SizedBox(width: 10),
+              ],
             ),
-            const SizedBox(width: 10),
-            if (isShowRsvp) _buildRsvpStatus(context),
-            const SizedBox(width: 10),
-          ],
-        ),
+          ),
+          if (getEventType(event) == EventFilters.ongoing)
+            _buildHappeningIndication(context),
+        ],
       ),
     );
   }
@@ -98,7 +106,7 @@ class EventItem extends StatelessWidget {
         return myRsvpStatus.when(
           data: (data) {
             final status = data.statusStr(); // kebab-case
-            return Chip(label: Text(_getStatusLabel(context, status)));
+            return _getRsvpStatus(context, status) ?? const SizedBox.shrink();
           },
           error: (e, st) => Chip(
             label: Text(
@@ -114,17 +122,49 @@ class EventItem extends StatelessWidget {
     );
   }
 
-  String _getStatusLabel(BuildContext context, String? status) {
+  Widget? _getRsvpStatus(BuildContext context, String? status) {
     if (status != null) {
       switch (status) {
         case 'yes':
-          return L10n.of(context).going;
+          return Row(
+            children: [
+              const Icon(Icons.check_circle, color: Colors.green),
+              const SizedBox(width: 4),
+              Text(L10n.of(context).going),
+            ],
+          );
         case 'no':
-          return L10n.of(context).notGoing;
-        case 'maybe':
-          return L10n.of(context).maybe;
+          return Row(
+            children: [
+              const Icon(Icons.cancel, color: Colors.red),
+              const SizedBox(width: 4),
+              Text(L10n.of(context).notGoing),
+            ],
+          );
+        default:
+          return Row(
+            children: [
+              const Icon(Icons.question_mark_rounded, color: Colors.grey),
+              const SizedBox(width: 4),
+              Text(L10n.of(context).maybe),
+            ],
+          );
       }
     }
-    return L10n.of(context).pending;
+    return null;
+  }
+
+  Widget _buildHappeningIndication(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: const BoxDecoration(
+        color: Colors.red,
+        borderRadius: BorderRadius.all(Radius.circular(100)),
+      ),
+      child: Text(
+        L10n.of(context).live,
+        style: Theme.of(context).textTheme.labelLarge,
+      ),
+    );
   }
 }
