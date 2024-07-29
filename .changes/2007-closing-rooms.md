@@ -1,0 +1,1 @@
+- You can now easily "close" chats and spaces as an admin.
