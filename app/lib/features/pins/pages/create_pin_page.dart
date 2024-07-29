@@ -8,9 +8,9 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class CreatePinPage extends ConsumerStatefulWidget {
   final String? initialSelectedSpace;
@@ -188,7 +188,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
         return;
       }
       EasyLoading.showToast(L10n.of(context).pinCreatedSuccessfully);
-      Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
+      Navigator.pop(context); // pop the create sheet
       context.pushNamed(
         Routes.pin.name,
         pathParameters: {'pinId': pinId.toString()},

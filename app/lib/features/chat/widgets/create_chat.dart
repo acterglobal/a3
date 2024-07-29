@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/features/chat/actions/create_chat.dart';
 import 'package:acter/common/widgets/user_builder.dart';
 import 'package:acter/features/invite_members/providers/invite_providers.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -73,7 +73,7 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return isLargeScreen(context)
+    return context.isLargeScreen
         ? Container(
             width: size.width * 0.5,
             decoration: BoxDecoration(
@@ -118,61 +118,31 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
     String? description,
     List<String> selectedUsers,
   ) async {
-    EasyLoading.show(status: L10n.of(context).creatingChat);
-    try {
-      final sdk = await ref.read(sdkProvider.future);
-      final config = sdk.api.newConvoSettingsBuilder();
-      // add the users
-      for (final userId in selectedUsers) {
-        config.addInvitee(userId);
+    final roomCreated = L10n.of(context).chatRoomCreated;
+    final roomIdStr = await createChat(
+      context,
+      ref,
+      name: convoName,
+      selectedUsers: selectedUsers,
+      parentId: ref.read(selectedSpaceIdProvider),
+      description: description,
+      avatarUri: ref.read(_avatarProvider),
+    );
+    if (roomIdStr != null) {
+      try {
+        final convo =
+            await ref.read(alwaysClientProvider).convoWithRetry(roomIdStr, 120);
+        EasyLoading.showToast(roomCreated);
+        return convo;
+      } catch (error, stack) {
+        _log.severe(
+          'Room $roomIdStr created but fetching failed',
+          error,
+          stack,
+        );
       }
-
-      if (convoName != null && convoName.isNotEmpty) {
-        // set the name
-        config.setName(convoName);
-      }
-
-      if (description != null && description.isNotEmpty) {
-        // and an optional description
-        config.setTopic(description);
-      }
-
-      final avatarUri = ref.read(_avatarProvider);
-      if (avatarUri.isNotEmpty) {
-        config.setAvatarUri(avatarUri); // convo creation will upload it
-      }
-
-      final parentId = ref.read(selectedSpaceIdProvider);
-      if (parentId != null) {
-        config.setParent(parentId);
-      }
-      final client = ref.read(alwaysClientProvider);
-      final roomIdStr = (await client.createConvo(config.build())).toString();
-      // add room to child of space (if given)
-      if (parentId != null) {
-        final space = await ref.read(spaceProvider(parentId).future);
-        await space.addChildRoom(roomIdStr);
-        // spaceRelations come from the server and must be manually invalidated
-        ref.invalidate(spaceRelationsOverviewProvider(parentId));
-      }
-      final convo = await client.convoWithRetry(roomIdStr, 120);
-      if (!mounted) {
-        EasyLoading.dismiss();
-        return null;
-      }
-      EasyLoading.showToast(L10n.of(context).chatRoomCreated);
-      return convo;
-    } catch (e) {
-      if (!mounted) {
-        EasyLoading.dismiss();
-        return null;
-      }
-      EasyLoading.showError(
-        L10n.of(context).errorCreatingChat(e),
-        duration: const Duration(seconds: 3),
-      );
-      return null;
     }
+    return null;
   }
 }
 
@@ -445,7 +415,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
         final convo = await widget.onCreateConvo(null, null, userIds);
         EasyLoading.dismiss();
         if (!mounted) return;
-        Navigator.of(context).pop();
+        Navigator.pop(context);
         if (convo == null) return;
         context.pushNamed(
           Routes.chatroom.name,
@@ -459,7 +429,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
       String? id = checkUserDMExists(othersUserId, client);
       if (id != null) {
         EasyLoading.dismiss();
-        Navigator.of(context).pop();
+        Navigator.pop(context);
         context.pushNamed(
           Routes.chatroom.name,
           pathParameters: {'roomId': id},
@@ -470,7 +440,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
       final convo = await widget.onCreateConvo(null, null, [othersUserId]);
       EasyLoading.dismiss();
       if (!mounted) return;
-      Navigator.of(context).pop();
+      Navigator.pop(context);
       if (convo == null) return;
       context.pushNamed(
         Routes.chatroom.name,
@@ -636,7 +606,7 @@ class _CreateRoomFormWidgetConsumerState
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
               OutlinedButton(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () => Navigator.pop(context),
                 child: Text(L10n.of(context).cancel),
               ),
               const SizedBox(width: 10),

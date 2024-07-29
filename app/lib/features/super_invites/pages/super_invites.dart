@@ -21,7 +21,6 @@ class SuperInvitesPage extends ConsumerWidget {
       sidebar: const SettingsPage(),
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: const AppBarTheme().backgroundColor,
           elevation: 0.0,
           title: Text(L10n.of(context).superInvites),
           centerTitle: true,
@@ -54,6 +53,10 @@ class SuperInvitesPage extends ConsumerWidget {
                       itemBuilder: (BuildContext context, int index) {
                         final token = tokens[index];
                         final tokenStr = token.token().toString();
+                        final firstRoom = token
+                            .rooms()
+                            .map((t) => t.toDartString())
+                            .firstOrNull;
                         return Card(
                           key: Key('edit-token-$tokenStr'),
                           margin: const EdgeInsets.all(5),
@@ -71,6 +74,18 @@ class SuperInvitesPage extends ConsumerWidget {
                                 extra: token,
                               );
                             },
+                            trailing: firstRoom != null
+                                ? OutlinedButton(
+                                    onPressed: () => context.pushNamed(
+                                      Routes.shareInviteCode.name,
+                                      queryParameters: {
+                                        'inviteCode': tokenStr,
+                                        'roomId': firstRoom,
+                                      },
+                                    ),
+                                    child: Text(L10n.of(context).share),
+                                  )
+                                : null,
                           ),
                         );
                       },

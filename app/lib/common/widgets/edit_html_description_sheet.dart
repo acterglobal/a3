@@ -5,7 +5,6 @@ import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:go_router/go_router.dart';
 
 void showEditHtmlDescriptionBottomSheet({
   required BuildContext context,
@@ -93,7 +92,7 @@ class _EditHtmlDescriptionSheetState
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               OutlinedButton(
-                onPressed: () => context.pop(),
+                onPressed: () => Navigator.pop(context),
                 child: Text(L10n.of(context).cancel),
               ),
               const SizedBox(width: 20),
@@ -104,7 +103,7 @@ class _EditHtmlDescriptionSheetState
                   final plainDescription = textEditorState.intoMarkdown();
                   if (htmlBodyDescription == widget.descriptionHtmlValue ||
                       plainDescription == widget.descriptionMarkdownValue) {
-                    context.pop();
+                    Navigator.pop(context);
                     return;
                   }
                   widget.onSave(htmlBodyDescription, plainDescription);

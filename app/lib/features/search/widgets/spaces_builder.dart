@@ -78,7 +78,7 @@ class SpacesBuilder extends ConsumerWidget {
                     ),
                   ),
                   onTap: () {
-                    if (context.canPop()) context.pop();
+                    Navigator.pop(context);
                     goToSpace(context, e.navigationTargetId);
                   },
                 ),

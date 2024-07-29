@@ -1,4 +1,5 @@
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
+import 'package:acter/common/utils/routes.dart';
 
 import 'package:acter/features/auth/providers/auth_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -11,7 +12,7 @@ import 'package:go_router/go_router.dart';
 void nukeConfirmationDialog(BuildContext context, WidgetRef ref) {
   showAdaptiveDialog(
     context: context,
-    builder: (BuildContext ctx) {
+    builder: (BuildContext context) {
       return AlertDialog(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,14 +44,18 @@ void nukeConfirmationDialog(BuildContext context, WidgetRef ref) {
         actionsAlignment: MainAxisAlignment.spaceEvenly,
         actions: <Widget>[
           OutlinedButton(
-            onPressed: () => ctx.pop(),
+            onPressed: () => Navigator.pop(context),
             child: const Text(
               'No',
             ),
           ),
           ActerDangerActionButton(
             onPressed: () async {
-              await ref.read(authStateProvider.notifier).nuke(ctx);
+              await ref.read(authStateProvider.notifier).nuke();
+
+              if (context.mounted) {
+                context.goNamed(Routes.main.name);
+              }
             },
             child: const Text(
               'Yihaaaa',

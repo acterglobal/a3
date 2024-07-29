@@ -5282,6 +5282,94 @@ class Api {
     return tmp7;
   }
 
+  bool? __roomUserHasSeenSuggestedFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _roomUserHasSeenSuggestedFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  bool? __roomSetUserHasSeenSuggestedFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _roomSetUserHasSeenSuggestedFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   RoomMessage? __timelineStreamGetMessageFuturePoll(
     int boxed,
     int postCobject,
@@ -20071,6 +20159,30 @@ class Api {
         int,
         int,
       )>();
+  late final _roomUserHasSeenSuggestedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__Room_user_has_seen_suggested");
+
+  late final _roomUserHasSeenSuggested =
+      _roomUserHasSeenSuggestedPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _roomSetUserHasSeenSuggestedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+            ffi.Uint8,
+          )>>("__Room_set_user_has_seen_suggested");
+
+  late final _roomSetUserHasSeenSuggested =
+      _roomSetUserHasSeenSuggestedPtr.asFunction<
+          int Function(
+            int,
+            int,
+          )>();
   late final _convoDiffActionPtr = _lookup<
       ffi.NativeFunction<
           _ConvoDiffActionReturn Function(
@@ -23128,6 +23240,17 @@ class Api {
           int Function(
             int,
           )>();
+  late final _spaceHierarchyRoomInfoSuggestedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.IntPtr,
+          )>>("__SpaceHierarchyRoomInfo_suggested");
+
+  late final _spaceHierarchyRoomInfoSuggested =
+      _spaceHierarchyRoomInfoSuggestedPtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _spaceHierarchyRoomInfoGetAvatarPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -23854,10 +23977,12 @@ class Api {
             ffi.IntPtr,
             ffi.UintPtr,
             ffi.UintPtr,
+            ffi.Uint8,
           )>>("__Space_add_child_room");
 
   late final _spaceAddChildRoom = _spaceAddChildRoomPtr.asFunction<
       int Function(
+        int,
         int,
         int,
         int,
@@ -28916,6 +29041,36 @@ class Api {
         int,
         int,
       )>();
+  late final _roomUserHasSeenSuggestedFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomUserHasSeenSuggestedFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__Room_user_has_seen_suggested_future_poll");
+
+  late final _roomUserHasSeenSuggestedFuturePoll =
+      _roomUserHasSeenSuggestedFuturePollPtr.asFunction<
+          _RoomUserHasSeenSuggestedFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _roomSetUserHasSeenSuggestedFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomSetUserHasSeenSuggestedFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__Room_set_user_has_seen_suggested_future_poll");
+
+  late final _roomSetUserHasSeenSuggestedFuturePoll =
+      _roomSetUserHasSeenSuggestedFuturePollPtr.asFunction<
+          _RoomSetUserHasSeenSuggestedFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _timelineStreamGetMessageFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _TimelineStreamGetMessageFuturePollReturn Function(
@@ -41601,6 +41756,47 @@ class Room {
     return tmp6;
   }
 
+  /// whether or not the user has already seen the suggested
+  /// children
+  Future<bool> userHasSeenSuggested() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomUserHasSeenSuggested(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__Room_user_has_seen_suggested_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__roomUserHasSeenSuggestedFuturePoll);
+    return tmp2;
+  }
+
+  /// Set the value of `user_has_seen_suggested` for this room
+  Future<bool> setUserHasSeenSuggested(
+    bool newValue,
+  ) {
+    final tmp1 = newValue;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    final tmp3 = _api._roomSetUserHasSeenSuggested(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 =
+        _Box(_api, tmp5_0, "__Room_set_user_has_seen_suggested_future_drop");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 =
+        _nativeFuture(tmp5_1, _api.__roomSetUserHasSeenSuggestedFuturePoll);
+    return tmp4;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -47166,6 +47362,18 @@ class SpaceHierarchyRoomInfo {
     return tmp2;
   }
 
+  /// is this a suggested room?
+  bool suggested() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceHierarchyRoomInfoSuggested(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
   /// get the binary data of avatar
   /// if thumb size is given, avatar thumbnail is returned
   /// if thumb size is not given, avatar file is returned
@@ -48638,14 +48846,18 @@ class Space {
   }
 
   /// add the following as a child space and return event id of that event
+  /// flag as suggested or not
   Future<String> addChildRoom(
     String roomId,
+    bool suggested,
   ) {
     final tmp1 = roomId;
+    final tmp5 = suggested;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
     var tmp4 = 0;
+    var tmp6 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -48655,18 +48867,20 @@ class Space {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._spaceAddChildRoom(
+    tmp6 = tmp5 ? 1 : 0;
+    final tmp7 = _api._spaceAddChildRoom(
       tmp0,
       tmp2,
       tmp3,
       tmp4,
+      tmp6,
     );
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "__Space_add_child_room_future_drop");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(tmp7_1, _api.__spaceAddChildRoomFuturePoll);
-    return tmp6;
+    final tmp9 = tmp7;
+    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+    final tmp9_1 = _Box(_api, tmp9_0, "__Space_add_child_room_future_drop");
+    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
+    final tmp8 = _nativeFuture(tmp9_1, _api.__spaceAddChildRoomFuturePoll);
+    return tmp8;
   }
 
   /// remove a child space
@@ -61124,6 +61338,36 @@ class _RoomSetNameFuturePollReturn extends ffi.Struct {
   @ffi.UintPtr()
   external int arg4;
   @ffi.IntPtr()
+  external int arg5;
+}
+
+class _RoomUserHasSeenSuggestedFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _RoomSetUserHasSeenSuggestedFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.Uint8()
   external int arg5;
 }
 

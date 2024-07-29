@@ -9,9 +9,9 @@ import 'package:acter/features/news/widgets/news_post_editor/post_attachment_opt
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:cross_file_image/cross_file_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class NewsSlideOptions extends ConsumerStatefulWidget {
   const NewsSlideOptions({super.key});
@@ -191,7 +191,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
           topLeft: Radius.circular(20),
         ),
       ),
-      builder: (ctx) => PostAttachmentOptions(
+      builder: (context) => PostAttachmentOptions(
         onTapAddText: () => NewsUtils.addTextSlide(ref),
         onTapImage: () async => await NewsUtils.addImageSlide(ref),
         onTapVideo: () async => await NewsUtils.addVideoSlide(ref),

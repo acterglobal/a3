@@ -1,3 +1,5 @@
+import 'package:acter/common/actions/redact_content.dart';
+import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
@@ -5,9 +7,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
-import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/render_html.dart';
-import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/events/model/keys.dart';
@@ -134,21 +134,16 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       actions.addAll([
         PopupMenuItem(
           key: EventsKeys.eventDeleteBtn,
-          onTap: () => showAdaptiveDialog(
-            context: context,
-            builder: (context) => RedactContentWidget(
-              removeBtnKey: EventsKeys.eventRemoveBtn,
-              title: L10n.of(context).removeThisPost,
-              eventId: event.eventId().toString(),
-              onSuccess: () {
-                if (context.canPop()) {
-                  Navigator.of(context, rootNavigator: true).pop();
-                }
-              },
-              senderId: event.sender().toString(),
-              roomId: roomId,
-              isSpace: true,
-            ),
+          onTap: () => openRedactContentDialog(
+            context,
+            removeBtnKey: EventsKeys.eventRemoveBtn,
+            title: L10n.of(context).removeThisPost,
+            eventId: event.eventId().toString(),
+            onSuccess: () {
+              Navigator.pop(context);
+            },
+            roomId: roomId,
+            isSpace: true,
           ),
           child: Row(
             children: <Widget>[
@@ -167,16 +162,14 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     //Report Event Action
     actions.add(
       PopupMenuItem(
-        onTap: () => showAdaptiveDialog(
-          context: context,
-          builder: (ctx) => ReportContentWidget(
-            title: L10n.of(context).reportThisEvent,
-            description: L10n.of(context).reportThisContent,
-            eventId: widget.calendarId,
-            roomId: event.roomIdStr(),
-            senderId: event.sender().toString(),
-            isSpace: true,
-          ),
+        onTap: () => openReportContentDialog(
+          context,
+          title: L10n.of(context).reportThisEvent,
+          description: L10n.of(context).reportThisContent,
+          eventId: widget.calendarId,
+          roomId: event.roomIdStr(),
+          senderId: event.sender().toString(),
+          isSpace: true,
         ),
         child: Row(
           children: <Widget>[
@@ -193,7 +186,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
 
     return PopupMenuButton(
       key: EventsKeys.appbarMenuActionBtn,
-      itemBuilder: (ctx) => actions,
+      itemBuilder: (context) => actions,
     );
   }
 
@@ -201,7 +194,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     return SliverToBoxAdapter(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        key: Key(widget.calendarId),
+        key: Key('cal-event-${widget.calendarId}'),
         children: [
           const SizedBox(height: 20),
           _buildEventBasicDetails(calendarEvent),
@@ -311,7 +304,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
 
       EasyLoading.dismiss();
       if (!mounted) return;
-      context.pop();
+      Navigator.pop(context);
     } catch (e, st) {
       _log.severe('Failed to edit event name', e, st);
       EasyLoading.dismiss();
@@ -413,7 +406,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   Widget _buildShareAction(CalendarEvent calendarEvent) {
     return PopupMenuButton(
       icon: const Icon(Icons.share),
-      itemBuilder: (ctx) => [
+      itemBuilder: (context) => [
         PopupMenuItem(
           onTap: () => onShareEvent(calendarEvent),
           child: Row(
@@ -664,7 +657,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       updateBuilder.descriptionHtml(plainDescription, htmlBodyDescription);
       await updateBuilder.send();
       EasyLoading.dismiss();
-      if (mounted) context.pop();
+      if (mounted) Navigator.pop(context);
     } catch (e, st) {
       _log.severe('Failed to update event description', e, st);
       EasyLoading.dismiss();

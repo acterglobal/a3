@@ -146,7 +146,7 @@ class _QuickJumpState extends ConsumerState<QuickJump> {
   }
 
   void routeTo(Routes route) {
-    if (context.canPop()) context.pop();
+    Navigator.pop(context);
     context.pushNamed(route.name);
   }
 

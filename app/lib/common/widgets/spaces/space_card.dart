@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 typedef SubtitleFn = Widget? Function(Space);
 
 class SpaceCard extends ConsumerWidget {
-  final Space space;
+  final String roomId;
   final SubtitleFn? subtitleFn;
   final double avatarSize;
 
@@ -79,9 +79,13 @@ class SpaceCard extends ConsumerWidget {
   ///
   final bool showParents;
 
+  /// Whether or not to render the suggested Icon
+  ///
+  final bool showSuggestedMark;
+
   const SpaceCard({
     super.key,
-    required this.space,
+    required this.roomId,
     this.subtitleFn,
     this.onTap,
     this.onLongPress,
@@ -95,12 +99,13 @@ class SpaceCard extends ConsumerWidget {
     this.shape,
     this.withBorder = true,
     this.showParents = true,
+    this.showSuggestedMark = false,
     this.trailing,
   });
 
   const SpaceCard.small({
     super.key,
-    required this.space,
+    required this.roomId,
     this.subtitleFn,
     this.onTap,
     this.onLongPress,
@@ -114,14 +119,13 @@ class SpaceCard extends ConsumerWidget {
     this.shape,
     this.withBorder = false,
     this.showParents = false,
+    this.showSuggestedMark = false,
     this.trailing,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final roomId = space.getRoomIdStr();
     final avatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
-    final subtitle = subtitleFn != null ? subtitleFn!(space) : null;
     final parents = ref.watch(parentAvatarInfosProvider(roomId)).valueOrNull;
 
     return SpaceWithAvatarInfoCard(
@@ -129,7 +133,6 @@ class SpaceCard extends ConsumerWidget {
       roomId: roomId,
       avatarInfo: avatarInfo,
       parents: parents,
-      subtitle: subtitle,
       onTap: onTap,
       onFocusChange: onFocusChange,
       onLongPress: onLongPress,
@@ -137,6 +140,7 @@ class SpaceCard extends ConsumerWidget {
       contentPadding: contentPadding,
       shape: shape,
       showParents: showParents,
+      showSuggestedMark: showSuggestedMark,
       trailing: trailing,
     );
   }

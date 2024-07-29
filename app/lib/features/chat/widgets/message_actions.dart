@@ -2,7 +2,7 @@ import 'package:acter/common/providers/common_providers.dart';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
-import 'package:acter/common/widgets/report_content.dart';
+import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -25,7 +25,7 @@ class MessageActions extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final message = ref.watch(
-      chatInputProvider(roomId).select((state) => state.selectedMessage),
+      chatInputProvider.select((state) => state.selectedMessage),
     );
     if (message == null) {
       // shouldn't ever happen in reality
@@ -54,9 +54,8 @@ class MessageActions extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           makeMenuItem(
-            pressed: () => ref
-                .read(chatInputProvider(roomId).notifier)
-                .setReplyToMessage(message),
+            pressed: () =>
+                ref.read(chatInputProvider.notifier).setReplyToMessage(message),
             text: Text(L10n.of(context).reply),
             icon: const Icon(Icons.reply_rounded, size: 18),
           ),
@@ -135,19 +134,17 @@ class MessageActions extends ConsumerWidget {
       ClipboardData(text: msg),
     );
     EasyLoading.showToast(L10n.of(context).messageCopiedToClipboard);
-    ref.read(chatInputProvider(roomId).notifier).unsetActions();
+    ref.read(chatInputProvider.notifier).unsetActions();
   }
 
   void onReportMessage(BuildContext context, Message message, String roomId) {
-    showAdaptiveDialog(
-      context: context,
-      builder: (context) => ReportContentWidget(
-        title: L10n.of(context).reportThisMessage,
-        description: L10n.of(context).reportMessageContent,
-        senderId: message.author.id,
-        roomId: roomId,
-        eventId: message.id,
-      ),
+    openReportContentDialog(
+      context,
+      title: L10n.of(context).reportThisMessage,
+      description: L10n.of(context).reportMessageContent,
+      senderId: message.author.id,
+      roomId: roomId,
+      eventId: message.id,
     );
   }
 
@@ -157,14 +154,14 @@ class MessageActions extends ConsumerWidget {
     String messageId,
     String roomId,
   ) {
-    final chatInputNotifier = ref.watch(chatInputProvider(roomId).notifier);
+    final chatInputNotifier = ref.watch(chatInputProvider.notifier);
     showAdaptiveDialog(
       context: context,
       builder: (context) => DefaultDialog(
         title: Text(L10n.of(context).areYouSureYouWantToDeleteThisMessage),
         actions: <Widget>[
           OutlinedButton(
-            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+            onPressed: () => Navigator.pop(context),
             child: Text(L10n.of(context).no),
           ),
           ActerPrimaryActionButton(
@@ -178,12 +175,12 @@ class MessageActions extends ConsumerWidget {
                 );
                 chatInputNotifier.unsetSelectedMessage();
                 if (context.mounted) {
-                  Navigator.of(context, rootNavigator: true).pop();
+                  Navigator.pop(context);
                 }
               } catch (error, stackTrace) {
                 _log.severe('Redacting message failed', error, stackTrace);
                 if (context.mounted) {
-                  Navigator.of(context, rootNavigator: true).pop();
+                  Navigator.pop(context);
                 }
                 EasyLoading.showError(error.toString());
               }
@@ -201,6 +198,6 @@ class MessageActions extends ConsumerWidget {
     String roomId,
     Message message,
   ) {
-    ref.read(chatInputProvider(roomId).notifier).setEditMessage(message);
+    ref.read(chatInputProvider.notifier).setEditMessage(message);
   }
 }

@@ -6,6 +6,7 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/main.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/bug_report/const.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -48,6 +49,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
       sidebar: const SettingsPage(),
       child: Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: !context.isLargeScreen,
           title: Text(
             '${L10n.of(context).acterApp} ${L10n.of(context).info}',
             style: Theme.of(context).textTheme.titleLarge,

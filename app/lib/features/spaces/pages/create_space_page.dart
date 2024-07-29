@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:acter/common/providers/sdk_provider.dart';
+
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -8,15 +8,14 @@ import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/common/widgets/visibility/room_visibility_item.dart';
 import 'package:acter/common/widgets/visibility/visibility_selector_drawer.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/spaces/actions/create_space.dart';
 import 'package:acter/features/spaces/model/keys.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 // user selected visibility provider
 final _selectedVisibilityProvider =
@@ -38,6 +37,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   final TextEditingController _spaceDescriptionController =
       TextEditingController();
   File? spaceAvatar;
+  bool createDefaultChat = false;
 
   @override
   void initState() {
@@ -45,6 +45,11 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
       final parentNotifier = ref.read(selectedSpaceIdProvider.notifier);
       parentNotifier.state = widget.initialParentsSpaceId;
+      setState(() {
+        // create default chats for highest level spaces, off by default
+        // for subspaces.
+        createDefaultChat = widget.initialParentsSpaceId == null;
+      });
 
       //Set default visibility based on the parent space selection
       // PRIVATE : If no parent is selected
@@ -101,6 +106,8 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
               _buildSpaceNameTextField(),
               const SizedBox(height: 20),
               _buildSpaceDescriptionTextField(),
+              const SizedBox(height: 10),
+              _buildDefaultChatField(),
               const SizedBox(height: 20),
               _buildParentSpace(),
               const SizedBox(height: 10),
@@ -172,6 +179,27 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     );
   }
 
+  Widget _buildDefaultChatField() {
+    return InkWell(
+      onTap: () {
+        setState(() {
+          createDefaultChat = !createDefaultChat;
+        });
+      },
+      child: Row(
+        children: [
+          Switch(
+            value: createDefaultChat,
+            onChanged: (newValue) => setState(() {
+              createDefaultChat = newValue;
+            }),
+          ),
+          Text(L10n.of(context).createDefaultChat),
+        ],
+      ),
+    );
+  }
+
   Widget _buildSpaceDescriptionTextField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -194,6 +222,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       mandatory: false,
       title: L10n.of(context).parentSpace,
       selectTitle: L10n.of(context).selectParentSpace,
+      emptyText: L10n.of(context).optionalParentSpace,
     );
   }
 
@@ -271,7 +300,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         OutlinedButton(
-          onPressed: () => context.pop(),
+          onPressed: () => Navigator.pop(context),
           child: Text(L10n.of(context).cancel),
         ),
         const SizedBox(width: 20),
@@ -285,49 +314,21 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   }
 
   Future<void> _handleCreateSpace() async {
-    EasyLoading.show(status: L10n.of(context).creatingSpace);
-    try {
-      final sdk = await ref.read(sdkProvider.future);
-      final config = sdk.api.newSpaceSettingsBuilder();
-      config.setName(_spaceNameController.text.trim());
-      if (_spaceDescriptionController.text.isNotEmpty) {
-        config.setTopic(_spaceDescriptionController.text.trim());
-      }
-      if (spaceAvatar != null && spaceAvatar!.path.isNotEmpty) {
-        // space creation will upload it
-        config.setAvatarUri(spaceAvatar!.path);
-      }
-      final parentRoomId = ref.read(selectedSpaceIdProvider);
-      if (parentRoomId != null) {
-        config.setParent(parentRoomId);
-      }
-      final roomVisibility = ref.read(_selectedVisibilityProvider);
-      if (roomVisibility != null) {
-        config.setVisibility(roomVisibility.name);
-      }
-      final client = ref.read(alwaysClientProvider);
-      final roomId = await client.createActerSpace(config.build());
-      if (parentRoomId != null) {
-        final space = await ref.read(spaceProvider(parentRoomId).future);
-        await space.addChildRoom(roomId.toString());
-        // spaceRelations come from the server and must be manually invalidated
-        ref.invalidate(spaceRelationsOverviewProvider(parentRoomId));
-      }
-
-      EasyLoading.dismiss();
-      if (!mounted) return;
+    final newRoomId = await createSpace(
+      context,
+      ref,
+      name: _spaceNameController.text.trim(),
+      description: _spaceDescriptionController.text.trim(),
+      spaceAvatar: spaceAvatar,
+      createDefaultChat: createDefaultChat,
+      parentRoomId: ref.read(selectedSpaceIdProvider),
+      roomVisibility: ref.read(_selectedVisibilityProvider),
+    );
+    if (!mounted) return;
+    if (newRoomId != null) {
       context.replaceNamed(
         Routes.spaceInvite.name,
-        pathParameters: {'spaceId': roomId.toString()},
-      );
-    } catch (err) {
-      if (!context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-      EasyLoading.showError(
-        L10n.of(context).creatingSpaceFailed(err),
-        duration: const Duration(seconds: 3),
+        pathParameters: {'spaceId': newRoomId},
       );
     }
   }

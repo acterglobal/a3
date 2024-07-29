@@ -103,7 +103,7 @@ class EventItem extends StatelessWidget {
 
   Widget _buildRsvpStatus(BuildContext context) {
     return Consumer(
-      builder: (ctx, ref, child) {
+      builder: (context, ref, child) {
         final eventId = event.eventId().toString();
         final myRsvpStatus = ref.watch(myRsvpStatusProvider(eventId));
         return myRsvpStatus.when(

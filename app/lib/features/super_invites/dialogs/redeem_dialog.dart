@@ -4,10 +4,10 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:skeletonizer/skeletonizer.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 const redeemConfirmKey = Key('super-invite-redeem-confirm-btn');
 const redeemInfoKey = Key('super-invites-redeem-info');
@@ -76,8 +76,7 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
       actionsAlignment: MainAxisAlignment.spaceEvenly,
       actions: <Widget>[
         OutlinedButton(
-          onPressed: () =>
-              Navigator.of(context, rootNavigator: true).pop(false),
+          onPressed: () => Navigator.pop(context, false),
           child: Text(L10n.of(context).cancel),
         ),
         ActerPrimaryActionButton(
@@ -153,7 +152,7 @@ Future<bool> showReedemTokenDialog(
 ) async {
   return await showDialog(
     context: context,
-    builder: (BuildContext ctx) =>
+    builder: (BuildContext context) =>
         _ShowRedeemTokenDialog(token: superInviteToken),
   );
 }

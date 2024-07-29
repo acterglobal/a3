@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/rooms.dart';
+import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -113,7 +113,7 @@ UserMentionMessageData parseUserMentionMessage(
     // Replace displayName with @displayName
     msg = msg.replaceAll(
       aTagElement.outerHtml,
-      '@$displayName',
+      displayName,
     );
   }
   return UserMentionMessageData(
@@ -193,7 +193,7 @@ void askToJoinRoom(
         topLeft: Radius.circular(20),
       ),
     ),
-    builder: (ctx) => Container(
+    builder: (context) => Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -207,7 +207,7 @@ void askToJoinRoom(
           const SizedBox(height: 20),
           ActerPrimaryActionButton(
             onPressed: () async {
-              Navigator.of(context).pop();
+              Navigator.pop(context);
               final server = roomId.split(':').last;
               await joinRoom(
                 context,

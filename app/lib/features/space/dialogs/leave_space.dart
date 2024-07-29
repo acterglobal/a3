@@ -3,9 +3,9 @@ import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
@@ -21,7 +21,7 @@ void showLeaveSpaceDialog(
   showAdaptiveDialog(
     barrierDismissible: true,
     context: context,
-    useRootNavigator: true,
+    useRootNavigator: false,
     builder: (context) => DefaultDialog(
       title: Column(
         children: <Widget>[
@@ -38,7 +38,7 @@ void showLeaveSpaceDialog(
       ),
       actions: <Widget>[
         OutlinedButton(
-          onPressed: () => context.pop(),
+          onPressed: () => Navigator.pop(context),
           child: Text(L10n.of(context).noIStay),
         ),
         ActerDangerActionButton(
@@ -53,7 +53,7 @@ void showLeaveSpaceDialog(
                 return;
               }
               EasyLoading.showToast(lang.leavingSpaceSuccessful);
-              context.pop();
+              Navigator.pop(context);
               context.goNamed(Routes.dashboard.name);
             } catch (error, stack) {
               _log.severe('Error leaving space', error, stack);

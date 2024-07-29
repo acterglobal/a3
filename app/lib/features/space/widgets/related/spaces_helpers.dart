@@ -1,13 +1,15 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/widgets/room/room_hierarchy_options_menu.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter/common/widgets/spaces/space_hierarchy_card.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:skeletonizer/skeletonizer.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
-final _log = Logger('a3::space::widget::related_spaces::helpers');
+final _log = Logger('a3::space::widget::related::spaces_helpers');
 
 List<Widget>? _renderKnownSubspaces(
   BuildContext context,
@@ -30,11 +32,18 @@ List<Widget>? _renderKnownSubspaces(
       ),
       shrinkWrap: true,
       itemBuilder: (context, index) {
-        final space = spaces.knownSubspaces[index];
+        final roomId = spaces.knownSubspaces[index];
+        final isSuggested = spaces.suggestedIds.contains(roomId);
         return SpaceCard(
-          key: Key('subspace-list-item-${space.getRoomIdStr()}'),
-          space: space,
+          key: Key('subspace-list-item-$roomId'),
+          roomId: roomId,
           showParents: false,
+          showSuggestedMark: isSuggested,
+          trailing: RoomHierarchyOptionsMenu(
+            childId: roomId,
+            parentId: spaceIdOrAlias,
+            isSuggested: isSuggested,
+          ),
         );
       },
     ),
@@ -57,9 +66,14 @@ Widget renderMoreSubspaces(
         return const SizedBox.shrink();
       }
 
+      int itemCount = spaces.length;
+      if (maxLength != null && maxLength < itemCount) {
+        itemCount = maxLength;
+      }
+
       return GridView.builder(
         padding: padding,
-        itemCount: maxLength ?? spaces.length,
+        itemCount: itemCount,
         physics: const NeverScrollableScrollPhysics(),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 1,
@@ -73,6 +87,7 @@ Widget renderMoreSubspaces(
             key: Key('subspace-list-item-${item.roomIdStr()}'),
             roomInfo: item,
             parentId: spaceIdOrAlias,
+            showIconIfSuggested: true,
           );
         },
       );
@@ -104,7 +119,11 @@ Widget? renderSubSpaces(
   int crossAxisCount = 1,
   Widget? Function()? titleBuilder,
 }) {
-  final canLinkSpace = spaces.membership?.canString('CanLinkSpaces') ?? false;
+  final canLinkSpace = ref
+          .watch(roomMembershipProvider(spaceIdOrAlias))
+          .valueOrNull
+          ?.canString('CanLinkSpaces') ??
+      false;
 
   final knownSubspaces = _renderKnownSubspaces(
     context,
@@ -114,7 +133,7 @@ Widget? renderSubSpaces(
     // crossAxisCount: crossAxisCount,
   );
 
-  final moreSubspaces = spaces.hasMoreSubspaces
+  final moreSubspaces = spaces.hasMore
       ? renderMoreSubspaces(
           context,
           ref,

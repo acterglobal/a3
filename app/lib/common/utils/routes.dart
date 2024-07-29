@@ -65,7 +65,6 @@ enum Routes {
   linkSubspace('/:spaceId([!#][^/]+)/linkSubspace'),
   linkChat('/:spaceId([!#][^/]+)/linkChat'),
   linkRecommended('/:spaceId([!#][^/]+)/linkRecommended'),
-  editSpace('/:spaceId([!#][^/]+)/edit'),
   spaceInvite('/:spaceId([!#][^/]+)/invite'),
   space('/:spaceId([!#][^/]+)'), // !spaceId, #spaceName
   spaceRelatedSpaces('/:spaceId([!#][^/]+)/spaces'),

@@ -1,12 +1,11 @@
 import 'package:acter/common/providers/chat_providers.dart';
-import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:skeletonizer/skeletonizer.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class ConvoWithAvatarInfoCard extends ConsumerWidget {
   final String roomId;
@@ -33,6 +32,10 @@ class ConvoWithAvatarInfoCard extends ConsumerWidget {
   ///
   final bool showParents;
 
+  /// Whether or not to render the suggested Icon
+  ///
+  final bool showSuggestedMark;
+
   const ConvoWithAvatarInfoCard({
     super.key,
     required this.roomId,
@@ -43,13 +46,13 @@ class ConvoWithAvatarInfoCard extends ConsumerWidget {
     this.onFocusChange,
     this.subtitle,
     this.trailing,
+    this.showSuggestedMark = false,
     this.showParents = true,
     this.showSelectedIndication = true,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final displayName = ref.watch(roomDisplayNameProvider(roomId));
     return LayoutBuilder(
       builder: (context, constraints) {
         return Column(
@@ -58,6 +61,7 @@ class ConvoWithAvatarInfoCard extends ConsumerWidget {
             Material(
               color: Colors.transparent,
               child: ListTile(
+                dense: true,
                 onTap: onTap,
                 selected: showSelectedIndication &&
                     roomId == ref.watch(selectedChatIdProvider),
@@ -65,37 +69,45 @@ class ConvoWithAvatarInfoCard extends ConsumerWidget {
                 onFocusChange: onFocusChange,
                 onLongPress: onLongPress,
                 leading: avatarWithIndicator(context, ref),
-                title: displayName.when(
-                  data: (dpl) => Text(
-                    dpl ?? roomId,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium!
-                        .copyWith(fontWeight: FontWeight.w700),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  error: (error, stackTrace) => Text(
-                    roomId,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium!
-                        .copyWith(fontWeight: FontWeight.w700),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  loading: () => Skeletonizer(
-                    child: Text(
-                      roomId,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
+                title: Text(
+                  avatarInfo.displayName ?? roomId,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium!
+                      .copyWith(fontWeight: FontWeight.w700),
+                  overflow: TextOverflow.ellipsis,
                 ),
-                subtitle: constraints.maxWidth < 300 ? null : subtitle,
+                subtitle: buildSubtitle(context, constraints),
                 trailing: constraints.maxWidth < 300 ? null : trailing,
               ),
             ),
           ],
         );
       },
+    );
+  }
+
+  Widget? buildSubtitle(BuildContext context, BoxConstraints constraints) {
+    if (!showSuggestedMark) {
+      return constraints.maxWidth < 300 ? null : subtitle;
+    }
+
+    if (subtitle != null) {
+      return Row(
+        children: [
+          Text(
+            L10n.of(context).suggested,
+            style: Theme.of(context).textTheme.labelSmall,
+          ),
+          const SizedBox(width: 2),
+          Expanded(child: subtitle!),
+        ],
+      );
+    }
+
+    return Text(
+      L10n.of(context).suggested,
+      style: Theme.of(context).textTheme.labelSmall,
     );
   }
 

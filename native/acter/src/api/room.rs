@@ -48,6 +48,8 @@ use std::{io::Write, ops::Deref, path::PathBuf};
 use tokio_stream::{wrappers::BroadcastStream, StreamExt};
 use tracing::{info, warn};
 
+mod account_data;
+
 use crate::{OptionBuffer, OptionString, RoomMessage, ThumbnailSize, UserProfile, RUNTIME};
 
 use super::{
@@ -353,6 +355,7 @@ impl Member {
 pub struct SpaceHierarchyRoomInfo {
     chunk: SpaceHierarchyRoomsChunk,
     core: CoreClient,
+    suggested: bool,
 }
 
 impl SpaceHierarchyRoomInfo {
@@ -363,6 +366,11 @@ impl SpaceHierarchyRoomInfo {
     /// The name of the room, if any.
     pub fn name(&self) -> Option<String> {
         self.chunk.name.clone()
+    }
+
+    /// whether or not this room is suggested to join
+    pub fn suggested(&self) -> bool {
+        self.suggested
     }
 
     /// The number of members joined to the room.
@@ -459,8 +467,12 @@ impl SpaceHierarchyRoomInfo {
 }
 
 impl SpaceHierarchyRoomInfo {
-    pub(crate) fn new(chunk: SpaceHierarchyRoomsChunk, core: CoreClient) -> Self {
-        SpaceHierarchyRoomInfo { chunk, core }
+    pub(crate) fn new(chunk: SpaceHierarchyRoomsChunk, core: CoreClient, suggested: bool) -> Self {
+        SpaceHierarchyRoomInfo {
+            chunk,
+            core,
+            suggested,
+        }
     }
 }
 
@@ -533,25 +545,34 @@ impl SpaceRelations {
 
     pub async fn query_hierarchy(&self) -> Result<Vec<SpaceHierarchyRoomInfo>> {
         let c = self.room.core.clone();
+        let suggested_rooms = self
+            .core
+            .children
+            .iter()
+            .filter(|c| c.suggested())
+            .map(|c| c.room_id())
+            .collect::<Vec<_>>();
         let room_id = self.room.room_id().to_owned();
         RUNTIME
             .spawn(async move {
-                println!("query start");
                 let mut next : Option<String> = Some("".to_owned());
                 let mut rooms = Vec::new();
                 while next.is_some() {
-                    let request = assign!(get_hierarchy::v1::Request::new(room_id.clone()), { from: next.clone(), max_depth: Some(1u32.into()) });
-                    println!("sending query ");
+                    let request = assign!(get_hierarchy::v1::Request::new(room_id.clone()), { from: next.clone(), max_depth: Some(2u32.into()) });
                     let resp = c.client().send(request, None).await?;
-                    println!("query receveived");
                     if (resp.rooms.is_empty()) {
                         break; // we are done
                     }
                     next = resp.next_batch;
-                    println!("going for next");
                     rooms.extend(resp.rooms
                         .into_iter()
-                        .map(|chunk| SpaceHierarchyRoomInfo::new(chunk, c.clone())));
+                        .filter_map(|chunk| {
+                            if chunk.room_id == room_id {
+                                return None;
+                            }
+                            let suggested = suggested_rooms.contains(&chunk.room_id);
+                            Some(SpaceHierarchyRoomInfo::new(chunk, c.clone(), suggested))
+                        }));
                     }
                 Ok(rooms)
             })

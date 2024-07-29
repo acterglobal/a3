@@ -15,7 +15,7 @@ void showAttachmentSelection(
   BuildContext context,
   AttachmentsManager manager,
 ) async {
-  isLargeScreen(context)
+  context.isLargeScreen
       ? await showAdaptiveDialog(
           context: context,
           builder: (context) => Dialog(
@@ -47,7 +47,7 @@ void _onTapCameraSelection(
     File file = File(imageFile.path);
 
     if (context.mounted) {
-      Navigator.of(context).pop();
+      Navigator.pop(context);
       attachmentConfirmationDialog(
         context,
         manager,
@@ -68,7 +68,7 @@ void _onTapVideoSelection(
     newAttachments.add((type: AttachmentType.video, file: file));
   }
   if (context.mounted) {
-    Navigator.of(context).pop();
+    Navigator.pop(context);
     attachmentConfirmationDialog(
       context,
       manager,
@@ -90,7 +90,7 @@ void _onTapImageSelection(
   }
 
   if (context.mounted) {
-    Navigator.of(context).pop();
+    Navigator.pop(context);
     attachmentConfirmationDialog(
       context,
       manager,
@@ -117,7 +117,7 @@ void _onTapFileSelection(
     }).toList();
 
     if (context.mounted) {
-      Navigator.of(context).pop();
+      Navigator.pop(context);
       attachmentConfirmationDialog(
         context,
         manager,

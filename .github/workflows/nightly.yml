@@ -6,7 +6,7 @@ concurrency:
 
 on:
   schedule:
-   - cron: 30 3 * * *
+   - cron: 0 1 * * 0-3,5-6
 
 jobs:
   run_checker:
@@ -64,12 +64,15 @@ jobs:
     needs:
      - tags
     with:
+      targets: android,linux,ios,macos,windows-exe # skip: windows-msix
       artifacts_prefix: 'nightly-'
       build_num: ${{ needs.tags.outputs.build_num }}
       version: ${{ needs.tags.outputs.version }}
       release_title: "Nightly ${{ needs.tags.outputs.tag }}"
       release_tag: nightly-${{ needs.tags.outputs.tag }}
       release_env: 'nightly'
+      release: true
+      prerelease: true
       flutter_build_extra: "--dart-define IS_NIGHTLY=true"
     secrets: inherit
 

@@ -78,13 +78,13 @@ class _PostAttachmentSelectionState
         children: <Widget>[
           OutlinedButton(
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.pop(context);
             },
             child: const Text('Cancel'),
           ),
           ActerPrimaryActionButton(
             onPressed: () async {
-              Navigator.of(context).pop();
+              Navigator.pop(context);
               handleAttachmentSend();
             },
             child: const Text('Send'),

@@ -20,7 +20,7 @@ class MemberAvatar extends ConsumerWidget {
       child: ActerAvatar(
         options: AvatarOptions.DM(
           avatarInfo,
-          size: 18,
+          size: 14,
         ),
       ),
     );

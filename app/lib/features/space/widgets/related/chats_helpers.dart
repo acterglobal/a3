@@ -1,0 +1,72 @@
+import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/widgets/chat/convo_card.dart';
+import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
+import 'package:acter/common/widgets/chat/loading_convo_card.dart';
+import 'package:acter/router/utils.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+
+Widget chatsListUI(WidgetRef ref, List<String> chats, int chatsLimit) {
+  return ListView.builder(
+    shrinkWrap: true,
+    itemCount: chatsLimit,
+    padding: EdgeInsets.zero,
+    physics: const NeverScrollableScrollPhysics(),
+    itemBuilder: (context, index) {
+      final roomId = chats[index];
+      return ref.watch(chatProvider(roomId)).when(
+            data: (room) => ConvoCard(
+              room: room,
+              showParents: false,
+              showSelectedIndication: false,
+              onTap: () => goToChat(context, roomId),
+            ),
+            error: (error, stack) => ListTile(
+              title: Text(roomId),
+              subtitle: Text(L10n.of(context).loadingFailed(error)),
+            ),
+            loading: () => LoadingConvoCard(roomId: roomId),
+          );
+    },
+  );
+}
+
+Widget renderFurther(
+  BuildContext context,
+  WidgetRef ref,
+  String spaceId,
+  int? maxItems,
+) {
+  final remoteChats = ref.watch(remoteChatRelationsProvider(spaceId));
+
+  return remoteChats.when(
+    data: (chats) {
+      if (chats.isEmpty) {
+        return const SizedBox.shrink();
+      }
+
+      return ListView.builder(
+        shrinkWrap: true,
+        padding: EdgeInsets.zero,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: maxItems ?? chats.length,
+        itemBuilder: (context, idx) {
+          final item = chats[idx];
+          return ConvoHierarchyCard(
+            showIconIfSuggested: true,
+            parentId: spaceId,
+            roomInfo: item,
+          );
+        },
+      );
+    },
+    error: (e, s) =>
+        Card(child: Text(L10n.of(context).errorLoadingRelatedChats(e))),
+    loading: () => Skeletonizer(
+      child: Card(child: Text(L10n.of(context).loadingOtherChats)),
+    ),
+  );
+}

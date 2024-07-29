@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/space_providers.dart';
-
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -484,7 +483,7 @@ class CreateEditEventPageConsumerState
       EasyLoading.dismiss();
 
       if (mounted) {
-        context.pop();
+        Navigator.pop(context);
         context.pushNamed(
           Routes.calendarEvent.name,
           pathParameters: {'calendarId': eventId.toString()},
@@ -537,7 +536,7 @@ class CreateEditEventPageConsumerState
 
       EasyLoading.dismiss();
 
-      if (mounted) context.pop();
+      if (mounted) Navigator.pop(context);
     } catch (e, st) {
       _log.severe('Failed to update calendar event', e, st);
       if (!mounted) {

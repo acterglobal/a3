@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
-
 import 'package:acter/common/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -19,7 +18,7 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
   final theme = Theme.of(context).colorScheme;
   showDialog(
     context: context,
-    builder: (BuildContext ctx) {
+    builder: (BuildContext context) {
       return AlertDialog(
         backgroundColor: Theme.of(context).colorScheme.surface,
         title: Text(
@@ -83,7 +82,7 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
         actions: <Widget>[
           OutlinedButton(
             key: deactivateCancelBtn,
-            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+            onPressed: () => Navigator.pop(context),
             child: Text(L10n.of(context).cancel),
           ),
           ActerDangerActionButton(

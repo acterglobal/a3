@@ -1,7 +1,6 @@
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/notifications/notifications.dart';
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
-
 import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/device.dart';
@@ -17,15 +16,14 @@ import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:shake/shake.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
-
-import 'package:logging/logging.dart';
 
 final _log = Logger('a3::home::home_shell');
 
@@ -257,7 +255,7 @@ class HomeShellState extends ConsumerState<HomeShell> {
       config: <Breakpoint, SlotLayoutConfig?>{
         Breakpoints.large: SlotLayout.from(
           key: const Key('primaryNavigation'),
-          builder: (BuildContext ctx) => SidebarWidget(
+          builder: (BuildContext context) => SidebarWidget(
             navigationShell: widget.navigationShell,
           ),
         ),
@@ -270,7 +268,7 @@ class HomeShellState extends ConsumerState<HomeShell> {
       config: <Breakpoint, SlotLayoutConfig>{
         Breakpoints.standard: SlotLayout.from(
           key: const Key('Body Small'),
-          builder: (BuildContext ctx) => widget.navigationShell,
+          builder: (BuildContext context) => widget.navigationShell,
         ),
       },
     );

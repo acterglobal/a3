@@ -1,5 +1,6 @@
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:dart_date/dart_date.dart';
@@ -7,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 void showCreateUpdateTaskItemBottomSheet(
   BuildContext context, {
@@ -259,7 +259,8 @@ class _CreateUpdateItemListConsumerState
       EasyLoading.dismiss();
       if (!mounted) return;
       if (widget.cancel != null) widget.cancel!();
-      context.pop();
+      Navigator.pop(context);
+      ref.invalidate(taskListProvider);
     } catch (e) {
       EasyLoading.dismiss();
       if (!mounted) return;
@@ -289,7 +290,8 @@ class _CreateUpdateItemListConsumerState
       await updater.send();
       EasyLoading.dismiss();
       if (!mounted) return;
-      context.pop();
+      Navigator.pop(context);
+      ref.invalidate(taskListProvider);
     } catch (e) {
       EasyLoading.dismiss();
       if (!mounted) return;

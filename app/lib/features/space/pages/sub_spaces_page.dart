@@ -6,12 +6,12 @@ import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
-import 'package:acter/features/space/widgets/related_spaces/helpers.dart';
+import 'package:acter/features/space/widgets/related/spaces_helpers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SubSpacesPage extends ConsumerWidget {
   static const moreOptionKey = Key('related-spaces-more-actions');
@@ -22,9 +22,7 @@ class SubSpacesPage extends ConsumerWidget {
 
   const SubSpacesPage({super.key, required this.spaceIdOrAlias});
 
-  Widget _renderTools(
-    BuildContext context,
-  ) {
+  Widget _renderTools(BuildContext context) {
     return PopupMenuButton(
       icon: const Icon(Atlas.plus_circle, key: moreOptionKey),
       iconSize: 28,
@@ -83,6 +81,9 @@ class SubSpacesPage extends ConsumerWidget {
     final crossAxisCount = max(1, min(widthCount, minCount));
     final spaceName =
         ref.watch(roomDisplayNameProvider(spaceIdOrAlias)).valueOrNull;
+    final membership = ref.watch(roomMembershipProvider(spaceIdOrAlias));
+    bool canLinkSpace =
+        membership.valueOrNull?.canString('CanLinkSpaces') == true;
     // get platform of context.
     return Scaffold(
       appBar: AppBar(
@@ -98,9 +99,17 @@ class SubSpacesPage extends ConsumerWidget {
           ],
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Atlas.arrows_rotating_right_thin),
+            iconSize: 28,
+            color: Theme.of(context).colorScheme.surface,
+            onPressed: () async {
+              ref.invalidate(spaceRelationsProvider);
+            },
+          ),
           spaces.when(
             data: (spaces) {
-              if (spaces.membership?.canString('CanLinkSpaces') ?? false) {
+              if (canLinkSpace) {
                 return _renderTools(context);
               } else {
                 return const SizedBox.shrink();
@@ -109,9 +118,7 @@ class SubSpacesPage extends ConsumerWidget {
             error: (error, stack) => Center(
               child: Text(L10n.of(context).loadingFailed(error)),
             ),
-            loading: () => Center(
-              child: Text(L10n.of(context).loading),
-            ),
+            loading: () => const SizedBox.shrink(),
           ),
         ],
       ),
@@ -129,7 +136,7 @@ class SubSpacesPage extends ConsumerWidget {
                     ) ??
                     renderFallback(
                       context,
-                      spaces.membership?.canString('CanLinkSpaces') ?? false,
+                      canLinkSpace,
                     );
               },
               error: (error, stack) => Center(

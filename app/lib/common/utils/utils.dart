@@ -70,8 +70,9 @@ extension RefDebounceExtension on Ref {
 
 const largeScreenBreakPoint = 770;
 
-bool isLargeScreen(BuildContext context) {
-  return MediaQuery.of(context).size.width >= largeScreenBreakPoint;
+extension ActerContextUtils on BuildContext {
+  bool get isLargeScreen =>
+      MediaQuery.of(this).size.width >= largeScreenBreakPoint;
 }
 
 DateTime kFirstDay = DateTime.utc(2010, 10, 16);

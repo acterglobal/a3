@@ -24,7 +24,7 @@ Future<void> showBlockUserDialog(BuildContext context, Member member) async {
         ),
         actions: <Widget>[
           OutlinedButton(
-            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+            onPressed: () => Navigator.pop(context),
             child: Text(L10n.of(context).no),
           ),
           ActerPrimaryActionButton(
@@ -47,7 +47,7 @@ Future<void> showBlockUserDialog(BuildContext context, Member member) async {
                   duration: const Duration(seconds: 3),
                 );
               }
-              Navigator.of(context, rootNavigator: true).pop();
+              Navigator.pop(context);
             },
             child: Text(L10n.of(context).yes),
           ),

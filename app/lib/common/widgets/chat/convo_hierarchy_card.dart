@@ -1,6 +1,8 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/chat/convo_with_avatar_card.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_join_button.dart';
+import 'package:acter/common/widgets/room/room_hierarchy_options_menu.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -75,6 +77,12 @@ class ConvoHierarchyCard extends ConsumerWidget {
   /// the default border.
   final bool withBorder;
 
+  /// Custom trailing widget.
+  final Widget? trailing;
+
+  /// Whether to show the suggested icon if this is a suggested chat
+  final bool showIconIfSuggested;
+
   const ConvoHierarchyCard({
     super.key,
     required this.roomInfo,
@@ -89,14 +97,17 @@ class ConvoHierarchyCard extends ConsumerWidget {
     this.contentPadding = const EdgeInsets.all(15),
     this.shape,
     this.withBorder = true,
+    this.showIconIfSuggested = false,
+    this.trailing,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final roomId = roomInfo.roomIdStr();
-    final avatarInfo = ref.watch(spaceHierarchyAvatarInfoProvider(roomInfo));
+    final avatarInfo = ref.watch(roomHierarchyAvatarInfoProvider(roomInfo));
     final topic = roomInfo.topic();
     final subtitle = topic?.isNotEmpty == true ? Text(topic!) : null;
+    bool showSuggested = showIconIfSuggested && roomInfo.suggested();
 
     return ConvoWithAvatarInfoCard(
       avatar: ActerAvatar(
@@ -108,18 +119,29 @@ class ConvoHierarchyCard extends ConsumerWidget {
       ),
       roomId: roomId,
       avatarInfo: avatarInfo,
+      showSuggestedMark: showSuggested,
       subtitle: subtitle,
-      trailing: RoomHierarchyJoinButton(
-        joinRule: roomInfo.joinRuleStr().toLowerCase(),
-        roomId: roomId,
-        roomName: roomInfo.name() ?? roomInfo.roomIdStr(),
-        viaServerName: roomInfo.viaServerName(),
-        forward: (roomId) {
-          goToChat(context, roomId);
-          // make sure the UI refreshes when the user comes back here
-          ref.invalidate(spaceRelationsOverviewProvider(parentId));
-        },
-      ),
+      trailing: trailing ??
+          Wrap(
+            children: [
+              RoomHierarchyJoinButton(
+                joinRule: roomInfo.joinRuleStr().toLowerCase(),
+                roomId: roomId,
+                roomName: roomInfo.name() ?? roomInfo.roomIdStr(),
+                viaServerName: roomInfo.viaServerName(),
+                forward: (roomId) {
+                  goToChat(context, roomId);
+                  // make sure the UI refreshes when the user comes back here
+                  ref.invalidate(spaceRelationsOverviewProvider(parentId));
+                },
+              ),
+              RoomHierarchyOptionsMenu(
+                isSuggested: roomInfo.suggested(),
+                childId: roomId,
+                parentId: parentId,
+              ),
+            ],
+          ),
       onTap: onTap,
       onFocusChange: onFocusChange,
       onLongPress: onLongPress,

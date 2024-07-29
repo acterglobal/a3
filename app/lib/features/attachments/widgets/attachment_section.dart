@@ -128,7 +128,7 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
     return Stack(
       children: [
         AttachmentItem(
-          key: Key(eventId),
+          key: Key('$eventId-attachment'),
           attachment: item,
         ),
         Positioned(
@@ -200,14 +200,14 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
                     OutlinedButton(
-                      onPressed: () => Navigator.of(context).pop(),
+                      onPressed: () => Navigator.pop(context),
                       child: Text(L10n.of(context).no),
                     ),
                     const SizedBox(width: 10),
                     ActerDangerActionButton(
                       key: AttachmentSectionWidget.confirmRedactKey,
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        Navigator.pop(context);
                         _handleRedactAttachment(
                           eventId,
                           reasonController.text.trim(),

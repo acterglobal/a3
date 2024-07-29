@@ -342,7 +342,7 @@ jobs:
             target
           key: ubuntu-latest-android-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
 
-      - uses: actions/setup-java@v2
+      - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -407,7 +407,7 @@ jobs:
             target
           key: ubuntu-latest-android-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
 
-      - uses: actions/setup-java@v2
+      - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -556,7 +556,7 @@ jobs:
   #           ~/.cargo
   #         key: macos-latest-cargo-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
 
-  #     - uses: actions/setup-java@v2
+  #     - uses: actions/setup-java@v4
   #       with:
   #         distribution: 'temurin'
   #         java-version: '17'

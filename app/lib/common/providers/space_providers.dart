@@ -1,4 +1,3 @@
-import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/notifiers/relations_notifier.dart';
 import 'package:acter/common/providers/notifiers/space_notifiers.dart';
 import 'package:acter/common/providers/room_providers.dart';
@@ -108,26 +107,24 @@ class SpaceItem {
 }
 
 class SpaceRelationsOverview {
-  bool hasMoreSubspaces;
-  bool hasMoreChats;
+  bool hasMore;
   SpaceRelations rel;
-  Member? membership;
-  List<Space> knownSubspaces;
-  List<Convo> knownChats;
+  List<String> knownSubspaces;
+  List<String> knownChats;
+  List<String> suggestedIds;
   Space? mainParent;
   List<Space> parents;
   List<Space> otherRelations;
 
   SpaceRelationsOverview({
     required this.rel,
-    required this.membership,
     required this.knownSubspaces,
     required this.knownChats,
+    required this.suggestedIds,
     required this.mainParent,
     required this.parents,
     required this.otherRelations,
-    required this.hasMoreSubspaces,
-    required this.hasMoreChats,
+    required this.hasMore,
   });
 }
 
@@ -194,7 +191,7 @@ final searchedSpacesProvider =
   return foundSpaces;
 });
 
-/// Get the SpaceItem of the given sapceId filled in brief form
+/// Get the SpaceItem of the given spaceId filled in brief form
 /// (only spaceProfileData, no activeMembers). Stays up to date with underlying
 /// client info
 final briefSpaceItemProvider =
@@ -231,34 +228,27 @@ final spaceRelationsOverviewProvider =
   if (relatedSpaces == null) {
     throw SpaceNotFound;
   }
-  final membership = await ref.watch(roomMembershipProvider(spaceId).future);
-  bool hasMoreSubspaces = false;
-  bool hasMoreChats = false;
-  final List<Space> knownSubspaces = [];
-  final List<Convo> knownChats = [];
+  bool hasMore = false;
+  final List<String> knownSubspaces = [];
+  final List<String> knownChats = [];
+  final List<String> suggested = [];
   List<Space> otherRelated = [];
-  for (final related in relatedSpaces.children()) {
+  final children = relatedSpaces.children();
+  for (final related in children) {
     String targetType = related.targetType();
     final roomId = related.roomId().toString();
-    if (targetType == 'ChatRoom') {
-      try {
-        final chat = await ref.watch(chatProvider(roomId).future);
-        knownChats.add(chat);
-      } catch (e) {
-        hasMoreChats = true;
-      }
+    if (related.suggested()) {
+      suggested.add(roomId);
+    }
+    if (targetType == 'Unknown') {
+      // this one is not found locally
+      hasMore = true;
+    } else if (targetType == 'ChatRoom') {
+      // we know this as a chat room
+      knownChats.add(roomId);
     } else {
-      try {
-        final space = await ref.watch(spaceProvider(roomId).future);
-        final isChildSpaceOf = await space.isChildSpaceOf(spaceId);
-        if (isChildSpaceOf) {
-          knownSubspaces.add(space);
-        } else {
-          otherRelated.add(space);
-        }
-      } catch (e) {
-        hasMoreSubspaces = true;
-      }
+      // this must be some space.
+      knownSubspaces.add(roomId);
     }
   }
   List<Space> parents = [];
@@ -296,14 +286,13 @@ final spaceRelationsOverviewProvider =
   }
   return SpaceRelationsOverview(
     rel: relatedSpaces,
-    membership: membership,
     parents: parents,
     knownChats: knownChats,
     knownSubspaces: knownSubspaces,
     otherRelations: otherRelated,
     mainParent: mainParent,
-    hasMoreSubspaces: hasMoreSubspaces,
-    hasMoreChats: hasMoreChats,
+    hasMore: hasMore,
+    suggestedIds: suggested,
   );
 });
 
@@ -333,8 +322,7 @@ final remoteChatRelationsProvider =
   try {
     final relatedSpaces =
         await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
-    final toIgnore =
-        relatedSpaces.knownChats.map((e) => e.getRoomIdStr()).toList();
+    final toIgnore = relatedSpaces.knownChats.toList();
     final roomHierarchy =
         await ref.watch(_spaceRemoteRelationsProvider(spaceId).future);
     // filter out the known rooms
@@ -352,8 +340,7 @@ final remoteSubspaceRelationsProvider =
   try {
     final relatedSpaces =
         await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
-    final toIgnore =
-        relatedSpaces.knownSubspaces.map((e) => e.getRoomIdStr()).toList();
+    final toIgnore = List.of(relatedSpaces.knownSubspaces);
     toIgnore.addAll(relatedSpaces.parents.map((e) => e.getRoomIdStr()));
     if (relatedSpaces.mainParent != null) {
       toIgnore.add(relatedSpaces.mainParent!.getRoomIdStr());
@@ -369,13 +356,6 @@ final remoteSubspaceRelationsProvider =
   } on SpaceNotFound {
     return [];
   }
-});
-
-/// Fill the Profile data for the given space-hierarchy-info
-final spaceHierarchyAvatarInfoProvider = Provider.autoDispose
-    .family<AvatarInfo, SpaceHierarchyRoomInfo>((ref, space) {
-  final roomId = space.roomIdStr();
-  return ref.watch(roomAvatarInfoProvider(roomId));
 });
 
 final acterAppSettingsProvider = FutureProvider.autoDispose

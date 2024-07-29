@@ -27,25 +27,25 @@ import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
-import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 import 'package:logging/logging.dart';
 import 'package:mime/mime.dart';
+import 'package:multi_trigger_autocomplete/multi_trigger_autocomplete.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 final _log = Logger('a3::chat::custom_input');
 
 final _sendButtonVisible = StateProvider.family<bool, String>(
   (ref, roomId) => ref.watch(
-    chatInputProvider(roomId).select((value) => value.message.isNotEmpty),
+    chatInputProvider.select((value) => value.message.isNotEmpty),
   ),
 );
 
 final _allowEdit = StateProvider.family<bool, String>(
   (ref, roomId) => ref.watch(
-    chatInputProvider(roomId)
+    chatInputProvider
         .select((state) => state.sendingState == SendingState.preparing),
   ),
 );
@@ -196,43 +196,39 @@ class _ChatInput extends ConsumerStatefulWidget {
 }
 
 class __ChatInputState extends ConsumerState<_ChatInput> {
-  GlobalKey<FlutterMentionsState> mentionKey =
-      GlobalKey<FlutterMentionsState>(debugLabel: 'mentions key');
+  TextEditingController controller = TextEditingController();
 
   void handleEmojiSelected(Category? category, Emoji emoji) {
-    final mentionState = mentionKey.currentState!;
     // Get cursor current position
-    var cursorPos = mentionState.controller!.selection.base.offset;
+    var cursorPos = controller.selection.base.offset;
 
     // Right text of cursor position
-    String suffixText = mentionState.controller!.text.substring(cursorPos);
+    String suffixText = controller.text.substring(cursorPos);
 
     // Get the left text of cursor
-    String prefixText = mentionState.controller!.text.substring(0, cursorPos);
+    String prefixText = controller.text.substring(0, cursorPos);
 
     int emojiLength = emoji.emoji.length;
 
     // Add emoji at current current cursor position
-    mentionState.controller!.text = prefixText + emoji.emoji + suffixText;
+    controller.text = prefixText + emoji.emoji + suffixText;
 
     // Cursor move to end of added emoji character
-    mentionState.controller!.selection = TextSelection(
+    controller.selection = TextSelection(
       baseOffset: cursorPos + emojiLength,
       extentOffset: cursorPos + emojiLength,
     );
   }
 
   void handleBackspacePressed() {
-    final newValue =
-        mentionKey.currentState!.controller!.text.characters.skipLast(1).string;
-    mentionKey.currentState!.controller!.text = newValue;
+    final newValue = controller.text.characters.skipLast(1).string;
+    controller.text = newValue;
   }
 
   @override
   Widget build(BuildContext context) {
-    final roomId = widget.roomId;
     final selectedMessage = ref.watch(
-      chatInputProvider(roomId).select(
+      chatInputProvider.select(
         (value) => value.selectedMessage,
       ),
     );
@@ -242,7 +238,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     }
 
     return switch (ref.watch(
-      chatInputProvider(roomId).select(
+      chatInputProvider.select(
         (value) => value.selectedMessageState,
       ),
     )) {
@@ -292,10 +288,9 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: _TextInputWidget(
-                        mentionKey: mentionKey,
                         roomId: widget.roomId,
-                        onSendButtonPressed: () =>
-                            onSendButtonPressed(context, ref),
+                        controller: controller,
+                        onSendButtonPressed: () => onSendButtonPressed(ref),
                         isEncrypted: isEncrypted,
                         onTyping: widget.onTyping,
                       ),
@@ -309,7 +304,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           ),
         ),
         if (ref.watch(
-          chatInputProvider(roomId).select((value) => value.emojiPickerVisible),
+          chatInputProvider.select((value) => value.emojiPickerVisible),
         ))
           EmojiPickerWidget(
             size: Size(
@@ -329,7 +324,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     if (allowEditing) {
       return IconButton.filled(
         iconSize: 20,
-        onPressed: () => onSendButtonPressed(context, ref),
+        onPressed: () => onSendButtonPressed(ref),
         icon: const Icon(
           Icons.send,
         ),
@@ -370,7 +365,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Consumer(
-                  builder: (ctx, ref, child) =>
+                  builder: (context, ref, child) =>
                       replyBuilder(roomId, repliedToMessage),
                 ),
                 _ReplyContentWidget(
@@ -430,8 +425,9 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           topLeft: Radius.circular(20),
         ),
       ),
-      builder: (ctx) => AttachmentOptions(
+      builder: (context) => AttachmentOptions(
         onTapCamera: () async {
+          Navigator.pop(context);
           XFile? imageFile =
               await ImagePicker().pickImage(source: ImageSource.camera);
           if (imageFile != null) {
@@ -447,6 +443,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           }
         },
         onTapImage: () async {
+          Navigator.pop(context);
           XFile? imageFile =
               await ImagePicker().pickImage(source: ImageSource.gallery);
           if (imageFile != null) {
@@ -462,6 +459,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           }
         },
         onTapVideo: () async {
+          Navigator.pop(context);
           XFile? imageFile =
               await ImagePicker().pickVideo(source: ImageSource.gallery);
           if (imageFile != null) {
@@ -477,7 +475,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           }
         },
         onTapFile: () async {
-          final selectedFiles = await handleFileSelection(ctx);
+          Navigator.pop(context);
+          final selectedFiles = await handleFileSelection(context);
 
           if (context.mounted) {
             attachmentConfirmation(
@@ -513,7 +512,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
   ) {
     final size = MediaQuery.of(context).size;
     if (selectedFiles != null && selectedFiles.isNotEmpty) {
-      isLargeScreen(context)
+      context.isLargeScreen
           ? showAdaptiveDialog(
               context: context,
               builder: (context) => Dialog(
@@ -529,7 +528,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
             )
           : showModalBottomSheet(
               context: context,
-              builder: (ctx) => Padding(
+              builder: (context) => Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: _FileWidget(selectedFiles, type, handleFileUpload),
               ),
@@ -541,9 +540,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     List<File> files,
     AttachmentType attachmentType,
   ) async {
-    final roomId = widget.roomId;
     final client = ref.read(alwaysClientProvider);
-    final inputState = ref.read(chatInputProvider(roomId));
+    final inputState = ref.read(chatInputProvider);
     final lang = L10n.of(context);
     final stream = await ref.read(
       timelineStreamProviderForId(widget.roomId).future,
@@ -614,14 +612,14 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       _log.severe('error occurred', e, s);
     }
 
-    ref.read(chatInputProvider(roomId).notifier).unsetSelectedMessage();
+    ref.read(chatInputProvider.notifier).unsetSelectedMessage();
   }
 
   Widget replyBuilder(String roomId, Message repliedToMessage) {
     final authorId = repliedToMessage.author.id;
     final memberAvatar =
         ref.watch(memberAvatarInfoProvider((userId: authorId, roomId: roomId)));
-    final inputNotifier = ref.watch(chatInputProvider(roomId).notifier);
+    final inputNotifier = ref.watch(chatInputProvider.notifier);
     return Row(
       children: [
         const SizedBox(width: 1),
@@ -659,8 +657,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     WidgetRef ref,
     Widget? child,
   ) {
-    final roomId = widget.roomId;
-    final inputNotifier = ref.watch(chatInputProvider(roomId).notifier);
+    final inputNotifier = ref.watch(chatInputProvider.notifier);
     return Row(
       children: [
         const SizedBox(width: 1),
@@ -677,10 +674,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         const Spacer(),
         GestureDetector(
           onTap: () {
-            final mentionState = mentionKey.currentState;
-            if (mentionKey.currentState != null) {
-              mentionState!.controller!.clear();
-            }
+            controller.clear();
             inputNotifier.unsetSelectedMessage();
             FocusScope.of(context).unfocus();
           },
@@ -690,20 +684,18 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     );
   }
 
-  Future<void> onSendButtonPressed(BuildContext context, WidgetRef ref) async {
-    if (mentionKey.currentState!.controller!.text.isEmpty) return;
+  Future<void> onSendButtonPressed(WidgetRef ref) async {
+    if (controller.text.isEmpty) return;
     final lang = L10n.of(context);
-    final roomId = widget.roomId;
-    ref.read(chatInputProvider(roomId).notifier).startSending();
+    ref.read(chatInputProvider.notifier).startSending();
     try {
       // end the typing notification
       if (widget.onTyping != null) {
         widget.onTyping!(false);
       }
 
-      final mentions = ref.read(chatInputProvider(roomId)).mentions;
-      final mentionState = mentionKey.currentState!;
-      String markdownText = mentionState.controller!.text;
+      final mentions = ref.read(chatInputProvider).mentions;
+      String markdownText = controller.text;
       final userMentions = [];
       mentions.forEach((key, value) {
         userMentions.add(value);
@@ -722,7 +714,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       }
 
       // actually send it out
-      final inputState = ref.read(chatInputProvider(roomId));
+      final inputState = ref.read(chatInputProvider);
       final stream = await ref.read(
         timelineStreamProviderForId(widget.roomId).future,
       );
@@ -734,15 +726,17 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       } else {
         await stream.sendMessage(draft);
       }
-      ref.read(chatInputProvider(roomId).notifier).messageSent();
-      mentionState.controller!.clear();
+
+      ref.read(chatInputProvider.notifier).messageSent();
+
+      controller.clear();
     } catch (error, stackTrace) {
       _log.severe('Sending chat message failed', error, stackTrace);
       EasyLoading.showError(
         lang.failedToSend(error),
         duration: const Duration(seconds: 3),
       );
-      ref.read(chatInputProvider(roomId).notifier).sendingFailed();
+      ref.read(chatInputProvider.notifier).sendingFailed();
     }
   }
 }
@@ -788,13 +782,13 @@ class _FileWidget extends ConsumerWidget {
         children: <Widget>[
           OutlinedButton(
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.pop(context);
             },
             child: Text(L10n.of(context).cancel),
           ),
           ActerPrimaryActionButton(
             onPressed: () async {
-              Navigator.of(context).pop();
+              Navigator.pop(context);
               handleFileUpload(selectedFiles, type);
             },
             child: Text(L10n.of(context).send),
@@ -838,185 +832,47 @@ class _FileWidget extends ConsumerWidget {
   }
 }
 
-class _TextInputWidget extends ConsumerWidget {
-  final GlobalKey<FlutterMentionsState> mentionKey;
+class _TextInputWidget extends ConsumerStatefulWidget {
   final String roomId;
+  final TextEditingController controller;
   final Function() onSendButtonPressed;
   final bool isEncrypted;
-  final FocusNode chatFocus = FocusNode();
   final void Function(bool)? onTyping;
 
-  _TextInputWidget({
-    required this.mentionKey,
+  const _TextInputWidget({
     required this.roomId,
+    required this.controller,
     required this.onSendButtonPressed,
     this.onTyping,
     this.isEncrypted = false,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final chatMentions = ref.watch(chatMentionsProvider(roomId));
-    final width = MediaQuery.of(context).size.width;
-    ref.listen(chatInputProvider(roomId), (prev, next) {
-      if (next.selectedMessageState == SelectedMessageState.edit &&
-          (prev?.selectedMessageState != next.selectedMessageState ||
-              next.selectedMessage != prev?.selectedMessage)) {
-        // a new message has been selected to be edited or switched from reply
-        // to edit, force refresh the inner text controller to reflect that
-        mentionKey.currentState!.controller!.text = next.message;
-        chatFocus.requestFocus();
-      } else if (next.selectedMessageState == SelectedMessageState.replyTo &&
-          (next.selectedMessage != prev?.selectedMessage ||
-              prev?.selectedMessageState != next.selectedMessageState)) {
-        chatFocus.requestFocus();
-      }
+  ConsumerState<_TextInputWidget> createState() =>
+      _TextInputWidgetConsumerState();
+}
+
+class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
+  final FocusNode chatFocus = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.controller.text = ref.read(
+        chatInputProvider.select((value) => value.message),
+      );
     });
-    return CallbackShortcuts(
-      bindings: <ShortcutActivator, VoidCallback>{
-        const SingleActivator(LogicalKeyboardKey.enter): () {
-          onSendButtonPressed();
-        },
-      },
-      child: Focus(
-        focusNode: chatFocus,
-        child: FlutterMentions(
-          key: mentionKey,
-          // restore input if available, but only as a read on startup
-          defaultText: ref
-              .read(chatInputProvider(roomId).select((value) => value.message)),
-          suggestionPosition: SuggestionPosition.Top,
-          suggestionListWidth: width >= 770 ? width * 0.6 : width * 0.8,
-          onMentionAdd: (roomMember) => onMentionAdd(roomMember, ref),
-          suggestionListDecoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(6),
-          ),
-          onChanged: (String value) async {
-            ref.read(chatInputProvider(roomId).notifier).updateMessage(value);
-            if (onTyping != null) {
-              onTyping!(value.isNotEmpty);
-            }
-          },
-          textInputAction: TextInputAction.newline,
-          textCapitalization: TextCapitalization.sentences,
-          enabled: ref.watch(_allowEdit(roomId)),
-          onSubmitted: (value) => onSendButtonPressed(),
-          style: Theme.of(context).textTheme.bodyMedium,
-          cursorColor: Theme.of(context).colorScheme.primary,
-          maxLines: 6,
-          minLines: 1,
-          onTap: () => onTextTap(
-            ref.read(chatInputProvider(roomId)).emojiPickerVisible,
-            ref,
-          ),
-          decoration: InputDecoration(
-            isCollapsed: true,
-            prefixIcon: isEncrypted
-                ? Icon(
-                    Icons.shield,
-                    size: 18,
-                    color:
-                        Theme.of(context).colorScheme.primary.withOpacity(0.8),
-                  )
-                : null,
-            suffixIcon: InkWell(
-              onTap: () => onSuffixTap(
-                ref.read(chatInputProvider(roomId)).emojiPickerVisible,
-                context,
-                ref,
-              ),
-              child: const Icon(Icons.emoji_emotions),
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(30),
-              borderSide: BorderSide(
-                width: 0.5,
-                style: BorderStyle.solid,
-                color: Theme.of(context).colorScheme.surface,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(30),
-              borderSide: const BorderSide(
-                width: 0.5,
-                style: BorderStyle.solid,
-              ),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(30),
-              borderSide: BorderSide(
-                width: 0.5,
-                style: BorderStyle.solid,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-            ),
-            hintText: isEncrypted
-                ? L10n.of(context).newEncryptedMessage
-                : L10n.of(context).newMessage,
-            hintStyle: Theme.of(context).textTheme.labelLarge!.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-            contentPadding: const EdgeInsets.all(15),
-            hintMaxLines: 1,
-          ),
-          mentions: [
-            Mention(
-              trigger: '@',
-              style: TextStyle(
-                height: 0.5,
-                background: Paint()
-                  ..color = Theme.of(context).colorScheme.surface
-                  ..strokeWidth = 13
-                  ..strokeJoin = StrokeJoin.round
-                  ..style = PaintingStyle.stroke,
-              ),
-              data: chatMentions.valueOrNull ?? [],
-              suggestionBuilder: (Map<String, dynamic> mentionRecord) {
-                final authorId = mentionRecord['id'];
-                final title = mentionRecord['displayName'];
-                return ListTile(
-                  leading: MentionProfileBuilder(
-                    roomId: roomId,
-                    authorId: authorId,
-                  ),
-                  title: title != null
-                      ? Wrap(
-                          children: [
-                            Text(
-                              title,
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                            const SizedBox(width: 15),
-                            Text(
-                              authorId,
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                          ],
-                        )
-                      : Text(
-                          authorId,
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
-  void onMentionAdd(Map<String, dynamic> roomMember, WidgetRef ref) {
-    String authorId = roomMember['id'];
-    String displayName = roomMember['display'];
-    ref
-        .read(chatInputProvider(roomId).notifier)
-        .addMention(displayName, authorId);
+  @override
+  void dispose() {
+    chatFocus.dispose();
+    super.dispose();
   }
 
   void onTextTap(bool emojiPickerVisible, WidgetRef ref) {
-    final chatInputNotifier = ref.read(chatInputProvider(roomId).notifier);
+    final chatInputNotifier = ref.read(chatInputProvider.notifier);
 
     ///Hide emoji picker before input field get focus if
     ///Platform is mobile & Emoji picker is visible
@@ -1030,7 +886,7 @@ class _TextInputWidget extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) {
-    final chatInputNotifier = ref.read(chatInputProvider(roomId).notifier);
+    final chatInputNotifier = ref.read(chatInputProvider.notifier);
     if (!emojiPickerVisible) {
       //Hide soft keyboard and then show Emoji Picker
       FocusScope.of(context).unfocus();
@@ -1039,6 +895,126 @@ class _TextInputWidget extends ConsumerWidget {
       //Hide Emoji Picker
       chatInputNotifier.emojiPickerVisible(false);
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    ref.listen(chatInputProvider, (prev, next) {
+      if (next.selectedMessageState == SelectedMessageState.edit &&
+          (prev?.selectedMessageState != next.selectedMessageState ||
+              next.message != prev?.message)) {
+        // a new message has been selected to be edited or switched from reply
+        // to edit, force refresh the inner text controller to reflect that
+        widget.controller.text = next.message;
+        chatFocus.requestFocus();
+      } else if (next.selectedMessageState == SelectedMessageState.replyTo &&
+          (next.selectedMessage != prev?.selectedMessage ||
+              prev?.selectedMessageState != next.selectedMessageState)) {
+        chatFocus.requestFocus();
+      }
+    });
+    return CallbackShortcuts(
+      bindings: <ShortcutActivator, VoidCallback>{
+        const SingleActivator(LogicalKeyboardKey.enter): () {
+          widget.onSendButtonPressed();
+        },
+      },
+      child: MultiTriggerAutocomplete(
+        optionsAlignment: OptionsAlignment.top,
+        textEditingController: widget.controller,
+        focusNode: chatFocus,
+        autocompleteTriggers: [
+          AutocompleteTrigger(
+            trigger: '@',
+            optionsViewBuilder: (context, autocompleteQuery, ctrl) {
+              return MentionProfileBuilder(
+                context: context,
+                roomQuery: (
+                  query: autocompleteQuery.query,
+                  roomId: widget.roomId
+                ),
+              );
+            },
+          ),
+        ],
+        fieldViewBuilder: (context, ctrl, focusNode) =>
+            _innerTextField(context, focusNode, ctrl),
+      ),
+    );
+  }
+
+  Widget _innerTextField(
+    BuildContext context,
+    FocusNode chatFocus,
+    TextEditingController ctrl,
+  ) {
+    return TextField(
+      onTap: () => onTextTap(
+        ref.read(chatInputProvider).emojiPickerVisible,
+        ref,
+      ),
+      controller: widget.controller,
+      focusNode: chatFocus,
+      enabled: ref.watch(_allowEdit(widget.roomId)),
+      onChanged: (val) {
+        ref.read(chatInputProvider.notifier).updateMessage(val);
+        if (widget.onTyping != null) {
+          widget.onTyping!(val.isNotEmpty);
+        }
+      },
+      onSubmitted: (_) => widget.onSendButtonPressed(),
+      style: Theme.of(context).textTheme.bodySmall,
+      decoration: InputDecoration(
+        contentPadding: const EdgeInsets.all(15),
+        isCollapsed: true,
+        prefixIcon: widget.isEncrypted
+            ? Icon(
+                Icons.shield,
+                size: 18,
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
+              )
+            : null,
+        suffixIcon: InkWell(
+          onTap: () => onSuffixTap(
+            ref.read(chatInputProvider).emojiPickerVisible,
+            context,
+            ref,
+          ),
+          child: const Icon(Icons.emoji_emotions),
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: BorderSide(
+            width: 0.5,
+            style: BorderStyle.solid,
+            color: Theme.of(context).colorScheme.surface,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: const BorderSide(
+            width: 0.5,
+            style: BorderStyle.solid,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: BorderSide(
+            width: 0.5,
+            style: BorderStyle.solid,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+        hintText: widget.isEncrypted
+            ? L10n.of(context).newEncryptedMessage
+            : L10n.of(context).newMessage,
+        hintStyle: Theme.of(context).textTheme.labelLarge!.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+        hintMaxLines: 1,
+      ),
+      textInputAction: TextInputAction.newline,
+    );
   }
 }
 
@@ -1145,6 +1121,6 @@ class _EditMessageContentWidget extends StatelessWidget {
         ),
       );
     }
-    return Container();
+    return const SizedBox.shrink();
   }
 }

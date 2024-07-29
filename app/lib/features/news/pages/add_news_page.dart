@@ -2,18 +2,17 @@ import 'dart:io';
 
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
-
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/events/widgets/skeletons/event_item_skeleton_widget.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
 import 'package:acter/features/news/widgets/news_post_editor/news_slide_options.dart';
 import 'package:acter/features/news/widgets/news_post_editor/select_action_item.dart';
@@ -98,7 +97,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
         onPressed: () {
           // Hide Keyboard
           SystemChannels.textInput.invokeMethod('TextInput.hide');
-          context.pop();
+          Navigator.pop(context);
         },
         icon: const Icon(Atlas.xmark_circle),
       ),
@@ -149,7 +148,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           title: Text(L10n.of(context).addActionWidget),
           content: SelectActionItem(
             onShareEventSelected: () async {
-              Navigator.of(context, rootNavigator: true).pop();
+              Navigator.pop(context);
               if (ref.read(newsStateProvider).newsPostSpaceId == null) {
                 EasyLoading.showToast(L10n.of(context).pleaseFirstSelectASpace);
                 return;
@@ -327,7 +326,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       alignment: Alignment.center,
       color: selectedNewsPost!.backgroundColor,
       child: ActerVideoPlayer(
-        key: Key(videoFile.name),
+        key: Key('add-news-slide-video-${videoFile.name}'),
         videoFile: File(videoFile.path),
       ),
     );
@@ -458,8 +457,10 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       // FIXME due to #718. well lets at least try forcing a refresh upon route.
       ref.invalidate(newsStateProvider);
       // Navigate back to update screen.
-      Navigator.of(context).pop();
-      context.goNamed(Routes.main.name); // go to the home / main updates
+      Navigator.pop(context);
+      context.pushReplacementNamed(
+        Routes.main.name,
+      ); // go to the home / main updates
     } catch (err) {
       if (!context.mounted) {
         EasyLoading.dismiss();

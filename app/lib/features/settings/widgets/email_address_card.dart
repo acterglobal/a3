@@ -32,9 +32,9 @@ class EmailAddressCard extends ConsumerWidget {
         title: Text(emailAddress),
         trailing: isConfirmed
             ? PopupMenuButton(
-                itemBuilder: (BuildContext ctx) => <PopupMenuEntry>[
+                itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                   PopupMenuItem(
-                    onTap: () => onUnregister(ctx, ref),
+                    onTap: () => onUnregister(context, ref),
                     child: Row(
                       children: [
                         const Icon(Atlas.trash_can_thin),
@@ -42,7 +42,7 @@ class EmailAddressCard extends ConsumerWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           child: Text(
                             L10n.of(context).remove,
-                            style: Theme.of(ctx).textTheme.labelSmall,
+                            style: Theme.of(context).textTheme.labelSmall,
                             softWrap: false,
                           ),
                         ),
@@ -60,7 +60,7 @@ class EmailAddressCard extends ConsumerWidget {
                       icon: const Icon(Atlas.envelope_check_thin),
                     ),
                     PopupMenuButton(
-                      itemBuilder: (BuildContext ctx) => <PopupMenuEntry>[
+                      itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                         PopupMenuItem(
                           onTap: () => alreadyConfirmedAddress(context, ref),
                           child: Row(
@@ -90,7 +90,7 @@ class EmailAddressCard extends ConsumerWidget {
                           ),
                         ),
                         PopupMenuItem(
-                          onTap: () => onUnregister(ctx, ref),
+                          onTap: () => onUnregister(context, ref),
                           child: Row(
                             children: [
                               const Icon(Atlas.trash_can_thin),
@@ -100,7 +100,7 @@ class EmailAddressCard extends ConsumerWidget {
                                 ),
                                 child: Text(
                                   L10n.of(context).remove,
-                                  style: Theme.of(ctx).textTheme.labelSmall,
+                                  style: Theme.of(context).textTheme.labelSmall,
                                   softWrap: false,
                                 ),
                               ),
@@ -123,7 +123,7 @@ class EmailAddressCard extends ConsumerWidget {
         title: Text(L10n.of(context).areYouSureYouWantToUnregisterEmailAddress),
         actions: <Widget>[
           OutlinedButton(
-            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+            onPressed: () => Navigator.pop(context),
             child: Text(L10n.of(context).no),
           ),
           ActerPrimaryActionButton(
@@ -133,7 +133,7 @@ class EmailAddressCard extends ConsumerWidget {
               ref.invalidate(emailAddressesProvider);
 
               if (!context.mounted) return;
-              Navigator.of(context, rootNavigator: true).pop();
+              Navigator.pop(context);
             },
             child: Text(L10n.of(context).yes),
           ),

@@ -7,32 +7,57 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::common::redact');
 
+Future<bool> openRedactContentDialog(
+  BuildContext context, {
+  final String? title,
+  final String? description,
+  required final String eventId,
+  required final String roomId,
+  final bool? isSpace,
+  final void Function()? onRemove,
+  final Function()? onSuccess,
+  final Key? cancelBtnKey,
+  final Key? removeBtnKey,
+}) async {
+  return await showAdaptiveDialog(
+    context: context,
+    useRootNavigator: false,
+    builder: (context) => _RedactContentWidget(
+      title: title,
+      description: description,
+      eventId: eventId,
+      roomId: roomId,
+      isSpace: isSpace ?? false,
+      onRemove: onRemove,
+      onSuccess: onSuccess,
+      cancelBtnKey: cancelBtnKey,
+      removeBtnKey: removeBtnKey,
+    ),
+  );
+}
+
 /// Reusable reporting acter content widget.
-class RedactContentWidget extends ConsumerWidget {
+class _RedactContentWidget extends ConsumerWidget {
   final String? title;
   final String? description;
   final String eventId;
-  final String senderId;
   final String roomId;
   final bool isSpace;
   final void Function()? onRemove;
   final Function()? onSuccess;
-  final TextEditingController reasonController = TextEditingController();
   final Key? cancelBtnKey;
   final Key? removeBtnKey;
+  final TextEditingController reasonController = TextEditingController();
 
-  RedactContentWidget({
-    super.key,
+  _RedactContentWidget({
     this.title,
     this.description,
     required this.eventId,
     required this.roomId,
-    required this.senderId,
     this.isSpace = false,
     this.onSuccess,
     this.onRemove,
@@ -72,7 +97,7 @@ class RedactContentWidget extends ConsumerWidget {
       actions: <Widget>[
         OutlinedButton(
           key: cancelBtnKey,
-          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+          onPressed: () => Navigator.pop(context, false),
           child: Text(L10n.of(context).close),
         ),
         ActerPrimaryActionButton(
@@ -85,39 +110,39 @@ class RedactContentWidget extends ConsumerWidget {
     );
   }
 
-  void redactContent(BuildContext ctx, WidgetRef ref, String reason) async {
-    EasyLoading.show(status: L10n.of(ctx).removingContent);
+  void redactContent(BuildContext context, WidgetRef ref, String reason) async {
+    EasyLoading.show(status: L10n.of(context).removingContent);
     try {
       if (isSpace) {
         final space = await ref.read(spaceProvider(roomId).future);
         final redactedId = await space.redactContent(eventId, reason);
         _log.info(
-          'Content from user:{$senderId redacted $redactedId reason:$reason}',
+          'Content from $redactedId reason:$reason}',
         );
       } else {
         final room = await ref.read(chatProvider(roomId).future);
         final redactedId = await room.redactContent(eventId, reason);
         _log.info(
-          'Content from user:{$senderId redacted $redactedId reason:$reason}',
+          'Content from $redactedId reason:$reason}',
         );
       }
 
-      if (!ctx.mounted) {
+      if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
-      EasyLoading.showToast(L10n.of(ctx).contentSuccessfullyRemoved);
-      if (ctx.canPop()) ctx.pop();
+      EasyLoading.showToast(L10n.of(context).contentSuccessfullyRemoved);
+      Navigator.pop(context, true);
       if (onSuccess != null) {
         onSuccess!();
       }
     } catch (e) {
-      if (!ctx.mounted) {
+      if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
       EasyLoading.showError(
-        '${L10n.of(ctx).redactionFailed} $e',
+        '${L10n.of(context).redactionFailed} $e',
         duration: const Duration(seconds: 3),
       );
     }

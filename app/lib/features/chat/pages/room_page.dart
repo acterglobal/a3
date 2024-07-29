@@ -5,6 +5,7 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/avatar_builder.dart';
@@ -28,17 +29,15 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class RoomPage extends ConsumerWidget {
   static const roomPageKey = Key('chat-room-page');
   final String roomId;
-  final bool inSidebar;
 
   const RoomPage({
     required this.roomId,
-    required this.inSidebar,
     super.key = roomPageKey,
   });
 
@@ -47,7 +46,7 @@ class RoomPage extends ConsumerWidget {
     final activeMembers = ref.watch(membersIdsProvider(roomId));
     return AppBar(
       elevation: 0,
-      automaticallyImplyLeading: inSidebar ? false : true,
+      automaticallyImplyLeading: !context.isLargeScreen,
       centerTitle: true,
       toolbarHeight: 70,
       flexibleSpace: FrostEffect(
@@ -114,7 +113,7 @@ class RoomPage extends ConsumerWidget {
           children: [
             appBar(context, ref),
             ref.watch(chatProvider(roomId)).when(
-                  data: (convo) => ChatRoom(convo: convo, inSidebar: inSidebar),
+                  data: (convo) => ChatRoom(convo: convo),
                   error: (e, s) => Center(
                     child: Text(L10n.of(context).loadingRoomFailed(e)),
                   ),
@@ -148,11 +147,9 @@ class RoomPage extends ConsumerWidget {
 
 class ChatRoom extends ConsumerStatefulWidget {
   final Convo convo;
-  final bool inSidebar;
 
   const ChatRoom({
     required this.convo,
-    required this.inSidebar,
     super.key,
   });
 
@@ -191,7 +188,6 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
   void showMessageOptions(
     BuildContext context,
     types.Message message,
-    String roomId,
   ) async {
     if (message is types.CustomMessage) {
       if (message.metadata!.containsKey('eventType') &&
@@ -199,7 +195,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
         return;
       }
     }
-    final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
+    final inputNotifier = ref.read(chatInputProvider.notifier);
     inputNotifier.setActionsMessage(message);
   }
 
@@ -210,6 +206,8 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
     final userId = ref.watch(myUserIdStrProvider);
     final roomId = widget.convo.getRoomIdStr();
     final messages = ref.watch(chatMessagesProvider(widget.convo));
+    final isDirectChat =
+        ref.watch(isDirectChatProvider(roomId)).valueOrNull ?? false;
 
     return Expanded(
       child: Chat(
@@ -251,9 +249,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
           required bool nextMessageInGroup,
         }) =>
             GestureDetector(
-          onSecondaryTap: () {
-            showMessageOptions(context, message, roomId);
-          },
+          onSecondaryTap: () => showMessageOptions(context, message),
           child: BubbleBuilder(
             convo: widget.convo,
             message: message,
@@ -299,19 +295,18 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
           messageWidth: messageWidth,
         ),
         systemMessageBuilder: (msg) => renderSystemMessage(context, msg),
-        showUserAvatars: true,
+        showUserAvatars: !isDirectChat,
         onMessageLongPress: (
           BuildContext context,
           types.Message message,
-        ) async {
-          showMessageOptions(context, message, roomId);
-        },
+        ) async =>
+            showMessageOptions(context, message),
+
         onEndReached:
             ref.read(chatStateProvider(widget.convo).notifier).handleEndReached,
         onEndReachedThreshold: 0.75,
-        onBackgroundTap: () {
-          ref.read(chatInputProvider(roomId).notifier).unsetActions();
-        },
+        onBackgroundTap: () =>
+            ref.read(chatInputProvider.notifier).unsetActions(),
         typingIndicatorOptions: TypingIndicatorOptions(
           typingMode: TypingIndicatorMode.name,
           typingUsers:
@@ -340,7 +335,10 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
           child: Divider(color: Theme.of(context).indicatorColor),
         ),
       '_encryptedInfo' => const EncryptedInfoWidget(),
-      _ => SystemMessage(key: Key(message.id), message: message.text)
+      _ => SystemMessage(
+          key: Key('chat-room-${message.id}'),
+          message: message.text,
+        )
     };
   }
 }

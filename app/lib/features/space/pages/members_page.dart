@@ -15,7 +15,6 @@ class SpaceMembersPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final space = ref.watch(spaceProvider(spaceIdOrAlias)).requireValue;
     final members = ref.watch(membersIdsProvider(spaceIdOrAlias));
     final membership =
         ref.watch(roomMembershipProvider(spaceIdOrAlias)).valueOrNull;
@@ -68,7 +67,7 @@ class SpaceMembersPage extends ConsumerWidget {
               itemBuilder: (context, index) {
                 return MemberListEntry(
                   memberId: members[index],
-                  roomId: space.getRoomIdStr(),
+                  roomId: spaceIdOrAlias,
                 );
               },
             );

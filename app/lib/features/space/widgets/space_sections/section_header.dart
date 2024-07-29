@@ -20,39 +20,42 @@ class SectionHeader extends StatelessWidget {
   }
 
   Widget sectionHeaderUI(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14),
-      margin: const EdgeInsets.symmetric(vertical: 12),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Theme.of(context).colorScheme.surface.withOpacity(0.9),
-            Theme.of(context).colorScheme.surface.withOpacity(0.3),
-            Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.1),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.topRight,
-          stops: const [0.0, 0.5, 1.0],
-          tileMode: TileMode.mirror,
-        ),
-      ),
-      child: Row(
-        children: [
-          Text(
-            title,
-            style: Theme.of(context)
-                .textTheme
-                .titleMedium!
-                .copyWith(color: Theme.of(context).primaryColor),
+    return GestureDetector(
+      onTap: () => onTapSeeAll(),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14),
+        margin: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Theme.of(context).colorScheme.surface.withOpacity(0.9),
+              Theme.of(context).colorScheme.surface.withOpacity(0.3),
+              Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.1),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.topRight,
+            stops: const [0.0, 0.5, 1.0],
+            tileMode: TileMode.mirror,
           ),
-          const Spacer(),
-          isShowSeeAllButton
-              ? ActerInlineTextButton(
-                  onPressed: () => onTapSeeAll(),
-                  child: Text(L10n.of(context).seeAll),
-                )
-              : const SizedBox(height: 50),
-        ],
+        ),
+        child: Row(
+          children: [
+            Text(
+              title,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium!
+                  .copyWith(color: Theme.of(context).primaryColor),
+            ),
+            const Spacer(),
+            isShowSeeAllButton
+                ? ActerInlineTextButton(
+                    onPressed: () => onTapSeeAll(),
+                    child: Text(L10n.of(context).seeAll),
+                  )
+                : const SizedBox(height: 50),
+          ],
+        ),
       ),
     );
   }
