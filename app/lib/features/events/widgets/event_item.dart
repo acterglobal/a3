@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/blinking_text.dart';
 import 'package:acter/features/events/event_utils/event_utils.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_date_widget.dart';
@@ -196,9 +197,12 @@ class EventItem extends StatelessWidget {
         color: Colors.red,
         borderRadius: BorderRadius.all(Radius.circular(100)),
       ),
-      child: Text(
+      child: BlinkText(
         L10n.of(context).live,
         style: Theme.of(context).textTheme.labelLarge,
+        beginColor: Colors.white,
+        endColor: Colors.red,
+        times: 5,
       ),
     );
   }
