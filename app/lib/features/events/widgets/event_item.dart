@@ -112,7 +112,13 @@ class EventItem extends StatelessWidget {
             return (rsvpStatusWidget != null)
                 ? Row(
                     children: [
-                      Text('${L10n.of(context).going}? : '),
+                      Text(
+                        '${L10n.of(context).rsvp} : ',
+                        style: Theme.of(context)
+                            .textTheme
+                            .labelLarge!
+                            .copyWith(fontWeight: FontWeight.bold),
+                      ),
                       rsvpStatusWidget,
                     ],
                   )
@@ -138,7 +144,11 @@ class EventItem extends StatelessWidget {
         case 'yes':
           return Row(
             children: [
-              const Icon(Icons.check_circle, color: Colors.green),
+              const Icon(
+                Icons.check_circle,
+                color: Colors.green,
+                size: 16,
+              ),
               const SizedBox(width: 4),
               Text(L10n.of(context).yes),
             ],
@@ -146,7 +156,11 @@ class EventItem extends StatelessWidget {
         case 'no':
           return Row(
             children: [
-              const Icon(Icons.cancel, color: Colors.red),
+              const Icon(
+                Icons.cancel,
+                color: Colors.red,
+                size: 16,
+              ),
               const SizedBox(width: 4),
               Text(L10n.of(context).no),
             ],
@@ -154,7 +168,18 @@ class EventItem extends StatelessWidget {
         case 'maybe':
           return Row(
             children: [
-              const Icon(Icons.question_mark_rounded, color: Colors.grey),
+              Container(
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade600,
+                  borderRadius: const BorderRadius.all(Radius.circular(100)),
+                ),
+                child: const Icon(
+                  Icons.question_mark_rounded,
+                  color: Colors.white,
+                  size: 11,
+                ),
+              ),
               const SizedBox(width: 4),
               Text(L10n.of(context).maybe),
             ],
