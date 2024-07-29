@@ -228,6 +228,9 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     try {
       EasyLoading.show(status: L10n.of(context).updateName);
       final convo = await ref.read(chatProvider(widget.roomId).future);
+      if (convo == null) {
+        throw RoomNotFound();
+      }
       await convo.setName(newName.trim());
       EasyLoading.dismiss();
       if (!mounted) return;
@@ -282,12 +285,12 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         // Bookmark
         convoLoader.when(
           data: (conv) {
-            final isBookmarked = conv.isBookmarked();
+            final isBookmarked = conv?.isBookmarked() == true;
             return _actionItem(
               context: context,
               iconData: isBookmarked ? Icons.bookmark : Icons.bookmark_border,
               actionName: L10n.of(context).bookmark,
-              onTap: () async => await conv.setBookmarked(!isBookmarked),
+              onTap: () async => await conv?.setBookmarked(!isBookmarked),
             );
           },
           error: (e, st) => Skeletonizer(
@@ -505,6 +508,9 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     EasyLoading.show(status: L10n.of(context).leavingRoom);
     try {
       final convo = await ref.read(chatProvider(widget.roomId).future);
+      if (convo == null) {
+        throw RoomNotFound();
+      }
       final res = await convo.leave();
       if (!mounted) {
         EasyLoading.dismiss();
@@ -550,6 +556,9 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     EasyLoading.show(status: L10n.of(context).sharingRoom);
     try {
       final convo = await ref.read(chatProvider(widget.roomId).future);
+      if (convo == null) {
+        throw RoomNotFound();
+      }
       final roomLink = await convo.permalink();
       if (!mounted) {
         EasyLoading.dismiss();

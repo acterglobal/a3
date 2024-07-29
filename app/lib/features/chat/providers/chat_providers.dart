@@ -2,6 +2,7 @@ import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/network_provider.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
@@ -39,22 +40,13 @@ final chatInputProvider =
 );
 
 final chatStateProvider =
-    StateNotifierProvider.family<ChatRoomNotifier, ChatRoomState, Convo>(
-  (ref, convo) => ChatRoomNotifier(ref: ref, convo: convo),
+    StateNotifierProvider.family<ChatRoomNotifier, ChatRoomState, String>(
+  (ref, roomId) => ChatRoomNotifier(ref: ref, roomId: roomId),
 );
 
-final chatIsEncrypted =
-    FutureProvider.autoDispose.family<bool, Convo>((ref, convo) async {
-  final c = await ref.watch(convoProvider(convo).future);
-  if (c == null) {
-    return false;
-  }
-  return await c.isEncrypted();
-});
-
 final chatTopic =
-    FutureProvider.autoDispose.family<String?, Convo>((ref, convo) async {
-  final c = await ref.watch(convoProvider(convo).future);
+    FutureProvider.autoDispose.family<String?, String>((ref, roomId) async {
+  final c = await ref.watch(chatProvider(roomId).future);
   return c?.topic();
 });
 
@@ -64,9 +56,9 @@ bool msgFilter(types.Message m) {
 }
 
 final renderableChatMessagesProvider =
-    StateProvider.autoDispose.family<List<Message>, Convo>((ref, convo) {
+    StateProvider.autoDispose.family<List<Message>, String>((ref, roomId) {
   return ref
-      .watch(chatStateProvider(convo).select((value) => value.messages))
+      .watch(chatStateProvider(roomId).select((value) => value.messages))
       .where(
         // filter only items we can show
         msgFilter,
@@ -77,9 +69,9 @@ final renderableChatMessagesProvider =
 });
 
 final latestTrackableMessageId =
-    StateProvider.autoDispose.family<String?, Convo>((ref, convo) {
+    StateProvider.autoDispose.family<String?, String>((ref, roomId) {
   return ref.watch(
-    chatStateProvider(convo).select(
+    chatStateProvider(roomId).select(
       (value) =>
           // find the last remote item we can use for tracking
           value.messages.lastOrNull?.remoteId,
@@ -88,9 +80,9 @@ final latestTrackableMessageId =
 });
 
 final chatMessagesProvider =
-    StateProvider.autoDispose.family<List<Message>, Convo>((ref, convo) {
+    StateProvider.autoDispose.family<List<Message>, String>((ref, roomId) {
   final moreMessages = [];
-  if (ref.watch(chatStateProvider(convo).select((value) => !value.hasMore))) {
+  if (ref.watch(chatStateProvider(roomId).select((value) => !value.hasMore))) {
     moreMessages.add(
       const types.SystemMessage(
         id: 'chat-invite',
@@ -102,7 +94,7 @@ final chatMessagesProvider =
     );
 
     // we have reached the end, show topic
-    final topic = ref.watch(chatTopic(convo)).valueOrNull;
+    final topic = ref.watch(chatTopic(roomId)).valueOrNull;
     if (topic != null) {
       moreMessages.add(
         types.SystemMessage(
@@ -116,7 +108,7 @@ final chatMessagesProvider =
     }
 
     // and encryption information block
-    if (ref.watch(chatIsEncrypted(convo)).valueOrNull == true) {
+    if (ref.watch(isRoomEncryptedProvider(roomId)).valueOrNull == true) {
       moreMessages.add(
         const types.SystemMessage(
           id: 'encrypted-information',
@@ -128,7 +120,7 @@ final chatMessagesProvider =
       );
     }
   }
-  final messages = ref.watch(renderableChatMessagesProvider(convo));
+  final messages = ref.watch(renderableChatMessagesProvider(roomId));
   if (moreMessages.isEmpty) {
     return messages;
   }
@@ -147,14 +139,13 @@ final mediaChatStateProvider = StateNotifierProvider.family<MediaChatNotifier,
   (ref, messageInfo) => MediaChatNotifier(ref: ref, messageInfo: messageInfo),
 );
 
-final timelineStreamProvider = StateProvider.family<TimelineStream, Convo>(
-  (ref, convo) => convo.timelineStream(),
-);
-
-final timelineStreamProviderForId =
+final timelineStreamProvider =
     FutureProvider.family<TimelineStream, String>((ref, roomId) async {
   final chat = await ref.watch(chatProvider(roomId).future);
-  return ref.watch(timelineStreamProvider(chat));
+  if (chat == null) {
+    throw RoomNotFound();
+  }
+  return chat.timelineStream();
 });
 
 final filteredChatsProvider =
@@ -180,7 +171,8 @@ final filteredChatsProvider =
 final isRoomEncryptedProvider =
     FutureProvider.family<bool, String>((ref, roomId) async {
   final convo = await ref.watch(chatProvider(roomId).future);
-  return await convo.isEncrypted();
+  // FIXME: unify this over all rooms.
+  return (await convo?.isEncrypted()) == true;
 });
 
 final chatTypingEventProvider = StreamProvider.autoDispose
@@ -207,10 +199,10 @@ final chatTypingEventProvider = StreamProvider.autoDispose
 // unread notifications, unread mentions, unread messages
 typedef UnreadCounters = (int, int, int);
 
-final unreadCountersProvider = FutureProvider.autoDispose
-    .family<UnreadCounters, String>((ref, roomId) async {
+final unreadCountersProvider =
+    FutureProvider.family<UnreadCounters, String>((ref, roomId) async {
   final convo = await ref.watch(
-    convoProvider(await ref.watch(chatProvider(roomId).future)).future,
+    chatProvider(roomId).future,
   );
   if (convo == null) {
     return (0, 0, 0);
@@ -229,7 +221,7 @@ final hasUnreadChatsProvider = FutureProvider.autoDispose((ref) async {
 
     return UrgencyBadge.none;
   }
-  final chats = ref.watch(chatsProvider);
+  final chats = ref.watch(chatIdsProvider);
   if (chats.isEmpty) {
     return UrgencyBadge.none;
   }
@@ -237,8 +229,7 @@ final hasUnreadChatsProvider = FutureProvider.autoDispose((ref) async {
 
   for (final chat in chats) {
     // this is highly inefficient
-    final unreadCounter =
-        await ref.watch(unreadCountersProvider(chat.getRoomIdStr()).future);
+    final unreadCounter = await ref.watch(unreadCountersProvider(chat).future);
     if (unreadCounter.$1 > 0) {
       // mentions, we just blurb
       return UrgencyBadge.important;

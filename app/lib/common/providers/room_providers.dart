@@ -183,23 +183,9 @@ final roomAvatarProvider =
 
 /// Provide the AvatarInfo for each room. Update internally accordingly
 final roomAvatarInfoProvider =
-    Provider.family<AvatarInfo, String>((ref, roomId) {
-  final fallback = AvatarInfo(uniqueId: roomId);
-
-  final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
-  if (room == null) {
-    return fallback;
-  }
-
-  final displayName = ref.watch(roomDisplayNameProvider(roomId)).valueOrNull;
-  final avatarData = ref.watch(roomAvatarProvider(roomId)).valueOrNull;
-
-  return AvatarInfo(
-    uniqueId: roomId,
-    displayName: displayName,
-    avatar: avatarData,
-  );
-});
+    NotifierProvider.family<RoomAvatarInfoNotifier, AvatarInfo, String>(
+  () => RoomAvatarInfoNotifier(),
+);
 
 /// get the [AvatarInfo] list of all the parents
 final parentAvatarInfosProvider =
@@ -345,7 +331,7 @@ final isDirectChatProvider =
     FutureProvider.family<bool, String>((ref, roomIdOrAlias) async {
   final convo = await ref.watch(chatProvider(roomIdOrAlias).future);
   final members = await ref.watch(membersIdsProvider(roomIdOrAlias).future);
-  return convo.isDm() && members.length == 2;
+  return convo?.isDm() == true && members.length == 2;
 });
 
 /// Caching the MemoryImage of each entry

@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -22,13 +24,13 @@ class PostProcessItem {
 
 class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   final Ref ref;
-  final Convo convo;
+  final String roomId;
   late TimelineStream timeline;
   late Stream<RoomMessageDiff> _listener;
   late StreamSubscription<RoomMessageDiff> _poller;
 
   ChatRoomNotifier({
-    required this.convo,
+    required this.roomId,
     required this.ref,
   }) : super(const ChatRoomState()) {
     _init();
@@ -36,7 +38,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   Future<void> _init() async {
     try {
-      timeline = ref.read(timelineStreamProvider(convo));
+      timeline = await ref.read(timelineStreamProvider(roomId).future);
       _listener = timeline.messagesStream(); // keep it resident in memory
       _poller = _listener.listen(handleDiff);
       ref.onDispose(() => _poller.cancel());
@@ -306,6 +308,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.image':
             MsgContent? msgContent = orgEventItem.msgContent();
             if (msgContent != null) {
+              final convo = await ref.read(chatProvider(roomId).future);
+              if (convo == null) {
+                throw RoomNotFound();
+              }
               convo.mediaBinary(originalId, null).then((data) {
                 repliedToContent['base64'] = base64Encode(data.asTypedList());
               });
@@ -324,6 +330,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.audio':
             MsgContent? msgContent = orgEventItem.msgContent();
             if (msgContent != null) {
+              final convo = await ref.read(chatProvider(roomId).future);
+              if (convo == null) {
+                throw RoomNotFound();
+              }
               convo.mediaBinary(originalId, null).then((data) {
                 repliedToContent['content'] = base64Encode(data.asTypedList());
               });
@@ -342,6 +352,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.video':
             MsgContent? msgContent = orgEventItem.msgContent();
             if (msgContent != null) {
+              final convo = await ref.read(chatProvider(roomId).future);
+              if (convo == null) {
+                throw RoomNotFound();
+              }
               convo.mediaBinary(originalId, null).then((data) {
                 repliedToContent['content'] = base64Encode(data.asTypedList());
               });
@@ -872,6 +886,11 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       case 'm.audio':
       case 'm.video':
         final messages = state.messages;
+
+        final convo = await ref.read(chatProvider(roomId).future);
+        if (convo == null) {
+          throw RoomNotFound();
+        }
         final data = await convo.mediaBinary(eventId, null);
         int index = messages.indexWhere((x) => x.id == eventId);
         if (index != -1) {

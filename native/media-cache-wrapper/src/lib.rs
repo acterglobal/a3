@@ -4,7 +4,10 @@ use core::fmt::Debug;
 use matrix_sdk_base::{
     deserialized_responses::RawAnySyncOrStrippedState,
     media::{MediaRequest, UniqueKey},
-    store::{QueuedEvent, SerializableEventContent, StoreEncryptionError},
+    store::{
+        ChildTransactionId, DependentQueuedEvent, DependentQueuedEventKind, QueuedEvent,
+        SerializableEventContent, StoreEncryptionError,
+    },
     MinimalRoomMemberEvent, RoomInfo, RoomMemberships, StateChanges, StateStore, StateStoreDataKey,
     StateStoreDataValue, StoreError,
 };
@@ -665,6 +668,68 @@ where
         Ok(self
             .inner
             .load_rooms_with_unsent_events()
+            .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
+    }
+
+    /// Add a new entry to the list of dependent send queue event for an event.
+    async fn save_dependent_send_queue_event(
+        &self,
+        room_id: &RoomId,
+        parent_txn_id: &TransactionId,
+        own_txn_id: ChildTransactionId,
+        content: DependentQueuedEventKind,
+    ) -> Result<(), Self::Error> {
+        Ok(self
+            .inner
+            .save_dependent_send_queue_event(room_id, parent_txn_id, own_txn_id, content)
+            .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
+    }
+
+    /// Update a set of dependent send queue events with an event id,
+    /// effectively marking them as ready.
+    ///
+    /// Returns the number of updated events.
+    async fn update_dependent_send_queue_event(
+        &self,
+        room_id: &RoomId,
+        parent_txn_id: &TransactionId,
+        event_id: OwnedEventId,
+    ) -> Result<usize, Self::Error> {
+        Ok(self
+            .inner
+            .update_dependent_send_queue_event(room_id, parent_txn_id, event_id)
+            .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
+    }
+
+    /// Remove a specific dependent send queue event by id.
+    ///
+    /// Returns true if the dependent send queue event has been indeed removed.
+    async fn remove_dependent_send_queue_event(
+        &self,
+        room: &RoomId,
+        own_txn_id: &ChildTransactionId,
+    ) -> Result<bool, Self::Error> {
+        Ok(self
+            .inner
+            .remove_dependent_send_queue_event(room, own_txn_id)
+            .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
+    }
+
+    /// List all the dependent send queue events.
+    ///
+    /// This returns absolutely all the dependent send queue events, whether
+    /// they have an event id or not. They must be returned in insertion order.
+    async fn list_dependent_send_queue_events(
+        &self,
+        room: &RoomId,
+    ) -> Result<Vec<DependentQueuedEvent>, Self::Error> {
+        Ok(self
+            .inner
+            .list_dependent_send_queue_events(room)
             .await
             .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
     }

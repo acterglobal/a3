@@ -420,7 +420,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     final inputState = ref.read(chatInputProvider);
     final lang = L10n.of(context);
     final stream = await ref.read(
-      timelineStreamProviderForId(widget.roomId).future,
+      timelineStreamProvider(widget.roomId).future,
     );
 
     try {
@@ -592,7 +592,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       // actually send it out
       final inputState = ref.read(chatInputProvider);
       final stream = await ref.read(
-        timelineStreamProviderForId(widget.roomId).future,
+        timelineStreamProvider(widget.roomId).future,
       );
 
       if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
