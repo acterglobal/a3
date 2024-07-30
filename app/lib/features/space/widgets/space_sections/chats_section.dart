@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/space/widgets/related/chats_helpers.dart';
+import 'package:acter/features/space/widgets/related/util.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -42,46 +43,33 @@ class ChatsSection extends ConsumerWidget {
     WidgetRef ref,
     List<String> chats,
   ) {
-    int chatsLimit;
-    bool isShowSeeAllButton = false;
-    bool renderRemote = false;
-    int moreCount;
-    if (chats.length > limit) {
-      chatsLimit = limit;
-      isShowSeeAllButton = true;
-      moreCount = 0;
-    } else {
-      chatsLimit = chats.length;
-      moreCount = limit - chats.length;
-      if (moreCount > 0) {
-        final remoteCount =
-            (ref.watch(remoteChatRelationsProvider(spaceId)).valueOrNull ?? [])
-                .length;
-        if (remoteCount > 0) {
-          renderRemote = true;
-          if (remoteCount < moreCount) {
-            moreCount = remoteCount;
-          }
-          if (remoteCount > moreCount) {
-            isShowSeeAllButton = true;
-          }
-        }
-      }
-    }
+    final config = calculateSectionConfig(
+      localListLen: chats.length,
+      limit: limit,
+      remoteListLen:
+          (ref.watch(remoteChatRelationsProvider(spaceId)).valueOrNull ?? [])
+              .length,
+    );
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionHeader(
           title: L10n.of(context).chats,
-          isShowSeeAllButton: isShowSeeAllButton,
+          isShowSeeAllButton: config.isShowSeeAllButton,
           onTapSeeAll: () => context.pushNamed(
             Routes.spaceChats.name,
             pathParameters: {'spaceId': spaceId},
           ),
         ),
-        chatsListUI(ref, chats, chatsLimit),
-        if (renderRemote) renderFurther(context, ref, spaceId, moreCount),
+        chatsListUI(ref, chats, config.listingLimit),
+        if (config.renderRemote)
+          renderFurther(
+            context,
+            ref,
+            spaceId,
+            config.remoteCount,
+          ),
       ],
     );
   }
