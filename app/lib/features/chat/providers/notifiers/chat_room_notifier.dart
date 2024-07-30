@@ -227,7 +227,14 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   // fetch original content media for reply msg, i.e. text/image/file etc.
   Future<void> fetchOriginalContent(String originalId, String replyId) async {
-    final roomMsg = await timeline.getMessage(originalId);
+    RoomMessage roomMsg;
+    try {
+      roomMsg = await timeline.getMessage(originalId);
+    } catch (error, stack) {
+      _log.severe('Failing to load reference $replyId (from $originalId)',
+          error, stack,);
+      return;
+    }
 
     // reply is allowed for only EventItem not VirtualItem
     // user should be able to get original event as RoomMessage
