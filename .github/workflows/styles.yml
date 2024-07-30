@@ -20,7 +20,7 @@ jobs:
       - name: Install specific toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          components: rustfmt,clippy
+          components: rustfmt
       - name: Rust Format
         run: cargo fmt --all --check
 
