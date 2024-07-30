@@ -18,17 +18,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install specific toolchain
-        uses: actions-rs/toolchain@v1
+        uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          toolchain: nightly
-          override: true
           components: rustfmt,clippy
-      - uses: Swatinem/rust-cache@v1
-      - uses: actions-rs/cargo@v1
-        name: Rust Format
-        with:
-          command: fmt
-          args: --all --check
+      - name: Rust Format
+        run: cargo fmt --all --check
 
   dart-style:
     name: Flutter Analyze

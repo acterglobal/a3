@@ -32,28 +32,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install specific toolchain
-        uses: actions-rs/toolchain@v1
+        uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          toolchain: nightly
-          override: true
           components: clippy
-      - uses: Swatinem/rust-cache@v1
-      - uses: actions-rs/cargo@v1
-        name: Clippy
-        with:
-          command: clippy
-          args: -p ${{matrix.package}} ${{matrix.clippy_extras}} -- -D warnings
+      - name: Clippy
+        run: cargo clippy  -p ${{matrix.package}} ${{matrix.clippy_extras}} -- -D warnings
       - uses: taiki-e/install-action@nextest
-      - uses: actions-rs/cargo@v1
-        name: Test
-        with:
-          command: nextest
-          args: run -p ${{matrix.package}}
-      - uses: actions-rs/cargo@v1
-        name: Release Build
-        with:
-          command: build
-          args: -p ${{matrix.package}} --release
+      - name: Test
+        run: cargo nextest run -p ${{matrix.package}}
+      - name: Release Build
+        run: cargo build -p ${{matrix.package}} --release
 
   integrations:
     runs-on: ubuntu-latest
@@ -68,13 +56,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install specific toolchain
-        uses: actions-rs/toolchain@v1
+        uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          toolchain: nightly
-          override: true
           components: clippy
           target: ${{ matrix.target }}
-      - uses: Swatinem/rust-cache@v1
       - uses: jlumbroso/free-disk-space@main
         name: Free Disk Space (Ubuntu)
         with:
@@ -86,22 +71,13 @@ jobs:
         with:
           flutter-version: '3.22'
           channel: 'stable'
-      - uses: actions-rs/cargo@v1
-        name: Clippy
-        with:
-          command: clippy
-          args: -p acter --target ${{matrix.target}} -- -D warnings
+      - name: Clippy
+        run: cargo clippy -p acter --target ${{matrix.target}} -- -D warnings
       - uses: taiki-e/install-action@nextest
-      - uses: actions-rs/cargo@v1
-        name: Unit tests
-        with:
-          command: nextest
-          args: run -p acter --target ${{matrix.target}} --lib
-      - uses: actions-rs/cargo@v1
-        name: Doctests
-        with:
-          command: test
-          args: -p acter --target ${{matrix.target}} --doc
+      - name: Unit tests
+        run: cargo nextest run -p acter --target ${{matrix.target}} --lib
+      - name: Doctests
+        run: cargo test -p acter --target ${{matrix.target}} --doc
 
   ffigen:
     name: FFI-Gen up-to-date
@@ -113,10 +89,7 @@ jobs:
           flutter-version: '3.22'
           channel: 'stable'
       - name: Install supported rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          override: true
+        uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: Install cargo-make
         uses: davidB/rust-cargo-make@v1
       - name: "Build FFI interface"
