@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
@@ -139,6 +140,9 @@ class _ReportContentWidget extends ConsumerWidget {
         _log.info('Content from user:{$senderId flagged $res reason:$reason}');
       } else {
         final room = await ref.read(chatProvider(roomId).future);
+        if (room == null) {
+          throw RoomNotFound();
+        }
         res = await room.reportContent(eventId, null, reason);
         _log.info('Content from user:{$senderId flagged $res reason:$reason}');
         if (ignoreFlag) {

@@ -1,9 +1,8 @@
-import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/menu_item_widget.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/room/room_profile_header.dart';
 import 'package:acter/features/invite_members/widgets/invite_code_ui.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
-import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -85,7 +84,7 @@ class InvitePage extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        _roomProfileDetailsUI(ref),
+        RoomProfileHeader(roomId: roomId),
         const SizedBox(height: 10),
         Text(
           L10n.of(context).invite,
@@ -96,22 +95,6 @@ class InvitePage extends ConsumerWidget {
           L10n.of(context).spaceInviteDescription,
           style: Theme.of(context).textTheme.bodySmall,
         ),
-      ],
-    );
-  }
-
-  Widget _roomProfileDetailsUI(WidgetRef ref) {
-    final roomAvatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
-    return Column(
-      children: [
-        ActerAvatar(
-          options: AvatarOptions(
-            roomAvatarInfo,
-            size: 50,
-          ),
-        ),
-        const SizedBox(height: 10),
-        Text(roomAvatarInfo.displayName ?? ''),
       ],
     );
   }

@@ -1,3 +1,4 @@
+import 'package:acter/common/actions/close_room.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
@@ -51,7 +52,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
 
     return Column(
       children: [
-        _buildAppBar(context, roomAvatarInfo, membership, convo),
+        _buildAppBar(context, roomAvatarInfo, membership, convo, isDirectChat),
         Expanded(
           child: _buildBody(
             context,
@@ -70,6 +71,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     AvatarInfo roomAvatarInfo,
     Member? membership,
     Convo? convo,
+    bool isDirectChat,
   ) {
     List<PopupMenuItem> menuListItems = [];
     if (membership?.canString('CanSetName') == true) {
@@ -93,6 +95,26 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
           child: Text(L10n.of(context).editDescription),
         ),
       );
+
+      if (!isDirectChat &&
+          convo != null &&
+          membership?.canString('CanKick') == true &&
+          membership?.canString('CanUpdateJoinRule') == true) {
+        menuListItems.add(
+          PopupMenuItem(
+            onTap: () => openCloseRoomDialog(
+              context: context,
+              roomId: convo.getRoomIdStr(),
+            ),
+            child: Text(
+              L10n.of(context).closeChat,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.error,
+              ),
+            ),
+          ),
+        );
+      }
     }
 
     return AppBar(
@@ -128,7 +150,13 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         padding: const EdgeInsets.symmetric(horizontal: 10.0),
         child: Column(
           children: [
-            _header(context, roomAvatarInfo, membership, convo),
+            _header(
+              context,
+              roomAvatarInfo,
+              membership,
+              convo,
+              isDirectChat,
+            ),
             _description(context, membership, convo),
             _actions(
               context,
@@ -152,12 +180,13 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     AvatarInfo roomAvatarInfo,
     Member? membership,
     Convo? convo,
+    bool isDirectChat,
   ) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         InkWell(
-          onTap: convo?.isDm() == true
+          onTap: isDirectChat
               ? null
               : () => openAvatar(context, ref, widget.roomId),
           child: RoomAvatar(
@@ -199,6 +228,9 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     try {
       EasyLoading.show(status: L10n.of(context).updateName);
       final convo = await ref.read(chatProvider(widget.roomId).future);
+      if (convo == null) {
+        throw RoomNotFound();
+      }
       await convo.setName(newName.trim());
       EasyLoading.dismiss();
       if (!mounted) return;
@@ -253,12 +285,12 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         // Bookmark
         convoLoader.when(
           data: (conv) {
-            final isBookmarked = conv.isBookmarked();
+            final isBookmarked = conv?.isBookmarked() == true;
             return _actionItem(
               context: context,
               iconData: isBookmarked ? Icons.bookmark : Icons.bookmark_border,
               actionName: L10n.of(context).bookmark,
-              onTap: () async => await conv.setBookmarked(!isBookmarked),
+              onTap: () async => await conv?.setBookmarked(!isBookmarked),
             );
           },
           error: (e, st) => Skeletonizer(
@@ -476,6 +508,9 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     EasyLoading.show(status: L10n.of(context).leavingRoom);
     try {
       final convo = await ref.read(chatProvider(widget.roomId).future);
+      if (convo == null) {
+        throw RoomNotFound();
+      }
       final res = await convo.leave();
       if (!mounted) {
         EasyLoading.dismiss();
@@ -521,6 +556,9 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     EasyLoading.show(status: L10n.of(context).sharingRoom);
     try {
       final convo = await ref.read(chatProvider(widget.roomId).future);
+      if (convo == null) {
+        throw RoomNotFound();
+      }
       final roomLink = await convo.permalink();
       if (!mounted) {
         EasyLoading.dismiss();

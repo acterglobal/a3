@@ -1,3 +1,4 @@
+import 'package:acter/common/actions/close_room.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -83,6 +84,17 @@ class SpaceToolbar extends ConsumerWidget {
           ),
         ),
       ),
+      if (membership?.canString('CanKick') == true &&
+          membership?.canString('CanUpdateJoinRule') == true)
+        PopupMenuItem(
+          onTap: () => openCloseRoomDialog(context: context, roomId: spaceId),
+          child: Text(
+            L10n.of(context).closeSpace,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.error,
+            ),
+          ),
+        ),
     ]);
 
     return AppBar(

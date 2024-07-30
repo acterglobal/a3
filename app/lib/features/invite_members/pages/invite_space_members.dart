@@ -42,23 +42,25 @@ class _InviteSpaceMembersConsumerState
   }
 
   Widget _buildBody() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      constraints: const BoxConstraints(maxWidth: 500),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            L10n.of(context).inviteSpaceMembersSubtitle,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 10),
-          _buildParentSpaces(),
-          const SizedBox(height: 20),
-          _buildOtherSpace(),
-          _buildDoneButton(),
-          const SizedBox(height: 10),
-        ],
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        constraints: const BoxConstraints(maxWidth: 500),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              L10n.of(context).inviteSpaceMembersSubtitle,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            _buildParentSpaces(),
+            const SizedBox(height: 20),
+            _buildOtherSpace(),
+            _buildDoneButton(),
+            const SizedBox(height: 10),
+          ],
+        ),
       ),
     );
   }
@@ -162,9 +164,10 @@ class _InviteSpaceMembersConsumerState
       return;
     }
 
+    final lang = L10n.of(context);
+
     EasyLoading.show(
-      status: L10n.of(context).invitingSpaceMembersLoading,
-      dismissOnTap: false,
+      status: lang.invitingSpaceMembersLoading,
     );
 
     try {
@@ -173,7 +176,7 @@ class _InviteSpaceMembersConsumerState
         _log.severe('Room failed to be found');
         if (!mounted) return;
         EasyLoading.showToast(
-          L10n.of(context).invitingSpaceMembersError('Missing room'),
+          lang.invitingSpaceMembersError('Missing room'),
         );
         return;
       }
@@ -184,26 +187,35 @@ class _InviteSpaceMembersConsumerState
               .toList();
       final joined =
           ref.read(membersIdsProvider(widget.roomId)).valueOrNull ?? [];
+      var total = 0;
       var inviteCount = 0;
       for (final roomId in selectedSpaces) {
         final members =
-            (await ref.watch(membersIdsProvider(roomId).future)).toList();
+            (await ref.read(membersIdsProvider(roomId).future)).toList();
+        total += members.length;
+
         for (final member in members) {
           final isInvited = invited.contains(member);
           final isJoined = joined.contains(member);
           if (!isInvited && !isJoined) {
+            EasyLoading.showProgress(
+              inviteCount / total,
+              status: lang.invitingSpaceMembersProgress(inviteCount, total),
+            );
             await room.inviteUser(member);
             inviteCount++;
+          } else {
+            total -= 1; // we substract from the total.
           }
         }
       }
       setState(() => selectedSpaces.clear());
       if (!mounted) return;
-      EasyLoading.showToast(L10n.of(context).membersInvited(inviteCount));
+      EasyLoading.showToast(lang.membersInvited(inviteCount));
     } catch (e, st) {
       _log.severe('Invite Space Members Error', e, st);
       if (!mounted) return;
-      EasyLoading.showToast(L10n.of(context).invitingSpaceMembersError(e));
+      EasyLoading.showToast(lang.invitingSpaceMembersError(e));
     }
   }
 }

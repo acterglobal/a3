@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/scrollable_list_tab_scroller.dart';
 import 'package:acter/features/space/dialogs/suggested_rooms.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
@@ -135,6 +136,14 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
           //Space Details Page UI
           itemBuilder: (BuildContext context, int index) =>
               spacePageUI(tabsList[index]),
+
+          // we allow this to be refreshed by over-pulling
+          onRefresh: () async {
+            await Future.wait([
+              ref.refresh(spaceProvider(widget.spaceId).future),
+              ref.refresh(maybeRoomProvider(widget.spaceId).future),
+            ]);
+          },
         );
       },
       error: (error, stack) => Text(L10n.of(context).loadingFailed(error)),

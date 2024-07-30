@@ -1,10 +1,11 @@
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,9 +19,8 @@ final _log = Logger('a3::chat::message_actions');
 
 class MessageActions extends ConsumerWidget {
   final String roomId;
-  final Convo convo;
 
-  const MessageActions({super.key, required this.convo, required this.roomId});
+  const MessageActions({super.key, required this.roomId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -167,6 +167,10 @@ class MessageActions extends ConsumerWidget {
           ActerPrimaryActionButton(
             onPressed: () async {
               try {
+                final convo = await ref.read(chatProvider(roomId).future);
+                if (convo == null) {
+                  throw RoomNotFound();
+                }
                 await convo.redactMessage(
                   messageId,
                   ref.read(myUserIdStrProvider),
