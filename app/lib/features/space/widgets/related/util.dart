@@ -26,15 +26,18 @@ SectionConfig calculateSectionConfig({
   required int limit,
   required int remoteListLen,
 }) {
-  int listingLimit;
+  int listingLimit = 0;
   bool isShowSeeAllButton = false;
   bool renderRemote = false;
-  int remoteCount;
+  int remoteCount = 0;
   // our local list is already going beyond the limits
   if (localListLen > limit) {
     listingLimit = limit;
     isShowSeeAllButton = true;
-    remoteCount = 0;
+  } else if (localListLen == limit) {
+    // locally fills the list
+    listingLimit = limit;
+    isShowSeeAllButton = remoteListLen > 0;
   } else {
     // the local list is not filling the list
     listingLimit = localListLen;

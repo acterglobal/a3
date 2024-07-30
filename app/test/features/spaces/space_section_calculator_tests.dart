@@ -67,5 +67,18 @@ void main() {
       assert(!config.renderRemote, 'Wrong render remote');
       assert(config.remoteCount == 0, 'Wrong remote count');
     });
+
+    test('exact local, none remote', () {
+      final config = calculateSectionConfig(
+        limit: 3,
+        localListLen: 3,
+        remoteListLen: 0,
+      );
+
+      assert(config.listingLimit == 3, 'Wrong listing limit');
+      assert(!config.isShowSeeAllButton, 'Wrong show all');
+      assert(!config.renderRemote, 'Wrong render remote');
+      assert(config.remoteCount == 0, 'Wrong remote count');
+    });
   });
 }
