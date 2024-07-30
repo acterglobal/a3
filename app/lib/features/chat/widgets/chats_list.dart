@@ -134,25 +134,27 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
   }
 
   void refreshList() {
-    final diffResult = calculateListDiff<String>(
-      _currentList,
-      widget.entries,
-      detectMoves: false,
-    );
-    for (final update in diffResult.getUpdatesWithData()) {
-      update.when(
-        insert: _insert,
-        remove: _remove,
-        change: (pos, oldData, newData) {
-          _remove(pos, oldData);
-          _insert(pos, newData);
-        },
-        move: (from, to, item) {
-          _remove(from, item);
-          _insert(to, item);
-        },
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+      final diffResult = calculateListDiff<String>(
+        _currentList,
+        widget.entries,
+        detectMoves: false,
       );
-    }
+      for (final update in diffResult.getUpdatesWithData()) {
+        update.when(
+          insert: _insert,
+          remove: _remove,
+          change: (pos, oldData, newData) {
+            _remove(pos, oldData);
+            _insert(pos, newData);
+          },
+          move: (from, to, item) {
+            _remove(from, item);
+            _insert(to, item);
+          },
+        );
+      }
+    });
   }
 
   void _insert(int pos, String data) {
