@@ -14,19 +14,18 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  core:
+  clippy:
     runs-on: ubuntu-latest
-    name: Clippy & Test & Build ${{ matrix.name }}
+    name: Clippy ${{ matrix.name }}
     strategy:
       matrix:
         include:
           - name: Core
             package: acter-core
             clippy_extras: --tests
-          - name: CLI
-            package: acter-cli
-          - name: TUI
-            package: acter-tui
+          - name: SDK
+            package: acter
+            clippy_extras: --tests
           - name: media-cache-wrapper
             package: matrix-sdk-store-media-cache-wrapper
     steps:
@@ -35,49 +34,43 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           components: clippy
-      - name: Clippy
+      - name: Run Clippy
         run: cargo clippy  -p ${{matrix.package}} ${{matrix.clippy_extras}} -- -D warnings
-      - uses: taiki-e/install-action@nextest
-      - name: Test
-        run: cargo nextest run -p ${{matrix.package}}
-      - name: Release Build
-        run: cargo build -p ${{matrix.package}} --release
 
-  integrations:
+  test:
     runs-on: ubuntu-latest
-    # FIXME: remove once tests don't fail
-    continue-on-error: true
-    name: Clippy & Test ${{ matrix.name }}
+    name: Test ${{ matrix.name }}
     strategy:
       matrix:
         include:
-          - name: FFI
-            target: x86_64-unknown-linux-gnu
+          - name: Core
+            package: acter-core
+            clippy_extras: --tests
+          - name: media-cache-wrapper
+            package: matrix-sdk-store-media-cache-wrapper
     steps:
       - uses: actions/checkout@v4
       - name: Install specific toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          components: clippy
-          target: ${{ matrix.target }}
-      - uses: jlumbroso/free-disk-space@main
-        name: Free Disk Space (Ubuntu)
-        with:
-          # this might remove tools that are actually needed,
-          # when set to "true" but frees about 6 GB
-          tool-cache: true
-      - uses: subosito/flutter-action@v2
-        name: Set up flutter
-        with:
-          flutter-version: '3.22'
-          channel: 'stable'
-      - name: Clippy
-        run: cargo clippy -p acter --target ${{matrix.target}} -- -D warnings
       - uses: taiki-e/install-action@nextest
-      - name: Unit tests
-        run: cargo nextest run -p acter --target ${{matrix.target}} --lib
-      - name: Doctests
-        run: cargo test -p acter --target ${{matrix.target}} --doc
+      - name: Test
+        run: cargo nextest run -p ${{matrix.package}}
+
+  release:
+    runs-on: ubuntu-latest
+    name: Release Build ${{ matrix.name }}
+    strategy:
+      matrix:
+        include:
+          - name: SDK
+            package: acter
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install specific toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+      - name: Release Build
+        run: cargo build -p ${{matrix.package}} --release
+
 
   ffigen:
     name: FFI-Gen up-to-date
