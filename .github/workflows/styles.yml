@@ -33,6 +33,9 @@ jobs:
   dart-style:
     name: Flutter Analyze
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        path: ['app', 'app/packages/rust_sdk', 'app/packages/acter_trigger_auto_complete']
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -43,6 +46,6 @@ jobs:
       - name: version
         run: flutter --version
 
-      - working-directory: app
-        run: flutter analyze
-        name: lint app
+      - working-directory: ${{ matrix.path }}
+        run: flutter analyze 
+        name: lint ${{ matrix.path }}
