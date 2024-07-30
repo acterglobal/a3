@@ -4,12 +4,9 @@ import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 
-import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
-import 'package:acter/features/attachments/widgets/attachment_container.dart';
-import 'package:acter/features/attachments/widgets/attachment_options.dart';
+import 'package:acter/features/attachments/actions/select_attachment.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/custom_message_builder.dart';
@@ -20,7 +17,6 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgDraft;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
@@ -28,7 +24,6 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 import 'package:logging/logging.dart';
 import 'package:mime/mime.dart';
@@ -277,7 +272,10 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
                   Padding(
                     padding: const EdgeInsets.only(right: 10),
                     child: InkWell(
-                      onTap: () => onSelectAttachment(context),
+                      onTap: () => selectAttachment(
+                        context: context,
+                        onSelected: handleFileUpload,
+                      ),
                       child: const Icon(
                         Atlas.paperclip_attachment_thin,
                         size: 20,
@@ -414,128 +412,6 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     );
   }
 
-  void onSelectAttachment(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isDismissible: true,
-      enableDrag: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topRight: Radius.circular(20),
-          topLeft: Radius.circular(20),
-        ),
-      ),
-      builder: (context) => AttachmentOptions(
-        onTapCamera: () async {
-          Navigator.pop(context);
-          XFile? imageFile =
-              await ImagePicker().pickImage(source: ImageSource.camera);
-          if (imageFile != null) {
-            List<File> files = [File(imageFile.path)];
-
-            if (context.mounted) {
-              attachmentConfirmation(
-                files,
-                AttachmentType.camera,
-                handleFileUpload,
-              );
-            }
-          }
-        },
-        onTapImage: () async {
-          Navigator.pop(context);
-          XFile? imageFile =
-              await ImagePicker().pickImage(source: ImageSource.gallery);
-          if (imageFile != null) {
-            List<File> files = [File(imageFile.path)];
-
-            if (context.mounted) {
-              attachmentConfirmation(
-                files,
-                AttachmentType.image,
-                handleFileUpload,
-              );
-            }
-          }
-        },
-        onTapVideo: () async {
-          Navigator.pop(context);
-          XFile? imageFile =
-              await ImagePicker().pickVideo(source: ImageSource.gallery);
-          if (imageFile != null) {
-            List<File> files = [File(imageFile.path)];
-
-            if (context.mounted) {
-              attachmentConfirmation(
-                files,
-                AttachmentType.video,
-                handleFileUpload,
-              );
-            }
-          }
-        },
-        onTapFile: () async {
-          Navigator.pop(context);
-          final selectedFiles = await handleFileSelection(context);
-
-          if (context.mounted) {
-            attachmentConfirmation(
-              selectedFiles,
-              AttachmentType.file,
-              handleFileUpload,
-            );
-          }
-        },
-      ),
-    );
-  }
-
-  // file selection
-  Future<List<File>?> handleFileSelection(BuildContext context) async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.any,
-      allowMultiple: true,
-    );
-    if (result != null) {
-      return result.paths.map((path) => File(path!)).toList();
-    }
-    return null;
-  }
-
-  void attachmentConfirmation(
-    List<File>? selectedFiles,
-    AttachmentType type,
-    Future<void> Function(
-      List<File> files,
-      AttachmentType attachmentType,
-    ) handleFileUpload,
-  ) {
-    final size = MediaQuery.of(context).size;
-    if (selectedFiles != null && selectedFiles.isNotEmpty) {
-      context.isLargeScreen
-          ? showAdaptiveDialog(
-              context: context,
-              builder: (context) => Dialog(
-                insetPadding: const EdgeInsets.all(8),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: size.width * 0.5,
-                    maxHeight: size.height * 0.5,
-                  ),
-                  child: _FileWidget(selectedFiles, type, handleFileUpload),
-                ),
-              ),
-            )
-          : showModalBottomSheet(
-              context: context,
-              builder: (context) => Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: _FileWidget(selectedFiles, type, handleFileUpload),
-              ),
-            );
-    }
-  }
-
   Future<void> handleFileUpload(
     List<File> files,
     AttachmentType attachmentType,
@@ -544,7 +420,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     final inputState = ref.read(chatInputProvider);
     final lang = L10n.of(context);
     final stream = await ref.read(
-      timelineStreamProviderForId(widget.roomId).future,
+      timelineStreamProvider(widget.roomId).future,
     );
 
     try {
@@ -716,7 +592,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       // actually send it out
       final inputState = ref.read(chatInputProvider);
       final stream = await ref.read(
-        timelineStreamProviderForId(widget.roomId).future,
+        timelineStreamProvider(widget.roomId).future,
       );
 
       if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
@@ -737,97 +613,6 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         duration: const Duration(seconds: 3),
       );
       ref.read(chatInputProvider.notifier).sendingFailed();
-    }
-  }
-}
-
-class _FileWidget extends ConsumerWidget {
-  final List<File> selectedFiles;
-  final AttachmentType type;
-  final Future<void> Function(
-    List<File> files,
-    AttachmentType attachmentType,
-  ) handleFileUpload;
-
-  const _FileWidget(this.selectedFiles, this.type, this.handleFileUpload);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text('${L10n.of(context).attachments} (${selectedFiles.length})'),
-          const SizedBox(height: 10),
-          Wrap(
-            spacing: 5.0,
-            runSpacing: 10.0,
-            children: <Widget>[
-              for (var file in selectedFiles) _filePreview(context, file),
-            ],
-          ),
-          _buildActionBtns(context),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionBtns(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: <Widget>[
-          OutlinedButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: Text(L10n.of(context).cancel),
-          ),
-          ActerPrimaryActionButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              handleFileUpload(selectedFiles, type);
-            },
-            child: Text(L10n.of(context).send),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _filePreview(BuildContext context, File file) {
-    final fileName = file.path.split('/').last;
-    if (type == AttachmentType.camera || type == AttachmentType.image) {
-      return AttachmentContainer(
-        name: fileName,
-        child: Image.file(file, height: 200, fit: BoxFit.cover),
-      );
-    } else if (type == AttachmentType.audio) {
-      return AttachmentContainer(
-        name: fileName,
-        child: const Center(
-          child: Icon(Atlas.file_sound_thin),
-        ),
-      );
-    } else if (type == AttachmentType.video) {
-      return AttachmentContainer(
-        name: fileName,
-        child: const Center(
-          child: Icon(Atlas.file_video_thin),
-        ),
-      );
-    }
-    //FIXME: cover all mime extension cases?
-    else {
-      return AttachmentContainer(
-        name: fileName,
-        child: const Center(
-          child: Icon(Atlas.plus_file_thin),
-        ),
-      );
     }
   }
 }

@@ -3,7 +3,6 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
 import 'package:acter/common/widgets/chat/loading_convo_card.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/space/widgets/related/chats_helpers.dart';
@@ -12,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 class SpaceChatsPage extends ConsumerWidget {
   static const createChatKey = Key('space-chat-create');
@@ -58,42 +56,6 @@ class SpaceChatsPage extends ConsumerWidget {
                 child: Text(L10n.of(context).linkToChat),
               )
             : null,
-      ),
-    );
-  }
-
-  Widget renderFurther(BuildContext context, WidgetRef ref) {
-    final remoteChats = ref.watch(remoteChatRelationsProvider(spaceIdOrAlias));
-
-    return remoteChats.when(
-      data: (chats) {
-        if (chats.isEmpty) {
-          return const SizedBox.shrink();
-        }
-
-        return SliverList.builder(
-          itemCount: chats.length,
-          itemBuilder: (context, idx) {
-            final item = chats[idx];
-            return ConvoHierarchyCard(
-              showIconIfSuggested: true,
-              parentId: spaceIdOrAlias,
-              roomInfo: item,
-            );
-          },
-        );
-      },
-      error: (e, s) => SliverToBoxAdapter(
-        child: Text(L10n.of(context).errorLoadingRelatedChats(e)),
-      ),
-      loading: () => SliverToBoxAdapter(
-        child: Skeletonizer(
-          child: Card(
-            child: ListTile(
-              title: Text(L10n.of(context).loadingOtherChats),
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -185,7 +147,8 @@ class SpaceChatsPage extends ConsumerWidget {
             if (chatList.isNotEmpty)
               chatsListUI(ref, chatList, chatList.length),
             if (isLoading) _renderLoading(context),
-            if (remoteChats.isNotEmpty) renderFurther(context, ref),
+            if (remoteChats.isNotEmpty)
+              renderFurther(context, ref, spaceIdOrAlias, null),
             if (isEmpty) _renderEmpty(context, ref),
           ],
         ),

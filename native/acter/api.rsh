@@ -1096,6 +1096,9 @@ object Room {
     /// Set the value of `user_has_seen_suggested` for this room
     fn set_user_has_seen_suggested(newValue: bool) -> Future<Result<bool>>;
 
+    /// leave this room
+    fn leave() -> Future<Result<bool>>;
+
 }
 
 

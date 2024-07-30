@@ -32,7 +32,7 @@ class RoomToInviteTo extends ConsumerWidget {
         final chat = ref.watch(chatProvider(roomId)).valueOrNull;
         if (chat != null) {
           return ConvoCard(
-            room: chat,
+            roomId: roomId,
             showParents: true,
             trailing: removeWidget(),
           );

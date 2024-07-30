@@ -12,11 +12,6 @@ final isActerSpaceForSpace =
   return await space.isActerSpace();
 });
 
-final isEncryptedForSpace =
-    FutureProvider.autoDispose.family<bool, Space>((ref, space) async {
-  return await space.isEncrypted();
-});
-
 class SpaceInfo extends ConsumerWidget {
   final String spaceId;
   final double size;
