@@ -504,14 +504,12 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         Jiffy.parseFromDateTime(toDartDatetime(ev.utcEnd()).toLocal())
             .format(pattern: 'EEE, MMM dd, yyyy AT hh:mm');
 
-    String eventTimingTitle = '';
-    if (getEventType(ev) == EventFilters.ongoing) {
-      eventTimingTitle = '${L10n.of(context).started} $agoTime';
-    } else if (getEventType(ev) == EventFilters.upcoming) {
-      eventTimingTitle = '${L10n.of(context).starts} $agoTime';
-    } else if (getEventType(ev) == EventFilters.past) {
-      eventTimingTitle = '${L10n.of(context).ended} $agoTime';
-    }
+    String eventTimingTitle = switch (getEventType(ev)) {
+      EventFilters.ongoing => '${L10n.of(context).eventStarted} $agoTime',
+      EventFilters.upcoming => '${L10n.of(context).eventStarts} $agoTime',
+      EventFilters.past => '${L10n.of(context).eventEnded} $agoTime',
+      EventFilters.all => '',
+    };
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0),

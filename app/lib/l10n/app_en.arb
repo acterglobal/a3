@@ -1980,9 +1980,9 @@
   "noEventsFound": "No events found",
   "noEventAvailableDescription": "Create new event and bring your community together.",
   "myEvents": "My Events",
-  "started": "Started",
-  "starts": "Starts",
-  "ended": "Ended",
+  "eventStarted": "Started",
+  "eventStarts": "Starts",
+  "eventEnded": "Ended",
   "myOngoingEvents": "My Ongoing Events",
   "myUpcomingEvents": "My Upcoming Events",
   "live": "Live"
