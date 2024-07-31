@@ -13,7 +13,10 @@ use matrix_sdk::{
     Client as SdkClient,
 };
 use ruma::assign;
-use ruma_client_api::uiaa::{AuthData, Password, UserIdentifier};
+use ruma_client_api::{
+    device::delete_device,
+    uiaa::{AuthData, Password, UserIdentifier},
+};
 use ruma_common::{device_id, OwnedDeviceId, OwnedUserId};
 use ruma_events::{
     key::verification::{accept::AcceptMethod, start::StartMethod, VerificationMethod},
@@ -163,15 +166,12 @@ impl VerificationEvent {
             .await?
     }
 
-    pub async fn accept_verification_request_with_methods(
-        &self,
-        methods: &mut Vec<String>,
-    ) -> Result<bool> {
+    pub async fn accept_verification_request_with_method(&self, method: String) -> Result<bool> {
         let client = self.client.clone();
         let controller = self.controller.clone();
         let sender = self.sender.clone();
         let flow_id = self.flow_id.clone();
-        let values = (*methods).iter().map(|e| e.as_str().into()).collect();
+        let values = vec![VerificationMethod::from(method.as_str())];
         RUNTIME
             .spawn(async move {
                 let Some(request) = client
@@ -1001,11 +1001,12 @@ impl SessionManager {
         username: String,
         password: String,
     ) -> Result<bool> {
-        let client = self.client.clone();
-        let devices = [OwnedDeviceId::from(dev_id)];
+        let client = self.client.deref().clone();
+        let dev_id = OwnedDeviceId::from(dev_id);
         RUNTIME
             .spawn(async move {
-                if let Err(e) = client.delete_devices(&devices, None).await {
+                let request = delete_device::v3::Request::new(dev_id.clone());
+                if let Err(e) = client.send(request, None).await {
                     if let Some(info) = e.as_uiaa_response() {
                         let pass_data = assign!(Password::new(
                             UserIdentifier::UserIdOrLocalpart(username),
@@ -1014,7 +1015,10 @@ impl SessionManager {
                             session: info.session.clone(),
                         });
                         let auth_data = AuthData::Password(pass_data);
-                        client.delete_devices(&devices, Some(auth_data)).await?;
+                        let request = assign!(delete_device::v3::Request::new(dev_id), {
+                            auth: Some(auth_data),
+                        });
+                        client.send(request, None).await?;
                     } else {
                         return Ok(false);
                     }
@@ -1206,13 +1210,10 @@ impl DeviceNewEvent {
             .await?
     }
 
-    pub async fn request_verification_to_user_with_methods(
-        &self,
-        methods: &mut Vec<String>,
-    ) -> Result<String> {
+    pub async fn request_verification_to_user_with_method(&self, method: String) -> Result<String> {
         let client = self.client();
         let user_id = self.user_id()?;
-        let values = (*methods).iter().map(|e| e.as_str().into()).collect();
+        let values = vec![VerificationMethod::from(method.as_str())];
 
         RUNTIME
             .spawn(async move {
@@ -1227,14 +1228,14 @@ impl DeviceNewEvent {
             .await?
     }
 
-    pub async fn request_verification_to_device_with_methods(
+    pub async fn request_verification_to_device_with_method(
         &self,
         dev_id: String,
-        methods: &mut Vec<String>,
+        method: String,
     ) -> Result<String> {
         let client = self.client();
         let user_id = self.user_id()?;
-        let values = (*methods).iter().map(|e| e.as_str().into()).collect();
+        let values = vec![VerificationMethod::from(method.as_str())];
 
         RUNTIME
             .spawn(async move {
