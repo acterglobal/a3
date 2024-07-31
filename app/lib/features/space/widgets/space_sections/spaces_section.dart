@@ -2,6 +2,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter/features/space/widgets/related/spaces_helpers.dart';
+import 'package:acter/features/space/widgets/related/util.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -40,53 +41,33 @@ class SpacesSection extends ConsumerWidget {
     WidgetRef ref,
     List<String> spaces,
   ) {
-    int spacesLimit;
-    bool isShowSeeAllButton = false;
-    bool renderRemote = false;
-    int moreCount;
-    if (spaces.length > limit) {
-      spacesLimit = limit;
-      isShowSeeAllButton = true;
-      moreCount = 0;
-    } else {
-      spacesLimit = spaces.length;
-      moreCount = limit - spaces.length;
-      if (moreCount > 0) {
-        // we have space for more
-        final remoteCount =
-            (ref.watch(remoteSubspaceRelationsProvider(spaceId)).valueOrNull ??
-                    [])
-                .length;
-        if (remoteCount > 0) {
-          renderRemote = true;
-          if (remoteCount < moreCount) {
-            moreCount = remoteCount;
-          }
-          if (remoteCount > moreCount) {
-            isShowSeeAllButton = true;
-          }
-        }
-      }
-    }
+    final config = calculateSectionConfig(
+      localListLen: spaces.length,
+      limit: limit,
+      remoteListLen:
+          (ref.watch(remoteSubspaceRelationsProvider(spaceId)).valueOrNull ??
+                  [])
+              .length,
+    );
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionHeader(
           title: L10n.of(context).spaces,
-          isShowSeeAllButton: isShowSeeAllButton,
+          isShowSeeAllButton: config.isShowSeeAllButton,
           onTapSeeAll: () => context.pushNamed(
             Routes.spaceRelatedSpaces.name,
             pathParameters: {'spaceId': spaceId},
           ),
         ),
-        spacesListUI(spaces, spacesLimit),
-        if (renderRemote)
+        spacesListUI(spaces, config.listingLimit),
+        if (config.renderRemote)
           renderMoreSubspaces(
             context,
             ref,
             spaceId,
-            maxLength: moreCount,
+            maxLength: config.remoteCount,
             padding: EdgeInsets.zero,
           ),
       ],
