@@ -8,19 +8,16 @@ import 'package:riverpod/riverpod.dart';
 final _log = Logger('a3::settings::devices');
 
 class AsyncDevicesNotifier extends AsyncNotifier<List<DeviceRecord>> {
-  Stream<DeviceNewEvent>? _newListener;
-  StreamSubscription<DeviceNewEvent>? _newPoller;
-
-  Stream<DeviceChangedEvent>? _changedListener;
-  StreamSubscription<DeviceChangedEvent>? _changedPoller;
+  Stream<DeviceEvent>? _listener;
+  StreamSubscription<DeviceEvent>? _poller;
 
   @override
   Future<List<DeviceRecord>> build() async {
     final client = ref.watch(alwaysClientProvider);
     final manager = client.sessionManager();
 
-    _newListener = client.deviceNewEventRx();
-    _newPoller = _newListener?.listen(
+    _listener = client.deviceEventRx();
+    _poller = _listener?.listen(
       (evt) async {
         final sessions = (await manager.allSessions()).toList();
         state = AsyncValue.data(sessions);
@@ -32,22 +29,7 @@ class AsyncDevicesNotifier extends AsyncNotifier<List<DeviceRecord>> {
         _log.info('stream ended');
       },
     );
-    ref.onDispose(() => _newPoller?.cancel());
-
-    _changedListener = client.deviceChangedEventRx();
-    _changedPoller = _changedListener?.listen(
-      (evt) async {
-        final sessions = (await manager.allSessions()).toList();
-        state = AsyncValue.data(sessions);
-      },
-      onError: (e, stack) {
-        _log.severe('stream errored', e, stack);
-      },
-      onDone: () {
-        _log.info('stream ended');
-      },
-    );
-    ref.onDispose(() => _changedPoller?.cancel());
+    ref.onDispose(() => _poller?.cancel());
 
     final sessions = (await manager.allSessions()).toList();
     return sessions;
