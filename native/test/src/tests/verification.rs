@@ -90,9 +90,9 @@ async fn interactive_verification_started_from_request() -> Result<()> {
             if let Ok(_devices) = alice.device_records(false).await {
                 // Alice sends a verification request with her desired methods to Bob
                 event
-                    .request_verification_to_device_with_methods(
+                    .request_verification_to_device_with_method(
                         bob_device_id.to_string(),
-                        &mut vec!["m.sas.v1".to_string()],
+                        "m.sas.v1".to_string(),
                     )
                     .await?;
                 break;
@@ -108,7 +108,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
 
     // Bob accepts the request, sending a Ready request
     event
-        .accept_verification_request_with_methods(&mut vec!["m.sas.v1".to_string()])
+        .accept_verification_request_with_method("m.sas.v1".to_string())
         .await?;
     // And also immediately sends a start request
     let started = event.start_sas_verification().await?;
