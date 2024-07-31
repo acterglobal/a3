@@ -1,6 +1,10 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/blinking_text.dart';
+import 'package:acter/features/events/event_utils/event_utils.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/events/widgets/event_date_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show CalendarEvent;
 import 'package:flutter/material.dart';
@@ -13,6 +17,7 @@ class EventItem extends StatelessWidget {
   final EdgeInsetsGeometry? margin;
   final Function(String)? onTapEventItem;
   final bool isShowRsvp;
+  final bool isShowSpaceName;
 
   const EventItem({
     super.key,
@@ -20,6 +25,7 @@ class EventItem extends StatelessWidget {
     this.margin,
     this.onTapEventItem,
     this.isShowRsvp = true,
+    this.isShowSpaceName = false,
   });
 
   @override
@@ -35,50 +41,36 @@ class EventItem extends StatelessWidget {
           pathParameters: {'calendarId': event.eventId().toString()},
         );
       },
-      child: Card(
-        margin: margin,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            _buildEventDate(context),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildEventTitle(context),
-                  _buildEventSubtitle(context),
-                ],
-              ),
+      child: Stack(
+        alignment: Alignment.topLeft,
+        children: [
+          Card(
+            margin: margin,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                EventDateWidget(calendarEvent: event),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildEventTitle(context),
+                      Consumer(builder: _buildEventSubtitle),
+                      const SizedBox(height: 4),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 10),
+                if (getEventType(event) == EventFilters.ongoing)
+                  _buildHappeningIndication(context),
+                const SizedBox(width: 10),
+                if (isShowRsvp) _buildRsvpStatus(context),
+                const SizedBox(width: 10),
+              ],
             ),
-            const SizedBox(width: 10),
-            if (isShowRsvp) _buildRsvpStatus(context),
-            const SizedBox(width: 10),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEventDate(BuildContext context) {
-    final day = getDayFromDate(event.utcStart());
-    final month = getMonthFromDate(event.utcStart());
-
-    return Card(
-      margin: const EdgeInsets.all(12),
-      color: Theme.of(context).colorScheme.primary,
-      child: Container(
-        height: 70,
-        width: 70,
-        alignment: Alignment.center,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(month),
-            Text(day, style: Theme.of(context).textTheme.titleLarge),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -92,10 +84,18 @@ class EventItem extends StatelessWidget {
     );
   }
 
-  Widget _buildEventSubtitle(BuildContext context) {
+  Widget _buildEventSubtitle(
+    BuildContext context,
+    WidgetRef ref,
+    Widget? child,
+  ) {
+    String eventSpaceName =
+        ref.watch(roomDisplayNameProvider(event.roomIdStr())).valueOrNull ??
+            L10n.of(context).unknown;
+    String eventDateTime = '${formatDate(event)} (${formatTime(event)})';
     return Text(
-      '${formatDate(event)} (${formatTime(event)})',
-      style: Theme.of(context).textTheme.labelMedium,
+      isShowSpaceName ? eventSpaceName : eventDateTime,
+      style: Theme.of(context).textTheme.labelLarge,
       maxLines: 2,
       overflow: TextOverflow.ellipsis,
     );
@@ -109,7 +109,11 @@ class EventItem extends StatelessWidget {
         return myRsvpStatus.when(
           data: (data) {
             final status = data.statusStr(); // kebab-case
-            return Chip(label: Text(_getStatusLabel(context, status)));
+            final rsvpStatusWidget =
+                _getRsvpStatus(context, status); // kebab-case
+            return (rsvpStatusWidget != null)
+                ? rsvpStatusWidget
+                : const SizedBox.shrink();
           },
           error: (e, st) => Chip(
             label: Text(
@@ -125,17 +129,39 @@ class EventItem extends StatelessWidget {
     );
   }
 
-  String _getStatusLabel(BuildContext context, String? status) {
+  Widget? _getRsvpStatus(BuildContext context, String? status) {
     if (status != null) {
       switch (status) {
         case 'yes':
-          return L10n.of(context).going;
+          return const Icon(
+            Icons.check_circle,
+            color: Colors.green,
+          );
         case 'no':
-          return L10n.of(context).notGoing;
+          return const Icon(
+            Icons.cancel,
+            color: Colors.red,
+          );
         case 'maybe':
-          return L10n.of(context).maybe;
+          return const Icon(Icons.question_mark_rounded);
       }
     }
-    return L10n.of(context).pending;
+    return null;
+  }
+
+  Widget _buildHappeningIndication(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.secondary,
+        borderRadius: const BorderRadius.all(Radius.circular(100)),
+      ),
+      child: BlinkText(
+        L10n.of(context).live,
+        style: Theme.of(context).textTheme.labelLarge,
+        beginColor: Colors.white,
+        endColor: Theme.of(context).colorScheme.secondary,
+      ),
+    );
   }
 }

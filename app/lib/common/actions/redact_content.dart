@@ -4,6 +4,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
+import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -126,6 +127,7 @@ class _RedactContentWidget extends ConsumerWidget {
           throw RoomNotFound();
         }
         final redactedId = await room.redactContent(eventId, reason);
+        ref.invalidate(allEventListProvider(roomId));
         _log.info(
           'Content from $redactedId reason:$reason}',
         );
