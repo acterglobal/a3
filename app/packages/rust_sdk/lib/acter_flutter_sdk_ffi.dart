@@ -56227,7 +56227,7 @@ class VerificationEvent {
     return tmp2;
   }
 
-  /// Bob accepts the verification request from Alice with specified methods
+  /// Bob accepts the verification request from Alice with specified method
   Future<bool> acceptVerificationRequestWithMethod(
     String method,
   ) {

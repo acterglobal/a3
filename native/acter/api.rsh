@@ -3009,7 +3009,7 @@ object VerificationEvent {
     /// alternative of terminate_verification
     fn cancel_verification_request() -> Future<Result<bool>>;
 
-    /// Bob accepts the verification request from Alice with specified methods
+    /// Bob accepts the verification request from Alice with specified method
     fn accept_verification_request_with_method(method: string) -> Future<Result<bool>>;
 
     /// Alice starts the SAS verification
