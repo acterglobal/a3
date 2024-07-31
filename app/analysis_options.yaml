@@ -10,5 +10,6 @@ linter:
 
 analyzer:
   exclude:
+   - packages/**
    - "**.g.dart"
    - "**_ffi.dart"
