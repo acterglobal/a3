@@ -13,6 +13,8 @@ class LanguageModel {
         return const LanguageModel.german();
       case 'pl':
         return const LanguageModel.polish();
+      case 'fr':
+        return const LanguageModel.french();
       case 'en':
       default:
         return const LanguageModel.english();
@@ -28,6 +30,10 @@ class LanguageModel {
       : languageName = 'Deutsch',
         languageCode = 'de';
 
+  const LanguageModel.french()
+      : languageName = 'Français',
+        languageCode = 'fr';
+
   const LanguageModel.polish()
       : languageName = 'Polski',
         languageCode = 'pl';
@@ -36,6 +42,7 @@ class LanguageModel {
     // we show them in ehm... alphabetical order
     LanguageModel.german(),
     LanguageModel.english(),
+    LanguageModel.french(),
     LanguageModel.polish(),
   ];
 }
