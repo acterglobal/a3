@@ -163,15 +163,12 @@ impl VerificationEvent {
             .await?
     }
 
-    pub async fn accept_verification_request_with_methods(
-        &self,
-        methods: &mut Vec<String>,
-    ) -> Result<bool> {
+    pub async fn accept_verification_request_with_method(&self, method: String) -> Result<bool> {
         let client = self.client.clone();
         let controller = self.controller.clone();
         let sender = self.sender.clone();
         let flow_id = self.flow_id.clone();
-        let values = (*methods).iter().map(|e| e.as_str().into()).collect();
+        let values = vec![VerificationMethod::from(method.as_str())];
         RUNTIME
             .spawn(async move {
                 let Some(request) = client
@@ -1206,13 +1203,10 @@ impl DeviceNewEvent {
             .await?
     }
 
-    pub async fn request_verification_to_user_with_methods(
-        &self,
-        methods: &mut Vec<String>,
-    ) -> Result<String> {
+    pub async fn request_verification_to_user_with_method(&self, method: String) -> Result<String> {
         let client = self.client();
         let user_id = self.user_id()?;
-        let values = (*methods).iter().map(|e| e.as_str().into()).collect();
+        let values = vec![VerificationMethod::from(method.as_str())];
 
         RUNTIME
             .spawn(async move {
@@ -1227,14 +1221,14 @@ impl DeviceNewEvent {
             .await?
     }
 
-    pub async fn request_verification_to_device_with_methods(
+    pub async fn request_verification_to_device_with_method(
         &self,
         dev_id: String,
-        methods: &mut Vec<String>,
+        method: String,
     ) -> Result<String> {
         let client = self.client();
         let user_id = self.user_id()?;
-        let values = (*methods).iter().map(|e| e.as_str().into()).collect();
+        let values = vec![VerificationMethod::from(method.as_str())];
 
         RUNTIME
             .spawn(async move {
