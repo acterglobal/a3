@@ -26,7 +26,7 @@ class MyEventsSection extends ConsumerWidget {
     String sectionTitle = '';
     if (eventFilters == EventFilters.ongoing) {
       myEvents = ref.watch(myOngoingEventListProvider(null));
-      sectionTitle = L10n.of(context).myOngoingEvents;
+      sectionTitle = L10n.of(context).happeningNow;
     } else {
       myEvents = ref.watch(myUpcomingEventListProvider(null));
       sectionTitle = L10n.of(context).myUpcomingEvents;

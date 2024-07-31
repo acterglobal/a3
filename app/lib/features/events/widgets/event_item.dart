@@ -58,13 +58,14 @@ class EventItem extends StatelessWidget {
                       _buildEventTitle(context),
                       Consumer(builder: _buildEventSubtitle),
                       const SizedBox(height: 4),
-                      if (isShowRsvp) _buildRsvpStatus(context),
                     ],
                   ),
                 ),
                 const SizedBox(width: 10),
                 if (getEventType(event) == EventFilters.ongoing)
                   _buildHappeningIndication(context),
+                const SizedBox(width: 10),
+                if (isShowRsvp) _buildRsvpStatus(context),
                 const SizedBox(width: 10),
               ],
             ),
@@ -111,18 +112,7 @@ class EventItem extends StatelessWidget {
             final rsvpStatusWidget =
                 _getRsvpStatus(context, status); // kebab-case
             return (rsvpStatusWidget != null)
-                ? Row(
-                    children: [
-                      Text(
-                        '${L10n.of(context).rsvp} : ',
-                        style: Theme.of(context)
-                            .textTheme
-                            .labelLarge!
-                            .copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      rsvpStatusWidget,
-                    ],
-                  )
+                ? rsvpStatusWidget
                 : const SizedBox.shrink();
           },
           error: (e, st) => Chip(
@@ -143,48 +133,17 @@ class EventItem extends StatelessWidget {
     if (status != null) {
       switch (status) {
         case 'yes':
-          return Row(
-            children: [
-              const Icon(
-                Icons.check_circle,
-                color: Colors.green,
-                size: 16,
-              ),
-              const SizedBox(width: 4),
-              Text(L10n.of(context).yes),
-            ],
+          return const Icon(
+            Icons.check_circle,
+            color: Colors.green,
           );
         case 'no':
-          return Row(
-            children: [
-              const Icon(
-                Icons.cancel,
-                color: Colors.red,
-                size: 16,
-              ),
-              const SizedBox(width: 4),
-              Text(L10n.of(context).no),
-            ],
+          return const Icon(
+            Icons.cancel,
+            color: Colors.red,
           );
         case 'maybe':
-          return Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade600,
-                  borderRadius: const BorderRadius.all(Radius.circular(100)),
-                ),
-                child: const Icon(
-                  Icons.question_mark_rounded,
-                  color: Colors.white,
-                  size: 11,
-                ),
-              ),
-              const SizedBox(width: 4),
-              Text(L10n.of(context).maybe),
-            ],
-          );
+          return const Icon(Icons.question_mark_rounded);
       }
     }
     return null;
@@ -193,15 +152,15 @@ class EventItem extends StatelessWidget {
   Widget _buildHappeningIndication(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      decoration: const BoxDecoration(
-        color: Colors.red,
-        borderRadius: BorderRadius.all(Radius.circular(100)),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.secondary,
+        borderRadius: const BorderRadius.all(Radius.circular(100)),
       ),
       child: BlinkText(
         L10n.of(context).live,
         style: Theme.of(context).textTheme.labelLarge,
         beginColor: Colors.white,
-        endColor: Colors.red,
+        endColor: Theme.of(context).colorScheme.secondary,
       ),
     );
   }

@@ -1983,7 +1983,7 @@
   "eventStarted": "Started",
   "eventStarts": "Starts",
   "eventEnded": "Ended",
-  "myOngoingEvents": "My Ongoing Events",
+  "happeningNow": "Happening Now",
   "myUpcomingEvents": "My Upcoming Events",
   "live": "Live"
 }

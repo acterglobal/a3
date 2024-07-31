@@ -97,7 +97,7 @@ class _EventListPageState extends ConsumerState<EventListPage> {
       scrollDirection: Axis.horizontal,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        child: Row(
+        child: Wrap(
           children: [
             FilterChip(
               selected: eventFilterValue == EventFilters.all,
@@ -173,7 +173,7 @@ class _EventListPageState extends ConsumerState<EventListPage> {
             : L10n.of(context).noEventsFound,
         subtitle: L10n.of(context).noEventAvailableDescription,
         image: 'assets/images/empty_event.svg',
-        primaryButton: canAdd && searchValue.isEmpty
+        primaryButton: canAdd
             ? ActerPrimaryActionButton(
                 onPressed: () => context.pushNamed(
                   Routes.createEvent.name,
