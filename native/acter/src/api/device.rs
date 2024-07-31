@@ -22,7 +22,10 @@ pub struct DeviceEvent {
 }
 
 impl DeviceEvent {
-    pub(crate) fn new(new_devices: Vec<OwnedDeviceId>, changed_devices: Vec<OwnedDeviceId>) -> Self {
+    pub(crate) fn new(
+        new_devices: Vec<OwnedDeviceId>,
+        changed_devices: Vec<OwnedDeviceId>,
+    ) -> Self {
         DeviceEvent {
             new_devices,
             changed_devices,
@@ -30,11 +33,17 @@ impl DeviceEvent {
     }
 
     pub fn new_devices(&self) -> Vec<String> {
-        self.new_devices.iter().map(OwnedDeviceId::to_string).collect()
+        self.new_devices
+            .iter()
+            .map(OwnedDeviceId::to_string)
+            .collect()
     }
 
     pub fn changed_devices(&self) -> Vec<String> {
-        self.changed_devices.iter().map(OwnedDeviceId::to_string).collect()
+        self.changed_devices
+            .iter()
+            .map(OwnedDeviceId::to_string)
+            .collect()
     }
 }
 
