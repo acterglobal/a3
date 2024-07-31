@@ -1033,13 +1033,11 @@ impl SessionManager {
         RUNTIME
             .spawn(async move {
                 let user_id = client.user_id()?;
-                let Some(device) = client
+                let device = client
                     .encryption()
                     .get_device(&user_id, device_id!(dev_id.as_str()))
                     .await?
-                else {
-                    bail!("Could not get device from encryption")
-                };
+                    .context("Could not get device from encryption")?;
                 let is_verified =
                     device.is_cross_signed_by_owner() || device.is_verified_with_cross_signing();
                 if is_verified {
@@ -1058,14 +1056,11 @@ impl SessionManager {
         RUNTIME
             .spawn(async move {
                 let user_id = client.user_id()?;
-                let Some(request) = client
+                let request = client
                     .encryption()
                     .get_verification_request(&user_id, flow_id)
                     .await
-                else {
-                    // request may be timed out
-                    bail!("Could not get verification request")
-                };
+                    .context("Could not get verification request")?; // request may be timed out
                 request.cancel().await?;
                 Ok(true)
             })
@@ -1094,14 +1089,12 @@ impl Client {
 
         RUNTIME
             .spawn(async move {
-                let Some(device) = client
+                let device = client
                     .clone()
                     .encryption()
                     .get_device(&user_id, device_id!(dev_id.as_str()))
                     .await?
-                else {
-                    bail!("Could not get device from encryption")
-                };
+                    .context("Could not get device from encryption")?;
                 let is_verified =
                     device.is_cross_signed_by_owner() || device.is_verified_with_cross_signing();
                 if is_verified {
@@ -1122,6 +1115,29 @@ impl Client {
             .await?
     }
 
+    #[cfg(feature = "testing")]
+    pub async fn request_verification_with_method(
+        &self,
+        dev_id: String,
+        method: String,
+    ) -> Result<String> {
+        let client = self.core.client().clone();
+        let user_id = self.user_id()?;
+        let values = vec![VerificationMethod::from(method.as_str())];
+
+        RUNTIME
+            .spawn(async move {
+                let device = client
+                    .encryption()
+                    .get_device(&user_id, device_id!(dev_id.as_str()))
+                    .await?
+                    .context("Could not get device from encryption")?;
+                let request = device.request_verification_with_methods(values).await?;
+                Ok(request.flow_id().to_owned())
+            })
+            .await?
+    }
+
     pub async fn install_request_event_handler(&self, flow_id: String) -> Result<bool> {
         let me = self.clone();
         let controller = self.verification_controller.clone();
@@ -1129,16 +1145,13 @@ impl Client {
 
         RUNTIME
             .spawn(async move {
-                let Some(request) = me
+                let request = me
                     .core
                     .client()
                     .encryption()
                     .get_verification_request(&sender, &flow_id)
                     .await
-                else {
-                    // request may be timed out
-                    bail!("Could not get verification request")
-                };
+                    .context("Could not get verification request")?; // request may be timed out
                 tokio::spawn(request_verification_handler(
                     me, controller, request, flow_id, sender,
                 ));
