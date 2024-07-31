@@ -130,7 +130,7 @@ class _RedactContentWidget extends ConsumerWidget {
           throw RoomNotFound();
         }
         final redactedId = await room.redactContent(eventId, reason);
-        ref.invalidate(spaceEventsProvider(roomId));
+        ref.invalidate(allEventListProvider(roomId));
         _log.info(
           'Content from $redactedId reason:$reason}',
         );

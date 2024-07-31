@@ -1,22 +1,20 @@
 import 'dart:math';
-
-import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
+import 'package:acter/common/widgets/space_name_widget.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/pin_list_item.dart';
 import 'package:acter/features/pins/widgets/pin_list_skeleton.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
-import 'package:acter/features/search/providers/search.dart';
 
 class PinsListPage extends ConsumerStatefulWidget {
   final String? spaceId;
@@ -48,7 +46,10 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(L10n.of(context).pins),
-          if (widget.spaceId != null) _buildSpaceName(),
+          if (widget.spaceId != null)
+            SpaceNameWidget(
+              spaceId: widget.spaceId,
+            ),
         ],
       ),
       actions: [
@@ -60,16 +61,6 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildSpaceName() {
-    String spaceName =
-        ref.watch(roomDisplayNameProvider(widget.spaceId!)).valueOrNull ?? '';
-    return Text(
-      '($spaceName)',
-      overflow: TextOverflow.ellipsis,
-      style: Theme.of(context).textTheme.labelLarge,
     );
   }
 
@@ -89,7 +80,9 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _buildSearchBar(),
+        ActerSearchWidget(
+          searchTextController: searchTextController,
+        ),
         Expanded(
           child: pinList.when(
             data: (pins) => _buildPinsList(pins),
@@ -99,34 +92,6 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildSearchBar() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-      child: SearchBar(
-        controller: searchTextController,
-        leading: const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Icon(Atlas.magnifying_glass),
-        ),
-        hintText: L10n.of(context).search,
-        trailing: searchValue.isNotEmpty
-            ? [
-                IconButton(
-                  onPressed: () {
-                    FocusManager.instance.primaryFocus?.unfocus();
-                    ref.read(searchValueProvider.notifier).state = '';
-                    searchTextController.clear();
-                  },
-                  icon: const Icon(Icons.clear),
-                ),
-              ]
-            : null,
-        onChanged: (value) =>
-            ref.read(searchValueProvider.notifier).state = value,
-      ),
     );
   }
 

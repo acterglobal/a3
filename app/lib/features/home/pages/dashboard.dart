@@ -4,6 +4,7 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
+import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/in_dashboard.dart';
 import 'package:acter/features/home/widgets/my_events.dart';
@@ -39,10 +40,16 @@ class Dashboard extends ConsumerWidget {
                         searchWidget(context),
                         featuresNav(context),
                         const SizedBox(height: 20),
+                        const MyEventsSection(
+                          eventFilters: EventFilters.ongoing,
+                        ),
+                        const SizedBox(height: 12),
                         const MyTasksSection(limit: 5),
-                        const SizedBox(height: 28),
-                        const MyEventsSection(limit: 5),
                         const SizedBox(height: 20),
+                        const MyEventsSection(
+                          limit: 3,
+                          eventFilters: EventFilters.upcoming,
+                        ),
                         const MySpacesSection(limit: 5),
                       ],
                     ),
@@ -116,7 +123,7 @@ class Dashboard extends ConsumerWidget {
               context: context,
               title: L10n.of(context).pins,
               iconData: Atlas.pin,
-              color: Colors.orangeAccent,
+              color: const Color(0xff7c4a4a),
               onTap: () => context.pushNamed(Routes.pins.name),
             ),
             const SizedBox(width: 20),
@@ -124,7 +131,7 @@ class Dashboard extends ConsumerWidget {
               context: context,
               title: L10n.of(context).events,
               iconData: Atlas.calendar_dots,
-              color: Theme.of(context).colorScheme.primary,
+              color: const Color(0xff206a9a),
               onTap: () => context.pushNamed(Routes.calendarEvents.name),
             ),
           ],
@@ -136,7 +143,7 @@ class Dashboard extends ConsumerWidget {
               context: context,
               title: L10n.of(context).tasks,
               iconData: Atlas.list,
-              color: Colors.green,
+              color: const Color(0xff406c6e),
               onTap: () => context.pushNamed(Routes.tasks.name),
             ),
             const SizedBox(width: 20),
