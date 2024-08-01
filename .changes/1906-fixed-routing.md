@@ -1,1 +1,0 @@
-- Fix in routing if you resized the app window while in setting screens.

@@ -14345,7 +14345,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __verificationEventAcceptVerificationRequestWithMethodsFuturePoll(
+  bool? __verificationEventAcceptVerificationRequestWithMethodFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -14360,7 +14360,7 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     final tmp6 =
-        _verificationEventAcceptVerificationRequestWithMethodsFuturePoll(
+        _verificationEventAcceptVerificationRequestWithMethodFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -14932,7 +14932,7 @@ class Api {
     return tmp7;
   }
 
-  String? __deviceNewEventRequestVerificationToUserWithMethodsFuturePoll(
+  String? __deviceNewEventRequestVerificationToUserWithMethodFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -14946,7 +14946,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _deviceNewEventRequestVerificationToUserWithMethodsFuturePoll(
+    final tmp6 = _deviceNewEventRequestVerificationToUserWithMethodFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -14994,7 +14994,7 @@ class Api {
     return tmp7;
   }
 
-  String? __deviceNewEventRequestVerificationToDeviceWithMethodsFuturePoll(
+  String? __deviceNewEventRequestVerificationToDeviceWithMethodFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -15008,8 +15008,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 =
-        _deviceNewEventRequestVerificationToDeviceWithMethodsFuturePoll(
+    final tmp6 = _deviceNewEventRequestVerificationToDeviceWithMethodFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -27738,18 +27737,20 @@ class Api {
           int Function(
             int,
           )>();
-  late final _verificationEventAcceptVerificationRequestWithMethodsPtr =
-      _lookup<
-              ffi.NativeFunction<
-                  ffi.IntPtr Function(
-                    ffi.IntPtr,
-                    ffi.IntPtr,
-                  )>>(
-          "__VerificationEvent_accept_verification_request_with_methods");
+  late final _verificationEventAcceptVerificationRequestWithMethodPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+          )>>("__VerificationEvent_accept_verification_request_with_method");
 
-  late final _verificationEventAcceptVerificationRequestWithMethods =
-      _verificationEventAcceptVerificationRequestWithMethodsPtr.asFunction<
+  late final _verificationEventAcceptVerificationRequestWithMethod =
+      _verificationEventAcceptVerificationRequestWithMethodPtr.asFunction<
           int Function(
+            int,
+            int,
             int,
             int,
           )>();
@@ -27941,20 +27942,24 @@ class Api {
             int,
             int,
           )>();
-  late final _deviceNewEventRequestVerificationToUserWithMethodsPtr = _lookup<
+  late final _deviceNewEventRequestVerificationToUserWithMethodPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
             ffi.IntPtr,
             ffi.IntPtr,
-          )>>("__DeviceNewEvent_request_verification_to_user_with_methods");
+            ffi.UintPtr,
+            ffi.UintPtr,
+          )>>("__DeviceNewEvent_request_verification_to_user_with_method");
 
-  late final _deviceNewEventRequestVerificationToUserWithMethods =
-      _deviceNewEventRequestVerificationToUserWithMethodsPtr.asFunction<
+  late final _deviceNewEventRequestVerificationToUserWithMethod =
+      _deviceNewEventRequestVerificationToUserWithMethodPtr.asFunction<
           int Function(
+            int,
+            int,
             int,
             int,
           )>();
-  late final _deviceNewEventRequestVerificationToDeviceWithMethodsPtr = _lookup<
+  late final _deviceNewEventRequestVerificationToDeviceWithMethodPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
             ffi.IntPtr,
@@ -27962,11 +27967,15 @@ class Api {
             ffi.UintPtr,
             ffi.UintPtr,
             ffi.IntPtr,
-          )>>("__DeviceNewEvent_request_verification_to_device_with_methods");
+            ffi.UintPtr,
+            ffi.UintPtr,
+          )>>("__DeviceNewEvent_request_verification_to_device_with_method");
 
-  late final _deviceNewEventRequestVerificationToDeviceWithMethods =
-      _deviceNewEventRequestVerificationToDeviceWithMethodsPtr.asFunction<
+  late final _deviceNewEventRequestVerificationToDeviceWithMethod =
+      _deviceNewEventRequestVerificationToDeviceWithMethodPtr.asFunction<
           int Function(
+            int,
+            int,
             int,
             int,
             int,
@@ -31989,21 +31998,21 @@ class Api {
             int,
             int,
           )>();
-  late final _verificationEventAcceptVerificationRequestWithMethodsFuturePollPtr =
+  late final _verificationEventAcceptVerificationRequestWithMethodFuturePollPtr =
       _lookup<
               ffi.NativeFunction<
-                  _VerificationEventAcceptVerificationRequestWithMethodsFuturePollReturn
+                  _VerificationEventAcceptVerificationRequestWithMethodFuturePollReturn
                       Function(
                     ffi.IntPtr,
                     ffi.IntPtr,
                     ffi.Int64,
                   )>>(
-          "__VerificationEvent_accept_verification_request_with_methods_future_poll");
+          "__VerificationEvent_accept_verification_request_with_method_future_poll");
 
-  late final _verificationEventAcceptVerificationRequestWithMethodsFuturePoll =
-      _verificationEventAcceptVerificationRequestWithMethodsFuturePollPtr
+  late final _verificationEventAcceptVerificationRequestWithMethodFuturePoll =
+      _verificationEventAcceptVerificationRequestWithMethodFuturePollPtr
           .asFunction<
-              _VerificationEventAcceptVerificationRequestWithMethodsFuturePollReturn
+              _VerificationEventAcceptVerificationRequestWithMethodFuturePollReturn
                   Function(
                 int,
                 int,
@@ -32174,41 +32183,41 @@ class Api {
             int,
             int,
           )>();
-  late final _deviceNewEventRequestVerificationToUserWithMethodsFuturePollPtr =
+  late final _deviceNewEventRequestVerificationToUserWithMethodFuturePollPtr =
       _lookup<
               ffi.NativeFunction<
-                  _DeviceNewEventRequestVerificationToUserWithMethodsFuturePollReturn
+                  _DeviceNewEventRequestVerificationToUserWithMethodFuturePollReturn
                       Function(
                     ffi.IntPtr,
                     ffi.IntPtr,
                     ffi.Int64,
                   )>>(
-          "__DeviceNewEvent_request_verification_to_user_with_methods_future_poll");
+          "__DeviceNewEvent_request_verification_to_user_with_method_future_poll");
 
-  late final _deviceNewEventRequestVerificationToUserWithMethodsFuturePoll =
-      _deviceNewEventRequestVerificationToUserWithMethodsFuturePollPtr
+  late final _deviceNewEventRequestVerificationToUserWithMethodFuturePoll =
+      _deviceNewEventRequestVerificationToUserWithMethodFuturePollPtr
           .asFunction<
-              _DeviceNewEventRequestVerificationToUserWithMethodsFuturePollReturn
+              _DeviceNewEventRequestVerificationToUserWithMethodFuturePollReturn
                   Function(
                 int,
                 int,
                 int,
               )>();
-  late final _deviceNewEventRequestVerificationToDeviceWithMethodsFuturePollPtr =
+  late final _deviceNewEventRequestVerificationToDeviceWithMethodFuturePollPtr =
       _lookup<
               ffi.NativeFunction<
-                  _DeviceNewEventRequestVerificationToDeviceWithMethodsFuturePollReturn
+                  _DeviceNewEventRequestVerificationToDeviceWithMethodFuturePollReturn
                       Function(
                     ffi.IntPtr,
                     ffi.IntPtr,
                     ffi.Int64,
                   )>>(
-          "__DeviceNewEvent_request_verification_to_device_with_methods_future_poll");
+          "__DeviceNewEvent_request_verification_to_device_with_method_future_poll");
 
-  late final _deviceNewEventRequestVerificationToDeviceWithMethodsFuturePoll =
-      _deviceNewEventRequestVerificationToDeviceWithMethodsFuturePollPtr
+  late final _deviceNewEventRequestVerificationToDeviceWithMethodFuturePoll =
+      _deviceNewEventRequestVerificationToDeviceWithMethodFuturePollPtr
           .asFunction<
-              _DeviceNewEventRequestVerificationToDeviceWithMethodsFuturePollReturn
+              _DeviceNewEventRequestVerificationToDeviceWithMethodFuturePollReturn
                   Function(
                 int,
                 int,
@@ -56690,27 +56699,38 @@ class VerificationEvent {
     return tmp2;
   }
 
-  /// Bob accepts the verification request from Alice with specified methods
-  Future<bool> acceptVerificationRequestWithMethods(
-    FfiListFfiString methods,
+  /// Bob accepts the verification request from Alice with specified method
+  Future<bool> acceptVerificationRequestWithMethod(
+    String method,
   ) {
-    final tmp1 = methods;
+    final tmp1 = method;
     var tmp0 = 0;
     var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
     tmp0 = _box.borrow();
-    tmp2 = tmp1._box.move();
-    final tmp3 = _api._verificationEventAcceptVerificationRequestWithMethods(
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._verificationEventAcceptVerificationRequestWithMethod(
       tmp0,
       tmp2,
+      tmp3,
+      tmp4,
     );
-    final tmp5 = tmp3;
-    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 = _Box(_api, tmp5_0,
-        "__VerificationEvent_accept_verification_request_with_methods_future_drop");
-    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 = _nativeFuture(tmp5_1,
-        _api.__verificationEventAcceptVerificationRequestWithMethodsFuturePoll);
-    return tmp4;
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0,
+        "__VerificationEvent_accept_verification_request_with_method_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1,
+        _api.__verificationEventAcceptVerificationRequestWithMethodFuturePoll);
+    return tmp6;
   }
 
   /// Alice starts the SAS verification
@@ -57099,43 +57119,16 @@ class DeviceNewEvent {
     return tmp6;
   }
 
-  /// Request verification to any devices of user with methods
+  /// Request verification to any devices of user with specified method
   /// returns flow id of verification
-  Future<String> requestVerificationToUserWithMethods(
-    FfiListFfiString methods,
+  Future<String> requestVerificationToUserWithMethod(
+    String method,
   ) {
-    final tmp1 = methods;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    tmp0 = _box.borrow();
-    tmp2 = tmp1._box.move();
-    final tmp3 = _api._deviceNewEventRequestVerificationToUserWithMethods(
-      tmp0,
-      tmp2,
-    );
-    final tmp5 = tmp3;
-    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 = _Box(_api, tmp5_0,
-        "__DeviceNewEvent_request_verification_to_user_with_methods_future_drop");
-    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 = _nativeFuture(tmp5_1,
-        _api.__deviceNewEventRequestVerificationToUserWithMethodsFuturePoll);
-    return tmp4;
-  }
-
-  /// Request verification to specific device with methods
-  /// returns flow id of verification
-  Future<String> requestVerificationToDeviceWithMethods(
-    String devId,
-    FfiListFfiString methods,
-  ) {
-    final tmp1 = devId;
-    final tmp5 = methods;
+    final tmp1 = method;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
     var tmp4 = 0;
-    var tmp6 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -57145,22 +57138,71 @@ class DeviceNewEvent {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    tmp6 = tmp5._box.move();
-    final tmp7 = _api._deviceNewEventRequestVerificationToDeviceWithMethods(
+    final tmp5 = _api._deviceNewEventRequestVerificationToUserWithMethod(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0,
+        "__DeviceNewEvent_request_verification_to_user_with_method_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1,
+        _api.__deviceNewEventRequestVerificationToUserWithMethodFuturePoll);
+    return tmp6;
+  }
+
+  /// Request verification to specific device with specified method
+  /// returns flow id of verification
+  Future<String> requestVerificationToDeviceWithMethod(
+    String devId,
+    String method,
+  ) {
+    final tmp1 = devId;
+    final tmp5 = method;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._deviceNewEventRequestVerificationToDeviceWithMethod(
       tmp0,
       tmp2,
       tmp3,
       tmp4,
       tmp6,
+      tmp7,
+      tmp8,
     );
-    final tmp9 = tmp7;
-    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
-    final tmp9_1 = _Box(_api, tmp9_0,
-        "__DeviceNewEvent_request_verification_to_device_with_methods_future_drop");
-    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
-    final tmp8 = _nativeFuture(tmp9_1,
-        _api.__deviceNewEventRequestVerificationToDeviceWithMethodsFuturePoll);
-    return tmp8;
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0,
+        "__DeviceNewEvent_request_verification_to_device_with_method_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = _nativeFuture(tmp11_1,
+        _api.__deviceNewEventRequestVerificationToDeviceWithMethodFuturePoll);
+    return tmp10;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -64322,7 +64364,7 @@ class _VerificationEventCancelVerificationRequestFuturePollReturn
   external int arg5;
 }
 
-class _VerificationEventAcceptVerificationRequestWithMethodsFuturePollReturn
+class _VerificationEventAcceptVerificationRequestWithMethodFuturePollReturn
     extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -64522,7 +64564,7 @@ class _DeviceNewEventRequestVerificationToDeviceFuturePollReturn
   external int arg7;
 }
 
-class _DeviceNewEventRequestVerificationToUserWithMethodsFuturePollReturn
+class _DeviceNewEventRequestVerificationToUserWithMethodFuturePollReturn
     extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -64542,7 +64584,7 @@ class _DeviceNewEventRequestVerificationToUserWithMethodsFuturePollReturn
   external int arg7;
 }
 
-class _DeviceNewEventRequestVerificationToDeviceWithMethodsFuturePollReturn
+class _DeviceNewEventRequestVerificationToDeviceWithMethodFuturePollReturn
     extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;

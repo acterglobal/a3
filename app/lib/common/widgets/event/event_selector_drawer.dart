@@ -20,7 +20,7 @@ Future<String?> selectEventDrawer({
     isDismissible: true,
     builder: (context) => Consumer(
       builder: (context, ref, child) {
-        final events = ref.watch(spaceEventsProvider(spaceId));
+        final events = ref.watch(allEventListProvider(spaceId));
         return events.when(
           data: (eventsList) {
             return Column(

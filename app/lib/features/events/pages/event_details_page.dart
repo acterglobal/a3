@@ -10,8 +10,10 @@ import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
+import 'package:acter/features/events/event_utils/event_utils.dart';
 import 'package:acter/features/events/model/keys.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/events/widgets/event_date_widget.dart';
 import 'package:acter/features/events/widgets/participants_list.dart';
 import 'package:acter/features/events/widgets/skeletons/event_details_skeleton_widget.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -216,69 +218,60 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   Widget _buildEventBasicDetails(CalendarEvent calendarEvent) {
-    final month = getMonthFromDate(calendarEvent.utcStart());
-    final day = getDayFromDate(calendarEvent.utcStart());
     final membership = ref
         .watch(roomMembershipProvider(calendarEvent.roomIdStr()))
         .valueOrNull;
     final canPostEvent = membership?.canString('CanPostEvent') == true;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Date and Month
-          Column(
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Date and Month
+        EventDateWidget(
+          calendarEvent: calendarEvent,
+          size: 80,
+        ),
+        // Title, Space, User counts, comments counts and like counts
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(month, style: Theme.of(context).textTheme.titleLarge!),
-              Text(day, style: Theme.of(context).textTheme.displayLarge),
-            ],
-          ),
-          // Space
-          const SizedBox(width: 30),
-          // Title, Space, User counts, comments counts and like counts
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SelectionArea(
-                  child: GestureDetector(
-                    onTap: () {
-                      if (canPostEvent) {
-                        showEditEventTitleBottomSheet(calendarEvent.title());
-                      }
-                    },
-                    child: Text(
-                      calendarEvent.title(),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
+              SelectionArea(
+                child: GestureDetector(
+                  onTap: () {
+                    if (canPostEvent) {
+                      showEditEventTitleBottomSheet(calendarEvent.title());
+                    }
+                  },
+                  child: Text(
+                    calendarEvent.title(),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
-                SpaceChip(spaceId: calendarEvent.roomIdStr()),
-                const SizedBox(height: 5),
-                Row(
-                  children: [
-                    const Icon(Atlas.accounts_group_people),
-                    const SizedBox(width: 10),
-                    ValueListenableBuilder(
-                      valueListenable: eventParticipantsList,
-                      builder: (context, eventParticipantsList, child) {
-                        return Text(
-                          L10n.of(context)
-                              .peopleGoing(eventParticipantsList.length),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            ),
+              ),
+              SpaceChip(spaceId: calendarEvent.roomIdStr()),
+              const SizedBox(height: 5),
+              Row(
+                children: [
+                  const Icon(Atlas.accounts_group_people),
+                  const SizedBox(width: 10),
+                  ValueListenableBuilder(
+                    valueListenable: eventParticipantsList,
+                    builder: (context, eventParticipantsList, child) {
+                      return Text(
+                        L10n.of(context)
+                            .peopleGoing(eventParticipantsList.length),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -500,16 +493,23 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   Widget _buildEventDataSet(CalendarEvent ev) {
-    final inDays =
+    final agoTime =
         Jiffy.parseFromDateTime(toDartDatetime(ev.utcStart()).toLocal())
-            .endOf(Unit.day)
+            .endOf(Unit.hour)
             .fromNow();
     final startDate =
         Jiffy.parseFromDateTime(toDartDatetime(ev.utcStart()).toLocal())
-            .format(pattern: 'EEE, MMM dd AT hh:mm');
+            .format(pattern: 'EEE, MMM dd, yyyy AT hh:mm');
     final endDate =
         Jiffy.parseFromDateTime(toDartDatetime(ev.utcEnd()).toLocal())
-            .format(pattern: 'EEE, MMM dd AT hh:mm');
+            .format(pattern: 'EEE, MMM dd, yyyy AT hh:mm');
+
+    String eventTimingTitle = switch (getEventType(ev)) {
+      EventFilters.ongoing => '${L10n.of(context).eventStarted} $agoTime',
+      EventFilters.upcoming => '${L10n.of(context).eventStarts} $agoTime',
+      EventFilters.past => '${L10n.of(context).eventEnded} $agoTime',
+      EventFilters.all => '',
+    };
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -517,7 +517,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         children: [
           ListTile(
             leading: const Icon(Atlas.calendar_dots),
-            title: Text(inDays),
+            title: Text(eventTimingTitle),
             subtitle: Text('$startDate - $endDate'),
           ),
           ListTile(

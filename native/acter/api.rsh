@@ -3014,8 +3014,8 @@ object VerificationEvent {
     /// alternative of terminate_verification
     fn cancel_verification_request() -> Future<Result<bool>>;
 
-    /// Bob accepts the verification request from Alice with specified methods
-    fn accept_verification_request_with_methods(methods: Vec<string>) -> Future<Result<bool>>;
+    /// Bob accepts the verification request from Alice with specified method
+    fn accept_verification_request_with_method(method: string) -> Future<Result<bool>>;
 
     /// Alice starts the SAS verification
     fn start_sas_verification() -> Future<Result<bool>>;
@@ -3092,13 +3092,13 @@ object DeviceNewEvent {
     /// returns flow id of verification
     fn request_verification_to_device(dev_id: string) -> Future<Result<string>>;
 
-    /// Request verification to any devices of user with methods
+    /// Request verification to any devices of user with specified method
     /// returns flow id of verification
-    fn request_verification_to_user_with_methods(methods: Vec<string>) -> Future<Result<string>>;
+    fn request_verification_to_user_with_method(method: string) -> Future<Result<string>>;
 
-    /// Request verification to specific device with methods
+    /// Request verification to specific device with specified method
     /// returns flow id of verification
-    fn request_verification_to_device_with_methods(dev_id: string, methods: Vec<string>) -> Future<Result<string>>;
+    fn request_verification_to_device_with_method(dev_id: string, method: string) -> Future<Result<string>>;
 }
 
 /// Deliver devices changed event from rust to flutter
