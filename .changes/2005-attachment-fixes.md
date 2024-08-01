@@ -1,2 +1,0 @@
-- Sending attachment in chats works again
-- Removing attachments from Pins and other objects works again

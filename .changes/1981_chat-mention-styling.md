@@ -1,1 +1,0 @@
-- Now when you mention some user in chat, the styling colors will appear on name/id.

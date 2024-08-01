@@ -1,2 +1,0 @@
-- Show the progress when inviting many users via other spaces
-- Pull to refresh for Space Overview page
