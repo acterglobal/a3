@@ -1,13 +1,13 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/common/widgets/user_builder.dart';
+import 'package:acter/features/invite_members/providers/invite_providers.dart';
 import 'package:acter/features/invite_members/widgets/direct_invite.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:acter/features/invite_members/providers/invite_providers.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 

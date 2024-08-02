@@ -1,11 +1,11 @@
 import 'package:acter/common/actions/redact_content.dart';
+import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_bottom_sheet.dart';
 import 'package:acter/common/widgets/like_button.dart';
-import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/router/utils.dart';
@@ -13,11 +13,11 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 final _log = Logger('a3::news::sidebar');
 

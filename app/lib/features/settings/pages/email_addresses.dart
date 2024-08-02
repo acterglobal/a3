@@ -95,9 +95,7 @@ class EmailAddressesPage extends ConsumerWidget {
             ),
             IconButton(
               onPressed: () => addEmailAddress(context, ref),
-              icon: const Icon(
-                Atlas.plus_circle_thin,
-              ),
+              icon: const Icon(Atlas.plus_circle_thin),
             ),
           ],
         ),

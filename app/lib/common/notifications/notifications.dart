@@ -7,12 +7,14 @@ import 'package:acter/common/notifications/util.dart';
 import 'package:acter/common/providers/app_state_provider.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/config/firebase_options.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:convert/convert.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -21,8 +23,6 @@ import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:push/push.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:acter/config/firebase_options.dart';
 
 final _log = Logger('a3::common::notifications');
 

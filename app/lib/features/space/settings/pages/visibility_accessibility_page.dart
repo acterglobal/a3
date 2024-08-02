@@ -3,14 +3,14 @@ import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/spaces/has_space_permission.dart';
-import 'package:acter/common/widgets/visibility/room_visibilty_type.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
+import 'package:acter/common/widgets/visibility/room_visibilty_type.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
