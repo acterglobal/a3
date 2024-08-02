@@ -7,8 +7,11 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:path/path.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+
+final _log = Logger('a3::common::room::select_drawer');
 
 // ChildRoomType configures the sub child type of the `Spaces`
 enum RoomType {
@@ -164,7 +167,10 @@ class _SelectRoomDrawerState extends ConsumerState<SelectRoomDrawer> {
         heightFactor: 10,
         child: CircularProgressIndicator(),
       ),
-      error: (e, s) => Center(child: Text(L10n.of(context).searchingFailed(e))),
+      error: (e, s) {
+        _log.severe('Searching spaces or convos failed', e, s);
+        return Center(child: Text(L10n.of(context).searchingFailed(e)));
+      },
     );
   }
 

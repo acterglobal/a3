@@ -18,7 +18,10 @@ import 'package:acter/features/space/widgets/space_toolbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+
+final _log = Logger('a3::space::space_details');
 
 class SpaceDetailsPage extends ConsumerStatefulWidget {
   static const headerKey = Key('space-menus-header');
@@ -146,7 +149,10 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
           },
         );
       },
-      error: (error, stack) => Text(L10n.of(context).loadingFailed(error)),
+      error: (error, stack) {
+        _log.severe('Fetching of spaces failed', error, stack);
+        return Text(L10n.of(context).loadingFailed(error));
+      },
       loading: () => const SpaceDetailsSkeletons(),
     );
   }

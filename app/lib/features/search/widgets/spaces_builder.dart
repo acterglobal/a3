@@ -7,7 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::search::spaces_builder');
 
 class SpacesBuilder extends ConsumerWidget {
   const SpacesBuilder({
@@ -19,10 +22,13 @@ class SpacesBuilder extends ConsumerWidget {
     final foundSpaces = ref.watch(spacesFoundProvider);
     return foundSpaces.when(
       loading: () => renderLoading(context),
-      error: (e, st) => inBox(
-        context,
-        Text(L10n.of(context).error(e)),
-      ),
+      error: (e, st) {
+        _log.severe('Searching of spaces failed', e, st);
+        return inBox(
+          context,
+          Text(L10n.of(context).error(e)),
+        );
+      },
       data: (data) {
         if (data.isEmpty) {
           return renderEmpty(context, ref);

@@ -5,7 +5,10 @@ import 'package:acter/router/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::space::related::chats_helpers');
 
 Widget chatsListUI(WidgetRef ref, List<String> chats, int chatsLimit) {
   return ListView.builder(
@@ -54,8 +57,10 @@ Widget renderFurther(
         },
       );
     },
-    error: (e, s) =>
-        Card(child: Text(L10n.of(context).errorLoadingRelatedChats(e))),
+    error: (e, s) {
+      _log.severe('Fetching of remote chat relations failed', e, s);
+      return Card(child: Text(L10n.of(context).errorLoadingRelatedChats(e)));
+    },
     loading: () => Skeletonizer(
       child: Card(child: Text(L10n.of(context).loadingOtherChats)),
     ),

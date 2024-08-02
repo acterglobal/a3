@@ -8,6 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::super_invites::list');
 
 class SuperInvitesPage extends ConsumerWidget {
   static Key createNewToken = const Key('super-invites-create');
@@ -98,11 +101,12 @@ class SuperInvitesPage extends ConsumerWidget {
                         ),
                       ),
                     ),
-              error: (error, stack) {
+              error: (e, s) {
+                _log.severe('Fetching of super invite tokens failed', e, s);
                 return SliverToBoxAdapter(
                   child: Center(
                     child: Text(
-                      L10n.of(context).failedToLoadInviteCodes(error),
+                      L10n.of(context).failedToLoadInviteCodes(e),
                     ),
                   ),
                 );

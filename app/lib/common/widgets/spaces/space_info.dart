@@ -5,7 +5,10 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::common::spaces::info');
 
 final isActerSpaceForSpace =
     FutureProvider.autoDispose.family<bool, Space>((ref, space) async {
@@ -33,7 +36,10 @@ class SpaceInfo extends ConsumerWidget {
           ],
         );
       },
-      error: (e, s) => Text(L10n.of(context).error(e)),
+      error: (e, s) {
+        _log.severe('Fetching of space info failed', e, s);
+        return Text(L10n.of(context).error(e));
+      },
       loading: () => skeletonUI(),
     );
   }

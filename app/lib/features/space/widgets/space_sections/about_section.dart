@@ -3,7 +3,10 @@ import 'package:acter/features/space/actions/set_space_topic.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::space::sections::about');
 
 class AboutSection extends ConsumerWidget {
   final String spaceId;
@@ -60,9 +63,12 @@ class AboutSection extends ConsumerWidget {
           ),
         );
       },
-      error: (error, stack) => Text(
-        L10n.of(context).loadingFailed(error),
-      ),
+      error: (error, stack) {
+        _log.severe('Loading of space failed', error, stack);
+        return Text(
+          L10n.of(context).loadingFailed(error),
+        );
+      },
       loading: () => Skeletonizer(
         child: Text(L10n.of(context).loading),
       ),

@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::search::pins_builder');
 
 class PinsBuilder extends ConsumerWidget {
   const PinsBuilder({
@@ -15,7 +18,10 @@ class PinsBuilder extends ConsumerWidget {
     final foundPins = ref.watch(pinsFoundProvider);
     return foundPins.when(
       loading: () => Text(L10n.of(context).loading),
-      error: (e, st) => Text(L10n.of(context).error(e)),
+      error: (e, st) {
+        _log.severe('Searching of pin list failed', e, st);
+        return Text(L10n.of(context).error(e));
+      },
       data: (data) {
         final Widget body;
         if (data.isEmpty) {

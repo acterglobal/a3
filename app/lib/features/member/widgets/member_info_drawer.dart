@@ -17,7 +17,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::member::member_info_drawer');
 
 class _MemberInfoDrawerInner extends ConsumerWidget {
   final Member member;
@@ -218,15 +221,18 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
             }
             return menu;
           },
-          error: (e, s) => [
-            _roomTitle(context, ref),
-            MenuItemWidget(
-              iconData: Atlas.triangle_exclamation_thin,
-              title: L10n.of(context).errorLoading(e),
-              withMenu: false,
-              onTap: () {},
-            ),
-          ],
+          error: (e, s) {
+            _log.severe('Fetching of room membership failed', e, s);
+            return [
+              _roomTitle(context, ref),
+              MenuItemWidget(
+                iconData: Atlas.triangle_exclamation_thin,
+                title: L10n.of(context).errorLoading(e),
+                withMenu: false,
+                onTap: () {},
+              ),
+            ];
+          },
           loading: () => [
             _roomTitle(context, ref),
             Skeletonizer(
@@ -314,10 +320,13 @@ class MemberInfoDrawer extends ConsumerWidget {
             memberId: memberId,
             isShowActions: isShowActions,
           ),
-          error: (e, s) => Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Text(L10n.of(context).errorLoadingProfile(e)),
-          ),
+          error: (e, s) {
+            _log.severe('Fetching of member failed', e, s);
+            return Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Text(L10n.of(context).errorLoadingProfile(e)),
+            );
+          },
           loading: () => const MemberInfoSkeleton(),
         );
   }

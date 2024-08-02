@@ -5,7 +5,10 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::common::spaces::select_form_field');
 
 class SelectSpaceFormField extends ConsumerWidget {
   static Key openKey = const Key('select-space-form-field-open');
@@ -98,7 +101,10 @@ class SelectSpaceFormField extends ConsumerWidget {
               onTapOpenSpaceDetail: false,
             )
           : Text(currentSelectedSpace!),
-      error: (e, s) => Text(L10n.of(context).errorLoading(e)),
+      error: (e, s) {
+        _log.severe('Fetching of selected space details failed', e, s);
+        return Text(L10n.of(context).errorLoading(e));
+      },
       loading: () => Skeletonizer(
         child: Chip(
           avatar: ActerAvatar(

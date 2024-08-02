@@ -378,7 +378,10 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                       onUp: _onUp,
                     ),
                   ),
-            error: (e, st) => Text(L10n.of(context).errorLoadingUsers(e)),
+            error: (e, st) {
+              _log.severe('Searching of users failed', e, st);
+              return Text(L10n.of(context).errorLoadingUsers(e));
+            },
             loading: () => const Center(
               heightFactor: 5,
               child: CircularProgressIndicator(),
@@ -716,7 +719,10 @@ class _UserWidget extends ConsumerWidget {
             ),
           );
         },
-        error: (e, st) => Text(L10n.of(context).errorLoadingAvatar(e)),
+        error: (e, st) {
+          _log.severe('Fetching of avatar binary data failed', e, st);
+          return Text(L10n.of(context).errorLoadingAvatar(e));
+        },
         loading: () => Skeletonizer(
           child: ActerAvatar(
             options: AvatarOptions.DM(

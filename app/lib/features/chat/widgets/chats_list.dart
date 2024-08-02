@@ -11,6 +11,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:diffutil_dart/diffutil.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::chat::chats_list');
 
 class ChatsList extends ConsumerStatefulWidget {
   final Function(String)? onSelected;
@@ -48,14 +51,17 @@ class _ChatsListConsumerState extends ConsumerState<ChatsList> {
                 child: CircularProgressIndicator(),
               ),
             ),
-            error: (e, s) => SliverToBoxAdapter(
-              child: Center(
-                heightFactor: 10,
-                child: Text(
-                  '${L10n.of(context).searchingFailed}: $e',
+            error: (e, s) {
+              _log.severe('Filtering of convos failed', e, s);
+              return SliverToBoxAdapter(
+                child: Center(
+                  heightFactor: 10,
+                  child: Text(
+                    '${L10n.of(context).searchingFailed}: $e',
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
             skipLoadingOnReload: true,
           );
     }

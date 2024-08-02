@@ -109,9 +109,12 @@ class _VisibilityAccessibilityPageState
                 },
         );
       },
-      error: (e, st) => const RoomVisibilityType(
-        selectedVisibilityEnum: RoomVisibility.Private,
-      ),
+      error: (e, st) {
+        _log.severe('Fetching of room visibility failed', e, st);
+        return const RoomVisibilityType(
+          selectedVisibilityEnum: RoomVisibility.Private,
+        );
+      },
       loading: () => const Skeletonizer(
         child: RoomVisibilityType(
           selectedVisibilityEnum: RoomVisibility.Private,

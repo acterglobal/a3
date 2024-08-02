@@ -6,6 +6,9 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::comments::list');
 
 class CommentsList extends ConsumerStatefulWidget {
   final CommentsManager manager;
@@ -32,7 +35,10 @@ class _CommentsListState extends ConsumerState<CommentsList> {
               return commentListUI(context, manager);
             }
           },
-          error: (e, st) => onError(context, e),
+          error: (e, st) {
+            _log.severe('Fetching of comment list failed', e, st);
+            return onError(context, e);
+          },
           loading: () => loading(context),
         );
   }

@@ -4,6 +4,9 @@ import 'package:acter/features/member/widgets/member_list_entry.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::chat::member_list');
 
 class MemberList extends ConsumerWidget {
   final String roomId;
@@ -42,9 +45,12 @@ class MemberList extends ConsumerWidget {
           },
         );
       },
-      error: (error, stack) => Center(
-        child: Text(L10n.of(context).loadingFailed(error)),
-      ),
+      error: (error, stack) {
+        _log.severe('Fetching of member list failed', error, stack);
+        return Center(
+          child: Text(L10n.of(context).loadingFailed(error)),
+        );
+      },
       loading: () => const MembersListSkeleton(),
     );
   }

@@ -9,6 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::news::news_widget');
 
 class NewsWidget extends ConsumerStatefulWidget {
   const NewsWidget({super.key});
@@ -76,6 +79,7 @@ class _NewsWidgetState extends ConsumerState<NewsWidget> {
         );
       },
       error: (error, stackTrace) {
+        _log.severe('Fetching of news list failed', error, stackTrace);
         return Center(child: Text(L10n.of(context).couldNotFetchNews));
       },
       loading: () => const Center(

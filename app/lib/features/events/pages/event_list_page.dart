@@ -15,6 +15,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::cal_event::list');
 
 class EventListPage extends ConsumerStatefulWidget {
   final String? spaceId;
@@ -83,8 +86,10 @@ class _EventListPageState extends ConsumerState<EventListPage> {
         Expanded(
           child: eventList.when(
             data: (events) => _buildEventList(events),
-            error: (error, stack) =>
-                Center(child: Text(L10n.of(context).loadingFailed(error))),
+            error: (e, st) {
+              _log.severe('Searching of events in space failed', e, st);
+              return Center(child: Text(L10n.of(context).loadingFailed(e)));
+            },
             loading: () => const EventListSkeleton(),
           ),
         ),

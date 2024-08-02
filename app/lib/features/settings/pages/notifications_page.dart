@@ -260,11 +260,14 @@ class NotificationsSettingsPage extends ConsumerWidget {
                   .map((item) => _pusherTile(context, ref, item))
                   .toList();
             },
-            error: (e, s) => [
-              SettingsTile(
-                title: Text(L10n.of(context).failedToLoadPushTargets(e)),
-              ),
-            ],
+            error: (e, s) {
+              _log.severe('Fetching of pushers failed', e, s);
+              return [
+                SettingsTile(
+                  title: Text(L10n.of(context).failedToLoadPushTargets(e)),
+                ),
+              ];
+            },
             loading: () => [
               SettingsTile(
                 title: Text(L10n.of(context).loadingTargets),

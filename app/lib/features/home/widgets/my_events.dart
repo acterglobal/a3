@@ -8,6 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::home::my_events');
 
 class MyEventsSection extends ConsumerWidget {
   final int? limit;
@@ -44,9 +47,12 @@ class MyEventsSection extends ConsumerWidget {
               )
             : const SizedBox.shrink();
       },
-      error: (error, stackTrace) => Text(
-        L10n.of(context).loadingEventsFailed(error),
-      ),
+      error: (error, stackTrace) {
+        _log.severe('Fetching of event list failed', error, stackTrace);
+        return Text(
+          L10n.of(context).loadingEventsFailed(error),
+        );
+      },
       loading: () => const EventListSkeleton(),
     );
   }

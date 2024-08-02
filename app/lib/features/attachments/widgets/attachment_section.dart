@@ -39,7 +39,10 @@ class AttachmentSectionWidget extends ConsumerWidget {
             attachmentManager: manager,
             key: attachmentsKey,
           ),
-          error: (e, st) => onError(context, e),
+          error: (e, st) {
+            _log.severe('Fetching of attachments manager failed', e, st);
+            return onError(context, e);
+          },
           loading: () => loading(context),
         );
   }
@@ -111,7 +114,10 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
           ),
         );
       },
-      error: (err, st) => Text(L10n.of(context).errorLoadingAttachments(err)),
+      error: (err, st) {
+        _log.severe('Fetching of attachments failed', err, st);
+        return Text(L10n.of(context).errorLoadingAttachments(err));
+      },
       loading: () => const Skeletonizer(
         child: Wrap(
           spacing: 5.0,

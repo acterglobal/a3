@@ -92,7 +92,10 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
           ),
         ],
       ),
-      error: (e, s) => AppBar(title: Text(L10n.of(context).failedToLoad(e))),
+      error: (e, s) {
+        _log.severe('Loading of tasklist failed', e, s);
+        return AppBar(title: Text(L10n.of(context).failedToLoad(e)));
+      },
       loading: () => AppBar(
         title: Text(L10n.of(context).loading),
       ),
@@ -128,7 +131,10 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
     final taskList = ref.watch(taskListItemProvider(widget.taskListId));
     return taskList.when(
       data: (data) => _buildTaskListData(data),
-      error: (e, s) => Text(L10n.of(context).failedToLoad(e)),
+      error: (e, s) {
+        _log.severe('Loading of tasklist failed', e, s);
+        return Text(L10n.of(context).failedToLoad(e));
+      },
       loading: () => Text(L10n.of(context).loading),
     );
   }

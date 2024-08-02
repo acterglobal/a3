@@ -47,11 +47,14 @@ class ChatSettingsPage extends ConsumerWidget {
               }
             },
           ),
-          error: (error, stack) => SettingsTile.navigation(
-            title: Text(
-              L10n.of(context).failed,
-            ),
-          ),
+          error: (error, stack) {
+            _log.severe('Loading of user app setting failed', error, stack);
+            return SettingsTile.navigation(
+              title: Text(
+                L10n.of(context).failed,
+              ),
+            );
+          },
           loading: () => SettingsTile.switchTile(
             title: Skeletonizer(
               child: Text(L10n.of(context).chatSettingsAutoDownload),
@@ -98,11 +101,14 @@ class ChatSettingsPage extends ConsumerWidget {
               }
             },
           ),
-          error: (error, stack) => SettingsTile.navigation(
-            title: Text(
-              L10n.of(context).failed,
-            ),
-          ),
+          error: (error, stack) {
+            _log.severe('Loading of user app setting failed', error, stack);
+            return SettingsTile.navigation(
+              title: Text(
+                L10n.of(context).failed,
+              ),
+            );
+          },
           loading: () => SettingsTile.switchTile(
             title: Skeletonizer(
               child: Text(L10n.of(context).chatSettingsTyping),

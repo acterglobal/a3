@@ -14,6 +14,9 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::space::link_room_sheet');
 
 // ChildRoomType configures the sub child type of the `Spaces`
 enum ChildRoomType {
@@ -138,7 +141,10 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
                   ],
                 );
         },
-        error: (e, s) => errorUI(L10n.of(context).error(e)),
+        error: (e, s) {
+          _log.severe('Loading of selected space details failed', e, s);
+          return errorUI(L10n.of(context).error(e));
+        },
         loading: () => Container(),
       ),
     );
@@ -178,7 +184,10 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       data: (chats) => chats.isEmpty
           ? Text(L10n.of(context).noChatsFoundMatchingYourSearchTerm)
           : chatListUI(chats),
-      error: (e, s) => errorUI(L10n.of(context).searchingFailed(e)),
+      error: (e, s) {
+        _log.severe('Searching of convos failed', e, s);
+        return errorUI(L10n.of(context).searchingFailed(e));
+      },
       loading: () => loadingUI(),
     );
   }
@@ -233,7 +242,10 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
         return spaceListUI(spaces);
       },
       loading: () => loadingUI(),
-      error: (e, s) => errorUI(L10n.of(context).searchingFailed(e)),
+      error: (e, s) {
+        _log.severe('Searching of spaces failed', e, s);
+        return errorUI(L10n.of(context).searchingFailed(e));
+      },
     );
   }
 

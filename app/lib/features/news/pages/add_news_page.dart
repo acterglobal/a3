@@ -28,7 +28,10 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
 import 'package:mime/mime.dart';
+
+final _log = Logger('a3::news::add_page');
 
 const addNewsKey = Key('add-news');
 
@@ -230,9 +233,12 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
                   },
                   loading: () =>
                       const SizedBox(width: 300, child: EventItemSkeleton()),
-                  error: (e, s) => Center(
-                    child: Text(L10n.of(context).failedToLoadEvent(e)),
-                  ),
+                  error: (e, s) {
+                    _log.severe('Fetching of calendar event failed', e, s);
+                    return Center(
+                      child: Text(L10n.of(context).failedToLoadEvent(e)),
+                    );
+                  },
                 ),
         ],
       ),

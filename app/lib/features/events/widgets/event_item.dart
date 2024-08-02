@@ -11,6 +11,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::cal_event::event_item');
 
 class EventItem extends StatelessWidget {
   final CalendarEvent event;
@@ -115,12 +118,15 @@ class EventItem extends StatelessWidget {
                 ? rsvpStatusWidget
                 : const SizedBox.shrink();
           },
-          error: (e, st) => Chip(
-            label: Text(
-              L10n.of(context).errorLoadingRsvpStatus(e),
-              softWrap: true,
-            ),
-          ),
+          error: (e, st) {
+            _log.severe('Fetching of RSVP status failed', e, st);
+            return Chip(
+              label: Text(
+                L10n.of(context).errorLoadingRsvpStatus(e),
+                softWrap: true,
+              ),
+            );
+          },
           loading: () => Chip(
             label: Text(L10n.of(context).loadingRsvpStatus),
           ),

@@ -106,9 +106,12 @@ class _InviteSpaceMembersConsumerState
         ref.watch(otherSpacesForInviteMembersProvider(widget.roomId));
     return otherSpaces.when(
       data: _buildOtherSpaceData,
-      error: (error, stack) => ListTile(
-        title: Text(error.toString()),
-      ),
+      error: (error, stack) {
+        _log.severe('Fetching of other spaces failed', error, stack);
+        return ListTile(
+          title: Text(error.toString()),
+        );
+      },
       loading: () => _buildSkeletonizerLoading(),
     );
   }

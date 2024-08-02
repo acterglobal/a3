@@ -8,7 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:acter/features/invite_members/providers/invite_providers.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::invite::individual_users');
 
 class InviteIndividualUsers extends ConsumerWidget {
   final String roomId;
@@ -172,8 +175,10 @@ class InviteIndividualUsers extends ConsumerWidget {
                       userId: data[index].userId().toString(),
                       roomId: roomId,
                     ),
-                    error: (err, stackTrace) =>
-                        Text(L10n.of(context).error(err)),
+                    error: (err, st) {
+                      _log.severe('Searching of users failed', err, st);
+                      return Text(L10n.of(context).error(err));
+                    },
                     loading: () => Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       child: Skeletonizer(

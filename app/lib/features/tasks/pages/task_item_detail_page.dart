@@ -132,7 +132,10 @@ class TaskItemDetailPage extends ConsumerWidget {
           ),
         ],
       ),
-      error: (e, s) => AppBar(title: Text(L10n.of(context).failedToLoad(e))),
+      error: (e, s) {
+        _log.severe('Loading of task failed', e, s);
+        return AppBar(title: Text(L10n.of(context).failedToLoad(e)));
+      },
       loading: () => AppBar(title: Text(L10n.of(context).loading)),
     );
   }
@@ -180,7 +183,10 @@ class TaskItemDetailPage extends ConsumerWidget {
   ) {
     return task.when(
       data: (data) => taskData(context, data, ref),
-      error: (e, s) => Text(L10n.of(context).failedToLoad(e)),
+      error: (e, s) {
+        _log.severe('Loading of task failed', e, s);
+        return Text(L10n.of(context).failedToLoad(e));
+      },
       loading: () => const TaskItemDetailPageSkeleton(),
     );
   }

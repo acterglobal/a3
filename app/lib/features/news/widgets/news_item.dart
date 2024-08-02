@@ -14,7 +14,10 @@ import 'package:carousel_indicator/carousel_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::news::news_item');
 
 class NewsItem extends ConsumerStatefulWidget {
   final Client client;
@@ -104,7 +107,10 @@ class _NewsItemState extends ConsumerState<NewsItem> {
                 padding: const EdgeInsets.all(16),
                 child: space.when(
                   data: (space) => Text(space.avatarInfo.displayName ?? roomId),
-                  error: (e, st) => Text(L10n.of(context).errorLoadingSpace(e)),
+                  error: (e, st) {
+                    _log.severe('Fetching of brief space item failed', e, st);
+                    return Text(L10n.of(context).errorLoadingSpace(e));
+                  },
                   loading: () => Skeletonizer(
                     child: Text(roomId),
                   ),
@@ -180,8 +186,10 @@ class _NewsItemState extends ConsumerState<NewsItem> {
               );
             },
             loading: () => const EventItemSkeleton(),
-            error: (e, s) =>
-                Center(child: Text(L10n.of(context).failedToLoadEvent(e))),
+            error: (e, s) {
+              _log.severe('Fetching of calendar event failed', e, s);
+              return Center(child: Text(L10n.of(context).failedToLoadEvent(e)));
+            },
           );
     } else {
       return Card(

@@ -15,6 +15,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::pins::list');
 
 class PinsListPage extends ConsumerStatefulWidget {
   final String? spaceId;
@@ -86,8 +89,10 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
         Expanded(
           child: pinList.when(
             data: (pins) => _buildPinsList(pins),
-            error: (error, stack) =>
-                Center(child: Text(L10n.of(context).loadingFailed(error))),
+            error: (error, stack) {
+              _log.severe('Fetching of pin list failed', error, stack);
+              return Center(child: Text(L10n.of(context).loadingFailed(error)));
+            },
             loading: () => const PinListSkeleton(),
           ),
         ),
