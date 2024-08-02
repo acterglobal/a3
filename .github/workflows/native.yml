@@ -25,15 +25,21 @@ jobs:
             clippy_extras: --tests
           - name: SDK
             package: acter
+            needs_flutter: true
             clippy_extras: --tests
           - name: media-cache-wrapper
             package: matrix-sdk-store-media-cache-wrapper
     steps:
       - uses: actions/checkout@v4
-      - name: Install specific toolchain
+      - name: Install rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           components: clippy
+      - uses: subosito/flutter-action@v2
+        if: ${{matrix.needs_flutter}}
+        with:
+          flutter-version: '3.22'
+          channel: 'stable'
       - name: Run Clippy
         run: cargo clippy  -p ${{matrix.package}} ${{matrix.clippy_extras}} -- -D warnings
 
@@ -50,7 +56,7 @@ jobs:
             package: matrix-sdk-store-media-cache-wrapper
     steps:
       - uses: actions/checkout@v4
-      - name: Install specific toolchain
+      - name: Install rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
       - uses: taiki-e/install-action@nextest
       - name: Test
@@ -64,10 +70,16 @@ jobs:
         include:
           - name: SDK
             package: acter
+            needs_flutter: true
     steps:
       - uses: actions/checkout@v4
-      - name: Install specific toolchain
+      - name: Install rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
+      - uses: subosito/flutter-action@v2
+        if: ${{matrix.needs_flutter}}
+        with:
+          flutter-version: '3.22'
+          channel: 'stable'
       - name: Release Build
         run: cargo build -p ${{matrix.package}} --release
 
