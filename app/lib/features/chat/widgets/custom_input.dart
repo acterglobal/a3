@@ -717,6 +717,20 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
     }
   }
 
+  // adds new line
+  void _insertNewLine() {
+    final TextSelection selection = widget.controller.selection;
+    if (selection.isValid) {
+      final String text = widget.controller.text;
+      final int start = selection.start;
+      final newText = text.replaceRange(start, selection.end, '\n');
+      widget.controller.value = TextEditingValue(
+        text: newText,
+        selection: TextSelection.collapsed(offset: start + 1),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     ref.listen(chatInputProvider, (prev, next) {
@@ -743,6 +757,9 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
       bindings: <ShortcutActivator, VoidCallback>{
         const SingleActivator(LogicalKeyboardKey.enter): () {
           widget.onSendButtonPressed();
+        },
+        LogicalKeySet(LogicalKeyboardKey.enter, LogicalKeyboardKey.shift): () {
+          _insertNewLine();
         },
       },
       child: MultiTriggerAutocomplete(
@@ -774,72 +791,78 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
     FocusNode chatFocus,
     TextEditingController ctrl,
   ) {
-    return TextField(
-      onTap: () => onTextTap(
-        ref.read(chatInputProvider).emojiPickerVisible,
-        ref,
+    return Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.2,
       ),
-      controller: widget.controller,
-      focusNode: chatFocus,
-      enabled: ref.watch(_allowEdit(widget.roomId)),
-      onChanged: (val) {
-        ref.read(chatInputProvider.notifier).updateMessage(val);
-        if (widget.onTyping != null) {
-          widget.onTyping!(val.isNotEmpty);
-        }
-      },
-      onSubmitted: (_) => widget.onSendButtonPressed(),
-      style: Theme.of(context).textTheme.bodySmall,
-      decoration: InputDecoration(
-        contentPadding: const EdgeInsets.all(15),
-        isCollapsed: true,
-        prefixIcon: widget.isEncrypted
-            ? Icon(
-                Icons.shield,
-                size: 18,
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
-              )
-            : null,
-        suffixIcon: InkWell(
-          onTap: () => onSuffixTap(
-            ref.read(chatInputProvider).emojiPickerVisible,
-            context,
-            ref,
-          ),
-          child: const Icon(Icons.emoji_emotions),
+      child: TextField(
+        maxLines: 5,
+        minLines: 1,
+        onTap: () => onTextTap(
+          ref.read(chatInputProvider).emojiPickerVisible,
+          ref,
         ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide: BorderSide(
-            width: 0.5,
-            style: BorderStyle.solid,
-            color: Theme.of(context).colorScheme.surface,
+        controller: widget.controller,
+        focusNode: chatFocus,
+        enabled: ref.watch(_allowEdit(widget.roomId)),
+        onChanged: (val) {
+          ref.read(chatInputProvider.notifier).updateMessage(val);
+          if (widget.onTyping != null) {
+            widget.onTyping!(val.isNotEmpty);
+          }
+        },
+        onSubmitted: (_) => widget.onSendButtonPressed(),
+        style: Theme.of(context).textTheme.bodySmall,
+        decoration: InputDecoration(
+          contentPadding: const EdgeInsets.all(15),
+          isCollapsed: true,
+          prefixIcon: widget.isEncrypted
+              ? Icon(
+                  Icons.shield,
+                  size: 18,
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                )
+              : null,
+          suffixIcon: InkWell(
+            onTap: () => onSuffixTap(
+              ref.read(chatInputProvider).emojiPickerVisible,
+              context,
+              ref,
+            ),
+            child: const Icon(Icons.emoji_emotions),
           ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide: const BorderSide(
-            width: 0.5,
-            style: BorderStyle.solid,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: BorderSide(
+              width: 0.5,
+              style: BorderStyle.solid,
+              color: Theme.of(context).colorScheme.surface,
+            ),
           ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide: BorderSide(
-            width: 0.5,
-            style: BorderStyle.solid,
-            color: Theme.of(context).colorScheme.onSurface,
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: const BorderSide(
+              width: 0.5,
+              style: BorderStyle.solid,
+            ),
           ),
-        ),
-        hintText: widget.isEncrypted
-            ? L10n.of(context).newEncryptedMessage
-            : L10n.of(context).newMessage,
-        hintStyle: Theme.of(context).textTheme.labelLarge!.copyWith(
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: BorderSide(
+              width: 0.5,
+              style: BorderStyle.solid,
               color: Theme.of(context).colorScheme.onSurface,
             ),
-        hintMaxLines: 1,
+          ),
+          hintText: widget.isEncrypted
+              ? L10n.of(context).newEncryptedMessage
+              : L10n.of(context).newMessage,
+          hintStyle: Theme.of(context).textTheme.labelLarge!.copyWith(
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+          hintMaxLines: 1,
+        ),
       ),
-      textInputAction: TextInputAction.newline,
     );
   }
 }
