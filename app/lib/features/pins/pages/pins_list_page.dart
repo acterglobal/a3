@@ -92,7 +92,9 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
             data: (pins) => _buildPinsList(pins),
             error: (error, stack) {
               _log.severe('Fetching of pin list failed', error, stack);
-              return Center(child: Text(L10n.of(context).loadingFailed(error)));
+              return Center(
+                child: Text(L10n.of(context).loadingFailed(error)),
+              );
             },
             loading: () => const PinListSkeleton(),
           ),

@@ -80,7 +80,9 @@ class _NewsWidgetState extends ConsumerState<NewsWidget> {
       },
       error: (error, stackTrace) {
         _log.severe('Fetching of news list failed', error, stackTrace);
-        return Center(child: Text(L10n.of(context).couldNotFetchNews));
+        return Center(
+          child: Text(L10n.of(context).couldNotFetchNews),
+        );
       },
       loading: () => const Center(
         child: SizedBox(

@@ -145,14 +145,14 @@ class _SelectRoomDrawerState extends ConsumerState<SelectRoomDrawer> {
 
 //Show space list based on the search term
   Widget searchedRoomsList(BuildContext context) {
-    final searchedrooms = ref.watch(
+    final searched = ref.watch(
       switch (widget.roomType) {
         RoomType.space => searchedSpacesProvider,
         RoomType.groupChat => roomSearchedChatsProvider,
       },
     );
 
-    return searchedrooms.when(
+    return searched.when(
       data: (rooms) {
         if (rooms.isEmpty) {
           return Center(
@@ -168,7 +168,9 @@ class _SelectRoomDrawerState extends ConsumerState<SelectRoomDrawer> {
       ),
       error: (e, s) {
         _log.severe('Searching spaces or convos failed', e, s);
-        return Center(child: Text(L10n.of(context).searchingFailed(e)));
+        return Center(
+          child: Text(L10n.of(context).searchingFailed(e)),
+        );
       },
     );
   }

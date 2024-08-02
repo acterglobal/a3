@@ -33,7 +33,9 @@ class ChatsSection extends ConsumerWidget {
       ),
       error: (error, stack) {
         _log.severe('Loading of related spaces failed', error, stack);
-        return Center(child: Text(L10n.of(context).loadingFailed(error)));
+        return Center(
+          child: Text(L10n.of(context).loadingFailed(error)),
+        );
       },
       loading: () => Skeletonizer(
         child: Center(

@@ -50,9 +50,7 @@ class ChatSettingsPage extends ConsumerWidget {
           error: (error, stack) {
             _log.severe('Loading of user app setting failed', error, stack);
             return SettingsTile.navigation(
-              title: Text(
-                L10n.of(context).failed,
-              ),
+              title: Text(L10n.of(context).failed),
             );
           },
           loading: () => SettingsTile.switchTile(
@@ -69,10 +67,7 @@ class ChatSettingsPage extends ConsumerWidget {
         );
   }
 
-  AbstractSettingsTile _typingNotice(
-    BuildContext context,
-    WidgetRef ref,
-  ) {
+  AbstractSettingsTile _typingNotice(BuildContext context, WidgetRef ref) {
     return ref.watch(userAppSettingsProvider).when(
           data: (settings) => SettingsTile.switchTile(
             title: Text(L10n.of(context).chatSettingsTyping),
@@ -104,9 +99,7 @@ class ChatSettingsPage extends ConsumerWidget {
           error: (error, stack) {
             _log.severe('Loading of user app setting failed', error, stack);
             return SettingsTile.navigation(
-              title: Text(
-                L10n.of(context).failed,
-              ),
+              title: Text(L10n.of(context).failed),
             );
           },
           loading: () => SettingsTile.switchTile(

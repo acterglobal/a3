@@ -92,15 +92,16 @@ Widget renderMoreSubspaces(
         },
       );
     },
-    error: (error, s) {
+    error: (e, s) {
       _log.severe(
         'Loading subspaces from remote failed $spaceIdOrAlias',
-        error,
+        e,
         s,
       );
       return Card(
-        child:
-            ListTile(title: Text(L10n.of(context).loadingSpacesFailed(error))),
+        child: ListTile(
+          title: Text(L10n.of(context).loadingSpacesFailed(e)),
+        ),
       );
     },
     loading: () => const Skeletonizer(

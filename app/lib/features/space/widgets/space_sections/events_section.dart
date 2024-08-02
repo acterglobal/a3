@@ -32,7 +32,9 @@ class EventsSection extends ConsumerWidget {
       data: (events) => buildEventsSectionUI(context, events),
       error: (e, s) {
         _log.severe('Searching of calendar events in space failed', e, s);
-        return Center(child: Text(L10n.of(context).loadingFailed(e)));
+        return Center(
+          child: Text(L10n.of(context).loadingFailed(e)),
+        );
       },
       loading: () => Center(
         child: Text(L10n.of(context).loading),

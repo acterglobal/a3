@@ -24,9 +24,7 @@ class MemberList extends ConsumerWidget {
       data: (members) {
         if (members.isEmpty) {
           return Center(
-            child: Text(
-              L10n.of(context).noMembersFound,
-            ),
+            child: Text(L10n.of(context).noMembersFound),
           );
         }
         return ListView.builder(

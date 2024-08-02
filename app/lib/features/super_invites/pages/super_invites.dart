@@ -32,7 +32,7 @@ class SuperInvitesPage extends ConsumerWidget {
               icon: const Icon(Atlas.arrows_rotating_right_thin),
               iconSize: 28,
               color: Theme.of(context).colorScheme.surface,
-              onPressed: () async {
+              onPressed: () {
                 ref.invalidate(superInvitesTokensProvider);
               },
             ),
@@ -41,7 +41,7 @@ class SuperInvitesPage extends ConsumerWidget {
               icon: const Icon(Atlas.plus_circle_thin),
               iconSize: 28,
               color: Theme.of(context).colorScheme.surface,
-              onPressed: () async {
+              onPressed: () {
                 context.pushNamed(Routes.actionCreateSuperInvite.name);
               },
             ),
@@ -105,9 +105,7 @@ class SuperInvitesPage extends ConsumerWidget {
                 _log.severe('Fetching of super invite tokens failed', e, s);
                 return SliverToBoxAdapter(
                   child: Center(
-                    child: Text(
-                      L10n.of(context).failedToLoadInviteCodes(e),
-                    ),
+                    child: Text(L10n.of(context).failedToLoadInviteCodes(e)),
                   ),
                 );
               },

@@ -80,16 +80,16 @@ class _EventListPageState extends ConsumerState<EventListPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        ActerSearchWidget(
-          searchTextController: searchTextController,
-        ),
+        ActerSearchWidget(searchTextController: searchTextController),
         filterChipsButtons(),
         Expanded(
           child: eventList.when(
             data: (events) => _buildEventList(events),
             error: (e, st) {
               _log.severe('Searching of events in space failed', e, st);
-              return Center(child: Text(L10n.of(context).loadingFailed(e)));
+              return Center(
+                child: Text(L10n.of(context).loadingFailed(e)),
+              );
             },
             loading: () => const EventListSkeleton(),
           ),

@@ -56,9 +56,7 @@ class _ChatsListConsumerState extends ConsumerState<ChatsList> {
               return SliverToBoxAdapter(
                 child: Center(
                   heightFactor: 10,
-                  child: Text(
-                    '${L10n.of(context).searchingFailed}: $e',
-                  ),
+                  child: Text('${L10n.of(context).searchingFailed}: $e'),
                 ),
               );
             },

@@ -49,9 +49,7 @@ class MyEventsSection extends ConsumerWidget {
       },
       error: (error, stackTrace) {
         _log.severe('Fetching of event list failed', error, stackTrace);
-        return Text(
-          L10n.of(context).loadingEventsFailed(error),
-        );
+        return Text(L10n.of(context).loadingEventsFailed(error));
       },
       loading: () => const EventListSkeleton(),
     );

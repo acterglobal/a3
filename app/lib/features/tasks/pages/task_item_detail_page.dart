@@ -134,9 +134,13 @@ class TaskItemDetailPage extends ConsumerWidget {
       ),
       error: (e, s) {
         _log.severe('Loading of task failed', e, s);
-        return AppBar(title: Text(L10n.of(context).failedToLoad(e)));
+        return AppBar(
+          title: Text(L10n.of(context).failedToLoad(e)),
+        );
       },
-      loading: () => AppBar(title: Text(L10n.of(context).loading)),
+      loading: () => AppBar(
+        title: Text(L10n.of(context).loading),
+      ),
     );
   }
 

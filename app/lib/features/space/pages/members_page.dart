@@ -56,9 +56,7 @@ class SpaceMembersPage extends ConsumerWidget {
             if (members.isEmpty) {
               return SliverToBoxAdapter(
                 child: Center(
-                  child: Text(
-                    L10n.of(context).noMembersFound,
-                  ),
+                  child: Text(L10n.of(context).noMembersFound),
                 ),
               );
             }

@@ -59,10 +59,14 @@ Widget renderFurther(
     },
     error: (e, s) {
       _log.severe('Fetching of remote chat relations failed', e, s);
-      return Card(child: Text(L10n.of(context).errorLoadingRelatedChats(e)));
+      return Card(
+        child: Text(L10n.of(context).errorLoadingRelatedChats(e)),
+      );
     },
     loading: () => Skeletonizer(
-      child: Card(child: Text(L10n.of(context).loadingOtherChats)),
+      child: Card(
+        child: Text(L10n.of(context).loadingOtherChats),
+      ),
     ),
   );
 }

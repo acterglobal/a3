@@ -188,7 +188,9 @@ class _NewsItemState extends ConsumerState<NewsItem> {
             loading: () => const EventItemSkeleton(),
             error: (e, s) {
               _log.severe('Fetching of calendar event failed', e, s);
-              return Center(child: Text(L10n.of(context).failedToLoadEvent(e)));
+              return Center(
+                child: Text(L10n.of(context).failedToLoadEvent(e)),
+              );
             },
           );
     } else {

@@ -271,11 +271,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     );
   }
 
-  Widget _actions(
-    BuildContext context,
-    Convo? convo,
-    bool isDirectChat,
-  ) {
+  Widget _actions(BuildContext context, Convo? convo, bool isDirectChat) {
     final convoLoader = ref.watch(chatProvider(widget.roomId));
     final myMembership = ref.watch(roomMembershipProvider(widget.roomId));
 
