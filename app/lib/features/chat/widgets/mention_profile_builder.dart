@@ -48,7 +48,7 @@ class MentionProfileBuilder extends ConsumerWidget {
             final normalizedQuery = roomQuery.query.toLowerCase();
 
             if (normalizedId.contains(normalizedQuery) ||
-                normalizedName.contains(normalizedQuery)) {
+                normalizedName.toLowerCase().contains(normalizedQuery)) {
               map[uId] = normalizedName;
             }
           }
