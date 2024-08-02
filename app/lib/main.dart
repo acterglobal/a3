@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:acter/common/notifications/notifications.dart';
+import 'package:acter/config/notifications/init.dart';
 import 'package:acter/common/providers/app_state_provider.dart';
 import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';

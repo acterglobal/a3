@@ -1,6 +1,7 @@
-import 'package:acter/common/notifications/notifications.dart';
-import 'package:acter/common/notifications/util.dart';
+import 'dart:io';
+
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/config/notifications/init.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:app_settings/app_settings.dart';
@@ -12,6 +13,8 @@ import 'package:logging/logging.dart';
 import 'package:settings_ui/settings_ui.dart';
 
 final _log = Logger('a3::settings::labs_notifications_settings_tile');
+
+final isOnSupportedPlatform = Platform.isAndroid || Platform.isIOS;
 
 class _LabNotificationSettingsTile extends ConsumerWidget {
   final String? title;
