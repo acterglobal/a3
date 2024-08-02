@@ -10,7 +10,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-final _log = Logger('a3::invite::invite_space_members');
+final _log = Logger('a3::invite::space_members');
 
 class InviteSpaceMembers extends ConsumerStatefulWidget {
   final String roomId;

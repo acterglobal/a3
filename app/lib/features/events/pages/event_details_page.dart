@@ -35,7 +35,7 @@ import 'package:path/path.dart' show join;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
-final _log = Logger('a3::event::details');
+final _log = Logger('a3::cal_event::details');
 
 class EventDetailPage extends ConsumerStatefulWidget {
   final String calendarId;

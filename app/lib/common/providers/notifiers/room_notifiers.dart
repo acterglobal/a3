@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::common::room');
+final _log = Logger('a3::common::room_notifiers');
 
 class AsyncMaybeRoomNotifier extends FamilyAsyncNotifier<Room?, String> {
   late Stream<bool> _listener;

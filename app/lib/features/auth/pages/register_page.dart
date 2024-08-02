@@ -1,7 +1,6 @@
 import 'package:acter/common/providers/network_provider.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
-
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -19,7 +18,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('Register');
+final _log = Logger('a3::auth::register');
 
 Future<void> tryRedeem(SuperInvites superInvites, String token) async {
   // try to redeem the token in a fire-and-forget-manner

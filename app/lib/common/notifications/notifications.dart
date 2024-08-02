@@ -24,7 +24,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:acter/config/firebase_options.dart';
 
-final _log = Logger('a3::notifications');
+final _log = Logger('a3::common::notifications');
 
 final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 

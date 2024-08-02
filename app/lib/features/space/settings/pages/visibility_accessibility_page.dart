@@ -14,7 +14,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-final _log = Logger('a3::space::settings::visibility_accessibility_settings');
+final _log = Logger('a3::space::settings::visibility_accessibility');
 
 class VisibilityAccessibilityPage extends ConsumerStatefulWidget {
   final String roomId;

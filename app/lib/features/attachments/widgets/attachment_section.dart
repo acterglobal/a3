@@ -18,7 +18,7 @@ import 'package:logging/logging.dart';
 import 'package:mime/mime.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-final _log = Logger('a3::common::attachments');
+final _log = Logger('a3::attachments::section');
 
 class AttachmentSectionWidget extends ConsumerWidget {
   static const attachmentsKey = Key('attachments');

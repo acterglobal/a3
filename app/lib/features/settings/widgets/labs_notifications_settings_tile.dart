@@ -11,7 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:settings_ui/settings_ui.dart';
 
-final _log = Logger('a3::settings::labs_notifications_settings_tile');
+final _log = Logger('a3::settings::labs_notifications');
 
 class _LabNotificationSettingsTile extends ConsumerWidget {
   final String? title;

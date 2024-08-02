@@ -22,7 +22,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::tasks::task_item_details_page');
+final _log = Logger('a3::tasks::task_item_details');
 
 class TaskItemDetailPage extends ConsumerWidget {
   final String taskListId;

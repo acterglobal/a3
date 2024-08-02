@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::space::set_space_title');
+final _log = Logger('a3::space::actions::set_space_title');
 
 void showEditSpaceNameBottomSheet({
   required BuildContext context,

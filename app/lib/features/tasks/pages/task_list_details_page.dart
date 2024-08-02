@@ -14,7 +14,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::tasks::task_list_details_page');
+final _log = Logger('a3::tasks::tasklist_details');
 
 class TaskListDetailPage extends ConsumerStatefulWidget {
   static const pageKey = Key('task-list-details-page');
@@ -96,9 +96,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
         _log.severe('Loading of tasklist failed', e, s);
         return AppBar(title: Text(L10n.of(context).failedToLoad(e)));
       },
-      loading: () => AppBar(
-        title: Text(L10n.of(context).loading),
-      ),
+      loading: () => AppBar(title: Text(L10n.of(context).loading)),
     );
   }
 

@@ -12,7 +12,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 const redeemConfirmKey = Key('super-invite-redeem-confirm-btn');
 const redeemInfoKey = Key('super-invites-redeem-info');
 
-final _log = Logger('a3::super_invites::redeem_dialog');
+final _log = Logger('a3::super_invites::redeem');
 
 class _ShowRedeemTokenDialog extends ConsumerWidget {
   final String token;

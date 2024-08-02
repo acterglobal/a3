@@ -25,7 +25,7 @@ import 'package:settings_ui/settings_ui.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-final _log = Logger('a3::chat::room_profile_page');
+final _log = Logger('a3::chat::room_profile');
 
 class RoomProfilePage extends ConsumerStatefulWidget {
   final String roomId;
