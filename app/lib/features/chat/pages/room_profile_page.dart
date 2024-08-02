@@ -293,15 +293,18 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
               onTap: () async => await conv?.setBookmarked(!isBookmarked),
             );
           },
-          error: (e, st) => Skeletonizer(
-            child: IconButton.filled(
-              icon: const Icon(
-                Icons.bookmark_add_outlined,
-                size: 20,
+          error: (e, st) {
+            _log.severe('Loading of convo failed', e, st);
+            return Skeletonizer(
+              child: IconButton.filled(
+                icon: const Icon(
+                  Icons.bookmark_add_outlined,
+                  size: 20,
+                ),
+                onPressed: () {},
               ),
-              onPressed: () {},
-            ),
-          ),
+            );
+          },
           loading: () => ActionItemSkeleton(
             iconData: Icons.bookmark_add_outlined,
             actionName: L10n.of(context).bookmark,
@@ -324,7 +327,10 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
               onTap: () => _handleInvite(membership),
             );
           },
-          error: (e, st) => Text(L10n.of(context).errorLoadingTileDueTo(e)),
+          error: (e, st) {
+            _log.severe('Loading of room membership failed', e, st);
+            return Text(L10n.of(context).errorLoadingTileDueTo(e));
+          },
           loading: () => ActionItemSkeleton(
             iconData: Atlas.user_plus_thin,
             actionName: L10n.of(context).invite,
@@ -467,8 +473,10 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
             loading: () => Skeletonizer(
               child: Text(L10n.of(context).membersCount(0)),
             ),
-            error: (error, stackTrace) =>
-                Text(L10n.of(context).errorLoadingMembersCount(error)),
+            error: (e, st) {
+              _log.severe('Fetching of room members failed', e, st);
+              return Text(L10n.of(context).errorLoadingMembersCount(e));
+            },
           ),
           MemberList(roomId: widget.roomId),
         ],

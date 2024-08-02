@@ -91,7 +91,7 @@ class PublicRoomItem extends ConsumerWidget {
                     options: AvatarOptions(profile),
                   ),
                   error: (e, s) {
-                    _log.severe('loading failed', e, s);
+                    _log.severe('loading of avatar info failed', e, s);
                     return fallbackAvatar();
                   },
                   loading: fallbackAvatar,
