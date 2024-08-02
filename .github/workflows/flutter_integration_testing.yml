@@ -61,12 +61,7 @@ jobs:
   #         sudo apt install -y dbus-x11 network-manager upower mpv libmpv-dev
 
   #     - name: Install supported toolchain
-  #       uses: actions-rs/toolchain@v1
-  #       with:
-  #         toolchain: nightly
-  #         override: true
-
-  #     - uses: Swatinem/rust-cache@v1
+  #       uses: actions-rust-lang/setup-rust-toolchain@v1
 
   #     - name: Install cargo-make
   #       uses: davidB/rust-cargo-make@v1
@@ -177,12 +172,7 @@ jobs:
   #     - uses: actions/checkout@v4
 
   #     - name: Install supported toolchain
-  #       uses: actions-rs/toolchain@v1
-  #       with:
-  #         toolchain: nightly
-  #         override: true
-
-  #     - uses: Swatinem/rust-cache@v1
+  #       uses: actions-rust-lang/setup-rust-toolchain@v1
 
   #     - name: Install cargo-make
   #       uses: davidB/rust-cargo-make@v1
@@ -316,39 +306,19 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install supported toolchain
-        id: rust_toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
+        uses: actions-rust-lang/setup-rust-toolchain@v1
 
       - uses: subosito/flutter-action@v2
         name: Set up flutter
         with:
           flutter-version: '3.22'
           channel: 'stable'
-
-      - name: Cache Cargo
-        id: cache-cargo
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo
-          key: ubuntu-latest-cargo-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
-
-      - name: Cache Rust
-        uses: actions/cache@v4
-        with:
-          path: |
-            target
-          key: ubuntu-latest-android-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
-
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
       - name: Install cargo-make
-        if: steps.cache-cargo.outputs.cache-hit != 'true'
         uses: davidB/rust-cargo-make@v1
 
       - name: Rust Android Setup
@@ -382,9 +352,7 @@ jobs:
 
       - name: Install supported toolchain
         id: rust_toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
+        uses: actions-rust-lang/setup-rust-toolchain@v1
 
       - uses: jlumbroso/free-disk-space@main
         name: Free Disk Space (Ubuntu)
@@ -544,9 +512,7 @@ jobs:
 
   #     - name: Install supported toolchain
   #       id: rust_toolchain
-  #       uses: actions-rs/toolchain@v1
-  #       with:
-  #         toolchain: stable
+  #       uses: actions-rust-lang/setup-rust-toolchain@v1
 
   #     - name: Cache Cargo
   #       id: cache-cargo
@@ -560,8 +526,6 @@ jobs:
   #       with:
   #         distribution: 'temurin'
   #         java-version: '17'
-
-  #     - uses: Swatinem/rust-cache@v1
 
   #     - name: Install cargo-make
   #       if: steps.cache-cargo.outputs.cache-hit != 'true'

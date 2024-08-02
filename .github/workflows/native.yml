@@ -14,94 +14,75 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  core:
+  clippy:
     runs-on: ubuntu-latest
-    name: Clippy & Test & Build ${{ matrix.name }}
+    name: Clippy ${{ matrix.name }}
     strategy:
       matrix:
         include:
           - name: Core
             package: acter-core
             clippy_extras: --tests
-          - name: CLI
-            package: acter-cli
-          - name: TUI
-            package: acter-tui
+          - name: SDK
+            package: acter
+            needs_flutter: true
+            clippy_extras: --tests
           - name: media-cache-wrapper
             package: matrix-sdk-store-media-cache-wrapper
     steps:
       - uses: actions/checkout@v4
-      - name: Install specific toolchain
-        uses: actions-rs/toolchain@v1
+      - name: Install rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          toolchain: nightly
-          override: true
           components: clippy
-      - uses: Swatinem/rust-cache@v1
-      - uses: actions-rs/cargo@v1
-        name: Clippy
-        with:
-          command: clippy
-          args: -p ${{matrix.package}} ${{matrix.clippy_extras}} -- -D warnings
-      - uses: taiki-e/install-action@nextest
-      - uses: actions-rs/cargo@v1
-        name: Test
-        with:
-          command: nextest
-          args: run -p ${{matrix.package}}
-      - uses: actions-rs/cargo@v1
-        name: Release Build
-        with:
-          command: build
-          args: -p ${{matrix.package}} --release
-
-  integrations:
-    runs-on: ubuntu-latest
-    # FIXME: remove once tests don't fail
-    continue-on-error: true
-    name: Clippy & Test ${{ matrix.name }}
-    strategy:
-      matrix:
-        include:
-          - name: FFI
-            target: x86_64-unknown-linux-gnu
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install specific toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          override: true
-          components: clippy
-          target: ${{ matrix.target }}
-      - uses: Swatinem/rust-cache@v1
-      - uses: jlumbroso/free-disk-space@main
-        name: Free Disk Space (Ubuntu)
-        with:
-          # this might remove tools that are actually needed,
-          # when set to "true" but frees about 6 GB
-          tool-cache: true
       - uses: subosito/flutter-action@v2
-        name: Set up flutter
+        if: ${{matrix.needs_flutter}}
         with:
           flutter-version: '3.22'
           channel: 'stable'
-      - uses: actions-rs/cargo@v1
-        name: Clippy
-        with:
-          command: clippy
-          args: -p acter --target ${{matrix.target}} -- -D warnings
+      - name: Run Clippy
+        run: cargo clippy  -p ${{matrix.package}} ${{matrix.clippy_extras}} -- -D warnings
+
+  test:
+    runs-on: ubuntu-latest
+    name: Test ${{ matrix.name }}
+    strategy:
+      matrix:
+        include:
+          - name: Core
+            package: acter-core
+            clippy_extras: --tests
+          - name: media-cache-wrapper
+            package: matrix-sdk-store-media-cache-wrapper
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
       - uses: taiki-e/install-action@nextest
-      - uses: actions-rs/cargo@v1
-        name: Unit tests
+      - name: Test
+        run: cargo nextest run -p ${{matrix.package}}
+
+  release:
+    runs-on: ubuntu-latest
+    name: Release Build ${{ matrix.name }}
+    strategy:
+      matrix:
+        include:
+          - name: SDK
+            package: acter
+            needs_flutter: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+      - uses: subosito/flutter-action@v2
+        if: ${{matrix.needs_flutter}}
         with:
-          command: nextest
-          args: run -p acter --target ${{matrix.target}} --lib
-      - uses: actions-rs/cargo@v1
-        name: Doctests
-        with:
-          command: test
-          args: -p acter --target ${{matrix.target}} --doc
+          flutter-version: '3.22'
+          channel: 'stable'
+      - name: Release Build
+        run: cargo build -p ${{matrix.package}} --release
+
 
   ffigen:
     name: FFI-Gen up-to-date
@@ -113,13 +94,10 @@ jobs:
           flutter-version: '3.22'
           channel: 'stable'
       - name: Install supported rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          override: true
+        uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: Install cargo-make
         uses: davidB/rust-cargo-make@v1
       - name: "Build FFI interface"
         run: cargo make ffigen
-      # - name: "Check file is no different"
-      #   run: git diff --exit-code app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
+      - name: "Check file is no different"
+        run: git diff --exit-code packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
