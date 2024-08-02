@@ -20,14 +20,14 @@ packages:
   acter_flutter_sdk:
     dependency: "direct main"
     description:
-      path: "packages/rust_sdk"
+      path: "../packages/rust_sdk"
       relative: true
     source: path
     version: "0.0.1"
   acter_trigger_auto_complete:
     dependency: "direct main"
     description:
-      path: "packages/acter_trigger_auto_complete"
+      path: "../packages/acter_trigger_auto_complete"
       relative: true
     source: path
     version: "0.0.1"
