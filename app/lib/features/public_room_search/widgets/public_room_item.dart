@@ -31,9 +31,7 @@ class _JoinBtn extends ConsumerWidget {
           },
           loading: () => Skeletonizer(
             child: OutlinedButton(
-              onPressed: () => onSelected(
-                item,
-              ),
+              onPressed: () => onSelected(item),
               child: Text(L10n.of(context).requestToJoin),
             ),
           ),
@@ -42,9 +40,7 @@ class _JoinBtn extends ConsumerWidget {
 
   Widget alreadyMember(BuildContext context) {
     return OutlinedButton(
-      onPressed: () => onSelected(
-        item,
-      ),
+      onPressed: () => onSelected(item),
       child: Text(L10n.of(context).member),
     );
   }
@@ -52,16 +48,12 @@ class _JoinBtn extends ConsumerWidget {
   Widget noMember(BuildContext context) {
     if (item.joinRuleStr() == 'Public') {
       return OutlinedButton(
-        onPressed: () => onSelected(
-          item,
-        ),
+        onPressed: () => onSelected(item),
         child: Text(L10n.of(context).join),
       );
     } else {
       return OutlinedButton(
-        onPressed: () => onSelected(
-          item,
-        ),
+        onPressed: () => onSelected(item),
         child: Text(L10n.of(context).requestToJoin),
       );
     }
@@ -93,14 +85,10 @@ class PublicRoomItem extends ConsumerWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
               child: ListTile(
-                onTap: () => onSelected(
-                  item,
-                ),
+                onTap: () => onSelected(item),
                 leading: profileInfo.when(
                   data: (profile) => ActerAvatar(
-                    options: AvatarOptions(
-                      profile,
-                    ),
+                    options: AvatarOptions(profile),
                   ),
                   error: (e, s) {
                     _log.severe('loading failed', e, s);
@@ -128,8 +116,10 @@ class PublicRoomItem extends ConsumerWidget {
           if (topic != null)
             Flexible(
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 child: Text(
                   topic,
                   style: Theme.of(context).textTheme.labelMedium,
