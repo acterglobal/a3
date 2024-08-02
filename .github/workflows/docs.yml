@@ -59,11 +59,11 @@ jobs:
         working-directory: app
 
       - name: Checking for bindings
-        run: ls -ltas app/packages/rust_sdk/lib/
+        run: ls -ltas packages/rust_sdk/lib/
 
       - name: Build Dart SDK
         run: flutter pub global run dartdoc --output ../../../docs/static/api/main/dart-sdk/
-        working-directory: app/packages/rust_sdk
+        working-directory: packages/rust_sdk
 
       #       ---- Finalisation for github pages
 

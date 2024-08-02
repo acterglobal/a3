@@ -60,7 +60,7 @@ dependencies:
   flutter_easyloading: ^3.0.5
   appflowy_editor: ^3.0.0
   acter_trigger_auto_complete:
-    path: packages/acter_trigger_auto_complete
+    path: ../packages/acter_trigger_auto_complete
 
   # Code Generation
   flutter_localizations:
@@ -68,7 +68,7 @@ dependencies:
   intl: ^0.19.0
   freezed: ^2.3.3
   acter_flutter_sdk:
-    path: packages/rust_sdk
+    path: ../packages/rust_sdk
 
   # State Management
   flutter_riverpod: ^2.5.1
