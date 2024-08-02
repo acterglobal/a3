@@ -20,7 +20,14 @@ packages:
   acter_flutter_sdk:
     dependency: "direct main"
     description:
-      path: "packages/rust_sdk"
+      path: "../packages/rust_sdk"
+      relative: true
+    source: path
+    version: "0.0.1"
+  acter_trigger_auto_complete:
+    dependency: "direct main"
+    description:
+      path: "../packages/acter_trigger_auto_complete"
       relative: true
     source: path
     version: "0.0.1"
@@ -1423,14 +1430,6 @@ packages:
       url: "https://github.com/insertjokehere/msix.git"
     source: git
     version: "3.16.7"
-  multi_trigger_autocomplete:
-    dependency: "direct main"
-    description:
-      name: multi_trigger_autocomplete
-      sha256: a38b1f0f68eaa34fe81847844167e60c6e793d7b620c5f818457ac6f9f8c31ab
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0"
   multiavatar:
     dependency: transitive
     description:

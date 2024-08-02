@@ -1,1 +1,0 @@
-- We have massively improved the performance of the chats section

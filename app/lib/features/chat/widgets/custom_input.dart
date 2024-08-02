@@ -15,6 +15,7 @@ import 'package:acter/features/chat/widgets/mention_profile_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgDraft;
+import 'package:acter_trigger_auto_complete/acter_trigger_autocomplete.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 import 'package:logging/logging.dart';
 import 'package:mime/mime.dart';
-import 'package:multi_trigger_autocomplete/multi_trigger_autocomplete.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 final _log = Logger('a3::chat::custom_input');
@@ -191,33 +191,56 @@ class _ChatInput extends ConsumerStatefulWidget {
 }
 
 class __ChatInputState extends ConsumerState<_ChatInput> {
-  TextEditingController controller = TextEditingController();
+  late ActerTriggerAutoCompleteTextController textController;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _setController();
+  }
+
+  void _setController() {
+    final Map<String, TextStyle> triggerStyles = {
+      '@': TextStyle(
+        color: Theme.of(context).colorScheme.onSecondary,
+        height: 0.5,
+        background: Paint()
+          ..color = Theme.of(context).colorScheme.secondary
+          ..strokeWidth = 10
+          ..strokeJoin = StrokeJoin.round
+          ..style = PaintingStyle.stroke,
+      ),
+    };
+    textController =
+        ActerTriggerAutoCompleteTextController(triggerStyles: triggerStyles);
+    setState(() {});
+  }
 
   void handleEmojiSelected(Category? category, Emoji emoji) {
     // Get cursor current position
-    var cursorPos = controller.selection.base.offset;
+    var cursorPos = textController.selection.base.offset;
 
     // Right text of cursor position
-    String suffixText = controller.text.substring(cursorPos);
+    String suffixText = textController.text.substring(cursorPos);
 
     // Get the left text of cursor
-    String prefixText = controller.text.substring(0, cursorPos);
+    String prefixText = textController.text.substring(0, cursorPos);
 
     int emojiLength = emoji.emoji.length;
 
     // Add emoji at current current cursor position
-    controller.text = prefixText + emoji.emoji + suffixText;
+    textController.text = prefixText + emoji.emoji + suffixText;
 
     // Cursor move to end of added emoji character
-    controller.selection = TextSelection(
+    textController.selection = TextSelection(
       baseOffset: cursorPos + emojiLength,
       extentOffset: cursorPos + emojiLength,
     );
   }
 
   void handleBackspacePressed() {
-    final newValue = controller.text.characters.skipLast(1).string;
-    controller.text = newValue;
+    final newValue = textController.text.characters.skipLast(1).string;
+    textController.text = newValue;
   }
 
   @override
@@ -287,7 +310,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: _TextInputWidget(
                         roomId: widget.roomId,
-                        controller: controller,
+                        controller: textController,
                         onSendButtonPressed: () => onSendButtonPressed(ref),
                         isEncrypted: isEncrypted,
                         onTyping: widget.onTyping,
@@ -550,7 +573,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         const Spacer(),
         GestureDetector(
           onTap: () {
-            controller.clear();
+            textController.clear();
             inputNotifier.unsetSelectedMessage();
             FocusScope.of(context).unfocus();
           },
@@ -561,7 +584,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
   }
 
   Future<void> onSendButtonPressed(WidgetRef ref) async {
-    if (controller.text.isEmpty) return;
+    if (textController.text.isEmpty) return;
     final lang = L10n.of(context);
     ref.read(chatInputProvider.notifier).startSending();
     try {
@@ -571,7 +594,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       }
 
       final mentions = ref.read(chatInputProvider).mentions;
-      String markdownText = controller.text;
+      String markdownText = textController.text;
       final userMentions = [];
       mentions.forEach((key, value) {
         userMentions.add(value);
@@ -605,7 +628,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
 
       ref.read(chatInputProvider.notifier).messageSent();
 
-      controller.clear();
+      textController.clear();
     } catch (error, stackTrace) {
       _log.severe('Sending chat message failed', error, stackTrace);
       EasyLoading.showError(
@@ -619,7 +642,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
 
 class _TextInputWidget extends ConsumerStatefulWidget {
   final String roomId;
-  final TextEditingController controller;
+  final ActerTriggerAutoCompleteTextController controller;
   final Function() onSendButtonPressed;
   final bool isEncrypted;
   final void Function(bool)? onTyping;
@@ -648,12 +671,6 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         chatInputProvider.select((value) => value.message),
       );
     });
-  }
-
-  @override
-  void dispose() {
-    chatFocus.dispose();
-    super.dispose();
   }
 
   void onTextTap(bool emojiPickerVisible, WidgetRef ref) {

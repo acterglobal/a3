@@ -1,3 +1,0 @@
-- [New] : Better visualisation of Ongoing, Upcoming and Past events by colours
-- [New] : Event listing screen contains Search and Filters option for better explore your events
-- [Fix] : Now dashboard will show events which you are attending

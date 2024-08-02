@@ -30,7 +30,7 @@ void main() {
 
           final messageDocument = parse(resultData.parsedMessage);
           final messageBodyText = messageDocument.body?.text ?? '';
-          expect(messageBodyText, 'hello @acter1');
+          expect(messageBodyText, 'hello acter1');
         },
       );
 
@@ -65,7 +65,7 @@ void main() {
 
           final messageDocument = parse(msg);
           final messageBodyText = messageDocument.body?.text ?? '';
-          expect(messageBodyText, 'hello @acter2 @acter1');
+          expect(messageBodyText, 'hello acter2 acter1');
         },
       );
 
@@ -93,7 +93,7 @@ void main() {
 
           final messageDocument = parse(msg);
           final messageBodyText = messageDocument.body?.text ?? '';
-          expect(messageBodyText, 'hello @acter2 @acter2');
+          expect(messageBodyText, 'hello acter2 acter2');
         },
       );
 
@@ -129,7 +129,7 @@ void main() {
 
           final messageDocument = parse(msg);
           final messageBodyText = messageDocument.body?.text ?? '';
-          expect(messageBodyText, 'hello @acter2 @acter1 @acter2');
+          expect(messageBodyText, 'hello acter2 acter1 acter2');
         },
       );
 
@@ -166,7 +166,7 @@ void main() {
 
           final messageDocument = parse(msg);
           final messageBodyText = messageDocument.body?.text ?? '';
-          expect(messageBodyText, 'hello @acter2 @acter1 @acter2 @acter1');
+          expect(messageBodyText, 'hello acter2 acter1 acter2 acter1');
         },
       );
     },

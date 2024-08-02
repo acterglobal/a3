@@ -18,21 +18,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install specific toolchain
-        uses: actions-rs/toolchain@v1
+        uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          toolchain: nightly
-          override: true
-          components: rustfmt,clippy
-      - uses: Swatinem/rust-cache@v1
-      - uses: actions-rs/cargo@v1
-        name: Rust Format
-        with:
-          command: fmt
-          args: --all --check
+          components: rustfmt
+      - name: Rust Format
+        run: cargo fmt --all --check
 
   dart-style:
     name: Flutter Analyze
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        path: ['app', 'packages/rust_sdk', 'packages/acter_trigger_auto_complete']
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -43,6 +40,6 @@ jobs:
       - name: version
         run: flutter --version
 
-      - working-directory: app
-        run: flutter analyze
-        name: lint app
+      - working-directory: ${{ matrix.path }}
+        run: flutter analyze 
+        name: lint ${{ matrix.path }}
