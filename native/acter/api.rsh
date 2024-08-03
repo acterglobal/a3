@@ -2707,11 +2707,8 @@ object Client {
     /// install sas verification event handler
     fn install_sas_event_handler(flow_id: string) -> Future<Result<bool>>;
 
-    /// Return the event handler of device new
-    fn device_new_event_rx() -> Option<Stream<DeviceNewEvent>>;
-
-    /// Return the event handler of device changed
-    fn device_changed_event_rx() -> Option<Stream<DeviceChangedEvent>>;
+    /// Return the event handler that new device was found or existing device was changed
+    fn device_event_rx() -> Option<Stream<DeviceEvent>>;
 
     /// Return the typing event receiver
     fn subscribe_to_typing_event_stream(room_id: string) -> Stream<TypingEvent>;
@@ -2841,7 +2838,6 @@ object Client {
 }
 
 object NotificationSettings {
-
     /// get informed about changes to the notification settings
     fn changes_stream() -> Stream<bool>;
 
@@ -2851,7 +2847,6 @@ object NotificationSettings {
     /// set default RoomNotificationMode for this combination
     fn set_default_notification_mode(is_encrypted: bool, is_one_on_one: bool, mode: string) -> Future<Result<bool>>;
     
-
     /// app settings
     fn global_content_setting(app_key: string) -> Future<Result<bool>>;
     fn set_global_content_setting(app_key: string, enabled: bool) -> Future<Result<bool>>;
@@ -3080,32 +3075,12 @@ object SessionManager {
 
 
 /// Deliver devices new event from rust to flutter
-object DeviceNewEvent {
-    /// get device id
-    fn device_id() -> DeviceId;
+object DeviceEvent {
+    /// get devices that was found newly
+    fn new_devices() -> Vec<string>;
 
-    /// Request verification to any devices of user
-    /// returns flow id of verification
-    fn request_verification_to_user() -> Future<Result<string>>;
-
-    /// Request verification to specific device
-    /// returns flow id of verification
-    fn request_verification_to_device(dev_id: string) -> Future<Result<string>>;
-
-    /// Request verification to any devices of user with specified method
-    /// returns flow id of verification
-    fn request_verification_to_user_with_method(method: string) -> Future<Result<string>>;
-
-    /// Request verification to specific device with specified method
-    /// returns flow id of verification
-    fn request_verification_to_device_with_method(dev_id: string, method: string) -> Future<Result<string>>;
-}
-
-/// Deliver devices changed event from rust to flutter
-object DeviceChangedEvent {
-    /// get device id
-    fn device_id() -> DeviceId;
-
+    /// get devices that already existed and was just changed
+    fn changed_devices() -> Vec<string>;
 }
 
 /// Provide various device infos

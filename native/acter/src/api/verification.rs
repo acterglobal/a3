@@ -32,7 +32,7 @@ use std::{
 use tokio::sync::Mutex;
 use tracing::{error, info};
 
-use super::{client::Client, common::DeviceRecord, device::DeviceNewEvent, RUNTIME};
+use super::{client::Client, common::DeviceRecord, RUNTIME};
 
 #[derive(Clone, Debug)]
 pub struct VerificationEvent {
@@ -1033,13 +1033,11 @@ impl SessionManager {
         RUNTIME
             .spawn(async move {
                 let user_id = client.user_id()?;
-                let Some(device) = client
+                let device = client
                     .encryption()
                     .get_device(&user_id, device_id!(dev_id.as_str()))
                     .await?
-                else {
-                    bail!("Could not get device from encryption")
-                };
+                    .context("Could not get device from encryption")?;
                 let is_verified =
                     device.is_cross_signed_by_owner() || device.is_verified_with_cross_signing();
                 if is_verified {
@@ -1058,14 +1056,11 @@ impl SessionManager {
         RUNTIME
             .spawn(async move {
                 let user_id = client.user_id()?;
-                let Some(request) = client
+                let request = client
                     .encryption()
                     .get_verification_request(&user_id, flow_id)
                     .await
-                else {
-                    // request may be timed out
-                    bail!("Could not get verification request")
-                };
+                    .context("Could not get verification request")?; // request may be timed out
                 request.cancel().await?;
                 Ok(true)
             })
@@ -1094,14 +1089,12 @@ impl Client {
 
         RUNTIME
             .spawn(async move {
-                let Some(device) = client
+                let device = client
                     .clone()
                     .encryption()
                     .get_device(&user_id, device_id!(dev_id.as_str()))
                     .await?
-                else {
-                    bail!("Could not get device from encryption")
-                };
+                    .context("Could not get device from encryption")?;
                 let is_verified =
                     device.is_cross_signed_by_owner() || device.is_verified_with_cross_signing();
                 if is_verified {
@@ -1122,6 +1115,29 @@ impl Client {
             .await?
     }
 
+    #[cfg(feature = "testing")]
+    pub async fn request_verification_with_method(
+        &self,
+        dev_id: String,
+        method: String,
+    ) -> Result<String> {
+        let client = self.core.client().clone();
+        let user_id = self.user_id()?;
+        let values = vec![VerificationMethod::from(method.as_str())];
+
+        RUNTIME
+            .spawn(async move {
+                let device = client
+                    .encryption()
+                    .get_device(&user_id, device_id!(dev_id.as_str()))
+                    .await?
+                    .context("Could not get device from encryption")?;
+                let request = device.request_verification_with_methods(values).await?;
+                Ok(request.flow_id().to_owned())
+            })
+            .await?
+    }
+
     pub async fn install_request_event_handler(&self, flow_id: String) -> Result<bool> {
         let me = self.clone();
         let controller = self.verification_controller.clone();
@@ -1129,16 +1145,13 @@ impl Client {
 
         RUNTIME
             .spawn(async move {
-                let Some(request) = me
+                let request = me
                     .core
                     .client()
                     .encryption()
                     .get_verification_request(&sender, &flow_id)
                     .await
-                else {
-                    // request may be timed out
-                    bail!("Could not get verification request")
-                };
+                    .context("Could not get verification request")?; // request may be timed out
                 tokio::spawn(request_verification_handler(
                     me, controller, request, flow_id, sender,
                 ));
@@ -1168,84 +1181,6 @@ impl Client {
                     me, controller, sas, flow_id, sender,
                 ));
                 Ok(true)
-            })
-            .await?
-    }
-}
-
-impl DeviceNewEvent {
-    pub async fn request_verification_to_user(&self) -> Result<String> {
-        let client = self.client();
-        let user_id = self.user_id()?;
-
-        RUNTIME
-            .spawn(async move {
-                let user = client
-                    .encryption()
-                    .get_user_identity(&user_id)
-                    .await?
-                    .context("alice should get user identity")?;
-                let request = user.request_verification().await?;
-                Ok(request.flow_id().to_owned())
-            })
-            .await?
-    }
-
-    pub async fn request_verification_to_device(&self, dev_id: String) -> Result<String> {
-        let client = self.client();
-        let user_id = self.user_id()?;
-
-        RUNTIME
-            .spawn(async move {
-                let dev = client
-                    .encryption()
-                    .get_device(&user_id, device_id!(dev_id.as_str()))
-                    .await?
-                    .context("alice should get device")?;
-                let request = dev
-                    .request_verification_with_methods(vec![VerificationMethod::SasV1])
-                    .await?;
-                Ok(request.flow_id().to_owned())
-            })
-            .await?
-    }
-
-    pub async fn request_verification_to_user_with_method(&self, method: String) -> Result<String> {
-        let client = self.client();
-        let user_id = self.user_id()?;
-        let values = vec![VerificationMethod::from(method.as_str())];
-
-        RUNTIME
-            .spawn(async move {
-                let user = client
-                    .encryption()
-                    .get_user_identity(&user_id)
-                    .await?
-                    .context("alice should get user identity")?;
-                let request = user.request_verification_with_methods(values).await?;
-                Ok(request.flow_id().to_owned())
-            })
-            .await?
-    }
-
-    pub async fn request_verification_to_device_with_method(
-        &self,
-        dev_id: String,
-        method: String,
-    ) -> Result<String> {
-        let client = self.client();
-        let user_id = self.user_id()?;
-        let values = vec![VerificationMethod::from(method.as_str())];
-
-        RUNTIME
-            .spawn(async move {
-                let dev = client
-                    .encryption()
-                    .get_device(&user_id, device_id!(dev_id.as_str()))
-                    .await?
-                    .context("alice should get device")?;
-                let request = dev.request_verification_with_methods(values).await?;
-                Ok(request.flow_id().to_owned())
             })
             .await?
     }
