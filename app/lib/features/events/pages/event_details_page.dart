@@ -144,7 +144,6 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             title: L10n.of(context).removeThisPost,
             eventId: event.eventId().toString(),
             onSuccess: () {
-              ref.invalidate(calendarEventProvider);
               Navigator.pop(context);
             },
             roomId: roomId,
@@ -333,8 +332,6 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       final client = ref.read(alwaysClientProvider);
       await client.waitForRsvp(rsvpId.toString(), null);
       EasyLoading.dismiss();
-      // refresh UI of this page & outer page
-      ref.invalidate(myRsvpStatusProvider(widget.calendarId));
     } catch (e, s) {
       _log.severe('Error =>', e, s);
       if (!context.mounted) {

@@ -15,7 +15,6 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -181,11 +180,10 @@ class ActionBox extends ConsumerWidget {
             title: L10n.of(context).removeThisPost,
             eventId: news.eventId().toString(),
             onSuccess: () async {
-              ref.invalidate(newsListProvider);
               if (!await Navigator.maybePop(context)) {
                 if (context.mounted) {
                   // fallback to go to home
-                  context.goNamed(Routes.main.name);
+                  Navigator.pushReplacementNamed(context, Routes.main.name);
                 }
               }
             },

@@ -49,8 +49,6 @@ void showLeaveSpaceDialog(
               EasyLoading.show(status: lang.leavingSpace);
               final space = await ref.read(spaceProvider(spaceId).future);
               await space.leave();
-              // refresh spaces list
-              ref.invalidate(spacesProvider);
               if (!context.mounted) {
                 return;
               }
