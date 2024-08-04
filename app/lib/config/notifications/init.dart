@@ -27,7 +27,10 @@ const pushServer = String.fromEnvironment(
   defaultValue: '',
 );
 
-const pushServerUrl = 'https://$pushServer/_matrix/push/v1/notify';
+const ntfyServer = String.fromEnvironment(
+  'NTFY_SERVER',
+  defaultValue: '',
+);
 
 Future<bool> initializeNotifications() async {
   await initializeNotifify(
@@ -37,7 +40,8 @@ Future<bool> initializeNotifications() async {
     shouldShowCheck: _shouldShow,
     appName: appName,
     appIdPrefix: appIdPrefix,
-    pushServerUrl: pushServer.isNotEmpty ? pushServerUrl : '',
+    pushServer: pushServer,
+    ntfyServer: ntfyServer,
     currentClientsGen: _genCurrentClients,
   );
   return false;
@@ -66,7 +70,8 @@ Future<bool> setupPushNotifications(
     client,
     appName: appName,
     appIdPrefix: appIdPrefix,
-    pushServerUrl: pushServer.isNotEmpty ? pushServerUrl : '',
+    pushServer: pushServer,
+    ntfyServer: ntfyServer,
   );
   if (requested == false) {
     // we were bluntly rejected, save and don't them bother again:

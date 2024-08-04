@@ -20,6 +20,8 @@ dependencies:
   push: ^2.3.0
   convert: ^3.1.1
   firebase_core: ^3.1.0
+  path_provider: ^2.1.4
+  dio: ^5.5.0+1
 
 dev_dependencies:
   flutter_test:

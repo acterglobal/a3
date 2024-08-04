@@ -23,18 +23,17 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final canPush = (isOnSupportedPlatform && pushServer.isNotEmpty) ||
+        (!isOnSupportedPlatform && ntfyServer.isNotEmpty);
     return SettingsTile.switchTile(
       title: Text(title ?? L10n.of(context).mobilePushNotifications),
-      description: !isOnSupportedPlatform
-          ? Text(L10n.of(context).onlySupportedIosAndAndroid)
-          : (pushServer.isEmpty
-              ? Text(L10n.of(context).noPushServerConfigured)
-              : null),
-      initialValue: isOnSupportedPlatform &&
+      description:
+          !canPush ? Text(L10n.of(context).noPushServerConfigured) : null,
+      initialValue: canPush &&
           ref.watch(
             isActiveProvider(LabsFeature.mobilePushNotifications),
           ),
-      enabled: isOnSupportedPlatform && pushServer.isNotEmpty,
+      enabled: canPush,
       onToggle: (newVal) => onToggle(context, ref, newVal),
     );
   }

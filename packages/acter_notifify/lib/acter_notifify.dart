@@ -8,6 +8,9 @@ import 'package:acter_notifify/local.dart';
 import 'package:acter_notifify/notifications.dart';
 import 'package:acter_notifify/util.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::notifify');
 
 /// Function to call when a notification has been tapped by the user
 typedef HandleMessageTap = FutureOr<bool> Function(Map<String?, Object?> data);
@@ -27,14 +30,15 @@ typedef CurrentClientsGen = FutureOr<List<Client>> Function();
 
 /// Initialize Notification support
 Future<void> initializeNotifify({
+  required HandleMessageTap handleMessageTap,
+  required String appName,
+  required String appIdPrefix,
+  required String pushServer,
+  required String ntfyServer,
   FirebaseOptions? androidFirebaseOptions,
-  HandleMessageTap? handleMessageTap,
   IsEnabledCheck? isEnabledCheck,
   ShouldShowCheck? shouldShowCheck,
   CurrentClientsGen? currentClientsGen,
-  required String appName,
-  required String appIdPrefix,
-  required String pushServerUrl,
 }) async {
   if (Platform.isAndroid) {
     await Firebase.initializeApp(
@@ -43,7 +47,7 @@ Future<void> initializeNotifify({
   }
   await initializeLocalNotifications();
 
-  if (usePush && handleMessageTap != null) {
+  if (usePush && pushServer.isNotEmpty) {
     await initializePush(
       handleMessageTap: handleMessageTap,
       shouldShowCheck: shouldShowCheck,
@@ -51,8 +55,24 @@ Future<void> initializeNotifify({
       currentClientsGen: currentClientsGen,
       appIdPrefix: appIdPrefix,
       appName: appName,
-      pushServerUrl: pushServerUrl,
+      pushServerUrl: 'https://$pushServer/_matrix/push/v1/notify',
     );
+  }
+  if (!usePush && ntfyServer.isNotEmpty && currentClientsGen != null) {
+    final clients = await currentClientsGen();
+    for (final client in clients) {
+      try {
+        await setupNtfyNotificationsForDevice(
+          client,
+          appIdPrefix: appIdPrefix,
+          appName: appName,
+          ntfyServer: ntfyServer,
+        );
+      } catch (error, stack) {
+        final deviceId = client.deviceId().toString();
+        _log.severe('Failed to setup ntfy for $deviceId', error, stack);
+      }
+    }
   }
 }
 
@@ -64,13 +84,24 @@ Future<bool?> setupNotificationsForDevice(
   Client client, {
   required String appName,
   required String appIdPrefix,
-  required String pushServerUrl,
+  required String pushServer,
+  required String ntfyServer,
 }) async {
-  if (usePush) {
-    return await setupPushNotificationsForDevice(client,
-        appIdPrefix: appIdPrefix,
-        appName: appName,
-        pushServerUrl: pushServerUrl);
+  if (usePush && pushServer.isNotEmpty) {
+    return await setupPushNotificationsForDevice(
+      client,
+      appIdPrefix: appIdPrefix,
+      appName: appName,
+      pushServerUrl: 'https://$pushServer/_matrix/push/v1/notify',
+    );
+  }
+  if (!usePush && ntfyServer.isNotEmpty) {
+    return await setupNtfyNotificationsForDevice(
+      client,
+      appIdPrefix: appIdPrefix,
+      appName: appName,
+      ntfyServer: ntfyServer,
+    );
   }
   return null;
 }

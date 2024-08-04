@@ -1,20 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
-// import 'package:acter/common/notifications/android.dart';
-// import 'package:acter/common/notifications/util.dart';
-// import 'package:acter/common/providers/app_state_provider.dart';
-// import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter_notifify/acter_notifify.dart';
 import 'package:acter_notifify/android.dart';
 import 'package:acter_notifify/local.dart';
 import 'package:acter_notifify/util.dart';
-// import 'package:acter/features/settings/providers/settings_providers.dart';
-// import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:convert/convert.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:logging/logging.dart';
 import 'package:push/push.dart';
@@ -54,7 +50,7 @@ Future<void> initializePush({
       if (isEnabledCheck != null && !await isEnabledCheck()) {
         return;
       }
-      await _handleMessage(
+      await _handlePushMessage(
         message,
         background: false,
         shouldShowCheck: shouldShowCheck,
@@ -68,7 +64,7 @@ Future<void> initializePush({
         if (isEnabledCheck != null && !await isEnabledCheck()) {
           return;
         }
-        await _handleMessage(
+        await _handlePushMessage(
           message,
           background: true,
           shouldShowCheck: shouldShowCheck,
@@ -101,7 +97,7 @@ Future<void> initializePush({
   }
 }
 
-Future<bool> _handleMessage(
+Future<bool> _handlePushMessage(
   RemoteMessage message, {
   bool background = false,
   ShouldShowCheck? shouldShowCheck,
@@ -110,9 +106,18 @@ Future<bool> _handleMessage(
     _log.info('non-matrix push: $message');
     return false;
   }
-  final deviceId = message.data!['device_id'] as String;
-  final roomId = message.data!['room_id'] as String;
-  final eventId = message.data!['event_id'] as String;
+  return await _handleMatrixMessage(message.data!,
+      background: background, shouldShowCheck: shouldShowCheck);
+}
+
+Future<bool> _handleMatrixMessage(
+  Map<String?, Object?> message, {
+  bool background = false,
+  ShouldShowCheck? shouldShowCheck,
+}) async {
+  final deviceId = message['device_id'] as String;
+  final roomId = message['room_id'] as String;
+  final eventId = message['event_id'] as String;
   _log.info('Received msg $roomId: $eventId');
   try {
     final instance = await ActerSdk.instance;
@@ -205,6 +210,81 @@ Future<bool?> setupPushNotificationsForDevice(
       appIdPrefix: appIdPrefix, appName: appName, pushServerUrl: pushServerUrl);
 }
 
+Map<String, StreamSubscription<String>> _subscriptions = {};
+
+Future<bool?> setupNtfyNotificationsForDevice(
+  Client client, {
+  required String appName,
+  required String appIdPrefix,
+  required String ntfyServer,
+  ShouldShowCheck? shouldShowCheck,
+}) async {
+  // let's get the token
+  final deviceId = await client.deviceId().toString();
+
+  final token = 'up$deviceId';
+
+  // submit to server
+  final submittedToken = await _addToken(
+    client,
+    'https://$ntfyServer/$token',
+    appIdPrefix: appIdPrefix,
+    appName: appName,
+    pushServerUrl: 'https://$ntfyServer/_matrix/push/v1/notify',
+  );
+
+  if (_subscriptions.containsKey(token)) {
+    // clear any pending streams
+    await _subscriptions[token]?.cancel();
+    _subscriptions.remove(token);
+  }
+
+  // and start listening to the server
+  Response<ResponseBody> rs = await Dio().get<ResponseBody>(
+    'https://$ntfyServer/$token/json',
+    options: Options(headers: {
+      // "Authorization":
+      //     'vhdrjb token"',
+      'Accept': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+    }, responseType: ResponseType.stream), // set responseType to `stream`
+  );
+  StreamTransformer<Uint8List, List<int>> unit8Transformer =
+      StreamTransformer.fromHandlers(
+    handleData: (data, sink) {
+      sink.add(List<int>.from(data));
+    },
+  );
+  if (rs.data == null) {
+    _log.severe('Connecting to ntfy server failed: $rs');
+  }
+  _subscriptions[token] = rs.data!.stream
+      .transform(unit8Transformer)
+      .transform(const Utf8Decoder())
+      .transform(const LineSplitter())
+      .listen((event) {
+    try {
+      final eventJson = json.decode(event);
+      if (eventJson['event'] != 'message') {
+        // not anything we care about
+        return;
+      }
+      final message = json
+          .decode(eventJson['message']); // we have to decode the content again
+      final notification = message['notification'];
+      // we plug our device ID as it is needed for the inner workings
+      notification['device_id'] = deviceId;
+      print("received $notification");
+      _handleMatrixMessage(
+        notification as Map<String?, Object?>,
+        shouldShowCheck: shouldShowCheck,
+      );
+    } catch (error, stack) {
+      _log.severe('Failed to show push notification $event', error, stack);
+    }
+  });
+}
+
 Future<bool> _addToken(
   Client client,
   String token, {
@@ -222,8 +302,8 @@ Future<bool> _addToken(
     } else {
       appId = '$appIdPrefix.ios.dev';
     }
-  } else if (Platform.isAndroid) {
-    appId = '$appIdPrefix.android';
+  } else {
+    appId = '$appIdPrefix.${Platform.operatingSystem}';
   }
 
   await client.addPusher(
