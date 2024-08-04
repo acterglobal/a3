@@ -14,7 +14,6 @@ import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
-import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/news/widgets/news_post_editor/news_slide_options.dart';
 import 'package:acter/features/news/widgets/news_post_editor/select_action_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
@@ -456,7 +455,6 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
 
       if (!context.mounted) return;
       // FIXME due to #718. well lets at least try forcing a refresh upon route.
-      ref.invalidate(newsListProvider);
       ref.invalidate(newsStateProvider);
       // Navigate back to update screen.
       Navigator.pop(context);

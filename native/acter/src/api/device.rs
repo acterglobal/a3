@@ -1,6 +1,6 @@
 use anyhow::{Context, Result};
 use futures::{
-    channel::mpsc::{channel, Receiver},
+    channel::mpsc::{channel, Receiver, Sender},
     pin_mut,
     stream::StreamExt,
 };
@@ -16,65 +16,49 @@ use tracing::{error, info};
 use super::{client::Client, common::DeviceRecord, RUNTIME};
 
 #[derive(Clone, Debug)]
-pub struct DeviceNewEvent {
-    client: SdkClient,
-    device_id: OwnedDeviceId,
+pub struct DeviceEvent {
+    new_devices: Vec<OwnedDeviceId>,
+    changed_devices: Vec<OwnedDeviceId>,
 }
 
-impl DeviceNewEvent {
-    pub(crate) fn new(client: &SdkClient, device_id: OwnedDeviceId) -> Self {
-        DeviceNewEvent {
-            client: client.clone(),
-            device_id,
+impl DeviceEvent {
+    pub(crate) fn new(
+        new_devices: Vec<OwnedDeviceId>,
+        changed_devices: Vec<OwnedDeviceId>,
+    ) -> Self {
+        DeviceEvent {
+            new_devices,
+            changed_devices,
         }
     }
 
-    pub(crate) fn client(&self) -> SdkClient {
-        self.client.clone()
+    pub fn new_devices(&self) -> Vec<String> {
+        self.new_devices
+            .iter()
+            .map(OwnedDeviceId::to_string)
+            .collect()
     }
 
-    pub fn device_id(&self) -> OwnedDeviceId {
-        self.device_id.clone()
-    }
-
-    pub(crate) fn user_id(&self) -> Result<OwnedUserId> {
-        self.client
-            .user_id()
-            .context("You must be logged in to do that")
-            .map(|x| x.to_owned())
-    }
-}
-
-#[derive(Clone, Debug)]
-pub struct DeviceChangedEvent {
-    client: SdkClient,
-    device_id: OwnedDeviceId,
-}
-
-impl DeviceChangedEvent {
-    pub(crate) fn new(client: &SdkClient, device_id: OwnedDeviceId) -> Self {
-        DeviceChangedEvent {
-            client: client.clone(),
-            device_id,
-        }
-    }
-
-    pub fn device_id(&self) -> OwnedDeviceId {
-        self.device_id.clone()
+    pub fn changed_devices(&self) -> Vec<String> {
+        self.changed_devices
+            .iter()
+            .map(OwnedDeviceId::to_string)
+            .collect()
     }
 }
 
 #[derive(Clone, Debug)]
 pub(crate) struct DeviceController {
-    new_event_rx: Arc<Mutex<Option<Receiver<DeviceNewEvent>>>>,
-    changed_event_rx: Arc<Mutex<Option<Receiver<DeviceChangedEvent>>>>,
-    listener: Arc<JoinHandle<()>>,
+    event_tx: Sender<DeviceEvent>, // keep it resident in memory
+    event_rx: Arc<Mutex<Option<Receiver<DeviceEvent>>>>,
+    listener: Arc<JoinHandle<()>>, // keep it resident in memory
 }
 
 impl DeviceController {
     pub fn new(client: SdkClient) -> Self {
-        let (mut new_event_tx, new_event_rx) = channel::<DeviceNewEvent>(10); // dropping after more than 10 items queued
-        let (mut changed_event_tx, changed_event_rx) = channel::<DeviceChangedEvent>(10); // dropping after more than 10 items queued
+        let (event_tx, event_rx) = channel::<DeviceEvent>(10); // dropping after more than 10 items queued
+
+        let mut tx = event_tx.clone();
 
         let listener = RUNTIME.spawn(async move {
             let devices_stream = client
@@ -89,47 +73,40 @@ impl DeviceController {
                 if !client.logged_in() {
                     break;
                 }
+                let mut new_devices = vec![];
+                let mut changed_devices = vec![];
                 if let Some(user_devices) = device_updates.new.get(my_id) {
-                    for device in user_devices.values() {
-                        let dev_id = device.device_id().to_owned();
+                    for (dev_id, dev) in user_devices {
                         info!("device-new device id: {}", dev_id);
-                        let evt = DeviceNewEvent::new(&client, dev_id);
-                        if let Err(e) = new_event_tx.try_send(evt) {
-                            error!("Dropping devices new event: {}", e);
-                        }
+                        new_devices.push(dev_id.to_owned());
                     }
                 }
                 if let Some(user_devices) = device_updates.changed.get(my_id) {
-                    for device in user_devices.values() {
-                        let dev_id = device.device_id().to_owned();
+                    for (dev_id, dev) in user_devices {
                         info!("device-changed device id: {}", dev_id);
-                        let evt = DeviceChangedEvent::new(&client, dev_id);
-                        if let Err(e) = changed_event_tx.try_send(evt) {
-                            error!("Dropping devices changed event: {}", e);
-                        }
+                        changed_devices.push(dev_id.to_owned());
+                    }
+                }
+                if !new_devices.is_empty() || !changed_devices.is_empty() {
+                    let evt = DeviceEvent::new(new_devices, changed_devices);
+                    if let Err(e) = tx.try_send(evt) {
+                        error!("Dropping device event: {}", e);
                     }
                 }
             }
         });
 
         DeviceController {
-            new_event_rx: Arc::new(Mutex::new(Some(new_event_rx))),
-            changed_event_rx: Arc::new(Mutex::new(Some(changed_event_rx))),
+            event_tx,
+            event_rx: Arc::new(Mutex::new(Some(event_rx))),
             listener: Arc::new(listener),
         }
     }
 }
 
 impl Client {
-    pub fn device_new_event_rx(&self) -> Option<Receiver<DeviceNewEvent>> {
-        match self.device_controller.new_event_rx.try_lock() {
-            Ok(mut r) => r.take(),
-            Err(e) => None,
-        }
-    }
-
-    pub fn device_changed_event_rx(&self) -> Option<Receiver<DeviceChangedEvent>> {
-        match self.device_controller.changed_event_rx.try_lock() {
+    pub fn device_event_rx(&self) -> Option<Receiver<DeviceEvent>> {
+        match self.device_controller.event_rx.try_lock() {
             Ok(mut r) => r.take(),
             Err(e) => None,
         }

@@ -1,4 +1,5 @@
 import 'package:acter/common/actions/redact_content.dart';
+import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
@@ -7,7 +8,6 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
-import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/events/event_utils/event_utils.dart';
@@ -142,7 +142,6 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             title: L10n.of(context).removeThisPost,
             eventId: event.eventId().toString(),
             onSuccess: () {
-              ref.invalidate(calendarEventProvider);
               Navigator.pop(context);
             },
             roomId: roomId,
@@ -331,8 +330,6 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       final client = ref.read(alwaysClientProvider);
       await client.waitForRsvp(rsvpId.toString(), null);
       EasyLoading.dismiss();
-      // refresh UI of this page & outer page
-      ref.invalidate(myRsvpStatusProvider(widget.calendarId));
     } catch (e, s) {
       _log.severe('Error =>', e, s);
       if (!context.mounted) {
