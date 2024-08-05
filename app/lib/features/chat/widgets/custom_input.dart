@@ -241,7 +241,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     // Ensure we keep the cursor up
     // frame delay to keep focus connected with keyboard.
     if (!chatFocus.hasFocus) {
-      Future.delayed(const Duration(milliseconds: 100), () {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         chatFocus.requestFocus();
       });
     }
@@ -554,7 +554,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           onTap: () {
             inputNotifier.unsetSelectedMessage();
             // frame delay to keep focus connected with keyboard.
-            Future.delayed(const Duration(milliseconds: 100), () {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
               chatFocus.requestFocus();
             });
           },
@@ -589,7 +589,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
             textController.clear();
             inputNotifier.unsetSelectedMessage();
             // frame delay to keep focus connected with keyboard..
-            Future.delayed(const Duration(milliseconds: 100), () {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
               chatFocus.requestFocus();
             });
           },
@@ -741,14 +741,14 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         // to edit, force refresh the inner text controller to reflect that
         widget.controller.text = next.message;
         // frame delay to keep focus connected with keyboard.
-        Future.delayed(Duration.zero, () {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
           widget.chatFocus.requestFocus();
         });
       } else if (next.selectedMessageState == SelectedMessageState.replyTo &&
           (next.selectedMessage != prev?.selectedMessage ||
               prev?.selectedMessageState != next.selectedMessageState)) {
         // frame delay to keep focus connected with keyboard..
-        Future.delayed(Duration.zero, () {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
           widget.chatFocus.requestFocus();
         });
       }
