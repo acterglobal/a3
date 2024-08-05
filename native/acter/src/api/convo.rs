@@ -459,20 +459,6 @@ impl Client {
             .await?
     }
 
-    pub async fn join_convo(
-        &self,
-        room_id_or_alias: String,
-        server_name: Option<String>,
-    ) -> Result<Convo> {
-        let room = self
-            .join_room(
-                room_id_or_alias,
-                server_name.map(|s| vec![s]).unwrap_or_default(),
-            )
-            .await?;
-        Ok(Convo::new(self.clone(), room).await)
-    }
-
     // ***_typed fn accepts rust-typed input, not string-based one
     async fn convo_by_alias_typed(&self, room_alias: OwnedRoomAliasId) -> Result<Convo> {
         let convo = self

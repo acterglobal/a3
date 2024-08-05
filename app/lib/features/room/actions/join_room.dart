@@ -15,8 +15,8 @@ Future<String?> joinRoom(
   EasyLoading.show(status: displayMsg);
   final client = ref.read(alwaysClientProvider);
   try {
-    final newSpace = await client.joinSpace(roomIdOrAlias, server);
-    final roomId = newSpace.getRoomIdStr();
+    final newRoom = await client.joinRoom(roomIdOrAlias, server);
+    final roomId = newRoom.roomIdStr();
     EasyLoading.dismiss();
     if (forward != null) forward(roomId);
     return roomId;
