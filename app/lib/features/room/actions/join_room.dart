@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -18,6 +19,10 @@ Future<String?> joinRoom(
     final newRoom = await client.joinRoom(roomIdOrAlias, server);
     final roomId = newRoom.roomIdStr();
     EasyLoading.dismiss();
+    // ensure we re-evaluate the room data on our end. This is necessary
+    // if we knew of the room prior (e.g. we had left it), but hadn't joined
+    // this should properly re-evaluate
+    ref.invalidate(maybeRoomProvider(roomId));
     if (forward != null) forward(roomId);
     return roomId;
   } catch (err) {
