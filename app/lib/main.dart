@@ -19,6 +19,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player_media_kit/video_player_media_kit.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:acter/config/env.g.dart';
 
 void main(List<String> args) async {
   if (args.isNotEmpty) {
@@ -55,14 +56,9 @@ Future<void> _startAppInner(Widget app, bool withSentry) async {
     await SentryFlutter.init(
       (options) {
         // we use the dart-define default env for the default stuff.
-        options.dsn =
-            const String.fromEnvironment('SENTRY_DSN', defaultValue: '');
-        options.environment = const String.fromEnvironment(
-          'SENTRY_ENVIRONMENT',
-          defaultValue: '',
-        );
-        options.release =
-            const String.fromEnvironment('SENTRY_RELEASE', defaultValue: '');
+        options.dsn = Env.sentryDsn;
+        options.environment = Env.sentryEnvironment;
+        options.release = Env.sentryRelease;
 
         // allows us to check whether the user has activated tracing
         // and prevent reporting otherwise.

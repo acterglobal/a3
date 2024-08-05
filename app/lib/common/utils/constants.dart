@@ -1,3 +1,4 @@
+import 'package:acter/config/env.g.dart';
 import 'package:flutter/foundation.dart';
 
 const String heart = '\u{2764}';
@@ -34,38 +35,15 @@ class Keys {
   static const usernameLabel = Key('username-lbl');
 }
 
-const inCI = bool.fromEnvironment(
-  'CI',
-  defaultValue: false,
-);
+const canGuestLogin = Env.canLoginAsGuest;
 
-const canGuestLogin = bool.fromEnvironment(
-  'CAN_LOGIN_AS_GUEST',
-  defaultValue: false,
-);
+const autoGuestLogin = Env.autoLoginAsGuest;
 
-const autoGuestLogin = bool.fromEnvironment(
-  'AUTO_LOGIN_AS_GUEST',
-  defaultValue: false,
-);
+const inCI = Env.isCI;
+const isDemo = Env.isDemo;
+const isNightly = Env.isNightly;
 
-const isNightly = bool.fromEnvironment(
-  'IS_NIGHTLY',
-  defaultValue: false,
-);
-
-const isDemo = bool.fromEnvironment(
-  'IS_DEMO',
-  defaultValue: false,
-);
-
-const defaultServersStr = String.fromEnvironment(
-  'DEFAULT_SEARCH_SERVER',
-  defaultValue:
-      'acter.global=Acter.global,matrix.org=Matrix.org,matrixrooms.info=Global Search,the-apothecary.club=The Apothecary Club,systemausfall.org=Systemausfall,gitter.im=Gitter.IM',
-);
-
-final defaultServers = parseServers(defaultServersStr);
+final defaultServers = parseServers(Env.defaultSearchServers);
 
 const List<TargetPlatform> desktopPlatforms = [
   TargetPlatform.macOS,

@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/config/env.g.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/bug_report/const.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -27,7 +27,7 @@ Future<String> report({
 }) async {
   final sdk = await ActerSdk.instance;
 
-  final request = http.MultipartRequest('POST', Uri.parse(rageshakeUrl));
+  final request = http.MultipartRequest('POST', Uri.parse(Env.rageshakeUrl));
   request.fields.addAll({
     'text': description,
     'user_agent': userAgent,
@@ -78,7 +78,7 @@ Future<String> report({
       ),
     );
   }
-  _log.info('sending $rageshakeUrl');
+  _log.info('sending ${Env.rageshakeUrl}');
   final resp = await request.send();
   if (resp.statusCode == HttpStatus.ok) {
     Map<String, dynamic> json = jsonDecode(await resp.stream.bytesToString());

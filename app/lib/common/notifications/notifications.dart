@@ -7,6 +7,7 @@ import 'package:acter/common/notifications/util.dart';
 import 'package:acter/common/providers/app_state_provider.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/config/env.g.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
@@ -30,20 +31,9 @@ final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 
 const bool isProduction = bool.fromEnvironment('dart.vm.product');
 
-const appIdPrefix = String.fromEnvironment(
-  'PUSH_APP_PREFIX',
-  defaultValue: 'global.acter.a3',
-);
-
-const appName = String.fromEnvironment(
-  'PUSH_APP_NAME',
-  defaultValue: 'Acter',
-);
-
-const pushServer = String.fromEnvironment(
-  'PUSH_SERVER',
-  defaultValue: '',
-);
+const appIdPrefix = Env.pushAppPrefix;
+const appName = Env.pushAppName;
+const pushServer = Env.pushServer;
 
 const pushServerUrl = 'https://$pushServer/_matrix/push/v1/notify';
 

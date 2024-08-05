@@ -8,7 +8,7 @@ import 'package:acter/common/utils/main.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
-import 'package:acter/features/bug_report/const.dart';
+import 'package:acter/config/env.g.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
@@ -135,15 +135,16 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                           L10n.of(context).rageShakeTargetUrl,
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
-                        value: const Text(rageshakeUrl),
+                        value: const Text(Env.rageshakeUrl),
                       )
                     : SettingsTile(
                         title: Text(
                           L10n.of(context).rageShakeTargetUrlDigest,
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
-                        value:
-                            Text('${sha1.convert(utf8.encode(rageshakeUrl))}'),
+                        value: Text(
+                          '${sha1.convert(utf8.encode(Env.rageshakeUrl))}',
+                        ),
                       ),
                 isDevBuild
                     ? SettingsTile(
