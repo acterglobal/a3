@@ -377,12 +377,6 @@ class MultiTriggerAutocompleteState extends State<MultiTriggerAutocomplete> {
 
   @override
   void dispose() {
-    _textEditingController.removeListener(_onChangedField);
-    _textEditingController.dispose();
-
-    _focusNode.removeListener(_onChangedFocus);
-    _focusNode.dispose();
-
     _debounceTimer?.cancel();
     _currentTrigger = null;
     _currentQuery = null;
