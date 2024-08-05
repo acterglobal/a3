@@ -1,6 +1,7 @@
 import 'package:acter/common/actions/close_room.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -507,6 +508,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     Navigator.pop(context);
     EasyLoading.show(status: L10n.of(context).leavingRoom);
     try {
+      final parentIds = await ref.read(parentIdsProvider(widget.roomId).future);
       final convo = await ref.read(chatProvider(widget.roomId).future);
       if (convo == null) {
         throw RoomNotFound();
@@ -515,6 +517,11 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
       if (!mounted) {
         EasyLoading.dismiss();
         return;
+      }
+
+      for (final parentId in parentIds) {
+        ref.invalidate(spaceRelationsProvider(parentId));
+        ref.invalidate(spaceRemoteRelationsProvider(parentId));
       }
       if (res) {
         EasyLoading.dismiss();

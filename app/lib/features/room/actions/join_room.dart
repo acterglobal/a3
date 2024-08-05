@@ -1,4 +1,6 @@
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -21,8 +23,10 @@ Future<String?> joinRoom(
     EasyLoading.dismiss();
     // ensure we re-evaluate the room data on our end. This is necessary
     // if we knew of the room prior (e.g. we had left it), but hadn't joined
-    // this should properly re-evaluate
+    // this should properly re-evaluate all possible readers
     ref.invalidate(maybeRoomProvider(roomId));
+    ref.invalidate(chatProvider(roomId));
+    ref.invalidate(spaceProvider(roomId));
     if (forward != null) forward(roomId);
     return roomId;
   } catch (err) {
