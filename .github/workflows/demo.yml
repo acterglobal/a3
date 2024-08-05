@@ -68,6 +68,6 @@ jobs:
       release_env: demo
       build_num: ${{ needs.tags.outputs.build_num }}
       version: ${{ needs.tags.outputs.tag }}
-      flutter_build_extra: "--dart-define IS_DEMO=true"
+      env_extra: "IS_DEMO=true"
       targets: android,linux,ios,macos,windows-exe # skip: windows-msix
     secrets: inherit
