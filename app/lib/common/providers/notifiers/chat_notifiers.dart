@@ -8,7 +8,7 @@ import 'package:flutter/widgets.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
-final _log = Logger('a3::common::chat');
+final _log = Logger('a3::common::chat_notifiers');
 
 class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, String> {
   late Stream<bool> _listener;

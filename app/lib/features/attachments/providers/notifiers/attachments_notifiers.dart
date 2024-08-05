@@ -7,7 +7,7 @@ import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod/riverpod.dart';
 
-final _log = Logger('a3::common::attachments');
+final _log = Logger('a3::attachments::notifiers');
 
 class AttachmentsManagerNotifier extends AutoDisposeFamilyAsyncNotifier<
     AttachmentsManager, Future<AttachmentsManager>> {

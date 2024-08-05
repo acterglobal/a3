@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
-final _log = Logger('a3::common::providers');
+final _log = Logger('a3::common::common_providers');
 
 // Loading Providers
 final loadingProvider = StateProvider<bool>((ref) => false);

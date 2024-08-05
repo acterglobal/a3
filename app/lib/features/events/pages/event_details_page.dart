@@ -35,7 +35,7 @@ import 'package:path/path.dart' show join;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
-final _log = Logger('a3::event::details');
+final _log = Logger('a3::cal_event::details');
 
 class EventDetailPage extends ConsumerStatefulWidget {
   final String calendarId;
@@ -66,8 +66,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             ],
           );
         },
-        error: (error, stackTrace) =>
-            Text(L10n.of(context).errorLoadingEventDueTo(error)),
+        error: (e, st) {
+          _log.severe('Fetching of calendar event failed', e, st);
+          return Text(L10n.of(context).errorLoadingEventDueTo(e));
+        },
         loading: () => const EventDetailsSkeleton(),
       ),
     );

@@ -10,6 +10,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::tasks::list');
 
 class TaskItemsListWidget extends ConsumerWidget {
   final TaskList taskList;
@@ -28,7 +31,10 @@ class TaskItemsListWidget extends ConsumerWidget {
     final tasks = ref.watch(taskItemsListProvider(taskList));
     return tasks.when(
       data: (overview) => taskData(context, overview),
-      error: (error, stack) => Text(L10n.of(context).errorLoadingTasks(error)),
+      error: (error, stack) {
+        _log.severe('Loading of tasklist failed', error, stack);
+        return Text(L10n.of(context).errorLoadingTasks(error));
+      },
       loading: () => const TaskItemsSkeleton(),
     );
   }

@@ -6,10 +6,10 @@ import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dar
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:fc_native_video_thumbnail/fc_native_video_thumbnail.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:riverpod/riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::chat::media_chat_notifier');
 

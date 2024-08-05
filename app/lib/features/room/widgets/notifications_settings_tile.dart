@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:settings_ui/settings_ui.dart';
 
-final _log = Logger('a3::room::notification_settings_tile');
+final _log = Logger('a3::room::notification_settings');
 
 String? notifToText(BuildContext context, String curNotifStatus) {
   if (curNotifStatus == 'muted') {

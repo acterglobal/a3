@@ -11,7 +11,10 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::tasks::task');
 
 class TaskItem extends ConsumerWidget {
   final Task task;
@@ -108,7 +111,10 @@ class TaskItem extends ConsumerWidget {
                       ),
                     ],
                   ),
-                  error: (e, s) => Text(L10n.of(context).loadingFailed(e)),
+                  error: (e, s) {
+                    _log.severe('Loading of task failed', e, s);
+                    return Text(L10n.of(context).loadingFailed(e));
+                  },
                   loading: () => Skeletonizer(
                     child: Text(L10n.of(context).loading),
                   ),

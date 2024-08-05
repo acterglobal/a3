@@ -4,9 +4,12 @@ import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/task_list_item_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::space::sections::tasks');
 
 class TasksSection extends ConsumerWidget {
   final String spaceId;
@@ -23,8 +26,12 @@ class TasksSection extends ConsumerWidget {
     final taskList = ref.watch(taskListProvider(spaceId));
     return taskList.when(
       data: (tasks) => buildTasksSectionUI(context, tasks),
-      error: (error, stack) =>
-          Center(child: Text(L10n.of(context).loadingFailed(error))),
+      error: (error, stack) {
+        _log.severe('Fetching of tasks failed', error, stack);
+        return Center(
+          child: Text(L10n.of(context).loadingFailed(error)),
+        );
+      },
       loading: () => Center(
         child: Text(L10n.of(context).loading),
       ),

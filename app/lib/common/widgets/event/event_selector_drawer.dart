@@ -4,6 +4,9 @@ import 'package:acter/features/events/widgets/skeletons/event_list_skeleton_widg
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::common::cal_event::select_drawer');
 
 const Key selectEventDrawerKey = Key('event-widgets-select-event-drawer');
 
@@ -72,6 +75,7 @@ Future<String?> selectEventDrawer({
             );
           },
           error: (error, stack) {
+            _log.severe('Fetching all cal events failed', error, stack);
             return Center(
               child: Text('Failed to load: $error'),
             );

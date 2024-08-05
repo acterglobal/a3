@@ -6,7 +6,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::notifications::android');
+final _log = Logger('a3::common::notifications::android');
 
 final Map<String, List<Message>> pendingMessage = {};
 

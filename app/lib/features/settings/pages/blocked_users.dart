@@ -119,6 +119,7 @@ class BlockedUsersPage extends ConsumerWidget {
                   child: Text(L10n.of(context).hereYouCanSeeAllUsersYouBlocked),
                 ),
           error: (error, stack) {
+            _log.severe('Fetching of ignored users failed', error, stack);
             return Center(
               child: Text(L10n.of(context).failedToLoad(error)),
             );

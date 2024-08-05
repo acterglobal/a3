@@ -15,7 +15,10 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::pins::pin_page');
 
 class PinPage extends ConsumerWidget {
   static const pinPageKey = Key('pin-page');
@@ -197,9 +200,12 @@ class PinPage extends ConsumerWidget {
             loading: () => SliverAppBar(
               title: Skeletonizer(child: Text(L10n.of(context).loadingPin)),
             ),
-            error: (err, st) => SliverAppBar(
-              title: Text(L10n.of(context).errorLoadingPin(err)),
-            ),
+            error: (err, st) {
+              _log.severe('Loading of pin failed', err, st);
+              return SliverAppBar(
+                title: Text(L10n.of(context).errorLoadingPin(err)),
+              );
+            },
           ),
           SliverToBoxAdapter(
             child: pin.when(
@@ -213,7 +219,10 @@ class PinPage extends ConsumerWidget {
                   CommentsSection(manager: acterPin.comments()),
                 ],
               ),
-              error: (err, st) => Text(L10n.of(context).errorLoadingPin(err)),
+              error: (err, st) {
+                _log.severe('Loading of pin failed', err, st);
+                return Text(L10n.of(context).errorLoadingPin(err));
+              },
               loading: () => const Skeletonizer(
                 child: Card(),
               ),

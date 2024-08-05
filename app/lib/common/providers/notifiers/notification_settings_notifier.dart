@@ -5,7 +5,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
-final _log = Logger('a3::common::notification_settings');
+final _log = Logger('a3::common::notification_settings_notifier');
 
 class AsyncNotificationSettingsNotifier
     extends AsyncNotifier<NotificationSettings> {
