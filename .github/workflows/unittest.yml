@@ -12,6 +12,7 @@ concurrency:
 
 jobs:
   flutter:
+    name: Flutter Unit Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
