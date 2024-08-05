@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:acter/common/models/sync_state/sync_state.dart';
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:riverpod/riverpod.dart';
 
@@ -55,7 +54,6 @@ class SyncNotifier extends StateNotifier<SyncState> {
         if (mounted) {
           state = const SyncState(initialSync: false);
         }
-        ref.invalidate(spacesProvider);
       }
     });
     ref.onDispose(() => _syncPoller.cancel());

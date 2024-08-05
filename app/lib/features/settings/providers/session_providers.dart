@@ -1,13 +1,10 @@
-import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/settings/providers/notifiers/devices_notifier.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show DeviceRecord;
 import 'package:riverpod/riverpod.dart';
 
-final allSessionsProvider = FutureProvider<List<DeviceRecord>>(
-  (ref) async {
-    final client = ref.watch(alwaysClientProvider);
-    final manager = client.sessionManager();
-    return (await manager.allSessions()).toList();
-  },
+final allSessionsProvider =
+    AsyncNotifierProvider<AsyncDevicesNotifier, List<DeviceRecord>>(
+  () => AsyncDevicesNotifier(),
 );
 
 final unknownSessionsProvider = FutureProvider<List<DeviceRecord>>(
