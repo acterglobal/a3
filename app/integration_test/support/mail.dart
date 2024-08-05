@@ -2,11 +2,11 @@
 
 import 'dart:convert';
 import 'package:acter/common/utils/constants.dart';
+import 'package:acter/config/env.g.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/settings/widgets/email_address_card.dart';
 import 'package:acter/features/settings/widgets/settings_menu.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -111,7 +111,7 @@ extension ActerMail on ConvenientTest {
   }) async {
     var link = await getLinkInLatestEmail(emailAddr, contains: contains);
     if (replaceWithHomeserver) {
-      final homeserver = Uri.parse(defaultServerUrl);
+      final homeserver = Uri.parse(Env.defaultHomeserverUrl);
       print('updating with $homeserver');
       link = link.replace(
         scheme: homeserver.scheme,

@@ -9,6 +9,7 @@ import 'package:acter/common/tutorial_dialogs/space_overview_tutorials/space_ove
 import 'package:acter/common/utils/language.dart';
 import 'package:acter/common/utils/logging.dart';
 import 'package:acter/common/utils/main.dart';
+import 'package:acter/config/setup.dart';
 import 'package:acter/features/cli/main.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/router/providers/router_providers.dart';
@@ -22,6 +23,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:acter/config/env.g.dart';
 
 void main(List<String> args) async {
+  configSetup();
   if (args.isNotEmpty) {
     await cliMain(args);
   } else {

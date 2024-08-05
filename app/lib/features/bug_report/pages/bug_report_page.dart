@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/config/env.g.dart';
+import 'package:acter/config/setup.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -31,8 +32,9 @@ Future<String> report({
   request.fields.addAll({
     'text': description,
     'user_agent': userAgent,
-    'app': appName, // should be same as one among github_project_mappings
-    'version': versionName,
+    'app': Env
+        .rageshakeAppName, // should be same as one among github_project_mappings
+    'version': Env.rageshakeAppVersion,
   });
   if (withUserId) {
     final client = sdk.currentClient;

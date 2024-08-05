@@ -1,5 +1,5 @@
+import 'package:acter/config/env.g.dart';
 import 'package:args/command_runner.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter/features/cli/util.dart';
 
 import 'dart:io';
@@ -15,9 +15,9 @@ class InfoCommand extends Command {
 
   @override
   Future<void> run() async {
-    print('Acter $versionName');
-    print(' - Default Homeserver: $defaultServerName');
-    print(' - Default Homeserver URL: $defaultServerUrl');
+    print('Acter ${Env.rageshakeAppVersion}');
+    print(' - Default Homeserver: ${Env.defaultHomeserverName}');
+    print(' - Default Homeserver URL: ${Env.defaultHomeserverUrl}');
     final appInfo = await AppInfo.make();
     print('Locally:');
     print(' - App Folder: ${appInfo.appDocPath}');

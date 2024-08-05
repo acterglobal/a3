@@ -3,6 +3,7 @@ import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/validation_utils.dart';
+import 'package:acter/config/env.g.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -167,7 +168,7 @@ class _AskForEmail extends StatelessWidget {
     EasyLoading.show(status: lang.sendingEmail);
     try {
       final resp = await sdk.api.requestPasswordChangeTokenViaEmail(
-        defaultServerUrl,
+        Env.defaultHomeserverUrl,
         emailController.text.trim(),
       );
       EasyLoading.dismiss();
@@ -290,7 +291,7 @@ class _NewPassword extends StatelessWidget {
     EasyLoading.show(status: lang.resettingPassword);
     try {
       await sdk.api.resetPassword(
-        defaultServerUrl,
+        Env.defaultHomeserverUrl,
         tokenResponse.sid(),
         tokenResponse.clientSecret(),
         passwordController.text,
