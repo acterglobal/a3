@@ -454,6 +454,10 @@ jobs:
             ~/.android/adb*
           key: avd-${{matrix.api_level}}
 
+      - name: Generate env
+        working-directory: ./app
+        run: dart run enven
+
       # - name: create AVD and generate snapshot for caching
       #   if: steps.avd-cache.outputs.cache-hit != 'true'
       #   uses: reactivecircus/android-emulator-runner@v2

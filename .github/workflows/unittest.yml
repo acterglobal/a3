@@ -19,6 +19,9 @@ jobs:
         name: Set up flutter
         with:
           channel: 'stable'
+      - name: Generate env
+        working-directory: ./app
+        run: dart run enven
       - name: Run flutter unit tests
         working-directory: app
         run: flutter test
