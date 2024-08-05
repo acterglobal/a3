@@ -9,6 +9,7 @@ import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
+import 'package:acter/features/bookmarks/widgets/bookmark_action.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/events/event_utils/event_utils.dart';
 import 'package:acter/features/events/model/keys.dart';
@@ -87,6 +88,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       pinned: true,
       actions: [
         _buildShareAction(calendarEvent),
+        BookmarkAction(type: 'event', id: widget.calendarId),
         _buildActionMenu(calendarEvent),
       ],
       flexibleSpace: Container(
