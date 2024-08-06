@@ -11,7 +11,6 @@ import 'package:acter/common/utils/logging.dart';
 import 'package:acter/common/utils/main.dart';
 import 'package:acter/features/cli/main.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
-import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter/router/router.dart';
 import 'package:acter_trigger_auto_complete/acter_trigger_autocomplete.dart';
 import 'package:flutter/material.dart';
