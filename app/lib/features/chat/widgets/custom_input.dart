@@ -192,6 +192,7 @@ class _ChatInput extends ConsumerStatefulWidget {
 
 class __ChatInputState extends ConsumerState<_ChatInput> {
   late ActerTriggerAutoCompleteTextController textController;
+  final FocusNode chatFocus = FocusNode();
 
   @override
   void didChangeDependencies() {
@@ -236,6 +237,14 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       baseOffset: cursorPos + emojiLength,
       extentOffset: cursorPos + emojiLength,
     );
+
+    // Ensure we keep the cursor up
+    // frame delay to keep focus connected with keyboard.
+    if (!chatFocus.hasFocus) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        chatFocus.requestFocus();
+      });
+    }
   }
 
   void handleBackspacePressed() {
@@ -311,6 +320,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
                       child: _TextInputWidget(
                         roomId: widget.roomId,
                         controller: textController,
+                        chatFocus: chatFocus,
                         onSendButtonPressed: () => onSendButtonPressed(ref),
                         isEncrypted: isEncrypted,
                         onTyping: widget.onTyping,
@@ -543,7 +553,10 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         GestureDetector(
           onTap: () {
             inputNotifier.unsetSelectedMessage();
-            FocusScope.of(context).unfocus();
+            // frame delay to keep focus connected with keyboard.
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              chatFocus.requestFocus();
+            });
           },
           child: const Icon(Atlas.xmark_circle),
         ),
@@ -575,7 +588,10 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           onTap: () {
             textController.clear();
             inputNotifier.unsetSelectedMessage();
-            FocusScope.of(context).unfocus();
+            // frame delay to keep focus connected with keyboard..
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              chatFocus.requestFocus();
+            });
           },
           child: const Icon(Atlas.xmark_circle),
         ),
@@ -637,12 +653,16 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       );
       ref.read(chatInputProvider.notifier).sendingFailed();
     }
+    if (!chatFocus.hasFocus) {
+      chatFocus.requestFocus();
+    }
   }
 }
 
 class _TextInputWidget extends ConsumerStatefulWidget {
   final String roomId;
   final ActerTriggerAutoCompleteTextController controller;
+  final FocusNode chatFocus;
   final Function() onSendButtonPressed;
   final bool isEncrypted;
   final void Function(bool)? onTyping;
@@ -650,6 +670,7 @@ class _TextInputWidget extends ConsumerStatefulWidget {
   const _TextInputWidget({
     required this.roomId,
     required this.controller,
+    required this.chatFocus,
     required this.onSendButtonPressed,
     this.onTyping,
     this.isEncrypted = false,
@@ -661,8 +682,6 @@ class _TextInputWidget extends ConsumerStatefulWidget {
 }
 
 class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
-  final FocusNode chatFocus = FocusNode();
-
   @override
   void initState() {
     super.initState();
@@ -691,11 +710,24 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
     final chatInputNotifier = ref.read(chatInputProvider.notifier);
     if (!emojiPickerVisible) {
       //Hide soft keyboard and then show Emoji Picker
-      FocusScope.of(context).unfocus();
       chatInputNotifier.emojiPickerVisible(true);
     } else {
       //Hide Emoji Picker
       chatInputNotifier.emojiPickerVisible(false);
+    }
+  }
+
+  // adds new line
+  void _insertNewLine() {
+    final TextSelection selection = widget.controller.selection;
+    if (selection.isValid) {
+      final String text = widget.controller.text;
+      final int start = selection.start;
+      final newText = text.replaceRange(start, selection.end, '\n');
+      widget.controller.value = TextEditingValue(
+        text: newText,
+        selection: TextSelection.collapsed(offset: start + 1),
+      );
     }
   }
 
@@ -708,11 +740,17 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         // a new message has been selected to be edited or switched from reply
         // to edit, force refresh the inner text controller to reflect that
         widget.controller.text = next.message;
-        chatFocus.requestFocus();
+        // frame delay to keep focus connected with keyboard.
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          widget.chatFocus.requestFocus();
+        });
       } else if (next.selectedMessageState == SelectedMessageState.replyTo &&
           (next.selectedMessage != prev?.selectedMessage ||
               prev?.selectedMessageState != next.selectedMessageState)) {
-        chatFocus.requestFocus();
+        // frame delay to keep focus connected with keyboard..
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          widget.chatFocus.requestFocus();
+        });
       }
     });
     return CallbackShortcuts(
@@ -720,11 +758,14 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         const SingleActivator(LogicalKeyboardKey.enter): () {
           widget.onSendButtonPressed();
         },
+        LogicalKeySet(LogicalKeyboardKey.enter, LogicalKeyboardKey.shift): () {
+          _insertNewLine();
+        },
       },
       child: MultiTriggerAutocomplete(
         optionsAlignment: OptionsAlignment.top,
         textEditingController: widget.controller,
-        focusNode: chatFocus,
+        focusNode: widget.chatFocus,
         autocompleteTriggers: [
           AutocompleteTrigger(
             trigger: '@',
@@ -750,72 +791,78 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
     FocusNode chatFocus,
     TextEditingController ctrl,
   ) {
-    return TextField(
-      onTap: () => onTextTap(
-        ref.read(chatInputProvider).emojiPickerVisible,
-        ref,
+    return Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.2,
       ),
-      controller: widget.controller,
-      focusNode: chatFocus,
-      enabled: ref.watch(_allowEdit(widget.roomId)),
-      onChanged: (val) {
-        ref.read(chatInputProvider.notifier).updateMessage(val);
-        if (widget.onTyping != null) {
-          widget.onTyping!(val.isNotEmpty);
-        }
-      },
-      onSubmitted: (_) => widget.onSendButtonPressed(),
-      style: Theme.of(context).textTheme.bodySmall,
-      decoration: InputDecoration(
-        contentPadding: const EdgeInsets.all(15),
-        isCollapsed: true,
-        prefixIcon: widget.isEncrypted
-            ? Icon(
-                Icons.shield,
-                size: 18,
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
-              )
-            : null,
-        suffixIcon: InkWell(
-          onTap: () => onSuffixTap(
-            ref.read(chatInputProvider).emojiPickerVisible,
-            context,
-            ref,
-          ),
-          child: const Icon(Icons.emoji_emotions),
+      child: TextField(
+        maxLines: 5,
+        minLines: 1,
+        onTap: () => onTextTap(
+          ref.read(chatInputProvider).emojiPickerVisible,
+          ref,
         ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide: BorderSide(
-            width: 0.5,
-            style: BorderStyle.solid,
-            color: Theme.of(context).colorScheme.surface,
+        controller: widget.controller,
+        focusNode: chatFocus,
+        enabled: ref.watch(_allowEdit(widget.roomId)),
+        onChanged: (val) {
+          ref.read(chatInputProvider.notifier).updateMessage(val);
+          if (widget.onTyping != null) {
+            widget.onTyping!(val.isNotEmpty);
+          }
+        },
+        onSubmitted: (_) => widget.onSendButtonPressed(),
+        style: Theme.of(context).textTheme.bodySmall,
+        decoration: InputDecoration(
+          contentPadding: const EdgeInsets.all(15),
+          isCollapsed: true,
+          prefixIcon: widget.isEncrypted
+              ? Icon(
+                  Icons.shield,
+                  size: 18,
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                )
+              : null,
+          suffixIcon: InkWell(
+            onTap: () => onSuffixTap(
+              ref.read(chatInputProvider).emojiPickerVisible,
+              context,
+              ref,
+            ),
+            child: const Icon(Icons.emoji_emotions),
           ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide: const BorderSide(
-            width: 0.5,
-            style: BorderStyle.solid,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: BorderSide(
+              width: 0.5,
+              style: BorderStyle.solid,
+              color: Theme.of(context).colorScheme.surface,
+            ),
           ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide: BorderSide(
-            width: 0.5,
-            style: BorderStyle.solid,
-            color: Theme.of(context).colorScheme.onSurface,
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: const BorderSide(
+              width: 0.5,
+              style: BorderStyle.solid,
+            ),
           ),
-        ),
-        hintText: widget.isEncrypted
-            ? L10n.of(context).newEncryptedMessage
-            : L10n.of(context).newMessage,
-        hintStyle: Theme.of(context).textTheme.labelLarge!.copyWith(
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: BorderSide(
+              width: 0.5,
+              style: BorderStyle.solid,
               color: Theme.of(context).colorScheme.onSurface,
             ),
-        hintMaxLines: 1,
+          ),
+          hintText: widget.isEncrypted
+              ? L10n.of(context).newEncryptedMessage
+              : L10n.of(context).newMessage,
+          hintStyle: Theme.of(context).textTheme.labelLarge!.copyWith(
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+          hintMaxLines: 1,
+        ),
       ),
-      textInputAction: TextInputAction.newline,
     );
   }
 }
