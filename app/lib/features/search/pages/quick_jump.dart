@@ -16,6 +16,7 @@ class QuickjumpDialog extends ConsumerWidget {
         appBar: AppBar(title: Text(L10n.of(context).jumpTo)),
         body: const QuickJump(
           expand: false,
+          popBeforeRoute: true,
         ),
       ),
     );

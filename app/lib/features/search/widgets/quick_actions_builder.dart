@@ -17,8 +17,11 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 final _log = Logger('a3::search::quick_actions_builder');
 
 class QuickActionsBuilder extends ConsumerWidget {
+  final bool popBeforeRoute;
+
   const QuickActionsBuilder({
     super.key,
+    required this.popBeforeRoute,
   });
 
   @override
@@ -52,7 +55,7 @@ class QuickActionsBuilder extends ConsumerWidget {
           if (canPostNews)
             OutlinedButton.icon(
               key: QuickJumpKeys.createUpdateAction,
-              onPressed: () => context.pushNamed(Routes.actionAddUpdate.name),
+              onPressed: () => routeTo(context, Routes.actionAddUpdate),
               icon: const Icon(
                 Atlas.plus_circle_thin,
                 size: 18,
@@ -65,7 +68,7 @@ class QuickActionsBuilder extends ConsumerWidget {
           if (canPostPin)
             OutlinedButton.icon(
               key: QuickJumpKeys.createPinAction,
-              onPressed: () => context.pushNamed(Routes.actionAddPin.name),
+              onPressed: () => routeTo(context, Routes.actionAddPin),
               icon: const Icon(
                 Atlas.plus_circle_thin,
                 size: 18,
@@ -78,7 +81,7 @@ class QuickActionsBuilder extends ConsumerWidget {
           if (canPostEvent)
             OutlinedButton.icon(
               key: QuickJumpKeys.createEventAction,
-              onPressed: () => context.pushNamed(Routes.createEvent.name),
+              onPressed: () => routeTo(context, Routes.createEvent),
               icon: const Icon(Atlas.plus_circle_thin, size: 18),
               label: Text(
                 L10n.of(context).event,
@@ -123,7 +126,7 @@ class QuickActionsBuilder extends ConsumerWidget {
           OutlinedButton.icon(
             icon: const Icon(Atlas.connection),
             key: SpacesKeys.actionCreate,
-            onPressed: () => context.pushNamed(Routes.createSpace.name),
+            onPressed: () => routeTo(context, Routes.createSpace),
             label: Text(L10n.of(context).createSpace),
           ),
           OutlinedButton.icon(
@@ -141,12 +144,21 @@ class QuickActionsBuilder extends ConsumerWidget {
               style: Theme.of(context).textTheme.labelMedium,
             ),
             onPressed: () async {
-              Navigator.pop(context);
+              if (popBeforeRoute) {
+                Navigator.pop(context);
+              }
               await openBugReport(context);
             },
           ),
         ],
       ),
     );
+  }
+
+  void routeTo(BuildContext context, Routes route) {
+    if (popBeforeRoute) {
+      Navigator.pop(context);
+    }
+    context.pushNamed(route.name);
   }
 }
