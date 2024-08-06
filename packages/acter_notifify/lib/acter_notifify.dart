@@ -59,7 +59,7 @@ Future<String?> initializeNotifify({
       handleMessageTap: handleMessageTap,
     );
   } else {
-    initialUrl = await initializeLocalNotifications();
+    initialUrl = await initializeLocalNotifications(handleMessageTap: handleMessageTap);
   }
 
   if (usePush && pushServer.isNotEmpty) {
