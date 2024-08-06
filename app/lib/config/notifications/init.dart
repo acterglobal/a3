@@ -32,8 +32,8 @@ const ntfyServer = String.fromEnvironment(
   defaultValue: '',
 );
 
-Future<bool> initializeNotifications() async {
-  await initializeNotifify(
+Future<String?> initializeNotifications() async {
+  return await initializeNotifify(
     androidFirebaseOptions: DefaultFirebaseOptions.android,
     handleMessageTap: _handleMessageTap,
     isEnabledCheck: _isEnabled,
@@ -44,7 +44,6 @@ Future<bool> initializeNotifications() async {
     ntfyServer: ntfyServer,
     currentClientsGen: _genCurrentClients,
   );
-  return false;
 }
 
 Future<bool> setupPushNotifications(

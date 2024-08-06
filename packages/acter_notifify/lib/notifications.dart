@@ -220,12 +220,12 @@ Future<bool?> setupNtfyNotificationsForDevice(
   ShouldShowCheck? shouldShowCheck,
 }) async {
   // let's get the token
-  final deviceId = await client.deviceId().toString();
+  final deviceId = client.deviceId().toString();
 
   final token = 'up$deviceId';
 
   // submit to server
-  final submittedToken = await _addToken(
+  await _addToken(
     client,
     'https://$ntfyServer/$token',
     appIdPrefix: appIdPrefix,
@@ -257,6 +257,7 @@ Future<bool?> setupNtfyNotificationsForDevice(
   );
   if (rs.data == null) {
     _log.severe('Connecting to ntfy server failed: $rs');
+    return false;
   }
   _subscriptions[token] = rs.data!.stream
       .transform(unit8Transformer)
@@ -274,7 +275,7 @@ Future<bool?> setupNtfyNotificationsForDevice(
       final notification = message['notification'];
       // we plug our device ID as it is needed for the inner workings
       notification['device_id'] = deviceId;
-      print("received $notification");
+      _log.info('Message received: $notification');
       _handleMatrixMessage(
         notification as Map<String?, Object?>,
         shouldShowCheck: shouldShowCheck,
@@ -283,6 +284,7 @@ Future<bool?> setupNtfyNotificationsForDevice(
       _log.severe('Failed to show push notification $event', error, stack);
     }
   });
+  return true;
 }
 
 Future<bool> _addToken(
@@ -317,13 +319,11 @@ Future<bool> _addToken(
   );
 
   _log.info(
-    ' ---- notification pusher set: $appName ($appId) on $name ($token) to $pushServerUrl',
+    'notification pusher set: $appName ($appId) on $name ($token) to $pushServerUrl',
   );
 
   await client.installDefaultActerPushRules();
 
-  _log.info(
-    ' ---- default push rules submitted',
-  );
+  _log.info('default push rules submitted');
   return true;
 }

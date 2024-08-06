@@ -29,7 +29,7 @@ typedef ShouldShowCheck = FutureOr<bool> Function(String url);
 typedef CurrentClientsGen = FutureOr<List<Client>> Function();
 
 /// Initialize Notification support
-Future<void> initializeNotifify({
+Future<String?> initializeNotifify({
   required HandleMessageTap handleMessageTap,
   required String appName,
   required String appIdPrefix,
@@ -45,7 +45,7 @@ Future<void> initializeNotifify({
       options: androidFirebaseOptions,
     );
   }
-  await initializeLocalNotifications();
+  final initialUrl = await initializeLocalNotifications();
 
   if (usePush && pushServer.isNotEmpty) {
     await initializePush(
@@ -74,6 +74,7 @@ Future<void> initializeNotifify({
       }
     }
   }
+  return initialUrl;
 }
 
 /// Return false if the user declined the request to

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:logging/logging.dart';
@@ -37,8 +36,6 @@ class ReceivedNotification {
   final String? payload;
 }
 
-String? selectedNotificationPayload;
-
 /// A notification action which triggers a url launch event
 const String urlLaunchActionId = 'id_1';
 
@@ -65,14 +62,17 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
   }
 }
 
-Future<void> initializeLocalNotifications() async {
-  final NotificationAppLaunchDetails? notificationAppLaunchDetails = !kIsWeb &&
-          Platform.isLinux
-      ? null
-      : await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
-  if (notificationAppLaunchDetails?.didNotificationLaunchApp ?? false) {
-    selectedNotificationPayload =
-        notificationAppLaunchDetails!.notificationResponse?.payload;
+/// Returns
+Future<String?> initializeLocalNotifications() async {
+  String? selectedNotificationPayload;
+  // do this only on supported platforms
+  if (Platform.isAndroid || Platform.isIOS) {
+    final NotificationAppLaunchDetails? notificationAppLaunchDetails =
+        await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+    if (notificationAppLaunchDetails?.didNotificationLaunchApp ?? false) {
+      selectedNotificationPayload =
+          notificationAppLaunchDetails!.notificationResponse?.payload;
+    }
   }
 
   const AndroidInitializationSettings initializationSettingsAndroid =
@@ -172,4 +172,5 @@ Future<void> initializeLocalNotifications() async {
     },
     onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
   );
+  return selectedNotificationPayload;
 }
