@@ -530,7 +530,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       EventFilters.ongoing => '${L10n.of(context).eventStarted} $agoTime',
       EventFilters.upcoming => '${L10n.of(context).eventStarts} $agoTime',
       EventFilters.past => '${L10n.of(context).eventEnded} $agoTime',
-      EventFilters.all => '',
+      _ => '',
     };
     final canChangeDate = getEventType(ev) == EventFilters.upcoming;
 

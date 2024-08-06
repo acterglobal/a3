@@ -108,6 +108,14 @@ class _EventListPageState extends ConsumerState<EventListPage> {
             ),
             const SizedBox(width: 10),
             FilterChip(
+              selected: eventFilterValue == EventFilters.bookmarked,
+              label: Text(L10n.of(context).bookmarked),
+              onSelected: (value) => ref
+                  .read(eventFilerProvider.notifier)
+                  .state = EventFilters.bookmarked,
+            ),
+            const SizedBox(width: 10),
+            FilterChip(
               selected: eventFilterValue == EventFilters.ongoing,
               label: Text(L10n.of(context).happeningNow),
               onSelected: (value) => ref
