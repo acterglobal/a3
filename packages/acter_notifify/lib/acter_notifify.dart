@@ -40,6 +40,10 @@ Future<String?> initializeNotifify({
   ShouldShowCheck? shouldShowCheck,
   CurrentClientsGen? currentClientsGen,
 }) async {
+  if (Platform.isFuchsia || Platform.isWindows) {
+    // not supported yet;
+    return null;
+  }
   if (Platform.isAndroid) {
     await Firebase.initializeApp(
       options: androidFirebaseOptions,
@@ -88,6 +92,10 @@ Future<bool?> setupNotificationsForDevice(
   required String pushServer,
   required String ntfyServer,
 }) async {
+  if (Platform.isFuchsia || Platform.isWindows) {
+    // not supported yet;
+    return null;
+  }
   if (usePush && pushServer.isNotEmpty) {
     return await setupPushNotificationsForDevice(
       client,
