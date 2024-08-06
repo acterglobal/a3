@@ -3,8 +3,8 @@ import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/events/widgets/change_date_sheet.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
@@ -15,6 +15,7 @@ import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/events/event_utils/event_utils.dart';
 import 'package:acter/features/events/model/keys.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/events/utils/events_utils.dart';
 import 'package:acter/features/events/widgets/event_date_widget.dart';
 import 'package:acter/features/events/widgets/participants_list.dart';
 import 'package:acter/features/events/widgets/skeletons/event_details_skeleton_widget.dart';
@@ -30,7 +31,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' show join;
@@ -107,6 +107,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     final canRedact = ref.watch(canRedactProvider(event));
     final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
     final canPostEvent = membership?.canString('CanPostEvent') == true;
+    final canChangeDate = getEventType(event) == EventFilters.upcoming;
 
     //Create event actions
     List<PopupMenuEntry> actions = [];
@@ -114,22 +115,52 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     if (membership != null) {
       //Edit Event Action
       if (canPostEvent) {
+        // Edit Title
         actions.add(
           PopupMenuItem(
             key: EventsKeys.eventEditBtn,
-            onTap: () => context.pushNamed(
-              Routes.editCalendarEvent.name,
-              pathParameters: {'calendarId': widget.calendarId},
-            ),
+            onTap: () => showEditEventTitleBottomSheet(event),
             child: Row(
               children: <Widget>[
                 const Icon(Atlas.pencil_edit_thin),
                 const SizedBox(width: 10),
-                Text(L10n.of(context).eventEdit),
+                Text(L10n.of(context).editTitle),
               ],
             ),
           ),
         );
+
+        // Edit Description
+        actions.add(
+          PopupMenuItem(
+            key: EventsKeys.eventEditBtn,
+            onTap: () => showEditDescriptionSheet(event),
+            child: Row(
+              children: <Widget>[
+                const Icon(Atlas.pencil_edit_thin),
+                const SizedBox(width: 10),
+                Text(L10n.of(context).editDescription),
+              ],
+            ),
+          ),
+        );
+
+        // Change Date
+        if (canChangeDate) {
+          actions.add(
+            PopupMenuItem(
+              key: EventsKeys.eventEditBtn,
+              onTap: () => showChangeDateSheet(event),
+              child: Row(
+                children: <Widget>[
+                  const Icon(Atlas.pencil_edit_thin),
+                  const SizedBox(width: 10),
+                  Text(L10n.of(context).changeDate),
+                ],
+              ),
+            ),
+          );
+        }
       }
     }
 
@@ -204,7 +235,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           const SizedBox(height: 20),
           _buildEventBasicDetails(calendarEvent),
           const SizedBox(height: 10),
-          _buildEventRsvpActions(),
+          _buildEventRsvpActions(calendarEvent),
           const SizedBox(height: 10),
           _buildEventDataSet(calendarEvent),
           const SizedBox(height: 10),
@@ -242,7 +273,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
                 child: GestureDetector(
                   onTap: () {
                     if (canPostEvent) {
-                      showEditEventTitleBottomSheet(calendarEvent.title());
+                      showEditEventTitleBottomSheet(calendarEvent);
                     }
                   },
                   child: Text(
@@ -277,36 +308,18 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     );
   }
 
-  void showEditEventTitleBottomSheet(String titleValue) {
+  void showEditEventTitleBottomSheet(CalendarEvent calendarEvent) {
     showEditTitleBottomSheet(
       context: context,
-      titleValue: titleValue,
+      titleValue: calendarEvent.title(),
       onSave: (newName) {
-        _editEventTitle(newName);
+        saveEventTitle(
+          context: context,
+          calendarEvent: calendarEvent,
+          newName: newName,
+        );
       },
     );
-  }
-
-  Future<void> _editEventTitle(String newName) async {
-    try {
-      EasyLoading.show(status: L10n.of(context).updateName);
-      // We always have calendar object at this stage.
-      final calendarEvent =
-          await ref.read(calendarEventProvider(widget.calendarId).future);
-      final updateBuilder = calendarEvent.updateBuilder();
-      updateBuilder.title(newName);
-      final eventId = await updateBuilder.send();
-      _log.info('Calendar Event Title Updated $eventId');
-
-      EasyLoading.dismiss();
-      if (!mounted) return;
-      Navigator.pop(context);
-    } catch (e, st) {
-      _log.severe('Failed to edit event name', e, st);
-      EasyLoading.dismiss();
-      if (!mounted) return;
-      EasyLoading.showError(L10n.of(context).updateNameFailed(e));
-    }
   }
 
   Future<void> onRsvp(RsvpStatusTag status, WidgetRef ref) async {
@@ -343,7 +356,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     }
   }
 
-  Widget _buildEventRsvpActions() {
+  Widget _buildEventRsvpActions(CalendarEvent calendarEvent) {
     final myRsvpStatus = ref.watch(myRsvpStatusProvider(widget.calendarId));
     Set<RsvpStatusTag?> rsvp = <RsvpStatusTag?>{null};
     myRsvpStatus.maybeWhen(
@@ -373,25 +386,31 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         children: [
           _buildEventRsvpActionItem(
             key: EventsKeys.eventRsvpGoingBtn,
+            calendarEvent: calendarEvent,
             onTap: () => onRsvp(RsvpStatusTag.Yes, ref),
             iconData: Icons.check,
             actionName: L10n.of(context).going,
+            rsvpStatusColor: Theme.of(context).colorScheme.secondary,
             isSelected: rsvp.single == RsvpStatusTag.Yes,
           ),
           _buildVerticalDivider(),
           _buildEventRsvpActionItem(
             key: EventsKeys.eventRsvpNotGoingBtn,
+            calendarEvent: calendarEvent,
             onTap: () => onRsvp(RsvpStatusTag.No, ref),
             iconData: Icons.close,
             actionName: L10n.of(context).notGoing,
+            rsvpStatusColor: Theme.of(context).colorScheme.error,
             isSelected: rsvp.single == RsvpStatusTag.No,
           ),
           _buildVerticalDivider(),
           _buildEventRsvpActionItem(
             key: EventsKeys.eventRsvpMaybeBtn,
+            calendarEvent: calendarEvent,
             onTap: () => onRsvp(RsvpStatusTag.Maybe, ref),
             iconData: Icons.question_mark,
             actionName: L10n.of(context).maybe,
+            rsvpStatusColor: Colors.white,
             isSelected: rsvp.single == RsvpStatusTag.Maybe,
           ),
         ],
@@ -454,27 +473,30 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
 
   Widget _buildEventRsvpActionItem({
     required Key key,
+    required CalendarEvent calendarEvent,
     required VoidCallback onTap,
     required IconData iconData,
     required String actionName,
+    required Color rsvpStatusColor,
     bool isSelected = false,
   }) {
+    final canRSVPUpdate = getEventType(calendarEvent) != EventFilters.past;
     return Expanded(
       child: InkWell(
         key: key,
-        onTap: onTap,
+        onTap: canRSVPUpdate ? onTap : null,
         child: Column(
           children: [
             Icon(
               iconData,
               size: 26,
-              color: isSelected ? Colors.white : Colors.white38,
+              color: isSelected ? rsvpStatusColor : Colors.white38,
             ),
             const SizedBox(height: 4),
             Text(
               actionName,
               style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                    color: isSelected ? Colors.white : Colors.white38,
+                    color: isSelected ? rsvpStatusColor : Colors.white38,
                   ),
             ),
           ],
@@ -510,6 +532,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       EventFilters.past => '${L10n.of(context).eventEnded} $agoTime',
       EventFilters.all => '',
     };
+    final canChangeDate = getEventType(ev) == EventFilters.upcoming;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -518,6 +541,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           ListTile(
             leading: const Icon(Atlas.calendar_dots),
             title: Text(eventTimingTitle),
+            onTap: canChangeDate ? () => showChangeDateSheet(ev) : null,
             subtitle: Text('$startDate - $endDate'),
           ),
           ListTile(
@@ -526,6 +550,13 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           ),
         ],
       ),
+    );
+  }
+
+  void showChangeDateSheet(CalendarEvent ev) {
+    showChangeDateBottomSheet(
+      context: context,
+      calendarId: ev.eventId().toString(),
     );
   }
 
@@ -618,7 +649,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           const SizedBox(height: 10),
           SelectionArea(
             child: GestureDetector(
-              onTap: () => showEditDescriptionSheet(formattedText, bodyText),
+              onTap: () => showEditDescriptionSheet(ev),
               child: formattedText != null
                   ? RenderHtml(
                       text: formattedText,
@@ -635,40 +666,20 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     );
   }
 
-  void showEditDescriptionSheet(String? formattedText, String? bodyText) {
+  void showEditDescriptionSheet(CalendarEvent ev) {
+    TextMessageContent? content = ev.description();
     showEditHtmlDescriptionBottomSheet(
       context: context,
-      descriptionHtmlValue: formattedText,
-      descriptionMarkdownValue: bodyText,
+      descriptionHtmlValue: content?.formatted(),
+      descriptionMarkdownValue: content?.body(),
       onSave: (htmlBodyDescription, plainDescription) {
-        _saveDescription(htmlBodyDescription, plainDescription);
+        saveEventDescription(
+          context: context,
+          calendarEvent: ev,
+          htmlBodyDescription: htmlBodyDescription,
+          plainDescription: plainDescription,
+        );
       },
     );
-  }
-
-  Future<void> _saveDescription(
-    String htmlBodyDescription,
-    String plainDescription,
-  ) async {
-    EasyLoading.show(status: L10n.of(context).updatingDescription);
-    try {
-      // We always have calendar object at this stage.
-      final calendarEvent =
-          await ref.read(calendarEventProvider(widget.calendarId).future);
-
-      final updateBuilder = calendarEvent.updateBuilder();
-      updateBuilder.descriptionHtml(plainDescription, htmlBodyDescription);
-      await updateBuilder.send();
-      EasyLoading.dismiss();
-      if (mounted) Navigator.pop(context);
-    } catch (e, st) {
-      _log.severe('Failed to update event description', e, st);
-      EasyLoading.dismiss();
-      if (!mounted) return;
-      EasyLoading.showError(
-        L10n.of(context).errorUpdatingDescription(e),
-        duration: const Duration(seconds: 3),
-      );
-    }
   }
 }

@@ -133,14 +133,14 @@ class EventItem extends StatelessWidget {
     if (status != null) {
       switch (status) {
         case 'yes':
-          return const Icon(
+          return  Icon(
             Icons.check_circle,
-            color: Colors.green,
+            color: Theme.of(context).colorScheme.secondary,
           );
         case 'no':
-          return const Icon(
+          return  Icon(
             Icons.cancel,
-            color: Colors.red,
+            color: Theme.of(context).colorScheme.error,
           );
         case 'maybe':
           return const Icon(Icons.question_mark_rounded);
