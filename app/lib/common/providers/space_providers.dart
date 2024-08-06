@@ -240,10 +240,14 @@ final spaceRelationsOverviewProvider =
     if (related.suggested()) {
       suggested.add(roomId);
     }
-    if (targetType == 'Unknown') {
-      // this one is not found locally
+    final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
+    if (room == null || !room.isJoined()) {
+      // we don't know this room or are not in it
       hasMore = true;
-    } else if (targetType == 'ChatRoom') {
+      continue;
+    }
+
+    if (targetType == 'ChatRoom') {
       // we know this as a chat room
       knownChats.add(roomId);
     } else {
@@ -306,7 +310,7 @@ final hasSubSpacesProvider =
   () => HasSubSpacesNotifier(),
 );
 
-final _spaceRemoteRelationsProvider =
+final spaceRemoteRelationsProvider =
     FutureProvider.family<List<SpaceHierarchyRoomInfo>, String>(
         (ref, spaceId) async {
   final relatedSpaces = await ref.watch(spaceRelationsProvider(spaceId).future);
@@ -324,7 +328,7 @@ final remoteChatRelationsProvider =
         await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
     final toIgnore = relatedSpaces.knownChats.toList();
     final roomHierarchy =
-        await ref.watch(_spaceRemoteRelationsProvider(spaceId).future);
+        await ref.watch(spaceRemoteRelationsProvider(spaceId).future);
     // filter out the known rooms
     return roomHierarchy
         .where((r) => !r.isSpace() && !toIgnore.contains(r.roomIdStr()))
@@ -348,7 +352,7 @@ final remoteSubspaceRelationsProvider =
     toIgnore.add(spaceId); // the hierarchy also gives us ourselfes ...
 
     final roomHierarchy =
-        await ref.watch(_spaceRemoteRelationsProvider(spaceId).future);
+        await ref.watch(spaceRemoteRelationsProvider(spaceId).future);
     // filter out the known rooms
     return roomHierarchy
         .where((r) => r.isSpace() && !toIgnore.contains(r.roomIdStr()))

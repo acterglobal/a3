@@ -11824,7 +11824,7 @@ class Api {
     return tmp7;
   }
 
-  Space? __clientJoinSpaceFuturePoll(
+  Room? __clientJoinRoomFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -11838,7 +11838,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _clientJoinSpaceFuturePoll(
+    final tmp6 = _clientJoinRoomFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -11865,56 +11865,9 @@ class Api {
       throw tmp9_0;
     }
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_Space");
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_Room");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = Space._(this, tmp13_1);
-    return tmp7;
-  }
-
-  Convo? __clientJoinConvoFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _clientJoinConvoFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_Convo");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = Convo._(this, tmp13_1);
+    final tmp7 = Room._(this, tmp13_1);
     return tmp7;
   }
 
@@ -25934,7 +25887,7 @@ class Api {
       int Function(
         int,
       )>();
-  late final _clientJoinSpacePtr = _lookup<
+  late final _clientJoinRoomPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
             ffi.IntPtr,
@@ -25945,33 +25898,9 @@ class Api {
             ffi.IntPtr,
             ffi.UintPtr,
             ffi.UintPtr,
-          )>>("__Client_join_space");
+          )>>("__Client_join_room");
 
-  late final _clientJoinSpace = _clientJoinSpacePtr.asFunction<
-      int Function(
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-      )>();
-  late final _clientJoinConvoPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Client_join_convo");
-
-  late final _clientJoinConvo = _clientJoinConvoPtr.asFunction<
+  late final _clientJoinRoom = _clientJoinRoomPtr.asFunction<
       int Function(
         int,
         int,
@@ -30820,32 +30749,17 @@ class Api {
         int,
         int,
       )>();
-  late final _clientJoinSpaceFuturePollPtr = _lookup<
+  late final _clientJoinRoomFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientJoinSpaceFuturePollReturn Function(
+          _ClientJoinRoomFuturePollReturn Function(
             ffi.IntPtr,
             ffi.IntPtr,
             ffi.Int64,
-          )>>("__Client_join_space_future_poll");
+          )>>("__Client_join_room_future_poll");
 
-  late final _clientJoinSpaceFuturePoll =
-      _clientJoinSpaceFuturePollPtr.asFunction<
-          _ClientJoinSpaceFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _clientJoinConvoFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientJoinConvoFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_join_convo_future_poll");
-
-  late final _clientJoinConvoFuturePoll =
-      _clientJoinConvoFuturePollPtr.asFunction<
-          _ClientJoinConvoFuturePollReturn Function(
+  late final _clientJoinRoomFuturePoll =
+      _clientJoinRoomFuturePollPtr.asFunction<
+          _ClientJoinRoomFuturePollReturn Function(
             int,
             int,
             int,
@@ -53086,64 +53000,8 @@ class Client {
     return tmp2;
   }
 
-  /// attempt to join a space
-  Future<Space> joinSpace(
-    String roomIdOrAlias,
-    String? serverName,
-  ) {
-    final tmp1 = roomIdOrAlias;
-    final tmp5 = serverName;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    var tmp6 = 0;
-    var tmp8 = 0;
-    var tmp9 = 0;
-    var tmp10 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    if (tmp5 == null) {
-      tmp6 = 0;
-    } else {
-      tmp6 = 1;
-      final tmp7 = tmp5;
-      final tmp7_0 = utf8.encode(tmp7);
-      tmp9 = tmp7_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp8_0 = _api.__allocate(tmp9 * 1, 1);
-      final Uint8List tmp8_1 = tmp8_0.asTypedList(tmp9);
-      tmp8_1.setAll(0, tmp7_0);
-      tmp8 = tmp8_0.address;
-      tmp10 = tmp9;
-    }
-    final tmp11 = _api._clientJoinSpace(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-      tmp6,
-      tmp8,
-      tmp9,
-      tmp10,
-    );
-    final tmp13 = tmp11;
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(_api, tmp13_0, "__Client_join_space_future_drop");
-    tmp13_1._finalizer = _api._registerFinalizer(tmp13_1);
-    final tmp12 = _nativeFuture(tmp13_1, _api.__clientJoinSpaceFuturePoll);
-    return tmp12;
-  }
-
   /// attempt to join a room
-  Future<Convo> joinConvo(
+  Future<Room> joinRoom(
     String roomIdOrAlias,
     String? serverName,
   ) {
@@ -53180,7 +53038,7 @@ class Client {
       tmp8 = tmp8_0.address;
       tmp10 = tmp9;
     }
-    final tmp11 = _api._clientJoinConvo(
+    final tmp11 = _api._clientJoinRoom(
       tmp0,
       tmp2,
       tmp3,
@@ -53192,9 +53050,9 @@ class Client {
     );
     final tmp13 = tmp11;
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(_api, tmp13_0, "__Client_join_convo_future_drop");
+    final tmp13_1 = _Box(_api, tmp13_0, "__Client_join_room_future_drop");
     tmp13_1._finalizer = _api._registerFinalizer(tmp13_1);
-    final tmp12 = _nativeFuture(tmp13_1, _api.__clientJoinConvoFuturePoll);
+    final tmp12 = _nativeFuture(tmp13_1, _api.__clientJoinRoomFuturePoll);
     return tmp12;
   }
 
@@ -62915,22 +62773,7 @@ class _ClientSpacesFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ClientJoinSpaceFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.IntPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-  @ffi.UintPtr()
-  external int arg4;
-  @ffi.IntPtr()
-  external int arg5;
-}
-
-class _ClientJoinConvoFuturePollReturn extends ffi.Struct {
+class _ClientJoinRoomFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

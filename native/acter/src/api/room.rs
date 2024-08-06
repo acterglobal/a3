@@ -558,7 +558,7 @@ impl SpaceRelations {
                 let mut next : Option<String> = Some("".to_owned());
                 let mut rooms = Vec::new();
                 while next.is_some() {
-                    let request = assign!(get_hierarchy::v1::Request::new(room_id.clone()), { from: next.clone(), max_depth: Some(2u32.into()) });
+                    let request = assign!(get_hierarchy::v1::Request::new(room_id.clone()), { from: next.clone(), max_depth: Some(1u32.into()) });
                     let resp = c.client().send(request, None).await?;
                     if (resp.rooms.is_empty()) {
                         break; // we are done

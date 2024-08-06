@@ -1,5 +1,5 @@
 use derive_builder::Builder;
-use matrix_sdk::room::Room;
+use matrix_sdk::{room::Room, RoomState};
 use ruma::assign;
 use ruma_client_api::room::{create_room, Visibility};
 use ruma_common::{
@@ -349,7 +349,10 @@ impl CoreClient {
             let target = ev.state_key();
             let target_type = match self.client().get_room(target) {
                 Some(child) => {
-                    if !child.is_space() {
+                    if !matches!(child.state(), RoomState::Joined) {
+                        // we count rooms we are not currently in as unknown
+                        RelationTargetType::Unknown
+                    } else if !child.is_space() {
                         RelationTargetType::ChatRoom
                     } else if is_acter_space(&child).await {
                         RelationTargetType::ActerSpace
