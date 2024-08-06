@@ -4,17 +4,19 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:acter_notifify/acter_notifify.dart';
-import 'package:acter_notifify/android.dart';
+import 'package:acter_notifify/platform/android.dart';
+import 'package:acter_notifify/platform/darwin.dart';
 import 'package:acter_notifify/local.dart';
+import 'package:acter_notifify/platform/linux.dart';
 import 'package:acter_notifify/util.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_notifify/platform/windows.dart';
 import 'package:convert/convert.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:logging/logging.dart';
 import 'package:push/push.dart';
-import 'package:path_provider/path_provider.dart';
 
 final _log = Logger('a3::notifify');
 int id = 0;
@@ -146,38 +148,35 @@ Future<void> _showNotification(
 ) async {
   if (Platform.isAndroid) {
     return await showNotificationOnAndroid(notification);
+  } else if (Platform.isWindows) {
+    return await showWindowsNotification(notification);
   }
-  // fallback for non-android
+
+  // fallback for linux & macos
   String? body;
   String title = notification.title();
-  List<DarwinNotificationAttachment> attachments = [];
-
   final msg = notification.body();
   if (msg != null) {
     body = msg.body();
   }
-  // FIXME: currently failing with
-  // Parsing Notification failed: PlatformException(Error 101, Unrecognized attachment file type, UNErrorDomain, null)
-  if (notification.hasImage()) {
-    final tempDir = await getTemporaryDirectory();
-    final filePath = await notification.imagePath(tempDir.path);
-    _log.info('attachment at $filePath');
-    attachments.add(DarwinNotificationAttachment(filePath));
+  DarwinNotificationDetails? darwinDetails;
+  LinuxNotificationDetails? linuxDetails;
+
+  if (Platform.isIOS || Platform.isMacOS) {
+    darwinDetails = await genDarwinDetails(notification);
+  } else if (Platform.isLinux) {
+    linuxDetails = await genLinuxDetails(notification);
   }
 
-  final darwinDetails = DarwinNotificationDetails(
-    threadIdentifier: notification.threadId(),
-    attachments: attachments,
-  );
-  final notificationDetails = NotificationDetails(
-    macOS: darwinDetails,
-    iOS: darwinDetails,
-  );
   await flutterLocalNotificationsPlugin.show(
     id++,
     title,
     body,
-    notificationDetails,
+    NotificationDetails(
+      macOS: darwinDetails,
+      iOS: darwinDetails,
+      linux: linuxDetails,
+    ),
     payload: notification.targetUrl(),
   );
 }

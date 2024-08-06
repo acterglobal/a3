@@ -1,13 +1,16 @@
 import 'dart:io';
 
-import 'package:acter_notifify/android.dart';
+import 'package:acter_notifify/platform/android.dart';
 import 'package:acter_notifify/local.dart';
+import 'package:acter_notifify/platform/windows.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
 final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 
-final isOnSupportedPlatform =
-    Platform.isAndroid || Platform.isIOS; // || Platform.isMacOS;
+final useLocal = Platform.isAndroid ||
+    Platform.isIOS ||
+    Platform.isMacOS ||
+    Platform.isLinux; // || Platform.isMacOS;
 
 final usePush = Platform.isAndroid || Platform.isIOS;
 
@@ -15,11 +18,13 @@ Future<void> removeNotificationsForRoom(String roomId) async {
   await cancelInThread(roomId);
   if (Platform.isAndroid) {
     androidClearNotificationsCache(roomId);
+  } else if (Platform.isWindows) {
+    windowsClearNotificationsCache(roomId);
   }
 }
 
 Future<void> cancelInThread(String threadId) async {
-  if (!isOnSupportedPlatform) {
+  if (!useLocal) {
     return; // nothing for us to do here.
   }
 

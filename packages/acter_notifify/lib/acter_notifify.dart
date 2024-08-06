@@ -7,6 +7,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_notifify/local.dart';
 import 'package:acter_notifify/notifications.dart';
 import 'package:acter_notifify/util.dart';
+import 'package:acter_notifify/platform/windows.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:logging/logging.dart';
 
@@ -35,12 +36,14 @@ Future<String?> initializeNotifify({
   required String appIdPrefix,
   required String pushServer,
   required String ntfyServer,
+  String? winApplicationId,
   FirebaseOptions? androidFirebaseOptions,
   IsEnabledCheck? isEnabledCheck,
   ShouldShowCheck? shouldShowCheck,
   CurrentClientsGen? currentClientsGen,
 }) async {
-  if (Platform.isFuchsia || Platform.isWindows) {
+  String? initialUrl;
+  if (Platform.isFuchsia) {
     // not supported yet;
     return null;
   }
@@ -49,7 +52,15 @@ Future<String?> initializeNotifify({
       options: androidFirebaseOptions,
     );
   }
-  final initialUrl = await initializeLocalNotifications();
+
+  if (Platform.isWindows) {
+    initializeWindowsNotifications(
+      applicationId: winApplicationId,
+      handleMessageTap: handleMessageTap,
+    );
+  } else {
+    initialUrl = await initializeLocalNotifications();
+  }
 
   if (usePush && pushServer.isNotEmpty) {
     await initializePush(
@@ -92,7 +103,7 @@ Future<bool?> setupNotificationsForDevice(
   required String pushServer,
   required String ntfyServer,
 }) async {
-  if (Platform.isFuchsia || Platform.isWindows) {
+  if (Platform.isFuchsia) {
     // not supported yet;
     return null;
   }

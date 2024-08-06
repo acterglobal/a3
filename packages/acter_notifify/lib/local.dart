@@ -146,8 +146,8 @@ Future<String?> initializeLocalNotifications() async {
   );
   final LinuxInitializationSettings initializationSettingsLinux =
       LinuxInitializationSettings(
-    defaultActionName: 'Open notification',
-    defaultIcon: AssetsLinuxIcon('icons/app_icon.png'),
+    defaultActionName: 'Open App',
+    defaultIcon: AssetsLinuxIcon('icon/logo.png'),
   );
   final InitializationSettings initializationSettings = InitializationSettings(
     android: initializationSettingsAndroid,
