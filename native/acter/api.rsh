@@ -1434,6 +1434,8 @@ object AttachmentDraft {
 }
 
 object Attachment {
+    /// display name, either filename or given by the user, if found
+    fn name() -> Option<string>;
     /// Who send this attachment
     fn sender() -> string;
     /// When was this attachment acknowledged by the server
@@ -1446,9 +1448,9 @@ object Attachment {
     fn type_str() -> string;
     /// if this is a media, hand over the description
     fn msg_content() -> MsgContent;
+
     /// if this is a media, hand over the data
     /// if thumb size is given, media thumbnail is returned
-
     /// download media (image/audio/video/file/location) to specified path
     /// if thumb size is given, media thumbnail is returned
     /// if thumb size is not given, media file is returned

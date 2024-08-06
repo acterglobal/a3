@@ -59,6 +59,9 @@ impl Deref for Attachment {
 }
 
 impl Attachment {
+    pub fn name(&self) -> Option<String> {
+        self.inner.content.name()
+    }
     pub fn attachment_id_str(&self) -> String {
         self.inner.meta.event_id.to_string()
     }

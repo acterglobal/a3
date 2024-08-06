@@ -27,6 +27,25 @@ pub enum FallbackAttachmentContent {
 }
 
 impl FallbackAttachmentContent {
+    pub fn name(&self) -> Option<String> {
+        match self {
+            FallbackAttachmentContent::Image(ImageMessageEventContent { filename, .. }) => {
+                filename.clone()
+            }
+            FallbackAttachmentContent::Video(VideoMessageEventContent { filename, .. }) => {
+                filename.clone()
+            }
+            FallbackAttachmentContent::Audio(AudioMessageEventContent { filename, .. }) => {
+                filename.clone()
+            }
+            FallbackAttachmentContent::File(FileMessageEventContent { filename, .. }) => {
+                filename.clone()
+            }
+            FallbackAttachmentContent::Location(LocationMessageEventContent { body, .. }) => {
+                Some(body.clone())
+            }
+        }
+    }
     pub fn type_str(&self) -> String {
         match self {
             FallbackAttachmentContent::Image(_) => "image".to_owned(),
@@ -108,6 +127,18 @@ impl TryFrom<MessageType> for AttachmentContent {
 }
 
 impl AttachmentContent {
+    pub fn name(&self) -> Option<String> {
+        match self {
+            AttachmentContent::Image(ImageMessageEventContent { filename, .. }) => filename.clone(),
+            AttachmentContent::Video(VideoMessageEventContent { filename, .. }) => filename.clone(),
+            AttachmentContent::Audio(AudioMessageEventContent { filename, .. }) => filename.clone(),
+            AttachmentContent::File(FileMessageEventContent { filename, .. }) => filename.clone(),
+            AttachmentContent::Location(LocationMessageEventContent { body, .. }) => {
+                Some(body.clone())
+            }
+            AttachmentContent::Fallback(f) => f.name(),
+        }
+    }
     pub fn type_str(&self) -> String {
         match self {
             AttachmentContent::Image(_) => "image".to_owned(),
