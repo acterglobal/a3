@@ -145,6 +145,8 @@ script_runner = "@shell"
 script = [
     "cd ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}",
     "dart fix --apply",
+    "cd ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/packages/acter_notifify",
+    "dart fix --apply",
     "cd ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/app",
     "dart fix --apply",
 ]
