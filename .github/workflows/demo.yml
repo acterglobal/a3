@@ -17,7 +17,7 @@ jobs:
     outputs:
       should_run: ${{steps.PR.outputs.pr_found == 'true' && contains(steps.PR.outputs.pr_labels, 'build-demo')}}
     steps:
-      - uses: 8BitJonny/gh-get-current-pr@2.2.0
+      - uses: 8BitJonny/gh-get-current-pr@3.0.0
         id: PR
         with:
           # Only return if PR is still open. (By default it returns PRs in any state.)
