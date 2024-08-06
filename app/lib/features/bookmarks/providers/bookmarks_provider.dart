@@ -8,15 +8,15 @@ final bookmarksManagerProvider =
   () => BookmarksManagerNotifier(),
 );
 
-final bookmarkByKeyProvider =
-    FutureProvider.family<List<String>, String>((ref, key) async {
+final bookmarkByTypeProvider =
+    FutureProvider.family<List<String>, BookmarkType>((ref, type) async {
   final bookmarks = await ref.watch(bookmarksManagerProvider.future);
-  return (bookmarks.entries(key)).map((s) => s.toDartString()).toList();
+  return (bookmarks.entries(type.name)).map((s) => s.toDartString()).toList();
 });
 
 final isBookmarkedProvider =
-    StateProvider.family<bool, Bookmarker>((ref, query) {
+    StateProvider.family<bool, Bookmarker>((ref, bookmarker) {
   final bookmarks =
-      ref.watch(bookmarkByKeyProvider(query.type)).valueOrNull ?? [];
-  return bookmarks.contains(query.id);
+      ref.watch(bookmarkByTypeProvider(bookmarker.type)).valueOrNull ?? [];
+  return bookmarks.contains(bookmarker.id);
 });
