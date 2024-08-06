@@ -166,22 +166,7 @@ class _CreateSuperInviteTokenPageConsumerState
                 Text(
                   L10n.of(context).spacesAndChatsToAddThemTo,
                 ),
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemBuilder: (context, idx) {
-                    final roomId = _roomIds[idx];
-                    return RoomToInviteTo(
-                      roomId: roomId,
-                      onRemove: () {
-                        tokenUpdater.removeRoom(roomId);
-                        setState(
-                          () => _roomIds = List.from(_roomIds)..remove(roomId),
-                        );
-                      },
-                    );
-                  },
-                  itemCount: _roomIds.length,
-                ),
+                _roomsList(context),
                 const SizedBox(
                   height: 10,
                 ),
@@ -189,37 +174,59 @@ class _CreateSuperInviteTokenPageConsumerState
                 const SizedBox(
                   height: 10,
                 ),
-                ButtonBar(
-                  children: [
-                    OutlinedButton(
-                      onPressed: () async {
-                        if (!await Navigator.maybePop(context)) {
-                          if (context.mounted) {
-                            // fallback to go to home
-                            context.go(Routes.main.name);
-                          }
-                        }
-                      },
-                      child: Text(
-                        L10n.of(context).cancel,
-                      ),
-                    ),
-                    ActerPrimaryActionButton(
-                      key: CreateSuperInviteTokenPage.submitBtn,
-                      onPressed: _submit,
-                      child: Text(
-                        isEdit
-                            ? L10n.of(context).save
-                            : L10n.of(context).createCode,
-                      ),
-                    ),
-                  ],
-                ),
+                _actionBar(context),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _roomsList(BuildContext context) {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemBuilder: (context, idx) {
+        final roomId = _roomIds[idx];
+        return RoomToInviteTo(
+          roomId: roomId,
+          onRemove: () {
+            tokenUpdater.removeRoom(roomId);
+            setState(
+              () => _roomIds = List.from(_roomIds)..remove(roomId),
+            );
+          },
+        );
+      },
+      itemCount: _roomIds.length,
+    );
+  }
+
+  Widget _actionBar(BuildContext context) {
+    return ButtonBar(
+      children: [
+        OutlinedButton(
+          onPressed: () async {
+            if (!await Navigator.maybePop(context)) {
+              if (context.mounted) {
+                // fallback to go to home
+                context.go(Routes.main.name);
+              }
+            }
+          },
+          child: Text(
+            L10n.of(context).cancel,
+          ),
+        ),
+        ActerPrimaryActionButton(
+          key: CreateSuperInviteTokenPage.submitBtn,
+          onPressed: _submit,
+          child: Text(
+            isEdit ? L10n.of(context).save : L10n.of(context).createCode,
+          ),
+        ),
+      ],
     );
   }
 

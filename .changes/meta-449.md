@@ -1,0 +1,1 @@
+- Fix bug in quick jump navigation, where it used to go black rather than properly jump sometimes

@@ -1,5 +1,6 @@
 import 'package:acter/features/events/event_utils/event_utils.dart';
 import 'package:acter/features/events/providers/notifiers/event_notifiers.dart';
+import 'package:acter/features/events/providers/notifiers/rsvp_notifier.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:riverpod/riverpod.dart';
 
@@ -10,11 +11,10 @@ final calendarEventProvider = AsyncNotifierProvider.autoDispose
 );
 
 //MY RSVP STATUS PROVIDER
-final myRsvpStatusProvider = FutureProvider.family
-    .autoDispose<ffi.OptionRsvpStatus, String>((ref, calendarId) async {
-  final event = await ref.watch(calendarEventProvider(calendarId).future);
-  return await event.respondedByMe();
-});
+final myRsvpStatusProvider = AsyncNotifierProvider.autoDispose
+    .family<AsyncRsvpStatusNotifier, ffi.OptionRsvpStatus, String>(
+  () => AsyncRsvpStatusNotifier(),
+);
 
 //SpaceId == null : GET LIST OF ALL PINs
 //SpaceId != null : GET LIST OF SPACE PINs
