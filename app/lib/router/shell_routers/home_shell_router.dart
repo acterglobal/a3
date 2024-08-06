@@ -43,535 +43,533 @@ import 'package:acter/features/tasks/pages/tasks_list_page.dart';
 import 'package:acter/router/router.dart';
 import 'package:go_router/go_router.dart';
 
-List<RouteBase> makeHomeShellRoutes() {
-  return <RouteBase>[
-    GoRoute(
-      name: Routes.dashboard.name,
-      path: Routes.dashboard.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: const Dashboard(),
-        );
-      },
-    ),
+final homeShellRoutes = [
+  GoRoute(
+    name: Routes.dashboard.name,
+    path: Routes.dashboard.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: const Dashboard(),
+      );
+    },
+  ),
 
-    // ---- SETTINGS
-    GoRoute(
-      name: Routes.settings.name,
-      path: Routes.settings.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: const SettingsPage(isFullPage: true),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.licenses.name,
-      path: Routes.licenses.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: const SettingsLicensesPage(),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.settingsLabs.name,
-      path: Routes.settingsLabs.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: const SettingsLabsPage(),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.settingsChat.name,
-      path: Routes.settingsChat.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: const ChatSettingsPage(),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.settingNotifications.name,
-      path: Routes.settingNotifications.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: const NotificationsSettingsPage(),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.settingsSuperInvites.name,
-      path: Routes.settingsSuperInvites.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: const SuperInvitesPage(),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.info.name,
-      path: Routes.info.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: const SettingsInfoPage(),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.myProfile.name,
-      path: Routes.myProfile.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: const MyProfilePage(),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.settingSessions.name,
-      path: Routes.settingSessions.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: const SessionsPage(),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.settingBackup.name,
-      path: Routes.settingBackup.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: const BackupPage(),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.settingLanguage.name,
-      path: Routes.settingLanguage.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: const LanguageSelectPage(),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.emailAddresses.name,
-      path: Routes.emailAddresses.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: const EmailAddressesPage(),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.blockedUsers.name,
-      path: Routes.blockedUsers.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: const BlockedUsersPage(),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.changePassword.name,
-      path: Routes.changePassword.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: const ChangePasswordPage(),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.spaceRelatedSpaces.name,
-      path: Routes.spaceRelatedSpaces.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: SubSpacesPage(
-            spaceIdOrAlias: state.pathParameters['spaceId']!,
+  // ---- SETTINGS
+  GoRoute(
+    name: Routes.settings.name,
+    path: Routes.settings.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: const SettingsPage(isFullPage: true),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.licenses.name,
+    path: Routes.licenses.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: const SettingsLicensesPage(),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.settingsLabs.name,
+    path: Routes.settingsLabs.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: const SettingsLabsPage(),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.settingsChat.name,
+    path: Routes.settingsChat.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: const ChatSettingsPage(),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.settingNotifications.name,
+    path: Routes.settingNotifications.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: const NotificationsSettingsPage(),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.settingsSuperInvites.name,
+    path: Routes.settingsSuperInvites.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: const SuperInvitesPage(),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.info.name,
+    path: Routes.info.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: const SettingsInfoPage(),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.myProfile.name,
+    path: Routes.myProfile.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: const MyProfilePage(),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.settingSessions.name,
+    path: Routes.settingSessions.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: const SessionsPage(),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.settingBackup.name,
+    path: Routes.settingBackup.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: const BackupPage(),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.settingLanguage.name,
+    path: Routes.settingLanguage.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: const LanguageSelectPage(),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.emailAddresses.name,
+    path: Routes.emailAddresses.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: const EmailAddressesPage(),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.blockedUsers.name,
+    path: Routes.blockedUsers.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: const BlockedUsersPage(),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.changePassword.name,
+    path: Routes.changePassword.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: const ChangePasswordPage(),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.spaceRelatedSpaces.name,
+    path: Routes.spaceRelatedSpaces.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: SubSpacesPage(
+          spaceIdOrAlias: state.pathParameters['spaceId']!,
+        ),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.spaceMembers.name,
+    path: Routes.spaceMembers.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: SpaceMembersPage(
+          spaceIdOrAlias: state.pathParameters['spaceId']!,
+        ),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.spacePins.name,
+    path: Routes.spacePins.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: PinsListPage(
+          spaceId: state.pathParameters['spaceId'],
+        ),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.spaceEvents.name,
+    path: Routes.spaceEvents.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: EventListPage(
+          spaceId: state.pathParameters['spaceId']!,
+        ),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.spaceChats.name,
+    path: Routes.spaceChats.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: SpaceChatsPage(
+          spaceIdOrAlias: state.pathParameters['spaceId']!,
+        ),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.spaceTasks.name,
+    path: Routes.spaceTasks.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: TasksListPage(
+          spaceId: state.pathParameters['spaceId']!,
+        ),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.searchPublicDirectory.name,
+    path: Routes.searchPublicDirectory.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: SearchPublicDirectory(
+          query: state.uri.queryParameters['query'],
+        ),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.space.name,
+    path: Routes.space.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: SpaceDetailsPage(
+          spaceId: state.pathParameters['spaceId']!,
+        ),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.spaces.name,
+    path: Routes.spaces.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: const SpacesPage(),
+      );
+    },
+  ),
+  // ---- Space SETTINGS
+  GoRoute(
+    name: Routes.spaceSettings.name,
+    path: Routes.spaceSettings.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: SpaceSettingsMenuIndexPage(
+          spaceId: state.pathParameters['spaceId']!,
+        ),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.spaceSettingsApps.name,
+    path: Routes.spaceSettingsApps.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: SpaceAppsSettingsPage(
+          spaceId: state.pathParameters['spaceId']!,
+        ),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.spaceSettingsVisibility.name,
+    path: Routes.spaceSettingsVisibility.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      final roomId = state.pathParameters['spaceId']!;
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: WithSidebar(
+          sidebar: SpaceSettingsMenu(
+            spaceId: roomId,
           ),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.spaceMembers.name,
-      path: Routes.spaceMembers.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: SpaceMembersPage(
-            spaceIdOrAlias: state.pathParameters['spaceId']!,
+          child: VisibilityAccessibilityPage(
+            roomId: roomId,
           ),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.spacePins.name,
-      path: Routes.spacePins.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: PinsListPage(
-            spaceId: state.pathParameters['spaceId'],
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.spaceEvents.name,
-      path: Routes.spaceEvents.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: EventListPage(
-            spaceId: state.pathParameters['spaceId']!,
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.spaceChats.name,
-      path: Routes.spaceChats.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: SpaceChatsPage(
-            spaceIdOrAlias: state.pathParameters['spaceId']!,
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.spaceTasks.name,
-      path: Routes.spaceTasks.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: TasksListPage(
-            spaceId: state.pathParameters['spaceId']!,
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.searchPublicDirectory.name,
-      path: Routes.searchPublicDirectory.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: SearchPublicDirectory(
-            query: state.uri.queryParameters['query'],
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.space.name,
-      path: Routes.space.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: SpaceDetailsPage(
-            spaceId: state.pathParameters['spaceId']!,
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.spaces.name,
-      path: Routes.spaces.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: const SpacesPage(),
-        );
-      },
-    ),
-    // ---- Space SETTINGS
-    GoRoute(
-      name: Routes.spaceSettings.name,
-      path: Routes.spaceSettings.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: SpaceSettingsMenuIndexPage(
-            spaceId: state.pathParameters['spaceId']!,
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.spaceSettingsApps.name,
-      path: Routes.spaceSettingsApps.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: SpaceAppsSettingsPage(
-            spaceId: state.pathParameters['spaceId']!,
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.spaceSettingsVisibility.name,
-      path: Routes.spaceSettingsVisibility.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        final roomId = state.pathParameters['spaceId']!;
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: WithSidebar(
-            sidebar: SpaceSettingsMenu(
-              spaceId: roomId,
-            ),
-            child: VisibilityAccessibilityPage(
-              roomId: roomId,
-            ),
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.spaceSettingsNotifications.name,
-      path: Routes.spaceSettingsNotifications.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: SpaceNotificationConfigurationPage(
-            spaceId: state.pathParameters['spaceId']!,
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.tasks.name,
-      path: Routes.tasks.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: const TasksListPage(),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.taskItemDetails.name,
-      path: Routes.taskItemDetails.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: TaskItemDetailPage(
-            taskListId: state.pathParameters['taskListId']!,
-            taskId: state.pathParameters['taskId']!,
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.taskListDetails.name,
-      path: Routes.taskListDetails.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: TaskListDetailPage(
-            taskListId: state.pathParameters['taskListId']!,
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.pins.name,
-      path: Routes.pins.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: const PinsListPage(),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.pin.name,
-      path: Routes.pin.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: PinPage(pinId: state.pathParameters['pinId']!),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.calendarEvents.name,
-      path: Routes.calendarEvents.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: const EventListPage(),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.createEvent.name,
-      path: Routes.createEvent.route,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: CreateEditEventPage(
-            initialSelectedSpace: state.uri.queryParameters['spaceId'],
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.editCalendarEvent.name,
-      path: Routes.editCalendarEvent.route,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: CreateEditEventPage(
-            calendarId: state.pathParameters['calendarId'],
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.calendarEvent.name,
-      path: Routes.calendarEvent.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: EventDetailPage(
-            calendarId: state.pathParameters['calendarId']!,
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.createSpace.name,
-      path: Routes.createSpace.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: CreateSpacePage(
-            initialParentsSpaceId: state.uri.queryParameters['parentSpaceId'],
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.spaceInvite.name,
-      path: Routes.spaceInvite.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: InvitePage(
-            roomId: state.pathParameters['spaceId']!,
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.inviteIndividual.name,
-      path: Routes.inviteIndividual.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: InviteIndividualUsers(
-            roomId: state.uri.queryParameters['roomId']!,
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.inviteSpaceMembers.name,
-      path: Routes.inviteSpaceMembers.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: InviteSpaceMembers(
-            roomId: state.uri.queryParameters['roomId']!,
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.shareInviteCode.name,
-      path: Routes.shareInviteCode.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: ShareInviteCode(
-            inviteCode: state.uri.queryParameters['inviteCode']!,
-            roomId: state.uri.queryParameters['roomId']!,
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.invitePending.name,
-      path: Routes.invitePending.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: InvitePending(
-            roomId: state.uri.queryParameters['roomId']!,
-          ),
-        );
-      },
-    ),
-  ];
-}
+        ),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.spaceSettingsNotifications.name,
+    path: Routes.spaceSettingsNotifications.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: SpaceNotificationConfigurationPage(
+          spaceId: state.pathParameters['spaceId']!,
+        ),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.tasks.name,
+    path: Routes.tasks.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: const TasksListPage(),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.taskItemDetails.name,
+    path: Routes.taskItemDetails.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: TaskItemDetailPage(
+          taskListId: state.pathParameters['taskListId']!,
+          taskId: state.pathParameters['taskId']!,
+        ),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.taskListDetails.name,
+    path: Routes.taskListDetails.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: TaskListDetailPage(
+          taskListId: state.pathParameters['taskListId']!,
+        ),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.pins.name,
+    path: Routes.pins.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: const PinsListPage(),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.pin.name,
+    path: Routes.pin.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: PinPage(pinId: state.pathParameters['pinId']!),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.calendarEvents.name,
+    path: Routes.calendarEvents.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: const EventListPage(),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.createEvent.name,
+    path: Routes.createEvent.route,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: CreateEditEventPage(
+          initialSelectedSpace: state.uri.queryParameters['spaceId'],
+        ),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.editCalendarEvent.name,
+    path: Routes.editCalendarEvent.route,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: CreateEditEventPage(
+          calendarId: state.pathParameters['calendarId'],
+        ),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.calendarEvent.name,
+    path: Routes.calendarEvent.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: EventDetailPage(
+          calendarId: state.pathParameters['calendarId']!,
+        ),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.createSpace.name,
+    path: Routes.createSpace.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: CreateSpacePage(
+          initialParentsSpaceId: state.uri.queryParameters['parentSpaceId'],
+        ),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.spaceInvite.name,
+    path: Routes.spaceInvite.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: InvitePage(
+          roomId: state.pathParameters['spaceId']!,
+        ),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.inviteIndividual.name,
+    path: Routes.inviteIndividual.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: InviteIndividualUsers(
+          roomId: state.uri.queryParameters['roomId']!,
+        ),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.inviteSpaceMembers.name,
+    path: Routes.inviteSpaceMembers.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: InviteSpaceMembers(
+          roomId: state.uri.queryParameters['roomId']!,
+        ),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.shareInviteCode.name,
+    path: Routes.shareInviteCode.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: ShareInviteCode(
+          inviteCode: state.uri.queryParameters['inviteCode']!,
+          roomId: state.uri.queryParameters['roomId']!,
+        ),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.invitePending.name,
+    path: Routes.invitePending.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: InvitePending(
+          roomId: state.uri.queryParameters['roomId']!,
+        ),
+      );
+    },
+  ),
+];
