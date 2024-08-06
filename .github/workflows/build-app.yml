@@ -303,7 +303,7 @@ jobs:
         run: |
           flutter ${{ matrix.flutter_build_args }} \
             --build-name="${{ inputs.version }}" \
-            --build-number="${{ inputs.build_num }}
+            --build-number="${{ inputs.build_num }}"
         working-directory: ./app
 
            ######  ####  ######   ##    ## 
