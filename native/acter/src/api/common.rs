@@ -143,6 +143,10 @@ pub enum MsgContent {
         geo_uri: String,
         info: Option<LocationInfo>,
     },
+    Link {
+        name: Option<String>,
+        link: String,
+    },
 }
 
 impl From<&TextMessageEventContent> for MsgContent {
@@ -269,6 +273,10 @@ impl From<&AttachmentContent> for MsgContent {
                     info: content.info.as_ref().map(|x| *x.clone()),
                 }
             }
+            AttachmentContent::Link(content) => MsgContent::Link {
+                name: content.name.clone(),
+                link: content.link.clone(),
+            },
         }
     }
 }
@@ -297,6 +305,7 @@ impl MsgContent {
             MsgContent::Video { body, .. } => body.clone(),
             MsgContent::File { body, .. } => body.clone(),
             MsgContent::Location { body, .. } => body.clone(),
+            MsgContent::Link { link, .. } => link.clone(),
         }
     }
 
@@ -447,6 +456,13 @@ impl MsgContent {
     pub fn geo_uri(&self) -> Option<String> {
         match self {
             MsgContent::Location { geo_uri, .. } => Some(geo_uri.clone()),
+            _ => None,
+        }
+    }
+
+    pub fn link(&self) -> Option<String> {
+        match self {
+            MsgContent::Link { link, .. } => Some(link.clone()),
             _ => None,
         }
     }
