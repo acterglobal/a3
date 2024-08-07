@@ -5,36 +5,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:logging/logging.dart';
 
+import 'acter_notifify.dart';
+
 final _log = Logger('a3::notifify::local');
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
-/// Streams are created so that app can respond to notification-related events
-/// since the plugin is initialised in the `main` function
-final StreamController<ReceivedNotification> didReceiveLocalNotificationStream =
-    StreamController<ReceivedNotification>.broadcast();
-
-final StreamController<String?> selectNotificationStream =
-    StreamController<String?>.broadcast();
-
 const MethodChannel platform = MethodChannel('acter/push_notification');
 
 const String portName = 'notification_send_port';
-
-class ReceivedNotification {
-  ReceivedNotification({
-    required this.id,
-    required this.title,
-    required this.body,
-    required this.payload,
-  });
-
-  final int id;
-  final String? title;
-  final String? body;
-  final String? payload;
-}
 
 /// A notification action which triggers a url launch event
 const String urlLaunchActionId = 'id_1';
@@ -63,7 +43,9 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
 }
 
 /// Returns
-Future<String?> initializeLocalNotifications() async {
+Future<String?> initializeLocalNotifications({
+  required HandleMessageTap handleMessageTap,
+  }) async {
   String? selectedNotificationPayload;
   // do this only on supported platforms
   if (Platform.isAndroid || Platform.isIOS) {
@@ -133,14 +115,7 @@ Future<String?> initializeLocalNotifications() async {
     requestSoundPermission: false,
     onDidReceiveLocalNotification:
         (int id, String? title, String? body, String? payload) async {
-      didReceiveLocalNotificationStream.add(
-        ReceivedNotification(
-          id: id,
-          title: title,
-          body: body,
-          payload: payload,
-        ),
-      );
+          handleMessageTap({"payload": payload});
     },
     notificationCategories: darwinNotificationCategories,
   );
@@ -159,15 +134,8 @@ Future<String?> initializeLocalNotifications() async {
     initializationSettings,
     onDidReceiveNotificationResponse:
         (NotificationResponse notificationResponse) {
-      switch (notificationResponse.notificationResponseType) {
-        case NotificationResponseType.selectedNotification:
-          selectNotificationStream.add(notificationResponse.payload);
-          break;
-        case NotificationResponseType.selectedNotificationAction:
-          if (notificationResponse.actionId == navigationActionId) {
-            selectNotificationStream.add(notificationResponse.payload);
-          }
-          break;
+      if (notificationResponse.notificationResponseType == NotificationResponseType.selectedNotification){
+          handleMessageTap({"payload": notificationResponse.payload});
       }
     },
     onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
