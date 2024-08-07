@@ -496,6 +496,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.6"
+  enven:
+    dependency: "direct dev"
+    description:
+      name: enven
+      sha256: "97a4ca9821e27e101b32f86fdcf937098b0698ee04fc90ac5127ae9af6afd106"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   equatable:
     dependency: transitive
     description:

@@ -109,17 +109,6 @@ dependencies = [
     "post-android",
 ]
 
-[tasks.android-arm]
-# build android ARM64 for actual device
-dependencies = [
-    "pre-android",
-    "android-aarch64",
-    "android-aarch64-release",
-    "post-android-aarch64",
-    "post-android",
-]
-
-
 [tasks.mock-data]
 command = "cargo"
 args = ["run", "-p", "acter-cli", "mock", "--homeserver-url",  "http://localhost:8118", "--homeserver-name", "localhost"]
@@ -420,6 +409,18 @@ script = [
     cp "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/${CARGO_MAKE_CRATE_CURRENT_WORKSPACE_MEMBER}/bindings.h" "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/ios/Classes/libacter.h"
     cp "$LIPO_LIB" "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/ios/$LIBNAME"
     """,
+]
+
+[tasks.android-arm]
+# Build android targets.
+dependencies = [
+    "pre-android",
+    "android-aarch64",
+    "android-aarch64-release",
+    "post-android-aarch64",
+    "android-armv7",
+    "android-armv7-release",
+    "post-android-armv7",
 ]
 
 [tasks.android]

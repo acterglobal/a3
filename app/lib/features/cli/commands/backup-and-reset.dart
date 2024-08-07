@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:acter/config/env.g.dart';
 import 'package:acter/features/cli/util.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:args/command_runner.dart';
@@ -61,7 +62,7 @@ class BackupAndResetCommand extends Command {
 
     if (!isDry) {
       await ActerSdk.storage.write(
-        key: defaultSessionKey,
+        key: Env.defaultActerSession,
         value: json.encode([]),
       );
     }

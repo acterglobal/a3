@@ -73,7 +73,7 @@ jobs:
       release_env: 'nightly'
       release: true
       prerelease: true
-      flutter_build_extra: "--dart-define IS_NIGHTLY=true"
+      env_extra: "IS_NIGHTLY=true"
     secrets: inherit
 
   changelog:
