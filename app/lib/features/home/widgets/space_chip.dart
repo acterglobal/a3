@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
@@ -10,12 +11,16 @@ class SpaceChip extends ConsumerWidget {
   final SpaceItem? space;
   final String? spaceId;
   final bool onTapOpenSpaceDetail;
+  final bool isCompactView;
+  final VoidCallback? onTapSelectSpace;
 
   const SpaceChip({
     super.key,
     this.space,
     this.spaceId,
     this.onTapOpenSpaceDetail = true,
+    this.isCompactView = false,
+    this.onTapSelectSpace,
   });
 
   @override
@@ -54,23 +59,35 @@ class SpaceChip extends ConsumerWidget {
     );
   }
 
-  Widget renderSpace(BuildContext context,SpaceItem space) {
+  Widget renderSpace(BuildContext context, SpaceItem space) {
+    String spaceName = space.avatarInfo.displayName ?? space.roomId;
     return InkWell(
       onTap:
           onTapOpenSpaceDetail ? () => goToSpace(context, space.roomId) : null,
-      child: Chip(
-        avatar: ActerAvatar(
-          options: AvatarOptions(
-            AvatarInfo(
-              uniqueId: space.roomId,
-              displayName: space.avatarInfo.displayName,
-              avatar: space.avatarInfo.avatar,
+      child: isCompactView
+          ? Row(
+              children: [
+                const Text('In'),
+                ActerInlineTextButton(
+                  onPressed: () =>
+                      onTapSelectSpace != null ? onTapSelectSpace!() : null,
+                  child: Text(spaceName),
+                ),
+              ],
+            )
+          : Chip(
+              avatar: ActerAvatar(
+                options: AvatarOptions(
+                  AvatarInfo(
+                    uniqueId: space.roomId,
+                    displayName: space.avatarInfo.displayName,
+                    avatar: space.avatarInfo.avatar,
+                  ),
+                  size: 24,
+                ),
+              ),
+              label: Text(spaceName),
             ),
-            size: 24,
-          ),
-        ),
-        label: Text(space.avatarInfo.displayName ?? space.roomId),
-      ),
     );
   }
 }
