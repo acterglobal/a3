@@ -7,7 +7,6 @@ import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/notifiers/room_notifiers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -202,13 +201,6 @@ final joinRulesAllowedRoomsProvider = FutureProvider.autoDispose
     return [];
   }
   return room.restrictedRoomIdsStr().map((e) => e.toDartString()).toList();
-});
-
-/// The list of suggested RoomIDs
-final suggestedRelationsIdsProvider =
-    FutureProvider.family<List<String>, String>((ref, spaceId) async {
-  return (await ref.watch(spaceRelationsOverviewProvider(spaceId).future))
-      .suggestedIds;
 });
 
 /// Get the user's membership for a specific space based off the roomId

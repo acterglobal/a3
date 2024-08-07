@@ -425,7 +425,8 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       childRoomsIds.add(roomId);
     }
     // spaceRelations come from the server and must be manually invalidated
-    ref.invalidate(spaceRelationsOverviewProvider(selectedParentSpaceId));
+    ref.invalidate(spaceRelationsProvider(selectedParentSpaceId));
+    ref.invalidate(spaceRemoteRelationsProvider(selectedParentSpaceId));
   }
 
 //Unlink child room

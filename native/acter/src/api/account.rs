@@ -2,6 +2,7 @@ use acter_core::events::settings::{ActerUserAppSettingsContent, APP_USER_SETTING
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::{media::MediaRequest, Account as SdkAccount};
+use matrix_sdk_base::{StateStoreDataKey, StateStoreDataValue};
 use ruma::assign;
 use ruma_client_api::uiaa::{AuthData, Password};
 use ruma_common::{OwnedMxcUri, OwnedUserId, UserId};
@@ -102,6 +103,7 @@ impl Account {
         let client = self.client.deref().clone();
         let account = self.account.clone();
         let path = PathBuf::from(uri);
+        let user_id = self.user_id();
         RUNTIME
             .spawn(async move {
                 let capabilities = client.get_capabilities().await?;
@@ -112,6 +114,15 @@ impl Account {
                 let content_type = guess.first().context("don't know mime type")?;
                 let data = std::fs::read(path)?;
                 let new_url = account.upload_avatar(&content_type, data).await?;
+
+                // set the internal cached key so the next fetch properly updates this
+                client
+                    .store()
+                    .set_kv_data(
+                        StateStoreDataKey::UserAvatarUrl(&user_id),
+                        StateStoreDataValue::UserAvatarUrl(new_url.clone()),
+                    )
+                    .await;
                 Ok(new_url)
             })
             .await?

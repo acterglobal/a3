@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -47,12 +48,18 @@ void showLeaveSpaceDialog(
             final lang = L10n.of(context);
             try {
               EasyLoading.show(status: lang.leavingSpace);
+              final parentIds =
+                  await ref.read(parentIdsProvider(spaceId).future);
               final space = await ref.read(spaceProvider(spaceId).future);
               await space.leave();
               if (!context.mounted) {
                 return;
               }
               EasyLoading.showToast(lang.leavingSpaceSuccessful);
+              for (final parentId in parentIds) {
+                ref.invalidate(spaceRelationsProvider(parentId));
+                ref.invalidate(spaceRemoteRelationsProvider(parentId));
+              }
               Navigator.pop(context);
               context.goNamed(Routes.dashboard.name);
             } catch (error, stack) {

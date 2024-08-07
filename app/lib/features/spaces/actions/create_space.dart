@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -50,7 +51,8 @@ Future<String?> createSpace(
       final space = await ref.read(spaceProvider(parentRoomId).future);
       await space.addChildRoom(roomId, false);
       // spaceRelations come from the server and must be manually invalidated
-      ref.invalidate(spaceRelationsOverviewProvider(parentRoomId));
+      ref.invalidate(spaceRelationsProvider(parentRoomId));
+      ref.invalidate(spaceRemoteRelationsProvider(parentRoomId));
     }
     EasyLoading.dismiss();
 

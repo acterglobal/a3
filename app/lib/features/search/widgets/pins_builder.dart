@@ -9,8 +9,10 @@ import 'package:logging/logging.dart';
 final _log = Logger('a3::search::pins_builder');
 
 class PinsBuilder extends ConsumerWidget {
+  final bool popBeforeRoute;
   const PinsBuilder({
     super.key,
+    required this.popBeforeRoute,
   });
 
   @override
@@ -40,10 +42,15 @@ class PinsBuilder extends ConsumerWidget {
                       ],
                     ),
                   ),
-                  onTap: () async => context.pushNamed(
-                    Routes.pin.name,
-                    pathParameters: {'pinId': e.navigationTargetId},
-                  ),
+                  onTap: () async {
+                    if (popBeforeRoute) {
+                      Navigator.pop(context);
+                    }
+                    context.pushNamed(
+                      Routes.pin.name,
+                      pathParameters: {'pinId': e.navigationTargetId},
+                    );
+                  },
                 ),
               )
               .toList();

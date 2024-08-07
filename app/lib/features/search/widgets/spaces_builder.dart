@@ -13,8 +13,11 @@ import 'package:skeletonizer/skeletonizer.dart';
 final _log = Logger('a3::search::spaces_builder');
 
 class SpacesBuilder extends ConsumerWidget {
+  final bool popBeforeRoute;
+
   const SpacesBuilder({
     super.key,
+    this.popBeforeRoute = false,
   });
 
   @override
@@ -84,7 +87,9 @@ class SpacesBuilder extends ConsumerWidget {
                     ),
                   ),
                   onTap: () {
-                    Navigator.pop(context);
+                    if (popBeforeRoute) {
+                      Navigator.pop(context);
+                    }
                     goToSpace(context, e.navigationTargetId);
                   },
                 ),
