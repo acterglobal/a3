@@ -5,7 +5,8 @@ import 'dart:io';
 
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_notifify/local.dart';
-import 'package:acter_notifify/notifications.dart';
+import 'package:acter_notifify/ntfy.dart';
+import 'package:acter_notifify/push.dart';
 import 'package:acter_notifify/util.dart';
 import 'package:acter_notifify/platform/windows.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -59,7 +60,8 @@ Future<String?> initializeNotifify({
       handleMessageTap: handleMessageTap,
     );
   } else {
-    initialUrl = await initializeLocalNotifications(handleMessageTap: handleMessageTap);
+    initialUrl =
+        await initializeLocalNotifications(handleMessageTap: handleMessageTap);
   }
 
   if (usePush && pushServer.isNotEmpty) {
