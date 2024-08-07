@@ -1,4 +1,5 @@
-import 'package:acter/common/notifications/notifications.dart';
+import 'package:acter/config/notifications/init.dart';
+import 'package:acter_notifify/util.dart';
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';

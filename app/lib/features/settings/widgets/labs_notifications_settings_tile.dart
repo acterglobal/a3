@@ -1,6 +1,7 @@
-import 'package:acter/common/notifications/notifications.dart';
-import 'package:acter/common/notifications/util.dart';
+import 'dart:io';
+
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/config/notifications/init.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:app_settings/app_settings.dart';
@@ -13,6 +14,8 @@ import 'package:settings_ui/settings_ui.dart';
 
 final _log = Logger('a3::settings::labs_notifications_settings_tile');
 
+final isOnSupportedPlatform = Platform.isAndroid || Platform.isIOS;
+
 class _LabNotificationSettingsTile extends ConsumerWidget {
   final String? title;
 
@@ -20,18 +23,17 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final canPush = (isOnSupportedPlatform && pushServer.isNotEmpty) ||
+        (!isOnSupportedPlatform && ntfyServer.isNotEmpty);
     return SettingsTile.switchTile(
       title: Text(title ?? L10n.of(context).mobilePushNotifications),
-      description: !isOnSupportedPlatform
-          ? Text(L10n.of(context).onlySupportedIosAndAndroid)
-          : (pushServer.isEmpty
-              ? Text(L10n.of(context).noPushServerConfigured)
-              : null),
-      initialValue: isOnSupportedPlatform &&
+      description:
+          !canPush ? Text(L10n.of(context).noPushServerConfigured) : null,
+      initialValue: canPush &&
           ref.watch(
             isActiveProvider(LabsFeature.mobilePushNotifications),
           ),
-      enabled: isOnSupportedPlatform && pushServer.isNotEmpty,
+      enabled: canPush,
       onToggle: (newVal) => onToggle(context, ref, newVal),
     );
   }
