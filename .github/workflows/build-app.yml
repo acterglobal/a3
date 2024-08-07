@@ -118,7 +118,7 @@ jobs:
             artifact_path: app\\build\\windows\\x64\\runner\\Release
             zip_files: false
             with_debug_symbols: true
-
+            env_extra: "windowsApplicationId=" # in the bundle we must replace this with none
           - name: Windows exe
             os: windows-latest
             target: windows-exe
@@ -282,11 +282,13 @@ jobs:
           SENTRY_RELEASE=${{ inputs.version }}
           SENTRY_ENVIRONMENT=${{inputs.release_env}}
           PUSH_SERVER=${{ secrets.PUSH_SERVER }}
+          NTFY_SERVER=${{ secrets.NTFY_SERVER }}
           RAGESHAKE_URL=${{ secrets.RAGESHAKE_URL }}
           RAGESHAKE_APP_NAME=${{ secrets.RAGESHAKE_APP_NAME }}
           RAGESHAKE_APP_VERSION=${{inputs.release_env}}/${{inputs.version}}/${{ matrix.name }}
           DEFAULT_HOMESERVER_URL=${{vars.DEFAULT_HOMESERVER_URL}}
           DEFAULT_HOMESERVER_NAME=${{vars.DEFAULT_HOMESERVER_NAME}}
+          ${{ matrix.env_extra }}
           ${{ inputs.env_extra  }}
           EOF
 
