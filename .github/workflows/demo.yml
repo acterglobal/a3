@@ -18,9 +18,11 @@ jobs:
       should_run: ${{steps.PR.outputs.pr_found == 'true' && contains(steps.PR.outputs.pr_labels, 'build-demo')}}
       pr_num: ${{steps.PR.outputs.number}}
     steps:
-      - uses: 8BitJonny/gh-get-current-pr@2.2.0
+      - uses: 8BitJonny/gh-get-current-pr@3.0.0
         id: PR
         with:
+          # Verbose setting SHA when using Pull_Request event trigger to fix #16. (For push even trigger this is not necessary.)
+          sha: ${{ github.event.pull_request.head.sha }}
           # Only return if PR is still open. (By default it returns PRs in any state.)
           filterOutClosed: true
           # Only return if PR is not in draft state. (By default it returns PRs in any state.)
@@ -69,7 +71,7 @@ jobs:
       release_env: demo
       build_num: ${{ needs.tags.outputs.build_num }}
       version: ${{ needs.tags.outputs.tag }}
-      flutter_build_extra: "--dart-define IS_DEMO=true"
+      env_extra: "IS_DEMO=true"
       targets: android,linux,ios,macos,windows-exe # skip: windows-msix
     secrets: inherit
 

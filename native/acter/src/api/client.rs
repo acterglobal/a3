@@ -17,6 +17,7 @@ use matrix_sdk::{
     Client as SdkClient,
 };
 use matrix_sdk_base::RoomStateFilter;
+use ruma::OwnedRoomOrAliasId;
 use ruma_common::{
     device_id, IdParseError, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId,
     OwnedServerName, OwnedUserId, RoomAliasId, RoomId, RoomOrAliasId, UserId,
@@ -138,22 +139,30 @@ impl Client {
             .context("Path was generated from strings. Must be string");
     }
 
-    pub(crate) async fn join_room(
+    pub async fn join_room(
         &self,
         room_id_or_alias: String,
-        server_names: Vec<String>,
+        server_name: Option<String>,
     ) -> Result<Room> {
-        let alias = RoomOrAliasId::parse(room_id_or_alias)?;
-        let server_names = server_names
-            .into_iter()
-            .map(OwnedServerName::try_from)
-            .collect::<Result<Vec<OwnedServerName>, IdParseError>>()?;
+        let parsed = RoomOrAliasId::parse(room_id_or_alias)?;
+        let server_names = match server_name {
+            Some(inner) => vec![OwnedServerName::try_from(inner)?],
+            None => vec![],
+        };
+
+        self.join_room_typed(parsed, server_names).await
+    }
+    pub async fn join_room_typed(
+        &self,
+        room_id_or_alias: OwnedRoomOrAliasId,
+        server_names: Vec<OwnedServerName>,
+    ) -> Result<Room> {
         let core = self.core.clone();
         RUNTIME
             .spawn(async move {
                 let joined = core
                     .client()
-                    .join_room_by_id_or_alias(alias.as_ref(), server_names.as_slice())
+                    .join_room_by_id_or_alias(&room_id_or_alias, server_names.as_slice())
                     .await?;
                 Ok(Room::new(core.clone(), joined))
             })

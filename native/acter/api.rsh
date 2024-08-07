@@ -2661,11 +2661,8 @@ object Client {
     /// fires immediately with the current state of spaces
     fn spaces_stream() -> Stream<SpaceDiff>;
 
-    /// attempt to join a space
-    fn join_space(room_id_or_alias: string, server_name: Option<string>) -> Future<Result<Space>>;
-
     /// attempt to join a room
-    fn join_convo(room_id_or_alias: string, server_name: Option<string>) -> Future<Result<Convo>>;
+    fn join_room(room_id_or_alias: string, server_name: Option<string>) -> Future<Result<Room>>;
 
     /// Get the space that user belongs to
     fn space(room_id_or_alias: string) -> Future<Result<Space>>;

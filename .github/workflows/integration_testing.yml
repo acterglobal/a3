@@ -13,7 +13,7 @@ concurrency:
 jobs:
   rust:
     runs-on: ubuntu-latest
-    name: Rust
+    name: Rust Integration Tests
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4

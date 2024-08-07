@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -52,7 +53,8 @@ Future<String?> createChat(
       final space = await ref.read(spaceProvider(parentId).future);
       await space.addChildRoom(roomIdStr, suggested);
       // spaceRelations come from the server and must be manually invalidated
-      ref.invalidate(spaceRelationsOverviewProvider(parentId));
+      ref.invalidate(spaceRelationsProvider(parentId));
+      ref.invalidate(spaceRemoteRelationsProvider(parentId));
     }
     return roomIdStr;
   } catch (e) {

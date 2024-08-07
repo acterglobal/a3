@@ -22,55 +22,8 @@ final _log = Logger('a3::sdk');
 
 const rustLogKey = 'RUST_LOG';
 const proxyKey = 'HTTP_PROXY';
+const bool isDevBuild = !bool.fromEnvironment('dart.vm.product');
 
-const defaultServerUrl = String.fromEnvironment(
-  'DEFAULT_HOMESERVER_URL',
-  defaultValue: 'https://matrix.m-1.acter.global',
-);
-
-const defaultServerName = String.fromEnvironment(
-  'DEFAULT_HOMESERVER_NAME',
-  defaultValue: 'm-1.acter.global',
-);
-
-final defaultLogSetting = Platform.environment.containsKey(rustLogKey)
-    ? Platform.environment[rustLogKey] as String
-    : const String.fromEnvironment(
-        rustLogKey,
-        defaultValue: 'acter=debug,a3::sdk=info,a3=warn,warn',
-      );
-
-const defaultSessionKey = String.fromEnvironment(
-  'DEFAULT_ACTER_SESSION',
-  defaultValue: 'sessions',
-);
-
-const defaultHttpProxy = String.fromEnvironment(
-  proxyKey,
-  defaultValue: '',
-);
-
-// allows us to use a different AppGroup Section to store
-// the app group under
-const appleKeychainAppGroupName = String.fromEnvironment(
-  'APPLE_KEYCHAIN_APP_GROUP_NAME',
-  defaultValue: 'V45JGKTC6K.global.acter.a3',
-);
-
-// ex: a3-nightly or acter-linux
-const appName = String.fromEnvironment(
-  'RAGESHAKE_APP_NAME',
-  defaultValue: 'acter-dev',
-);
-
-const versionName = String.fromEnvironment(
-  'RAGESHAKE_APP_VERSION',
-  defaultValue: 'DEV',
-);
-
-const isDevBuild = versionName == 'DEV';
-
-String userAgent = '$appName/$versionName';
 RegExp logFileRegExp = RegExp('app_.*log');
 RegExp screenshotFileRegExp = RegExp('screenshot_.*png');
 
@@ -103,7 +56,7 @@ Future<String> appCacheDir() async {
 
 Future<String> appDirInner() async {
   Directory appDocDir = await getApplicationSupportDirectory();
-  if (versionName == 'DEV') {
+  if (isDevBuild) {
     // on dev we put this into a subfolder to separate from any installed version
     appDocDir = Directory(p.join(appDocDir.path, 'DEV'));
     if (!await appDocDir.exists()) {
@@ -115,7 +68,7 @@ Future<String> appDirInner() async {
 
 Future<String> appCacheDirInner() async {
   Directory appCacheDir = await getApplicationCacheDirectory();
-  if (versionName == 'DEV') {
+  if (isDevBuild) {
     // on dev we put this into a subfolder to separate from any installed version
     appCacheDir = Directory(p.join(appCacheDir.path, 'DEV'));
     if (!await appCacheDir.exists()) {
@@ -127,7 +80,7 @@ Future<String> appCacheDirInner() async {
 
 Future<SharedPreferences> sharedPrefs() async {
   if (_sharedPrefCompl == null) {
-    if (versionName == 'DEV') {
+    if (isDevBuild) {
       // on dev we put this into a prefix to separate from any installed version
       SharedPreferences.setPrefix('dev.flutter');
     }
@@ -173,38 +126,62 @@ DateTime toDartDatetime(ffi.UtcDateTime dt) {
   return DateTime.fromMillisecondsSinceEpoch(dt.timestampMillis(), isUtc: true);
 }
 
-const aOptions = AndroidOptions(
-  encryptedSharedPreferences: true,
-  preferencesKeyPrefix: isDevBuild ? 'dev.flutter' : null,
-);
-const iOptions = IOSOptions(
-  synchronizable: false,
-  accessibility: KeychainAccessibility
-      .first_unlock, // must have been unlocked since reboot
-  groupId:
-      appleKeychainAppGroupName, // to allow the background process to access the same store
-);
-const mOptions = MacOsOptions(
-  synchronizable: false,
-  accessibility: KeychainAccessibility
-      .first_unlock, // must have been unlocked since reboot
-  groupId:
-      appleKeychainAppGroupName, // to allow the background process to access the same store
-);
-
 class ActerSdk {
   late final ffi.Api _api;
   String? _previousLogPath;
-  static String _sessionKey = defaultSessionKey;
   int _index = 0;
   static final List<ffi.Client> _clients = [];
   static const platform = MethodChannel('acter_flutter_sdk');
 
-  static FlutterSecureStorage storage = const FlutterSecureStorage(
-    aOptions: aOptions,
-    iOptions: iOptions,
-    mOptions: mOptions,
-  );
+  static late final String _sessionKey;
+  static late FlutterSecureStorage storage;
+  static late String userAgent;
+  static late String defaultServerUrl;
+  static late String defaultServerName;
+  static late String defaultLogSetting;
+  static late String defaultHttpProxy;
+
+  static void setup({
+    required String sessionKey,
+    required String appleKeychainAppGroupName,
+    required String userAgent,
+    required String defaultLogSetting,
+    required String defaultHomeServerUrl,
+    required String defaultHomeServerName,
+    required String defaultHttpProxy,
+  }) {
+    ActerSdk._sessionKey = sessionKey;
+    ActerSdk.defaultServerUrl = defaultHomeServerUrl;
+    ActerSdk.defaultServerName = defaultHomeServerName;
+    ActerSdk.defaultLogSetting = defaultLogSetting;
+    ActerSdk.defaultHttpProxy = defaultHttpProxy;
+    ActerSdk.userAgent = userAgent;
+
+    const aOptions = AndroidOptions(
+      encryptedSharedPreferences: true,
+      preferencesKeyPrefix: isDevBuild ? 'dev.flutter' : null,
+    );
+    final iOptions = IOSOptions(
+      synchronizable: false,
+      accessibility: KeychainAccessibility
+          .first_unlock, // must have been unlocked since reboot
+      groupId:
+          appleKeychainAppGroupName, // to allow the background process to access the same store
+    );
+    final mOptions = MacOsOptions(
+      synchronizable: false,
+      accessibility: KeychainAccessibility
+          .first_unlock, // must have been unlocked since reboot
+      groupId:
+          appleKeychainAppGroupName, // to allow the background process to access the same store
+    );
+
+    ActerSdk.storage = FlutterSecureStorage(
+      aOptions: aOptions,
+      iOptions: iOptions,
+      mOptions: mOptions,
+    );
+  }
 
   ActerSdk._(this._api);
 
@@ -541,9 +518,9 @@ class ActerSdk {
 
     final logSettings = (await sharedPrefs()).getString(rustLogKey);
     try {
-      print('log settings: ${logSettings ?? defaultLogSetting}');
+      print('log settings: ${logSettings ?? ActerSdk.defaultLogSetting}');
       print('logs will be found in $logPath');
-      api.initLogging(logPath, logSettings ?? defaultLogSetting);
+      api.initLogging(logPath, logSettings ?? ActerSdk.defaultLogSetting);
     } catch (e) {
       developer.log(
         'Logging setup failed',
@@ -553,7 +530,7 @@ class ActerSdk {
     }
 
     final httpProxySettings =
-        (await sharedPrefs()).getString(proxyKey) ?? defaultHttpProxy;
+        (await sharedPrefs()).getString(proxyKey) ?? ActerSdk.defaultHttpProxy;
 
     try {
       if (httpProxySettings.isNotEmpty) {

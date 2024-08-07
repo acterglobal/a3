@@ -1,0 +1,3 @@
+- [Chats]: various fixes has been done which cause input cursor to lose focus when interacting with emoji picker, swipe-reply/edit and sending messages.
+- [Chats]: bug fix where on desktop, input doesn't go multi-line when shift+enter.
+- [Chats]: bug fix on mentions when suggestions don't come up with name of user.
