@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:acter/common/providers/app_state_provider.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/config/env.g.dart';
 import 'package:acter/config/notifications/firebase_options.dart';
 import 'package:acter/config/notifications/util.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
@@ -12,25 +15,10 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::notifications');
 
-const appIdPrefix = String.fromEnvironment(
-  'PUSH_APP_PREFIX',
-  defaultValue: 'global.acter.a3',
-);
-
-const appName = String.fromEnvironment(
-  'PUSH_APP_NAME',
-  defaultValue: 'Acter',
-);
-
-const pushServer = String.fromEnvironment(
-  'PUSH_SERVER',
-  defaultValue: '',
-);
-
-const ntfyServer = String.fromEnvironment(
-  'NTFY_SERVER',
-  defaultValue: '',
-);
+const appIdPrefix = Env.pushAppPrefix;
+const appName = Env.pushAppName;
+const pushServer = Env.pushServer;
+const ntfyServer = Env.ntfyServer;
 
 Future<String?> initializeNotifications() async {
   return await initializeNotifify(
@@ -42,6 +30,8 @@ Future<String?> initializeNotifications() async {
     appIdPrefix: appIdPrefix,
     pushServer: pushServer,
     ntfyServer: ntfyServer,
+    winApplicationId:
+        Env.windowsApplicationId.isNotEmpty ? Env.windowsApplicationId : null,
     currentClientsGen: _genCurrentClients,
   );
 }
@@ -50,11 +40,25 @@ Future<bool> setupPushNotifications(
   Client client, {
   forced = false,
 }) async {
-  if (pushServer.isEmpty) {
-    // no server given. Ignoring
-    _log.warning(
-      'No push server configured. Skipping push notification setup.',
-    );
+  if ((Platform.isAndroid || Platform.isIOS)) {
+    if (pushServer.isEmpty) {
+      // no server given. Ignoring
+      _log.warning(
+        'No push server configured. Skipping push notification setup.',
+      );
+      return false;
+    }
+  } else if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) {
+    if (ntfyServer.isEmpty) {
+      // no server given. Ignoring
+      _log.warning(
+        'No NTFY server configured. Skipping notification setup.',
+      );
+      return false;
+    }
+  } else {
+    // not supported
+    _log.warning('Notifications not supported on this platform');
     return false;
   }
 
@@ -65,7 +69,7 @@ Future<bool> setupPushNotifications(
   }
 
   // this show some extra dialog here on devices where necessary
-  final requested = setupNotificationsForDevice(
+  final requested = await setupNotificationsForDevice(
     client,
     appName: appName,
     appIdPrefix: appIdPrefix,
@@ -73,7 +77,7 @@ Future<bool> setupPushNotifications(
     ntfyServer: ntfyServer,
   );
   if (requested == false) {
-    // we were bluntly rejected, save and don't them bother again:
+    // we were bluntly rejected, save and don't bother them again:
     await setRejected(deviceId, true);
   }
   return requested != null;
