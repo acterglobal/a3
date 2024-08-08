@@ -748,6 +748,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         autocompleteTriggers: [
           AutocompleteTrigger(
             trigger: '@',
+            minimumRequiredCharacters: 1,
             optionsViewBuilder: (context, autocompleteQuery, ctrl) {
               return MentionProfileBuilder(
                 context: context,

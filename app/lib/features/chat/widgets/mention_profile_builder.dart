@@ -54,55 +54,52 @@ class MentionProfileBuilder extends ConsumerWidget {
           }
           return map;
         });
-        return SizedBox(
-          height: MediaQuery.of(context).size.height * 0.3,
-          child: Card(
-            margin: const EdgeInsets.symmetric(horizontal: 8),
-            elevation: 2,
-            clipBehavior: Clip.hardEdge,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: ListView.builder(
-              shrinkWrap: true,
-              padding: const EdgeInsets.all(0),
-              itemCount: users.length,
-              itemBuilder: (_, index) {
-                final id = users.keys.elementAt(index);
-                final displayName = users.values.elementAt(index);
-                return ListTile(
-                  dense: true,
-                  onTap: () {
-                    final autocomplete = MultiTriggerAutocomplete.of(context);
-                    ref
-                        .read(chatInputProvider.notifier)
-                        .addMention(displayName, id);
-                    return autocomplete.acceptAutocompleteOption(
-                      displayName.isNotEmpty ? displayName : id.substring(1),
+        return Card(
+          margin: const EdgeInsets.symmetric(horizontal: 8),
+          elevation: 2,
+          clipBehavior: Clip.hardEdge,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: ListView.builder(
+            shrinkWrap: true,
+            padding: const EdgeInsets.all(0),
+            itemCount: users.length,
+            itemBuilder: (_, index) {
+              final id = users.keys.elementAt(index);
+              final displayName = users.values.elementAt(index);
+              return ListTile(
+                dense: true,
+                onTap: () {
+                  final autocomplete = MultiTriggerAutocomplete.of(context);
+                  ref
+                      .read(chatInputProvider.notifier)
+                      .addMention(displayName, id);
+                  return autocomplete.acceptAutocompleteOption(
+                    displayName.isNotEmpty ? displayName : id.substring(1),
+                  );
+                },
+                leading: Consumer(
+                  builder: (context, ref, child) {
+                    final avatarInfo = ref.watch(
+                      memberAvatarInfoProvider(
+                        (roomId: roomQuery.roomId, userId: id),
+                      ),
+                    );
+                    return ActerAvatar(
+                      options: AvatarOptions.DM(
+                        avatarInfo,
+                        size: 18,
+                      ),
                     );
                   },
-                  leading: Consumer(
-                    builder: (context, ref, child) {
-                      final avatarInfo = ref.watch(
-                        memberAvatarInfoProvider(
-                          (roomId: roomQuery.roomId, userId: id),
-                        ),
-                      );
-                      return ActerAvatar(
-                        options: AvatarOptions.DM(
-                          avatarInfo,
-                          size: 18,
-                        ),
-                      );
-                    },
-                  ),
-                  title: Text(displayName),
-                  titleTextStyle: Theme.of(context).textTheme.bodyMedium,
-                  subtitleTextStyle: Theme.of(context).textTheme.labelMedium,
-                  subtitle: displayName.isNotEmpty ? Text(id) : null,
-                );
-              },
-            ),
+                ),
+                title: Text(displayName),
+                titleTextStyle: Theme.of(context).textTheme.bodyMedium,
+                subtitleTextStyle: Theme.of(context).textTheme.labelMedium,
+                subtitle: displayName.isNotEmpty ? Text(id) : null,
+              );
+            },
           ),
         );
       },
