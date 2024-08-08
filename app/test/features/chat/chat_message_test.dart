@@ -26,7 +26,8 @@ void main() {
           };
           aTagElement.attributes.addAll(attributes);
 
-          final resultData = parseUserMentionMessage(msg, aTagElement);
+          final resultData =
+              ChatUtils.parseUserMentionMessage(msg, aTagElement);
 
           final messageDocument = parse(resultData.parsedMessage);
           final messageBodyText = messageDocument.body?.text ?? '';
@@ -59,7 +60,8 @@ void main() {
 
           final aTagElementList = document.getElementsByTagName('a');
           for (final aTagElement in aTagElementList) {
-            final resultData = parseUserMentionMessage(msg, aTagElement);
+            final resultData =
+                ChatUtils.parseUserMentionMessage(msg, aTagElement);
             msg = resultData.parsedMessage;
           }
 
@@ -87,7 +89,8 @@ void main() {
 
           final aTagElementList = document.getElementsByTagName('a');
           for (final aTagElement in aTagElementList) {
-            final resultData = parseUserMentionMessage(msg, aTagElement);
+            final resultData =
+                ChatUtils.parseUserMentionMessage(msg, aTagElement);
             msg = resultData.parsedMessage;
           }
 
@@ -123,7 +126,8 @@ void main() {
 
           final aTagElementList = document.getElementsByTagName('a');
           for (final aTagElement in aTagElementList) {
-            final resultData = parseUserMentionMessage(msg, aTagElement);
+            final resultData =
+                ChatUtils.parseUserMentionMessage(msg, aTagElement);
             msg = resultData.parsedMessage;
           }
 
@@ -160,7 +164,8 @@ void main() {
 
           final aTagElementList = document.getElementsByTagName('a');
           for (final aTagElement in aTagElementList) {
-            final resultData = parseUserMentionMessage(msg, aTagElement);
+            final resultData =
+                ChatUtils.parseUserMentionMessage(msg, aTagElement);
             msg = resultData.parsedMessage;
           }
 
@@ -182,7 +187,7 @@ void main() {
           String roodIdLink =
               'https://matrix.to/#/!zxDsxBeywEsePmARgd:m-1.acter.global?via=m-1.acter.global';
 
-          final resultData = getRoomIdFromLink(Uri.parse(roodIdLink));
+          final resultData = ChatUtils.getRoomIdFromLink(Uri.parse(roodIdLink));
 
           expect(resultData, '!zxDsxBeywEsePmARgd:m-1.acter.global');
         },
@@ -194,7 +199,7 @@ void main() {
           String roodIdLink =
               'https://matrix.to/#/!zxDsxBeywEsePmARgd:m-1.acter.global';
 
-          final resultData = getRoomIdFromLink(Uri.parse(roodIdLink));
+          final resultData = ChatUtils.getRoomIdFromLink(Uri.parse(roodIdLink));
 
           expect(resultData, '!zxDsxBeywEsePmARgd:m-1.acter.global');
         },
@@ -205,7 +210,7 @@ void main() {
         () {
           String roodIdLink = 'https://matrix.to/#/#acterroom2:matrix.org';
 
-          final resultData = getRoomIdFromLink(Uri.parse(roodIdLink));
+          final resultData = ChatUtils.getRoomIdFromLink(Uri.parse(roodIdLink));
 
           expect(resultData, '#acterroom2:matrix.org');
         },
@@ -216,7 +221,7 @@ void main() {
         () {
           String roodIdLink = 'https://matrix.to/#/%23acterroom123:matrix.org';
 
-          final resultData = getRoomIdFromLink(Uri.parse(roodIdLink));
+          final resultData = ChatUtils.getRoomIdFromLink(Uri.parse(roodIdLink));
 
           expect(resultData, '#acterroom123:matrix.org');
         },
@@ -227,7 +232,7 @@ void main() {
         () {
           String roodIdLink = 'https://matrix.to/#/#acterroom2';
 
-          final resultData = getRoomIdFromLink(Uri.parse(roodIdLink));
+          final resultData = ChatUtils.getRoomIdFromLink(Uri.parse(roodIdLink));
 
           expect(resultData, null);
         },
@@ -238,7 +243,7 @@ void main() {
         () {
           String roodIdLink = 'https://www.google.com';
 
-          final resultData = getRoomIdFromLink(Uri.parse(roodIdLink));
+          final resultData = ChatUtils.getRoomIdFromLink(Uri.parse(roodIdLink));
 
           expect(resultData, null);
         },

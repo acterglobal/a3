@@ -18,7 +18,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 // removes all matrix custom links
 String _cleanMessage(String input) {
-  final cleaned = simplifyBody(input).replaceAll(matrixLinks, '');
+  final cleaned = simplifyBody(input).replaceAll(ChatUtils.matrixLinks, '');
   return cleaned;
 }
 
@@ -202,7 +202,7 @@ class _TextWidget extends ConsumerWidget {
   }
 
   Future<void> onLinkTap(Uri uri, BuildContext context, WidgetRef ref) async {
-    final roomId = getRoomIdFromLink(uri);
+    final roomId = ChatUtils.getRoomIdFromLink(uri);
 
     ///If link is type of matrix room link
     if (roomId != null) {

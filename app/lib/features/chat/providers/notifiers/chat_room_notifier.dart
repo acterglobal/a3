@@ -231,8 +231,11 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     try {
       roomMsg = await timeline.getMessage(originalId);
     } catch (error, stack) {
-      _log.severe('Failing to load reference $replyId (from $originalId)',
-          error, stack,);
+      _log.severe(
+        'Failing to load reference $replyId (from $originalId)',
+        error,
+        stack,
+      );
       return;
     }
 
@@ -749,7 +752,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.notice':
           case 'm.server_notice':
           case 'm.text':
-            final body = prepareMsg(eventItem.msgContent());
+            final body = ChatUtils.prepareMsg(eventItem.msgContent());
             Map<String, dynamic> metadata = {
               'eventState': eventState,
               'receipts': receipts,
