@@ -1,9 +1,10 @@
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
+import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/pins/widgets/pin_attachment_options.dart';
-import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,7 +30,9 @@ class CreatePin extends ConsumerStatefulWidget {
 class _CreatePinConsumerState extends ConsumerState<CreatePin> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
-  EditorState textEditorState = EditorState.blank();
+
+  String htmlBodyDescription = '1';
+  String plainDescription = '';
 
   @override
   void initState() {
@@ -69,8 +72,9 @@ class _CreatePinConsumerState extends ConsumerState<CreatePin> {
                 key: _formKey,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
-                    const SizedBox(height: 15),
+                    const SizedBox(height: 14),
                     _buildTitleField(),
                     const Align(
                       alignment: Alignment.centerLeft,
@@ -79,10 +83,21 @@ class _CreatePinConsumerState extends ConsumerState<CreatePin> {
                         isCompactView: true,
                       ),
                     ),
-                    const SizedBox(height: 15),
+                    const SizedBox(height: 14),
+                    _pinDescription(),
                     attachmentHeader(),
-                    const PinAttachmentOptions(),
-                    const SizedBox(height: 15),
+                    PinAttachmentOptions(
+                      pinDescriptionParams: (
+                        htmlBodyDescription: htmlBodyDescription,
+                        plainDescription: plainDescription,
+                      ),
+                      onAddText: (htmlBodyDescription, plainDescription) {
+                        this.htmlBodyDescription = htmlBodyDescription;
+                        this.plainDescription = plainDescription;
+                        setState(() {});
+                      },
+                    ),
+                    const SizedBox(height: 14),
                   ],
                 ),
               ),
@@ -122,11 +137,61 @@ class _CreatePinConsumerState extends ConsumerState<CreatePin> {
             showModalBottomSheet<void>(
               context: context,
               showDragHandle: true,
-              builder: (context) => const PinAttachmentOptions(),
+              builder: (context) => PinAttachmentOptions(
+                pinDescriptionParams: (
+                  htmlBodyDescription: htmlBodyDescription,
+                  plainDescription: plainDescription,
+                ),
+                onAddText: (htmlBodyDescription, plainDescription) {
+                  this.htmlBodyDescription = htmlBodyDescription;
+                  this.plainDescription = plainDescription;
+                  setState(() {});
+                },
+              ),
             );
           },
           child: Text(L10n.of(context).add),
         ),
+      ],
+    );
+  }
+
+  Widget _pinDescription() {
+    if (plainDescription.trim().isEmpty) {
+      return const SizedBox.shrink();
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(L10n.of(context).description),
+        const SizedBox(height: 12),
+        SelectionArea(
+          child: GestureDetector(
+            onTap: () {
+              showEditHtmlDescriptionBottomSheet(
+                context: context,
+                descriptionHtmlValue: htmlBodyDescription,
+                descriptionMarkdownValue: plainDescription,
+                onSave: (htmlBodyDescription, plainDescription) async {
+                  Navigator.pop(context);
+                  this.htmlBodyDescription = htmlBodyDescription;
+                  this.plainDescription = plainDescription;
+                  setState(() {});
+                },
+              );
+            },
+            child: htmlBodyDescription.isNotEmpty
+                ? RenderHtml(
+                    text: htmlBodyDescription,
+                    defaultTextStyle: Theme.of(context).textTheme.labelLarge,
+                  )
+                : Text(
+                    plainDescription,
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
+          ),
+        ),
+        const SizedBox(height: 20),
       ],
     );
   }

@@ -3,8 +3,20 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
+typedef PinDescriptionParams = ({
+  String htmlBodyDescription,
+  String plainDescription
+});
+
 class PinAttachmentOptions extends StatelessWidget {
-  const PinAttachmentOptions({super.key});
+  final PinDescriptionParams pinDescriptionParams;
+  final Function(String, String) onAddText;
+
+  const PinAttachmentOptions({
+    super.key,
+    required this.pinDescriptionParams,
+    required this.onAddText,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +37,14 @@ class PinAttachmentOptions extends StatelessWidget {
                 showEditHtmlDescriptionBottomSheet(
                   bottomSheetTitle: L10n.of(context).add,
                   context: context,
-                  onSave: (htmlBodyDescription, plainDescription) async {},
+                  descriptionHtmlValue:
+                      pinDescriptionParams.htmlBodyDescription,
+                  descriptionMarkdownValue:
+                      pinDescriptionParams.plainDescription,
+                  onSave: (htmlBodyDescription, plainDescription) {
+                    Navigator.pop(context);
+                    onAddText(htmlBodyDescription, plainDescription);
+                  },
                 );
               },
             ),
@@ -77,9 +96,7 @@ class PinAttachmentOptions extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     return InkWell(
-      onTap: () {
-        onTap();
-      },
+      onTap: onTap,
       child: Container(
         alignment: Alignment.center,
         height: 100,
