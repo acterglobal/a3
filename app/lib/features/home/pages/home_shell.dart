@@ -23,7 +23,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:screenshot/screenshot.dart';
-import 'package:shake/shake.dart';
+import 'package:shake_detector/shake_detector.dart';
 
 final _log = Logger('a3::home::home_shell');
 
@@ -83,7 +83,7 @@ class HomeShellState extends ConsumerState<HomeShell> {
     // shake is possible in only actual mobile devices
     if (await isRealPhone()) {
       detector = ShakeDetector.waitForStart(
-        onPhoneShake: () {
+        onShake: () {
           openBugReport(context);
         },
       );

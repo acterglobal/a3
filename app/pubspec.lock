@@ -1907,26 +1907,18 @@ packages:
     dependency: transitive
     description:
       name: sensors_plus
-      sha256: "362c8f4f001838b90dd5206b898bbad941bc0142479eab9a3415f0f79e622908"
+      sha256: "142212b10316640e9b14fe508e2a292707d5f264aed3b1d6dabe61b8cb15e839"
       url: "https://pub.dev"
     source: hosted
-    version: "1.4.1"
+    version: "6.0.0"
   sensors_plus_platform_interface:
     dependency: transitive
     description:
       name: sensors_plus_platform_interface
-      sha256: bc472d6cfd622acb4f020e726433ee31788b038056691ba433fec80e448a094f
+      sha256: b6cacfe243cbeb16403ba688cb0d7054ad4dccb946dcd1254bebdf345fe4b187
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.0"
-  sensors_plus_web:
-    dependency: transitive
-    description:
-      name: sensors_plus_web
-      sha256: fca8d7d9ab6233b2a059952666415508e252420be1ef54f092d07884da53ec5e
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.2"
+    version: "2.0.0"
   sentry:
     dependency: transitive
     description:
@@ -1959,14 +1951,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.2"
-  shake:
+  shake_detector:
     dependency: "direct main"
     description:
-      name: shake
-      sha256: "107546951c6b8f5e4c2dca66dfb3aa27dd1a853b4e9a26c9aea224b167045023"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.0"
+      path: "../packages/shake_detector"
+      relative: true
+    source: path
+    version: "0.1.2"
   share_plus:
     dependency: "direct main"
     description:

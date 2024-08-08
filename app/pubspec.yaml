@@ -95,7 +95,6 @@ dependencies:
   jiffy: ^6.2.1
   screenshot: ^3.0.0
   http: ^1.0.0
-  shake: ^2.2.0
   crypto: ^3.0.2
   flutter_math_fork: ^0.7.2
   shared_preferences: ^2.2.0
@@ -130,6 +129,9 @@ dependencies:
   scrolls_to_top: ^2.1.1
   scrollable_positioned_list: ^0.3.8
   diffutil_dart: ^4.0.1
+
+  shake_detector:
+    path: ../packages/shake_detector
 
 dev_dependencies:
   flutter_test:
