@@ -57,8 +57,8 @@ class ShakeDetector {
 
   /// Starts listening to accelerometer events
   void startListening() {
-    streamSubscription = accelerometerEventStream().listen(
-      (AccelerometerEvent event) {
+    streamSubscription = userAccelerometerEventStream().listen(
+      (UserAccelerometerEvent event) {
         if (_isPaused) return;
 
         if (lastResumedTimeStamp + 500 >
@@ -66,13 +66,9 @@ class ShakeDetector {
           return;
         }
 
-        double x = event.x;
-        double y = event.y;
-        double z = event.z;
-
-        double gX = x / 9.80665;
-        double gY = y / 9.80665;
-        double gZ = z / 9.80665;
+        double gX = event.x;
+        double gY = event.y;
+        double gZ = event.z;
 
         // gForce will be close to 1 when there is no movement.
         double gForce = sqrt(gX * gX + gY * gY + gZ * gZ);
