@@ -1,7 +1,8 @@
+import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
+import 'package:acter/features/pins/widgets/pin_attachment_options.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/common/providers/space_providers.dart';
@@ -46,7 +47,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePin> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
-      body: _buildBody(),
+      body: SafeArea(child: _buildBody()),
     );
   }
 
@@ -57,30 +58,38 @@ class _CreatePinConsumerState extends ConsumerState<CreatePin> {
   }
 
   Widget _buildBody() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            const SizedBox(height: 15),
-            _buildTitleField(),
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: SelectSpaceFormField(
-                canCheck: 'CanPostPin',
-                isCompactView: true,
+    return Padding(
+      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    const SizedBox(height: 15),
+                    _buildTitleField(),
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: SelectSpaceFormField(
+                        canCheck: 'CanPostPin',
+                        isCompactView: true,
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    attachmentHeader(),
+                    const PinAttachmentOptions(),
+                    const SizedBox(height: 15),
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 15),
-            _buildDescriptionField(),
-            const SizedBox(height: 15),
-            const SizedBox(height: 15),
-            _buildCreateButton(),
-          ],
-        ),
+          ),
+          _buildCreateButton(),
+        ],
       ),
     );
   }
@@ -104,32 +113,19 @@ class _CreatePinConsumerState extends ConsumerState<CreatePin> {
     );
   }
 
-  Widget _buildDescriptionField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(L10n.of(context).description),
-        const SizedBox(height: 6),
-        Container(
-          height: 200,
-          margin: const EdgeInsets.symmetric(vertical: 8),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: HtmlEditor(
-            key: descriptionFieldKey,
-            editable: true,
-            autoFocus: false,
-            editorState: textEditorState,
-            footer: const SizedBox(),
-            onChanged: (body, html) {
-              final document = html != null
-                  ? ActerDocumentHelpers.fromHtml(html)
-                  : ActerDocumentHelpers.fromMarkdown(body);
-              textEditorState = EditorState(document: document);
-            },
-          ),
+  Widget attachmentHeader() {
+    return Row(
+      children: [
+        Expanded(child: Text(L10n.of(context).attachments)),
+        ActerInlineTextButton(
+          onPressed: () {
+            showModalBottomSheet<void>(
+              context: context,
+              showDragHandle: true,
+              builder: (context) => const PinAttachmentOptions(),
+            );
+          },
+          child: Text(L10n.of(context).add),
         ),
       ],
     );
