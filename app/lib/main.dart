@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:acter/common/notifications/notifications.dart';
+import 'package:acter/config/notifications/init.dart';
 import 'package:acter/common/providers/app_state_provider.dart';
 import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';
@@ -12,7 +12,7 @@ import 'package:acter/common/utils/main.dart';
 import 'package:acter/config/setup.dart';
 import 'package:acter/features/cli/main.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
-import 'package:acter/router/providers/router_providers.dart';
+import 'package:acter/router/router.dart';
 import 'package:acter_trigger_auto_complete/acter_trigger_autocomplete.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -52,8 +52,16 @@ Future<void> _startAppInner(Widget app, bool withSentry) async {
     windows: true,
     linux: true,
   );
-  await initializeNotifications();
   await initLogging();
+  final initialLocationFromNotification = await initializeNotifications();
+
+  if (initialLocationFromNotification != null) {
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+      // push after the next render to ensure we still have the "initial" location
+      goRouter.push(initialLocationFromNotification);
+    });
+  }
+
   if (withSentry) {
     await SentryFlutter.init(
       (options) {
@@ -102,7 +110,6 @@ class _ActerState extends ConsumerState<Acter> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final language = ref.watch(languageProvider);
-    final router = ref.watch(routerProvider);
 
     // all toast msgs will appear at bottom
     final builder = EasyLoading.init();
@@ -110,7 +117,7 @@ class _ActerState extends ConsumerState<Acter> with WidgetsBindingObserver {
 
     return Portal(
       child: MaterialApp.router(
-        routerConfig: router,
+        routerConfig: goRouter,
         theme: ActerTheme.theme,
         title: 'Acter',
         builder: builder,
