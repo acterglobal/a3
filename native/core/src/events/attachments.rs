@@ -115,7 +115,7 @@ pub enum AttachmentContent {
     File(FileMessageEventContent),
     /// A location attachment.
     Location(LocationMessageEventContent),
-    /// A location attachment.
+    /// A link attachment.
     Link(LinkAttachmentContent),
     /// Backwards-compatible fallback support for previous untagged version
     /// only for reading existing events.
