@@ -277,7 +277,7 @@ class _ChatBubble extends ConsumerWidget {
   }
 }
 
-class _OriginalMessageBuilder extends ConsumerWidget {
+class _OriginalMessageBuilder extends StatelessWidget {
   final types.Message message;
   final String roomId;
 
@@ -287,7 +287,7 @@ class _OriginalMessageBuilder extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final repliedMessage = message.repliedMessage;
     if (repliedMessage == null) return const SizedBox();
     if (repliedMessage is types.TextMessage) {

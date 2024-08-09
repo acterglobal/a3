@@ -301,7 +301,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.text':
             MsgContent? msgContent = orgEventItem.msgContent();
             if (msgContent != null) {
-              String body = msgContent.body();
+              final body = ChatUtils.prepareMsg(msgContent);
               repliedToContent = {
                 'content': body,
                 'messageLength': body.length,

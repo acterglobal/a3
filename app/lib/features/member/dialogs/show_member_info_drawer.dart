@@ -1,3 +1,4 @@
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/member/widgets/member_info_drawer.dart';
 import 'package:flutter/material.dart';
 
@@ -10,18 +11,30 @@ Future<void> showMemberInfoDrawer({
   bool isShowActions = true,
   Key? key = memberInfoDrawer,
 }) async {
-  await showModalBottomSheet(
-    showDragHandle: true,
-    enableDrag: true,
-    useSafeArea: true,
-    context: context,
-    isScrollControlled: true,
-    isDismissible: true,
-    builder: (context) => MemberInfoDrawer(
-      key: key,
-      roomId: roomId,
-      memberId: memberId,
-      isShowActions: isShowActions,
-    ),
-  );
+  context.isLargeScreen
+      ? await showDialog<void>(
+          context: context,
+          builder: (context) => AlertDialog(
+            content: MemberInfoDrawer(
+              key: key,
+              roomId: roomId,
+              memberId: memberId,
+              isShowActions: isShowActions,
+            ),
+          ),
+        )
+      : await showModalBottomSheet(
+          showDragHandle: true,
+          enableDrag: true,
+          useSafeArea: true,
+          context: context,
+          isScrollControlled: true,
+          isDismissible: true,
+          builder: (context) => MemberInfoDrawer(
+            key: key,
+            roomId: roomId,
+            memberId: memberId,
+            isShowActions: isShowActions,
+          ),
+        );
 }

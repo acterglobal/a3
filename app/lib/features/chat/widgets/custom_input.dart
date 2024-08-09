@@ -13,6 +13,7 @@ import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat/widgets/custom_message_builder.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
 import 'package:acter/features/chat/widgets/mention_profile_builder.dart';
+import 'package:acter/features/chat/widgets/pill_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgDraft;
@@ -872,11 +873,20 @@ class _ReplyContentWidget extends StatelessWidget {
       );
     } else if (msg is TextMessage) {
       final textMsg = msg as TextMessage;
+
       return Container(
         constraints:
             BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.2),
         padding: const EdgeInsets.all(12),
         child: Html(
+          pillBuilder: ({required identifier, onTap, required url}) =>
+              pillBuilder(
+            context: context,
+            roomId: roomId,
+            identifier: identifier,
+            uri: url,
+            onTap: () => {},
+          ),
           data: textMsg.text,
           defaultTextStyle: Theme.of(context)
               .textTheme
