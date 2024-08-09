@@ -501,11 +501,11 @@ void tasksTests() {
         .first
         .widget as TaskItem;
 
-    final btnNotDoneFinder = find.byKey(taskEntry.notDoneKey());
+    final btnNotDoneFinder = find.byKey(taskEntry.notDoneKey(taskEntry.taskId));
     await btnNotDoneFinder.should(findsOneWidget);
     await btnNotDoneFinder.tap(); // toggle done
 
-    final btnDoneFinder = find.byKey(taskEntry.doneKey());
+    final btnDoneFinder = find.byKey(taskEntry.doneKey(taskEntry.taskId));
     await btnDoneFinder.should(findsOneWidget);
     await btnDoneFinder.tap(); // toggle undone
 
@@ -536,11 +536,11 @@ void tasksTests() {
         .first
         .widget as TaskItem;
 
-    final btnNotDoneFinder = find.byKey(taskEntry.notDoneKey());
+    final btnNotDoneFinder = find.byKey(taskEntry.notDoneKey(taskEntry.taskId));
     await btnNotDoneFinder.should(findsOneWidget);
     await btnNotDoneFinder.tap(); // toggle done
 
-    final btnDoneFinder = find.byKey(taskEntry.doneKey());
+    final btnDoneFinder = find.byKey(taskEntry.doneKey(taskEntry.taskId));
     await btnDoneFinder.should(findsOneWidget);
     await btnDoneFinder.tap(); // toggle undone
 
@@ -726,7 +726,7 @@ void tasksTests() {
         .widget as TaskItem;
 
     // mark as done.
-    final btnNotDoneFinder = find.byKey(taskEntry.notDoneKey());
+    final btnNotDoneFinder = find.byKey(taskEntry.notDoneKey(taskEntry.taskId));
     await btnNotDoneFinder.should(findsOneWidget);
     await btnNotDoneFinder.tap(); // toggle done
 
