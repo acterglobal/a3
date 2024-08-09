@@ -5,9 +5,8 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/events/model/keys.dart';
-import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/events/utils/events_utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
@@ -21,23 +20,20 @@ final _log = Logger('a3::event::createOrEdit');
 
 const createEditEventKey = Key('create-edit-event');
 
-class CreateEditEventPage extends ConsumerStatefulWidget {
+class CreateEventPage extends ConsumerStatefulWidget {
   final String? initialSelectedSpace;
-  final String? calendarId;
 
-  const CreateEditEventPage({
+  const CreateEventPage({
     super.key = createEditEventKey,
     this.initialSelectedSpace,
-    this.calendarId,
   });
 
   @override
-  ConsumerState<CreateEditEventPage> createState() =>
-      CreateEditEventPageConsumerState();
+  ConsumerState<CreateEventPage> createState() =>
+      CreateEventPageConsumerState();
 }
 
-class CreateEditEventPageConsumerState
-    extends ConsumerState<CreateEditEventPage> {
+class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
   final _formKey = GlobalKey<FormState>(debugLabel: 'event form key');
   final _eventNameController = TextEditingController();
   final _startDateController = TextEditingController();
@@ -54,52 +50,13 @@ class CreateEditEventPageConsumerState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-      // if calendarId is not null that means Edit Event
-      if (widget.calendarId != null) {
-        _setEditEventData();
-      }
       // if calendarId is null that means Create Event
-      else if (widget.initialSelectedSpace != null &&
+      if (widget.initialSelectedSpace != null &&
           widget.initialSelectedSpace!.isNotEmpty) {
         final parentNotifier = ref.read(selectedSpaceIdProvider.notifier);
         parentNotifier.state = widget.initialSelectedSpace;
       }
     });
-  }
-
-  // Apply existing data to fields
-  void _setEditEventData() async {
-    final calendarEvent =
-        await ref.read(calendarEventProvider(widget.calendarId!).future);
-    if (!mounted) return;
-    // setting data to variables
-    _eventNameController.text = calendarEvent.title();
-    final document = calendarEvent.description() != null &&
-            calendarEvent.description()!.formatted() != null
-        ? ActerDocumentHelpers.fromHtml(
-            calendarEvent.description()!.formatted()!,
-          )
-        : ActerDocumentHelpers.fromMarkdown(
-            calendarEvent.description()!.body(),
-          );
-    textEditorState = EditorState(document: document);
-
-    // Getting start and end date time
-    final dartStartTime = toDartDatetime(calendarEvent.utcStart());
-    final dartEndTime = toDartDatetime(calendarEvent.utcEnd());
-
-    // Setting data to variables for start date
-    _selectedStartDate = dartStartTime.toLocal();
-    _selectedStartTime = TimeOfDay.fromDateTime(_selectedStartDate);
-    _startDateController.text = eventDateFormat(_selectedStartDate);
-    _startTimeController.text = _selectedStartTime.format(context);
-
-    // Setting data to variables for end date
-    _selectedEndDate = dartEndTime.toLocal();
-    _selectedEndTime = TimeOfDay.fromDateTime(_selectedEndDate);
-    _endDateController.text = eventDateFormat(_selectedEndDate);
-    _endTimeController.text = _selectedEndTime.format(context);
-    setState(() {});
   }
 
   @override
@@ -114,9 +71,7 @@ class CreateEditEventPageConsumerState
   AppBar _buildAppbar() {
     return AppBar(
       title: Text(
-        widget.calendarId != null
-            ? L10n.of(context).eventEdit
-            : L10n.of(context).eventCreate,
+        L10n.of(context).eventCreate,
         style: Theme.of(context).textTheme.titleMedium,
       ),
     );
@@ -139,8 +94,7 @@ class CreateEditEventPageConsumerState
               const SizedBox(height: 10),
               _eventDescriptionField(),
               const SizedBox(height: 10),
-              if (widget.calendarId == null)
-                const SelectSpaceFormField(canCheck: 'CanPostEvent'),
+              const SelectSpaceFormField(canCheck: 'CanPostEvent'),
               const SizedBox(height: 20),
               _eventActionButtons(),
               const SizedBox(height: 30),
@@ -404,32 +358,10 @@ class CreateEditEventPageConsumerState
         const SizedBox(width: 10),
         ActerPrimaryActionButton(
           key: EventsKeys.eventCreateEditBtn,
-          onPressed: widget.calendarId != null
-              ? _handleUpdateEvent
-              : _handleCreateEvent,
-          child: Text(
-            widget.calendarId != null
-                ? L10n.of(context).eventUpdate
-                : L10n.of(context).eventCreate,
-          ),
+          onPressed: _handleCreateEvent,
+          child: Text(L10n.of(context).eventCreate),
         ),
       ],
-    );
-  }
-
-  DateTime _calculateStartDate() {
-    // Replacing hours and minutes from DateTime
-    return _selectedStartDate.copyWith(
-      hour: _selectedStartTime.hour,
-      minute: _selectedStartTime.minute,
-    );
-  }
-
-  DateTime _calculateEndDate() {
-    // Replacing hours and minutes from DateTime
-    return _selectedEndDate.copyWith(
-      hour: _selectedEndTime.hour,
-      minute: _selectedEndTime.minute,
     );
   }
 
@@ -450,9 +382,11 @@ class CreateEditEventPageConsumerState
     try {
       // Replacing hours and minutes from DateTime
       // Start Date
-      final startDateTime = _calculateStartDate();
+      final startDateTime =
+          calculateDateTimeWithHours(_selectedStartDate, _selectedStartTime);
       // End Date
-      final endDateTime = _calculateEndDate();
+      final endDateTime =
+          calculateDateTimeWithHours(_selectedEndDate, _selectedEndTime);
 
       // Convert utc time zone
       final utcStartDateTime = startDateTime.toUtc().toIso8601String();
@@ -498,54 +432,6 @@ class CreateEditEventPageConsumerState
       }
       EasyLoading.showError(
         L10n.of(context).errorCreatingCalendarEvent(e),
-        duration: const Duration(seconds: 3),
-      );
-    }
-  }
-
-  // Edit event handler
-  Future<void> _handleUpdateEvent() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    EasyLoading.show(status: L10n.of(context).updatingEvent);
-    try {
-      // We always have calendar object at this stage.
-      final calendarEvent =
-          await ref.read(calendarEventProvider(widget.calendarId!).future);
-
-      // Replacing hours and minutes from DateTime
-      // Start Date
-      final startDateTime = _calculateStartDate();
-      // End Date
-      final endDateTime = _calculateEndDate();
-
-      // Convert UTC time zone
-      final utcStartDateTime = startDateTime.toUtc().toIso8601String();
-      final utcEndDateTime = endDateTime.toUtc().toIso8601String();
-
-      // Updating calender event
-      final title = _eventNameController.text;
-      final plainDescription = textEditorState.intoMarkdown();
-      final htmlBodyDescription = textEditorState.intoHtml();
-      final updateBuilder = calendarEvent.updateBuilder();
-      updateBuilder.title(title);
-      updateBuilder.utcStartFromRfc3339(utcStartDateTime);
-      updateBuilder.utcEndFromRfc3339(utcEndDateTime);
-      updateBuilder.descriptionHtml(plainDescription, htmlBodyDescription);
-      final eventId = await updateBuilder.send();
-      _log.info('Calendar Event updated $eventId');
-
-      EasyLoading.dismiss();
-
-      if (mounted) Navigator.pop(context);
-    } catch (e, st) {
-      _log.severe('Failed to update calendar event', e, st);
-      if (!mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-      EasyLoading.showError(
-        L10n.of(context).errorUpdatingEvent(e),
         duration: const Duration(seconds: 3),
       );
     }

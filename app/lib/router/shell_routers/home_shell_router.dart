@@ -1,9 +1,9 @@
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
+import 'package:acter/features/events/pages/create_event_page.dart';
 import 'package:acter/features/events/pages/event_list_page.dart';
 import 'package:acter/features/invite_members/pages/invite_individual_users.dart';
 import 'package:acter/features/invite_members/pages/invite_page.dart';
-import 'package:acter/features/events/pages/create_edit_event_page.dart';
 import 'package:acter/features/events/pages/event_details_page.dart';
 import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/invite_members/pages/invite_pending.dart';
@@ -462,20 +462,8 @@ final homeShellRoutes = [
     pageBuilder: (context, state) {
       return NoTransitionPage(
         key: state.pageKey,
-        child: CreateEditEventPage(
+        child: CreateEventPage(
           initialSelectedSpace: state.uri.queryParameters['spaceId'],
-        ),
-      );
-    },
-  ),
-  GoRoute(
-    name: Routes.editCalendarEvent.name,
-    path: Routes.editCalendarEvent.route,
-    pageBuilder: (context, state) {
-      return NoTransitionPage(
-        key: state.pageKey,
-        child: CreateEditEventPage(
-          calendarId: state.pathParameters['calendarId'],
         ),
       );
     },
