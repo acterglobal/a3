@@ -672,6 +672,27 @@ class _TextInputWidget extends ConsumerStatefulWidget {
 }
 
 class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
+  @override
+  void initState() {
+    super.initState();
+    ref.listenManual(
+        chatInputProvider.select((state) => state.selectedMessageState),
+        (prev, next) {
+      if (next == SelectedMessageState.edit) {
+        widget.controller.text = ChatUtils.parseEditMessage(ref) ?? '';
+        // frame delay to keep focus connected with keyboard.
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          widget.chatFocus.requestFocus();
+        });
+      } else if (next == SelectedMessageState.replyTo) {
+        // frame delay to keep focus connected with keyboard..
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          widget.chatFocus.requestFocus();
+        });
+      }
+    });
+  }
+
   void onTextTap(bool emojiPickerVisible, WidgetRef ref) {
     final chatInputNotifier = ref.read(chatInputProvider.notifier);
 
@@ -713,25 +734,6 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(chatInputProvider, (prev, next) {
-      if (next.selectedMessageState == SelectedMessageState.edit &&
-          (next.selectedMessage != prev?.selectedMessage ||
-              prev?.selectedMessageState != next.selectedMessageState)) {
-        widget.controller.text =
-            ChatUtils.parseEditMessage(next.selectedMessage!, ref);
-        // frame delay to keep focus connected with keyboard.
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          widget.chatFocus.requestFocus();
-        });
-      } else if (next.selectedMessageState == SelectedMessageState.replyTo &&
-          (next.selectedMessage != prev?.selectedMessage ||
-              prev?.selectedMessageState != next.selectedMessageState)) {
-        // frame delay to keep focus connected with keyboard..
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          widget.chatFocus.requestFocus();
-        });
-      }
-    });
     return CallbackShortcuts(
       bindings: <ShortcutActivator, VoidCallback>{
         const SingleActivator(LogicalKeyboardKey.enter): () {

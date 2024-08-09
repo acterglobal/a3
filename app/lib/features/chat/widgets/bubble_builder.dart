@@ -21,7 +21,9 @@ import 'package:swipe_to/swipe_to.dart';
 
 final _log = Logger('a3::chat::bubble_builder');
 
-class BubbleBuilder extends ConsumerWidget {
+// keep this widget stateful consumer
+// otherwise doesn't hold correct message state
+class BubbleBuilder extends ConsumerStatefulWidget {
   final String roomId;
   final Widget child;
   final types.Message message;
@@ -38,43 +40,50 @@ class BubbleBuilder extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final myId = ref.watch(myUserIdStrProvider);
-    final isAuthor = (myId == message.author.id);
-    final inputNotifier = ref.read(chatInputProvider.notifier);
-    String eventType = message.metadata?['eventType'] ?? '';
-    bool isMemberEvent = eventType == 'm.room.member';
-    bool redactedOrEncrypted = (message is types.CustomMessage) &&
-        (message.metadata!.containsKey('eventType') ||
-            message.metadata!['eventType'] == 'm.room.redaction');
+  ConsumerState<BubbleBuilder> createState() => _BubbleBuilderConsumerState();
+}
 
+class _BubbleBuilderConsumerState extends ConsumerState<BubbleBuilder> {
+  @override
+  Widget build(BuildContext context) {
+    final myId = ref.watch(myUserIdStrProvider);
+    final isAuthor = (myId == widget.message.author.id);
+    String eventType = widget.message.metadata?['eventType'] ?? '';
+    bool isMemberEvent = eventType == 'm.room.member';
+    bool redactedOrEncrypted = (widget.message is types.CustomMessage) &&
+        (widget.message.metadata!.containsKey('eventType') ||
+            widget.message.metadata!['eventType'] == 'm.room.redaction');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         isMemberEvent
-            ? child
+            ? widget.child
             : SwipeTo(
                 onRightSwipe: redactedOrEncrypted
                     ? null
                     : (DragUpdateDetails details) {
-                        inputNotifier.setReplyToMessage(message);
+                        final inputNotifier =
+                            ref.read(chatInputProvider.notifier);
+                        inputNotifier.setReplyToMessage(widget.message);
                       },
                 iconOnRightSwipe: Icons.reply_rounded,
                 onLeftSwipe: redactedOrEncrypted
                     ? null
                     : isAuthor
                         ? (DragUpdateDetails details) {
-                            inputNotifier.setEditMessage(message);
+                            final inputNotifier =
+                                ref.read(chatInputProvider.notifier);
+                            inputNotifier.setEditMessage(widget.message);
                           }
                         : null,
                 iconOnLeftSwipe: Atlas.pencil_edit_thin,
                 child: _ChatBubble(
-                  roomId: roomId,
-                  message: message,
-                  nextMessageInGroup: nextMessageInGroup,
-                  enlargeEmoji: enlargeEmoji,
-                  child: child,
+                  roomId: widget.roomId,
+                  message: widget.message,
+                  nextMessageInGroup: widget.nextMessageInGroup,
+                  enlargeEmoji: widget.enlargeEmoji,
+                  child: widget.child,
                 ),
               ),
       ],

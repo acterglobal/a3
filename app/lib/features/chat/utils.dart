@@ -236,10 +236,12 @@ class ChatUtils {
     );
   }
 
-  static String parseEditMessage(types.Message message, WidgetRef ref) {
+  static String? parseEditMessage(WidgetRef ref) {
     final mentionNotifier = ref.read(chatInputProvider.notifier);
+    final message = ref.read(chatInputProvider).selectedMessage;
     String messageBodyText = '';
-    if (message is types.TextMessage) {
+
+    if (message != null && message is types.TextMessage) {
       // Parse String Data to HTML document
       final document = parse(message.text);
 
