@@ -17,6 +17,7 @@ import 'package:acter/features/onboarding/pages/link_email_page.dart';
 import 'package:acter/features/auth/pages/register_page.dart';
 import 'package:acter/features/onboarding/pages/save_username_page.dart';
 import 'package:acter/features/onboarding/pages/upload_avatar_page.dart';
+import 'package:acter/features/pins/pages/create_pin.dart';
 import 'package:acter/features/pins/pages/create_pin_page.dart';
 import 'package:acter/features/search/pages/quick_jump.dart';
 import 'package:acter/features/super_invites/pages/create.dart';
@@ -115,6 +116,18 @@ final generalRoutes = [
     pageBuilder: (context, state) => DialogPage(
       builder: (BuildContext context) => const QuickjumpDialog(),
     ),
+  ),
+  GoRoute(
+    name: Routes.createPin.name,
+    path: Routes.createPin.route,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: CreatePin(
+          initialSelectedSpace: state.uri.queryParameters['spaceId'],
+        ),
+      );
+    },
   ),
   GoRoute(
     parentNavigatorKey: rootNavKey,
