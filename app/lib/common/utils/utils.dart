@@ -36,6 +36,10 @@ final idMatrixRegexp = RegExp(
   r'matrix:roomid/(?<id>[^?]+)(\?via=(?<server_name>[^&]+))?(&via=(?<server_name2>[^&]+))?(&via=(?<server_name3>[^&]+))?',
 );
 
+final urlValidatorRegexp = RegExp(
+  r'^[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b[-a-zA-Z0-9()@:%_+.~#?&/=]*$',
+);
+
 /// Get provider right from the context no matter where we are
 extension Context on BuildContext {
   // Custom call a provider for reading method only

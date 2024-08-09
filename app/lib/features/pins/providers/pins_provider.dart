@@ -1,4 +1,6 @@
+import 'package:acter/features/pins/models/create_pin_state/create_pin_state.dart';
 import 'package:acter/features/pins/models/pin_edit_state/pin_edit_state.dart';
+import 'package:acter/features/pins/providers/notifiers/create_pin_notifier.dart';
 import 'package:acter/features/pins/providers/notifiers/edit_state_notifier.dart';
 import 'package:acter/features/pins/providers/notifiers/pins_notifiers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -36,4 +38,10 @@ final pinProvider = AsyncNotifierProvider.autoDispose
 final pinEditProvider = StateNotifierProvider.family
     .autoDispose<PinEditNotifier, PinEditState, ActerPin>(
   (ref, pin) => PinEditNotifier(pin: pin, ref: ref),
+);
+
+// Create Pin State
+final createPinStateProvider =
+    StateNotifierProvider.autoDispose<CreatePinNotifier, CreatePinState>(
+  (ref) => CreatePinNotifier(ref: ref),
 );

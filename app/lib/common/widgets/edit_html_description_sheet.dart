@@ -18,7 +18,6 @@ void showEditHtmlDescriptionBottomSheet({
     useSafeArea: true,
     context: context,
     isDismissible: true,
-    constraints: const BoxConstraints(maxHeight: 450),
     isScrollControlled: true,
     builder: (context) {
       return EditHtmlDescriptionSheet(
@@ -69,9 +68,10 @@ class _EditHtmlDescriptionSheetState
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+    return Padding(
+      padding: MediaQuery.of(context).viewInsets,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Text(widget.bottomSheetTitle ?? L10n.of(context).editDescription),
           const SizedBox(height: 20),
@@ -112,7 +112,7 @@ class _EditHtmlDescriptionSheetState
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 100),
         ],
       ),
     );
