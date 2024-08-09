@@ -1,29 +1,27 @@
+import 'dart:async';
+
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
+import 'package:acter/features/pins/Utils/pins_utils.dart';
+import 'package:acter/features/pins/models/create_pin_state/pin_attachment_model.dart';
+import 'package:acter/features/pins/providers/pins_provider.dart';
+import 'package:acter/features/pins/widgets/pin_link_bottom_sheet.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-typedef PinDescriptionParams = ({
-  String htmlBodyDescription,
-  String plainDescription
-});
+class PinAttachmentOptions extends ConsumerWidget {
+  final bool isBottomSheetOpen;
 
-class PinAttachmentOptions extends StatelessWidget {
-  final PinDescriptionParams pinDescriptionParams;
-  final Function(String, String) onAddText;
-
-  const PinAttachmentOptions({
-    super.key,
-    required this.pinDescriptionParams,
-    required this.onAddText,
-  });
+  const PinAttachmentOptions({super.key, this.isBottomSheetOpen = false});
 
   @override
-  Widget build(BuildContext context) {
-    return _buildPinAttachmentOptions(context);
+  Widget build(BuildContext context, WidgetRef ref) {
+    return _buildPinAttachmentOptions(context, ref);
   }
 
-  Widget _buildPinAttachmentOptions(BuildContext context) {
+  Widget _buildPinAttachmentOptions(BuildContext context, WidgetRef ref) {
+    final pinState = ref.watch(createPinStateProvider);
     return Column(
       children: [
         Row(
@@ -38,12 +36,18 @@ class PinAttachmentOptions extends StatelessWidget {
                   bottomSheetTitle: L10n.of(context).add,
                   context: context,
                   descriptionHtmlValue:
-                      pinDescriptionParams.htmlBodyDescription,
+                      pinState.pinDescriptionParams?.htmlBodyDescription,
                   descriptionMarkdownValue:
-                      pinDescriptionParams.plainDescription,
+                      pinState.pinDescriptionParams?.plainDescription,
                   onSave: (htmlBodyDescription, plainDescription) {
+                    if (isBottomSheetOpen) Navigator.pop(context);
                     Navigator.pop(context);
-                    onAddText(htmlBodyDescription, plainDescription);
+                    ref
+                        .read(createPinStateProvider.notifier)
+                        .setDescriptionValue(
+                          htmlBodyDescription: htmlBodyDescription,
+                          plainDescription: plainDescription,
+                        );
                   },
                 );
               },
@@ -52,13 +56,33 @@ class PinAttachmentOptions extends StatelessWidget {
               context: context,
               title: 'Link',
               iconData: Atlas.link,
-              onTap: () {},
+              onTap: () {
+                showPinLinkBottomSheet(
+                  context: context,
+                  bottomSheetTitle: L10n.of(context).addLink,
+                  onSave: (title, link) {
+                    if (isBottomSheetOpen) Navigator.pop(context);
+                    Navigator.pop(context);
+                    ref.read(createPinStateProvider.notifier).addAttachment(
+                          PinAttachment(
+                            pinAttachmentType: PinAttachmentType.link,
+                            title: title,
+                            link: link,
+                          ),
+                        );
+                  },
+                );
+              },
             ),
             _pinAttachmentOptionItem(
               context: context,
               title: 'File',
               iconData: Atlas.file,
-              onTap: () {},
+              onTap: () => selectAttachmentOnTap(
+                ref,
+                context,
+                PinAttachmentType.file,
+              ),
             ),
           ],
         ),
@@ -69,24 +93,47 @@ class PinAttachmentOptions extends StatelessWidget {
               context: context,
               title: 'Image',
               iconData: Atlas.image_gallery,
-              onTap: () {},
+              onTap: () => selectAttachmentOnTap(
+                ref,
+                context,
+                PinAttachmentType.image,
+              ),
             ),
             _pinAttachmentOptionItem(
               context: context,
               title: 'Video',
               iconData: Atlas.video_camera,
-              onTap: () {},
+              onTap: () => selectAttachmentOnTap(
+                ref,
+                context,
+                PinAttachmentType.video,
+              ),
             ),
             _pinAttachmentOptionItem(
               context: context,
               title: 'Audio',
               iconData: Atlas.audio_headphones,
-              onTap: () {},
+              onTap: () => selectAttachmentOnTap(
+                ref,
+                context,
+                PinAttachmentType.audio,
+              ),
             ),
           ],
         ),
       ],
     );
+  }
+
+  Future<void> selectAttachmentOnTap(
+    WidgetRef ref,
+    BuildContext context,
+    PinAttachmentType pinAttachmentType,
+  ) async {
+    await selectAttachment(ref, pinAttachmentType);
+    if (isBottomSheetOpen && context.mounted) {
+      Navigator.pop(context);
+    }
   }
 
   Widget _pinAttachmentOptionItem({

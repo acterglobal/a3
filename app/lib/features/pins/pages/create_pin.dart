@@ -1,10 +1,17 @@
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
+import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
+import 'package:acter/features/pins/Utils/pins_utils.dart';
+import 'package:acter/features/pins/models/create_pin_state/create_pin_state.dart';
+import 'package:acter/features/pins/models/create_pin_state/pin_attachment_model.dart';
+import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/pin_attachment_options.dart';
+import 'package:acter/features/pins/widgets/pin_link_bottom_sheet.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,9 +37,6 @@ class CreatePin extends ConsumerStatefulWidget {
 class _CreatePinConsumerState extends ConsumerState<CreatePin> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
-
-  String htmlBodyDescription = '1';
-  String plainDescription = '';
 
   @override
   void initState() {
@@ -61,6 +65,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePin> {
   }
 
   Widget _buildBody() {
+    final pinState = ref.watch(createPinStateProvider);
     return Padding(
       padding: const EdgeInsets.only(left: 16, right: 16, bottom: 24),
       child: Column(
@@ -84,19 +89,12 @@ class _CreatePinConsumerState extends ConsumerState<CreatePin> {
                       ),
                     ),
                     const SizedBox(height: 14),
-                    _pinDescription(),
-                    attachmentHeader(),
-                    PinAttachmentOptions(
-                      pinDescriptionParams: (
-                        htmlBodyDescription: htmlBodyDescription,
-                        plainDescription: plainDescription,
-                      ),
-                      onAddText: (htmlBodyDescription, plainDescription) {
-                        this.htmlBodyDescription = htmlBodyDescription;
-                        this.plainDescription = plainDescription;
-                        setState(() {});
-                      },
-                    ),
+                    _pinDescription(pinState),
+                    attachmentHeader(pinState),
+                    if (pinState.pinAttachmentList.isEmpty)
+                      const PinAttachmentOptions()
+                    else
+                      attachmentListUI(pinState),
                     const SizedBox(height: 14),
                   ],
                 ),
@@ -119,7 +117,11 @@ class _CreatePinConsumerState extends ConsumerState<CreatePin> {
           hintText: L10n.of(context).pinName,
           key: titleFieldKey,
           textInputType: TextInputType.text,
+          textInputAction: TextInputAction.done,
           controller: _titleController,
+          onInputChanged: (text) => ref
+              .read(createPinStateProvider.notifier)
+              .setPinTitleValue(text ?? ''),
           validator: (value) => (value != null && value.trim().isNotEmpty)
               ? null
               : L10n.of(context).pleaseEnterATitle,
@@ -128,36 +130,132 @@ class _CreatePinConsumerState extends ConsumerState<CreatePin> {
     );
   }
 
-  Widget attachmentHeader() {
+  Widget attachmentHeader(CreatePinState pinState) {
     return Row(
       children: [
         Expanded(child: Text(L10n.of(context).attachments)),
-        ActerInlineTextButton(
-          onPressed: () {
-            showModalBottomSheet<void>(
-              context: context,
-              showDragHandle: true,
-              builder: (context) => PinAttachmentOptions(
-                pinDescriptionParams: (
-                  htmlBodyDescription: htmlBodyDescription,
-                  plainDescription: plainDescription,
+        if (pinState.pinAttachmentList.isNotEmpty)
+          ActerInlineTextButton(
+            onPressed: () {
+              showModalBottomSheet<void>(
+                context: context,
+                showDragHandle: true,
+                builder: (context) => const PinAttachmentOptions(
+                  isBottomSheetOpen: true,
                 ),
-                onAddText: (htmlBodyDescription, plainDescription) {
-                  this.htmlBodyDescription = htmlBodyDescription;
-                  this.plainDescription = plainDescription;
-                  setState(() {});
-                },
-              ),
-            );
-          },
-          child: Text(L10n.of(context).add),
-        ),
+              );
+            },
+            child: Text(L10n.of(context).add),
+          ),
       ],
     );
   }
 
-  Widget _pinDescription() {
-    if (plainDescription.trim().isEmpty) {
+  Widget attachmentListUI(CreatePinState pinState) {
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: pinState.pinAttachmentList.length,
+      physics: const NeverScrollableScrollPhysics(),
+      itemBuilder: (context, index) {
+        final attachmentData = pinState.pinAttachmentList[index];
+        return attachmentItemUI(attachmentData, index);
+      },
+    );
+  }
+
+  Widget attachmentItemUI(PinAttachment attachmentData, int index) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 5),
+      child: ListTile(
+        leading: attachmentLeadingIcon(attachmentData.pinAttachmentType),
+        onTap: () => attachmentItemOnTap(attachmentData, index),
+        title: Text(
+          attachmentData.title,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+        subtitle: Row(
+          children: [
+            if (attachmentData.pinAttachmentType == PinAttachmentType.link)
+              Text(attachmentData.link ?? '')
+            else ...[
+              Text(attachmentData.size ?? ''),
+              const SizedBox(width: 10),
+              const Text('.'),
+              const SizedBox(width: 10),
+              Text(
+                documentTypeFromFileExtension(
+                  attachmentData.fileExtension ?? '',
+                ),
+              ),
+            ],
+          ],
+        ),
+        trailing: IconButton(
+          onPressed: () =>
+              ref.read(createPinStateProvider.notifier).removeAttachment(index),
+          icon: const Icon(
+            Atlas.xmark_circle,
+            color: Colors.red,
+          ),
+        ),
+      ),
+    );
+  }
+
+  void attachmentItemOnTap(PinAttachment attachmentData, int index) {
+    if (attachmentData.pinAttachmentType == PinAttachmentType.link) {
+      showPinLinkBottomSheet(
+        context: context,
+        pinTitle: attachmentData.title,
+        pinLink: attachmentData.link,
+        onSave: (title, link) {
+          Navigator.pop(context);
+          final pinAttachment = attachmentData.copyWith(
+            title: title,
+            link: link,
+          );
+          ref
+              .read(createPinStateProvider.notifier)
+              .changeAttachmentTitle(pinAttachment, index);
+        },
+      );
+    } else {
+      showEditTitleBottomSheet(
+        context: context,
+        titleValue: attachmentData.title,
+        onSave: (newTitle) {
+          Navigator.pop(context);
+          final pinAttachment = attachmentData.copyWith(title: newTitle);
+          ref
+              .read(createPinStateProvider.notifier)
+              .changeAttachmentTitle(pinAttachment, index);
+        },
+      );
+    }
+  }
+
+  Widget attachmentLeadingIcon(PinAttachmentType pinAttachmentType) {
+    switch (pinAttachmentType) {
+      case PinAttachmentType.link:
+        return const Icon(Atlas.link);
+      case PinAttachmentType.image:
+        return const Icon(Atlas.image_gallery);
+      case PinAttachmentType.video:
+        return const Icon(Atlas.video_camera);
+      case PinAttachmentType.audio:
+        return const Icon(Atlas.audio_headphones);
+      case PinAttachmentType.file:
+        return const Icon(Atlas.file);
+      default:
+        return const SizedBox.shrink();
+    }
+  }
+
+  Widget _pinDescription(CreatePinState pinState) {
+    if (pinState.pinDescriptionParams == null ||
+        pinState.pinDescriptionParams!.htmlBodyDescription.trim().isEmpty ||
+        pinState.pinDescriptionParams!.plainDescription.trim().isEmpty) {
       return const SizedBox.shrink();
     }
     return Column(
@@ -170,23 +268,26 @@ class _CreatePinConsumerState extends ConsumerState<CreatePin> {
             onTap: () {
               showEditHtmlDescriptionBottomSheet(
                 context: context,
-                descriptionHtmlValue: htmlBodyDescription,
-                descriptionMarkdownValue: plainDescription,
+                descriptionHtmlValue:
+                    pinState.pinDescriptionParams!.htmlBodyDescription,
+                descriptionMarkdownValue:
+                    pinState.pinDescriptionParams!.plainDescription,
                 onSave: (htmlBodyDescription, plainDescription) async {
                   Navigator.pop(context);
-                  this.htmlBodyDescription = htmlBodyDescription;
-                  this.plainDescription = plainDescription;
-                  setState(() {});
+                  ref.read(createPinStateProvider.notifier).setDescriptionValue(
+                        htmlBodyDescription: htmlBodyDescription,
+                        plainDescription: plainDescription,
+                      );
                 },
               );
             },
-            child: htmlBodyDescription.isNotEmpty
+            child: pinState.pinDescriptionParams!.htmlBodyDescription.isNotEmpty
                 ? RenderHtml(
-                    text: htmlBodyDescription,
+                    text: pinState.pinDescriptionParams!.htmlBodyDescription,
                     defaultTextStyle: Theme.of(context).textTheme.labelLarge,
                   )
                 : Text(
-                    plainDescription,
+                    pinState.pinDescriptionParams!.plainDescription,
                     style: Theme.of(context).textTheme.labelLarge,
                   ),
           ),
