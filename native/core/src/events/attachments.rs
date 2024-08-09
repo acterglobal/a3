@@ -27,6 +27,25 @@ pub enum FallbackAttachmentContent {
 }
 
 impl FallbackAttachmentContent {
+    pub fn name(&self) -> Option<String> {
+        match self {
+            FallbackAttachmentContent::Image(ImageMessageEventContent { filename, .. }) => {
+                filename.clone()
+            }
+            FallbackAttachmentContent::Video(VideoMessageEventContent { filename, .. }) => {
+                filename.clone()
+            }
+            FallbackAttachmentContent::Audio(AudioMessageEventContent { filename, .. }) => {
+                filename.clone()
+            }
+            FallbackAttachmentContent::File(FileMessageEventContent { filename, .. }) => {
+                filename.clone()
+            }
+            FallbackAttachmentContent::Location(LocationMessageEventContent { body, .. }) => {
+                Some(body.clone())
+            }
+        }
+    }
     pub fn type_str(&self) -> String {
         match self {
             FallbackAttachmentContent::Image(_) => "image".to_owned(),
@@ -74,18 +93,30 @@ impl FallbackAttachmentContent {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct LinkAttachmentContent {
+    /// A short name for the given link
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+
+    /// The actual Link / URL / URI
+    pub link: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(tag = "type")]
 pub enum AttachmentContent {
-    /// An image message.
+    /// An image attachment.
     Image(ImageMessageEventContent),
-    /// A video message.
+    /// A video attachment.
     Video(VideoMessageEventContent),
-    /// An audio message.
+    /// An audio attachment.
     Audio(AudioMessageEventContent),
-    /// A file message
+    /// A file attachment
     File(FileMessageEventContent),
-    /// A location message.
+    /// A location attachment.
     Location(LocationMessageEventContent),
+    /// A link attachment.
+    Link(LinkAttachmentContent),
     /// Backwards-compatible fallback support for previous untagged version
     /// only for reading existing events.
     #[serde(untagged)]
@@ -108,6 +139,19 @@ impl TryFrom<MessageType> for AttachmentContent {
 }
 
 impl AttachmentContent {
+    pub fn name(&self) -> Option<String> {
+        match self {
+            AttachmentContent::Image(ImageMessageEventContent { filename, .. }) => filename.clone(),
+            AttachmentContent::Video(VideoMessageEventContent { filename, .. }) => filename.clone(),
+            AttachmentContent::Audio(AudioMessageEventContent { filename, .. }) => filename.clone(),
+            AttachmentContent::File(FileMessageEventContent { filename, .. }) => filename.clone(),
+            AttachmentContent::Location(LocationMessageEventContent { body, .. }) => {
+                Some(body.clone())
+            }
+            AttachmentContent::Link(LinkAttachmentContent { name, .. }) => name.clone(),
+            AttachmentContent::Fallback(f) => f.name(),
+        }
+    }
     pub fn type_str(&self) -> String {
         match self {
             AttachmentContent::Image(_) => "image".to_owned(),
@@ -115,6 +159,7 @@ impl AttachmentContent {
             AttachmentContent::Audio(_) => "audio".to_owned(),
             AttachmentContent::File(_) => "file".to_owned(),
             AttachmentContent::Location(_) => "location".to_owned(),
+            AttachmentContent::Link(_) => "link".to_owned(),
             AttachmentContent::Fallback(f) => f.type_str(),
         }
     }
@@ -156,6 +201,13 @@ impl AttachmentContent {
             AttachmentContent::Location(content) => Some(content.clone()),
             AttachmentContent::Fallback(f) => f.location(),
             _ => None,
+        }
+    }
+    pub fn link(&self) -> Option<String> {
+        if let AttachmentContent::Link(LinkAttachmentContent { link, .. }) = self {
+            Some(link.clone())
+        } else {
+            None
         }
     }
 }
