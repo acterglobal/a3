@@ -44,6 +44,7 @@ final tasksListSearchProvider = FutureProvider.autoDispose
         .toLowerCase()
         .contains(params.searchText.toLowerCase())) {
       filteredTaskList.add(taskListItem);
+      continue;
     }
 
     //Check search param in task list items data
@@ -54,6 +55,7 @@ final tasksListSearchProvider = FutureProvider.autoDispose
           .toLowerCase()
           .contains(params.searchText.toLowerCase())) {
         filteredTaskList.add(taskListItem);
+        break;
       }
     }
   }
