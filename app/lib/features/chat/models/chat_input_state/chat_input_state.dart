@@ -18,7 +18,6 @@ enum SendingState {
 @freezed
 class ChatInputState with _$ChatInputState {
   const factory ChatInputState({
-    @Default('') String message,
     @Default(SelectedMessageState.none)
     SelectedMessageState selectedMessageState,
     @Default(SendingState.preparing) SendingState sendingState,

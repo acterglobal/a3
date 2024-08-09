@@ -28,7 +28,7 @@ class RoomChip extends ConsumerWidget {
         ),
         label: Text(displayName, overflow: TextOverflow.ellipsis),
         onPressed: () async {
-          await navigateToRoomOrAskToJoin(context, ref, roomId);
+          await ChatUtils.navigateToRoomOrAskToJoin(context, ref, roomId);
         },
       ),
     );

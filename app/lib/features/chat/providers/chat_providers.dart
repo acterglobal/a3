@@ -52,7 +52,7 @@ final chatTopic =
 
 bool msgFilter(types.Message m) {
   return m is! types.UnsupportedMessage &&
-      !(m is types.CustomMessage && !renderCustomMessageBubble(m));
+      !(m is types.CustomMessage && !ChatUtils.renderCustomMessageBubble(m));
 }
 
 final renderableChatMessagesProvider =

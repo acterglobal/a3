@@ -37,40 +37,46 @@ enum OptionsAlignment {
   /// Positions the options to the bottom right of the field.
   bottomEnd;
 
-  Anchor _toAnchor({double? widthFactor = 1.0}) {
+  Anchor _toAnchor({double? widthFactor = 1.0, double? heightFactor = 5.0}) {
     switch (this) {
       case OptionsAlignment.top:
         return Aligned(
+          heightFactor: heightFactor,
           widthFactor: widthFactor,
           follower: Alignment.bottomCenter,
           target: Alignment.topCenter,
         );
       case OptionsAlignment.bottom:
         return Aligned(
+          heightFactor: heightFactor,
           widthFactor: widthFactor,
           follower: Alignment.topCenter,
           target: Alignment.bottomCenter,
         );
       case OptionsAlignment.topStart:
         return Aligned(
+          heightFactor: heightFactor,
           widthFactor: widthFactor,
           follower: Alignment.bottomLeft,
           target: Alignment.topLeft,
         );
       case OptionsAlignment.topEnd:
         return Aligned(
+          heightFactor: heightFactor,
           widthFactor: widthFactor,
           follower: Alignment.bottomRight,
           target: Alignment.topRight,
         );
       case OptionsAlignment.bottomStart:
         return Aligned(
+          heightFactor: heightFactor,
           widthFactor: widthFactor,
           follower: Alignment.topLeft,
           target: Alignment.bottomLeft,
         );
       case OptionsAlignment.bottomEnd:
         return Aligned(
+          heightFactor: heightFactor,
           widthFactor: widthFactor,
           follower: Alignment.topRight,
           target: Alignment.bottomRight,
@@ -93,6 +99,7 @@ class MultiTriggerAutocomplete extends StatefulWidget {
     this.fieldViewBuilder = _defaultFieldViewBuilder,
     this.optionsAlignment = OptionsAlignment.bottom,
     this.optionsWidthFactor = 1.0,
+    this.optionsHeightFactor = 5.0,
     this.debounceDuration = const Duration(milliseconds: 300),
   });
 
@@ -147,6 +154,9 @@ class MultiTriggerAutocomplete extends StatefulWidget {
   /// The default value is 1.0, which makes the options the same width
   /// as the field.
   final double? optionsWidthFactor;
+
+  /// The default value is 5.0.
+  final double? optionsHeightFactor;
 
   /// The duration of the debounce period for the [TextEditingController].
   ///
@@ -390,6 +400,7 @@ class MultiTriggerAutocompleteState extends State<MultiTriggerAutocomplete> {
       builder: (context) {
         final anchor = widget.optionsAlignment._toAnchor(
           widthFactor: widget.optionsWidthFactor,
+          heightFactor: widget.optionsHeightFactor,
         );
         final shouldShowOptions = _shouldShowOptions;
         final optionViewBuilder = shouldShowOptions

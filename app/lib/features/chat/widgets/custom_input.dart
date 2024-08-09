@@ -9,9 +9,11 @@ import 'package:acter/common/widgets/frost_effect.dart';
 import 'package:acter/features/attachments/actions/select_attachment.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat/widgets/custom_message_builder.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
 import 'package:acter/features/chat/widgets/mention_profile_builder.dart';
+import 'package:acter/features/chat/widgets/pill_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgDraft;
@@ -31,12 +33,6 @@ import 'package:mime/mime.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 final _log = Logger('a3::chat::custom_input');
-
-final _sendButtonVisible = StateProvider.family<bool, String>(
-  (ref, roomId) => ref.watch(
-    chatInputProvider.select((value) => value.message.isNotEmpty),
-  ),
-);
 
 final _allowEdit = StateProvider.family<bool, String>(
   (ref, roomId) => ref.watch(
@@ -327,7 +323,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
                       ),
                     ),
                   ),
-                  if (ref.watch(_sendButtonVisible(roomId)))
+                  if (textController.text.trim().isNotEmpty)
                     renderSendButton(context, roomId),
                 ],
               ),
@@ -383,7 +379,10 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         child: Container(
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(6),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(6),
+              topRight: Radius.circular(6),
+            ),
           ),
           child: Padding(
             padding: const EdgeInsets.only(
@@ -420,25 +419,17 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         child: Container(
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(6),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(6),
+              topRight: Radius.circular(6),
+            ),
           ),
           child: Padding(
-            padding: const EdgeInsets.only(
-              top: 12.0,
-              left: 16.0,
-              right: 16.0,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 12.0,
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Consumer(builder: editMessageBuilder),
-                _EditMessageContentWidget(
-                  roomId: widget.roomId,
-                  msg: editMessage,
-                ),
-              ],
-            ),
+            child: Consumer(builder: editMessageBuilder),
           ),
         ),
       ),
@@ -685,10 +676,21 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.controller.text = ref.read(
-        chatInputProvider.select((value) => value.message),
-      );
+    ref.listenManual(
+        chatInputProvider.select((state) => state.selectedMessageState),
+        (prev, next) {
+      if (next == SelectedMessageState.edit) {
+        widget.controller.text = ChatUtils.parseEditMessage(ref) ?? '';
+        // frame delay to keep focus connected with keyboard.
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          widget.chatFocus.requestFocus();
+        });
+      } else if (next == SelectedMessageState.replyTo) {
+        // frame delay to keep focus connected with keyboard..
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          widget.chatFocus.requestFocus();
+        });
+      }
     });
   }
 
@@ -733,26 +735,6 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(chatInputProvider, (prev, next) {
-      if (next.selectedMessageState == SelectedMessageState.edit &&
-          (prev?.selectedMessageState != next.selectedMessageState ||
-              next.message != prev?.message)) {
-        // a new message has been selected to be edited or switched from reply
-        // to edit, force refresh the inner text controller to reflect that
-        widget.controller.text = next.message;
-        // frame delay to keep focus connected with keyboard.
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          widget.chatFocus.requestFocus();
-        });
-      } else if (next.selectedMessageState == SelectedMessageState.replyTo &&
-          (next.selectedMessage != prev?.selectedMessage ||
-              prev?.selectedMessageState != next.selectedMessageState)) {
-        // frame delay to keep focus connected with keyboard..
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          widget.chatFocus.requestFocus();
-        });
-      }
-    });
     return CallbackShortcuts(
       bindings: <ShortcutActivator, VoidCallback>{
         const SingleActivator(LogicalKeyboardKey.enter): () {
@@ -769,6 +751,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         autocompleteTriggers: [
           AutocompleteTrigger(
             trigger: '@',
+            minimumRequiredCharacters: 1,
             optionsViewBuilder: (context, autocompleteQuery, ctrl) {
               return MentionProfileBuilder(
                 context: context,
@@ -806,7 +789,6 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         focusNode: chatFocus,
         enabled: ref.watch(_allowEdit(widget.roomId)),
         onChanged: (val) {
-          ref.read(chatInputProvider.notifier).updateMessage(val);
           if (widget.onTyping != null) {
             widget.onTyping!(val.isNotEmpty);
           }
@@ -891,11 +873,20 @@ class _ReplyContentWidget extends StatelessWidget {
       );
     } else if (msg is TextMessage) {
       final textMsg = msg as TextMessage;
+
       return Container(
         constraints:
             BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.2),
         padding: const EdgeInsets.all(12),
         child: Html(
+          pillBuilder: ({required identifier, onTap, required url}) =>
+              pillBuilder(
+            context: context,
+            roomId: roomId,
+            identifier: identifier,
+            uri: url,
+            onTap: () => {},
+          ),
           data: textMsg.text,
           defaultTextStyle: Theme.of(context)
               .textTheme
@@ -929,47 +920,5 @@ class _ReplyContentWidget extends StatelessWidget {
         ),
       );
     }
-  }
-}
-
-class _EditMessageContentWidget extends StatelessWidget {
-  final String roomId;
-  final Message msg;
-
-  const _EditMessageContentWidget({
-    required this.roomId,
-    required this.msg,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (msg is ImageMessage) {
-      final imageMsg = msg as ImageMessage;
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ImageMessageBuilder(
-          roomId: roomId,
-          message: imageMsg,
-          messageWidth: imageMsg.size.toInt(),
-          isReplyContent: true,
-        ),
-      );
-    } else if (msg is TextMessage) {
-      final textMsg = msg as TextMessage;
-      return Container(
-        constraints:
-            BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.2),
-        padding: const EdgeInsets.all(12),
-        child: Html(
-          data: textMsg.text,
-          defaultTextStyle: Theme.of(context)
-              .textTheme
-              .bodySmall!
-              .copyWith(overflow: TextOverflow.ellipsis),
-          maxLines: 3,
-        ),
-      );
-    }
-    return const SizedBox.shrink();
   }
 }
