@@ -2059,5 +2059,7 @@
   "eventEnded": "Ended",
   "happeningNow": "Happening Now",
   "myUpcomingEvents": "My Upcoming Events",
-  "live": "Live"
+  "live": "Live",
+  "changeDate": "Change Date",
+  "updatingDate": "Updating Date"
 }

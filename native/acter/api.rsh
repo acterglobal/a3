@@ -1434,6 +1434,8 @@ object AttachmentDraft {
 }
 
 object Attachment {
+    /// display name, either filename or given by the user, if found
+    fn name() -> Option<string>;
     /// Who send this attachment
     fn sender() -> string;
     /// When was this attachment acknowledged by the server
@@ -1446,9 +1448,12 @@ object Attachment {
     fn type_str() -> string;
     /// if this is a media, hand over the description
     fn msg_content() -> MsgContent;
+
+    /// if this is a link, this contains the URI/Link/URL
+    fn link() -> Option<string>;
+
     /// if this is a media, hand over the data
     /// if thumb size is given, media thumbnail is returned
-
     /// download media (image/audio/video/file/location) to specified path
     /// if thumb size is given, media thumbnail is returned
     /// if thumb size is not given, media file is returned
@@ -1480,8 +1485,11 @@ object AttachmentsManager {
     /// How many attachments does this item have
     fn attachments_count() -> u32;
 
-    /// create news slide for image msg
+    /// create attachment for given msg draft
     fn content_draft(base_draft: MsgDraft) -> Future<Result<AttachmentDraft>>;
+
+    /// create attachment for given link draft
+    fn link_draft(url: string, name: Option<string>) -> Future<Result<AttachmentDraft>>;
 
     // inform about the changes to this manager
     fn reload() -> Future<Result<AttachmentsManager>>;

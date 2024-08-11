@@ -14,6 +14,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::router');
 
 Future<String?> authGuardRedirect(
   BuildContext context,
@@ -32,10 +35,7 @@ Future<String?> authGuardRedirect(
       return null;
     }
   } catch (error, trace) {
-    // ignore: deprecated_member_use, avoid_print
-    print('Fatal error: $error');
-    // ignore: avoid_print
-    print('Stack: $trace');
+    _log.severe('AuthGuard Fatal error', error, trace);
     return state.namedLocation(
       Routes.fatalFail.name,
       queryParameters: {'error': error.toString(), 'trace': trace.toString()},
@@ -73,10 +73,7 @@ Future<String?> forwardRedirect(
       // ensure we have selected the right client
       ref.invalidate(clientProvider);
     } catch (error, trace) {
-      // ignore: deprecated_member_use, avoid_print
-      print('Client not found error: $error');
-      // ignore: avoid_print
-      print('Stack: $trace');
+      _log.severe('Client not found', error, trace);
       return null;
     }
     final roomId = state.uri.queryParameters['roomId'];
@@ -95,10 +92,7 @@ Future<String?> forwardRedirect(
       );
     }
   } catch (error, trace) {
-    // ignore: deprecated_member_use, avoid_print
-    print('Fatal error: $error');
-    // ignore: avoid_print
-    print('Stack: $trace');
+    _log.severe('Forward fail', error, trace);
     return state.namedLocation(
       Routes.fatalFail.name,
       queryParameters: {'error': error.toString(), 'trace': trace.toString()},
@@ -128,9 +122,35 @@ final GlobalKey<NavigatorState> searchTabNavKey = GlobalKey<NavigatorState>(
   debugLabel: 'searchTabNavKey',
 );
 
-List<RouteBase> makeRoutes(Ref ref) {
-  return [
-    ...makeGeneralRoutes(),
+final shellBranches = [
+  StatefulShellBranch(
+    navigatorKey: homeTabNavKey,
+    routes: homeShellRoutes,
+  ),
+  StatefulShellBranch(
+    navigatorKey: updateTabNavKey,
+    routes: updateShellRoutes,
+  ),
+  StatefulShellBranch(
+    navigatorKey: chatTabNavKey,
+    routes: chatShellRoutes,
+  ),
+  StatefulShellBranch(
+    navigatorKey: activitiesTabNavKey,
+    routes: activitiesShellRoutes,
+  ),
+  StatefulShellBranch(
+    navigatorKey: searchTabNavKey,
+    routes: searchShellRoutes,
+  ),
+];
+
+final goRouter = GoRouter(
+  errorBuilder: (context, state) => NotFoundPage(routerState: state),
+  navigatorKey: rootNavKey,
+  initialLocation: '/',
+  routes: [
+    ...generalRoutes,
     StatefulShellRoute.indexedStack(
       parentNavigatorKey: rootNavKey,
       builder: (
@@ -140,41 +160,7 @@ List<RouteBase> makeRoutes(Ref ref) {
       ) {
         return HomeShell(key: homeShellKey, navigationShell: navigationShell);
       },
-      branches: shellBranches(ref),
+      branches: shellBranches,
     ),
-  ];
-}
-
-List<StatefulShellBranch> shellBranches(Ref ref) {
-  return [
-    StatefulShellBranch(
-      navigatorKey: homeTabNavKey,
-      routes: makeHomeShellRoutes(),
-    ),
-    StatefulShellBranch(
-      navigatorKey: updateTabNavKey,
-      routes: makeUpdateShellRoutes(ref),
-    ),
-    StatefulShellBranch(
-      navigatorKey: chatTabNavKey,
-      routes: makeChatShellRoutes(ref),
-    ),
-    StatefulShellBranch(
-      navigatorKey: activitiesTabNavKey,
-      routes: makeActivitiesShellRoutes(ref),
-    ),
-    StatefulShellBranch(
-      navigatorKey: searchTabNavKey,
-      routes: makeSearchShellRoutes(ref),
-    ),
-  ];
-}
-
-GoRouter makeRouter(Ref ref) {
-  return GoRouter(
-    errorBuilder: (context, state) => NotFoundPage(routerState: state),
-    navigatorKey: rootNavKey,
-    initialLocation: '/',
-    routes: makeRoutes(ref),
-  );
-}
+  ],
+);

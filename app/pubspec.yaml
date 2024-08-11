@@ -61,6 +61,8 @@ dependencies:
   appflowy_editor: ^3.0.0
   acter_trigger_auto_complete:
     path: ../packages/acter_trigger_auto_complete
+  acter_notifify:
+    path: ../packages/acter_notifify
 
   # Code Generation
   flutter_localizations:
@@ -95,7 +97,6 @@ dependencies:
   jiffy: ^6.2.1
   screenshot: ^3.0.0
   http: ^1.0.0
-  shake: ^2.2.0
   crypto: ^3.0.2
   flutter_math_fork: ^0.7.2
   shared_preferences: ^2.2.0
@@ -105,12 +106,10 @@ dependencies:
       url: https://github.com/acterglobal/riverpod_infinite_scroll.git
   infinite_scroll_pagination: ^4.0.0
   convert: ^3.1.1
-  push: ^2.3.0
   logging: ^1.2.0
   args: ^2.4.2
   breadcrumbs: ^0.1.0
   device_info_plus: ^10.1.0
-  flutter_local_notifications: ^17.1.2
   app_settings: ^5.1.1
   video_player_media_kit: ^1.0.5
   media_kit_libs_android_video: any
@@ -130,6 +129,9 @@ dependencies:
   scrolls_to_top: ^2.1.1
   scrollable_positioned_list: ^0.3.8
   diffutil_dart: ^4.0.1
+
+  shake_detector:
+    path: ../packages/shake_detector
 
 dev_dependencies:
   flutter_test:

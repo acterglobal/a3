@@ -24,6 +24,13 @@ packages:
       relative: true
     source: path
     version: "0.0.1"
+  acter_notifify:
+    dependency: "direct main"
+    description:
+      path: "../packages/acter_notifify"
+      relative: true
+    source: path
+    version: "0.0.1"
   acter_trigger_auto_complete:
     dependency: "direct main"
     description:
@@ -472,6 +479,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.1"
+  dio:
+    dependency: transitive
+    description:
+      name: dio
+      sha256: e17f6b3097b8c51b72c74c9f071a605c47bcc8893839bd66732457a5ebe73714
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.5.0+1"
+  dio_web_adapter:
+    dependency: transitive
+    description:
+      name: dio_web_adapter
+      sha256: "36c5b2d79eb17cdae41e974b7a8284fec631651d2a6f39a8a2ff22327e90aeac"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   dotted_border:
     dependency: "direct main"
     description:
@@ -787,7 +810,7 @@ packages:
     source: hosted
     version: "4.0.0"
   flutter_local_notifications:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: flutter_local_notifications
       sha256: c500d5d9e7e553f06b61877ca6b9c8b92c570a4c8db371038702e8ce57f8a50f
@@ -1759,7 +1782,7 @@ packages:
     source: hosted
     version: "1.3.0"
   push:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: push
       sha256: "9fd6dce70b4755e525dd21dd753e4130c5c70bc155558207f39eb0a1aa2647c7"
@@ -1955,26 +1978,18 @@ packages:
     dependency: transitive
     description:
       name: sensors_plus
-      sha256: "362c8f4f001838b90dd5206b898bbad941bc0142479eab9a3415f0f79e622908"
+      sha256: "142212b10316640e9b14fe508e2a292707d5f264aed3b1d6dabe61b8cb15e839"
       url: "https://pub.dev"
     source: hosted
-    version: "1.4.1"
+    version: "6.0.0"
   sensors_plus_platform_interface:
     dependency: transitive
     description:
       name: sensors_plus_platform_interface
-      sha256: bc472d6cfd622acb4f020e726433ee31788b038056691ba433fec80e448a094f
+      sha256: b6cacfe243cbeb16403ba688cb0d7054ad4dccb946dcd1254bebdf345fe4b187
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.0"
-  sensors_plus_web:
-    dependency: transitive
-    description:
-      name: sensors_plus_web
-      sha256: fca8d7d9ab6233b2a059952666415508e252420be1ef54f092d07884da53ec5e
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.2"
+    version: "2.0.0"
   sentry:
     dependency: transitive
     description:
@@ -2007,14 +2022,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.2"
-  shake:
+  shake_detector:
     dependency: "direct main"
     description:
-      name: shake
-      sha256: "107546951c6b8f5e4c2dca66dfb3aa27dd1a853b4e9a26c9aea224b167045023"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.0"
+      path: "../packages/shake_detector"
+      relative: true
+    source: path
+    version: "0.1.2"
   share_plus:
     dependency: "direct main"
     description:
@@ -2587,7 +2601,15 @@ packages:
       sha256: "723b7f851e5724c55409bb3d5a32b203b3afe8587eaf5dafb93a5fed8ecda0d6"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.4"
+    version: "1.1.3"
+  windows_notification:
+    dependency: transitive
+    description:
+      name: windows_notification
+      sha256: "963482b068a9fc792832cf229f66953d4426ad4a46a99e03a26cd17313c3b2bf"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.0"
   xdg_directories:
     dependency: transitive
     description:
@@ -2621,5 +2643,5 @@ packages:
     source: hosted
     version: "1.0.3"
 sdks:
-  dart: ">=3.4.0 <4.0.0"
+  dart: ">=3.4.4 <4.0.0"
   flutter: ">=3.22.0"

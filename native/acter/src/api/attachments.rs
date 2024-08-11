@@ -1,5 +1,7 @@
 use acter_core::{
-    events::attachments::{AttachmentBuilder, AttachmentContent, FallbackAttachmentContent},
+    events::attachments::{
+        AttachmentBuilder, AttachmentContent, FallbackAttachmentContent, LinkAttachmentContent,
+    },
     models::{self, can_redact, ActerModel, AnyActerModel},
 };
 use anyhow::{bail, Context, Result};
@@ -59,6 +61,14 @@ impl Deref for Attachment {
 }
 
 impl Attachment {
+    pub fn name(&self) -> Option<String> {
+        self.inner.content.name()
+    }
+
+    pub fn link(&self) -> Option<String> {
+        self.inner.content.link()
+    }
+
     pub fn attachment_id_str(&self) -> String {
         self.inner.meta.event_id.to_string()
     }
@@ -524,6 +534,21 @@ impl AttachmentsManager {
                 }
             })
             .await??;
+
+        let mut builder = self.inner.draft_builder();
+        builder.content(content);
+        Ok(AttachmentDraft {
+            client: self.client.clone(),
+            room: self.room.clone(),
+            inner: builder,
+        })
+    }
+
+    pub async fn link_draft(&self, url: String, name: Option<String>) -> Result<AttachmentDraft> {
+        let room = self.room.clone();
+        let client = self.client.deref().clone();
+
+        let content = AttachmentContent::Link(LinkAttachmentContent { link: url, name });
 
         let mut builder = self.inner.draft_builder();
         builder.content(content);
