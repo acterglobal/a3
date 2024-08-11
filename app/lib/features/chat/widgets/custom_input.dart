@@ -323,7 +323,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
                       ),
                     ),
                   ),
-                  if (textController.text.trim().isNotEmpty)
+                  if (textController.text.isNotEmpty)
                     renderSendButton(context, roomId),
                 ],
               ),
@@ -602,6 +602,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
 
       final mentions = ref.read(chatInputProvider).mentions;
       String markdownText = textController.text;
+
       final userMentions = [];
       mentions.forEach((key, value) {
         userMentions.add(value);
@@ -875,24 +876,25 @@ class _ReplyContentWidget extends StatelessWidget {
       final textMsg = msg as TextMessage;
 
       return Container(
-        constraints:
-            BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.2),
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.2,
+        ),
         padding: const EdgeInsets.all(12),
-        child: Html(
-          pillBuilder: ({required identifier, onTap, required url}) =>
-              pillBuilder(
-            context: context,
-            roomId: roomId,
-            identifier: identifier,
-            uri: url,
-            onTap: () => {},
+        child: SingleChildScrollView(
+          child: Html(
+            renderNewlines: true,
+            shrinkToFit: true,
+            pillBuilder: ({required identifier, onTap, required url}) =>
+                pillBuilder(
+              context: context,
+              roomId: roomId,
+              identifier: identifier,
+              uri: url,
+              onTap: () => {},
+            ),
+            data: textMsg.text,
+            defaultTextStyle: Theme.of(context).textTheme.bodySmall!,
           ),
-          data: textMsg.text,
-          defaultTextStyle: Theme.of(context)
-              .textTheme
-              .bodySmall!
-              .copyWith(overflow: TextOverflow.ellipsis),
-          maxLines: 3,
         ),
       );
     } else if (msg is FileMessage) {

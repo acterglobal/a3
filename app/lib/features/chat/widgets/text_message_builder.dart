@@ -130,49 +130,48 @@ class _TextWidget extends ConsumerWidget {
     final emojiTextStyle = client.userId().toString() == message.author.id
         ? Theme.of(context).chatTheme.sentEmojiMessageTextStyle
         : Theme.of(context).chatTheme.receivedEmojiMessageTextStyle;
+
     return Column(
       children: [
-        ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: messageWidth.toDouble()),
-          child: enlargeEmoji
-              ? Text(
-                  message.text,
-                  style: emojiTextStyle.copyWith(
-                    overflow: isReply ? TextOverflow.ellipsis : null,
-                    fontFamily: emojiFont,
-                  ),
-                  maxLines: isReply ? 3 : null,
-                )
-              : Html(
-                  onLinkTap: (url) => ChatUtils.onLinkTap(url, context),
-                  backgroundColor: Colors.transparent,
-                  data: message.text,
-                  pillBuilder: ({
-                    required String identifier,
-                    required String url,
-                    OnPillTap? onTap,
-                  }) =>
-                      pillBuilder(
-                    context: context,
-                    roomId: roomId,
-                    identifier: identifier,
-                    uri: url,
-                    onTap: () => ChatUtils.onLinkTap(Uri.parse(url), context),
-                  ),
-                  shrinkToFit: true,
-                  defaultTextStyle:
-                      Theme.of(context).textTheme.bodySmall!.copyWith(
-                            overflow: isReply ? TextOverflow.ellipsis : null,
-                            color: isNotice
-                                ? Theme.of(context)
-                                    .colorScheme
-                                    .onSurface
-                                    .withOpacity(0.5)
-                                : null,
-                          ),
-                  maxLines: isReply ? 3 : null,
+        enlargeEmoji
+            ? Text(
+                message.text,
+                style: emojiTextStyle.copyWith(
+                  overflow: isReply ? TextOverflow.ellipsis : null,
+                  fontFamily: emojiFont,
                 ),
-        ),
+                maxLines: isReply ? 3 : null,
+              )
+            : Html(
+                onLinkTap: (url) => ChatUtils.onLinkTap(url, context),
+                backgroundColor: Colors.transparent,
+                renderNewlines: true,
+                shrinkToFit: true,
+                data: message.text,
+                pillBuilder: ({
+                  required String identifier,
+                  required String url,
+                  OnPillTap? onTap,
+                }) =>
+                    pillBuilder(
+                  context: context,
+                  roomId: roomId,
+                  identifier: identifier,
+                  uri: url,
+                  onTap: () => ChatUtils.onLinkTap(Uri.parse(url), context),
+                ),
+                defaultTextStyle:
+                    Theme.of(context).textTheme.bodySmall!.copyWith(
+                          overflow: isReply ? TextOverflow.ellipsis : null,
+                          color: isNotice
+                              ? Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withOpacity(0.5)
+                              : null,
+                        ),
+                maxLines: isReply ? 3 : null,
+              ),
         Visibility(
           visible: wasEdited,
           child: Text(
