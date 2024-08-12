@@ -1,13 +1,7 @@
-enum PinAttachmentType {
-  link,
-  image,
-  audio,
-  video,
-  file,
-}
+import 'package:acter/common/models/types.dart';
 
 class PinAttachment {
-  final PinAttachmentType pinAttachmentType;
+  final AttachmentType attachmentType;
   final String title;
   final String? link;
   final String? fileExtension;
@@ -15,7 +9,7 @@ class PinAttachment {
   final String? size;
 
   PinAttachment({
-    required this.pinAttachmentType,
+    required this.attachmentType,
     required this.title,
     this.link,
     this.fileExtension,
@@ -24,7 +18,7 @@ class PinAttachment {
   });
 
   PinAttachment copyWith({
-    PinAttachmentType? pinAttachmentType,
+    AttachmentType? attachmentType,
     String? title,
     String? link,
     String? fileExtension,
@@ -32,7 +26,7 @@ class PinAttachment {
     String? size,
   }) =>
       PinAttachment(
-        pinAttachmentType: pinAttachmentType ?? this.pinAttachmentType,
+        attachmentType: attachmentType ?? this.attachmentType,
         title: title ?? this.title,
         link: link ?? this.link,
         fileExtension: fileExtension ?? this.fileExtension,

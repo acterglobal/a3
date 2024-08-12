@@ -1,24 +1,15 @@
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:acter/common/actions/redact_content.dart';
-import 'package:acter/common/models/types.dart';
+import 'package:acter/features/attachments/actions/handle_selected_attachments.dart';
 import 'package:acter/features/attachments/actions/select_attachment.dart';
 import 'package:acter/features/attachments/providers/attachment_providers.dart';
 import 'package:acter/features/attachments/widgets/attachment_item.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Attachment, AttachmentDraft, AttachmentsManager;
+    show Attachment, AttachmentsManager;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logging/logging.dart';
-import 'package:mime/mime.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-
-final _log = Logger('a3::common::attachments');
 
 class AttachmentSectionWidget extends ConsumerWidget {
   static const attachmentsKey = Key('attachments');
@@ -171,8 +162,13 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
       key: AttachmentSectionWidget.addAttachmentBtnKey,
       onTap: () => selectAttachment(
         context: context,
-        onSelected: (files, selectedType) =>
-            handleAttachmentSelected(context, ref, files, selectedType),
+        onSelected: (files, selectedType) => handleAttachmentSelected(
+          context: context,
+          ref: ref,
+          manager: attachmentManager,
+          attachments: files,
+          attachmentType: selectedType,
+        ),
       ),
       child: Container(
         height: 100,
@@ -193,75 +189,5 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
         ),
       ),
     );
-  }
-
-  // if generic attachment, send via manager
-  Future<void> handleAttachmentSelected(
-    BuildContext context,
-    WidgetRef ref,
-    List<File> attachments,
-    AttachmentType attachmentType,
-  ) async {
-    /// converts user selected media to attachment draft and sends state list.
-    /// only supports image/video/audio/file.
-    final lang = L10n.of(context);
-    EasyLoading.show(status: lang.sendingAttachment);
-    final client = ref.read(alwaysClientProvider);
-    final manager = attachmentManager;
-    List<AttachmentDraft> drafts = [];
-    try {
-      for (var selected in attachments) {
-        final file = selected;
-        final mimeType = lookupMimeType(file.path);
-        if (mimeType == null) throw lang.failedToDetectMimeType;
-        if (attachmentType == AttachmentType.camera ||
-            attachmentType == AttachmentType.image) {
-          Uint8List bytes = await file.readAsBytes();
-          final decodedImage = await decodeImageFromList(bytes);
-          final imageDraft = client
-              .imageDraft(file.path, mimeType)
-              .size(bytes.length)
-              .width(decodedImage.width)
-              .height(decodedImage.height);
-          final attachmentDraft = await manager.contentDraft(imageDraft);
-          drafts.add(attachmentDraft);
-        } else if (attachmentType == AttachmentType.audio) {
-          Uint8List bytes = await file.readAsBytes();
-          final audioDraft =
-              client.audioDraft(file.path, mimeType).size(bytes.length);
-          final attachmentDraft = await manager.contentDraft(audioDraft);
-          drafts.add(attachmentDraft);
-        } else if (attachmentType == AttachmentType.video) {
-          Uint8List bytes = await file.readAsBytes();
-          final videoDraft =
-              client.videoDraft(file.path, mimeType).size(bytes.length);
-          final attachmentDraft = await manager.contentDraft(videoDraft);
-          drafts.add(attachmentDraft);
-        } else {
-          String fileName = file.path.split('/').last;
-          final fileDraft = client
-              .fileDraft(file.path, mimeType)
-              .filename(fileName)
-              .size(file.lengthSync());
-          final attachmentDraft = await manager.contentDraft(fileDraft);
-          drafts.add(attachmentDraft);
-        }
-      }
-      for (var draft in drafts) {
-        final res = await draft.send();
-        _log.info('attachment sent: $res');
-      }
-      EasyLoading.dismiss();
-    } catch (e) {
-      _log.severe('Error sending attachments', e);
-      if (!context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-      EasyLoading.showError(
-        lang.errorSendingAttachment(e),
-        duration: const Duration(seconds: 3),
-      );
-    }
   }
 }

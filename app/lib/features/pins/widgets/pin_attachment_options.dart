@@ -1,13 +1,12 @@
 import 'dart:async';
 
-import 'package:acter/common/widgets/edit_html_description_sheet.dart';
-import 'package:acter/features/pins/Utils/pins_utils.dart';
-import 'package:acter/features/pins/models/create_pin_state/pin_attachment_model.dart';
+import 'package:acter/common/models/types.dart';
+import 'package:acter/features/pins/actions/select_pin_attachments.dart';
+import 'package:acter/features/pins/actions/set_pin_description.dart';
+import 'package:acter/features/pins/actions/set_pin_links.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
-import 'package:acter/features/pins/widgets/pin_link_bottom_sheet.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class PinAttachmentOptions extends ConsumerWidget {
@@ -32,23 +31,14 @@ class PinAttachmentOptions extends ConsumerWidget {
               title: 'Text',
               iconData: Atlas.text,
               onTap: () {
-                showEditHtmlDescriptionBottomSheet(
-                  bottomSheetTitle: L10n.of(context).add,
+                showEditPinDescriptionBottomSheet(
                   context: context,
-                  descriptionHtmlValue:
+                  ref: ref,
+                  isBottomSheetOpen: isBottomSheetOpen,
+                  htmlBodyDescription:
                       pinState.pinDescriptionParams?.htmlBodyDescription,
-                  descriptionMarkdownValue:
+                  plainDescription:
                       pinState.pinDescriptionParams?.plainDescription,
-                  onSave: (htmlBodyDescription, plainDescription) {
-                    if (isBottomSheetOpen) Navigator.pop(context);
-                    Navigator.pop(context);
-                    ref
-                        .read(createPinStateProvider.notifier)
-                        .setDescriptionValue(
-                          htmlBodyDescription: htmlBodyDescription,
-                          plainDescription: plainDescription,
-                        );
-                  },
                 );
               },
             ),
@@ -56,23 +46,11 @@ class PinAttachmentOptions extends ConsumerWidget {
               context: context,
               title: 'Link',
               iconData: Atlas.link,
-              onTap: () {
-                showPinLinkBottomSheet(
-                  context: context,
-                  bottomSheetTitle: L10n.of(context).addLink,
-                  onSave: (title, link) {
-                    if (isBottomSheetOpen) Navigator.pop(context);
-                    Navigator.pop(context);
-                    ref.read(createPinStateProvider.notifier).addAttachment(
-                          PinAttachment(
-                            pinAttachmentType: PinAttachmentType.link,
-                            title: title,
-                            link: link,
-                          ),
-                        );
-                  },
-                );
-              },
+              onTap: () => showAddPinLinkBottomSheet(
+                context: context,
+                ref: ref,
+                isBottomSheetOpen: isBottomSheetOpen,
+              ),
             ),
             _pinAttachmentOptionItem(
               context: context,
@@ -81,7 +59,7 @@ class PinAttachmentOptions extends ConsumerWidget {
               onTap: () => selectAttachmentOnTap(
                 ref,
                 context,
-                PinAttachmentType.file,
+                AttachmentType.file,
               ),
             ),
           ],
@@ -96,7 +74,7 @@ class PinAttachmentOptions extends ConsumerWidget {
               onTap: () => selectAttachmentOnTap(
                 ref,
                 context,
-                PinAttachmentType.image,
+                AttachmentType.image,
               ),
             ),
             _pinAttachmentOptionItem(
@@ -106,7 +84,7 @@ class PinAttachmentOptions extends ConsumerWidget {
               onTap: () => selectAttachmentOnTap(
                 ref,
                 context,
-                PinAttachmentType.video,
+                AttachmentType.video,
               ),
             ),
             _pinAttachmentOptionItem(
@@ -116,7 +94,7 @@ class PinAttachmentOptions extends ConsumerWidget {
               onTap: () => selectAttachmentOnTap(
                 ref,
                 context,
-                PinAttachmentType.audio,
+                AttachmentType.audio,
               ),
             ),
           ],
@@ -128,9 +106,9 @@ class PinAttachmentOptions extends ConsumerWidget {
   Future<void> selectAttachmentOnTap(
     WidgetRef ref,
     BuildContext context,
-    PinAttachmentType pinAttachmentType,
+    AttachmentType attachmentType,
   ) async {
-    await selectAttachment(ref, pinAttachmentType);
+    await selectAttachment(ref, attachmentType);
     if (isBottomSheetOpen && context.mounted) {
       Navigator.pop(context);
     }

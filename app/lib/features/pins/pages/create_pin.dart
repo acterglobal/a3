@@ -1,21 +1,29 @@
+import 'dart:io';
+
+import 'package:acter/common/models/types.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/widgets/edit_html_description_sheet.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
-import 'package:acter/features/pins/Utils/pins_utils.dart';
+import 'package:acter/features/attachments/actions/handle_selected_attachments.dart';
+import 'package:acter/features/pins/actions/select_pin_attachments.dart';
+import 'package:acter/features/pins/actions/set_pin_description.dart';
+import 'package:acter/features/pins/actions/set_pin_links.dart';
 import 'package:acter/features/pins/models/create_pin_state/create_pin_state.dart';
 import 'package:acter/features/pins/models/create_pin_state/pin_attachment_model.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/pin_attachment_options.dart';
-import 'package:acter/features/pins/widgets/pin_link_bottom_sheet.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:go_router/go_router.dart';
 
 const createPinPageKey = Key('create-pin-page');
 const titleFieldKey = Key('create-pin-title-field');
@@ -167,30 +175,36 @@ class _CreatePinConsumerState extends ConsumerState<CreatePin> {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 5),
       child: ListTile(
-        leading: attachmentLeadingIcon(attachmentData.pinAttachmentType),
+        leading: attachmentLeadingIcon(attachmentData.attachmentType),
         onTap: () => attachmentItemOnTap(attachmentData, index),
-        title: Text(
-          attachmentData.title,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-        ),
-        subtitle: Row(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (attachmentData.pinAttachmentType == PinAttachmentType.link)
-              Text(attachmentData.link ?? '')
-            else ...[
-              Text(attachmentData.size ?? ''),
-              const SizedBox(width: 10),
-              const Text('.'),
-              const SizedBox(width: 10),
+            if (attachmentData.title.isNotEmpty)
               Text(
-                documentTypeFromFileExtension(
-                  attachmentData.fileExtension ?? '',
-                ),
+                attachmentData.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
-            ],
+            if (attachmentData.attachmentType == AttachmentType.link)
+              Text(attachmentData.link ?? ''),
           ],
         ),
+        subtitle: attachmentData.attachmentType == AttachmentType.link
+            ? null
+            : Row(
+                children: [
+                  Text(attachmentData.size ?? ''),
+                  const SizedBox(width: 10),
+                  const Text('.'),
+                  const SizedBox(width: 10),
+                  Text(
+                    documentTypeFromFileExtension(
+                      attachmentData.fileExtension ?? '',
+                    ),
+                  ),
+                ],
+              ),
         trailing: IconButton(
           onPressed: () =>
               ref.read(createPinStateProvider.notifier).removeAttachment(index),
@@ -204,21 +218,12 @@ class _CreatePinConsumerState extends ConsumerState<CreatePin> {
   }
 
   void attachmentItemOnTap(PinAttachment attachmentData, int index) {
-    if (attachmentData.pinAttachmentType == PinAttachmentType.link) {
-      showPinLinkBottomSheet(
+    if (attachmentData.attachmentType == AttachmentType.link) {
+      showEditPinLinkBottomSheet(
         context: context,
-        pinTitle: attachmentData.title,
-        pinLink: attachmentData.link,
-        onSave: (title, link) {
-          Navigator.pop(context);
-          final pinAttachment = attachmentData.copyWith(
-            title: title,
-            link: link,
-          );
-          ref
-              .read(createPinStateProvider.notifier)
-              .changeAttachmentTitle(pinAttachment, index);
-        },
+        ref: ref,
+        attachmentData: attachmentData,
+        index: index,
       );
     } else {
       showEditTitleBottomSheet(
@@ -235,17 +240,17 @@ class _CreatePinConsumerState extends ConsumerState<CreatePin> {
     }
   }
 
-  Widget attachmentLeadingIcon(PinAttachmentType pinAttachmentType) {
+  Widget attachmentLeadingIcon(AttachmentType pinAttachmentType) {
     switch (pinAttachmentType) {
-      case PinAttachmentType.link:
+      case AttachmentType.link:
         return const Icon(Atlas.link);
-      case PinAttachmentType.image:
+      case AttachmentType.image:
         return const Icon(Atlas.image_gallery);
-      case PinAttachmentType.video:
+      case AttachmentType.video:
         return const Icon(Atlas.video_camera);
-      case PinAttachmentType.audio:
+      case AttachmentType.audio:
         return const Icon(Atlas.audio_headphones);
-      case PinAttachmentType.file:
+      case AttachmentType.file:
         return const Icon(Atlas.file);
       default:
         return const SizedBox.shrink();
@@ -266,19 +271,13 @@ class _CreatePinConsumerState extends ConsumerState<CreatePin> {
         SelectionArea(
           child: GestureDetector(
             onTap: () {
-              showEditHtmlDescriptionBottomSheet(
+              showEditPinDescriptionBottomSheet(
                 context: context,
-                descriptionHtmlValue:
-                    pinState.pinDescriptionParams!.htmlBodyDescription,
-                descriptionMarkdownValue:
-                    pinState.pinDescriptionParams!.plainDescription,
-                onSave: (htmlBodyDescription, plainDescription) async {
-                  Navigator.pop(context);
-                  ref.read(createPinStateProvider.notifier).setDescriptionValue(
-                        htmlBodyDescription: htmlBodyDescription,
-                        plainDescription: plainDescription,
-                      );
-                },
+                ref: ref,
+                htmlBodyDescription:
+                    pinState.pinDescriptionParams?.htmlBodyDescription,
+                plainDescription:
+                    pinState.pinDescriptionParams?.plainDescription,
               );
             },
             child: pinState.pinDescriptionParams!.htmlBodyDescription.isNotEmpty
@@ -300,8 +299,74 @@ class _CreatePinConsumerState extends ConsumerState<CreatePin> {
   Widget _buildCreateButton() {
     return ActerPrimaryActionButton(
       key: submitBtn,
-      onPressed: () {},
+      onPressed: _createPin,
       child: Text(L10n.of(context).create),
     );
+  }
+
+  Future<void> _createPin() async {
+    if (!_formKey.currentState!.validate()) return;
+    EasyLoading.show(status: L10n.of(context).creatingPin);
+    try {
+      final spaceId = ref.read(selectedSpaceIdProvider);
+      final space = await ref.read(spaceProvider(spaceId!).future);
+      final pinDraft = space.pinDraft();
+      final pinState = ref.read(createPinStateProvider);
+
+      // Pin Title
+      if (pinState.pinTitle != null && pinState.pinTitle!.isNotEmpty) {
+        pinDraft.title(pinState.pinTitle!);
+      }
+
+      // Pin Description
+      if (pinState.pinDescriptionParams != null) {
+        if (pinState.pinDescriptionParams!.htmlBodyDescription.isNotEmpty) {
+          pinDraft.contentHtml(
+            pinState.pinDescriptionParams!.plainDescription,
+            pinState.pinDescriptionParams!.htmlBodyDescription,
+          );
+        } else {
+          pinDraft.contentMarkdown(
+            pinState.pinDescriptionParams!.plainDescription,
+          );
+        }
+      }
+      final pinId = await pinDraft.send();
+
+      // Add Attachments
+      await addAttachment(pinId, pinState);
+
+      EasyLoading.dismiss();
+      if (!mounted) return;
+      EasyLoading.showToast(L10n.of(context).pinCreatedSuccessfully);
+      context.replaceNamed(
+        Routes.pin.name,
+        pathParameters: {'pinId': pinId.toString()},
+      );
+    } catch (e) {
+      EasyLoading.dismiss();
+      if (!mounted) return;
+      EasyLoading.showError(
+        L10n.of(context).errorCreatingPin(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
+  }
+
+  Future<void> addAttachment(EventId pinId, CreatePinState pinState) async {
+    final acterPin = await ref.read(pinProvider(pinId.toString()).future);
+    final manager = await acterPin.attachments();
+    if (!mounted) return;
+    for (final attachment in pinState.pinAttachmentList) {
+      await handleAttachmentSelected(
+        context: context,
+        ref: ref,
+        manager: manager,
+        attachments: attachment.path != null ? [File(attachment.path!)] : [],
+        title: attachment.title,
+        link: attachment.link,
+        attachmentType: attachment.attachmentType,
+      );
+    }
   }
 }

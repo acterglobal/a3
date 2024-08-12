@@ -95,8 +95,9 @@ class _PinLinkBottomSheet extends ConsumerState<PinLinkBottomSheet> {
 
                       // no changes to submit
                       if (_titleController.text.trim() ==
-                              widget.pinTitle?.trim() ||
-                          _linkController.text.trim() == widget.pinLink?.trim()) {
+                              widget.pinTitle?.trim() &&
+                          _linkController.text.trim() ==
+                              widget.pinLink?.trim()) {
                         Navigator.pop(context);
                         return;
                       }
@@ -132,9 +133,6 @@ class _PinLinkBottomSheet extends ConsumerState<PinLinkBottomSheet> {
           autofocus: true,
           minLines: 1,
           maxLines: 1,
-          validator: (value) => (value != null && value.trim().isNotEmpty)
-              ? null
-              : L10n.of(context).pleaseEnterATitle,
         ),
       ],
     );
