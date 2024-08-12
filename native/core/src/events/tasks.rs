@@ -12,7 +12,7 @@ use tracing::trace;
 /// modeled after [JMAP Tasks](https://jmap.io/spec-tasks.html), extensions to
 /// [ietf rfc8984](https://www.rfc-editor.org/rfc/rfc8984.html#name-task).
 ///
-use super::{BelongsTo, Color, Date, Update, UtcDateTime};
+use super::{BelongsTo, Date, Display, Update, UtcDateTime};
 use crate::{util::deserialize_some, Result as ActerResult};
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
@@ -65,7 +65,7 @@ pub struct TaskListEventContent {
 
     #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub color: Option<Color>,
+    pub display: Option<Display>,
 
     #[builder(default)]
     #[serde(default)]
@@ -126,7 +126,7 @@ pub struct TaskListUpdateEventContent {
         skip_serializing_if = "Option::is_none",
         deserialize_with = "deserialize_some"
     )]
-    pub color: Option<Option<Color>>,
+    pub display: Option<Option<Display>>,
 
     #[builder(default)]
     #[serde(
@@ -177,8 +177,8 @@ impl TaskListUpdateEventContent {
             task_list.description.clone_from(description);
             updated = true;
         }
-        if let Some(color) = &self.color {
-            task_list.color = *color;
+        if let Some(display) = &self.display {
+            task_list.display.clone_from(display);
             updated = true;
         }
         if let Some(sort_order) = &self.sort_order {
@@ -261,10 +261,10 @@ pub struct TaskEventContent {
     #[serde(default, skip_serializing_if = "Priority::is_undefinied")]
     pub priority: Priority,
 
-    /// Color this task
+    /// Display this task
     #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub color: Option<Color>,
+    pub display: Option<Display>,
 
     // FIXME: manage through `label` as in [MSC2326](https://github.com/matrix-org/matrix-doc/pull/2326)
     #[builder(setter(into), default)]
@@ -373,14 +373,14 @@ pub struct TaskUpdateEventContent {
     )]
     pub priority: Option<Priority>,
 
-    /// Color this task
+    /// Display this task
     #[builder(default)]
     #[serde(
         default,
         skip_serializing_if = "Option::is_none",
         deserialize_with = "deserialize_some"
     )]
-    pub color: Option<Option<Color>>,
+    pub display: Option<Option<Display>>,
 
     // FIXME: manage through `label` as in [MSC2326](https://github.com/matrix-org/matrix-doc/pull/2326)
     #[builder(default)]
@@ -435,8 +435,8 @@ impl TaskUpdateEventContent {
             task.priority = priority.clone();
             updated = true;
         }
-        if let Some(color) = &self.color {
-            task.color = *color;
+        if let Some(display) = &self.display {
+            task.display.clone_from(display);
             updated = true;
         }
         if let Some(keywords) = &self.keywords {

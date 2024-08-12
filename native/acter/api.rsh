@@ -57,6 +57,9 @@ fn new_thumb_size(width: u64, height: u64) -> Result<ThumbnailSize>;
 /// create a colorize builder
 fn new_colorize_builder(color: Option<u32>, background: Option<u32>) -> Result<ColorizeBuilder>;
 
+/// create a display builder
+fn new_display_builder() -> DisplayBuilder;
+
 /// create a task ref builder
 /// target_id: event id of target
 /// task_list: event id of task list
@@ -482,6 +485,10 @@ object PinDraft {
     fn url(text: string);
     fn unset_url();
 
+    /// set the display for this pin
+    fn display(display: Display);
+    fn unset_display();
+
     /// fire this pin over - the event_id is the confirmation from the server.
     fn send() -> Future<Result<EventId>>;
 }
@@ -501,7 +508,7 @@ object ActerPin {
     /// get the link content
     fn url() -> Option<string>;
     /// get the link color settings
-    fn color() -> Option<u32>;
+    fn display() -> Option<Display>;
     /// The room this Pin belongs to
     //fn team() -> Room;
 
@@ -549,6 +556,11 @@ object PinUpdateBuilder {
     fn url(text: string);
     fn unset_url();
     fn unset_url_update();
+
+    /// set the display for this pin
+    fn display(display: Display);
+    fn unset_display();
+    fn unset_display_update();
 
     /// fire this update over - the event_id is the confirmation from the server.
     fn send() -> Future<Result<EventId>>;
@@ -1558,8 +1570,8 @@ object Task {
     /// When this was started
     fn utc_start_rfc3339() -> Option<string>;
 
-    /// Has this been colored in?
-    fn color() -> Option<u32>;
+    /// What display options are given?
+    fn display() -> Option<Display>;
 
     /// is this task already done?
     fn is_done() -> bool;
@@ -1619,10 +1631,10 @@ object TaskUpdateBuilder {
     fn sort_order(sort_order: u32);
     fn unset_sort_order_update();
 
-    /// set the color for this task list
-    fn color(color: u32);
-    fn unset_color();
-    fn unset_color_update();
+    /// set the display of the update
+    fn display(display: Display);
+    fn unset_display();
+    fn unset_display_update();
 
     /// set the due day for this task
     fn due_date(year: i32, month: u32, day: u32);
@@ -1683,9 +1695,9 @@ object TaskDraft {
     /// set the sort order for this task
     fn sort_order(sort_order: u32);
 
-    /// set the color for this task
-    fn color(color: u32);
-    fn unset_color();
+    /// set the disply options for this task
+    fn display(display: Display);
+    fn unset_display();
 
     /// set the due day for this task
     fn due_date(year: i32, month: u32, day: u32);
@@ -1734,8 +1746,8 @@ object TaskList {
     /// order in the list
     fn sort_order() -> u32;
 
-    /// Has this been colored in?
-    fn color() -> Option<u32>;
+    /// What display options are given?
+    fn display() -> Option<Display>;
 
     /// Does this have any special time zone
     fn time_zone() -> Option<string>;
@@ -1795,9 +1807,9 @@ object TaskListDraft {
     /// set the sort order for this task list
     fn sort_order(sort_order: u32);
 
-    /// set the color for this task list
-    fn color(color: u32);
-    fn unset_color();
+    /// set the display for this task list
+    fn display(display: Display);
+    fn unset_display();
 
     /// set the keywords for this task list
     fn keywords(keywords: Vec<string>);
@@ -1826,10 +1838,10 @@ object TaskListUpdateBuilder {
     /// set the sort order for this task list
     fn sort_order(sort_order: u32);
 
-    /// set the color for this task list
-    fn color(color: u32);
-    fn unset_color();
-    fn unset_color_update();
+    /// set the display for this task list
+    fn display(display: Display);
+    fn unset_display();
+    fn unset_display_update();
 
     /// set the keywords for this task list
     fn keywords(keywords: Vec<string>);
@@ -1995,8 +2007,7 @@ object Category {
     fn id() -> string;
     fn title() -> string;
     fn entries() -> string;
-    fn icon_type_str() -> Option<string>;
-    fn icon_str() -> Option<string>;
+    fn display() -> Option<Display>;
     fn update_builder() -> CategoryBuilder;
 }
 
@@ -2004,8 +2015,8 @@ object CategoryBuilder {
     fn title(title: string);
     fn clear_entries();
     fn add_entry(entry: string);
-    fn unset_icon();
-    fn icon(type: string, key: string);
+    fn display(display: Display);
+    fn unset_display();
     fn build() -> Result<Category>;
 }
 
@@ -2020,6 +2031,32 @@ object CategoriesBuilder {
     fn add(cat: Category);
     fn clear();
 }
+
+
+//  ########  ####  ######  ########  ##          ###    ##    ## 
+//  ##     ##  ##  ##    ## ##     ## ##         ## ##    ##  ##  
+//  ##     ##  ##  ##       ##     ## ##        ##   ##    ####   
+//  ##     ##  ##   ######  ########  ##       ##     ##    ##    
+//  ##     ##  ##        ## ##        ##       #########    ##    
+//  ##     ##  ##  ##    ## ##        ##       ##     ##    ##    
+//  ########  ####  ######  ##        ######## ##     ##    ##    
+
+
+object Display {
+    fn icon_type_str() -> Option<string>;
+    fn icon_str() -> Option<string>;
+    fn color() -> Option<u32>;
+    fn update_builder() -> DisplayBuilder;
+}
+
+object DisplayBuilder {
+    fn icon(type: string, value: string);
+    fn unset_icon();
+    fn color(color: u32);
+    fn unset_color();
+    fn build() -> Result<Display>;
+}
+
 
 //   ######  ########     ###     ######  ######## 
 //  ##    ## ##     ##   ## ##   ##    ## ##       

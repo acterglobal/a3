@@ -1738,6 +1738,17 @@ class Api {
     return tmp9;
   }
 
+  /// create a display builder
+  DisplayBuilder newDisplayBuilder() {
+    final tmp0 = _newDisplayBuilder();
+    final tmp2 = tmp0;
+    final ffi.Pointer<ffi.Void> tmp2_0 = ffi.Pointer.fromAddress(tmp2);
+    final tmp2_1 = _Box(this, tmp2_0, "drop_box_DisplayBuilder");
+    tmp2_1._finalizer = this._registerFinalizer(tmp2_1);
+    final tmp1 = DisplayBuilder._(this, tmp2_1);
+    return tmp1;
+  }
+
   /// create a task ref builder
   /// target_id: event id of target
   /// task_list: event id of task list
@@ -16306,6 +16317,12 @@ class Api {
         int,
         int,
       )>();
+  late final _newDisplayBuilderPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__new_display_builder");
+
+  late final _newDisplayBuilder =
+      _newDisplayBuilderPtr.asFunction<int Function()>();
   late final _newTaskRefBuilderPtr = _lookup<
       ffi.NativeFunction<
           _NewTaskRefBuilderReturn Function(
@@ -17630,6 +17647,28 @@ class Api {
       void Function(
         int,
       )>();
+  late final _pinDraftDisplayPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+          )>>("__PinDraft_display");
+
+  late final _pinDraftDisplay = _pinDraftDisplayPtr.asFunction<
+      void Function(
+        int,
+        int,
+      )>();
+  late final _pinDraftUnsetDisplayPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+          )>>("__PinDraft_unset_display");
+
+  late final _pinDraftUnsetDisplay = _pinDraftUnsetDisplayPtr.asFunction<
+      void Function(
+        int,
+      )>();
   late final _pinDraftSendPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -17702,14 +17741,14 @@ class Api {
       _ActerPinUrlReturn Function(
         int,
       )>();
-  late final _acterPinColorPtr = _lookup<
+  late final _acterPinDisplayPtr = _lookup<
       ffi.NativeFunction<
-          _ActerPinColorReturn Function(
+          _ActerPinDisplayReturn Function(
             ffi.IntPtr,
-          )>>("__ActerPin_color");
+          )>>("__ActerPin_display");
 
-  late final _acterPinColor = _acterPinColorPtr.asFunction<
-      _ActerPinColorReturn Function(
+  late final _acterPinDisplay = _acterPinDisplayPtr.asFunction<
+      _ActerPinDisplayReturn Function(
         int,
       )>();
   late final _acterPinEventIdStrPtr = _lookup<
@@ -17943,6 +17982,40 @@ class Api {
 
   late final _pinUpdateBuilderUnsetUrlUpdate =
       _pinUpdateBuilderUnsetUrlUpdatePtr.asFunction<
+          void Function(
+            int,
+          )>();
+  late final _pinUpdateBuilderDisplayPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+          )>>("__PinUpdateBuilder_display");
+
+  late final _pinUpdateBuilderDisplay = _pinUpdateBuilderDisplayPtr.asFunction<
+      void Function(
+        int,
+        int,
+      )>();
+  late final _pinUpdateBuilderUnsetDisplayPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+          )>>("__PinUpdateBuilder_unset_display");
+
+  late final _pinUpdateBuilderUnsetDisplay =
+      _pinUpdateBuilderUnsetDisplayPtr.asFunction<
+          void Function(
+            int,
+          )>();
+  late final _pinUpdateBuilderUnsetDisplayUpdatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+          )>>("__PinUpdateBuilder_unset_display_update");
+
+  late final _pinUpdateBuilderUnsetDisplayUpdate =
+      _pinUpdateBuilderUnsetDisplayUpdatePtr.asFunction<
           void Function(
             int,
           )>();
@@ -21483,14 +21556,14 @@ class Api {
       _TaskUtcStartRfc3339Return Function(
         int,
       )>();
-  late final _taskColorPtr = _lookup<
+  late final _taskDisplayPtr = _lookup<
       ffi.NativeFunction<
-          _TaskColorReturn Function(
+          _TaskDisplayReturn Function(
             ffi.IntPtr,
-          )>>("__Task_color");
+          )>>("__Task_display");
 
-  late final _taskColor = _taskColorPtr.asFunction<
-      _TaskColorReturn Function(
+  late final _taskDisplay = _taskDisplayPtr.asFunction<
+      _TaskDisplayReturn Function(
         int,
       )>();
   late final _taskIsDonePtr = _lookup<
@@ -21736,37 +21809,38 @@ class Api {
           void Function(
             int,
           )>();
-  late final _taskUpdateBuilderColorPtr = _lookup<
+  late final _taskUpdateBuilderDisplayPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
             ffi.IntPtr,
-            ffi.Uint32,
-          )>>("__TaskUpdateBuilder_color");
+            ffi.IntPtr,
+          )>>("__TaskUpdateBuilder_display");
 
-  late final _taskUpdateBuilderColor = _taskUpdateBuilderColorPtr.asFunction<
-      void Function(
-        int,
-        int,
-      )>();
-  late final _taskUpdateBuilderUnsetColorPtr = _lookup<
+  late final _taskUpdateBuilderDisplay =
+      _taskUpdateBuilderDisplayPtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
+  late final _taskUpdateBuilderUnsetDisplayPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
             ffi.IntPtr,
-          )>>("__TaskUpdateBuilder_unset_color");
+          )>>("__TaskUpdateBuilder_unset_display");
 
-  late final _taskUpdateBuilderUnsetColor =
-      _taskUpdateBuilderUnsetColorPtr.asFunction<
+  late final _taskUpdateBuilderUnsetDisplay =
+      _taskUpdateBuilderUnsetDisplayPtr.asFunction<
           void Function(
             int,
           )>();
-  late final _taskUpdateBuilderUnsetColorUpdatePtr = _lookup<
+  late final _taskUpdateBuilderUnsetDisplayUpdatePtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
             ffi.IntPtr,
-          )>>("__TaskUpdateBuilder_unset_color_update");
+          )>>("__TaskUpdateBuilder_unset_display_update");
 
-  late final _taskUpdateBuilderUnsetColorUpdate =
-      _taskUpdateBuilderUnsetColorUpdatePtr.asFunction<
+  late final _taskUpdateBuilderUnsetDisplayUpdate =
+      _taskUpdateBuilderUnsetDisplayUpdatePtr.asFunction<
           void Function(
             int,
           )>();
@@ -22139,25 +22213,25 @@ class Api {
         int,
         int,
       )>();
-  late final _taskDraftColorPtr = _lookup<
+  late final _taskDraftDisplayPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
             ffi.IntPtr,
-            ffi.Uint32,
-          )>>("__TaskDraft_color");
+            ffi.IntPtr,
+          )>>("__TaskDraft_display");
 
-  late final _taskDraftColor = _taskDraftColorPtr.asFunction<
+  late final _taskDraftDisplay = _taskDraftDisplayPtr.asFunction<
       void Function(
         int,
         int,
       )>();
-  late final _taskDraftUnsetColorPtr = _lookup<
+  late final _taskDraftUnsetDisplayPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
             ffi.IntPtr,
-          )>>("__TaskDraft_unset_color");
+          )>>("__TaskDraft_unset_display");
 
-  late final _taskDraftUnsetColor = _taskDraftUnsetColorPtr.asFunction<
+  late final _taskDraftUnsetDisplay = _taskDraftUnsetDisplayPtr.asFunction<
       void Function(
         int,
       )>();
@@ -22407,14 +22481,14 @@ class Api {
       int Function(
         int,
       )>();
-  late final _taskListColorPtr = _lookup<
+  late final _taskListDisplayPtr = _lookup<
       ffi.NativeFunction<
-          _TaskListColorReturn Function(
+          _TaskListDisplayReturn Function(
             ffi.IntPtr,
-          )>>("__TaskList_color");
+          )>>("__TaskList_display");
 
-  late final _taskListColor = _taskListColorPtr.asFunction<
-      _TaskListColorReturn Function(
+  late final _taskListDisplay = _taskListDisplayPtr.asFunction<
+      _TaskListDisplayReturn Function(
         int,
       )>();
   late final _taskListTimeZonePtr = _lookup<
@@ -22659,28 +22733,29 @@ class Api {
         int,
         int,
       )>();
-  late final _taskListDraftColorPtr = _lookup<
+  late final _taskListDraftDisplayPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
             ffi.IntPtr,
-            ffi.Uint32,
-          )>>("__TaskListDraft_color");
+            ffi.IntPtr,
+          )>>("__TaskListDraft_display");
 
-  late final _taskListDraftColor = _taskListDraftColorPtr.asFunction<
+  late final _taskListDraftDisplay = _taskListDraftDisplayPtr.asFunction<
       void Function(
         int,
         int,
       )>();
-  late final _taskListDraftUnsetColorPtr = _lookup<
+  late final _taskListDraftUnsetDisplayPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
             ffi.IntPtr,
-          )>>("__TaskListDraft_unset_color");
+          )>>("__TaskListDraft_unset_display");
 
-  late final _taskListDraftUnsetColor = _taskListDraftUnsetColorPtr.asFunction<
-      void Function(
-        int,
-      )>();
+  late final _taskListDraftUnsetDisplay =
+      _taskListDraftUnsetDisplayPtr.asFunction<
+          void Function(
+            int,
+          )>();
   late final _taskListDraftKeywordsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -22829,38 +22904,38 @@ class Api {
             int,
             int,
           )>();
-  late final _taskListUpdateBuilderColorPtr = _lookup<
+  late final _taskListUpdateBuilderDisplayPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
             ffi.IntPtr,
-            ffi.Uint32,
-          )>>("__TaskListUpdateBuilder_color");
+            ffi.IntPtr,
+          )>>("__TaskListUpdateBuilder_display");
 
-  late final _taskListUpdateBuilderColor =
-      _taskListUpdateBuilderColorPtr.asFunction<
+  late final _taskListUpdateBuilderDisplay =
+      _taskListUpdateBuilderDisplayPtr.asFunction<
           void Function(
             int,
             int,
           )>();
-  late final _taskListUpdateBuilderUnsetColorPtr = _lookup<
+  late final _taskListUpdateBuilderUnsetDisplayPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
             ffi.IntPtr,
-          )>>("__TaskListUpdateBuilder_unset_color");
+          )>>("__TaskListUpdateBuilder_unset_display");
 
-  late final _taskListUpdateBuilderUnsetColor =
-      _taskListUpdateBuilderUnsetColorPtr.asFunction<
+  late final _taskListUpdateBuilderUnsetDisplay =
+      _taskListUpdateBuilderUnsetDisplayPtr.asFunction<
           void Function(
             int,
           )>();
-  late final _taskListUpdateBuilderUnsetColorUpdatePtr = _lookup<
+  late final _taskListUpdateBuilderUnsetDisplayUpdatePtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
             ffi.IntPtr,
-          )>>("__TaskListUpdateBuilder_unset_color_update");
+          )>>("__TaskListUpdateBuilder_unset_display_update");
 
-  late final _taskListUpdateBuilderUnsetColorUpdate =
-      _taskListUpdateBuilderUnsetColorUpdatePtr.asFunction<
+  late final _taskListUpdateBuilderUnsetDisplayUpdate =
+      _taskListUpdateBuilderUnsetDisplayUpdatePtr.asFunction<
           void Function(
             int,
           )>();
@@ -23590,24 +23665,14 @@ class Api {
       _CategoryEntriesReturn Function(
         int,
       )>();
-  late final _categoryIconTypeStrPtr = _lookup<
+  late final _categoryDisplayPtr = _lookup<
       ffi.NativeFunction<
-          _CategoryIconTypeStrReturn Function(
+          _CategoryDisplayReturn Function(
             ffi.IntPtr,
-          )>>("__Category_icon_type_str");
+          )>>("__Category_display");
 
-  late final _categoryIconTypeStr = _categoryIconTypeStrPtr.asFunction<
-      _CategoryIconTypeStrReturn Function(
-        int,
-      )>();
-  late final _categoryIconStrPtr = _lookup<
-      ffi.NativeFunction<
-          _CategoryIconStrReturn Function(
-            ffi.IntPtr,
-          )>>("__Category_icon_str");
-
-  late final _categoryIconStr = _categoryIconStrPtr.asFunction<
-      _CategoryIconStrReturn Function(
+  late final _categoryDisplay = _categoryDisplayPtr.asFunction<
+      _CategoryDisplayReturn Function(
         int,
       )>();
   late final _categoryUpdateBuilderPtr = _lookup<
@@ -23663,39 +23728,29 @@ class Api {
         int,
         int,
       )>();
-  late final _categoryBuilderUnsetIconPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.IntPtr,
-          )>>("__CategoryBuilder_unset_icon");
-
-  late final _categoryBuilderUnsetIcon =
-      _categoryBuilderUnsetIconPtr.asFunction<
-          void Function(
-            int,
-          )>();
-  late final _categoryBuilderIconPtr = _lookup<
+  late final _categoryBuilderDisplayPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
             ffi.IntPtr,
             ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__CategoryBuilder_icon");
+          )>>("__CategoryBuilder_display");
 
-  late final _categoryBuilderIcon = _categoryBuilderIconPtr.asFunction<
+  late final _categoryBuilderDisplay = _categoryBuilderDisplayPtr.asFunction<
       void Function(
         int,
         int,
-        int,
-        int,
-        int,
-        int,
-        int,
       )>();
+  late final _categoryBuilderUnsetDisplayPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+          )>>("__CategoryBuilder_unset_display");
+
+  late final _categoryBuilderUnsetDisplay =
+      _categoryBuilderUnsetDisplayPtr.asFunction<
+          void Function(
+            int,
+          )>();
   late final _categoryBuilderBuildPtr = _lookup<
       ffi.NativeFunction<
           _CategoryBuilderBuildReturn Function(
@@ -23757,6 +23812,111 @@ class Api {
 
   late final _categoriesBuilderClear = _categoriesBuilderClearPtr.asFunction<
       void Function(
+        int,
+      )>();
+  late final _displayIconTypeStrPtr = _lookup<
+      ffi.NativeFunction<
+          _DisplayIconTypeStrReturn Function(
+            ffi.IntPtr,
+          )>>("__Display_icon_type_str");
+
+  late final _displayIconTypeStr = _displayIconTypeStrPtr.asFunction<
+      _DisplayIconTypeStrReturn Function(
+        int,
+      )>();
+  late final _displayIconStrPtr = _lookup<
+      ffi.NativeFunction<
+          _DisplayIconStrReturn Function(
+            ffi.IntPtr,
+          )>>("__Display_icon_str");
+
+  late final _displayIconStr = _displayIconStrPtr.asFunction<
+      _DisplayIconStrReturn Function(
+        int,
+      )>();
+  late final _displayColorPtr = _lookup<
+      ffi.NativeFunction<
+          _DisplayColorReturn Function(
+            ffi.IntPtr,
+          )>>("__Display_color");
+
+  late final _displayColor = _displayColorPtr.asFunction<
+      _DisplayColorReturn Function(
+        int,
+      )>();
+  late final _displayUpdateBuilderPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__Display_update_builder");
+
+  late final _displayUpdateBuilder = _displayUpdateBuilderPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _displayBuilderIconPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+          )>>("__DisplayBuilder_icon");
+
+  late final _displayBuilderIcon = _displayBuilderIconPtr.asFunction<
+      void Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _displayBuilderUnsetIconPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+          )>>("__DisplayBuilder_unset_icon");
+
+  late final _displayBuilderUnsetIcon = _displayBuilderUnsetIconPtr.asFunction<
+      void Function(
+        int,
+      )>();
+  late final _displayBuilderColorPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.Uint32,
+          )>>("__DisplayBuilder_color");
+
+  late final _displayBuilderColor = _displayBuilderColorPtr.asFunction<
+      void Function(
+        int,
+        int,
+      )>();
+  late final _displayBuilderUnsetColorPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+          )>>("__DisplayBuilder_unset_color");
+
+  late final _displayBuilderUnsetColor =
+      _displayBuilderUnsetColorPtr.asFunction<
+          void Function(
+            int,
+          )>();
+  late final _displayBuilderBuildPtr = _lookup<
+      ffi.NativeFunction<
+          _DisplayBuilderBuildReturn Function(
+            ffi.IntPtr,
+          )>>("__DisplayBuilder_build");
+
+  late final _displayBuilderBuild = _displayBuilderBuildPtr.asFunction<
+      _DisplayBuilderBuildReturn Function(
         int,
       )>();
   late final _spaceSpaceRelationsPtr = _lookup<
@@ -36520,6 +36680,31 @@ class PinDraft {
     return;
   }
 
+  /// set the display for this pin
+  void display(
+    Display display,
+  ) {
+    final tmp1 = display;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._pinDraftDisplay(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void unsetDisplay() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._pinDraftUnsetDisplay(
+      tmp0,
+    );
+    return;
+  }
+
   /// fire this pin over - the event_id is the confirmation from the server.
   Future<EventId> send() {
     var tmp0 = 0;
@@ -36690,10 +36875,10 @@ class ActerPin {
   }
 
   /// get the link color settings
-  int? color() {
+  Display? display() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._acterPinColor(
+    final tmp1 = _api._acterPinDisplay(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -36701,7 +36886,10 @@ class ActerPin {
     if (tmp3 == 0) {
       return null;
     }
-    final tmp2 = tmp4;
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_Display");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = Display._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -37090,6 +37278,40 @@ class PinUpdateBuilder {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     _api._pinUpdateBuilderUnsetUrlUpdate(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the display for this pin
+  void display(
+    Display display,
+  ) {
+    final tmp1 = display;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._pinUpdateBuilderDisplay(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void unsetDisplay() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._pinUpdateBuilderUnsetDisplay(
+      tmp0,
+    );
+    return;
+  }
+
+  void unsetDisplayUpdate() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._pinUpdateBuilderUnsetDisplayUpdate(
       tmp0,
     );
     return;
@@ -44692,11 +44914,11 @@ class Task {
     return tmp2;
   }
 
-  /// Has this been colored in?
-  int? color() {
+  /// What display options are given?
+  Display? display() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._taskColor(
+    final tmp1 = _api._taskDisplay(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -44704,7 +44926,10 @@ class Task {
     if (tmp3 == 0) {
       return null;
     }
-    final tmp2 = tmp4;
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_Display");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = Display._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -45078,35 +45303,35 @@ class TaskUpdateBuilder {
     return;
   }
 
-  /// set the color for this task list
-  void color(
-    int color,
+  /// set the display of the update
+  void display(
+    Display display,
   ) {
-    final tmp1 = color;
+    final tmp1 = display;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
-    tmp2 = tmp1;
-    _api._taskUpdateBuilderColor(
+    tmp2 = tmp1._box.move();
+    _api._taskUpdateBuilderDisplay(
       tmp0,
       tmp2,
     );
     return;
   }
 
-  void unsetColor() {
+  void unsetDisplay() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskUpdateBuilderUnsetColor(
+    _api._taskUpdateBuilderUnsetDisplay(
       tmp0,
     );
     return;
   }
 
-  void unsetColorUpdate() {
+  void unsetDisplayUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskUpdateBuilderUnsetColorUpdate(
+    _api._taskUpdateBuilderUnsetDisplayUpdate(
       tmp0,
     );
     return;
@@ -45625,26 +45850,26 @@ class TaskDraft {
     return;
   }
 
-  /// set the color for this task
-  void color(
-    int color,
+  /// set the disply options for this task
+  void display(
+    Display display,
   ) {
-    final tmp1 = color;
+    final tmp1 = display;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
-    tmp2 = tmp1;
-    _api._taskDraftColor(
+    tmp2 = tmp1._box.move();
+    _api._taskDraftDisplay(
       tmp0,
       tmp2,
     );
     return;
   }
 
-  void unsetColor() {
+  void unsetDisplay() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskDraftUnsetColor(
+    _api._taskDraftUnsetDisplay(
       tmp0,
     );
     return;
@@ -46091,11 +46316,11 @@ class TaskList {
     return tmp2;
   }
 
-  /// Has this been colored in?
-  int? color() {
+  /// What display options are given?
+  Display? display() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._taskListColor(
+    final tmp1 = _api._taskListDisplay(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -46103,7 +46328,10 @@ class TaskList {
     if (tmp3 == 0) {
       return null;
     }
-    final tmp2 = tmp4;
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_Display");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = Display._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -46564,26 +46792,26 @@ class TaskListDraft {
     return;
   }
 
-  /// set the color for this task list
-  void color(
-    int color,
+  /// set the display for this task list
+  void display(
+    Display display,
   ) {
-    final tmp1 = color;
+    final tmp1 = display;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
-    tmp2 = tmp1;
-    _api._taskListDraftColor(
+    tmp2 = tmp1._box.move();
+    _api._taskListDraftDisplay(
       tmp0,
       tmp2,
     );
     return;
   }
 
-  void unsetColor() {
+  void unsetDisplay() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskListDraftUnsetColor(
+    _api._taskListDraftUnsetDisplay(
       tmp0,
     );
     return;
@@ -46797,35 +47025,35 @@ class TaskListUpdateBuilder {
     return;
   }
 
-  /// set the color for this task list
-  void color(
-    int color,
+  /// set the display for this task list
+  void display(
+    Display display,
   ) {
-    final tmp1 = color;
+    final tmp1 = display;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
-    tmp2 = tmp1;
-    _api._taskListUpdateBuilderColor(
+    tmp2 = tmp1._box.move();
+    _api._taskListUpdateBuilderDisplay(
       tmp0,
       tmp2,
     );
     return;
   }
 
-  void unsetColor() {
+  void unsetDisplay() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskListUpdateBuilderUnsetColor(
+    _api._taskListUpdateBuilderUnsetDisplay(
       tmp0,
     );
     return;
   }
 
-  void unsetColorUpdate() {
+  void unsetDisplayUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskListUpdateBuilderUnsetColorUpdate(
+    _api._taskListUpdateBuilderUnsetDisplayUpdate(
       tmp0,
     );
     return;
@@ -48241,69 +48469,21 @@ class Category {
     return tmp2;
   }
 
-  String? iconTypeStr() {
+  Display? display() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._categoryIconTypeStr(
+    final tmp1 = _api._categoryDisplay(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
     if (tmp3 == 0) {
       return null;
     }
-    if (tmp5 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  String? iconStr() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._categoryIconStr(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    if (tmp3 == 0) {
-      return null;
-    }
-    if (tmp5 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
-    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_Display");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = Display._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -48394,53 +48574,26 @@ class CategoryBuilder {
     return;
   }
 
-  void unsetIcon() {
+  void display(
+    Display display,
+  ) {
+    final tmp1 = display;
     var tmp0 = 0;
+    var tmp2 = 0;
     tmp0 = _box.borrow();
-    _api._categoryBuilderUnsetIcon(
+    tmp2 = tmp1._box.move();
+    _api._categoryBuilderDisplay(
       tmp0,
+      tmp2,
     );
     return;
   }
 
-  void icon(
-    String type,
-    String key,
-  ) {
-    final tmp1 = type;
-    final tmp5 = key;
+  void unsetDisplay() {
     var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    var tmp6 = 0;
-    var tmp7 = 0;
-    var tmp8 = 0;
     tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5_0 = utf8.encode(tmp5);
-    tmp7 = tmp5_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
-    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
-    tmp6_1.setAll(0, tmp5_0);
-    tmp6 = tmp6_0.address;
-    tmp8 = tmp7;
-    _api._categoryBuilderIcon(
+    _api._categoryBuilderUnsetDisplay(
       tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-      tmp6,
-      tmp7,
-      tmp8,
     );
     return;
   }
@@ -48564,6 +48717,230 @@ class CategoriesBuilder {
       tmp0,
     );
     return;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class Display {
+  final Api _api;
+  final _Box _box;
+
+  Display._(this._api, this._box);
+
+  String? iconTypeStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._displayIconTypeStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? iconStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._displayIconStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  int? color() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._displayColor(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  DisplayBuilder updateBuilder() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._displayUpdateBuilder(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_DisplayBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = DisplayBuilder._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class DisplayBuilder {
+  final Api _api;
+  final _Box _box;
+
+  DisplayBuilder._(this._api, this._box);
+
+  void icon(
+    String type,
+    String value,
+  ) {
+    final tmp1 = type;
+    final tmp5 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    _api._displayBuilderIcon(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    return;
+  }
+
+  void unsetIcon() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._displayBuilderUnsetIcon(
+      tmp0,
+    );
+    return;
+  }
+
+  void color(
+    int color,
+  ) {
+    final tmp1 = color;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._displayBuilderColor(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void unsetColor() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._displayBuilderUnsetColor(
+      tmp0,
+    );
+    return;
+  }
+
+  Display build() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._displayBuilderBuild(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 =
+          utf8.decode(tmp4_0.asTypedList(tmp5), allowMalformed: true);
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_Display");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = Display._(_api, tmp7_1);
+    return tmp2;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -57878,10 +58255,10 @@ class _ActerPinUrlReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _ActerPinColorReturn extends ffi.Struct {
+class _ActerPinDisplayReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.IntPtr()
   external int arg1;
 }
 
@@ -58815,10 +59192,10 @@ class _TaskUtcStartRfc3339Return extends ffi.Struct {
   external int arg3;
 }
 
-class _TaskColorReturn extends ffi.Struct {
+class _TaskDisplayReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.IntPtr()
   external int arg1;
 }
 
@@ -58944,10 +59321,10 @@ class _TaskListRoleReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _TaskListColorReturn extends ffi.Struct {
+class _TaskListDisplayReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.IntPtr()
   external int arg1;
 }
 
@@ -59217,29 +59594,56 @@ class _CategoryEntriesReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _CategoryIconTypeStrReturn extends ffi.Struct {
+class _CategoryDisplayReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
   external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-}
-
-class _CategoryIconStrReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
 }
 
 class _CategoryBuilderBuildReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
+class _DisplayIconTypeStrReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _DisplayIconStrReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _DisplayColorReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint32()
+  external int arg1;
+}
+
+class _DisplayBuilderBuildReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()

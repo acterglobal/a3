@@ -1,7 +1,8 @@
 use acter_core::events::{
     attachments::{AttachmentContent, FallbackAttachmentContent},
     rsvp::RsvpStatus,
-    ColorizeBuilder, ObjRefBuilder, Position, RefDetails, RefDetailsBuilder,
+    ColorizeBuilder, Display, DisplayBuilder, ObjRefBuilder, Position, RefDetails,
+    RefDetailsBuilder,
 };
 use anyhow::{Context, Result};
 use core::time::Duration;
@@ -719,4 +720,8 @@ pub fn clearify_error(err: matrix_sdk::Error) -> anyhow::Error {
         }
     }
     err.into()
+}
+
+pub fn new_display_builder() -> DisplayBuilder {
+    DisplayBuilder::default()
 }
