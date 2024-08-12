@@ -1,5 +1,5 @@
 import 'package:acter/common/dialogs/logout_confirmation.dart';
-import 'package:acter/common/notifications/notifications.dart';
+import 'package:acter/config/notifications/init.dart';
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';
 import 'package:acter/common/utils/constants.dart';
@@ -23,7 +23,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:screenshot/screenshot.dart';
-import 'package:shake/shake.dart';
+import 'package:shake_detector/shake_detector.dart';
 
 final _log = Logger('a3::home::home_shell');
 
@@ -82,12 +82,12 @@ class HomeShellState extends ConsumerState<HomeShell> {
   Future<void> initShake() async {
     // shake is possible in only actual mobile devices
     if (await isRealPhone()) {
-      detector = ShakeDetector.waitForStart(
-        onPhoneShake: () {
+      detector = ShakeDetector.autoStart(
+        shakeThresholdGravity: 3.0,
+        onShake: () {
           openBugReport(context);
         },
       );
-      detector.startListening();
     }
   }
 

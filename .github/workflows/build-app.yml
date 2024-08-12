@@ -33,7 +33,7 @@ on:
       targets:
         required: false
         type: string
-      flutter_build_extra:
+      env_extra:
         required: false
         type: string
 
@@ -52,7 +52,7 @@ jobs:
             os: ubuntu-latest
             exclude_from_release: true
             cargo_make_setup: setup-android
-            cargo_make_args: android
+            cargo_make_args: android-arm
             with_ndk_version: r25
             java_version: "17"
             flutter_build_args: "build appbundle --split-debug-info=debug_symbols"
@@ -64,7 +64,7 @@ jobs:
             target: android
             os: ubuntu-latest
             cargo_make_setup: setup-android
-            cargo_make_args: android
+            cargo_make_args: android-arm
             with_ndk_version: r25
             java_version: "17"
             flutter_build_args: "build apk --split-per-abi --split-debug-info=debug_symbols"
@@ -118,7 +118,7 @@ jobs:
             artifact_path: app\\build\\windows\\x64\\runner\\Release
             zip_files: false
             with_debug_symbols: true
-
+            env_extra: "windowsApplicationId=" # in the bundle we must replace this with none
           - name: Windows exe
             os: windows-latest
             target: windows-exe
@@ -273,6 +273,30 @@ jobs:
         working-directory: ./app/android
         run: echo "${{ secrets.ANDROID_KEYSTORE_JKS }}" | base64 --decode > key.jks
 
+      - name: Write environment
+        working-directory: ./app
+        shell: bash
+        run: |
+          cat <<EOF > .env.production
+          SENTRY_DSN=${{ secrets.SENTRY_DSN }}
+          SENTRY_RELEASE=${{ inputs.version }}
+          SENTRY_ENVIRONMENT=${{inputs.release_env}}
+          PUSH_SERVER=${{ secrets.PUSH_SERVER }}
+          NTFY_SERVER=${{ secrets.NTFY_SERVER }}
+          RAGESHAKE_URL=${{ secrets.RAGESHAKE_URL }}
+          RAGESHAKE_APP_NAME=${{ secrets.RAGESHAKE_APP_NAME }}
+          RAGESHAKE_APP_VERSION=${{inputs.release_env}}/${{inputs.version}}/${{ matrix.name }}
+          DEFAULT_HOMESERVER_URL=${{vars.DEFAULT_HOMESERVER_URL}}
+          DEFAULT_HOMESERVER_NAME=${{vars.DEFAULT_HOMESERVER_NAME}}
+          ${{ matrix.env_extra }}
+          ${{ inputs.env_extra  }}
+          EOF
+
+          dart run enven
+
+          echo "Show .env files"
+          ls -ltash .env*
+
       - name: Flutter Build
         env:
           ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
@@ -280,18 +304,8 @@ jobs:
         shell: bash
         run: |
           flutter ${{ matrix.flutter_build_args }} \
-            ${{ inputs.flutter_build_extra || '' }} \
             --build-name="${{ inputs.version }}" \
-            --build-number="${{ inputs.build_num }}" \
-            --dart-define SENTRY_DSN="${{ secrets.SENTRY_DSN }}" \
-            --dart-define SENTRY_RELEASE="${{ inputs.version }}" \
-            --dart-define SENTRY_ENVIRONMENT="${{inputs.release_env}}" \
-            --dart-define PUSH_SERVER="${{ secrets.PUSH_SERVER }}" \
-            --dart-define RAGESHAKE_URL="${{ secrets.RAGESHAKE_URL }}" \
-            --dart-define RAGESHAKE_APP_NAME="${{ secrets.RAGESHAKE_APP_NAME }}" \
-            --dart-define RAGESHAKE_APP_VERSION="${{inputs.release_env}}/${{inputs.version}}/${{ matrix.name }}" \
-            --dart-define DEFAULT_HOMESERVER_URL="${{vars.DEFAULT_HOMESERVER_URL}}" \
-            --dart-define DEFAULT_HOMESERVER_NAME="${{vars.DEFAULT_HOMESERVER_NAME}}"
+            --build-number="${{ inputs.build_num }}"
         working-directory: ./app
 
            ######  ####  ######   ##    ## 

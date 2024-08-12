@@ -13,11 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     name: Check latest commit
     outputs:
-      should_run: ${{ steps.check-new-commits.outputs.has-new-commits && steps.check-changelog-files.outputs.has-changelog-files }}
+      should_run: ${{ steps.check-new-commits.outputs.has-new-commits == 'true' && steps.check-changelog-files.outputs.has-changelog-files == 'true' }}
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # fetch all history and tags
+          fetch-tags: true # fetch the tags
       - name: Check for new commits since last nightly
         id: check-new-commits
         shell: bash
@@ -73,7 +73,7 @@ jobs:
       release_env: 'nightly'
       release: true
       prerelease: true
-      flutter_build_extra: "--dart-define IS_NIGHTLY=true"
+      env_extra: "IS_NIGHTLY=true"
     secrets: inherit
 
   changelog:

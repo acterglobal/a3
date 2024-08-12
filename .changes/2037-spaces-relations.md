@@ -1,1 +1,0 @@
-- Fix on showing the relations of spaces and chats properly if you've left any of the rooms

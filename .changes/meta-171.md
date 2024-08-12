@@ -1,1 +1,0 @@
-- Fix uploading of my Avatar: no more crashing, instant updating

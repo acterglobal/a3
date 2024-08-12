@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:acter/common/notifications/notifications.dart';
+import 'package:acter_notifify/util.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
