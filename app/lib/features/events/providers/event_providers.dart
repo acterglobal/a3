@@ -1,4 +1,7 @@
-import 'package:acter/features/events/event_utils/event_utils.dart';
+import 'package:acter/features/bookmarks/providers/bookmarks_provider.dart';
+import 'package:acter/features/bookmarks/types.dart';
+import 'package:acter/features/events/actions/get_event_type.dart';
+import 'package:acter/features/events/actions/sort_event_list.dart';
 import 'package:acter/features/events/providers/notifiers/event_notifiers.dart';
 import 'package:acter/features/events/providers/notifiers/rsvp_notifier.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
@@ -22,6 +25,18 @@ final allEventListProvider = AsyncNotifierProvider.family<EventListNotifier,
     List<ffi.CalendarEvent>, String?>(
   () => EventListNotifier(),
 );
+
+//ALL ONGOING EVENTS
+final bookmarkedEventListProvider = FutureProvider.autoDispose
+    .family<List<ffi.CalendarEvent>, String?>((ref, spaceId) async {
+  final allEventList = await ref.watch(allEventListProvider(spaceId).future);
+  final bookmarkedEventIds =
+      ref.watch(bookmarkByTypeProvider(BookmarkType.events)).valueOrNull ?? [];
+  List<ffi.CalendarEvent> bookmarkedEventList = allEventList.where((event) {
+    return bookmarkedEventIds.contains(event.eventId().toString());
+  }).toList();
+  return sortEventListAscTime(bookmarkedEventList);
+});
 
 //ALL ONGOING EVENTS
 final allOngoingEventListProvider = FutureProvider.autoDispose
@@ -104,6 +119,7 @@ final myPastEventListProvider = FutureProvider.autoDispose
 //EVENT FILTERS
 enum EventFilters {
   all,
+  bookmarked,
   ongoing,
   upcoming,
   past,
@@ -124,6 +140,12 @@ final eventListSearchFilterProvider = FutureProvider.autoDispose
   //Filter events based on the selection
   EventFilters eventFilter = ref.watch(eventFilerProvider);
   switch (eventFilter) {
+    case EventFilters.bookmarked:
+      {
+        List<ffi.CalendarEvent> bookmarkedEventList =
+            await ref.watch(bookmarkedEventListProvider(params.spaceId).future);
+        filteredEventList = bookmarkedEventList;
+      }
     case EventFilters.ongoing:
       {
         List<ffi.CalendarEvent> ongoingEventList =

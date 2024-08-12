@@ -7501,6 +7501,53 @@ class Api {
     return tmp7;
   }
 
+  AttachmentDraft? __attachmentsManagerLinkDraftFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _attachmentsManagerLinkDraftFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_AttachmentDraft");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = AttachmentDraft._(this, tmp13_1);
+    return tmp7;
+  }
+
   AttachmentsManager? __attachmentsManagerReloadFuturePoll(
     int boxed,
     int postCobject,
@@ -21044,6 +21091,16 @@ class Api {
       int Function(
         int,
       )>();
+  late final _attachmentNamePtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentNameReturn Function(
+            ffi.IntPtr,
+          )>>("__Attachment_name");
+
+  late final _attachmentName = _attachmentNamePtr.asFunction<
+      _AttachmentNameReturn Function(
+        int,
+      )>();
   late final _attachmentSenderPtr = _lookup<
       ffi.NativeFunction<
           _AttachmentSenderReturn Function(
@@ -21104,6 +21161,16 @@ class Api {
 
   late final _attachmentMsgContent = _attachmentMsgContentPtr.asFunction<
       int Function(
+        int,
+      )>();
+  late final _attachmentLinkPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentLinkReturn Function(
+            ffi.IntPtr,
+          )>>("__Attachment_link");
+
+  late final _attachmentLink = _attachmentLinkPtr.asFunction<
+      _AttachmentLinkReturn Function(
         int,
       )>();
   late final _attachmentDownloadMediaPtr = _lookup<
@@ -21213,6 +21280,31 @@ class Api {
   late final _attachmentsManagerContentDraft =
       _attachmentsManagerContentDraftPtr.asFunction<
           int Function(
+            int,
+            int,
+          )>();
+  late final _attachmentsManagerLinkDraftPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+            ffi.Uint8,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+          )>>("__AttachmentsManager_link_draft");
+
+  late final _attachmentsManagerLinkDraft =
+      _attachmentsManagerLinkDraftPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
             int,
             int,
           )>();
@@ -29372,6 +29464,21 @@ class Api {
   late final _attachmentsManagerContentDraftFuturePoll =
       _attachmentsManagerContentDraftFuturePollPtr.asFunction<
           _AttachmentsManagerContentDraftFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _attachmentsManagerLinkDraftFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentsManagerLinkDraftFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__AttachmentsManager_link_draft_future_poll");
+
+  late final _attachmentsManagerLinkDraftFuturePoll =
+      _attachmentsManagerLinkDraftFuturePollPtr.asFunction<
+          _AttachmentsManagerLinkDraftFuturePollReturn Function(
             int,
             int,
             int,
@@ -43671,6 +43778,40 @@ class Attachment {
 
   Attachment._(this._api, this._box);
 
+  /// display name, either filename or given by the user, if found
+  String? name() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentName(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
   /// Who send this attachment
   String sender() {
     var tmp0 = 0;
@@ -43815,6 +43956,40 @@ class Attachment {
     final tmp3_1 = _Box(_api, tmp3_0, "drop_box_MsgContent");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = MsgContent._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// if this is a link, this contains the URI/Link/URL
+  String? link() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentLink(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
     return tmp2;
   }
 
@@ -44003,7 +44178,7 @@ class AttachmentsManager {
     return tmp2;
   }
 
-  /// create news slide for image msg
+  /// create attachment for given msg draft
   Future<AttachmentDraft> contentDraft(
     MsgDraft baseDraft,
   ) {
@@ -44024,6 +44199,64 @@ class AttachmentsManager {
     final tmp4 =
         _nativeFuture(tmp5_1, _api.__attachmentsManagerContentDraftFuturePoll);
     return tmp4;
+  }
+
+  /// create attachment for given link draft
+  Future<AttachmentDraft> linkDraft(
+    String url,
+    String? name,
+  ) {
+    final tmp1 = url;
+    final tmp5 = name;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    var tmp9 = 0;
+    var tmp10 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    if (tmp5 == null) {
+      tmp6 = 0;
+    } else {
+      tmp6 = 1;
+      final tmp7 = tmp5;
+      final tmp7_0 = utf8.encode(tmp7);
+      tmp9 = tmp7_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = _api.__allocate(tmp9 * 1, 1);
+      final Uint8List tmp8_1 = tmp8_0.asTypedList(tmp9);
+      tmp8_1.setAll(0, tmp7_0);
+      tmp8 = tmp8_0.address;
+      tmp10 = tmp9;
+    }
+    final tmp11 = _api._attachmentsManagerLinkDraft(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp8,
+      tmp9,
+      tmp10,
+    );
+    final tmp13 = tmp11;
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 =
+        _Box(_api, tmp13_0, "__AttachmentsManager_link_draft_future_drop");
+    tmp13_1._finalizer = _api._registerFinalizer(tmp13_1);
+    final tmp12 =
+        _nativeFuture(tmp13_1, _api.__attachmentsManagerLinkDraftFuturePoll);
+    return tmp12;
   }
 
   Future<AttachmentsManager> reload() {
@@ -58427,6 +58660,17 @@ class _CommentsManagerRoomIdStrReturn extends ffi.Struct {
   external int arg2;
 }
 
+class _AttachmentNameReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
 class _AttachmentSenderReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
@@ -58461,6 +58705,17 @@ class _AttachmentTypeStrReturn extends ffi.Struct {
   external int arg1;
   @ffi.UintPtr()
   external int arg2;
+}
+
+class _AttachmentLinkReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
 }
 
 class _AttachmentsManagerRoomIdStrReturn extends ffi.Struct {
@@ -61363,6 +61618,21 @@ class _AttachmentsManagerAttachmentsFuturePollReturn extends ffi.Struct {
 }
 
 class _AttachmentsManagerContentDraftFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _AttachmentsManagerLinkDraftFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
