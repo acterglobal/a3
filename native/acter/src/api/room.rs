@@ -22,7 +22,7 @@ use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     notification_settings::{IsEncrypted, IsOneToOne},
     room::{Room as SdkRoom, RoomMember},
-    DisplayName, RoomMemberships, RoomState,
+    ComposerDraft, ComposerDraftType, DisplayName, RoomMemberships, RoomState,
 };
 use ruma::{assign, Int};
 use ruma_client_api::{
@@ -54,6 +54,7 @@ use crate::{OptionBuffer, OptionString, RoomMessage, ThumbnailSize, UserProfile,
 
 use super::{
     api::FfiBuffer,
+    common::ComposeDraft,
     push::{notification_mode_from_input, room_notification_mode_name},
 };
 
@@ -1101,6 +1102,69 @@ impl Room {
                     bail!("No permissions to send message in this room");
                 }
                 room.typing_notice(typing).await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn msg_draft(&self) -> Result<Option<ComposeDraft>> {
+        if !self.is_joined() {
+            bail!("Unable to fetch composer draft of a room we are not in");
+        }
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let draft = room.load_composer_draft().await?;
+
+                Ok(draft.map(|composer_draft| {
+                    let (msg_type, event_id) = match composer_draft.draft_type {
+                        ComposerDraftType::NewMessage => ("new".to_string(), None),
+                        ComposerDraftType::Edit { event_id } => {
+                            ("edit".to_string(), Some(event_id.to_string()))
+                        }
+                        ComposerDraftType::Reply { event_id } => {
+                            ("reply".to_string(), Some(event_id.to_string()))
+                        }
+                    };
+                    ComposeDraft::new(
+                        composer_draft.plain_text,
+                        composer_draft.html_text,
+                        msg_type,
+                        event_id,
+                    )
+                }))
+            })
+            .await?
+    }
+
+    pub async fn save_msg_draft(
+        &self,
+        text: String,
+        html: Option<String>,
+        draft_type: String,
+        event_id: Option<String>,
+    ) -> Result<bool> {
+        if !self.is_joined() {
+            bail!("Unable to save composer draft of a room we are not in");
+        }
+        let room = self.room.clone();
+        let msg_draft = ComposeDraft::new(text, html, draft_type, event_id);
+        RUNTIME
+            .spawn(async move {
+                let draft = room.save_composer_draft(msg_draft.inner()).await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn clear_msg_draft(&self) -> Result<bool> {
+        if !self.is_joined() {
+            bail!("Unable to remove composer draft of a room we are not in");
+        }
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let draft = room.clear_composer_draft();
                 Ok(true)
             })
             .await?

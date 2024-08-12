@@ -330,6 +330,21 @@ object MxcUri {
     fn to_string() -> string;
 }
 
+object ComposeDraft {
+    /// plain body text, always available
+    fn plain_text() -> string;
+
+    /// formatted text
+    fn html_text() -> Option<string>;
+
+    /// event id, only valid for edit and reply states
+    fn event_id() -> Option<string>;
+
+    /// compose message state type.
+    /// One of `new`, `edit`, `reply`.
+    fn draft_type() -> string;
+}
+
 object RoomId {
     fn to_string() -> string;
 }
@@ -1098,6 +1113,15 @@ object Room {
 
     /// leave this room
     fn leave() -> Future<Result<bool>>;
+
+    /// compose message state of the room
+    fn msg_draft() -> Future<Result<Option<ComposeDraft>>>;
+
+    /// save composed message state of the room
+    fn save_msg_draft(text: string, html: Option<string>, draft_type: string, event_id: Option<string>) -> Future<Result<bool>>;
+
+    /// clear composed message state of the room
+    fn clear_msg_draft() -> Future<Result<bool>>;
 
 }
 
