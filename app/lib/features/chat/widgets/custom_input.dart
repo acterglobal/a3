@@ -323,8 +323,12 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
                       ),
                     ),
                   ),
-                  if (textController.text.isNotEmpty)
-                    renderSendButton(context, roomId),
+                  if (textController.text.trim().isNotEmpty)
+                    Consumer(
+                      builder: (context, ref, child) {
+                        return renderSendButton(context, roomId);
+                      },
+                    ),
                 ],
               ),
             ),
