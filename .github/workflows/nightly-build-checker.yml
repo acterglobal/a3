@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-tags: true # fetch the tags
+          fetch-depth: 0 # fetch the tags
       - name: Check for new commits since last nightly
         id: check-new-commits
         shell: bash
