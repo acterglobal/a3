@@ -17,15 +17,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-tags: true # fetch the tags
+          fetch-depth: 0 # fetch the tags
       - name: Check for new commits since last nightly
         id: check-new-commits
         shell: bash
         run: |
           if [ `git diff --name-only nightly-latest app native .changes | wc -l` -ne 0 ]; then
             echo "has-new-commits=true"  >> $GITHUB_OUTPUT ;
+            echo "has-new-commits=true";
           else
             echo "has-new-commits=false" >> $GITHUB_OUTPUT ;
+            echo "has-new-commits=false";
           fi
       - name: Check whether any changelog files are present
         id: check-changelog-files
@@ -35,8 +37,10 @@ jobs:
             if (( ${#files} ))
             then
               echo "has-changelog-files=true"  >> $GITHUB_OUTPUT ;
+              echo "has-changelog-files=true";
             else
               echo "has-changelog-files=false" >> $GITHUB_OUTPUT ;
+              echo "has-changelog-files=false";
             fi
 
   tags:
