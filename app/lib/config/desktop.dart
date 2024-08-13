@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/router/router.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart' hide MenuItem;
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tray_manager/tray_manager.dart';
@@ -45,11 +45,12 @@ Future<void> initDesktop() async {
       ),
       MenuItem.separator(),
       MenuItem(
-          key: 'exit_app',
-          label: 'Exit App',
-          onClick: (item) {
-            windowManager.destroy();
-          },),
+        key: 'exit_app',
+        label: 'Exit App',
+        onClick: (item) {
+          windowManager.destroy();
+        },
+      ),
     ],
   );
   await trayManager.setContextMenu(menu);
