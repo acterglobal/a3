@@ -1,27 +1,14 @@
-name: Docs
+name: Reusable Docs Build
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
+  workflow_call:
 
 jobs:
   docs:
     runs-on: ubuntu-20.04
     name: Build Latest API Docs
     steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: true
-
-      #       ---- setup of systems
-
+      - uses: actions/checkout@v4
       - name: Setup flutter
         uses: subosito/flutter-action@v2
         with:
@@ -65,12 +52,8 @@ jobs:
         run: flutter pub global run dartdoc --output ../../../docs/static/api/main/dart-sdk/
         working-directory: packages/rust_sdk
 
-      #       ---- Finalisation for github pages
-
-      - name: build zola
-        uses: shalzz/zola-deploy-action@v0.16.1-1
-        if: ${{ github.ref == 'refs/heads/main' }}
-        env:
-          BUILD_DIR: docs
-          PAGES_BRANCH: "gh-pages"
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload the docs
+          path: 'docs/'
