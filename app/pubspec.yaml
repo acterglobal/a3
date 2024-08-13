@@ -133,6 +133,7 @@ dependencies:
   shake_detector:
     path: ../packages/shake_detector
   open_filex: ^4.5.0
+  phosphor_flutter: ^2.1.0
 
 dev_dependencies:
   flutter_test:
