@@ -1,4 +1,5 @@
 import 'dart:math';
+
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
@@ -9,7 +10,6 @@ import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/sheets/create_update_task_list.dart';
 import 'package:acter/features/tasks/widgets/skeleton/tasks_list_skeleton.dart';
 import 'package:acter/features/tasks/widgets/task_list_item_card.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -91,7 +91,7 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
   }
 
   Widget _buildBody() {
-    AsyncValue<List<TaskList>> tasksList;
+    AsyncValue<List<String>> tasksList;
 
     tasksList = ref.watch(
       tasksListSearchProvider(
@@ -108,8 +108,9 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
         Expanded(
           child: tasksList.when(
             data: (tasks) => _buildTasksList(tasks),
-            error: (error, stack) =>
-                Center(child: Text(L10n.of(context).loadingFailed(error))),
+            error: (error, stack) => Center(
+              child: Text(L10n.of(context).loadingFailed(error)),
+            ),
             loading: () => const TasksListSkeleton(),
           ),
         ),
@@ -117,7 +118,7 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
     );
   }
 
-  Widget _buildTasksList(List<TaskList> tasksList) {
+  Widget _buildTasksList(List<String> tasksList) {
     final size = MediaQuery.of(context).size;
     final widthCount = (size.width ~/ 500).toInt();
     const int minCount = 2;
@@ -129,12 +130,12 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
       child: StaggeredGrid.count(
         crossAxisCount: max(1, min(widthCount, minCount)),
         children: [
-          for (var taskList in tasksList)
+          for (var taskListId in tasksList)
             ValueListenableBuilder(
               valueListenable: showCompletedTask,
               builder: (context, value, child) {
                 return TaskListItemCard(
-                  taskList: taskList,
+                  taskListId: taskListId,
                   showCompletedTask: value,
                   showSpace: widget.spaceId == null,
                 );
