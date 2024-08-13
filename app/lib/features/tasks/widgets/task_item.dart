@@ -43,8 +43,8 @@ class TaskItem extends ConsumerWidget {
               context.pushNamed(
                 Routes.taskItemDetails.name,
                 pathParameters: {
-                  'taskId': task.eventIdStr(),
-                  'taskListId': task.taskListIdStr(),
+                  'taskId': taskId,
+                  'taskListId': taskListId,
                 },
               );
             },
@@ -85,7 +85,7 @@ class TaskItem extends ConsumerWidget {
   Widget leadingWidget(Task task) {
     final isDone = task.isDone();
     return InkWell(
-      key: isDone ? doneKey(task.eventIdStr()) : notDoneKey(task.eventIdStr()),
+      key: isDone ? doneKey() : notDoneKey(),
       child: Icon(
         isDone ? Atlas.check_circle_thin : Icons.radio_button_off_outlined,
       ),
@@ -212,11 +212,11 @@ class TaskItem extends ConsumerWidget {
     );
   }
 
-  Key doneKey(String taskId) {
+  Key doneKey() {
     return Key('task-entry-$taskId-status-btn-done');
   }
 
-  Key notDoneKey(String taskId) {
+  Key notDoneKey() {
     return Key('task-entry-$taskId-status-btn-not-done');
   }
 }

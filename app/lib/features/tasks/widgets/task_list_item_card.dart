@@ -59,7 +59,6 @@ class TaskListItemCard extends ConsumerWidget {
   }
 
   Widget title(BuildContext context, TaskList taskList) {
-    final taskListId = taskList.eventIdStr();
     return InkWell(
       onTap: () {
         context.pushNamed(
