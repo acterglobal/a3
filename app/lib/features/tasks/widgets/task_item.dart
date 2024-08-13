@@ -60,8 +60,8 @@ class TaskItem extends ConsumerWidget {
           ),
           error: (error, stack) {
             _log.severe('failed to load task', error, stack);
-            return const ListTile(
-              title: Text('failed'),
+            return ListTile(
+              title: Text('Loading of task failed: $error'),
             );
           },
           loading: () => const ListTile(
