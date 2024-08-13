@@ -338,10 +338,6 @@ class _ChangeDateSheetState extends ConsumerState<ChangeDateSheet> {
 
       EasyLoading.dismiss();
 
-      ref.invalidate(calendarEventProvider(eventId.toString())); // edit page
-      final spaceId = calendarEvent.roomIdStr();
-      ref.invalidate(allEventListProvider(spaceId)); // events page in space
-
       if (mounted) Navigator.pop(context);
     } catch (e, st) {
       _log.severe('Failed to update calendar event', e, st);
