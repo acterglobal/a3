@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
-import 'package:flutter_matrix_html/text_parser.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
@@ -148,17 +147,12 @@ class _TextWidget extends ConsumerWidget {
                 renderNewlines: true,
                 shrinkToFit: true,
                 data: message.text,
-                pillBuilder: ({
-                  required String identifier,
-                  required String url,
-                  OnPillTap? onTap,
-                }) =>
-                    pillBuilder(
+                pillBuilder: ({required identifier, onTap, required url}) =>
+                    PillBuilder(
                   context: context,
                   roomId: roomId,
                   identifier: identifier,
                   uri: url,
-                  onTap: () => ChatUtils.onLinkTap(Uri.parse(url), context),
                 ),
                 defaultTextStyle:
                     Theme.of(context).textTheme.bodySmall!.copyWith(

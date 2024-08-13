@@ -889,12 +889,11 @@ class _ReplyContentWidget extends StatelessWidget {
             renderNewlines: true,
             shrinkToFit: true,
             pillBuilder: ({required identifier, onTap, required url}) =>
-                pillBuilder(
+                PillBuilder(
               context: context,
               roomId: roomId,
               identifier: identifier,
               uri: url,
-              onTap: () => {},
             ),
             data: textMsg.text,
             defaultTextStyle: Theme.of(context).textTheme.bodySmall!,
