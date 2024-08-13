@@ -57,10 +57,11 @@ class TaskItemsListWidget extends ConsumerWidget {
 
     return Column(
       children: [
-        for (final task in overview.openTasks)
+        for (final taskId in overview.openTasks)
           TaskItem(
             onTap: () => showInlineAddTask.value = false,
-            task: task,
+            taskListId: taskList.eventIdStr(),
+            taskId: taskId,
           ),
       ],
     );
@@ -109,9 +110,10 @@ class TaskItemsListWidget extends ConsumerWidget {
             const Expanded(child: Divider(indent: 20, endIndent: 20)),
           ],
         ),
-        for (final task in overview.doneTasks)
+        for (final taskId in overview.doneTasks)
           TaskItem(
-            task: task,
+            taskListId: taskList.eventIdStr(),
+            taskId: taskId,
             onTap: () => showInlineAddTask.value = false,
           ),
       ],

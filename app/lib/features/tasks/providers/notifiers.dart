@@ -16,13 +16,13 @@ class TaskItemsListNotifier
 
   Future<TasksOverview> _refresh(TaskList taskList) async {
     final tasks = (await taskList.tasks()).toList();
-    List<Task> openTasks = [];
-    List<Task> doneTasks = [];
+    List<String> openTasks = [];
+    List<String> doneTasks = [];
     for (final task in tasks) {
       if (task.isDone()) {
-        doneTasks.add(task);
+        doneTasks.add(task.eventIdStr());
       } else {
-        openTasks.add(task);
+        openTasks.add(task.eventIdStr());
       }
     }
 

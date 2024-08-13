@@ -2,7 +2,6 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
-import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -202,7 +201,6 @@ class _CreateUpdateTaskListConsumerState
       EasyLoading.dismiss();
       if (!mounted) return;
       Navigator.pop(context);
-      ref.invalidate(taskListProvider);
     } catch (e) {
       if (!mounted) {
         EasyLoading.dismiss();

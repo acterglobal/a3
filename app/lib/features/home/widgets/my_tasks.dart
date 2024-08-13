@@ -34,7 +34,8 @@ class MyTasksSection extends ConsumerWidget {
                   itemCount: tasks.length,
                   itemBuilder: (context, index) {
                     return TaskItem(
-                      task: tasks[index],
+                      taskListId: tasks[index].taskListIdStr(),
+                      taskId: tasks[index].eventIdStr(),
                       showBreadCrumb: true,
                       onDone: () => EasyLoading.showToast(
                         L10n.of(context).markedAsDone,
