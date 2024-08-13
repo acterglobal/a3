@@ -132,40 +132,43 @@ class _TextWidget extends ConsumerWidget {
 
     return Column(
       children: [
-        enlargeEmoji
-            ? Text(
-                message.text,
-                style: emojiTextStyle.copyWith(
-                  overflow: isReply ? TextOverflow.ellipsis : null,
-                  fontFamily: emojiFont,
+        ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: messageWidth.toDouble()),
+          child: enlargeEmoji
+              ? Text(
+                  message.text,
+                  style: emojiTextStyle.copyWith(
+                    overflow: isReply ? TextOverflow.ellipsis : null,
+                    fontFamily: emojiFont,
+                  ),
+                  maxLines: isReply ? 3 : null,
+                )
+              : Html(
+                  onLinkTap: (url) => ChatUtils.onLinkTap(url, context),
+                  backgroundColor: Colors.transparent,
+                  renderNewlines: true,
+                  shrinkToFit: true,
+                  data: message.text,
+                  pillBuilder: ({required identifier, onTap, required url}) =>
+                      PillBuilder(
+                    context: context,
+                    roomId: roomId,
+                    identifier: identifier,
+                    uri: url,
+                  ),
+                  defaultTextStyle:
+                      Theme.of(context).textTheme.bodySmall!.copyWith(
+                            overflow: isReply ? TextOverflow.ellipsis : null,
+                            color: isNotice
+                                ? Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withOpacity(0.5)
+                                : null,
+                          ),
+                  maxLines: isReply ? 3 : null,
                 ),
-                maxLines: isReply ? 3 : null,
-              )
-            : Html(
-                onLinkTap: (url) => ChatUtils.onLinkTap(url, context),
-                backgroundColor: Colors.transparent,
-                renderNewlines: true,
-                shrinkToFit: true,
-                data: message.text,
-                pillBuilder: ({required identifier, onTap, required url}) =>
-                    PillBuilder(
-                  context: context,
-                  roomId: roomId,
-                  identifier: identifier,
-                  uri: url,
-                ),
-                defaultTextStyle:
-                    Theme.of(context).textTheme.bodySmall!.copyWith(
-                          overflow: isReply ? TextOverflow.ellipsis : null,
-                          color: isNotice
-                              ? Theme.of(context)
-                                  .colorScheme
-                                  .onSurface
-                                  .withOpacity(0.5)
-                              : null,
-                        ),
-                maxLines: isReply ? 3 : null,
-              ),
+        ),
         Visibility(
           visible: wasEdited,
           child: Text(
