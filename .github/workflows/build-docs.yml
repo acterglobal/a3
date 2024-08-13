@@ -1,0 +1,59 @@
+name: Reusable Docs Build
+
+on:
+  workflow_call:
+
+jobs:
+  docs:
+    runs-on: ubuntu-20.04
+    name: Build Latest API Docs
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22'
+          channel: 'stable'
+
+      - name: Install supported toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+
+      #       ---- Install extra tools
+
+      - name: Install Dartdocs
+        run: flutter pub global activate dartdoc
+
+      #
+      - name: Versions
+        run: |
+          echo "--- Rust"
+          cargo -V
+          echo "--- Flutter doctor"
+          flutter doctor
+          echo "--- dartdoct"
+          flutter pub global run dartdoc --version
+
+      #       ---- Actual build steps
+
+      - name: Build Rust docs
+        run: |
+          cargo doc -p acter -p acter-core -p matrix-sdk-store-media-cache-wrapper
+          echo --- Moving docs
+          mv target/doc/ docs/api/main/rust
+
+      - name: Build Dart App
+        run: flutter pub global run dartdoc  --include-external integration_test/main_test.dart --output ../docs/api/main/app/
+        working-directory: app
+
+      - name: Checking for bindings
+        run: ls -ltas packages/rust_sdk/lib/
+
+      - name: Build Dart SDK
+        run: flutter pub global run dartdoc --output ../../../docs/api/main/dart-sdk/
+        working-directory: packages/rust_sdk
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload the docs
+          path: 'docs/'
