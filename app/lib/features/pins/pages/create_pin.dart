@@ -75,43 +75,46 @@ class _CreatePinConsumerState extends ConsumerState<CreatePin> {
 
   Widget _buildBody() {
     final pinState = ref.watch(createPinStateProvider);
-    return Padding(
-      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    const SizedBox(height: 14),
-                    _buildTitleField(),
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: SelectSpaceFormField(
-                        canCheck: 'CanPostPin',
-                        isCompactView: true,
+    return GestureDetector(
+      onTap: ()=> FocusManager.instance.primaryFocus?.unfocus(),
+      child: Padding(
+        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      const SizedBox(height: 14),
+                      _buildTitleField(),
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: SelectSpaceFormField(
+                          canCheck: 'CanPostPin',
+                          isCompactView: true,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 14),
-                    _pinDescription(pinState),
-                    attachmentHeader(pinState),
-                    if (pinState.pinAttachmentList.isEmpty)
-                      const PinAttachmentOptions()
-                    else
-                      attachmentListUI(pinState),
-                    const SizedBox(height: 14),
-                  ],
+                      const SizedBox(height: 14),
+                      _pinDescription(pinState),
+                      attachmentHeader(pinState),
+                      if (pinState.pinAttachmentList.isEmpty)
+                        const PinAttachmentOptions()
+                      else
+                        attachmentListUI(pinState),
+                      const SizedBox(height: 14),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          _buildCreateButton(),
-        ],
+            _buildCreateButton(),
+          ],
+        ),
       ),
     );
   }
