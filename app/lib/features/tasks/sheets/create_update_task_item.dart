@@ -1,6 +1,5 @@
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:dart_date/dart_date.dart';
@@ -260,7 +259,6 @@ class _CreateUpdateItemListConsumerState
       if (!mounted) return;
       if (widget.cancel != null) widget.cancel!();
       Navigator.pop(context);
-      ref.invalidate(taskListProvider);
     } catch (e) {
       EasyLoading.dismiss();
       if (!mounted) return;
@@ -291,7 +289,6 @@ class _CreateUpdateItemListConsumerState
       EasyLoading.dismiss();
       if (!mounted) return;
       Navigator.pop(context);
-      ref.invalidate(taskListProvider);
     } catch (e) {
       EasyLoading.dismiss();
       if (!mounted) return;

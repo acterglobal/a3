@@ -20,10 +20,10 @@ class MyTasksSection extends ConsumerWidget {
       data: (tasks) => tasks.isEmpty
           ? const SizedBox.shrink()
           : Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              myTaskHeader(context),
-              ListView.separated(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                myTaskHeader(context),
+                ListView.separated(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   separatorBuilder: (context, index) =>
@@ -31,7 +31,8 @@ class MyTasksSection extends ConsumerWidget {
                   itemCount: tasks.length,
                   itemBuilder: (context, index) {
                     return TaskItem(
-                      task: tasks[index],
+                      taskListId: tasks[index].taskListIdStr(),
+                      taskId: tasks[index].eventIdStr(),
                       showBreadCrumb: true,
                       onDone: () => EasyLoading.showToast(
                         L10n.of(context).markedAsDone,
@@ -39,15 +40,14 @@ class MyTasksSection extends ConsumerWidget {
                     );
                   },
                 ),
-            ],
-          ),
-      error: (error, stack) =>
-          Text(L10n.of(context).loadingTasksFailed(error)),
+              ],
+            ),
+      error: (error, stack) => Text(L10n.of(context).loadingTasksFailed(error)),
       loading: () => Text(L10n.of(context).loading),
     );
   }
 
-  Widget myTaskHeader(BuildContext context){
+  Widget myTaskHeader(BuildContext context) {
     return Row(
       children: [
         Text(
@@ -62,5 +62,4 @@ class MyTasksSection extends ConsumerWidget {
       ],
     );
   }
-
 }
