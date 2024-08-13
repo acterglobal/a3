@@ -2064,5 +2064,6 @@
   "updatingDate": "Updating Date",
   "pleaseEnterALink": "Please enter a link",
   "pleaseEnterAValidLink": "Please enter a valid link",
-  "addLink": "Add Link"
+  "addLink": "Add Link",
+  "attachmentEmptyStateTitle": "No attachments found."
 }

@@ -9,6 +9,7 @@ import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/attachments/actions/handle_selected_attachments.dart';
+import 'package:acter/features/pins/actions/attachment_leading_icon.dart';
 import 'package:acter/features/pins/actions/select_pin_attachments.dart';
 import 'package:acter/features/pins/actions/set_pin_description.dart';
 import 'package:acter/features/pins/actions/set_pin_links.dart';
@@ -237,23 +238,6 @@ class _CreatePinConsumerState extends ConsumerState<CreatePin> {
               .changeAttachmentTitle(pinAttachment, index);
         },
       );
-    }
-  }
-
-  Widget attachmentLeadingIcon(AttachmentType pinAttachmentType) {
-    switch (pinAttachmentType) {
-      case AttachmentType.link:
-        return const Icon(Atlas.link);
-      case AttachmentType.image:
-        return const Icon(Atlas.image_gallery);
-      case AttachmentType.video:
-        return const Icon(Atlas.video_camera);
-      case AttachmentType.audio:
-        return const Icon(Atlas.audio_headphones);
-      case AttachmentType.file:
-        return const Icon(Atlas.file);
-      default:
-        return const SizedBox.shrink();
     }
   }
 

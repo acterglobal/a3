@@ -1,4 +1,4 @@
-import 'package:acter/common/actions/redact_content.dart';
+import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/features/attachments/actions/handle_selected_attachments.dart';
 import 'package:acter/features/attachments/actions/select_attachment.dart';
 import 'package:acter/features/attachments/providers/attachment_providers.dart';
@@ -65,43 +65,10 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final attachmentTitleTextStyle = Theme.of(context).textTheme.labelLarge;
     final attachments = ref.watch(attachmentsProvider(attachmentManager));
 
-    bool canEdit = attachmentManager.canEditAttachments();
-
     return attachments.when(
-      data: (list) {
-        return Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Row(
-                children: [
-                  const Icon(Atlas.paperclip_attachment_thin, size: 14),
-                  const SizedBox(width: 5),
-                  Text(
-                    L10n.of(context).attachments,
-                    style: attachmentTitleTextStyle,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Wrap(
-                spacing: 5.0,
-                runSpacing: 10.0,
-                children: <Widget>[
-                  if (list.isNotEmpty)
-                    for (var item in list)
-                      _buildAttachmentItem(context, item, canEdit),
-                  if (canEdit) _buildAddAttachment(context, ref),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
+      data: (list) => attachmentData(list, context, ref),
       error: (err, st) => Text(L10n.of(context).errorLoadingAttachments(err)),
       loading: () => const Skeletonizer(
         child: Wrap(
@@ -113,81 +80,76 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
     );
   }
 
+  Widget attachmentData(
+    List<Attachment> list,
+    BuildContext context,
+    WidgetRef ref,
+  ) {
+    bool canEdit = attachmentManager.canEditAttachments();
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          attachmentHeader(context, ref),
+          if (list.isEmpty) ...[
+            const SizedBox(height: 10),
+            Text(L10n.of(context).attachmentEmptyStateTitle),
+          ],
+          Wrap(
+            spacing: 5.0,
+            runSpacing: 10.0,
+            children: <Widget>[
+              if (list.isNotEmpty)
+                for (var item in list)
+                  _buildAttachmentItem(context, item, canEdit),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget attachmentHeader(BuildContext context, WidgetRef ref) {
+    final attachmentTitleTextStyle = Theme.of(context).textTheme.labelLarge;
+    return Row(
+      children: [
+        const Icon(Atlas.paperclip_attachment_thin, size: 14),
+        const SizedBox(width: 5),
+        Text(
+          L10n.of(context).attachments,
+          style: attachmentTitleTextStyle,
+        ),
+        const Spacer(),
+        ActerInlineTextButton(
+          onPressed: () => selectAttachment(
+            context: context,
+            onSelected: (files, selectedType) {
+              return handleAttachmentSelected(
+                context: context,
+                ref: ref,
+                manager: attachmentManager,
+                attachments: files,
+                attachmentType: selectedType,
+              );
+            },
+          ),
+          child: Text(L10n.of(context).add),
+        ),
+      ],
+    );
+  }
+
   Widget _buildAttachmentItem(
     BuildContext context,
     Attachment item,
     bool canEdit,
   ) {
     final eventId = item.attachmentIdStr();
-    final roomId = item.roomIdStr();
-    return Stack(
-      children: [
-        AttachmentItem(
-          key: Key('$eventId-attachment'),
-          attachment: item,
-        ),
-        Positioned(
-          top: -12,
-          right: -12,
-          child: Visibility(
-            visible: canEdit,
-            child: IconButton(
-              key: AttachmentSectionWidget.redactBtnKey,
-              onPressed: () => openRedactContentDialog(
-                context,
-                eventId: eventId,
-                roomId: roomId,
-                title: L10n.of(context).deleteAttachment,
-                description:
-                    L10n.of(context).areYouSureYouWantToRemoveAttachmentFromPin,
-                isSpace: true,
-                removeBtnKey: AttachmentSectionWidget.confirmRedactKey,
-              ),
-              icon: const Icon(
-                Atlas.minus_circle_thin,
-                size: 14,
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildAddAttachment(BuildContext context, WidgetRef ref) {
-    final containerColor = Theme.of(context).colorScheme.surface;
-    final iconColor = Theme.of(context).colorScheme.secondary;
-    final iconTextStyle = Theme.of(context).textTheme.labelLarge;
-    return InkWell(
-      key: AttachmentSectionWidget.addAttachmentBtnKey,
-      onTap: () => selectAttachment(
-        context: context,
-        onSelected: (files, selectedType) => handleAttachmentSelected(
-          context: context,
-          ref: ref,
-          manager: attachmentManager,
-          attachments: files,
-          attachmentType: selectedType,
-        ),
-      ),
-      child: Container(
-        height: 100,
-        width: 100,
-        decoration: BoxDecoration(
-          color: containerColor,
-          borderRadius: BorderRadius.circular(6),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(Icons.add, color: iconColor),
-            Text(
-              L10n.of(context).add,
-              style: iconTextStyle!.copyWith(color: iconColor),
-            ),
-          ],
-        ),
-      ),
+    return AttachmentItem(
+      key: Key('$eventId-attachment'),
+      attachment: item,
+      canEdit: canEdit,
     );
   }
 }

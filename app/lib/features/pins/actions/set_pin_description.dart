@@ -1,8 +1,5 @@
-import 'package:acter/common/models/types.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
-import 'package:acter/features/pins/models/create_pin_state/pin_attachment_model.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
-import 'package:acter/features/pins/widgets/pin_link_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
