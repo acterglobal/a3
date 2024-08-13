@@ -15,7 +15,7 @@ class SelectSpaceFormField extends ConsumerWidget {
   final String? emptyText;
   final String canCheck;
   final bool mandatory;
-  final bool isCompactView;
+  final bool useCompatView;
 
   const SelectSpaceFormField({
     super.key,
@@ -24,18 +24,17 @@ class SelectSpaceFormField extends ConsumerWidget {
     this.emptyText,
     this.mandatory = true,
     required this.canCheck,
-    this.isCompactView = false,
+    this.useCompatView = false,
   });
 
   void selectSpace(BuildContext context, WidgetRef ref) async {
-    final spaceNotifier = ref.watch(selectedSpaceIdProvider.notifier);
     final newSelectedSpaceId = await selectSpaceDrawer(
       context: context,
       currentSpaceId: ref.read(selectedSpaceIdProvider),
       canCheck: canCheck,
       title: Text(selectTitle ?? L10n.of(context).selectSpace),
     );
-    spaceNotifier.state = newSelectedSpaceId;
+    ref.read(selectedSpaceIdProvider.notifier).state = newSelectedSpaceId;
   }
 
   @override
@@ -57,7 +56,7 @@ class SelectSpaceFormField extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (!isCompactView)
+                  if (!useCompatView)
                     Text(
                       title ?? L10n.of(context).space,
                       style: Theme.of(context).textTheme.bodyMedium,
@@ -99,9 +98,9 @@ class SelectSpaceFormField extends ConsumerWidget {
           ? SpaceChip(
               space: space,
               onTapOpenSpaceDetail: false,
-              isCompactView: isCompactView,
+              useCompatView: useCompatView,
               onTapSelectSpace: () =>
-                  isCompactView ? selectSpace(context, ref) : null,
+                  useCompatView ? selectSpace(context, ref) : null,
             )
           : Text(currentSelectedSpace!),
       error: (e, s) => Text(L10n.of(context).errorLoading(e)),

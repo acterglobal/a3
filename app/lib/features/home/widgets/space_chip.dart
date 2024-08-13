@@ -11,7 +11,7 @@ class SpaceChip extends ConsumerWidget {
   final SpaceItem? space;
   final String? spaceId;
   final bool onTapOpenSpaceDetail;
-  final bool isCompactView;
+  final bool useCompatView;
   final VoidCallback? onTapSelectSpace;
 
   const SpaceChip({
@@ -19,7 +19,7 @@ class SpaceChip extends ConsumerWidget {
     this.space,
     this.spaceId,
     this.onTapOpenSpaceDetail = true,
-    this.isCompactView = false,
+    this.useCompatView = false,
     this.onTapSelectSpace,
   });
 
@@ -64,7 +64,7 @@ class SpaceChip extends ConsumerWidget {
     return InkWell(
       onTap:
           onTapOpenSpaceDetail ? () => goToSpace(context, space.roomId) : null,
-      child: isCompactView
+      child: useCompatView
           ? Row(
               children: [
                 const Text('In'),

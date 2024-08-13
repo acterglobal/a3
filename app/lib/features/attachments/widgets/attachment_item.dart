@@ -91,7 +91,7 @@ class AttachmentItem extends ConsumerWidget {
     final fileNameSplit = fileName.split('.');
     final title = fileNameSplit.first;
     final fileExtension = fileNameSplit.last;
-    String fileSize = getFileSize(msgContent.size() ?? 0);
+    String fileSize = getHumanReadableFileSize(msgContent.size() ?? 0);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -135,10 +135,8 @@ class AttachmentItem extends ConsumerWidget {
     // Open attachment link
     if (attachmentType == AttachmentType.link) {
       openLink(attachment.link() ?? '', context);
-    }
-
-    // If attachment is media then check media is downloaded
-    else if (mediaState.mediaFile == null) {
+    } else if (mediaState.mediaFile == null) {
+      // If attachment is media then check media is downloaded
       // If attachment not downloaded
       ref
           .read(attachmentMediaStateProvider(attachment).notifier)

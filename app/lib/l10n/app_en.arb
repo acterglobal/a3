@@ -2065,5 +2065,7 @@
   "pleaseEnterALink": "Please enter a link",
   "pleaseEnterAValidLink": "Please enter a valid link",
   "addLink": "Add Link",
-  "attachmentEmptyStateTitle": "No attachments found."
+  "attachmentEmptyStateTitle": "No attachments found.",
+  "text": "text",
+  "audio": "Audio"
 }

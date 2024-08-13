@@ -3,9 +3,7 @@ import 'package:acter/features/pins/models/create_pin_state/pin_attachment_model
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CreatePinNotifier extends StateNotifier<CreatePinState> {
-  final Ref ref;
-
-  CreatePinNotifier({required this.ref}) : super(const CreatePinState());
+  CreatePinNotifier() : super(const CreatePinState());
 
   void setPinTitleValue(String title) {
     state = state.copyWith(pinTitle: title);

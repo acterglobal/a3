@@ -43,5 +43,5 @@ final pinEditProvider = StateNotifierProvider.family
 // Create Pin State
 final createPinStateProvider =
     StateNotifierProvider.autoDispose<CreatePinNotifier, CreatePinState>(
-  (ref) => CreatePinNotifier(ref: ref),
+  (ref) => CreatePinNotifier(),
 );
