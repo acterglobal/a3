@@ -26,12 +26,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
 
-const createPinPageKey = Key('create-pin-page');
-const titleFieldKey = Key('create-pin-title-field');
-const descriptionFieldKey = Key('create-pin-description-field');
-const submitBtn = Key('create-pin-submit');
-
 class CreatePin extends ConsumerStatefulWidget {
+  static const createPinPageKey = Key('create-pin-page');
+  static const titleFieldKey = Key('create-pin-title-field');
+  static const descriptionFieldKey = Key('create-pin-description-field');
+  static const submitBtn = Key('create-pin-submit');
+
   final String? initialSelectedSpace;
 
   const CreatePin({
@@ -124,7 +124,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePin> {
         const SizedBox(height: 6),
         InputTextField(
           hintText: L10n.of(context).pinName,
-          key: titleFieldKey,
+          key: CreatePin.titleFieldKey,
           textInputType: TextInputType.text,
           textInputAction: TextInputAction.done,
           controller: _titleController,
@@ -282,7 +282,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePin> {
 
   Widget _buildCreateButton() {
     return ActerPrimaryActionButton(
-      key: submitBtn,
+      key: CreatePin.submitBtn,
       onPressed: _createPin,
       child: Text(L10n.of(context).create),
     );
