@@ -52,7 +52,7 @@ class _ChatsListConsumerState extends ConsumerState<ChatsList> {
               ),
             ),
             error: (e, s) {
-              _log.severe('Filtering of convos failed', e, s);
+              _log.severe('Failed to filter convos', e, s);
               return SliverToBoxAdapter(
                 child: Center(
                   heightFactor: 10,

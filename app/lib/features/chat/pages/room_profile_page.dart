@@ -291,7 +291,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
             );
           },
           error: (e, st) {
-            _log.severe('Loading of convo failed', e, st);
+            _log.severe('Failed to load convo', e, st);
             return Skeletonizer(
               child: IconButton.filled(
                 icon: const Icon(
@@ -325,7 +325,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
             );
           },
           error: (e, st) {
-            _log.severe('Loading of room membership failed', e, st);
+            _log.severe('Failed to load room membership', e, st);
             return Text(L10n.of(context).errorLoadingTileDueTo(e));
           },
           loading: () => ActionItemSkeleton(
@@ -471,7 +471,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
               child: Text(L10n.of(context).membersCount(0)),
             ),
             error: (e, st) {
-              _log.severe('Fetching of room members failed', e, st);
+              _log.severe('Failed to load room members', e, st);
               return Text(L10n.of(context).errorLoadingMembersCount(e));
             },
           ),

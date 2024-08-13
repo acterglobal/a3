@@ -36,7 +36,7 @@ class _CommentsListState extends ConsumerState<CommentsList> {
             }
           },
           error: (e, st) {
-            _log.severe('Fetching of comment list failed', e, st);
+            _log.severe('Failed to load comments', e, st);
             return onError(context, e);
           },
           loading: () => loading(context),

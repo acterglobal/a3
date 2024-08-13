@@ -167,7 +167,7 @@ class _SelectRoomDrawerState extends ConsumerState<SelectRoomDrawer> {
         child: CircularProgressIndicator(),
       ),
       error: (e, s) {
-        _log.severe('Searching spaces or convos failed', e, s);
+        _log.severe('Failed to search space or convo', e, s);
         return Center(
           child: Text(L10n.of(context).searchingFailed(e)),
         );

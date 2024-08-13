@@ -22,7 +22,7 @@ class VisibilityChip extends ConsumerWidget {
         return renderSpaceChip(context, visibility);
       },
       error: (error, st) {
-        _log.severe('Fetching of room visibility failed', error, st);
+        _log.severe('Failed to load room visibility', error, st);
         return Chip(
           label: Text(L10n.of(context).loadingFailed(error)),
         );

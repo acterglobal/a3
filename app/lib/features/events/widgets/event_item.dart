@@ -119,7 +119,7 @@ class EventItem extends StatelessWidget {
                 : const SizedBox.shrink();
           },
           error: (e, st) {
-            _log.severe('Fetching of RSVP status failed', e, st);
+            _log.severe('Failed to load RSVP status', e, st);
             return Chip(
               label: Text(
                 L10n.of(context).errorLoadingRsvpStatus(e),
@@ -139,12 +139,12 @@ class EventItem extends StatelessWidget {
     if (status != null) {
       switch (status) {
         case 'yes':
-          return  Icon(
+          return Icon(
             Icons.check_circle,
             color: Theme.of(context).colorScheme.secondary,
           );
         case 'no':
-          return  Icon(
+          return Icon(
             Icons.cancel,
             color: Theme.of(context).colorScheme.error,
           );

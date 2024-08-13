@@ -48,7 +48,7 @@ class ChatSettingsPage extends ConsumerWidget {
             },
           ),
           error: (error, stack) {
-            _log.severe('Loading of user app setting failed', error, stack);
+            _log.severe('Failed to load user app settings', error, stack);
             return SettingsTile.navigation(
               title: Text(L10n.of(context).failed),
             );
@@ -97,7 +97,7 @@ class ChatSettingsPage extends ConsumerWidget {
             },
           ),
           error: (error, stack) {
-            _log.severe('Loading of user app setting failed', error, stack);
+            _log.severe('Failed to load user app settings', error, stack);
             return SettingsTile.navigation(
               title: Text(L10n.of(context).failed),
             );

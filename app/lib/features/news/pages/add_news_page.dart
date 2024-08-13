@@ -230,10 +230,12 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
                       ),
                     );
                   },
-                  loading: () =>
-                      const SizedBox(width: 300, child: EventItemSkeleton()),
+                  loading: () => const SizedBox(
+                    width: 300,
+                    child: EventItemSkeleton(),
+                  ),
                   error: (e, s) {
-                    _log.severe('Fetching of calendar event failed', e, s);
+                    _log.severe('Failed to load cal event', e, s);
                     return Center(
                       child: Text(L10n.of(context).failedToLoadEvent(e)),
                     );

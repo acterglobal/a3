@@ -32,7 +32,7 @@ class TaskItemsListWidget extends ConsumerWidget {
     return tasks.when(
       data: (overview) => taskData(context, overview),
       error: (error, stack) {
-        _log.severe('Loading of tasklist failed', error, stack);
+        _log.severe('Failed to load tasklist', error, stack);
         return Text(L10n.of(context).errorLoadingTasks(error));
       },
       loading: () => const TaskItemsSkeleton(),

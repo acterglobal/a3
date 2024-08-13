@@ -107,7 +107,7 @@ class _InviteSpaceMembersConsumerState
     return otherSpaces.when(
       data: _buildOtherSpaceData,
       error: (error, stack) {
-        _log.severe('Fetching of other spaces failed', error, stack);
+        _log.severe('Failed to load other spaces', error, stack);
         return ListTile(
           title: Text(error.toString()),
         );

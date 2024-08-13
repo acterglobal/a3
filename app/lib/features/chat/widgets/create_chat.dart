@@ -379,7 +379,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                     ),
                   ),
             error: (e, st) {
-              _log.severe('Searching of users failed', e, st);
+              _log.severe('Failed to search users', e, st);
               return Text(L10n.of(context).errorLoadingUsers(e));
             },
             loading: () => const Center(
@@ -720,7 +720,7 @@ class _UserWidget extends ConsumerWidget {
           );
         },
         error: (e, st) {
-          _log.severe('Fetching of avatar binary data failed', e, st);
+          _log.severe('Failed to load binary data of avatar', e, st);
           return Text(L10n.of(context).errorLoadingAvatar(e));
         },
         loading: () => Skeletonizer(

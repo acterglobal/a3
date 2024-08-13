@@ -32,7 +32,7 @@ class ChatsSection extends ConsumerWidget {
         spaceRelationsOverview.knownChats,
       ),
       error: (error, stack) {
-        _log.severe('Loading of related spaces failed', error, stack);
+        _log.severe('Failed to load the related spaces', error, stack);
         return Center(
           child: Text(L10n.of(context).loadingFailed(error)),
         );

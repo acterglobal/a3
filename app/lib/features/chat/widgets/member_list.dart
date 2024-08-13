@@ -44,7 +44,7 @@ class MemberList extends ConsumerWidget {
         );
       },
       error: (error, stack) {
-        _log.severe('Fetching of member list failed', error, stack);
+        _log.severe('Failed to load room members', error, stack);
         return Center(
           child: Text(L10n.of(context).loadingFailed(error)),
         );

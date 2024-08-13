@@ -222,7 +222,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
             return menu;
           },
           error: (e, s) {
-            _log.severe('Fetching of room membership failed', e, s);
+            _log.severe('Failed to load room membership', e, s);
             return [
               _roomTitle(context, ref),
               MenuItemWidget(
@@ -321,7 +321,7 @@ class MemberInfoDrawer extends ConsumerWidget {
             isShowActions: isShowActions,
           ),
           error: (e, s) {
-            _log.severe('Fetching of member failed', e, s);
+            _log.severe('Failed to load room member', e, s);
             return Padding(
               padding: const EdgeInsets.all(20.0),
               child: Text(L10n.of(context).errorLoadingProfile(e)),

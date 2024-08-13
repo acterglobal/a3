@@ -47,7 +47,7 @@ class TaskListItemCard extends ConsumerWidget {
             ),
           ),
           error: (error, stack) {
-            _log.severe('failed to load tasklist', error, stack);
+            _log.severe('Failed to load tasklist', error, stack);
             return Card(
               child: Text('Loading of tasklist failed: $error'),
             );

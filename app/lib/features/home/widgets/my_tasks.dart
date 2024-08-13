@@ -29,8 +29,10 @@ class MyTasksSection extends ConsumerWidget {
                 ListView.separated(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  separatorBuilder: (context, index) =>
-                      const Divider(color: Colors.white24, indent: 30),
+                  separatorBuilder: (context, index) => const Divider(
+                    color: Colors.white24,
+                    indent: 30,
+                  ),
                   itemCount: tasks.length,
                   itemBuilder: (context, index) {
                     return TaskItem(
@@ -46,7 +48,7 @@ class MyTasksSection extends ConsumerWidget {
               ],
             ),
       error: (error, stack) {
-        _log.severe('Fetching of open tasks failed', error, stack);
+        _log.severe('Failed to load open tasks', error, stack);
         return Text(L10n.of(context).loadingTasksFailed(error));
       },
       loading: () => Text(L10n.of(context).loading),

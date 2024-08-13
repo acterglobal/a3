@@ -26,7 +26,7 @@ class _JoinBtn extends ConsumerWidget {
           data: (data) =>
               data == null ? noMember(context) : alreadyMember(context),
           error: (error, st) {
-            _log.severe('loading membership info failed', error, st);
+            _log.severe('Failed to load room membership', error, st);
             return Text(L10n.of(context).loadingFailed(error));
           },
           loading: () => Skeletonizer(
@@ -91,7 +91,7 @@ class PublicRoomItem extends ConsumerWidget {
                     options: AvatarOptions(profile),
                   ),
                   error: (e, s) {
-                    _log.severe('loading of avatar info failed', e, s);
+                    _log.severe('Failed to load avatar info', e, s);
                     return fallbackAvatar();
                   },
                   loading: fallbackAvatar,

@@ -130,7 +130,7 @@ class SpaceHeaderProfile extends ConsumerWidget {
         );
       },
       error: (error, stack) {
-        _log.severe('Fetching of space members failed', error, stack);
+        _log.severe('Failed to load members in space', error, stack);
         return Text(L10n.of(context).loadingMembersFailed(error));
       },
       loading: () => const Skeletonizer(

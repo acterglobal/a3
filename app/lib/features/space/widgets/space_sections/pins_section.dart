@@ -27,7 +27,7 @@ class PinsSection extends ConsumerWidget {
     return pinList.when(
       data: (pins) => buildPinsSectionUI(context, pins),
       error: (error, stack) {
-        _log.severe('Fetching of pin list failed', error, stack);
+        _log.severe('Failed to load pins in space', error, stack);
         return Center(
           child: Text(L10n.of(context).loadingFailed(error)),
         );

@@ -86,7 +86,7 @@ class _EventListPageState extends ConsumerState<EventListPage> {
           child: eventList.when(
             data: (events) => _buildEventList(events),
             error: (e, st) {
-              _log.severe('Searching of events in space failed', e, st);
+              _log.severe('Failed to search events in space', e, st);
               return Center(
                 child: Text(L10n.of(context).loadingFailed(e)),
               );

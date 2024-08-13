@@ -108,7 +108,7 @@ class _NewsItemState extends ConsumerState<NewsItem> {
                 child: space.when(
                   data: (space) => Text(space.avatarInfo.displayName ?? roomId),
                   error: (e, st) {
-                    _log.severe('Fetching of brief space item failed', e, st);
+                    _log.severe('Failed to load brief of space', e, st);
                     return Text(L10n.of(context).errorLoadingSpace(e));
                   },
                   loading: () => Skeletonizer(
@@ -187,7 +187,7 @@ class _NewsItemState extends ConsumerState<NewsItem> {
             },
             loading: () => const EventItemSkeleton(),
             error: (e, s) {
-              _log.severe('Fetching of calendar event failed', e, s);
+              _log.severe('Failed to load cal event', e, s);
               return Center(
                 child: Text(L10n.of(context).failedToLoadEvent(e)),
               );

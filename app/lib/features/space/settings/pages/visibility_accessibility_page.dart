@@ -110,7 +110,7 @@ class _VisibilityAccessibilityPageState
         );
       },
       error: (e, st) {
-        _log.severe('Fetching of room visibility failed', e, st);
+        _log.severe('Failed to load room visibility', e, st);
         return const RoomVisibilityType(
           selectedVisibilityEnum: RoomVisibility.Private,
         );
@@ -153,7 +153,7 @@ class _VisibilityAccessibilityPageState
               },
             ),
             error: (error, stack) {
-              _log.severe('Loading Space Info failed', error, stack);
+              _log.severe('Failed to load the allowed rooms', error, stack);
               return _spaceItemCard(
                 'Loading Space Info failed',
                 subtitle: Text('$error'),
@@ -217,7 +217,7 @@ class _VisibilityAccessibilityPageState
     return ref.watch(briefSpaceItemProvider(spaceId)).when(
           data: (d) => _spaceFoundUI(d, canEdit),
           error: (error, stack) {
-            _log.severe('Loading Space Info failed', error, stack);
+            _log.severe('Failed to load brief of space', error, stack);
             return _spaceItemCard(
               spaceId,
               subtitle: Text('Loading Space Info failed: $error'),

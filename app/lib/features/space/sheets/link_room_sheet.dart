@@ -142,7 +142,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
                 );
         },
         error: (e, s) {
-          _log.severe('Loading of selected space details failed', e, s);
+          _log.severe('Failed to load the details of selected space', e, s);
           return errorUI(L10n.of(context).error(e));
         },
         loading: () => Container(),
@@ -185,7 +185,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
           ? Text(L10n.of(context).noChatsFoundMatchingYourSearchTerm)
           : chatListUI(chats),
       error: (e, s) {
-        _log.severe('Searching of convos failed', e, s);
+        _log.severe('Failed to search chats', e, s);
         return errorUI(L10n.of(context).searchingFailed(e));
       },
       loading: () => loadingUI(),
@@ -243,7 +243,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       },
       loading: () => loadingUI(),
       error: (e, s) {
-        _log.severe('Searching of spaces failed', e, s);
+        _log.severe('Failed to search spaces', e, s);
         return errorUI(L10n.of(context).searchingFailed(e));
       },
     );

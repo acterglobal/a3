@@ -93,11 +93,7 @@ Widget renderMoreSubspaces(
       );
     },
     error: (e, s) {
-      _log.severe(
-        'Loading subspaces from remote failed $spaceIdOrAlias',
-        e,
-        s,
-      );
+      _log.severe('Failed to load the related subspaces', e, s);
       return Card(
         child: ListTile(
           title: Text(L10n.of(context).loadingSpacesFailed(e)),

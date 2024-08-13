@@ -69,7 +69,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           );
         },
         error: (e, st) {
-          _log.severe('Fetching of calendar event failed', e, st);
+          _log.severe('Failed to load cal event', e, st);
           return Text(L10n.of(context).errorLoadingEventDueTo(e));
         },
         loading: () => const EventDetailsSkeleton(),

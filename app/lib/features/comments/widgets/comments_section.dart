@@ -28,7 +28,7 @@ class CommentsSection extends ConsumerWidget {
     return ref.watch(commentsManagerProvider(manager)).when(
           data: (manager) => found(context, manager),
           error: (e, st) {
-            _log.severe('Fetching of comments manager failed', e, st);
+            _log.severe('Failed to load comment manager', e, st);
             return onError(context, e);
           },
           loading: () => loading(context),

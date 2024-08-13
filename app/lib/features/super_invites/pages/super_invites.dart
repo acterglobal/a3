@@ -102,7 +102,7 @@ class SuperInvitesPage extends ConsumerWidget {
                       ),
                     ),
               error: (e, s) {
-                _log.severe('Fetching of super invite tokens failed', e, s);
+                _log.severe('Failed to load the super invite tokens', e, s);
                 return SliverToBoxAdapter(
                   child: Center(
                     child: Text(L10n.of(context).failedToLoadInviteCodes(e)),

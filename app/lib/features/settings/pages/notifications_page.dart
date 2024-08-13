@@ -261,7 +261,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
                   .toList();
             },
             error: (e, s) {
-              _log.severe('Fetching of pushers failed', e, s);
+              _log.severe('Failed to load pushers', e, s);
               return [
                 SettingsTile(
                   title: Text(L10n.of(context).failedToLoadPushTargets(e)),

@@ -58,7 +58,7 @@ Widget renderFurther(
       );
     },
     error: (e, s) {
-      _log.severe('Fetching of remote chat relations failed', e, s);
+      _log.severe('Failed to load the related chats', e, s);
       return Card(
         child: Text(L10n.of(context).errorLoadingRelatedChats(e)),
       );

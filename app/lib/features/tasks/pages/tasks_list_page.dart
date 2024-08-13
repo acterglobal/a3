@@ -112,7 +112,7 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
           child: tasksList.when(
             data: (tasks) => _buildTasksList(tasks),
             error: (e, s) {
-              _log.severe('Searching of tasklists in space failed', e, s);
+              _log.severe('Failed to search tasklists in space', e, s);
               return Center(
                 child: Text(L10n.of(context).loadingFailed(e)),
               );

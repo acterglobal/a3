@@ -26,7 +26,7 @@ class MentionProfileBuilder extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final client = ref.watch(alwaysClientProvider);
     final userId = client.userId().toString();
-    var memberIds = ref.watch(membersIdsProvider((roomQuery.roomId)));
+    var memberIds = ref.watch(membersIdsProvider(roomQuery.roomId));
     return memberIds.when(
       loading: () => Skeletonizer(
         child: SizedBox(
@@ -35,7 +35,7 @@ class MentionProfileBuilder extends ConsumerWidget {
         ),
       ),
       error: (error, st) {
-        _log.severe('Fetching of member list failed', error, st);
+        _log.severe('Failed to load room members', error, st);
         return ErrorWidget(L10n.of(context).failedToLoad(error));
       },
       data: (data) {

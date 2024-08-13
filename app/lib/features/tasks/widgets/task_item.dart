@@ -59,7 +59,7 @@ class TaskItem extends ConsumerWidget {
             trailing: trailing(ref, task),
           ),
           error: (error, stack) {
-            _log.severe('failed to load task', error, stack);
+            _log.severe('Failed to load task', error, stack);
             return ListTile(
               title: Text('Loading of task failed: $error'),
             );
@@ -128,7 +128,7 @@ class TaskItem extends ConsumerWidget {
                     ],
                   ),
                   error: (e, s) {
-                    _log.severe('Loading of task failed', e, s);
+                    _log.severe('Failed to load task', e, s);
                     return Text(L10n.of(context).loadingFailed(e));
                   },
                   loading: () => Skeletonizer(

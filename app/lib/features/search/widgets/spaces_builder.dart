@@ -26,7 +26,7 @@ class SpacesBuilder extends ConsumerWidget {
     return foundSpaces.when(
       loading: () => renderLoading(context),
       error: (e, st) {
-        _log.severe('Searching of spaces failed', e, st);
+        _log.severe('Failed to search spaces', e, st);
         return inBox(
           context,
           Text(L10n.of(context).error(e)),

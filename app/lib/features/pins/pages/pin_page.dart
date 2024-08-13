@@ -198,10 +198,12 @@ class PinPage extends ConsumerWidget {
               );
             },
             loading: () => SliverAppBar(
-              title: Skeletonizer(child: Text(L10n.of(context).loadingPin)),
+              title: Skeletonizer(
+                child: Text(L10n.of(context).loadingPin),
+              ),
             ),
             error: (err, st) {
-              _log.severe('Loading of pin failed', err, st);
+              _log.severe('Failed to load pin', err, st);
               return SliverAppBar(
                 title: Text(L10n.of(context).errorLoadingPin(err)),
               );
@@ -220,7 +222,7 @@ class PinPage extends ConsumerWidget {
                 ],
               ),
               error: (err, st) {
-                _log.severe('Loading of pin failed', err, st);
+                _log.severe('Failed to load pin', err, st);
                 return Text(L10n.of(context).errorLoadingPin(err));
               },
               loading: () => const Skeletonizer(

@@ -79,7 +79,7 @@ class RoomPage extends ConsumerWidget {
               },
               skipLoadingOnReload: false,
               error: (e, s) {
-                _log.severe('Fetching of active members failed', e, s);
+                _log.severe('Failed to load active members', e, s);
                 return Text(L10n.of(context).errorLoadingMembersCount(e));
               },
               loading: () => Skeletonizer(

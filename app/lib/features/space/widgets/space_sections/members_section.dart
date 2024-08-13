@@ -26,7 +26,7 @@ class MembersSection extends ConsumerWidget {
     return membersList.when(
       data: (members) => buildMembersSectionUI(context, members),
       error: (error, stack) {
-        _log.severe('Fetching of member list failed', error, stack);
+        _log.severe('Failed to load members in space', error, stack);
         return Center(
           child: Text(L10n.of(context).loadingFailed(error)),
         );

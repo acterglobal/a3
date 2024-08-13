@@ -75,7 +75,7 @@ class SpaceMembersPage extends ConsumerWidget {
             );
           },
           error: (error, stack) {
-            _log.severe('Fetching of members failed', error, stack);
+            _log.severe('Failed to load space members', error, stack);
             return SliverToBoxAdapter(
               child: Center(
                 child: Text(L10n.of(context).loadingFailed(error)),

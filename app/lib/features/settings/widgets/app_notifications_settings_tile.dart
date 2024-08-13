@@ -32,7 +32,7 @@ class _AppNotificationSettingsTile extends ConsumerWidget {
               st,
             );
             return SettingsTile(
-              title: Text('${L10n.of(context).error}: $error'),
+              title: Text(L10n.of(context).error(error)),
             );
           },
           loading: () => Skeletonizer(

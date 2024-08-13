@@ -26,7 +26,7 @@ class HasSpacePermission extends ConsumerWidget {
           data: (membership) =>
               membership?.canString(permission) == true ? child : otherwise,
           error: (e, s) {
-            _log.severe('Loading membership failed', e, s);
+            _log.severe('Failed to load membership', e, s);
             return otherwise;
           },
           loading: () => otherwise,

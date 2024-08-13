@@ -93,7 +93,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
         ],
       ),
       error: (e, s) {
-        _log.severe('Loading of tasklist failed', e, s);
+        _log.severe('Failed to load tasklist', e, s);
         return AppBar(
           title: Text(L10n.of(context).failedToLoad(e)),
         );
@@ -134,7 +134,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
     return taskList.when(
       data: (data) => _buildTaskListData(data),
       error: (e, s) {
-        _log.severe('Loading of tasklist failed', e, s);
+        _log.severe('Failed to load tasklist', e, s);
         return Text(L10n.of(context).failedToLoad(e));
       },
       loading: () => Text(L10n.of(context).loading),

@@ -119,7 +119,7 @@ class SubSpacesPage extends ConsumerWidget {
               }
             },
             error: (error, stack) {
-              _log.severe('Fetching of related spaces failed', error, stack);
+              _log.severe('Failed to load the related spaces', error, stack);
               return Center(
                 child: Text(L10n.of(context).loadingFailed(error)),
               );
@@ -146,7 +146,7 @@ class SubSpacesPage extends ConsumerWidget {
                     );
               },
               error: (error, stack) {
-                _log.severe('Fetching of related spaces failed', error, stack);
+                _log.severe('Failed to load the related spaces', error, stack);
                 return Center(
                   child: Text(L10n.of(context).loadingFailed(error)),
                 );

@@ -34,7 +34,7 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
             info.when(
               data: (info) => renderInfo(context, ref, info),
               error: (e, s) {
-                _log.severe('Loading super invite failed: $token', e, s);
+                _log.severe('Failed to load the super invite: $token', e, s);
                 final errorStr = e.toString();
                 if (errorStr.contains('error: [404]')) {
                   // Server doesn't yet support previewing

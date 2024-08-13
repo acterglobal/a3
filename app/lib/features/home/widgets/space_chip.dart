@@ -33,7 +33,7 @@ class SpaceChip extends ConsumerWidget {
           return renderSpace(context, space);
         },
         error: (error, st) {
-          _log.severe('Fetching of brief space item failed', error, st);
+          _log.severe('Failed to load brief of space', error, st);
           return Chip(
             label: Text(L10n.of(context).loadingFailed(error)),
           );
