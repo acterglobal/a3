@@ -34,7 +34,6 @@ class AttachmentItem extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final containerColor = Theme.of(context).colorScheme.surface;
     final borderColor = Theme.of(context).colorScheme.primary;
-    var msgContent = attachment.msgContent();
     final attachmentType = AttachmentType.values.byName(attachment.typeStr());
     final eventId = attachment.attachmentIdStr();
     final roomId = attachment.roomIdStr();
@@ -68,11 +67,7 @@ class AttachmentItem extends ConsumerWidget {
                   isSpace: true,
                 )
             : null,
-        title: Text(
-          msgContent.body(),
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-        ),
+        title: title(attachmentType),
         trailing: Visibility(
           visible: mediaState.mediaFile == null &&
               attachmentType != AttachmentType.link,
@@ -87,6 +82,47 @@ class AttachmentItem extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget title(AttachmentType attachmentType) {
+    final msgContent = attachment.msgContent();
+    final fileName = msgContent.body();
+    final fileNameSplit = fileName.split('.');
+    final title = fileNameSplit.first;
+    final fileExtension = fileNameSplit.last;
+    String fileSize = getFileSize(msgContent.size() ?? 0);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (attachmentType == AttachmentType.link) ...[
+          Text(
+            attachment.name() ?? '',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          Text(
+            attachment.link() ?? '',
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ] else ...[
+          Text(
+            title,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          Row(
+            children: [
+              Text(fileSize),
+              const SizedBox(width: 10),
+              const Text('.'),
+              const SizedBox(width: 10),
+              Text(documentTypeFromFileExtension(fileExtension)),
+            ],
+          ),
+        ],
+      ],
     );
   }
 

@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:math';
 import 'package:acter/common/models/types.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/pins/models/create_pin_state/pin_attachment_model.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:file_picker/file_picker.dart';
@@ -9,14 +9,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::pins::select::attachment');
-
-String getFileSize(PlatformFile file) {
-  int bytes = file.size;
-  if (bytes <= 0) return '0 B';
-  const suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-  var i = (log(bytes) / log(1024)).floor();
-  return '${(bytes / pow(1024, i)).toStringAsFixed(1)} ${suffixes[i]}';
-}
 
 FileType attachmentFileType(AttachmentType pinAttachmentType) {
   switch (pinAttachmentType) {
@@ -33,27 +25,6 @@ FileType attachmentFileType(AttachmentType pinAttachmentType) {
   }
 }
 
-String documentTypeFromFileExtension(String fileExtension) {
-  switch (fileExtension) {
-    case 'png':
-    case 'jpg':
-    case 'jpeg':
-      return 'Image';
-    case 'mov':
-    case 'mp4':
-      return 'Video';
-    case 'mp3':
-    case 'wav':
-      return 'Audio';
-    case 'pdf':
-      return 'PDF';
-    case 'txt':
-      return 'Text File';
-    default:
-      return '';
-  }
-}
-
 //Select Attachment
 Future<void> selectAttachment(
   WidgetRef ref,
@@ -67,7 +38,7 @@ Future<void> selectAttachment(
     );
     if (result != null && result.files.isNotEmpty) {
       final file = result.files.first;
-      String fileSize = getFileSize(file);
+      String fileSize = getFileSize(file.size);
       final fileNameSplit = file.name.split('.');
       final title = fileNameSplit.first;
       final fileExtension = fileNameSplit.last;
