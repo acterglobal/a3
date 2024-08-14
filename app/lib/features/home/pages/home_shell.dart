@@ -83,7 +83,7 @@ class HomeShellState extends ConsumerState<HomeShell> {
     // shake is possible in only actual mobile devices
     if (await isRealPhone()) {
       detector = ShakeDetector.autoStart(
-        shakeThresholdGravity: 3.0,
+        shakeThresholdGravity: 30.0,
         onShake: () {
           openBugReport(context);
         },
