@@ -234,6 +234,11 @@ object OptionRsvpStatus {
     fn status_str() -> Option<string>;
 }
 
+object OptionComposeDraft {
+    /// get compose draft object
+    fn draft() -> Option<ComposeDraft>;
+}
+
 object UserProfile {
     /// get user id
     fn user_id() -> UserId;
@@ -328,6 +333,21 @@ object EventId {
 
 object MxcUri {
     fn to_string() -> string;
+}
+
+object ComposeDraft {
+    /// plain body text, always available
+    fn plain_text() -> string;
+
+    /// formatted text
+    fn html_text() -> Option<string>;
+
+    /// event id, only valid for edit and reply states
+    fn event_id() -> Option<string>;
+
+    /// compose message state type.
+    /// One of `new`, `edit`, `reply`.
+    fn draft_type() -> string;
 }
 
 object RoomId {
@@ -1098,7 +1118,6 @@ object Room {
 
     /// leave this room
     fn leave() -> Future<Result<bool>>;
-
 }
 
 
@@ -1356,6 +1375,15 @@ object Convo {
     fn redact_content(event_id: string, reason: Option<string>) -> Future<Result<EventId>>;
 
     fn is_joined() -> bool;
+
+    /// compose message state of the room
+    fn msg_draft() -> Future<Result<OptionComposeDraft>>;
+
+    /// save composed message state of the room
+    fn save_msg_draft(text: string, html: Option<string>, draft_type: string, event_id: Option<string>) -> Future<Result<bool>>;
+
+    /// clear composed message state of the room
+    fn clear_msg_draft() -> Future<Result<bool>>;
 }
 
 
