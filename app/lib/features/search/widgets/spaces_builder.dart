@@ -29,7 +29,7 @@ class SpacesBuilder extends ConsumerWidget {
         _log.severe('Failed to search spaces', e, st);
         return inBox(
           context,
-          Text(L10n.of(context).error(e)),
+          Text(L10n.of(context).searchingFailed(e)),
         );
       },
       data: (data) {

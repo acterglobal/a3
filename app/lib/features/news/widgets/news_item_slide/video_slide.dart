@@ -52,7 +52,7 @@ class VideoSlide extends StatelessWidget {
               snapshot.stackTrace,
             );
             return Center(
-              child: Text(L10n.of(context).errorLoading(snapshot.error!)),
+              child: Text(L10n.of(context).loadingFailed(snapshot.error!)),
             );
           }
 

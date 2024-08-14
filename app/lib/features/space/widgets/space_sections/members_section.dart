@@ -28,7 +28,7 @@ class MembersSection extends ConsumerWidget {
       error: (error, stack) {
         _log.severe('Failed to load members in space', error, stack);
         return Center(
-          child: Text(L10n.of(context).loadingFailed(error)),
+          child: Text(L10n.of(context).loadingMembersFailed(error)),
         );
       },
       loading: () => Center(

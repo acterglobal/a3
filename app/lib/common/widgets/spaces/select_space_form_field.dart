@@ -103,7 +103,7 @@ class SelectSpaceFormField extends ConsumerWidget {
           : Text(currentSelectedSpace!),
       error: (e, s) {
         _log.severe('Failed to load the details of selected space', e, s);
-        return Text(L10n.of(context).errorLoading(e));
+        return Text(L10n.of(context).loadingFailed(e));
       },
       loading: () => Skeletonizer(
         child: Chip(

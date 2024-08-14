@@ -109,7 +109,7 @@ class _InviteSpaceMembersConsumerState
       error: (error, stack) {
         _log.severe('Failed to load other spaces', error, stack);
         return ListTile(
-          title: Text(error.toString()),
+          title: Text(L10n.of(context).loadingFailed(error)),
         );
       },
       loading: () => _buildSkeletonizerLoading(),

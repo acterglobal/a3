@@ -3,6 +3,7 @@ import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/events/widgets/skeletons/event_list_skeleton_widget.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -74,7 +75,7 @@ Future<String?> selectEventDrawer({
           error: (error, stack) {
             _log.severe('Failed to load all cal events', error, stack);
             return Center(
-              child: Text('Failed to load all cal events: $error'),
+              child: Text(L10n.of(context).failedToLoadEventsDueTo(error)),
             );
           },
           loading: () => const SizedBox(

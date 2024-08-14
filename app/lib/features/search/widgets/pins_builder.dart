@@ -22,7 +22,7 @@ class PinsBuilder extends ConsumerWidget {
       loading: () => Text(L10n.of(context).loading),
       error: (e, st) {
         _log.severe('Failed to search pins', e, st);
-        return Text(L10n.of(context).error(e));
+        return Text(L10n.of(context).searchingFailed(e));
       },
       data: (data) {
         final Widget body;

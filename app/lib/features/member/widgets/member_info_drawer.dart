@@ -227,7 +227,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
               _roomTitle(context, ref),
               MenuItemWidget(
                 iconData: Atlas.triangle_exclamation_thin,
-                title: L10n.of(context).errorLoading(e),
+                title: L10n.of(context).loadingFailed(e),
                 withMenu: false,
                 onTap: () {},
               ),

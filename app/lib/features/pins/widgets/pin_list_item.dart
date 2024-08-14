@@ -36,7 +36,7 @@ class PinListItemById extends ConsumerWidget {
       ),
       error: (err, st) {
         _log.severe('Failed to load pin', err, st);
-        return Text(L10n.of(context).errorLoading(err));
+        return Text(L10n.of(context).errorLoadingPin(err));
       },
       loading: () => const Skeletonizer(
         child: SizedBox(

@@ -28,7 +28,7 @@ class TasksSection extends ConsumerWidget {
       error: (error, stack) {
         _log.severe('Failed to load tasks in space', error, stack);
         return Center(
-          child: Text(L10n.of(context).loadingFailed(error)),
+          child: Text(L10n.of(context).loadingTasksFailed(error)),
         );
       },
       loading: () => Center(

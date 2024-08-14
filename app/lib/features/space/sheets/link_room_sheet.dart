@@ -143,7 +143,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
         },
         error: (e, s) {
           _log.severe('Failed to load the details of selected space', e, s);
-          return errorUI(L10n.of(context).error(e));
+          return errorUI(L10n.of(context).loadingFailed(e));
         },
         loading: () => Container(),
       ),

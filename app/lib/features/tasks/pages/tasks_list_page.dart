@@ -114,7 +114,7 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
             error: (e, s) {
               _log.severe('Failed to search tasklists in space', e, s);
               return Center(
-                child: Text(L10n.of(context).loadingFailed(e)),
+                child: Text(L10n.of(context).searchingFailed(e)),
               );
             },
             loading: () => const TasksListSkeleton(),

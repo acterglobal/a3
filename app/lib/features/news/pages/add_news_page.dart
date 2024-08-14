@@ -353,9 +353,8 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       return;
     }
 
-    String displayMsg = L10n.of(context).slidePosting;
     // Show loading message
-    EasyLoading.show(status: displayMsg);
+    EasyLoading.show(status: L10n.of(context).slidePosting);
     try {
       final space = await ref.read(spaceProvider(spaceId).future);
       NewsEntryDraft draft = space.newsDraft();
@@ -475,7 +474,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
         return;
       }
       EasyLoading.showError(
-        '$displayMsg ${L10n.of(context).failed}: \n $err',
+        L10n.of(context).error(err),
         duration: const Duration(seconds: 3),
       );
     }

@@ -61,11 +61,11 @@ class TaskItem extends ConsumerWidget {
           error: (error, stack) {
             _log.severe('Failed to load task', error, stack);
             return ListTile(
-              title: Text('Loading of task failed: $error'),
+              title: Text(L10n.of(context).loadingFailed(error)),
             );
           },
-          loading: () => const ListTile(
-            title: Text('loading'),
+          loading: () => ListTile(
+            title: Text(L10n.of(context).loading),
           ),
         );
   }

@@ -38,7 +38,7 @@ class SpaceInfo extends ConsumerWidget {
       },
       error: (e, s) {
         _log.severe('Failed to load space', e, s);
-        return Text(L10n.of(context).error(e));
+        return Text(L10n.of(context).loadingFailed(e));
       },
       loading: () => skeletonUI(),
     );

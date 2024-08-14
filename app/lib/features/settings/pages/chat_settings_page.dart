@@ -50,7 +50,7 @@ class ChatSettingsPage extends ConsumerWidget {
           error: (error, stack) {
             _log.severe('Failed to load user app settings', error, stack);
             return SettingsTile.navigation(
-              title: Text(L10n.of(context).failed),
+              title: Text(L10n.of(context).loadingFailed(error)),
             );
           },
           loading: () => SettingsTile.switchTile(
@@ -99,7 +99,7 @@ class ChatSettingsPage extends ConsumerWidget {
           error: (error, stack) {
             _log.severe('Failed to load user app settings', error, stack);
             return SettingsTile.navigation(
-              title: Text(L10n.of(context).failed),
+              title: Text(L10n.of(context).loadingFailed(error)),
             );
           },
           loading: () => SettingsTile.switchTile(

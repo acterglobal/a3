@@ -36,7 +36,7 @@ class MentionProfileBuilder extends ConsumerWidget {
       ),
       error: (error, st) {
         _log.severe('Failed to load room members', error, st);
-        return ErrorWidget(L10n.of(context).failedToLoad(error));
+        return ErrorWidget(L10n.of(context).loadingFailed(error));
       },
       data: (data) {
         final users = data.fold<Map<String, String>>({}, (map, uId) {

@@ -88,7 +88,7 @@ class _EventListPageState extends ConsumerState<EventListPage> {
             error: (e, st) {
               _log.severe('Failed to search events in space', e, st);
               return Center(
-                child: Text(L10n.of(context).loadingFailed(e)),
+                child: Text(L10n.of(context).searchingFailed(e)),
               );
             },
             loading: () => const EventListSkeleton(),
