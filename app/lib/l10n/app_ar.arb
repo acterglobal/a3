@@ -1177,7 +1177,7 @@
   "@suggestedRoomsSubtitle": {},
   "invitingSpaceMembersProgress": "دعوة عضو فضاء{count} / {total}",
   "@invitingSpaceMembersProgress": {},
-  "closingRoomDoneBut": "تم الإغلاق وتمّت مغادرتك. ولكن لم تتمكن من إزالة {skippe} المستخدمين الآخرين وإزالتها كفرع من {skippedParents} الفضاءات بسبب عدم وجود إذن. قد لا يزال بإمكان الآخرين الوصول إليها.",
+  "closingRoomDoneBut": "تم الإغلاق وتمّت مغادرتك. ولكن لم تتمكن من إزالة {skipped} المستخدمين الآخرين وإزالتها كفرع من {skippedParents} الفضاءات بسبب عدم وجود إذن. قد لا يزال بإمكان الآخرين الوصول إليها.",
   "@closingRoomDoneBut": {},
   "analyticsDescription2": "هذه بالطبع مجهولة المصدر ولا تحتوي على أي معلومات خاصة",
   "@analyticsDescription2": {},
