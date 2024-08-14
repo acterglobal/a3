@@ -1,4 +1,3 @@
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/attachments/widgets/attachment_selection_options.dart';
 import 'package:flutter/material.dart';
@@ -8,23 +7,13 @@ Future<void> selectAttachment({
   required OnAttachmentSelected onSelected,
   OnLinkSelected? onLinkSelected,
 }) async {
-  context.isLargeScreen
-      ? await showAdaptiveDialog(
-          context: context,
-          builder: (context) => Dialog(
-            child: AttachmentSelectionOptions(
-              onSelected: onSelected,
-              onLinkSelected: onLinkSelected,
-            ),
-          ),
-        )
-      : await showModalBottomSheet(
-          isDismissible: true,
-          showDragHandle: true,
-          context: context,
-          builder: (context) => AttachmentSelectionOptions(
-            onSelected: onSelected,
-            onLinkSelected: onLinkSelected,
-          ),
-        );
+  await showModalBottomSheet(
+    isDismissible: true,
+    showDragHandle: true,
+    context: context,
+    builder: (context) => AttachmentSelectionOptions(
+      onSelected: onSelected,
+      onLinkSelected: onLinkSelected,
+    ),
+  );
 }
