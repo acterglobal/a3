@@ -5,6 +5,7 @@ Color brandColor = const Color(0xff126bab);
 Color secondaryColor = const Color(0xFF74A64D);
 
 // Background Colors
+Color greyColor = Colors.grey.shade800;
 Color surfaceColor = const Color(0xff181c1f);
 Color backgroundColor = const Color(0xff0d0f11);
 
@@ -33,6 +34,7 @@ var colorScheme = ColorScheme.dark(
   surface: surfaceColor,
   onSurface: whiteColor,
 );
+
 extension CustomColorScheme on ColorScheme {
   // brand
   Color get textHighlight => secondary;

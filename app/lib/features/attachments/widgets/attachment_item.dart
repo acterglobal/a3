@@ -1,6 +1,7 @@
 import 'package:acter/common/actions/redact_content.dart';
 import 'package:acter/common/models/attachment_media_state/attachment_media_state.dart';
 import 'package:acter/common/models/types.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/image_dialog.dart';
 import 'package:acter/common/widgets/video_dialog.dart';
@@ -8,7 +9,6 @@ import 'package:acter/features/attachments/providers/attachment_providers.dart';
 import 'package:acter/features/files/actions/file_share.dart';
 import 'package:acter/features/pins/actions/attachment_leading_icon.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Attachment;
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,7 +31,6 @@ class AttachmentItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final containerColor = Theme.of(context).colorScheme.surface;
-    final borderColor = Theme.of(context).colorScheme.primary;
     final attachmentType = AttachmentType.values.byName(attachment.typeStr());
     final eventId = attachment.attachmentIdStr();
     final roomId = attachment.roomIdStr();
@@ -41,21 +40,38 @@ class AttachmentItem extends ConsumerWidget {
       decoration: BoxDecoration(
         color: containerColor,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: borderColor),
+        border: Border.all(color: greyColor),
       ),
       child: ListTile(
-        leading:
-            mediaState.mediaLoadingState.isLoading || mediaState.isDownloading
-                ? loadingIndication()
-                : attachmentLeadingIcon(attachmentType),
+        leading: attachmentLeadingIcon(attachmentType),
         onTap: () => attachmentOnTap(
           ref,
           context,
           attachmentType,
           mediaState,
         ),
-        onLongPress: canEdit
-            ? () => openRedactContentDialog(
+        title: title(context, attachmentType),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (mediaState.mediaFile == null &&
+                attachmentType != AttachmentType.link)
+              mediaState.mediaLoadingState.isLoading || mediaState.isDownloading
+                  ? loadingIndication()
+                  : IconButton(
+                      onPressed: () => ref
+                          .read(
+                            attachmentMediaStateProvider(attachment).notifier,
+                          )
+                          .downloadMedia(),
+                      icon: Icon(
+                        Icons.download,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+            if (canEdit)
+              IconButton(
+                onPressed: () => openRedactContentDialog(
                   context,
                   eventId: eventId,
                   roomId: roomId,
@@ -63,27 +79,19 @@ class AttachmentItem extends ConsumerWidget {
                   description: L10n.of(context)
                       .areYouSureYouWantToRemoveAttachmentFromPin,
                   isSpace: true,
-                )
-            : null,
-        title: title(attachmentType),
-        trailing: Visibility(
-          visible: mediaState.mediaFile == null &&
-              attachmentType != AttachmentType.link,
-          child: IconButton(
-            onPressed: () => attachmentOnTap(
-              ref,
-              context,
-              attachmentType,
-              mediaState,
-            ),
-            icon: const Icon(Atlas.download_arrow_down),
-          ),
+                ),
+                icon: Icon(
+                  Icons.delete_forever,
+                  color: Theme.of(context).colorScheme.error,
+                ),
+              ),
+          ],
         ),
       ),
     );
   }
 
-  Widget title(AttachmentType attachmentType) {
+  Widget title(BuildContext context, AttachmentType attachmentType) {
     final msgContent = attachment.msgContent();
     final fileName = msgContent.body();
     final fileNameSplit = fileName.split('.');
@@ -103,6 +111,7 @@ class AttachmentItem extends ConsumerWidget {
             attachment.link() ?? '',
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.labelMedium,
           ),
         ] else ...[
           Text(
@@ -112,11 +121,20 @@ class AttachmentItem extends ConsumerWidget {
           ),
           Row(
             children: [
-              Text(fileSize),
+              Text(
+                fileSize,
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
               const SizedBox(width: 10),
-              const Text('.'),
+              Text(
+                '.',
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
               const SizedBox(width: 10),
-              Text(documentTypeFromFileExtension(fileExtension)),
+              Text(
+                documentTypeFromFileExtension(fileExtension),
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
             ],
           ),
         ],
@@ -172,8 +190,8 @@ class AttachmentItem extends ConsumerWidget {
 
   Widget loadingIndication() {
     return const SizedBox(
-      width: 40,
-      height: 40,
+      width: 20,
+      height: 20,
       child: Center(child: CircularProgressIndicator()),
     );
   }

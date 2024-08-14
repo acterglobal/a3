@@ -1,3 +1,4 @@
+import 'package:acter/common/models/types.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/features/attachments/actions/handle_selected_attachments.dart';
 import 'package:acter/features/attachments/actions/select_attachment.dart';
@@ -132,6 +133,18 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
         ActerInlineTextButton(
           onPressed: () => selectAttachment(
             context: context,
+            onLinkSelected: (title, link) {
+              Navigator.pop(context);
+              return handleAttachmentSelected(
+                context: context,
+                ref: ref,
+                manager: attachmentManager,
+                title: title,
+                link: link,
+                attachmentType: AttachmentType.link,
+                attachments: [],
+              );
+            },
             onSelected: (files, selectedType) {
               return handleAttachmentSelected(
                 context: context,
