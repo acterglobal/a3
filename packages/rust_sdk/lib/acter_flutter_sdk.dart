@@ -116,8 +116,8 @@ Future<ImageProvider<Object>?> remapToImage(
       return ResizeImage(image, width: cacheWidth, height: cacheHeight);
     }
     return image;
-  } catch (e) {
-    _log.severe('Error fetching avatar: $e');
+  } catch (e, st) {
+    _log.severe('Error fetching avatar', e, st);
     return null;
   }
 }
