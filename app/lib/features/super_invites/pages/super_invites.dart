@@ -8,6 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::super_invites::list');
 
 class SuperInvitesPage extends ConsumerWidget {
   static Key createNewToken = const Key('super-invites-create');
@@ -29,7 +32,7 @@ class SuperInvitesPage extends ConsumerWidget {
               icon: const Icon(Atlas.arrows_rotating_right_thin),
               iconSize: 28,
               color: Theme.of(context).colorScheme.surface,
-              onPressed: () async {
+              onPressed: () {
                 ref.invalidate(superInvitesTokensProvider);
               },
             ),
@@ -38,7 +41,7 @@ class SuperInvitesPage extends ConsumerWidget {
               icon: const Icon(Atlas.plus_circle_thin),
               iconSize: 28,
               color: Theme.of(context).colorScheme.surface,
-              onPressed: () async {
+              onPressed: () {
                 context.pushNamed(Routes.actionCreateSuperInvite.name);
               },
             ),
@@ -98,12 +101,11 @@ class SuperInvitesPage extends ConsumerWidget {
                         ),
                       ),
                     ),
-              error: (error, stack) {
+              error: (e, s) {
+                _log.severe('Failed to load the super invite tokens', e, s);
                 return SliverToBoxAdapter(
                   child: Center(
-                    child: Text(
-                      L10n.of(context).failedToLoadInviteCodes(error),
-                    ),
+                    child: Text(L10n.of(context).failedToLoadInviteCodes(e)),
                   ),
                 );
               },

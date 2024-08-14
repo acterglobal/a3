@@ -12,7 +12,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 const redeemConfirmKey = Key('super-invite-redeem-confirm-btn');
 const redeemInfoKey = Key('super-invites-redeem-info');
 
-final _log = Logger('a3::super_invites::redeem_dialog');
+final _log = Logger('a3::super_invites::redeem');
 
 class _ShowRedeemTokenDialog extends ConsumerWidget {
   final String token;
@@ -33,13 +33,9 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
           children: [
             info.when(
               data: (info) => renderInfo(context, ref, info),
-              error: (error, stackTrace) {
-                _log.severe(
-                  'Loading super invite failed: $token',
-                  error,
-                  stackTrace,
-                );
-                final errorStr = error.toString();
+              error: (e, s) {
+                _log.severe('Failed to load the super invite: $token', e, s);
+                final errorStr = e.toString();
                 if (errorStr.contains('error: [404]')) {
                   // Server doesn't yet support previewing
                   return Text(
@@ -48,20 +44,16 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
                 }
                 if (errorStr.contains('error: [403]')) {
                   // 403 means we can't use that anymore
-                  return Text(
-                    L10n.of(context).superInvitesDeleted(token),
-                  );
+                  return Text(L10n.of(context).superInvitesDeleted(token));
                 }
-                return Text(L10n.of(context).loadingFailed(error));
+                return Text(L10n.of(context).loadingFailed(e));
               },
               loading: () => Skeletonizer(
                 child: Card(
                   child: ListTile(
                     leading: ActerAvatar(
                       options: const AvatarOptions.DM(
-                        AvatarInfo(
-                          uniqueId: 'nothing',
-                        ),
+                        AvatarInfo(uniqueId: 'nothing'),
                         size: 18,
                       ),
                     ),
@@ -101,9 +93,7 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
               displayName != null ? '$displayName ($userId)' : userId,
             ),
           ),
-          subtitle: Text(
-            L10n.of(context).superInvitedTo(info.roomsCount()),
-          ),
+          subtitle: Text(L10n.of(context).superInvitedTo(info.roomsCount())),
           leading: ActerAvatar(
             options: AvatarOptions.DM(
               AvatarInfo(

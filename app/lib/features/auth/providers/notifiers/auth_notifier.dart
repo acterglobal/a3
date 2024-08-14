@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
-final _log = Logger('a3::onboarding::auth');
+final _log = Logger('a3::auth::notifier');
 
 class AuthStateNotifier extends StateNotifier<bool> {
   final Ref ref;

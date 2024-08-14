@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:logging/logging.dart';
 
 final _log = Logger('a3::settings::chat_settings');
 
@@ -47,11 +47,12 @@ class ChatSettingsPage extends ConsumerWidget {
               }
             },
           ),
-          error: (error, stack) => SettingsTile.navigation(
-            title: Text(
-              L10n.of(context).failed,
-            ),
-          ),
+          error: (error, stack) {
+            _log.severe('Failed to load user app settings', error, stack);
+            return SettingsTile.navigation(
+              title: Text(L10n.of(context).loadingFailed(error)),
+            );
+          },
           loading: () => SettingsTile.switchTile(
             title: Skeletonizer(
               child: Text(L10n.of(context).chatSettingsAutoDownload),
@@ -66,10 +67,7 @@ class ChatSettingsPage extends ConsumerWidget {
         );
   }
 
-  AbstractSettingsTile _typingNotice(
-    BuildContext context,
-    WidgetRef ref,
-  ) {
+  AbstractSettingsTile _typingNotice(BuildContext context, WidgetRef ref) {
     return ref.watch(userAppSettingsProvider).when(
           data: (settings) => SettingsTile.switchTile(
             title: Text(L10n.of(context).chatSettingsTyping),
@@ -98,11 +96,12 @@ class ChatSettingsPage extends ConsumerWidget {
               }
             },
           ),
-          error: (error, stack) => SettingsTile.navigation(
-            title: Text(
-              L10n.of(context).failed,
-            ),
-          ),
+          error: (error, stack) {
+            _log.severe('Failed to load user app settings', error, stack);
+            return SettingsTile.navigation(
+              title: Text(L10n.of(context).loadingFailed(error)),
+            );
+          },
           loading: () => SettingsTile.switchTile(
             title: Skeletonizer(
               child: Text(L10n.of(context).chatSettingsTyping),

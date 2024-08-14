@@ -12,6 +12,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::space::sub_spaces');
 
 class SubSpacesPage extends ConsumerWidget {
   static const moreOptionKey = Key('related-spaces-more-actions');
@@ -115,9 +118,12 @@ class SubSpacesPage extends ConsumerWidget {
                 return const SizedBox.shrink();
               }
             },
-            error: (error, stack) => Center(
-              child: Text(L10n.of(context).loadingFailed(error)),
-            ),
+            error: (error, stack) {
+              _log.severe('Failed to load the related spaces', error, stack);
+              return Center(
+                child: Text(L10n.of(context).loadingFailed(error)),
+              );
+            },
             loading: () => const SizedBox.shrink(),
           ),
         ],
@@ -139,9 +145,12 @@ class SubSpacesPage extends ConsumerWidget {
                       canLinkSpace,
                     );
               },
-              error: (error, stack) => Center(
-                child: Text(L10n.of(context).loadingFailed(error)),
-              ),
+              error: (error, stack) {
+                _log.severe('Failed to load the related spaces', error, stack);
+                return Center(
+                  child: Text(L10n.of(context).loadingFailed(error)),
+                );
+              },
               loading: () => Center(
                 child: Text(L10n.of(context).loading),
               ),

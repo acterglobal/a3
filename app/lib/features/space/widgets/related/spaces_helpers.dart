@@ -9,7 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-final _log = Logger('a3::space::widget::related::spaces_helpers');
+final _log = Logger('a3::space::related::spaces_helpers');
 
 List<Widget>? _renderKnownSubspaces(
   BuildContext context,
@@ -92,15 +92,12 @@ Widget renderMoreSubspaces(
         },
       );
     },
-    error: (error, s) {
-      _log.severe(
-        'Loading subspaces from remote failed $spaceIdOrAlias',
-        error,
-        s,
-      );
+    error: (e, s) {
+      _log.severe('Failed to load the related subspaces', e, s);
       return Card(
-        child:
-            ListTile(title: Text(L10n.of(context).loadingSpacesFailed(error))),
+        child: ListTile(
+          title: Text(L10n.of(context).loadingSpacesFailed(e)),
+        ),
       );
     },
     loading: () => const Skeletonizer(

@@ -119,8 +119,9 @@ class BlockedUsersPage extends ConsumerWidget {
                   child: Text(L10n.of(context).hereYouCanSeeAllUsersYouBlocked),
                 ),
           error: (error, stack) {
+            _log.severe('Failed to load the ignored users', error, stack);
             return Center(
-              child: Text(L10n.of(context).failedToLoad(error)),
+              child: Text(L10n.of(context).loadingFailed(error)),
             );
           },
           loading: () => const Center(

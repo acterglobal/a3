@@ -28,8 +28,11 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:logging/logging.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::chat::room');
 
 class RoomPage extends ConsumerWidget {
   static const roomPageKey = Key('chat-room-page');
@@ -75,9 +78,10 @@ class RoomPage extends ConsumerWidget {
                 );
               },
               skipLoadingOnReload: false,
-              error: (error, stackTrace) => Text(
-                L10n.of(context).errorLoadingMembersCount(error),
-              ),
+              error: (e, s) {
+                _log.severe('Failed to load active members', e, s);
+                return Text(L10n.of(context).errorLoadingMembersCount(e));
+              },
               loading: () => Skeletonizer(
                 child: Text(L10n.of(context).membersCount(100)),
               ),

@@ -9,7 +9,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::space::space_header_profile');
 
 class SpaceHeaderProfile extends ConsumerWidget {
   static const headerKey = Key('space-header');
@@ -126,9 +129,10 @@ class SpaceHeaderProfile extends ConsumerWidget {
           ),
         );
       },
-      error: (error, stack) => Text(
-        L10n.of(context).loadingMembersFailed(error),
-      ),
+      error: (error, stack) {
+        _log.severe('Failed to load members in space', error, stack);
+        return Text(L10n.of(context).loadingMembersFailed(error));
+      },
       loading: () => const Skeletonizer(
         child: Wrap(
           direction: Axis.horizontal,

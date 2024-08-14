@@ -21,7 +21,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::tasks::task_item_details_page');
+final _log = Logger('a3::tasks::task_item_details');
 
 class TaskItemDetailPage extends ConsumerWidget {
   final String taskListId;
@@ -131,8 +131,15 @@ class TaskItemDetailPage extends ConsumerWidget {
           ),
         ],
       ),
-      error: (e, s) => AppBar(title: Text(L10n.of(context).failedToLoad(e))),
-      loading: () => AppBar(title: Text(L10n.of(context).loading)),
+      error: (e, s) {
+        _log.severe('Failed to load task', e, s);
+        return AppBar(
+          title: Text(L10n.of(context).loadingFailed(e)),
+        );
+      },
+      loading: () => AppBar(
+        title: Text(L10n.of(context).loading),
+      ),
     );
   }
 
@@ -177,7 +184,10 @@ class TaskItemDetailPage extends ConsumerWidget {
   ) {
     return task.when(
       data: (data) => taskData(context, data, ref),
-      error: (e, s) => Text(L10n.of(context).failedToLoad(e)),
+      error: (e, s) {
+        _log.severe('Failed to load task', e, s);
+        return Text(L10n.of(context).loadingFailed(e));
+      },
       loading: () => const TaskItemDetailPageSkeleton(),
     );
   }

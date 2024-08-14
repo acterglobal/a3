@@ -5,9 +5,9 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/edit_plain_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
-import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/visibility/visibility_chip.dart';
 import 'package:acter/features/chat/widgets/member_list.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
@@ -26,7 +26,7 @@ import 'package:settings_ui/settings_ui.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-final _log = Logger('a3::chat::room_profile_page');
+final _log = Logger('a3::chat::room_profile');
 
 class RoomProfilePage extends ConsumerStatefulWidget {
   final String roomId;
@@ -272,11 +272,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     );
   }
 
-  Widget _actions(
-    BuildContext context,
-    Convo? convo,
-    bool isDirectChat,
-  ) {
+  Widget _actions(BuildContext context, Convo? convo, bool isDirectChat) {
     final convoLoader = ref.watch(chatProvider(widget.roomId));
     final myMembership = ref.watch(roomMembershipProvider(widget.roomId));
 
@@ -294,15 +290,18 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
               onTap: () async => await conv?.setBookmarked(!isBookmarked),
             );
           },
-          error: (e, st) => Skeletonizer(
-            child: IconButton.filled(
-              icon: const Icon(
-                Icons.bookmark_add_outlined,
-                size: 20,
+          error: (e, st) {
+            _log.severe('Failed to load convo', e, st);
+            return Skeletonizer(
+              child: IconButton.filled(
+                icon: const Icon(
+                  Icons.bookmark_add_outlined,
+                  size: 20,
+                ),
+                onPressed: () {},
               ),
-              onPressed: () {},
-            ),
-          ),
+            );
+          },
           loading: () => ActionItemSkeleton(
             iconData: Icons.bookmark_add_outlined,
             actionName: L10n.of(context).bookmark,
@@ -325,7 +324,10 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
               onTap: () => _handleInvite(membership),
             );
           },
-          error: (e, st) => Text(L10n.of(context).errorLoadingTileDueTo(e)),
+          error: (e, st) {
+            _log.severe('Failed to load room membership', e, st);
+            return Text(L10n.of(context).errorLoadingTileDueTo(e));
+          },
           loading: () => ActionItemSkeleton(
             iconData: Atlas.user_plus_thin,
             actionName: L10n.of(context).invite,
@@ -468,8 +470,10 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
             loading: () => Skeletonizer(
               child: Text(L10n.of(context).membersCount(0)),
             ),
-            error: (error, stackTrace) =>
-                Text(L10n.of(context).errorLoadingMembersCount(error)),
+            error: (e, st) {
+              _log.severe('Failed to load room members', e, st);
+              return Text(L10n.of(context).errorLoadingMembersCount(e));
+            },
           ),
           MemberList(roomId: widget.roomId),
         ],

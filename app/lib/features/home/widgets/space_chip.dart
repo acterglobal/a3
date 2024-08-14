@@ -3,9 +3,12 @@ import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::home::space_chip');
 
 class SpaceChip extends ConsumerWidget {
   final SpaceItem? space;
@@ -34,9 +37,12 @@ class SpaceChip extends ConsumerWidget {
         data: (space) {
           return renderSpace(context, space);
         },
-        error: (error, st) => Chip(
-          label: Text(L10n.of(context).loadingFailed(error)),
-        ),
+        error: (error, st) {
+          _log.severe('Failed to load brief of space', error, st);
+          return Chip(
+            label: Text(L10n.of(context).loadingFailed(error)),
+          );
+        },
         loading: () => renderLoading(spaceId!),
       );
     }
@@ -48,9 +54,7 @@ class SpaceChip extends ConsumerWidget {
       child: Chip(
         avatar: ActerAvatar(
           options: AvatarOptions(
-            AvatarInfo(
-              uniqueId: spaceId,
-            ),
+            AvatarInfo(uniqueId: spaceId),
             size: 24,
           ),
         ),

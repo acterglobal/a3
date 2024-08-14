@@ -27,7 +27,10 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
 import 'package:mime/mime.dart';
+
+final _log = Logger('a3::news::add_page');
 
 const addNewsKey = Key('add-news');
 
@@ -227,11 +230,16 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
                       ),
                     );
                   },
-                  loading: () =>
-                      const SizedBox(width: 300, child: EventItemSkeleton()),
-                  error: (e, s) => Center(
-                    child: Text(L10n.of(context).failedToLoadEvent(e)),
+                  loading: () => const SizedBox(
+                    width: 300,
+                    child: EventItemSkeleton(),
                   ),
+                  error: (e, s) {
+                    _log.severe('Failed to load cal event', e, s);
+                    return Center(
+                      child: Text(L10n.of(context).failedToLoadEvent(e)),
+                    );
+                  },
                 ),
         ],
       ),
@@ -345,9 +353,8 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       return;
     }
 
-    String displayMsg = L10n.of(context).slidePosting;
     // Show loading message
-    EasyLoading.show(status: displayMsg);
+    EasyLoading.show(status: L10n.of(context).slidePosting);
     try {
       final space = await ref.read(spaceProvider(spaceId).future);
       NewsEntryDraft draft = space.newsDraft();
@@ -467,7 +474,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
         return;
       }
       EasyLoading.showError(
-        '$displayMsg ${L10n.of(context).failed}: \n $err',
+        L10n.of(context).error(err),
         duration: const Duration(seconds: 3),
       );
     }

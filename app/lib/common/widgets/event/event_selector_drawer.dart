@@ -3,7 +3,11 @@ import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/events/widgets/skeletons/event_list_skeleton_widget.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::common::cal_event::select_drawer');
 
 const Key selectEventDrawerKey = Key('event-widgets-select-event-drawer');
 
@@ -56,28 +60,28 @@ Future<String?> selectEventDrawer({
                       : ListView.builder(
                           padding: const EdgeInsets.all(8),
                           itemCount: eventsList.length,
-                          itemBuilder: (context, index) {
-                            final event = eventsList[index];
-                            return EventItem(
-                              event: event,
-                              isShowRsvp: false,
-                              onTapEventItem: (event) {
-                                Navigator.pop(context, event);
-                              },
-                            );
-                          },
+                          itemBuilder: (context, index) => EventItem(
+                            event: eventsList[index],
+                            isShowRsvp: false,
+                            onTapEventItem: (event) {
+                              Navigator.pop(context, event);
+                            },
+                          ),
                         ),
                 ),
               ],
             );
           },
           error: (error, stack) {
+            _log.severe('Failed to load all cal events', error, stack);
             return Center(
-              child: Text('Failed to load: $error'),
+              child: Text(L10n.of(context).failedToLoadEventsDueTo(error)),
             );
           },
-          loading: () =>
-              const SizedBox(height: 500, child: EventListSkeleton()),
+          loading: () => const SizedBox(
+            height: 500,
+            child: EventListSkeleton(),
+          ),
         );
       },
     ),

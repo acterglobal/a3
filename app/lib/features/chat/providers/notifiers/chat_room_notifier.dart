@@ -10,8 +10,8 @@ import 'package:acter/features/chat/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:riverpod/riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::chat::room_notifier');
 
@@ -231,8 +231,11 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     try {
       roomMsg = await timeline.getMessage(originalId);
     } catch (error, stack) {
-      _log.severe('Failing to load reference $replyId (from $originalId)',
-          error, stack,);
+      _log.severe(
+        'Failing to load reference $replyId (from $originalId)',
+        error,
+        stack,
+      );
       return;
     }
 
