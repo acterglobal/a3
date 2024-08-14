@@ -358,26 +358,17 @@ impl Convo {
 
         let draft_type = match (draft_type.as_str(), event_id) {
             ("new", None) => ComposerDraftType::NewMessage,
-            ("edit", id) => {
-                if let Some(id) = id {
-                    ComposerDraftType::Edit {
-                        event_id: OwnedEventId::try_from(id)?,
-                    }
-                } else {
-                    bail!("Invalid event id or not found");
-                }
-            }
+            ("edit", Some(id)) => ComposerDraftType::Edit {
+                event_id: OwnedEventId::try_from(id)?,
+            },
 
-            ("reply", id) => {
-                if let Some(id) = id {
-                    ComposerDraftType::Reply {
-                        event_id: OwnedEventId::try_from(id)?,
-                    }
-                } else {
-                    bail!("Invalid event id or not found");
-                }
-            }
-            _ => bail!("Invalid draft type"),
+            ("reply", Some(id)) => ComposerDraftType::Reply {
+                event_id: OwnedEventId::try_from(id)?,
+            },
+
+            ("reply", _) | ("edit", _) => bail!("Invalid event id"),
+
+            (draft_type, _) => bail!("Invalid draft type {draft_type}"),
         };
 
         let msg_draft = ComposerDraft {
