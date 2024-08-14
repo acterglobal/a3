@@ -1,7 +1,6 @@
 import 'package:acter/config/notifications/init.dart';
 import 'package:acter_notifify/util.dart';
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
-
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
@@ -261,11 +260,14 @@ class NotificationsSettingsPage extends ConsumerWidget {
                   .map((item) => _pusherTile(context, ref, item))
                   .toList();
             },
-            error: (e, s) => [
-              SettingsTile(
-                title: Text(L10n.of(context).failedToLoadPushTargets(e)),
-              ),
-            ],
+            error: (e, s) {
+              _log.severe('Failed to load pushers', e, s);
+              return [
+                SettingsTile(
+                  title: Text(L10n.of(context).failedToLoadPushTargets(e)),
+                ),
+              ];
+            },
             loading: () => [
               SettingsTile(
                 title: Text(L10n.of(context).loadingTargets),

@@ -59,13 +59,13 @@ class TaskItem extends ConsumerWidget {
             trailing: trailing(ref, task),
           ),
           error: (error, stack) {
-            _log.severe('failed to load task', error, stack);
+            _log.severe('Failed to load task', error, stack);
             return ListTile(
-              title: Text('Loading of task failed: $error'),
+              title: Text(L10n.of(context).loadingFailed(error)),
             );
           },
-          loading: () => const ListTile(
-            title: Text('loading'),
+          loading: () => ListTile(
+            title: Text(L10n.of(context).loading),
           ),
         );
   }
@@ -127,7 +127,10 @@ class TaskItem extends ConsumerWidget {
                       ),
                     ],
                   ),
-                  error: (e, s) => Text(L10n.of(context).loadingFailed(e)),
+                  error: (e, s) {
+                    _log.severe('Failed to load task', e, s);
+                    return Text(L10n.of(context).loadingFailed(e));
+                  },
                   loading: () => Skeletonizer(
                     child: Text(L10n.of(context).loading),
                   ),

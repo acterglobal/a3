@@ -1,14 +1,12 @@
 import 'package:acter/common/models/types.dart';
-import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/widgets/download_button.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/files/actions/file_share.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:share_plus/share_plus.dart';
 
 class FileMessageBuilder extends ConsumerWidget {
   final types.FileMessage message;
@@ -31,11 +29,7 @@ class FileMessageBuilder extends ConsumerWidget {
     return InkWell(
       onTap: () async {
         if (mediaState.mediaFile != null) {
-          if (isDesktop) {
-            downloadFile(context, mediaState.mediaFile!);
-          } else {
-            Share.shareXFiles([XFile(mediaState.mediaFile!.path)]);
-          }
+          openFileShareDialog(context: context, file: mediaState.mediaFile!);
         } else {
           await ref
               .read(mediaChatStateProvider(messageInfo).notifier)

@@ -1,19 +1,17 @@
 import 'package:acter/common/actions/redact_content.dart';
 import 'package:acter/common/models/attachment_media_state/attachment_media_state.dart';
 import 'package:acter/common/models/types.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/download_button.dart';
 import 'package:acter/common/widgets/image_dialog.dart';
 import 'package:acter/common/widgets/video_dialog.dart';
 import 'package:acter/features/attachments/providers/attachment_providers.dart';
+import 'package:acter/features/files/actions/file_share.dart';
 import 'package:acter/features/pins/actions/attachment_leading_icon.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Attachment;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:share_plus/share_plus.dart';
 
 // Attachment item UI
 class AttachmentItem extends ConsumerWidget {
@@ -182,11 +180,7 @@ class AttachmentItem extends ConsumerWidget {
       }
       // If attachment is downloaded and file or others
       else {
-        if (isDesktop) {
-          downloadFile(context, mediaState.mediaFile!);
-        } else {
-          Share.shareXFiles([XFile(mediaState.mediaFile!.path)]);
-        }
+        openFileShareDialog(context: context, file: mediaState.mediaFile!);
       }
     }
   }

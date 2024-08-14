@@ -1,12 +1,16 @@
 import 'dart:math';
+
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/member/widgets/member_list_entry.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::space::members_page');
 
 class SpaceMembersPage extends ConsumerWidget {
   final String spaceIdOrAlias;
@@ -52,9 +56,7 @@ class SpaceMembersPage extends ConsumerWidget {
             if (members.isEmpty) {
               return SliverToBoxAdapter(
                 child: Center(
-                  child: Text(
-                    L10n.of(context).noMembersFound,
-                  ),
+                  child: Text(L10n.of(context).noMembersFound),
                 ),
               );
             }
@@ -72,11 +74,14 @@ class SpaceMembersPage extends ConsumerWidget {
               },
             );
           },
-          error: (error, stack) => SliverToBoxAdapter(
-            child: Center(
-              child: Text(L10n.of(context).loadingFailed(error)),
-            ),
-          ),
+          error: (error, stack) {
+            _log.severe('Failed to load space members', error, stack);
+            return SliverToBoxAdapter(
+              child: Center(
+                child: Text(L10n.of(context).loadingFailed(error)),
+              ),
+            );
+          },
           loading: () => SliverToBoxAdapter(
             child: Center(
               child: Text(L10n.of(context).loading),

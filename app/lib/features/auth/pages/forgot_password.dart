@@ -14,7 +14,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::auth::passwordReset');
+final _log = Logger('a3::auth::forgot_password');
 
 class ForgotPassword extends ConsumerStatefulWidget {
   static Key passwordKey = const Key('pw-reset-password-field');

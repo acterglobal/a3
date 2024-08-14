@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::common::invite_provider');
+final _log = Logger('a3::invite::providers');
 
 final userNameRegExp = RegExp(
   r'@\S+:\S+.\S+$',
@@ -66,8 +66,11 @@ final suggestedUsersProvider = FutureProvider.family<List<FoundUser>, String>(
       MemoryImage? avatar;
       if (user.hasAvatar()) {
         try {
-          avatar = await user.getAvatar(null).then((val) =>
-              MemoryImage(Uint8List.fromList(val.data()!.asTypedList())),);
+          avatar = await user.getAvatar(null).then(
+                (val) => MemoryImage(
+                  Uint8List.fromList(val.data()!.asTypedList()),
+                ),
+              );
         } catch (e, s) {
           _log.severe('failure fetching avatar', e, s);
         }

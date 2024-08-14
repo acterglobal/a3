@@ -5,10 +5,15 @@ use acter_core::events::{
 };
 use anyhow::{Context, Result};
 use core::time::Duration;
-use matrix_sdk::media::{MediaFormat, MediaThumbnailSettings, MediaThumbnailSize};
+use matrix_sdk::{
+    media::{MediaFormat, MediaThumbnailSettings, MediaThumbnailSize},
+    ComposerDraft, ComposerDraftType,
+};
 use ruma::UInt;
 use ruma_client_api::media::get_content_thumbnail;
-use ruma_common::{EventId, MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedMxcUri, OwnedUserId};
+use ruma_common::{
+    EventId, MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedEventId, OwnedMxcUri, OwnedUserId,
+};
 use ruma_events::room::{
     message::{
         AudioInfo, AudioMessageEventContent, EmoteMessageEventContent, FileInfo,
@@ -71,6 +76,20 @@ impl OptionRsvpStatus {
 
     pub fn status_str(&self) -> Option<String> {
         self.status.as_ref().map(|x| x.to_string())
+    }
+}
+#[derive(Clone)]
+pub struct OptionComposeDraft {
+    draft: Option<ComposeDraft>,
+}
+
+impl OptionComposeDraft {
+    pub(crate) fn new(draft: Option<ComposeDraft>) -> Self {
+        OptionComposeDraft { draft }
+    }
+
+    pub fn draft(&self) -> Option<ComposeDraft> {
+        self.draft.clone()
     }
 }
 
@@ -464,6 +483,65 @@ impl MsgContent {
         match self {
             MsgContent::Link { link, .. } => Some(link.clone()),
             _ => None,
+        }
+    }
+}
+
+#[derive(Clone)]
+pub struct ComposeDraft {
+    inner: ComposerDraft,
+}
+
+impl ComposeDraft {
+    pub fn new(
+        plain_text: String,
+        html_text: Option<String>,
+        msg_type: String,
+        event_id: Option<OwnedEventId>,
+    ) -> Self {
+        let m_type = msg_type.clone();
+        let draft_type = match (m_type.as_str(), event_id) {
+            ("new", None) => ComposerDraftType::NewMessage,
+            ("edit", Some(id)) => ComposerDraftType::Edit { event_id: id },
+            ("reply", Some(id)) => ComposerDraftType::Reply { event_id: id },
+            _ => ComposerDraftType::NewMessage,
+        };
+
+        ComposeDraft {
+            inner: ComposerDraft {
+                plain_text,
+                html_text,
+                draft_type,
+            },
+        }
+    }
+
+    pub fn inner(&self) -> ComposerDraft {
+        self.inner.clone()
+    }
+
+    pub fn plain_text(&self) -> String {
+        self.inner.plain_text.clone()
+    }
+
+    pub fn html_text(&self) -> Option<String> {
+        self.inner.html_text.clone()
+    }
+
+    // only valid for reply and edit drafts
+    pub fn event_id(&self) -> Option<String> {
+        match &(self.inner.draft_type) {
+            ComposerDraftType::Edit { event_id } => Some(event_id.to_string()),
+            ComposerDraftType::Reply { event_id } => Some(event_id.to_string()),
+            ComposerDraftType::NewMessage => None,
+        }
+    }
+
+    pub fn draft_type(&self) -> String {
+        match &(self.inner.draft_type) {
+            ComposerDraftType::NewMessage => "new".to_string(),
+            ComposerDraftType::Edit { event_id } => "edit".to_string(),
+            ComposerDraftType::Reply { event_id } => "reply".to_string(),
         }
     }
 }

@@ -8,6 +8,9 @@ on:
   schedule:
    - cron: 0 1 * * 0-3,5-6
 
+permissions:
+  contents: write
+
 jobs:
   run_checker:
     runs-on: ubuntu-latest
@@ -277,7 +280,7 @@ jobs:
  ######   ####    ##    ##     ##  #######  ########     ##         #######  ########  ######## ####  ######  ##     ## 
 
   publish:
-    environment: nightly
+    environment: release
     runs-on: ubuntu-latest
     name: Publish
     if: ${{ github.event.schedule }}
@@ -288,7 +291,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.PAT }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/download-artifact@v3
         with:

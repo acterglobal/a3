@@ -10,7 +10,10 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::attachments::section');
 
 class AttachmentSectionWidget extends ConsumerWidget {
   static const attachmentsKey = Key('attachments');
@@ -31,7 +34,10 @@ class AttachmentSectionWidget extends ConsumerWidget {
             attachmentManager: manager,
             key: attachmentsKey,
           ),
-          error: (e, st) => onError(context, e),
+          error: (e, st) {
+            _log.severe('Failed to load attachment manager', e, st);
+            return onError(context, e);
+          },
           loading: () => loading(context),
         );
   }
@@ -70,7 +76,10 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
 
     return attachments.when(
       data: (list) => attachmentData(list, context, ref),
-      error: (err, st) => Text(L10n.of(context).errorLoadingAttachments(err)),
+      error: (err, st) {
+        _log.severe('Failed to load attachments', err, st);
+        return Text(L10n.of(context).errorLoadingAttachments(err));
+      },
       loading: () => const Skeletonizer(
         child: Wrap(
           spacing: 5.0,
