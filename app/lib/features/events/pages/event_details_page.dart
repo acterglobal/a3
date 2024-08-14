@@ -1,8 +1,9 @@
+import 'dart:io';
+
 import 'package:acter/common/actions/redact_content.dart';
 import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/events/actions/get_event_type.dart';
 import 'package:acter/features/events/widgets/change_date_sheet.dart';
@@ -19,6 +20,7 @@ import 'package:acter/features/events/utils/events_utils.dart';
 import 'package:acter/features/events/widgets/event_date_widget.dart';
 import 'package:acter/features/events/widgets/participants_list.dart';
 import 'package:acter/features/events/widgets/skeletons/event_details_skeleton_widget.dart';
+import 'package:acter/features/files/actions/file_share.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/space/widgets/member_avatar.dart';
@@ -26,7 +28,6 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -35,7 +36,7 @@ import 'package:jiffy/jiffy.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' show join;
 import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 final _log = Logger('a3::event::details');
 
@@ -419,51 +420,29 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   Widget _buildShareAction(CalendarEvent calendarEvent) {
-    return PopupMenuButton(
-      icon: const Icon(Icons.share),
-      itemBuilder: (context) => [
-        PopupMenuItem(
-          onTap: () => onShareEvent(calendarEvent),
-          child: Row(
-            children: <Widget>[
-              const Icon(Icons.share),
-              const SizedBox(width: 10),
-              Text(L10n.of(context).shareIcal),
-            ],
-          ),
-        ),
-      ],
+    return IconButton(
+      icon: PhosphorIcon(PhosphorIcons.shareFat()),
+      onPressed: () => onShareEvent(calendarEvent),
     );
   }
 
   Future<void> onShareEvent(CalendarEvent event) async {
     try {
       final filename = event.title().replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_');
-
-      if (isDesktop) {
-        String? outputFile = await FilePicker.platform.saveFile(
-          dialogTitle: 'Please select where to store the file',
-          fileName: '$filename.ics',
-        );
-
-        if (outputFile != null) {
-          // User canceled the picker
-          event.icalForSharing(outputFile);
-          EasyLoading.showToast('File saved to $outputFile');
-        }
-        return;
-      }
-
       final tempDir = await getTemporaryDirectory();
       final icalPath = join(tempDir.path, '$filename.ics');
       event.icalForSharing(icalPath);
 
-      await Share.shareXFiles([
-        XFile(
-          icalPath,
+      if (context.mounted) {
+        await openFileShareDialog(
+          // ignore: use_build_context_synchronously
+          context: context,
+          // ignore: use_build_context_synchronously
+          header: Text(L10n.of(context).shareIcal),
+          file: File(icalPath),
           mimeType: 'text/calendar',
-        ),
-      ]);
+        );
+      }
     } catch (error, stack) {
       _log.severe('Creating iCal Share Event failed:', error, stack);
       // ignore: use_build_context_synchronously
