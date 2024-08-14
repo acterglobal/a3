@@ -49,7 +49,7 @@ jobs:
         run: ls -ltas packages/rust_sdk/lib/
 
       - name: Build Dart SDK
-        run: flutter pub global run dartdoc --output ../../../docs/api/main/dart-sdk/
+        run: flutter pub global run dartdoc --output ../../docs/api/main/dart-sdk/
         working-directory: packages/rust_sdk
 
       - name: Upload artifact
