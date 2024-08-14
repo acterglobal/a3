@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 Future<void> selectAttachment({
   required BuildContext context,
   required OnAttachmentSelected onSelected,
+  OnLinkSelected? onLinkSelected,
 }) async {
   context.isLargeScreen
       ? await showAdaptiveDialog(
@@ -13,14 +14,17 @@ Future<void> selectAttachment({
           builder: (context) => Dialog(
             child: AttachmentSelectionOptions(
               onSelected: onSelected,
+              onLinkSelected: onLinkSelected,
             ),
           ),
         )
       : await showModalBottomSheet(
           isDismissible: true,
+          showDragHandle: true,
           context: context,
           builder: (context) => AttachmentSelectionOptions(
             onSelected: onSelected,
+            onLinkSelected: onLinkSelected,
           ),
         );
 }

@@ -6,3 +6,7 @@ typedef OnAttachmentSelected = Future<void> Function(
   List<File> files,
   AttachmentType attachmentType,
 );
+typedef OnLinkSelected = Future<void> Function(
+  String title,
+  String link,
+);

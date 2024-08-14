@@ -6,6 +6,7 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/attachments/widgets/attachment_container.dart';
+import 'package:acter/features/pins/widgets/pin_link_bottom_sheet.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -15,46 +16,99 @@ import 'package:image_picker/image_picker.dart';
 // Attachments Selection Media Type Widget (Mobile)
 class AttachmentSelectionOptions extends StatelessWidget {
   final OnAttachmentSelected onSelected;
+  final OnLinkSelected? onLinkSelected;
 
   const AttachmentSelectionOptions({
     super.key,
     required this.onSelected,
+    this.onLinkSelected,
   });
 
   @override
   Widget build(BuildContext context) {
-    final Color iconColor = Theme.of(context).colorScheme.primary;
     return ListView(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       children: [
-        if (!isDesktop)
-          ListTile(
-            onTap: () => onTapCamera(context),
-            leading: Icon(Atlas.camera, color: iconColor),
-            title: Text(L10n.of(context).camera),
+        Wrap(alignment: WrapAlignment.center, children: [
+          if (onLinkSelected != null)
+            _attachmentOptionItem(
+              context: context,
+              title: L10n.of(context).link,
+              iconData: Atlas.link,
+              onTap: () => onTapLink(context),
+            ),
+          if (!isDesktop)
+            _attachmentOptionItem(
+              context: context,
+              title: L10n.of(context).camera,
+              iconData: Atlas.camera,
+              onTap: () => onTapCamera(context),
+            ),
+          _attachmentOptionItem(
+            context: context,
+            title: L10n.of(context).image,
+            iconData: Atlas.file_image,
+            onTap: () => onTapImage(context),
           ),
-        ListTile(
-          onTap: () => onTapImage(context),
-          leading: Icon(Atlas.file_image, color: iconColor),
-          title: Text(L10n.of(context).image),
-        ),
-        ListTile(
-          onTap: () => onTapVideo(context),
-          leading: Icon(Atlas.file_video, color: iconColor),
-          title: Text(L10n.of(context).video),
-        ),
-        ListTile(
-          onTap: () => onTapFile(context),
-          leading: Icon(Atlas.file, color: iconColor),
-          title: Text(L10n.of(context).file),
-        ),
-        ListTile(
-          onTap: () => Navigator.pop(context),
-          contentPadding: const EdgeInsets.all(0),
-          title: Text(L10n.of(context).cancel, textAlign: TextAlign.center),
-        ),
+          _attachmentOptionItem(
+            context: context,
+            title: L10n.of(context).video,
+            iconData: Atlas.file_video,
+            onTap: () => onTapVideo(context),
+          ),
+          _attachmentOptionItem(
+            context: context,
+            title: L10n.of(context).audio,
+            iconData: Atlas.audio_headphones,
+            onTap: () => onTapAudio(context),
+          ),
+          _attachmentOptionItem(
+            context: context,
+            title: L10n.of(context).file,
+            iconData: Atlas.file,
+            onTap: () => onTapFile(context),
+          ),
+        ]),
       ],
+    );
+  }
+
+  Widget _attachmentOptionItem({
+    required BuildContext context,
+    required String title,
+    required IconData iconData,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        alignment: Alignment.center,
+        height: 100,
+        width: 100,
+        padding: const EdgeInsets.all(10),
+        margin: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: Column(
+          children: [
+            Expanded(child: Icon(iconData)),
+            Text(title),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> onTapLink(BuildContext context) async {
+    showPinLinkBottomSheet(
+      context: context,
+      onSave: (title, link) {
+        Navigator.pop(context);
+        onLinkSelected!(title, link);
+      },
     );
   }
 
@@ -106,6 +160,25 @@ class AttachmentSelectionOptions extends StatelessWidget {
           context,
           files,
           AttachmentType.video,
+          onSelected,
+        );
+      }
+    }
+  }
+
+  Future<void> onTapAudio(BuildContext context) async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.audio,
+    );
+    if (result != null) {
+      final selectedFiles = result.paths.map((path) => File(path!)).toList();
+
+      if (context.mounted) {
+        Navigator.pop(context);
+        _attachmentConfirmation(
+          context,
+          selectedFiles,
+          AttachmentType.audio,
           onSelected,
         );
       }
