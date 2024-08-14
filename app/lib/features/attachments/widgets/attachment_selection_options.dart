@@ -30,46 +30,49 @@ class AttachmentSelectionOptions extends StatelessWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       children: [
-        Wrap(alignment: WrapAlignment.center, children: [
-          if (onLinkSelected != null)
+        Wrap(
+          alignment: WrapAlignment.center,
+          children: [
+            if (onLinkSelected != null)
+              _attachmentOptionItem(
+                context: context,
+                title: L10n.of(context).link,
+                iconData: Atlas.link,
+                onTap: () => onTapLink(context),
+              ),
+            if (!isDesktop)
+              _attachmentOptionItem(
+                context: context,
+                title: L10n.of(context).camera,
+                iconData: Atlas.camera,
+                onTap: () => onTapCamera(context),
+              ),
             _attachmentOptionItem(
               context: context,
-              title: L10n.of(context).link,
-              iconData: Atlas.link,
-              onTap: () => onTapLink(context),
+              title: L10n.of(context).image,
+              iconData: Atlas.file_image,
+              onTap: () => onTapImage(context),
             ),
-          if (!isDesktop)
             _attachmentOptionItem(
               context: context,
-              title: L10n.of(context).camera,
-              iconData: Atlas.camera,
-              onTap: () => onTapCamera(context),
+              title: L10n.of(context).video,
+              iconData: Atlas.file_video,
+              onTap: () => onTapVideo(context),
             ),
-          _attachmentOptionItem(
-            context: context,
-            title: L10n.of(context).image,
-            iconData: Atlas.file_image,
-            onTap: () => onTapImage(context),
-          ),
-          _attachmentOptionItem(
-            context: context,
-            title: L10n.of(context).video,
-            iconData: Atlas.file_video,
-            onTap: () => onTapVideo(context),
-          ),
-          _attachmentOptionItem(
-            context: context,
-            title: L10n.of(context).audio,
-            iconData: Atlas.audio_headphones,
-            onTap: () => onTapAudio(context),
-          ),
-          _attachmentOptionItem(
-            context: context,
-            title: L10n.of(context).file,
-            iconData: Atlas.file,
-            onTap: () => onTapFile(context),
-          ),
-        ]),
+            _attachmentOptionItem(
+              context: context,
+              title: L10n.of(context).audio,
+              iconData: Atlas.audio_headphones,
+              onTap: () => onTapAudio(context),
+            ),
+            _attachmentOptionItem(
+              context: context,
+              title: L10n.of(context).file,
+              iconData: Atlas.file,
+              onTap: () => onTapFile(context),
+            ),
+          ],
+        ),
       ],
     );
   }

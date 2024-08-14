@@ -61,7 +61,8 @@ class AttachmentItem extends ConsumerWidget {
                   : IconButton(
                       onPressed: () => ref
                           .read(
-                              attachmentMediaStateProvider(attachment).notifier)
+                            attachmentMediaStateProvider(attachment).notifier,
+                          )
                           .downloadMedia(),
                       icon: Icon(
                         Icons.download,
@@ -79,8 +80,10 @@ class AttachmentItem extends ConsumerWidget {
                       .areYouSureYouWantToRemoveAttachmentFromPin,
                   isSpace: true,
                 ),
-                icon: Icon(Icons.delete_forever,
-                    color: Theme.of(context).colorScheme.error),
+                icon: Icon(
+                  Icons.delete_forever,
+                  color: Theme.of(context).colorScheme.error,
+                ),
               ),
           ],
         ),
