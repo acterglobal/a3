@@ -5414,141 +5414,6 @@ class Api {
     return tmp7;
   }
 
-  OptionComposeDraft? __roomMsgDraftFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _roomMsgDraftFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionComposeDraft");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = OptionComposeDraft._(this, tmp13_1);
-    return tmp7;
-  }
-
-  bool? __roomSaveMsgDraftFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _roomSaveMsgDraftFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final tmp7 = tmp13 > 0;
-    return tmp7;
-  }
-
-  bool? __roomClearMsgDraftFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _roomClearMsgDraftFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final tmp7 = tmp13 > 0;
-    return tmp7;
-  }
-
   RoomMessage? __timelineStreamGetMessageFuturePoll(
     int boxed,
     int postCobject,
@@ -7167,6 +7032,141 @@ class Api {
     final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  OptionComposeDraft? __convoMsgDraftFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _convoMsgDraftFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionComposeDraft");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = OptionComposeDraft._(this, tmp13_1);
+    return tmp7;
+  }
+
+  bool? __convoSaveMsgDraftFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _convoSaveMsgDraftFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  bool? __convoClearMsgDraftFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _convoClearMsgDraftFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
     return tmp7;
   }
 
@@ -20091,64 +20091,6 @@ class Api {
       int Function(
         int,
       )>();
-  late final _roomMsgDraftPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-          )>>("__Room_msg_draft");
-
-  late final _roomMsgDraft = _roomMsgDraftPtr.asFunction<
-      int Function(
-        int,
-      )>();
-  late final _roomSaveMsgDraftPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Room_save_msg_draft");
-
-  late final _roomSaveMsgDraft = _roomSaveMsgDraftPtr.asFunction<
-      int Function(
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-      )>();
-  late final _roomClearMsgDraftPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-          )>>("__Room_clear_msg_draft");
-
-  late final _roomClearMsgDraft = _roomClearMsgDraftPtr.asFunction<
-      int Function(
-        int,
-      )>();
   late final _convoDiffActionPtr = _lookup<
       ffi.NativeFunction<
           _ConvoDiffActionReturn Function(
@@ -21100,6 +21042,64 @@ class Api {
           )>>("__Convo_is_joined");
 
   late final _convoIsJoined = _convoIsJoinedPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _convoMsgDraftPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__Convo_msg_draft");
+
+  late final _convoMsgDraft = _convoMsgDraftPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _convoSaveMsgDraftPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+            ffi.Uint8,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+            ffi.Uint8,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+          )>>("__Convo_save_msg_draft");
+
+  late final _convoSaveMsgDraft = _convoSaveMsgDraftPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _convoClearMsgDraftPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__Convo_clear_msg_draft");
+
+  late final _convoClearMsgDraft = _convoClearMsgDraftPtr.asFunction<
       int Function(
         int,
       )>();
@@ -28948,50 +28948,6 @@ class Api {
         int,
         int,
       )>();
-  late final _roomMsgDraftFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomMsgDraftFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Room_msg_draft_future_poll");
-
-  late final _roomMsgDraftFuturePoll = _roomMsgDraftFuturePollPtr.asFunction<
-      _RoomMsgDraftFuturePollReturn Function(
-        int,
-        int,
-        int,
-      )>();
-  late final _roomSaveMsgDraftFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomSaveMsgDraftFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Room_save_msg_draft_future_poll");
-
-  late final _roomSaveMsgDraftFuturePoll =
-      _roomSaveMsgDraftFuturePollPtr.asFunction<
-          _RoomSaveMsgDraftFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _roomClearMsgDraftFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomClearMsgDraftFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Room_clear_msg_draft_future_poll");
-
-  late final _roomClearMsgDraftFuturePoll =
-      _roomClearMsgDraftFuturePollPtr.asFunction<
-          _RoomClearMsgDraftFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
   late final _timelineStreamGetMessageFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _TimelineStreamGetMessageFuturePollReturn Function(
@@ -29509,6 +29465,50 @@ class Api {
   late final _convoRedactContentFuturePoll =
       _convoRedactContentFuturePollPtr.asFunction<
           _ConvoRedactContentFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _convoMsgDraftFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ConvoMsgDraftFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__Convo_msg_draft_future_poll");
+
+  late final _convoMsgDraftFuturePoll = _convoMsgDraftFuturePollPtr.asFunction<
+      _ConvoMsgDraftFuturePollReturn Function(
+        int,
+        int,
+        int,
+      )>();
+  late final _convoSaveMsgDraftFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ConvoSaveMsgDraftFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__Convo_save_msg_draft_future_poll");
+
+  late final _convoSaveMsgDraftFuturePoll =
+      _convoSaveMsgDraftFuturePollPtr.asFunction<
+          _ConvoSaveMsgDraftFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _convoClearMsgDraftFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ConvoClearMsgDraftFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__Convo_clear_msg_draft_future_poll");
+
+  late final _convoClearMsgDraftFuturePoll =
+      _convoClearMsgDraftFuturePollPtr.asFunction<
+          _ConvoClearMsgDraftFuturePollReturn Function(
             int,
             int,
             int,
@@ -41803,132 +41803,6 @@ class Room {
     return tmp2;
   }
 
-  /// compose message state of the room
-  Future<OptionComposeDraft> msgDraft() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._roomMsgDraft(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__Room_msg_draft_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__roomMsgDraftFuturePoll);
-    return tmp2;
-  }
-
-  /// save composed message state of the room
-  Future<bool> saveMsgDraft(
-    String text,
-    String? html,
-    String draftType,
-    String? eventId,
-  ) {
-    final tmp1 = text;
-    final tmp5 = html;
-    final tmp11 = draftType;
-    final tmp15 = eventId;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    var tmp6 = 0;
-    var tmp8 = 0;
-    var tmp9 = 0;
-    var tmp10 = 0;
-    var tmp12 = 0;
-    var tmp13 = 0;
-    var tmp14 = 0;
-    var tmp16 = 0;
-    var tmp18 = 0;
-    var tmp19 = 0;
-    var tmp20 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    if (tmp5 == null) {
-      tmp6 = 0;
-    } else {
-      tmp6 = 1;
-      final tmp7 = tmp5;
-      final tmp7_0 = utf8.encode(tmp7);
-      tmp9 = tmp7_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp8_0 = _api.__allocate(tmp9 * 1, 1);
-      final Uint8List tmp8_1 = tmp8_0.asTypedList(tmp9);
-      tmp8_1.setAll(0, tmp7_0);
-      tmp8 = tmp8_0.address;
-      tmp10 = tmp9;
-    }
-    final tmp11_0 = utf8.encode(tmp11);
-    tmp13 = tmp11_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
-    final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
-    tmp12_1.setAll(0, tmp11_0);
-    tmp12 = tmp12_0.address;
-    tmp14 = tmp13;
-    if (tmp15 == null) {
-      tmp16 = 0;
-    } else {
-      tmp16 = 1;
-      final tmp17 = tmp15;
-      final tmp17_0 = utf8.encode(tmp17);
-      tmp19 = tmp17_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp18_0 = _api.__allocate(tmp19 * 1, 1);
-      final Uint8List tmp18_1 = tmp18_0.asTypedList(tmp19);
-      tmp18_1.setAll(0, tmp17_0);
-      tmp18 = tmp18_0.address;
-      tmp20 = tmp19;
-    }
-    final tmp21 = _api._roomSaveMsgDraft(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-      tmp6,
-      tmp8,
-      tmp9,
-      tmp10,
-      tmp12,
-      tmp13,
-      tmp14,
-      tmp16,
-      tmp18,
-      tmp19,
-      tmp20,
-    );
-    final tmp23 = tmp21;
-    final ffi.Pointer<ffi.Void> tmp23_0 = ffi.Pointer.fromAddress(tmp23);
-    final tmp23_1 = _Box(_api, tmp23_0, "__Room_save_msg_draft_future_drop");
-    tmp23_1._finalizer = _api._registerFinalizer(tmp23_1);
-    final tmp22 = _nativeFuture(tmp23_1, _api.__roomSaveMsgDraftFuturePoll);
-    return tmp22;
-  }
-
-  /// clear composed message state of the room
-  Future<bool> clearMsgDraft() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._roomClearMsgDraft(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__Room_clear_msg_draft_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__roomClearMsgDraftFuturePoll);
-    return tmp2;
-  }
-
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -43903,6 +43777,132 @@ class Convo {
     );
     final tmp3 = tmp1;
     final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// compose message state of the room
+  Future<OptionComposeDraft> msgDraft() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoMsgDraft(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Convo_msg_draft_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__convoMsgDraftFuturePoll);
+    return tmp2;
+  }
+
+  /// save composed message state of the room
+  Future<bool> saveMsgDraft(
+    String text,
+    String? html,
+    String draftType,
+    String? eventId,
+  ) {
+    final tmp1 = text;
+    final tmp5 = html;
+    final tmp11 = draftType;
+    final tmp15 = eventId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    var tmp9 = 0;
+    var tmp10 = 0;
+    var tmp12 = 0;
+    var tmp13 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    var tmp19 = 0;
+    var tmp20 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    if (tmp5 == null) {
+      tmp6 = 0;
+    } else {
+      tmp6 = 1;
+      final tmp7 = tmp5;
+      final tmp7_0 = utf8.encode(tmp7);
+      tmp9 = tmp7_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = _api.__allocate(tmp9 * 1, 1);
+      final Uint8List tmp8_1 = tmp8_0.asTypedList(tmp9);
+      tmp8_1.setAll(0, tmp7_0);
+      tmp8 = tmp8_0.address;
+      tmp10 = tmp9;
+    }
+    final tmp11_0 = utf8.encode(tmp11);
+    tmp13 = tmp11_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
+    final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
+    tmp12_1.setAll(0, tmp11_0);
+    tmp12 = tmp12_0.address;
+    tmp14 = tmp13;
+    if (tmp15 == null) {
+      tmp16 = 0;
+    } else {
+      tmp16 = 1;
+      final tmp17 = tmp15;
+      final tmp17_0 = utf8.encode(tmp17);
+      tmp19 = tmp17_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp18_0 = _api.__allocate(tmp19 * 1, 1);
+      final Uint8List tmp18_1 = tmp18_0.asTypedList(tmp19);
+      tmp18_1.setAll(0, tmp17_0);
+      tmp18 = tmp18_0.address;
+      tmp20 = tmp19;
+    }
+    final tmp21 = _api._convoSaveMsgDraft(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp8,
+      tmp9,
+      tmp10,
+      tmp12,
+      tmp13,
+      tmp14,
+      tmp16,
+      tmp18,
+      tmp19,
+      tmp20,
+    );
+    final tmp23 = tmp21;
+    final ffi.Pointer<ffi.Void> tmp23_0 = ffi.Pointer.fromAddress(tmp23);
+    final tmp23_1 = _Box(_api, tmp23_0, "__Convo_save_msg_draft_future_drop");
+    tmp23_1._finalizer = _api._registerFinalizer(tmp23_1);
+    final tmp22 = _nativeFuture(tmp23_1, _api.__convoSaveMsgDraftFuturePoll);
+    return tmp22;
+  }
+
+  /// clear composed message state of the room
+  Future<bool> clearMsgDraft() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoClearMsgDraft(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Convo_clear_msg_draft_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__convoClearMsgDraftFuturePoll);
     return tmp2;
   }
 
@@ -61330,51 +61330,6 @@ class _RoomLeaveFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _RoomMsgDraftFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.IntPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-  @ffi.UintPtr()
-  external int arg4;
-  @ffi.IntPtr()
-  external int arg5;
-}
-
-class _RoomSaveMsgDraftFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.IntPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-  @ffi.UintPtr()
-  external int arg4;
-  @ffi.Uint8()
-  external int arg5;
-}
-
-class _RoomClearMsgDraftFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.IntPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-  @ffi.UintPtr()
-  external int arg4;
-  @ffi.Uint8()
-  external int arg5;
-}
-
 class _TimelineStreamGetMessageFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -61901,6 +61856,51 @@ class _ConvoRedactContentFuturePollReturn extends ffi.Struct {
   @ffi.UintPtr()
   external int arg4;
   @ffi.IntPtr()
+  external int arg5;
+}
+
+class _ConvoMsgDraftFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _ConvoSaveMsgDraftFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _ConvoClearMsgDraftFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.Uint8()
   external int arg5;
 }
 

@@ -3,7 +3,7 @@ use acter_core::events::{
     rsvp::RsvpStatus,
     ColorizeBuilder, ObjRefBuilder, Position, RefDetails, RefDetailsBuilder,
 };
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result};
 use core::time::Duration;
 use matrix_sdk::{
     media::{MediaFormat, MediaThumbnailSettings, MediaThumbnailSize},

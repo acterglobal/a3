@@ -1118,16 +1118,6 @@ object Room {
 
     /// leave this room
     fn leave() -> Future<Result<bool>>;
-
-    /// compose message state of the room
-    fn msg_draft() -> Future<Result<OptionComposeDraft>>;
-
-    /// save composed message state of the room
-    fn save_msg_draft(text: string, html: Option<string>, draft_type: string, event_id: Option<string>) -> Future<Result<bool>>;
-
-    /// clear composed message state of the room
-    fn clear_msg_draft() -> Future<Result<bool>>;
-
 }
 
 
@@ -1385,6 +1375,15 @@ object Convo {
     fn redact_content(event_id: string, reason: Option<string>) -> Future<Result<EventId>>;
 
     fn is_joined() -> bool;
+
+    /// compose message state of the room
+    fn msg_draft() -> Future<Result<OptionComposeDraft>>;
+
+    /// save composed message state of the room
+    fn save_msg_draft(text: string, html: Option<string>, draft_type: string, event_id: Option<string>) -> Future<Result<bool>>;
+
+    /// clear composed message state of the room
+    fn clear_msg_draft() -> Future<Result<bool>>;
 }
 
 
