@@ -20,6 +20,18 @@ var inputDecorationTheme = InputDecorationTheme(
     borderSide: BorderSide.none,
     borderRadius: BorderRadius.circular(12),
   ),
+  errorBorder: OutlineInputBorder(
+    borderSide: const BorderSide(
+      color: Colors.red,
+    ),
+    borderRadius: BorderRadius.circular(12),
+  ),
+  focusedErrorBorder: OutlineInputBorder(
+    borderSide: const BorderSide(
+      color: Colors.red,
+    ),
+    borderRadius: BorderRadius.circular(12),
+  ),
   hintStyle: const TextStyle(
     color: Color(0xFF898989),
     fontWeight: FontWeight.w300,

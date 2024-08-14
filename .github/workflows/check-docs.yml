@@ -1,0 +1,26 @@
+name: Docs
+
+on:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  docs:
+    uses: ./.github/workflows/build-docs.yml
+    secrets: inherit
+
+  deploy:
+    runs-on: ubuntu-20.04
+    if: ${{ github.ref == 'refs/heads/main' }}
+    needs:
+      - docs
+    name: Build Latest API Docs
+    steps:
+      - name: Deploy to GitHub Pages
+        if: ${{ github.ref == 'refs/heads/main' }}
+        id: deployment
+        uses: actions/deploy-pages@v4
