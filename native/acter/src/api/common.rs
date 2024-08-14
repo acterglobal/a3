@@ -78,6 +78,20 @@ impl OptionRsvpStatus {
         self.status.as_ref().map(|x| x.to_string())
     }
 }
+#[derive(Clone)]
+pub struct OptionComposeDraft {
+    draft: Option<ComposeDraft>,
+}
+
+impl OptionComposeDraft {
+    pub(crate) fn new(draft: Option<ComposeDraft>) -> Self {
+        OptionComposeDraft { draft }
+    }
+
+    pub fn draft(&self) -> Option<ComposeDraft> {
+        self.draft.clone()
+    }
+}
 
 pub struct MediaSource {
     inner: SdkMediaSource,
@@ -457,6 +471,7 @@ impl MsgContent {
     }
 }
 
+#[derive(Clone)]
 pub struct ComposeDraft {
     inner: ComposerDraft,
 }
@@ -466,17 +481,13 @@ impl ComposeDraft {
         plain_text: String,
         html_text: Option<String>,
         msg_type: String,
-        event_id: Option<String>,
+        event_id: Option<OwnedEventId>,
     ) -> Self {
         let m_type = msg_type.clone();
         let draft_type = match (m_type.as_str(), event_id) {
-            ("new", _) => ComposerDraftType::NewMessage,
-            ("edit", Some(id)) => ComposerDraftType::Edit {
-                event_id: OwnedEventId::try_from(id).expect("should parse correctly"),
-            },
-            ("reply", Some(id)) => ComposerDraftType::Reply {
-                event_id: OwnedEventId::try_from(id).expect("should parse correctly"),
-            },
+            ("new", None) => ComposerDraftType::NewMessage,
+            ("edit", Some(id)) => ComposerDraftType::Edit { event_id: id },
+            ("reply", Some(id)) => ComposerDraftType::Reply { event_id: id },
             _ => ComposerDraftType::NewMessage,
         };
 

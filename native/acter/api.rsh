@@ -234,6 +234,11 @@ object OptionRsvpStatus {
     fn status_str() -> Option<string>;
 }
 
+object OptionComposeDraft {
+    /// get compose draft object
+    fn draft() -> Option<ComposeDraft>;
+}
+
 object UserProfile {
     /// get user id
     fn user_id() -> UserId;
@@ -1115,7 +1120,7 @@ object Room {
     fn leave() -> Future<Result<bool>>;
 
     /// compose message state of the room
-    fn msg_draft() -> Future<Result<Option<ComposeDraft>>>;
+    fn msg_draft() -> Future<Result<OptionComposeDraft>>;
 
     /// save composed message state of the room
     fn save_msg_draft(text: string, html: Option<string>, draft_type: string, event_id: Option<string>) -> Future<Result<bool>>;

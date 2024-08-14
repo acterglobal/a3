@@ -44,7 +44,7 @@ use ruma_events::{
     space::{child::HierarchySpaceChildEvent, parent::SpaceParentEventContent},
     MessageLikeEventType, StateEvent, StateEventType, StaticEventContent,
 };
-use std::{io::Write, ops::Deref, path::PathBuf};
+use std::{io::Write, ops::Deref, path::PathBuf, str::FromStr};
 use tokio_stream::{wrappers::BroadcastStream, StreamExt};
 use tracing::{info, warn};
 
@@ -54,7 +54,7 @@ use crate::{OptionBuffer, OptionString, RoomMessage, ThumbnailSize, UserProfile,
 
 use super::{
     api::FfiBuffer,
-    common::ComposeDraft,
+    common::{ComposeDraft, OptionComposeDraft},
     push::{notification_mode_from_input, room_notification_mode_name},
 };
 
@@ -1107,7 +1107,7 @@ impl Room {
             .await?
     }
 
-    pub async fn msg_draft(&self) -> Result<Option<ComposeDraft>> {
+    pub async fn msg_draft(&self) -> Result<OptionComposeDraft> {
         if !self.is_joined() {
             bail!("Unable to fetch composer draft of a room we are not in");
         }
@@ -1116,14 +1116,14 @@ impl Room {
             .spawn(async move {
                 let draft = room.load_composer_draft().await?;
 
-                Ok(draft.map(|composer_draft| {
+                Ok(OptionComposeDraft::new(draft.map(|composer_draft| {
                     let (msg_type, event_id) = match composer_draft.draft_type {
                         ComposerDraftType::NewMessage => ("new".to_string(), None),
                         ComposerDraftType::Edit { event_id } => {
-                            ("edit".to_string(), Some(event_id.to_string()))
+                            ("edit".to_string(), Some(event_id))
                         }
                         ComposerDraftType::Reply { event_id } => {
-                            ("reply".to_string(), Some(event_id.to_string()))
+                            ("reply".to_string(), Some(event_id))
                         }
                     };
                     ComposeDraft::new(
@@ -1132,7 +1132,7 @@ impl Room {
                         msg_type,
                         event_id,
                     )
-                }))
+                })))
             })
             .await?
     }
@@ -1148,10 +1148,40 @@ impl Room {
             bail!("Unable to save composer draft of a room we are not in");
         }
         let room = self.room.clone();
-        let msg_draft = ComposeDraft::new(text, html, draft_type, event_id);
+
+        let draft_type = match (draft_type.as_str(), event_id) {
+            ("new", None) => ComposerDraftType::NewMessage,
+            ("edit", id) => {
+                if let Some(id) = id {
+                    ComposerDraftType::Edit {
+                        event_id: OwnedEventId::try_from(id)?,
+                    }
+                } else {
+                    bail!("Invalid event id or not found");
+                }
+            }
+
+            ("reply", id) => {
+                if let Some(id) = id {
+                    ComposerDraftType::Reply {
+                        event_id: OwnedEventId::try_from(id)?,
+                    }
+                } else {
+                    bail!("Invalid event id or not found");
+                }
+            }
+            _ => bail!("Invalid draft type"),
+        };
+
+        let msg_draft = ComposerDraft {
+            plain_text: text,
+            html_text: html,
+            draft_type,
+        };
+
         RUNTIME
             .spawn(async move {
-                let draft = room.save_composer_draft(msg_draft.inner()).await?;
+                room.save_composer_draft(msg_draft).await?;
                 Ok(true)
             })
             .await?
