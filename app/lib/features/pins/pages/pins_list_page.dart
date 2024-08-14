@@ -56,7 +56,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
         AddButtonWithCanPermission(
           canString: 'CanPostPin',
           onPressed: () => context.pushNamed(
-            Routes.actionAddPin.name,
+            Routes.createPin.name,
             queryParameters: {'spaceId': widget.spaceId},
           ),
         ),
@@ -134,7 +134,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
         primaryButton: canAdd && searchValue.isEmpty
             ? ActerPrimaryActionButton(
                 onPressed: () => context.pushNamed(
-                  Routes.actionAddPin.name,
+                  Routes.createPin.name,
                   queryParameters: {'spaceId': widget.spaceId},
                 ),
                 child: Text(L10n.of(context).createPin),

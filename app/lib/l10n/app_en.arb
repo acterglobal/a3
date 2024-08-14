@@ -2061,5 +2061,11 @@
   "myUpcomingEvents": "My Upcoming Events",
   "live": "Live",
   "changeDate": "Change Date",
-  "updatingDate": "Updating Date"
+  "updatingDate": "Updating Date",
+  "pleaseEnterALink": "Please enter a link",
+  "pleaseEnterAValidLink": "Please enter a valid link",
+  "addLink": "Add Link",
+  "attachmentEmptyStateTitle": "No attachments found.",
+  "text": "text",
+  "audio": "Audio"
 }

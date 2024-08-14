@@ -15,6 +15,7 @@ class SelectSpaceFormField extends ConsumerWidget {
   final String? emptyText;
   final String canCheck;
   final bool mandatory;
+  final bool useCompatView;
 
   const SelectSpaceFormField({
     super.key,
@@ -23,42 +24,43 @@ class SelectSpaceFormField extends ConsumerWidget {
     this.emptyText,
     this.mandatory = true,
     required this.canCheck,
+    this.useCompatView = false,
   });
+
+  void selectSpace(BuildContext context, WidgetRef ref) async {
+    final newSelectedSpaceId = await selectSpaceDrawer(
+      context: context,
+      currentSpaceId: ref.read(selectedSpaceIdProvider),
+      canCheck: canCheck,
+      title: Text(selectTitle ?? L10n.of(context).selectSpace),
+    );
+    ref.read(selectedSpaceIdProvider.notifier).state = newSelectedSpaceId;
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentSelectedSpace = ref.watch(selectedSpaceIdProvider);
-    final spaceNotifier = ref.watch(selectedSpaceIdProvider.notifier);
     final selectedSpace = currentSelectedSpace != null;
 
-    void selectSpace() async {
-      final newSelectedSpaceId = await selectSpaceDrawer(
-        context: context,
-        currentSpaceId: ref.read(selectedSpaceIdProvider),
-        canCheck: canCheck,
-        title: Text(selectTitle ?? L10n.of(context).selectSpace),
-      );
-      spaceNotifier.state = newSelectedSpaceId;
-    }
-
     final emptyButton = OutlinedButton(
-      key: openKey,
-      onPressed: selectSpace,
-      child: Text(emptyText ?? L10n.of(context).pleaseSelectSpace),
-    );
+            key: openKey,
+            onPressed: () => selectSpace(context, ref),
+            child: Text(emptyText ?? L10n.of(context).pleaseSelectSpace),
+          );
 
     return FormField(
       builder: (state) => selectedSpace
           ? InkWell(
               key: openKey,
-              onTap: selectSpace,
+              onTap: () => selectSpace(context, ref),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title ?? L10n.of(context).space,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
+                  if (!useCompatView)
+                    Text(
+                      title ?? L10n.of(context).space,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
                   Consumer(builder: spaceBuilder),
                 ],
               ),
@@ -96,6 +98,9 @@ class SelectSpaceFormField extends ConsumerWidget {
           ? SpaceChip(
               space: space,
               onTapOpenSpaceDetail: false,
+              useCompatView: useCompatView,
+              onTapSelectSpace: () =>
+                  useCompatView ? selectSpace(context, ref) : null,
             )
           : Text(currentSelectedSpace!),
       error: (e, s) => Text(L10n.of(context).errorLoading(e)),
