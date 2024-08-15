@@ -1,5 +1,11 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/widgets/edit_html_description_sheet.dart';
+import 'package:acter/common/widgets/render_html.dart';
+import 'package:acter/common/widgets/space_name_widget.dart';
+import 'package:acter/features/attachments/widgets/attachment_section.dart';
+import 'package:acter/features/comments/widgets/comments_section.dart';
+import 'package:acter/features/pins/Utils/pins_utils.dart';
 import 'package:acter/features/pins/actions/edit_pin_actions.dart';
 import 'package:acter/features/pins/actions/reduct_pin_action.dart';
 import 'package:acter/features/pins/actions/report_pin_action.dart';
@@ -48,9 +54,18 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
   Widget _buildBodyUI() {
     final pinData = ref.watch(pinProvider(widget.pinId));
     return pinData.when(
-      data: (pin) {
-        return Container();
-      },
+      data: (pin) => SingleChildScrollView(
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            _buildPinHeaderUI(pin),
+            const SizedBox(height: 20),
+            AttachmentSectionWidget(manager: pin.attachments()),
+            const SizedBox(height: 20),
+            CommentsSection(manager: pin.comments()),
+          ],
+        ),
+      ),
       loading: () => Skeletonizer(child: Text(L10n.of(context).loadingPin)),
       error: (err, st) => Text(
         L10n.of(context).errorLoadingPin(err),
@@ -140,5 +155,111 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
     }
 
     return actions;
+  }
+
+  Widget _buildPinHeaderUI(ActerPin pin) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              pinIconUI(),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    pinTitleUI(pin),
+                    pinSpaceNameUI(pin),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 18),
+          pinDescriptionUI(pin),
+        ],
+      ),
+    );
+  }
+
+  Widget pinIconUI() {
+    return Container(
+      height: 50,
+      width: 50,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.secondary,
+        borderRadius: const BorderRadius.all(Radius.circular(100)),
+      ),
+      child: const Icon(Atlas.pin),
+    );
+  }
+
+  Widget pinTitleUI(ActerPin pin) {
+    return Text(
+      pin.title(),
+      style: Theme.of(context).textTheme.titleSmall,
+    );
+  }
+
+  Widget pinSpaceNameUI(ActerPin pin) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          L10n.of(context).inKey,
+          style: Theme.of(context).textTheme.labelLarge,
+        ),
+        Text(
+          ' : ',
+          style: Theme.of(context).textTheme.labelLarge,
+        ),
+        Expanded(
+          child: SpaceNameWidget(
+            spaceId: pin.roomIdStr(),
+            isShowBrackets: false,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget pinDescriptionUI(ActerPin pin) {
+    final description = pin.content();
+    if (description == null) return const SizedBox.shrink();
+    final formattedBody = description.formattedBody();
+
+    return SelectionArea(
+      child: GestureDetector(
+        onTap: () {
+          showEditHtmlDescriptionBottomSheet(
+            context: context,
+            descriptionHtmlValue: description.formattedBody(),
+            descriptionMarkdownValue: description.body(),
+            onSave: (htmlBodyDescription, plainDescription) async {
+              saveDescription(
+                context,
+                htmlBodyDescription,
+                plainDescription,
+                pin,
+              );
+            },
+          );
+        },
+        child: formattedBody != null
+            ? RenderHtml(
+                text: formattedBody,
+                defaultTextStyle: Theme.of(context).textTheme.labelLarge,
+              )
+            : Text(
+                description.body(),
+                style: Theme.of(context).textTheme.labelLarge,
+              ),
+      ),
+    );
   }
 }

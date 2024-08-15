@@ -2116,5 +2116,6 @@
   "attachmentEmptyStateTitle": "No attachments found.",
   "text": "text",
   "audio": "Audio",
-  "pinDetails": "Pin Details"
+  "pinDetails": "Pin Details",
+  "inKey": "In"
 }

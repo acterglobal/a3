@@ -3,9 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SpaceNameWidget extends ConsumerWidget {
-  final String? spaceId;
+  final String spaceId;
+  final bool isShowBrackets;
 
-  const SpaceNameWidget({super.key, this.spaceId});
+  const SpaceNameWidget({
+    super.key,
+    required this.spaceId,
+    this.isShowBrackets = true,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -14,10 +19,12 @@ class SpaceNameWidget extends ConsumerWidget {
 
   Widget _buildSpaceName(BuildContext context, WidgetRef ref) {
     String spaceName =
-        ref.watch(roomDisplayNameProvider(spaceId!)).valueOrNull ?? '';
+        ref.watch(roomDisplayNameProvider(spaceId)).valueOrNull ?? '';
+    if (isShowBrackets) spaceName = '($spaceName)';
     return Text(
-      '($spaceName)',
+      spaceName,
       overflow: TextOverflow.ellipsis,
+      maxLines: 3,
       style: Theme.of(context).textTheme.labelLarge,
     );
   }

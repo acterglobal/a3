@@ -71,7 +71,7 @@ class SpaceChip extends ConsumerWidget {
       child: useCompatView
           ? Row(
               children: [
-                const Text('In'),
+                Text(L10n.of(context).inKey),
                 ActerInlineTextButton(
                   onPressed: () =>
                       onTapSelectSpace != null ? onTapSelectSpace!() : null,

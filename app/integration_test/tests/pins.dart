@@ -3,7 +3,7 @@ import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/pins/pages/create_pin_page.dart';
-import 'package:acter/features/pins/pages/pin_page.dart';
+import 'package:acter/features/pins/pages/pin_details_page.dart';
 import 'package:acter/features/pins/widgets/pin_item.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
@@ -74,15 +74,15 @@ extension ActerNews on ConvenientTest {
   }
 
   Future<String> editPin(String title, String content, String url) async {
-    await find.byKey(PinPage.actionMenuKey).should(findsOneWidget);
-    final actionMenuKey = find.byKey(PinPage.actionMenuKey);
+    await find.byKey(PinDetailsPage.actionMenuKey).should(findsOneWidget);
+    final actionMenuKey = find.byKey(PinDetailsPage.actionMenuKey);
     await actionMenuKey.tap();
 
-    await find.byKey(PinPage.editBtnKey).should(findsOneWidget);
-    final editBtnKey = find.byKey(PinPage.editBtnKey);
+    await find.byKey(PinDetailsPage.editBtnKey).should(findsOneWidget);
+    final editBtnKey = find.byKey(PinDetailsPage.editBtnKey);
     await editBtnKey.tap();
 
-    final titleField = find.byKey(PinPage.titleFieldKey);
+    final titleField = find.byKey(PinDetailsPage.titleFieldKey);
     await titleField.should(findsOneWidget);
     await titleField.replaceText(title);
 
@@ -109,9 +109,9 @@ extension ActerNews on ConvenientTest {
     await tester.ensureVisible(saveBtnKey);
     await saveBtnKey.tap();
 
-    final pinPage = find.byKey(PinPage.pinPageKey);
+    final pinPage = find.byKey(PinDetailsPage.pinPageKey);
     await pinPage.should(findsOneWidget);
-    final page = pinPage.evaluate().first.widget as PinPage;
+    final page = pinPage.evaluate().first.widget as PinDetailsPage;
     return page.pinId;
   }
 }
