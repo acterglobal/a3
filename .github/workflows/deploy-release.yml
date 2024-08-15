@@ -379,21 +379,10 @@ jobs:
           git config --global user.name 'Sari'
           git config --global user.email 'acter-sari@users.noreply.github.com'
 
-      - name: "Generate docs"
-        run: |
-          echo "+++" > docs/content/releases/${{ needs.tags.outputs.version }}.md
-          echo "title = \" ${{ needs.tags.outputs.tag }}\"" >> docs/content/releases/${{ needs.tags.outputs.version }}.md
-          echo "template = \"releases/release.html\"" >> docs/content/releases/${{ needs.tags.outputs.version }}.md
-          echo "date = `date +%Y-%m-%d`" >> docs/content/releases/${{ needs.tags.outputs.version }}.md
-          echo "+++" >> docs/content/releases/${{ needs.tags.outputs.version }}.md
-          echo "" >> docs/content/releases/${{ needs.tags.outputs.version }}.md
-          cat CHANGELOG.md >> docs/content/releases/${{ needs.tags.outputs.version }}.md
-
       - name: Clear old docs
         continue-on-error: true
         run: |
           git rm .changes/*.md
-          git commit -m "Clearing .changes for ${{ needs.tags.outputs.version }}"
 
       - name: "Update flatpack version"
         run : |
@@ -402,7 +391,6 @@ jobs:
 
       - name: Tag for release
         run: |
-          git add "docs/content/releases/${{ needs.tags.outputs.version }}.md"
           echo "Add release ${{ needs.tags.outputs.tag }}"
           git commit -m "Releasing ${{ needs.tags.outputs.tag }}"
           git tag ${{ needs.tags.outputs.tag }}
