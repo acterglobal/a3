@@ -27,7 +27,9 @@ Future<void> initDesktop() async {
   });
 
   await trayManager.setIcon(
-    Platform.isWindows ? 'icon/tray_icon.ico' : 'assets/icon/logo_foreground.png',
+    Platform.isWindows
+        ? 'assets/icon/tray_icon.ico'
+        : 'assets/icon/tray_icon.png',
   );
   Menu menu = Menu(
     items: [
