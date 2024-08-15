@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/custom_input.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
@@ -6,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../helpers/mock_chat_message.dart';
+import '../../helpers/mock_sdk.dart';
 import '../../helpers/test_wrapper_widget.dart';
 
 void main() {
@@ -77,12 +79,11 @@ void main() {
     },
   );
 
-  group('Custom Chat Input - Edit States', () {
+  group('Send button states', () {
     final overrides = [
       canSendProvider.overrideWith((ref, roomId) => true),
       isRoomEncryptedProvider.overrideWith((ref, roomId) => true),
     ];
-
     testWidgets(
       'Showing and hiding send button simple',
       (tester) async {
@@ -119,6 +120,53 @@ void main() {
       },
     );
 
+    testWidgets(
+      'Send button visibility with whitespaces and text with leading whitespaces',
+      (tester) async {
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: overrides,
+            child: const InActerContextTestWrapper(
+              child: CustomChatInput(
+                roomId: 'roomId',
+              ),
+            ),
+          ),
+        );
+
+        // the send button should not be visible
+        expect(find.byKey(CustomChatInput.sendBtnKey), findsNothing);
+
+        // text with leading whitespaces
+        await tester.enterText(find.byType(TextField), '   leading whitespace');
+        await tester.pump();
+
+        // The send button should be visible
+        expect(find.byKey(CustomChatInput.sendBtnKey), findsOneWidget);
+
+        // Clear the text
+        final TextField textField = tester.widget(find.byType(TextField));
+        textField.controller!.clear();
+        await tester.pump();
+
+        // The send button should not be visible
+        expect(find.byKey(CustomChatInput.sendBtnKey), findsNothing);
+
+        // Enter only whitespace
+        await tester.enterText(find.byType(TextField), '     ');
+        await tester.pump();
+
+        // The send button should not be visible
+        expect(find.byKey(CustomChatInput.sendBtnKey), findsNothing);
+      },
+    );
+  });
+
+  group('Custom Chat Input - Controller states', () {
+    final overrides = [
+      canSendProvider.overrideWith((ref, roomId) => true),
+      isRoomEncryptedProvider.overrideWith((ref, roomId) => true),
+    ];
     testWidgets(
       'Adding text in the middle',
       (tester) async {
@@ -168,7 +216,10 @@ void main() {
       (tester) async {
         await tester.pumpWidget(
           ProviderScope(
-            overrides: overrides,
+            overrides: [
+              sdkProvider.overrideWith((ref) => MockActerSdk()),
+              ...overrides,
+            ],
             child: const InActerContextTestWrapper(
               child: CustomChatInput(
                 roomId: 'roomId',
@@ -176,10 +227,9 @@ void main() {
             ),
           ),
         );
+        // not visible
         expect(find.byKey(CustomChatInput.noAccessKey), findsNothing);
         expect(find.byKey(CustomChatInput.loadingKey), findsNothing);
-
-        // not visible
 
         final element = tester.element(find.byType(CustomChatInput));
         final container = ProviderScope.containerOf(element);
@@ -210,8 +260,59 @@ void main() {
         await tester.pump();
         await tester.enterTextWithoutReplace(find.byType(TextField), 't');
 
-        await tester.pump();
+        // This test is timing out due to a pending timer.
+        // See MultiTriggerAutocompleteState._onChangedField in:
+        // acter_trigger_autocomplete.dart:279
+        // put 300ms delay as (debounceTimerDuration)
+        await tester.pump(Durations.medium2);
         expect(controller.text, 'testing code'); // <- cursor moved
+      },
+    );
+
+    testWidgets(
+      'Edit message shows correct message state in controller',
+      (tester) async {
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              sdkProvider.overrideWith((ref) => MockActerSdk()),
+              ...overrides,
+            ],
+            child: const InActerContextTestWrapper(
+              child: CustomChatInput(
+                roomId: 'roomId',
+              ),
+            ),
+          ),
+        );
+        // not visible
+        expect(find.byKey(CustomChatInput.noAccessKey), findsNothing);
+        expect(find.byKey(CustomChatInput.loadingKey), findsNothing);
+
+        final element = tester.element(find.byType(CustomChatInput));
+        final container = ProviderScope.containerOf(element);
+
+        final TextField textField = tester.widget(find.byType(TextField));
+        final controller = textField.controller!;
+
+        // initial state should be empty
+        assert(controller.text.trim().isEmpty, true);
+
+        // now we select the one we want to edit to
+        final chatInputNotifier = container.read(chatInputProvider.notifier);
+        final mockMessage = buildMockTextMessage();
+        chatInputNotifier.setEditMessage(mockMessage);
+
+        await tester.pump();
+
+        // controller text should copy over message text
+        expect(controller.text, mockMessage.text);
+
+        // This test is timing out due to a pending timer.
+        // See MultiTriggerAutocompleteState._onChangedField in:
+        // acter_trigger_autocomplete.dart:279
+        // put 300ms delay as (debounceTimerDuration)
+        await tester.pump(Durations.medium2);
       },
     );
   });
