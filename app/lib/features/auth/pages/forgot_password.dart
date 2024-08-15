@@ -130,7 +130,7 @@ class _AskForEmail extends StatelessWidget {
     var screenHeight = MediaQuery.of(context).size.height;
     var imageSize = screenHeight / 4;
     return SvgPicture.asset(
-      'assets/imagess/forgot_password.svg',
+      'assets/images/forgot_password.svg',
       height: imageSize,
       width: imageSize,
     );
