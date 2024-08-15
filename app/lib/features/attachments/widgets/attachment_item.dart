@@ -102,11 +102,12 @@ class AttachmentItem extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (attachmentType == AttachmentType.link) ...[
-          Text(
-            attachment.name() ?? '',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
+          if (attachment.name() != null && attachment.name()!.isNotEmpty)
+            Text(
+              attachment.name()!,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           Text(
             attachment.link() ?? '',
             maxLines: 2,

@@ -7,6 +7,7 @@ import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/pins/Utils/pins_utils.dart';
 import 'package:acter/features/pins/actions/edit_pin_actions.dart';
+import 'package:acter/features/pins/actions/pin_link_backward_support.dart';
 import 'package:acter/features/pins/actions/reduct_pin_action.dart';
 import 'package:acter/features/pins/actions/report_pin_action.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
@@ -54,18 +55,21 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
   Widget _buildBodyUI() {
     final pinData = ref.watch(pinProvider(widget.pinId));
     return pinData.when(
-      data: (pin) => SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            _buildPinHeaderUI(pin),
-            const SizedBox(height: 20),
-            AttachmentSectionWidget(manager: pin.attachments()),
-            const SizedBox(height: 20),
-            CommentsSection(manager: pin.comments()),
-          ],
-        ),
-      ),
+      data: (pin) {
+        managePinLink(context, ref, pin);
+        return SingleChildScrollView(
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+              _buildPinHeaderUI(pin),
+              const SizedBox(height: 20),
+              AttachmentSectionWidget(manager: pin.attachments()),
+              const SizedBox(height: 20),
+              CommentsSection(manager: pin.comments()),
+            ],
+          ),
+        );
+      },
       loading: () => Skeletonizer(child: Text(L10n.of(context).loadingPin)),
       error: (err, st) => Text(
         L10n.of(context).errorLoadingPin(err),
