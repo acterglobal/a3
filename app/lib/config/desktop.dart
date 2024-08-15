@@ -104,7 +104,7 @@ class _DesktopSupportState extends State<DesktopSupport>
   }
 
   @override
-  void onTrayIconMouseUp() async {
+  void onTrayIconMouseDown() async {
     // toggle visiblity
     print("toggled");
     if (await windowManager.isVisible()) {
