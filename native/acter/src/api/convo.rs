@@ -2,13 +2,13 @@ use acter_core::{statics::default_acter_convo_states, Error};
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use futures::stream::{Stream, StreamExt};
-use matrix_sdk::{executor::JoinHandle, RoomMemberships};
+use matrix_sdk::{executor::JoinHandle, ComposerDraft, ComposerDraftType, RoomMemberships};
 use matrix_sdk_ui::{timeline::RoomExt, Timeline};
 use ruma::assign;
 use ruma_client_api::room::{create_room, Visibility};
 use ruma_common::{
-    serde::Raw, MxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedUserId, RoomAliasId, RoomId,
-    RoomOrAliasId, ServerName, UserId,
+    serde::Raw, MxcUri, OwnedEventId, OwnedRoomAliasId, OwnedRoomId, OwnedUserId, RoomAliasId,
+    RoomId, RoomOrAliasId, ServerName, UserId,
 };
 use ruma_events::{
     receipt::{ReceiptThread, ReceiptType},
@@ -35,7 +35,7 @@ use super::{
     receipt::ReceiptRecord,
     room::Room,
     utils::{remap_for_diff, ApiVectorDiff},
-    RUNTIME,
+    ComposeDraft, OptionComposeDraft, RUNTIME,
 };
 
 pub type ConvoDiff = ApiVectorDiff<Convo>;
@@ -310,6 +310,90 @@ impl Convo {
                     }
                 }
                 Ok(records)
+            })
+            .await?
+    }
+
+    pub async fn msg_draft(&self) -> Result<OptionComposeDraft> {
+        if !self.is_joined() {
+            bail!("Unable to fetch composer draft of a room we are not in");
+        }
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let draft = room.load_composer_draft().await?;
+
+                Ok(OptionComposeDraft::new(draft.map(|composer_draft| {
+                    let (msg_type, event_id) = match composer_draft.draft_type {
+                        ComposerDraftType::NewMessage => ("new".to_string(), None),
+                        ComposerDraftType::Edit { event_id } => {
+                            ("edit".to_string(), Some(event_id))
+                        }
+                        ComposerDraftType::Reply { event_id } => {
+                            ("reply".to_string(), Some(event_id))
+                        }
+                    };
+                    ComposeDraft::new(
+                        composer_draft.plain_text,
+                        composer_draft.html_text,
+                        msg_type,
+                        event_id,
+                    )
+                })))
+            })
+            .await?
+    }
+
+    pub async fn save_msg_draft(
+        &self,
+        text: String,
+        html: Option<String>,
+        draft_type: String,
+        event_id: Option<String>,
+    ) -> Result<bool> {
+        if !self.is_joined() {
+            bail!("Unable to save composer draft of a room we are not in");
+        }
+        let room = self.room.clone();
+
+        let draft_type = match (draft_type.as_str(), event_id) {
+            ("new", None) => ComposerDraftType::NewMessage,
+            ("edit", Some(id)) => ComposerDraftType::Edit {
+                event_id: OwnedEventId::try_from(id)?,
+            },
+
+            ("reply", Some(id)) => ComposerDraftType::Reply {
+                event_id: OwnedEventId::try_from(id)?,
+            },
+
+            ("reply", _) | ("edit", _) => bail!("Invalid event id"),
+
+            (draft_type, _) => bail!("Invalid draft type {draft_type}"),
+        };
+
+        let msg_draft = ComposerDraft {
+            plain_text: text,
+            html_text: html,
+            draft_type,
+        };
+
+        RUNTIME
+            .spawn(async move {
+                room.save_composer_draft(msg_draft).await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn clear_msg_draft(&self) -> Result<bool> {
+        if !self.is_joined() {
+            bail!("Unable to remove composer draft of a room we are not in");
+        }
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let draft = room.clear_composer_draft();
+                Ok(true)
             })
             .await?
     }

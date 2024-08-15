@@ -15,7 +15,6 @@ FileType attachmentFileType(AttachmentType pinAttachmentType) {
     AttachmentType.image => FileType.image,
     AttachmentType.video => FileType.video,
     AttachmentType.audio => FileType.audio,
-    AttachmentType.file => FileType.custom,
     _ => FileType.any
   };
 }
@@ -26,7 +25,10 @@ Future<void> selectAttachment(
   AttachmentType attachmentType,
 ) async {
   try {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    final fileType = attachmentFileType(attachmentType);
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: fileType,
+    );
     if (result != null && result.files.isNotEmpty) {
       final file = result.files.first;
       String fileSize = getHumanReadableFileSize(file.size);

@@ -24,8 +24,8 @@ class PinAttachmentOptions extends ConsumerWidget {
     final pinState = ref.watch(createPinStateProvider);
     return Column(
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+        Wrap(
+          alignment: WrapAlignment.spaceAround,
           children: [
             _pinAttachmentOptionItem(
               context: context,
@@ -63,11 +63,6 @@ class PinAttachmentOptions extends ConsumerWidget {
                 AttachmentType.file,
               ),
             ),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
             _pinAttachmentOptionItem(
               context: context,
               title: L10n.of(context).image,

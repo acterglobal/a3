@@ -4,6 +4,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.target || 'all' }}
   cancel-in-progress: true
 
+permissions:
+  contents: write
+
 on:
   workflow_dispatch:
     inputs:
@@ -66,9 +69,8 @@ jobs:
       tag: v${{ inputs.new_version || steps.version.outputs.version }}
       version: ${{ inputs.new_version || steps.version.outputs.version }}
       build_num: ${{ steps.build_num.outputs.build_num }}
-      prev_tag: ${{ inputs.prev_tag || 'release-latest' }}
       targets: ${{ inputs.target || 'all' }}
-      release_title: ${{ inputs.custom_title || 'Release'}}
+      release_title_prefix: ${{ inputs.custom_title || 'Release'}}
     steps:
       - id: version
         # the suffix 0 allows us to provide up to 9 more hotfixes on the same day
@@ -83,7 +85,7 @@ jobs:
     with:
       build_num: ${{ needs.tags.outputs.build_num }}
       version: ${{ needs.tags.outputs.version }}
-      release_title: ${{ needs.tags.outputs.release_title }} ${{ needs.tags.outputs.tag }}
+      release_title: "${{ needs.tags.outputs.release_title_prefix }} ${{ needs.tags.outputs.tag }}"
       release_tag: ${{ needs.tags.outputs.tag }}
       targets: ${{ needs.tags.outputs.targets }}
       release: true
@@ -354,7 +356,7 @@ jobs:
  ######   ####    ##    ##     ##  #######  ########     ##         #######  ########  ######## ####  ######  ##     ## 
 
   publish:
-    environment: nightly
+    environment: release
     runs-on: ubuntu-latest
     name: Publish
     # if: ${{ github.event.schedule }}
@@ -365,7 +367,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.PAT }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/download-artifact@v3
         with:
@@ -377,21 +379,10 @@ jobs:
           git config --global user.name 'Sari'
           git config --global user.email 'acter-sari@users.noreply.github.com'
 
-      - name: "Generate docs"
-        run: |
-          echo "+++" > docs/content/releases/${{ needs.tags.outputs.version }}.md
-          echo "title = \" ${{ needs.tags.outputs.tag }}\"" >> docs/content/releases/${{ needs.tags.outputs.version }}.md
-          echo "template = \"releases/release.html\"" >> docs/content/releases/${{ needs.tags.outputs.version }}.md
-          echo "date = `date +%Y-%m-%d`" >> docs/content/releases/${{ needs.tags.outputs.version }}.md
-          echo "+++" >> docs/content/releases/${{ needs.tags.outputs.version }}.md
-          echo "" >> docs/content/releases/${{ needs.tags.outputs.version }}.md
-          cat CHANGELOG.md >> docs/content/releases/${{ needs.tags.outputs.version }}.md
-
       - name: Clear old docs
         continue-on-error: true
         run: |
           git rm .changes/*.md
-          git commit -m "Clearing .changes for ${{ needs.tags.outputs.version }}"
 
       - name: "Update flatpack version"
         run : |
@@ -400,7 +391,6 @@ jobs:
 
       - name: Tag for release
         run: |
-          git add "docs/content/releases/${{ needs.tags.outputs.version }}.md"
           echo "Add release ${{ needs.tags.outputs.tag }}"
           git commit -m "Releasing ${{ needs.tags.outputs.tag }}"
           git tag ${{ needs.tags.outputs.tag }}
@@ -413,7 +403,7 @@ jobs:
           # publish this full release now
           draft: true
           generate_release_notes: false
-          name: ${{ needs.tags.outputs.release_title }} ${{ needs.tags.outputs.tag }}
+          name: "${{ needs.tags.outputs.release_title_prefix }} ${{ needs.tags.outputs.tag }}"
           tag_name: ${{ needs.tags.outputs.tag }}
           body_path: CHANGELOG.md
           prerelease: false

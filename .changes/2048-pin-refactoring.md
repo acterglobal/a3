@@ -1,3 +1,0 @@
-- [New] : Brand new UI-UX for Pin creation
-- [New] : Support for adding attachment while Pin Creation
-- [New] : Now you can add one or more Link as attachment for Pin
