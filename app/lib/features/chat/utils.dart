@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/dom.dart' as html;
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:html/parser.dart';
 
 //Check for mentioned user link
 final mentionedUserLinkRegex = RegExp(
@@ -243,4 +245,33 @@ String prepareMsg(MsgContent? content) {
     matrixLinks,
     (match) => '<a href="${match.group(0)}">${match.group(0)}</a>',
   );
+}
+
+String parseEditMsg(WidgetRef ref) {
+  // shouldn't ever happen to be null if state is edit or reply
+  final message = ref.read(chatInputProvider).selectedMessage!;
+
+  if (message is types.TextMessage) {
+    // Parse String Data to HTML document
+    final document = parse(message.text);
+
+    if (document.body != null) {
+      // Get message data
+      String msg = message.text.trim();
+
+      // Get list of 'A Tags' values
+      final aTagElementList = document.getElementsByTagName('a');
+
+      for (final aTagElement in aTagElementList) {
+        final userMentionMessageData =
+            parseUserMentionMessage(msg, aTagElement);
+        msg = userMentionMessageData.parsedMessage;
+      }
+
+      // Parse data
+      final messageDocument = parse(msg);
+      return messageDocument.body?.text ?? '';
+    }
+  }
+  return '';
 }

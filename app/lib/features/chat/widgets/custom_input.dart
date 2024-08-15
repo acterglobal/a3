@@ -8,6 +8,7 @@ import 'package:acter/common/widgets/frost_effect.dart';
 import 'package:acter/features/attachments/actions/select_attachment.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat/widgets/custom_message_builder.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
 import 'package:acter/features/chat/widgets/mention_profile_builder.dart';
@@ -30,12 +31,6 @@ import 'package:mime/mime.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 final _log = Logger('a3::chat::custom_input');
-
-final _sendButtonVisible = StateProvider.family<bool, String>(
-  (ref, roomId) => ref.watch(
-    chatInputProvider.select((value) => value.message.isNotEmpty),
-  ),
-);
 
 final _allowEdit = StateProvider.family<bool, String>(
   (ref, roomId) => ref.watch(
@@ -333,7 +328,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
                       ),
                     ),
                   ),
-                  if (ref.watch(_sendButtonVisible(roomId)))
+                  if (textController.text.trim().isNotEmpty)
                     renderSendButton(context, roomId),
                 ],
               ),
@@ -692,10 +687,23 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.controller.text = ref.read(
-        chatInputProvider.select((value) => value.message),
-      );
+    ref.listenManual(
+        chatInputProvider.select((state) => state.selectedMessageState),
+        (prev, next) {
+      if (next == SelectedMessageState.edit) {
+        // a new message has been selected to be edited or switched from reply
+        // to edit, force refresh the inner text controller to reflect that
+        widget.controller.text = parseEditMsg(ref);
+        // frame delay to keep focus connected with keyboard.
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          widget.chatFocus.requestFocus();
+        });
+      } else if (next == SelectedMessageState.replyTo) {
+        // frame delay to keep focus connected with keyboard..
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          widget.chatFocus.requestFocus();
+        });
+      }
     });
   }
 
@@ -740,26 +748,6 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(chatInputProvider, (prev, next) {
-      if (next.selectedMessageState == SelectedMessageState.edit &&
-          (prev?.selectedMessageState != next.selectedMessageState ||
-              next.message != prev?.message)) {
-        // a new message has been selected to be edited or switched from reply
-        // to edit, force refresh the inner text controller to reflect that
-        widget.controller.text = next.message;
-        // frame delay to keep focus connected with keyboard.
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          widget.chatFocus.requestFocus();
-        });
-      } else if (next.selectedMessageState == SelectedMessageState.replyTo &&
-          (next.selectedMessage != prev?.selectedMessage ||
-              prev?.selectedMessageState != next.selectedMessageState)) {
-        // frame delay to keep focus connected with keyboard..
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          widget.chatFocus.requestFocus();
-        });
-      }
-    });
     return CallbackShortcuts(
       bindings: <ShortcutActivator, VoidCallback>{
         const SingleActivator(LogicalKeyboardKey.enter): () {
@@ -813,7 +801,6 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         focusNode: chatFocus,
         enabled: ref.watch(_allowEdit(widget.roomId)),
         onChanged: (val) {
-          ref.read(chatInputProvider.notifier).updateMessage(val);
           if (widget.onTyping != null) {
             widget.onTyping!(val.isNotEmpty);
           }
