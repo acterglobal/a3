@@ -17,7 +17,7 @@ import 'package:acter/features/onboarding/pages/link_email_page.dart';
 import 'package:acter/features/auth/pages/register_page.dart';
 import 'package:acter/features/onboarding/pages/save_username_page.dart';
 import 'package:acter/features/onboarding/pages/upload_avatar_page.dart';
-import 'package:acter/features/pins/pages/create_pin.dart';
+import 'package:acter/features/pins/pages/create_pin_page.dart';
 import 'package:acter/features/search/pages/quick_jump.dart';
 import 'package:acter/features/super_invites/pages/create.dart';
 import 'package:acter/features/space/sheets/link_room_sheet.dart';
@@ -122,7 +122,7 @@ final generalRoutes = [
     pageBuilder: (context, state) {
       return NoTransitionPage(
         key: state.pageKey,
-        child: CreatePin(
+        child: CreatePinPage(
           initialSelectedSpace: state.uri.queryParameters['spaceId'],
         ),
       );
