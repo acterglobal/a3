@@ -54,6 +54,7 @@ final canSendProvider = FutureProvider.family<bool?, String>(
 class CustomChatInput extends ConsumerWidget {
   static const noAccessKey = Key('custom-chat-no-access');
   static const loadingKey = Key('custom-chat-loading');
+  static const sendBtnKey = Key('custom-chat-send-button');
   final String roomId;
   final void Function(bool)? onTyping;
 
@@ -359,6 +360,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
 
     if (allowEditing) {
       return IconButton.filled(
+        key: CustomChatInput.sendBtnKey,
         iconSize: 20,
         onPressed: () => onSendButtonPressed(ref),
         icon: const Icon(

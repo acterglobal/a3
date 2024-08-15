@@ -14,7 +14,14 @@ class InActerContextTestWrapper extends StatelessWidget {
       child: MaterialApp(
         theme: ActerTheme.theme,
         title: 'Acter',
-        builder: (context, other) => Scaffold(body: child),
+        home: child,
+        builder: (context, child) => Overlay(
+          initialEntries: [
+            OverlayEntry(
+              builder: (context) => Scaffold(body: child),
+            ),
+          ],
+        ),
         locale: const Locale('en', 'US'),
         localizationsDelegates: L10n.localizationsDelegates,
         supportedLocales: L10n.supportedLocales,
