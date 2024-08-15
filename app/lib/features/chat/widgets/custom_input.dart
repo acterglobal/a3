@@ -44,7 +44,16 @@ final _allowEdit = StateProvider.family<bool, String>(
   ),
 );
 
+final canSendProvider = FutureProvider.family<bool?, String>(
+  (ref, roomId) async {
+    final membership = ref.watch(roomMembershipProvider(roomId));
+    return membership.valueOrNull?.canString('CanSendChatMessages');
+  },
+);
+
 class CustomChatInput extends ConsumerWidget {
+  static const noAccessKey = Key('custom-chat-no-access');
+  static const loadingKey = Key('custom-chat-loading');
   final String roomId;
   final void Function(bool)? onTyping;
 
@@ -52,12 +61,7 @@ class CustomChatInput extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final canSend = ref.watch(
-      roomMembershipProvider(roomId).select(
-        (membership) =>
-            membership.valueOrNull?.canString('CanSendChatMessages'),
-      ),
-    );
+    final canSend = ref.watch(canSendProvider(roomId)).valueOrNull;
     if (canSend == null) {
       // we are still loading
       return loadingState(context);
@@ -84,6 +88,7 @@ class CustomChatInput extends ConsumerWidget {
               ),
               const SizedBox(width: 4),
               Text(
+                key: noAccessKey,
                 L10n.of(context).chatMissingPermissionsToSend,
                 style: const TextStyle(color: Colors.grey, fontSize: 14),
               ),
@@ -98,6 +103,7 @@ class CustomChatInput extends ConsumerWidget {
     return Skeletonizer(
       child: FrostEffect(
         child: Container(
+          key: loadingKey,
           padding: const EdgeInsets.symmetric(vertical: 15),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
