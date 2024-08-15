@@ -47,7 +47,6 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
 
   AppBar _buildAppBar() {
     return AppBar(
-      title: Text(L10n.of(context).pinDetails),
       actions: [_buildActionMenu()],
     );
   }
