@@ -75,10 +75,9 @@ class _DesktopSupportState extends State<DesktopSupport>
       // the menu crashes on macos if hidden for some reason.
       await trayManager.setContextMenu(menu);
     }
-    try {
-      trayManager.setToolTip('Acter');
-    } on MissingPluginException {
-      _log.warning('Setting Tray tooltip not supported on this platform');
+    if (!Platform.isLinux) {
+      // not supported on linux;
+      await trayManager.setToolTip('Acter');
     }
   }
 
