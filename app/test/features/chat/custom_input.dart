@@ -116,9 +116,7 @@ void main() {
         await tester.pump();
         // not visible
         expect(find.byKey(CustomChatInput.sendBtnKey), findsNothing);
-        // CURRENTLY FAILS
       },
-      skip: true,
     );
 
     testWidgets(
@@ -215,7 +213,6 @@ void main() {
         await tester.pump();
         expect(controller.text, 'testing code'); // <- cursor moved
       },
-      skip: true,
     );
   });
 }

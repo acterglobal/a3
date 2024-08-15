@@ -194,11 +194,19 @@ class _ChatInput extends ConsumerStatefulWidget {
 class __ChatInputState extends ConsumerState<_ChatInput> {
   late ActerTriggerAutoCompleteTextController textController;
   final FocusNode chatFocus = FocusNode();
+  final ValueNotifier<bool> _isInputEmptyNotifier = ValueNotifier(true);
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _setController();
+    textController.addListener(_updateInputState);
+  }
+
+  @override
+  void dispose() {
+    _isInputEmptyNotifier.dispose();
+    super.dispose();
   }
 
   void _setController() {
@@ -216,6 +224,11 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     textController =
         ActerTriggerAutoCompleteTextController(triggerStyles: triggerStyles);
     setState(() {});
+  }
+
+  // listener for handling send state
+  void _updateInputState() {
+    _isInputEmptyNotifier.value = textController.text.trim().isEmpty;
   }
 
   void handleEmojiSelected(Category? category, Emoji emoji) {
@@ -286,7 +299,6 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     final roomId = widget.roomId;
     final isEncrypted =
         ref.watch(isRoomEncryptedProvider(roomId)).valueOrNull ?? false;
-
     return Column(
       children: [
         if (child != null) child,
@@ -328,8 +340,14 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
                       ),
                     ),
                   ),
-                  if (textController.text.trim().isNotEmpty)
-                    renderSendButton(context, roomId),
+                  ValueListenableBuilder<bool>(
+                    valueListenable: _isInputEmptyNotifier,
+                    builder: (context, isEmpty, child) {
+                      return !isEmpty
+                          ? renderSendButton(context, roomId)
+                          : const SizedBox();
+                    },
+                  ),
                 ],
               ),
             ),
