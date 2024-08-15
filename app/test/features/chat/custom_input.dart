@@ -1,4 +1,3 @@
-import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/custom_input.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
