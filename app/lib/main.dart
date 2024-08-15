@@ -59,7 +59,6 @@ Future<void> _startAppInner(Widget app, bool withSentry) async {
 
   if (isDesktop) {
     app = DesktopSupport(child: app);
-    await initDesktop();
   }
 
   if (initialLocationFromNotification != null) {
