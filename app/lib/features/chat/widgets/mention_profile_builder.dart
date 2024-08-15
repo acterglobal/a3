@@ -5,9 +5,12 @@ import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_trigger_auto_complete/acter_trigger_autocomplete.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::chat::mention_profile_builder');
 
 class MentionProfileBuilder extends ConsumerWidget {
   final BuildContext context;
@@ -23,7 +26,7 @@ class MentionProfileBuilder extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final client = ref.watch(alwaysClientProvider);
     final userId = client.userId().toString();
-    var memberIds = ref.watch(membersIdsProvider((roomQuery.roomId)));
+    var memberIds = ref.watch(membersIdsProvider(roomQuery.roomId));
     return memberIds.when(
       loading: () => Skeletonizer(
         child: SizedBox(
@@ -31,7 +34,10 @@ class MentionProfileBuilder extends ConsumerWidget {
           child: Card(child: ListView()),
         ),
       ),
-      error: (error, st) => ErrorWidget(L10n.of(context).failedToLoad(error)),
+      error: (error, st) {
+        _log.severe('Failed to load room members', error, st);
+        return ErrorWidget(L10n.of(context).loadingFailed(error));
+      },
       data: (data) {
         final users = data.fold<Map<String, String>>({}, (map, uId) {
           if (uId != userId) {

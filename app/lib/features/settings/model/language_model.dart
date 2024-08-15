@@ -9,8 +9,12 @@ class LanguageModel {
 
   factory LanguageModel.fromCode(String? locale) {
     switch (locale) {
+      case 'ar':
+        return const LanguageModel.arabic();
       case 'de':
         return const LanguageModel.german();
+      case 'es':
+        return const LanguageModel.spanish();
       case 'pl':
         return const LanguageModel.polish();
       case 'fr':
@@ -38,11 +42,21 @@ class LanguageModel {
       : languageName = 'Polski',
         languageCode = 'pl';
 
+  const LanguageModel.spanish()
+      : languageName = 'Espanol',
+        languageCode = 'es';
+
+  const LanguageModel.arabic()
+      : languageName = 'اَلْعَرَبِيَّةُ',
+        languageCode = 'ar';
+
   static const allLanguagesList = [
-    // we show them in ehm... alphabetical order
+    // we show them in ehm... alphabetical order of the name in their own language
     LanguageModel.german(),
     LanguageModel.english(),
+    LanguageModel.spanish(),
     LanguageModel.french(),
     LanguageModel.polish(),
+    LanguageModel.arabic(),
   ];
 }

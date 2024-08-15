@@ -2,8 +2,8 @@ import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/home/data/keys.dart';
+import 'package:acter/features/pins/pages/create_pin.dart';
 import 'package:acter/features/pins/pages/pin_page.dart';
-import 'package:acter/features/pins/pages/create_pin_page.dart';
 import 'package:acter/features/pins/widgets/pin_item.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
@@ -56,15 +56,11 @@ extension ActerNews on ConvenientTest {
     await pinActionKey.should(findsOneWidget);
     await pinActionKey.tap();
 
-    final titleField = find.byKey(CreatePinPage.titleFieldKey);
+    final titleField = find.byKey(CreatePin.titleFieldKey);
     await titleField.should(findsOneWidget);
     await titleField.enterTextWithoutReplace(title);
 
-    final urlField = find.byKey(CreatePinPage.urlFieldKey);
-    await urlField.should(findsOneWidget);
-    await urlField.enterTextWithoutReplace(url);
-
-    final descriptionField = find.byKey(CreatePinPage.descriptionFieldKey);
+    final descriptionField = find.byKey(CreatePin.descriptionFieldKey);
     await descriptionField.should(findsOneWidget);
     final textEditorState =
         (tester.firstState(descriptionField) as HtmlEditorState).editorState;
@@ -72,7 +68,7 @@ extension ActerNews on ConvenientTest {
     textEditorState.service.keyboardService!.closeKeyboard();
     await selectSpace(spaceId, SelectSpaceFormField.openKey);
 
-    final submit = find.byKey(CreatePinPage.submitBtn);
+    final submit = find.byKey(CreatePin.submitBtn);
     await tester.ensureVisible(submit);
     await submit.tap();
   }

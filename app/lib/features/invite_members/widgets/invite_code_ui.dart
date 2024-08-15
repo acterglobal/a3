@@ -15,7 +15,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::invite_members::invite_code');
+final _log = Logger('a3::invite::invite_code');
 
 class InviteCodeUI extends ConsumerStatefulWidget {
   final String roomId;

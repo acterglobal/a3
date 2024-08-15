@@ -342,9 +342,12 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: Text('loading')),
-        error: (e, s) => Center(
-          child: Text('Error loading app settings: $e'),
-        ),
+        error: (e, s) {
+          _log.severe('Failed to load space settings', e, s);
+          return Center(
+            child: Text(L10n.of(context).loadingFailed(e)),
+          );
+        },
       ),
     );
   }

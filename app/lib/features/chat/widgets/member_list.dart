@@ -2,8 +2,11 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/chat/widgets/skeletons/members_list_skeleton_widget.dart';
 import 'package:acter/features/member/widgets/member_list_entry.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::chat::member_list');
 
 class MemberList extends ConsumerWidget {
   final String roomId;
@@ -21,9 +24,7 @@ class MemberList extends ConsumerWidget {
       data: (members) {
         if (members.isEmpty) {
           return Center(
-            child: Text(
-              L10n.of(context).noMembersFound,
-            ),
+            child: Text(L10n.of(context).noMembersFound),
           );
         }
         return ListView.builder(
@@ -42,9 +43,12 @@ class MemberList extends ConsumerWidget {
           },
         );
       },
-      error: (error, stack) => Center(
-        child: Text(L10n.of(context).loadingFailed(error)),
-      ),
+      error: (error, stack) {
+        _log.severe('Failed to load room members', error, stack);
+        return Center(
+          child: Text(L10n.of(context).loadingFailed(error)),
+        );
+      },
       loading: () => const MembersListSkeleton(),
     );
   }

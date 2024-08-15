@@ -1,0 +1,1 @@
+- Acter is now available in Spanish (thanks to Sandra) and in Arabic (thanks, Omar!)

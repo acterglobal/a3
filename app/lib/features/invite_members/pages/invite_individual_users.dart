@@ -1,14 +1,17 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/common/widgets/user_builder.dart';
+import 'package:acter/features/invite_members/providers/invite_providers.dart';
 import 'package:acter/features/invite_members/widgets/direct_invite.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:acter/features/invite_members/providers/invite_providers.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::invite::individual_users');
 
 class InviteIndividualUsers extends ConsumerWidget {
   final String roomId;
@@ -172,8 +175,10 @@ class InviteIndividualUsers extends ConsumerWidget {
                       userId: data[index].userId().toString(),
                       roomId: roomId,
                     ),
-                    error: (err, stackTrace) =>
-                        Text(L10n.of(context).error(err)),
+                    error: (err, st) {
+                      _log.severe('Failed to search users', err, st);
+                      return Text(L10n.of(context).searchingFailed(err));
+                    },
                     loading: () => Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       child: Skeletonizer(

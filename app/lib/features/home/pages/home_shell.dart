@@ -82,12 +82,12 @@ class HomeShellState extends ConsumerState<HomeShell> {
   Future<void> initShake() async {
     // shake is possible in only actual mobile devices
     if (await isRealPhone()) {
-      detector = ShakeDetector.waitForStart(
+      detector = ShakeDetector.autoStart(
+        shakeThresholdGravity: 30.0,
         onShake: () {
           openBugReport(context);
         },
       );
-      detector.startListening();
     }
   }
 

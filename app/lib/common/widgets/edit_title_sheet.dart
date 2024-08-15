@@ -13,7 +13,7 @@ void showEditTitleBottomSheet({
     showDragHandle: true,
     useSafeArea: true,
     context: context,
-    constraints: const BoxConstraints(maxHeight: 300),
+    isScrollControlled: true,
     builder: (context) {
       return EditTitleSheet(
         bottomSheetTitle: bottomSheetTitle,
@@ -52,9 +52,9 @@ class _EditTitleSheetState extends ConsumerState<EditTitleSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      constraints: const BoxConstraints(maxWidth: 500),
+      padding: MediaQuery.of(context).viewInsets,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             widget.bottomSheetTitle ?? L10n.of(context).editTitle,

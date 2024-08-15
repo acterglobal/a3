@@ -82,6 +82,7 @@ enum Routes {
   // -- pins
   pins('/pins'),
   pin('/pins/:pinId'),
+  createPin('/pins/create'),
 
   // -- events
   calendarEvents('/events'),

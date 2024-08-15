@@ -9,6 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::settings::email_addresses');
 
 class AddEmailAddr extends StatefulWidget {
   const AddEmailAddr({super.key});
@@ -92,15 +95,14 @@ class EmailAddressesPage extends ConsumerWidget {
             ),
             IconButton(
               onPressed: () => addEmailAddress(context, ref),
-              icon: const Icon(
-                Atlas.plus_circle_thin,
-              ),
+              icon: const Icon(Atlas.plus_circle_thin),
             ),
           ],
         ),
         body: emailAddresses.when(
           data: (addresses) => buildAddresses(context, addresses),
           error: (error, stack) {
+            _log.severe('Failed to load email addresses', error, stack);
             return Center(
               child: Text(L10n.of(context).errorLoadingEmailAddresses(error)),
             );

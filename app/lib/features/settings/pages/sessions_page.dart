@@ -8,6 +8,9 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::settings::sessions');
 
 class SessionsPage extends ConsumerWidget {
   const SessionsPage({super.key});
@@ -36,6 +39,7 @@ class SessionsPage extends ConsumerWidget {
         body: allSessions.when(
           data: (sessions) => buildSessions(context, sessions),
           error: (error, stack) {
+            _log.severe('Failed to load unknown sessions', error, stack);
             return Center(
               child: Text(L10n.of(context).couldNotLoadAllSessions),
             );

@@ -10,6 +10,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::tasks::list');
 
 class TaskItemsListWidget extends ConsumerWidget {
   final TaskList taskList;
@@ -28,7 +31,10 @@ class TaskItemsListWidget extends ConsumerWidget {
     final tasks = ref.watch(taskItemsListProvider(taskList));
     return tasks.when(
       data: (overview) => taskData(context, overview),
-      error: (error, stack) => Text(L10n.of(context).errorLoadingTasks(error)),
+      error: (error, stack) {
+        _log.severe('Failed to load tasklist', error, stack);
+        return Text(L10n.of(context).errorLoadingTasks(error));
+      },
       loading: () => const TaskItemsSkeleton(),
     );
   }
@@ -51,10 +57,11 @@ class TaskItemsListWidget extends ConsumerWidget {
 
     return Column(
       children: [
-        for (final task in overview.openTasks)
+        for (final taskId in overview.openTasks)
           TaskItem(
             onTap: () => showInlineAddTask.value = false,
-            task: task,
+            taskListId: taskList.eventIdStr(),
+            taskId: taskId,
           ),
       ],
     );
@@ -103,9 +110,10 @@ class TaskItemsListWidget extends ConsumerWidget {
             const Expanded(child: Divider(indent: 20, endIndent: 20)),
           ],
         ),
-        for (final task in overview.doneTasks)
+        for (final taskId in overview.doneTasks)
           TaskItem(
-            task: task,
+            taskListId: taskList.eventIdStr(),
+            taskId: taskId,
             onTap: () => showInlineAddTask.value = false,
           ),
       ],

@@ -4,9 +4,9 @@ import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/events/widgets/skeletons/event_item_skeleton_widget.dart';
 import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/news/widgets/news_item_slide/video_slide.dart';
-import 'package:acter/features/news/widgets/news_side_bar.dart';
 import 'package:acter/features/news/widgets/news_item_slide/image_slide.dart';
 import 'package:acter/features/news/widgets/news_item_slide/text_slide.dart';
+import 'package:acter/features/news/widgets/news_side_bar.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -14,7 +14,10 @@ import 'package:carousel_indicator/carousel_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::news::news_item');
 
 class NewsItem extends ConsumerStatefulWidget {
   final Client client;
@@ -104,7 +107,10 @@ class _NewsItemState extends ConsumerState<NewsItem> {
                 padding: const EdgeInsets.all(16),
                 child: space.when(
                   data: (space) => Text(space.avatarInfo.displayName ?? roomId),
-                  error: (e, st) => Text(L10n.of(context).errorLoadingSpace(e)),
+                  error: (e, st) {
+                    _log.severe('Failed to load brief of space', e, st);
+                    return Text(L10n.of(context).errorLoadingSpace(e));
+                  },
                   loading: () => Skeletonizer(
                     child: Text(roomId),
                   ),
@@ -180,8 +186,12 @@ class _NewsItemState extends ConsumerState<NewsItem> {
               );
             },
             loading: () => const EventItemSkeleton(),
-            error: (e, s) =>
-                Center(child: Text(L10n.of(context).failedToLoadEvent(e))),
+            error: (e, s) {
+              _log.severe('Failed to load cal event', e, s);
+              return Center(
+                child: Text(L10n.of(context).failedToLoadEvent(e)),
+              );
+            },
           );
     } else {
       return Card(
