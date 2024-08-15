@@ -68,13 +68,13 @@ class _DesktopSupportState extends State<DesktopSupport>
         MenuItem(
           key: 'exit_app',
           label: 'Exit App',
-          onClick: (item) {
-            windowManager.destroy();
-          },
         ),
       ],
     );
-    await trayManager.setContextMenu(menu);
+    if (!Platform.isMacOS) {
+      // the menu crashes on macos if hidden for some reason.
+      await trayManager.setContextMenu(menu);
+    }
     try {
       trayManager.setToolTip('Acter');
     } on MissingPluginException {
@@ -98,7 +98,6 @@ class _DesktopSupportState extends State<DesktopSupport>
   void onWindowClose() async {
     bool isPreventClose = await windowManager.isPreventClose();
     if (isPreventClose) {
-      print('prevent close');
       await windowManager.hide();
     }
   }
@@ -129,14 +128,15 @@ class _DesktopSupportState extends State<DesktopSupport>
       return;
     }
 
-    // we want to show the window on all other clicks
-    windowManager.show();
-    if (menuItem.key == 'home') {
-      rootNavKey.currentContext!.pushNamed(Routes.main.name);
-    } else if (menuItem.key == 'chat') {
-      rootNavKey.currentContext!.pushNamed(Routes.chat.name);
-    } else if (menuItem.key == 'activities') {
-      rootNavKey.currentContext!.pushNamed(Routes.activities.name);
-    }
+    await windowManager.show();
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) async {
+      if (menuItem.key == 'home') {
+        rootNavKey.currentContext!.pushNamed(Routes.main.name);
+      } else if (menuItem.key == 'chat') {
+        rootNavKey.currentContext!.pushNamed(Routes.chat.name);
+      } else if (menuItem.key == 'activities') {
+        rootNavKey.currentContext!.pushNamed(Routes.activities.name);
+      }
+    });
   }
 }

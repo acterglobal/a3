@@ -2605,10 +2605,11 @@ packages:
   window_manager:
     dependency: "direct main"
     description:
-      name: window_manager
-      sha256: e052224c7d8f0d1d0b2e03b7b1047bb08ea800d919a79453518311839881fa5f
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: main
+      resolved-ref: "7fdebf9b1b3dac140d10590306ad068a2abb6bf4"
+      url: "https://github.com/acterglobal/window_manager"
+    source: git
     version: "0.4.0"
   windows_notification:
     dependency: transitive
