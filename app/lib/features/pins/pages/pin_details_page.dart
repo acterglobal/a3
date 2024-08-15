@@ -180,7 +180,6 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
               ),
             ],
           ),
-          const SizedBox(height: 18),
           pinDescriptionUI(pin),
         ],
       ),
@@ -218,33 +217,44 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
     if (description == null) return const SizedBox.shrink();
     final formattedBody = description.formattedBody();
 
-    return SelectionArea(
-      child: GestureDetector(
-        onTap: () {
-          showEditHtmlDescriptionBottomSheet(
-            context: context,
-            descriptionHtmlValue: description.formattedBody(),
-            descriptionMarkdownValue: description.body(),
-            onSave: (htmlBodyDescription, plainDescription) async {
-              saveDescription(
-                context,
-                htmlBodyDescription,
-                plainDescription,
-                pin,
+    if (formattedBody == null && description.body().trim().isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 18),
+        SelectionArea(
+          child: GestureDetector(
+            onTap: () {
+              showEditHtmlDescriptionBottomSheet(
+                context: context,
+                descriptionHtmlValue: description.formattedBody(),
+                descriptionMarkdownValue: description.body(),
+                onSave: (htmlBodyDescription, plainDescription) async {
+                  saveDescription(
+                    context,
+                    htmlBodyDescription,
+                    plainDescription,
+                    pin,
+                  );
+                },
               );
             },
-          );
-        },
-        child: formattedBody != null
-            ? RenderHtml(
-                text: formattedBody,
-                defaultTextStyle: Theme.of(context).textTheme.labelLarge,
-              )
-            : Text(
-                description.body(),
-                style: Theme.of(context).textTheme.labelLarge,
-              ),
-      ),
+            child: formattedBody != null
+                ? RenderHtml(
+                    text: formattedBody,
+                    defaultTextStyle: Theme.of(context).textTheme.labelLarge,
+                  )
+                : Text(
+                    description.body(),
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
+          ),
+        ),
+      ],
     );
   }
 }
