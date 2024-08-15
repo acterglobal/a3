@@ -2,9 +2,9 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
-import 'package:acter/common/widgets/space_name_widget.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
+import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/pins/Utils/pins_utils.dart';
 import 'package:acter/features/pins/actions/edit_pin_actions.dart';
 import 'package:acter/features/pins/actions/reduct_pin_action.dart';
@@ -207,24 +207,9 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
   }
 
   Widget pinSpaceNameUI(ActerPin pin) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          L10n.of(context).inKey,
-          style: Theme.of(context).textTheme.labelLarge,
-        ),
-        Text(
-          ' : ',
-          style: Theme.of(context).textTheme.labelLarge,
-        ),
-        Expanded(
-          child: SpaceNameWidget(
-            spaceId: pin.roomIdStr(),
-            isShowBrackets: false,
-          ),
-        ),
-      ],
+    return SpaceChip(
+      spaceId: pin.roomIdStr(),
+      useCompatView: true,
     );
   }
 

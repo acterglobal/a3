@@ -95,6 +95,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
                     children: <Widget>[
                       const SizedBox(height: 14),
                       _buildTitleField(),
+                      const SizedBox(height: 14),
                       const Align(
                         alignment: Alignment.centerLeft,
                         child: SelectSpaceFormField(
