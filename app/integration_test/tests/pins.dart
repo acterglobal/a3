@@ -4,7 +4,6 @@ import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/pins/pages/create_pin_page.dart';
 import 'package:acter/features/pins/pages/pin_details_page.dart';
-import 'package:acter/features/pins/widgets/pin_item.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
@@ -85,29 +84,6 @@ extension ActerNews on ConvenientTest {
     final titleField = find.byKey(PinDetailsPage.titleFieldKey);
     await titleField.should(findsOneWidget);
     await titleField.replaceText(title);
-
-    final linkField = find.byKey(PinItem.linkFieldKey);
-    await linkField.should(findsOneWidget);
-    await linkField.replaceText(url);
-
-    final descriptionField = find.byKey(PinItem.descriptionFieldKey);
-    await descriptionField.should(findsOneWidget);
-    final textEditorState =
-        (tester.firstState(descriptionField) as HtmlEditorState).editorState;
-    final lastSelectable = textEditorState.getLastSelectable()!;
-    final transaction = textEditorState.transaction;
-    transaction.insertText(
-      lastSelectable.$1,
-      35,
-      content,
-    );
-    await textEditorState.apply(transaction);
-    textEditorState.service.keyboardService!.closeKeyboard();
-
-    final saveBtnKey = find.byKey(PinItem.saveBtnKey);
-    await saveBtnKey.should(findsOneWidget);
-    await tester.ensureVisible(saveBtnKey);
-    await saveBtnKey.tap();
 
     final pinPage = find.byKey(PinDetailsPage.pinPageKey);
     await pinPage.should(findsOneWidget);

@@ -22,6 +22,7 @@ class PinDetailsPage extends ConsumerStatefulWidget {
   static const actionMenuKey = Key('pin-action-menu');
   static const editBtnKey = Key('pin-edit-btn');
   static const titleFieldKey = Key('edit-pin-title-field');
+  static const descriptionFieldKey = Key('edit-pin-description-field');
 
   final String pinId;
 
