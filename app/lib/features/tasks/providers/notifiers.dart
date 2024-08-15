@@ -6,7 +6,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
-final _log = Logger('a3::tasks::providers');
+final _log = Logger('a3::tasks::notifiers');
 
 //List of task items based on the specified task list
 class TaskItemsListNotifier

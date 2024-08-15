@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
+
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
@@ -13,9 +14,9 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
-import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -34,6 +35,10 @@ final idHttpRegexp = RegExp(
 
 final idMatrixRegexp = RegExp(
   r'matrix:roomid/(?<id>[^?]+)(\?via=(?<server_name>[^&]+))?(&via=(?<server_name2>[^&]+))?(&via=(?<server_name3>[^&]+))?',
+);
+
+final urlValidatorRegexp = RegExp(
+  r'^[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b[-a-zA-Z0-9()@:%_+.~#?&/=]*$',
 );
 
 /// Get provider right from the context no matter where we are
@@ -158,6 +163,34 @@ Future<bool> openLink(String target, BuildContext context) async {
   } else {
     _log.info('Opening external URL: $url');
     return await launchUrl(url);
+  }
+}
+
+String getHumanReadableFileSize(int bytes) {
+  if (bytes <= 0) return '0 B';
+  const suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+  var i = (log(bytes) / log(1024)).floor();
+  return '${(bytes / pow(1024, i)).toStringAsFixed(1)} ${suffixes[i]}';
+}
+
+String documentTypeFromFileExtension(String fileExtension) {
+  switch (fileExtension) {
+    case 'png':
+    case 'jpg':
+    case 'jpeg':
+      return 'Image';
+    case 'mov':
+    case 'mp4':
+      return 'Video';
+    case 'mp3':
+    case 'wav':
+      return 'Audio';
+    case 'pdf':
+      return 'PDF';
+    case 'txt':
+      return 'Text File';
+    default:
+      return '';
   }
 }
 

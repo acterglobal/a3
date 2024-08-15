@@ -5,8 +5,11 @@ import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::comments::section');
 
 class CommentsSection extends ConsumerWidget {
   final Future<CommentsManager> manager;
@@ -24,7 +27,10 @@ class CommentsSection extends ConsumerWidget {
     }
     return ref.watch(commentsManagerProvider(manager)).when(
           data: (manager) => found(context, manager),
-          error: (e, st) => onError(context, e),
+          error: (e, st) {
+            _log.severe('Failed to load comment manager', e, st);
+            return onError(context, e);
+          },
           loading: () => loading(context),
         );
   }

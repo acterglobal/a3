@@ -35,7 +35,7 @@ Future<String?> joinRoom(
       return null;
     }
     EasyLoading.showError(
-      '$displayMsg ${L10n.of(context).failed}: \n $err"',
+      L10n.of(context).error(err),
       duration: const Duration(seconds: 3),
     );
     return null;

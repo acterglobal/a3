@@ -7,6 +7,9 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::home::my_tasks');
 
 class MyTasksSection extends ConsumerWidget {
   final int limit;
@@ -26,8 +29,10 @@ class MyTasksSection extends ConsumerWidget {
                 ListView.separated(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  separatorBuilder: (context, index) =>
-                      const Divider(color: Colors.white24, indent: 30),
+                  separatorBuilder: (context, index) => const Divider(
+                    color: Colors.white24,
+                    indent: 30,
+                  ),
                   itemCount: tasks.length,
                   itemBuilder: (context, index) {
                     return TaskItem(
@@ -42,7 +47,10 @@ class MyTasksSection extends ConsumerWidget {
                 ),
               ],
             ),
-      error: (error, stack) => Text(L10n.of(context).loadingTasksFailed(error)),
+      error: (error, stack) {
+        _log.severe('Failed to load open tasks', error, stack);
+        return Text(L10n.of(context).loadingTasksFailed(error));
+      },
       loading: () => Text(L10n.of(context).loading),
     );
   }

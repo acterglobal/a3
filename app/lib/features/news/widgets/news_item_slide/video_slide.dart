@@ -5,8 +5,11 @@ import 'package:acter/features/news/model/keys.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+
+final _log = Logger('a3::news::widget::video_slide');
 
 class VideoSlide extends StatelessWidget {
   final NewsSlide slide;
@@ -43,8 +46,13 @@ class VideoSlide extends StatelessWidget {
         future: getNewsVideo(),
         builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
           if (snapshot.hasError) {
+            _log.severe(
+              'Failed to load video of slide',
+              snapshot.error,
+              snapshot.stackTrace,
+            );
             return Center(
-              child: Text(L10n.of(context).errorLoading(snapshot.error!)),
+              child: Text(L10n.of(context).loadingFailed(snapshot.error!)),
             );
           }
 

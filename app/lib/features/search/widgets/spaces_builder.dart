@@ -4,10 +4,13 @@ import 'package:acter/features/search/providers/search.dart';
 import 'package:acter/features/search/providers/spaces.dart';
 import 'package:acter/router/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::search::spaces_builder');
 
 class SpacesBuilder extends ConsumerWidget {
   final bool popBeforeRoute;
@@ -22,10 +25,13 @@ class SpacesBuilder extends ConsumerWidget {
     final foundSpaces = ref.watch(spacesFoundProvider);
     return foundSpaces.when(
       loading: () => renderLoading(context),
-      error: (e, st) => inBox(
-        context,
-        Text(L10n.of(context).error(e)),
-      ),
+      error: (e, st) {
+        _log.severe('Failed to search spaces', e, st);
+        return inBox(
+          context,
+          Text(L10n.of(context).searchingFailed(e)),
+        );
+      },
       data: (data) {
         if (data.isEmpty) {
           return renderEmpty(context, ref);

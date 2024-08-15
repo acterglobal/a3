@@ -1,4 +1,5 @@
 import 'dart:math';
+
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -11,10 +12,13 @@ import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/events/widgets/skeletons/event_list_skeleton_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::cal_event::list');
 
 class EventListPage extends ConsumerStatefulWidget {
   final String? spaceId;
@@ -76,15 +80,17 @@ class _EventListPageState extends ConsumerState<EventListPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        ActerSearchWidget(
-          searchTextController: searchTextController,
-        ),
+        ActerSearchWidget(searchTextController: searchTextController),
         filterChipsButtons(),
         Expanded(
           child: eventList.when(
             data: (events) => _buildEventList(events),
-            error: (error, stack) =>
-                Center(child: Text(L10n.of(context).loadingFailed(error))),
+            error: (e, st) {
+              _log.severe('Failed to search events in space', e, st);
+              return Center(
+                child: Text(L10n.of(context).searchingFailed(e)),
+              );
+            },
             loading: () => const EventListSkeleton(),
           ),
         ),

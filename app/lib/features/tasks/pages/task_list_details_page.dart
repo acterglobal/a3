@@ -1,8 +1,8 @@
 import 'package:acter/common/actions/redact_content.dart';
+import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
-import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
@@ -14,7 +14,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::tasks::task_list_details_page');
+final _log = Logger('a3::tasks::tasklist_details');
 
 class TaskListDetailPage extends ConsumerStatefulWidget {
   static const pageKey = Key('task-list-details-page');
@@ -92,7 +92,12 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
           ),
         ],
       ),
-      error: (e, s) => AppBar(title: Text(L10n.of(context).failedToLoad(e))),
+      error: (e, s) {
+        _log.severe('Failed to load tasklist', e, s);
+        return AppBar(
+          title: Text(L10n.of(context).loadingFailed(e)),
+        );
+      },
       loading: () => AppBar(
         title: Text(L10n.of(context).loading),
       ),
@@ -128,7 +133,10 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
     final taskList = ref.watch(taskListItemProvider(widget.taskListId));
     return taskList.when(
       data: (data) => _buildTaskListData(data),
-      error: (e, s) => Text(L10n.of(context).failedToLoad(e)),
+      error: (e, s) {
+        _log.severe('Failed to load tasklist', e, s);
+        return Text(L10n.of(context).loadingFailed(e));
+      },
       loading: () => Text(L10n.of(context).loading),
     );
   }

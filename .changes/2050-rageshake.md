@@ -1,1 +1,0 @@
-- Fix for being to sensitive on rage shakes

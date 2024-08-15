@@ -14,6 +14,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::tasks::tasklist');
 
 class TasksListPage extends ConsumerStatefulWidget {
   static const scrollView = Key('space-task-lists');
@@ -108,9 +111,12 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
         Expanded(
           child: tasksList.when(
             data: (tasks) => _buildTasksList(tasks),
-            error: (error, stack) => Center(
-              child: Text(L10n.of(context).loadingFailed(error)),
-            ),
+            error: (e, s) {
+              _log.severe('Failed to search tasklists in space', e, s);
+              return Center(
+                child: Text(L10n.of(context).searchingFailed(e)),
+              );
+            },
             loading: () => const TasksListSkeleton(),
           ),
         ),

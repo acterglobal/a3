@@ -10,7 +10,10 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::pins::pin_item');
 
 class PinListItemById extends ConsumerWidget {
   final String pinId;
@@ -31,7 +34,10 @@ class PinListItemById extends ConsumerWidget {
         pin: acterPin,
         showSpace: showSpace,
       ),
-      error: (err, st) => Text(L10n.of(context).errorLoading(err)),
+      error: (err, st) {
+        _log.severe('Failed to load pin', err, st);
+        return Text(L10n.of(context).errorLoadingPin(err));
+      },
       loading: () => const Skeletonizer(
         child: SizedBox(
           height: 100,

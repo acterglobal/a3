@@ -2,8 +2,11 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::settings::app_notifications');
 
 class _AppNotificationSettingsTile extends ConsumerWidget {
   final String title;
@@ -22,9 +25,16 @@ class _AppNotificationSettingsTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(appContentNotificationSetting(appKey)).when(
           data: (v) => innerBuild(context, ref, v),
-          error: (error, st) => SettingsTile(
-            title: Text('${L10n.of(context).error}: $error'),
-          ),
+          error: (error, st) {
+            _log.severe(
+              'Fetching of app content notification setting failed',
+              error,
+              st,
+            );
+            return SettingsTile(
+              title: Text(L10n.of(context).loadingFailed(error)),
+            );
+          },
           loading: () => Skeletonizer(
             child: SettingsTile.switchTile(
               initialValue: true,

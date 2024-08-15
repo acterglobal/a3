@@ -4,9 +4,12 @@ import 'package:acter/features/pins/widgets/pin_list_item.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::space::sections::pins');
 
 class PinsSection extends ConsumerWidget {
   final String spaceId;
@@ -23,8 +26,12 @@ class PinsSection extends ConsumerWidget {
     final pinList = ref.watch(pinListProvider(spaceId));
     return pinList.when(
       data: (pins) => buildPinsSectionUI(context, pins),
-      error: (error, stack) =>
-          Center(child: Text(L10n.of(context).loadingFailed(error))),
+      error: (error, stack) {
+        _log.severe('Failed to load pins in space', error, stack);
+        return Center(
+          child: Text(L10n.of(context).loadingFailed(error)),
+        );
+      },
       loading: () => Center(
         child: Text(L10n.of(context).loading),
       ),
