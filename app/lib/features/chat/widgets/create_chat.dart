@@ -449,8 +449,8 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
         Routes.chatroom.name,
         pathParameters: {'roomId': convo.getRoomIdStr()},
       );
-    } catch (e, st) {
-      _log.severe("Couldn't create chat", e, st);
+    } catch (e, s) {
+      _log.severe('Couldn’t create chat', e, s);
       if (!mounted) {
         EasyLoading.dismiss();
         return;
@@ -650,6 +650,7 @@ class _CreateRoomFormWidgetConsumerState
     String title = titleInput.trim();
     if (title.isEmpty) return;
     if (isSpaceRoom && currentParentSpace == null) {
+      _log.severe('Parent space must be selected');
       EasyLoading.showError(
         L10n.of(context).parentSpaceMustBeSelected,
         duration: const Duration(seconds: 2),
@@ -669,7 +670,7 @@ class _CreateRoomFormWidgetConsumerState
         );
       }
     } catch (e, st) {
-      _log.severe("Couldn't create chat", e, st);
+      _log.severe('Couldn’t create chat', e, st);
       if (!mounted) {
         EasyLoading.dismiss();
         return;

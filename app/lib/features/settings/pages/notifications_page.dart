@@ -1,5 +1,4 @@
 import 'package:acter/config/notifications/init.dart';
-import 'package:acter_notifify/util.dart';
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -13,6 +12,7 @@ import 'package:acter/features/settings/widgets/app_notifications_settings_tile.
 import 'package:acter/features/settings/widgets/labs_notifications_settings_tile.dart';
 import 'package:acter/features/settings/widgets/settings_section_with_title_actions.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_notifify/util.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -295,18 +295,19 @@ class NotificationsSettingsPage extends ConsumerWidget {
     try {
       await client.addEmailPusher(
         appIdPrefix,
-        (await deviceName()),
+        await deviceName(),
         emailToAdd,
         null,
       );
       ref.invalidate(possibleEmailToAddForPushProvider);
-    } catch (e) {
+    } catch (e, s) {
+      _log.severe('Failed to add email pusher', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).failedToAdd('$emailToAdd: $e'),
+        L10n.of(context).failedToAdd(emailToAdd, e),
         duration: const Duration(seconds: 3),
       );
       return;
@@ -393,7 +394,8 @@ class NotificationsSettingsPage extends ConsumerWidget {
       EasyLoading.showToast(L10n.of(context).pushTargetDeleted);
       ref.invalidate(possibleEmailToAddForPushProvider);
       ref.invalidate(pushersProvider);
-    } catch (e) {
+    } catch (e, s) {
+      _log.severe('Failed to delete email pusher', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;

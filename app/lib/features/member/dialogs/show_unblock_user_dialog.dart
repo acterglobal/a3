@@ -3,6 +3,9 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::member::unblock_user');
 
 Future<void> showUnblockUserDialog(BuildContext context, Member member) async {
   final userId = member.userId().toString();
@@ -40,13 +43,14 @@ Future<void> showUnblockUserDialog(BuildContext context, Member member) async {
                   return;
                 }
                 EasyLoading.showToast(L10n.of(context).unblockingUserSuccess);
-              } catch (error) {
+              } catch (e, s) {
+                _log.severe('Failed to unblock user', e, s);
                 if (!context.mounted) {
                   EasyLoading.dismiss();
                   return;
                 }
                 EasyLoading.showError(
-                  L10n.of(context).unblockingUserFailed(error),
+                  L10n.of(context).unblockingUserFailed(e),
                   duration: const Duration(seconds: 3),
                 );
               }

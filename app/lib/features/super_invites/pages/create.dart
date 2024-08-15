@@ -14,6 +14,9 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::super_invites::create');
 
 class CreateSuperInviteTokenPage extends ConsumerStatefulWidget {
   static Key tokenFieldKey = const Key('super-invites-create-token-token');
@@ -256,15 +259,23 @@ class _CreateSuperInviteTokenPageConsumerState
       EasyLoading.dismiss();
       if (!mounted) return;
       Navigator.pop(context); // pop the create sheet
-    } catch (err) {
+    } catch (e, s) {
+      if (isEdit) {
+        _log.severe('Failed to change the invitation code', e, s);
+      } else {
+        _log.severe('Failed to create the invitation code', e, s);
+      }
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
       final status = isEdit
-          ? L10n.of(context).saveInviteCodeFailed(err)
-          : L10n.of(context).createInviteCodeFailed(err);
-      EasyLoading.showError(status, duration: const Duration(seconds: 3));
+          ? L10n.of(context).saveInviteCodeFailed(e)
+          : L10n.of(context).createInviteCodeFailed(e);
+      EasyLoading.showError(
+        status,
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 
@@ -313,13 +324,14 @@ class _CreateSuperInviteTokenPageConsumerState
       EasyLoading.dismiss();
       if (!context.mounted) return;
       Navigator.pop(context); // pop the create sheet
-    } catch (err) {
+    } catch (e, s) {
+      _log.severe('Failed to delete the invitation code', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).deleteInviteCodeFailed(err),
+        L10n.of(context).deleteInviteCodeFailed(e),
         duration: const Duration(seconds: 3),
       );
     }

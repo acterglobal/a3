@@ -12,7 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::common::close');
+final _log = Logger('a3::common::close_room');
 
 Future<bool> openCloseRoomDialog({
   required BuildContext context,
@@ -227,6 +227,10 @@ class _CloseRoomConfirmationState
       Navigator.pop(context, true);
     } catch (error, stack) {
       _log.severe('Failure in closing room', error, stack);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         L10n.of(context).closingRoomFailed(error),
         duration: const Duration(seconds: 3),

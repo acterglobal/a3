@@ -1,17 +1,18 @@
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+
 import 'package:acter/common/models/types.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show AttachmentDraft, AttachmentsManager;
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mime/mime.dart';
 
-final _log = Logger('a3::action::attachments');
+final _log = Logger('a3::attachments::actions::handle_selected');
 
 // if generic attachment, send via manager
 Future<void> handleAttachmentSelected({
@@ -76,8 +77,8 @@ Future<void> handleAttachmentSelected({
       _log.info('attachment sent: $res');
     }
     EasyLoading.dismiss();
-  } catch (e) {
-    _log.severe('Error sending attachments', e);
+  } catch (e, s) {
+    _log.severe('Failed to create attachments', e, s);
     if (!context.mounted) {
       EasyLoading.dismiss();
       return;

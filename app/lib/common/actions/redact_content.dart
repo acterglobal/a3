@@ -10,7 +10,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::common::redact');
+final _log = Logger('a3::common::redact_content');
 
 Future<bool> openRedactContentDialog(
   BuildContext context, {
@@ -136,13 +136,14 @@ class _RedactContentWidget extends ConsumerWidget {
       if (onSuccess != null) {
         onSuccess!();
       }
-    } catch (e) {
+    } catch (e, s) {
+      _log.severe('Failed to redact content', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
       EasyLoading.showError(
-        '${L10n.of(context).redactionFailed} $e',
+        L10n.of(context).redactionFailed(e),
         duration: const Duration(seconds: 3),
       );
     }

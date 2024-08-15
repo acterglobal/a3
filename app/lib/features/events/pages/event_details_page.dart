@@ -4,8 +4,6 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/events/actions/get_event_type.dart';
-import 'package:acter/features/events/widgets/change_date_sheet.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
@@ -13,9 +11,11 @@ import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/bookmarks/types.dart';
 import 'package:acter/features/bookmarks/widgets/bookmark_action.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
+import 'package:acter/features/events/actions/get_event_type.dart';
 import 'package:acter/features/events/model/keys.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/utils/events_utils.dart';
+import 'package:acter/features/events/widgets/change_date_sheet.dart';
 import 'package:acter/features/events/widgets/event_date_widget.dart';
 import 'package:acter/features/events/widgets/participants_list.dart';
 import 'package:acter/features/events/widgets/skeletons/event_details_skeleton_widget.dart';
@@ -349,12 +349,15 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       await client.waitForRsvp(rsvpId.toString(), null);
       EasyLoading.dismiss();
     } catch (e, s) {
-      _log.severe('Error =>', e, s);
-      if (!context.mounted) {
+      _log.severe('Failed to send RSVP', e, s);
+      if (!mounted) {
         EasyLoading.dismiss();
         return;
       }
-      EasyLoading.showError(e.toString(), duration: const Duration(seconds: 3));
+      EasyLoading.showError(
+        L10n.of(context).sendingRsvpFailed(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 
@@ -468,8 +471,11 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       ]);
     } catch (error, stack) {
       _log.severe('Creating iCal Share Event failed:', error, stack);
-      // ignore: use_build_context_synchronously
-      EasyLoading.showError(L10n.of(context).shareFailed(error));
+      if (!mounted) return;
+      EasyLoading.showError(
+        L10n.of(context).shareFailed(error),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 

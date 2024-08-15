@@ -7,6 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::tasks::create_update_task_item');
 
 void showCreateUpdateTaskItemBottomSheet(
   BuildContext context, {
@@ -259,9 +262,12 @@ class _CreateUpdateItemListConsumerState
       if (!mounted) return;
       if (widget.cancel != null) widget.cancel!();
       Navigator.pop(context);
-    } catch (e) {
-      EasyLoading.dismiss();
-      if (!mounted) return;
+    } catch (e, s) {
+      _log.severe('Failed to create task', e, s);
+      if (!mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         L10n.of(context).creatingTaskFailed(e),
         duration: const Duration(seconds: 3),
@@ -289,9 +295,12 @@ class _CreateUpdateItemListConsumerState
       EasyLoading.dismiss();
       if (!mounted) return;
       Navigator.pop(context);
-    } catch (e) {
-      EasyLoading.dismiss();
-      if (!mounted) return;
+    } catch (e, s) {
+      _log.severe('Failed to change task', e, s);
+      if (!mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         L10n.of(context).updatingTaskFailed(e),
         duration: const Duration(seconds: 3),

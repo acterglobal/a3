@@ -6,10 +6,13 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/actions/create_chat.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::spaces::actions::create_space');
 
 /// Create a new space as the current client
 ///
@@ -57,11 +60,10 @@ Future<String?> createSpace(
     EasyLoading.dismiss();
 
     if (createDefaultChat) {
+      if (!context.mounted) return null;
       final chatId = await createChat(
-        // ignore: use_build_context_synchronously
         context,
         ref,
-        // ignore: use_build_context_synchronously
         name: L10n.of(context).defaultChatName(name),
         parentId: roomId,
         suggested: true,
@@ -71,15 +73,17 @@ Future<String?> createSpace(
         EasyLoading.dismiss();
       }
     }
-
     return roomId;
-  } catch (err) {
-    if (context.mounted) {
-      EasyLoading.showError(
-        L10n.of(context).creatingSpaceFailed(err),
-        duration: const Duration(seconds: 3),
-      );
+  } catch (e, s) {
+    _log.severe('Failed to create space', e, s);
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return null;
     }
+    EasyLoading.showError(
+      L10n.of(context).creatingSpaceFailed(e),
+      duration: const Duration(seconds: 3),
+    );
     return null;
   }
 }

@@ -236,11 +236,16 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
       EasyLoading.dismiss();
       if (!mounted) return;
       Navigator.pop(context);
-    } catch (e, st) {
-      _log.severe('Failed to edit chat name', e, st);
-      EasyLoading.dismiss();
-      if (!mounted) return;
-      EasyLoading.showError(L10n.of(context).updateNameFailed(e));
+    } catch (e, s) {
+      _log.severe('Failed to edit chat name', e, s);
+      if (!mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).updateNameFailed(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 
@@ -531,13 +536,14 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         EasyLoading.dismiss();
         context.goNamed(Routes.chat.name);
       } else {
+        _log.severe('Failed to leave room');
         EasyLoading.showError(
           L10n.of(context).someErrorOccurredLeavingRoom,
           duration: const Duration(seconds: 3),
         );
       }
-    } catch (e, st) {
-      _log.severe("Couldn't leave room", e, st);
+    } catch (e, s) {
+      _log.severe('Couldn’t leave room', e, s);
       if (!mounted) {
         EasyLoading.dismiss();
         return;
@@ -556,6 +562,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         pathParameters: {'roomId': widget.roomId},
       );
     } else {
+      _log.severe('Not enough permission to invite');
       EasyLoading.showError(
         L10n.of(context).notEnoughPowerLevelForInvites,
         duration: const Duration(seconds: 3),
@@ -580,8 +587,8 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         subject: L10n.of(context).linkToChat,
       );
       EasyLoading.showToast(L10n.of(context).sharedSuccessfully);
-    } catch (e, st) {
-      _log.severe("Couldn't share this room", e, st);
+    } catch (e, s) {
+      _log.severe('Couldn’t share this room', e, s);
       if (!mounted) {
         EasyLoading.dismiss();
         return;
@@ -608,10 +615,16 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
           EasyLoading.dismiss();
           if (!context.mounted) return;
           Navigator.pop(context);
-        } catch (e) {
-          EasyLoading.dismiss();
-          if (!context.mounted) return;
-          EasyLoading.showError(L10n.of(context).updateDescriptionFailed(e));
+        } catch (e, s) {
+          _log.severe('Failed to change description', e, s);
+          if (!context.mounted) {
+            EasyLoading.dismiss();
+            return;
+          }
+          EasyLoading.showError(
+            L10n.of(context).updateDescriptionFailed(e),
+            duration: const Duration(seconds: 3),
+          );
         }
       },
     );

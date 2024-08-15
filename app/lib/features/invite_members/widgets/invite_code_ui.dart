@@ -251,9 +251,11 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
       ref.invalidate(superInvitesProvider);
       EasyLoading.dismiss();
     } catch (error) {
-      EasyLoading.dismiss();
       _log.severe('Invite code activation failed', error);
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         L10n.of(context).activateInviteCodeFailed(error),
         duration: const Duration(seconds: 3),

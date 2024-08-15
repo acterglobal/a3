@@ -371,6 +371,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
 
     final spaceId = ref.read(selectedSpaceIdProvider);
     if (spaceId == null) {
+      _log.severe('Please select space to create calendar event');
       EasyLoading.showError(
         L10n.of(context).pleaseSelectSpace,
         duration: const Duration(seconds: 2),
@@ -424,8 +425,8 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
           pathParameters: {'calendarId': eventId.toString()},
         );
       }
-    } catch (e, st) {
-      _log.severe('Failed to create calendar event', e, st);
+    } catch (e, s) {
+      _log.severe('Failed to create calendar event', e, s);
       if (!mounted) {
         EasyLoading.dismiss();
         return;

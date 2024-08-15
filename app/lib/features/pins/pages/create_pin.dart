@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:acter/common/models/types.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -20,11 +21,13 @@ import 'package:acter/features/pins/widgets/pin_attachment_options.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::pins::create_pin');
 
 class CreatePin extends ConsumerStatefulWidget {
   static const createPinPageKey = Key('create-pin-page');
@@ -76,7 +79,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePin> {
   Widget _buildBody() {
     final pinState = ref.watch(createPinStateProvider);
     return GestureDetector(
-      onTap: ()=> FocusManager.instance.primaryFocus?.unfocus(),
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Padding(
         padding: const EdgeInsets.only(left: 16, right: 16, bottom: 24),
         child: Column(
@@ -330,9 +333,12 @@ class _CreatePinConsumerState extends ConsumerState<CreatePin> {
         Routes.pin.name,
         pathParameters: {'pinId': pinId.toString()},
       );
-    } catch (e) {
-      EasyLoading.dismiss();
-      if (!mounted) return;
+    } catch (e, s) {
+      _log.severe('Failed to create pin', e, s);
+      if (!mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         L10n.of(context).errorCreatingPin(e),
         duration: const Duration(seconds: 3),

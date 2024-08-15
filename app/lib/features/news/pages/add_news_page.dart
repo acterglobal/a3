@@ -363,6 +363,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
         // If slide type is text
         if (slidePost.type == NewsSlideType.text) {
           if (slidePost.text == null || slidePost.text!.trim().isEmpty) {
+            _log.severe('Text slide must contain some text');
             if (!context.mounted) {
               EasyLoading.dismiss();
               return;
@@ -396,6 +397,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           String? mimeType = file.mimeType ?? lookupMimeType(file.path);
           if (mimeType == null) throw lang.failedToDetectMimeType;
           if (!mimeType.startsWith('image/')) {
+            _log.severe('Posting of $mimeType not yet supported');
             if (!context.mounted) {
               EasyLoading.dismiss();
               return;
@@ -431,6 +433,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           String? mimeType = file.mimeType ?? lookupMimeType(file.path);
           if (mimeType == null) throw lang.failedToDetectMimeType;
           if (!mimeType.startsWith('video/')) {
+            _log.severe('Posting of $mimeType not yet supported');
             if (!context.mounted) {
               EasyLoading.dismiss();
               return;
@@ -468,13 +471,14 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       context.pushReplacementNamed(
         Routes.main.name,
       ); // go to the home / main updates
-    } catch (err) {
+    } catch (e, s) {
+      _log.severe('Failed to send news', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).error(err),
+        L10n.of(context).creatingNewsFailed(e),
         duration: const Duration(seconds: 3),
       );
     }

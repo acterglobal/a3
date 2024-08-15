@@ -1,7 +1,12 @@
 import 'package:acter/features/pins/models/pin_edit_state/pin_edit_state.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show ActerPin;
+import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
+
+final _log = Logger('a3::pins::edit_state');
 
 class PinEditNotifier extends StateNotifier<PinEditState> {
   final ActerPin pin;
@@ -42,7 +47,7 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
   void setEditMode(bool editMode) => state = state.copyWith(editMode: editMode);
 
   // FIXME: move it to UI widget in order to implement l10n
-  Future<void> onSave() async {
+  Future<void> onSave(BuildContext context) async {
     EasyLoading.show(status: 'Saving Pin');
     try {
       final updateBuilder = pin.updateBuilder();
@@ -82,13 +87,14 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
         return;
       }
       EasyLoading.showToast('Pin Updated Successfully');
-    } catch (e) {
-      if (!mounted) {
+    } catch (e, s) {
+      _log.severe('Failed to change pin', e, s);
+      if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
       EasyLoading.showError(
-        'Error saving changes: ${e.toString()}',
+        L10n.of(context).failedToChangePin(e),
         duration: const Duration(seconds: 3),
       );
     }

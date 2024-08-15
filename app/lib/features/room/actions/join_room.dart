@@ -6,6 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::room::join');
 
 Future<String?> joinRoom(
   BuildContext context,
@@ -29,13 +32,14 @@ Future<String?> joinRoom(
     ref.invalidate(spaceProvider(roomId));
     if (forward != null) forward(roomId);
     return roomId;
-  } catch (err) {
+  } catch (e, s) {
+    _log.severe('Failed to join room', e, s);
     if (!context.mounted) {
       EasyLoading.dismiss();
       return null;
     }
     EasyLoading.showError(
-      L10n.of(context).error(err),
+      L10n.of(context).joiningFailed(e),
       duration: const Duration(seconds: 3),
     );
     return null;

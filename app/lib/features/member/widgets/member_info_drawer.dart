@@ -56,7 +56,8 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
         return;
       }
       EasyLoading.showToast(L10n.of(context).powerLevelUpdateSubmitted);
-    } catch (e) {
+    } catch (e, s) {
+      _log.severe('Failed to change power level', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;

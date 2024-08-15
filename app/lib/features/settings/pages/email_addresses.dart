@@ -63,6 +63,7 @@ class _AddEmailAddrState extends State<AddEmailAddr> {
 
   void onSubmit(BuildContext context) {
     if (!_formKey.currentState!.validate()) {
+      _log.severe('Email or password seems to be not valid.');
       EasyLoading.showError(
         L10n.of(context).emailOrPasswordSeemsNotValid,
         duration: const Duration(seconds: 3),
@@ -231,7 +232,8 @@ class EmailAddressesPage extends ConsumerWidget {
           return;
         }
         EasyLoading.showToast(L10n.of(context).pleaseCheckYourInbox);
-      } catch (e) {
+      } catch (e, s) {
+        _log.severe('Failed to submit email address', e, s);
         if (!context.mounted) {
           EasyLoading.dismiss();
           return;

@@ -69,8 +69,8 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
       EasyLoading.showToast(
         L10n.of(context).changedPushNotificationSettingsSuccessfully,
       );
-    } catch (e, st) {
-      _log.severe('Failed to change settings', e, st);
+    } catch (e, s) {
+      _log.severe('Failed to change settings of push notification', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;

@@ -210,10 +210,12 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
       await updater.send();
       EasyLoading.dismiss();
       if (mounted) Navigator.pop(context);
-    } catch (e, st) {
-      _log.severe('Failed to update event description', e, st);
-      EasyLoading.dismiss();
-      if (!mounted) return;
+    } catch (e, s) {
+      _log.severe('Failed to update description of tasklist', e, s);
+      if (!mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         L10n.of(context).errorUpdatingDescription(e),
         duration: const Duration(seconds: 3),
@@ -295,9 +297,12 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
           EasyLoading.dismiss();
           if (!context.mounted) return;
           Navigator.pop(context);
-        } catch (e) {
-          EasyLoading.dismiss();
-          if (!context.mounted) return;
+        } catch (e, s) {
+          _log.severe('Failed to rename tasklist', e, s);
+          if (!context.mounted) {
+            EasyLoading.dismiss();
+            return;
+          }
           EasyLoading.showError(
             L10n.of(context).updatingTaskFailed(e),
             duration: const Duration(seconds: 3),

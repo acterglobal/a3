@@ -14,11 +14,7 @@ final _log = Logger('a3::spaces::leave_space');
 
 const leaveSpaceYesBtn = Key('leave-space-yes-btn');
 
-void showLeaveSpaceDialog(
-  BuildContext context,
-  WidgetRef ref,
-  String spaceId,
-) {
+void showLeaveSpaceDialog(BuildContext context, WidgetRef ref, String spaceId) {
   showAdaptiveDialog(
     barrierDismissible: true,
     context: context,
@@ -34,9 +30,7 @@ void showLeaveSpaceDialog(
           ),
         ],
       ),
-      subtitle: Text(
-        L10n.of(context).areYouSureYouWantToLeaveSpace,
-      ),
+      subtitle: Text(L10n.of(context).areYouSureYouWantToLeaveSpace),
       actions: <Widget>[
         OutlinedButton(
           onPressed: () => Navigator.pop(context),
@@ -62,9 +56,16 @@ void showLeaveSpaceDialog(
               }
               Navigator.pop(context);
               context.goNamed(Routes.dashboard.name);
-            } catch (error, stack) {
-              _log.severe('Error leaving space', error, stack);
-              EasyLoading.showError(lang.leavingSpaceFailed(error));
+            } catch (e, s) {
+              _log.severe('Failed to leave space', e, s);
+              if (!context.mounted) {
+                EasyLoading.dismiss();
+                return;
+              }
+              EasyLoading.showError(
+                lang.leavingSpaceFailed(e),
+                duration: const Duration(seconds: 3),
+              );
             }
           },
           child: Text(L10n.of(context).yesLeave),

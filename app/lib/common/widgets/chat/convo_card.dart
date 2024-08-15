@@ -8,10 +8,13 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::common::chat::convo_card');
 
 class ConvoCard extends ConsumerWidget {
   final String roomId;
@@ -60,10 +63,7 @@ class ConvoCard extends ConsumerWidget {
     );
   }
 
-  Widget renderTrailing(
-    BuildContext context,
-    WidgetRef ref,
-  ) {
+  Widget renderTrailing(BuildContext context, WidgetRef ref) {
     final mutedStatus = ref.watch(roomIsMutedProvider(roomId));
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -101,12 +101,10 @@ class ConvoCard extends ConsumerWidget {
     );
   }
 
-  Future<void> onUnmute(
-    BuildContext context,
-    WidgetRef ref,
-  ) async {
+  Future<void> onUnmute(BuildContext context, WidgetRef ref) async {
     final room = await ref.read(maybeRoomProvider(roomId).future);
     if (room == null) {
+      _log.severe('Room not found: $roomId');
       if (!context.mounted) return;
       EasyLoading.showError(
         L10n.of(context).roomNotFound,
@@ -129,9 +127,7 @@ class ConvoCard extends ConsumerWidget {
 class _SubtitleWidget extends ConsumerWidget {
   final String roomId;
 
-  const _SubtitleWidget({
-    required this.roomId,
-  });
+  const _SubtitleWidget({required this.roomId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -424,9 +420,7 @@ class _SubtitleWidget extends ConsumerWidget {
 class _TrailingWidget extends ConsumerWidget {
   final String roomId;
 
-  const _TrailingWidget({
-    required this.roomId,
-  });
+  const _TrailingWidget({required this.roomId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

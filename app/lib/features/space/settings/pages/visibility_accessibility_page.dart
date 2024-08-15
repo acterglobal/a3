@@ -306,14 +306,21 @@ class _VisibilityAccessibilityPageState
           for (final roomId in (spaceIds ?? [])) {
             update.addRoom(roomId);
           }
+          break;
       }
 
       await room.setJoinRule(update);
       EasyLoading.dismiss();
-    } catch (e) {
-      _log.severe('Error updating visibility: $e');
-      EasyLoading.showError('Error updating visibility: $e');
-      return;
+    } catch (e, s) {
+      _log.severe('Failed to change room visibility', e, s);
+      if (!mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).updatingVisibilityFailed(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 }

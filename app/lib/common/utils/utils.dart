@@ -1,5 +1,3 @@
-// ignore_for_file: unnecessary_null_comparison
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
@@ -205,13 +203,19 @@ Future<void> shareTextToWhatsApp(
   } else {
     _log.warning('WhatsApp not available');
     if (!context.mounted) return;
-    EasyLoading.showError(L10n.of(context).appUnavailable);
+    EasyLoading.showError(
+      L10n.of(context).appUnavailable,
+      duration: const Duration(seconds: 3),
+    );
   }
 }
 
 Future<void> mailTo({required String toAddress, String? subject}) async {
-  final Uri emailLaunchUri =
-      Uri(scheme: 'mailto', path: toAddress, query: subject);
+  final emailLaunchUri = Uri(
+    scheme: 'mailto',
+    path: toAddress,
+    query: subject,
+  );
   await launchUrl(emailLaunchUri);
 }
 
@@ -260,14 +264,16 @@ Future<void> uploadAvatar(
     if (file.path != null) await room.uploadAvatar(file.path!);
     // close loading
     EasyLoading.dismiss();
-  } catch (e, st) {
-    _log.severe('Failed to upload avatar', e, st);
-    if (context.mounted) {
-      EasyLoading.showError(
-        L10n.of(context).failedToUploadAvatar(e),
-        duration: const Duration(seconds: 3),
-      );
+  } catch (e, s) {
+    _log.severe('Failed to upload avatar', e, s);
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return;
     }
+    EasyLoading.showError(
+      L10n.of(context).failedToUploadAvatar(e),
+      duration: const Duration(seconds: 3),
+    );
   }
 }
 

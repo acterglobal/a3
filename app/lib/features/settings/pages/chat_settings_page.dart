@@ -33,24 +33,31 @@ class ChatSettingsPage extends ConsumerWidget {
                 final updater = settings.updateBuilder();
                 updater.autoDownloadChat(newVal);
                 await updater.send();
+                if (!context.mounted) {
+                  EasyLoading.dismiss();
+                  return;
+                }
                 EasyLoading.showToast(
-                  // ignore: use_build_context_synchronously
                   L10n.of(context).settingsSubmittingSuccess,
                   toastPosition: EasyLoadingToastPosition.bottom,
                 );
-              } catch (error, stackTrace) {
-                _log.severe('Failure submitting settings', error, stackTrace);
+              } catch (e, s) {
+                _log.severe('Failure submitting settings', e, s);
+                if (!context.mounted) {
+                  EasyLoading.dismiss();
+                  return;
+                }
                 EasyLoading.showError(
-                  // ignore: use_build_context_synchronously
-                  L10n.of(context).settingsSubmittingFailed(error),
+                  L10n.of(context).settingsSubmittingFailed(e),
+                  duration: const Duration(seconds: 3),
                 );
               }
             },
           ),
-          error: (error, stack) {
-            _log.severe('Failed to load user app settings', error, stack);
+          error: (e, s) {
+            _log.severe('Failed to load user app settings', e, s);
             return SettingsTile.navigation(
-              title: Text(L10n.of(context).loadingFailed(error)),
+              title: Text(L10n.of(context).loadingFailed(e)),
             );
           },
           loading: () => SettingsTile.switchTile(
@@ -82,24 +89,31 @@ class ChatSettingsPage extends ConsumerWidget {
                 final updater = settings.updateBuilder();
                 updater.typingNotice(newVal);
                 await updater.send();
+                if (!context.mounted) {
+                  EasyLoading.dismiss();
+                  return;
+                }
                 EasyLoading.showToast(
-                  // ignore: use_build_context_synchronously
                   L10n.of(context).settingsSubmittingSuccess,
                   toastPosition: EasyLoadingToastPosition.bottom,
                 );
-              } catch (error, stackTrace) {
-                _log.severe('Failure submitting settings', error, stackTrace);
+              } catch (e, s) {
+                _log.severe('Failure submitting settings', e, s);
+                if (!context.mounted) {
+                  EasyLoading.dismiss();
+                  return;
+                }
                 EasyLoading.showError(
-                  // ignore: use_build_context_synchronously
-                  L10n.of(context).settingsSubmittingFailed(error),
+                  L10n.of(context).settingsSubmittingFailed(e),
+                  duration: const Duration(seconds: 3),
                 );
               }
             },
           ),
-          error: (error, stack) {
-            _log.severe('Failed to load user app settings', error, stack);
+          error: (e, s) {
+            _log.severe('Failed to load user app settings', e, s);
             return SettingsTile.navigation(
-              title: Text(L10n.of(context).loadingFailed(error)),
+              title: Text(L10n.of(context).loadingFailed(e)),
             );
           },
           loading: () => SettingsTile.switchTile(

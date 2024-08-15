@@ -142,14 +142,14 @@ class _BugReportState extends ConsumerState<BugReportPage> {
         EasyLoading.showToast(status);
       }
       return true;
-    } catch (e) {
+    } catch (e, s) {
+      _log.severe('Failed to repor bug', e, s);
       loadingNotifier.update((state) => false);
-      if (context.mounted) {
-        EasyLoading.showError(
-          L10n.of(context).bugReportingError(e),
-          duration: const Duration(seconds: 3),
-        );
-      }
+      if (!context.mounted) return false;
+      EasyLoading.showError(
+        L10n.of(context).bugReportingError(e),
+        duration: const Duration(seconds: 3),
+      );
       return false;
     }
   }
