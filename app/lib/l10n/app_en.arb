@@ -2115,5 +2115,6 @@
   "addLink": "Add Link",
   "attachmentEmptyStateTitle": "No attachments found.",
   "text": "text",
-  "audio": "Audio"
+  "audio": "Audio",
+  "pinDetails": "Pin Details"
 }
