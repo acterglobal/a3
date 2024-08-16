@@ -182,10 +182,12 @@ class MessageActions extends ConsumerWidget {
                 }
               } catch (e, s) {
                 _log.severe('Redacting message failed', e, s);
-                if (context.mounted) {
-                  Navigator.pop(context);
-                }
-                EasyLoading.showError(e.toString());
+                if (!context.mounted) return;
+                EasyLoading.showError(
+                  L10n.of(context).redactionFailed(e),
+                  duration: const Duration(seconds: 3),
+                );
+                Navigator.pop(context);
               }
             },
             child: Text(L10n.of(context).yes),

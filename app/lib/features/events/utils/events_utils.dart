@@ -22,9 +22,14 @@ Future<void> saveEventTitle({
     if (context.mounted) Navigator.pop(context);
   } catch (e, s) {
     _log.severe('Failed to rename event', e, s);
-    EasyLoading.dismiss();
-    if (!context.mounted) return;
-    EasyLoading.showError(L10n.of(context).updateNameFailed(e));
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return;
+    }
+    EasyLoading.showError(
+      L10n.of(context).updateNameFailed(e),
+      duration: const Duration(seconds: 3),
+    );
   }
 }
 
@@ -43,8 +48,10 @@ Future<void> saveEventDescription({
     if (context.mounted) Navigator.pop(context);
   } catch (e, s) {
     _log.severe('Failed to update event description', e, s);
-    EasyLoading.dismiss();
-    if (!context.mounted) return;
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return;
+    }
     EasyLoading.showError(
       L10n.of(context).errorUpdatingDescription(e),
       duration: const Duration(seconds: 3),
