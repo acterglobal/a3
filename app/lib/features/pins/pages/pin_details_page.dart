@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
+import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
@@ -203,9 +204,30 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
   }
 
   Widget pinTitleUI(ActerPin pin) {
-    return Text(
-      pin.title(),
-      style: Theme.of(context).textTheme.titleSmall,
+    return SelectionArea(
+      child: GestureDetector(
+        onTap: () {
+          final membership =
+              ref.watch(roomMembershipProvider(pin.roomIdStr())).valueOrNull;
+          if (membership != null && membership.canString('CanPostPin')) {
+            showEditTitleBottomSheet(
+              context: context,
+              bottomSheetTitle: L10n.of(context).editName,
+              titleValue: pin.title(),
+              onSave: (newTitle) async {
+                final pinEditNotifier =
+                    ref.watch(pinEditProvider(pin).notifier);
+                pinEditNotifier.setTitle(newTitle);
+                savePinTitle(context, pin, newTitle);
+              },
+            );
+          }
+        },
+        child: Text(
+          pin.title(),
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+      ),
     );
   }
 
