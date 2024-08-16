@@ -1,2 +1,0 @@
-- [Fix] : Restrict user on updating RSVP status if event is past
-- [Fix] : Restrict user on updating Dates if event is past/ongoing
