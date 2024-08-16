@@ -200,7 +200,6 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _setController();
-    textController.addListener(_updateInputState);
   }
 
   @override
@@ -223,6 +222,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     };
     textController =
         ActerTriggerAutoCompleteTextController(triggerStyles: triggerStyles);
+    textController.addListener(_updateInputState);
     setState(() {});
   }
 
@@ -705,18 +705,22 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
   @override
   void initState() {
     super.initState();
-    ref.listenManual(
-        chatInputProvider.select((state) => state.selectedMessageState),
-        (prev, next) {
-      if (next == SelectedMessageState.edit) {
+    ref.listenManual(chatInputProvider, (prev, next) {
+      if (next.selectedMessageState == SelectedMessageState.edit &&
+          (prev?.selectedMessageState != next.selectedMessageState ||
+              next.selectedMessage != prev?.selectedMessage)) {
         // a new message has been selected to be edited or switched from reply
         // to edit, force refresh the inner text controller to reflect that
-        widget.controller.text = parseEditMsg(ref);
-        // frame delay to keep focus connected with keyboard.
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          widget.chatFocus.requestFocus();
-        });
-      } else if (next == SelectedMessageState.replyTo) {
+        if (next.selectedMessage != null) {
+          widget.controller.text = parseEditMsg(next.selectedMessage!);
+          // frame delay to keep focus connected with keyboard.
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            widget.chatFocus.requestFocus();
+          });
+        }
+      } else if (next.selectedMessageState == SelectedMessageState.replyTo &&
+          (next.selectedMessage != prev?.selectedMessage ||
+              prev?.selectedMessageState != next.selectedMessageState)) {
         // frame delay to keep focus connected with keyboard..
         WidgetsBinding.instance.addPostFrameCallback((_) {
           widget.chatFocus.requestFocus();

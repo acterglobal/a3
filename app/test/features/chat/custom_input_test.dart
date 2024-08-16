@@ -265,7 +265,7 @@ void main() {
         // acter_trigger_autocomplete.dart:279
         // put 300ms delay as (debounceTimerDuration)
         await tester.pump(Durations.medium2);
-        expect(controller.text, 'testing code'); // <- cursor moved
+        expect(controller.text, 'testing code');
       },
     );
 
@@ -307,6 +307,66 @@ void main() {
 
         // controller text should copy over message text
         expect(controller.text, mockMessage.text);
+
+        // This test is timing out due to a pending timer.
+        // See MultiTriggerAutocompleteState._onChangedField in:
+        // acter_trigger_autocomplete.dart:279
+        // put 300ms delay as (debounceTimerDuration)
+        await tester.pump(Durations.medium2);
+      },
+    );
+
+    testWidgets(
+      'Switching edit/reply stores selected message',
+      (tester) async {
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              sdkProvider.overrideWith((ref) => MockActerSdk()),
+              ...overrides,
+            ],
+            child: const InActerContextTestWrapper(
+              child: CustomChatInput(
+                roomId: 'roomId',
+              ),
+            ),
+          ),
+        );
+        // not visible
+        expect(find.byKey(CustomChatInput.noAccessKey), findsNothing);
+        expect(find.byKey(CustomChatInput.loadingKey), findsNothing);
+
+        final element = tester.element(find.byType(CustomChatInput));
+        final container = ProviderScope.containerOf(element);
+
+        final TextField textField = tester.widget(find.byType(TextField));
+        final controller = textField.controller!;
+
+        // initial state should be empty
+        assert(controller.text.trim().isEmpty, true);
+
+        // now we select the one we want to edit to
+        final chatInputNotifier = container.read(chatInputProvider.notifier);
+        final mockMessage = buildMockTextMessage();
+        chatInputNotifier.setEditMessage(mockMessage);
+
+        await tester.pump();
+
+        // read container for updated value
+        final editState = container.read(chatInputProvider);
+        // should match the message id selected for edit
+        expect(editState.selectedMessage?.id, mockMessage.id);
+
+        // now switch the view to reply
+        chatInputNotifier.setReplyToMessage(mockMessage);
+
+        await tester.pump();
+
+        // read container again for updated value
+        final replyState = container.read(chatInputProvider);
+
+        // should match the message id selected for reply
+        expect(replyState.selectedMessage?.id, mockMessage.id);
 
         // This test is timing out due to a pending timer.
         // See MultiTriggerAutocompleteState._onChangedField in:

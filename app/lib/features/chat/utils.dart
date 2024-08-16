@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -247,10 +246,7 @@ String prepareMsg(MsgContent? content) {
   );
 }
 
-String parseEditMsg(WidgetRef ref) {
-  // shouldn't ever happen to be null if state is edit or reply
-  final message = ref.read(chatInputProvider).selectedMessage!;
-
+String parseEditMsg(types.Message message) {
   if (message is types.TextMessage) {
     // Parse String Data to HTML document
     final document = parse(message.text);
