@@ -106,10 +106,10 @@ class _InviteSpaceMembersConsumerState
         ref.watch(otherSpacesForInviteMembersProvider(widget.roomId));
     return otherSpaces.when(
       data: _buildOtherSpaceData,
-      error: (error, stack) {
-        _log.severe('Failed to load other spaces', error, stack);
+      error: (e, s) {
+        _log.severe('Failed to load other spaces', e, s);
         return ListTile(
-          title: Text(L10n.of(context).loadingFailed(error)),
+          title: Text(L10n.of(context).loadingFailed(e)),
         );
       },
       loading: () => _buildSkeletonizerLoading(),
@@ -215,8 +215,8 @@ class _InviteSpaceMembersConsumerState
       setState(() => selectedSpaces.clear());
       if (!mounted) return;
       EasyLoading.showToast(lang.membersInvited(inviteCount));
-    } catch (e, st) {
-      _log.severe('Invite Space Members Error', e, st);
+    } catch (e, s) {
+      _log.severe('Invite Space Members Error', e, s);
       if (!mounted) return;
       EasyLoading.showToast(lang.invitingSpaceMembersError(e));
     }

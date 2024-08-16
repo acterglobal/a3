@@ -69,8 +69,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             ],
           );
         },
-        error: (e, st) {
-          _log.severe('Failed to load cal event', e, st);
+        error: (e, s) {
+          _log.severe('Failed to load cal event', e, s);
           return Text(L10n.of(context).errorLoadingEventDueTo(e));
         },
         loading: () => const EventDetailsSkeleton(),
@@ -448,11 +448,11 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           mimeType: 'text/calendar',
         );
       }
-    } catch (error, stack) {
-      _log.severe('Creating iCal Share Event failed:', error, stack);
+    } catch (e, s) {
+      _log.severe('Creating iCal Share Event failed', e, s);
       if (!mounted) return;
       EasyLoading.showError(
-        L10n.of(context).shareFailed(error),
+        L10n.of(context).shareFailed(e),
         duration: const Duration(seconds: 3),
       );
     }

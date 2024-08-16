@@ -134,12 +134,8 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
             await ref.read(alwaysClientProvider).convoWithRetry(roomIdStr, 120);
         EasyLoading.showToast(roomCreated);
         return convo;
-      } catch (error, stack) {
-        _log.severe(
-          'Room $roomIdStr created but fetching failed',
-          error,
-          stack,
-        );
+      } catch (e, s) {
+        _log.severe('Room $roomIdStr created but fetching failed', e, s);
       }
     }
     return null;
@@ -378,8 +374,8 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                       onUp: _onUp,
                     ),
                   ),
-            error: (e, st) {
-              _log.severe('Failed to search users', e, st);
+            error: (e, s) {
+              _log.severe('Failed to search users', e, s);
               return Text(L10n.of(context).errorLoadingUsers(e));
             },
             loading: () => const Center(
@@ -668,8 +664,8 @@ class _CreateRoomFormWidgetConsumerState
           pathParameters: {'roomId': convo.getRoomIdStr()},
         );
       }
-    } catch (e, st) {
-      _log.severe('Couldn’t create chat', e, st);
+    } catch (e, s) {
+      _log.severe('Couldn’t create chat', e, s);
       if (!mounted) {
         EasyLoading.dismiss();
         return;
@@ -719,8 +715,8 @@ class _UserWidget extends ConsumerWidget {
             ),
           );
         },
-        error: (e, st) {
-          _log.severe('Failed to load binary data of avatar', e, st);
+        error: (e, s) {
+          _log.severe('Failed to load binary data of avatar', e, s);
           return Text(L10n.of(context).errorLoadingAvatar(e));
         },
         loading: () => Skeletonizer(

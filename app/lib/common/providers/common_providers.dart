@@ -122,8 +122,8 @@ final canRedactProvider = FutureProvider.autoDispose.family<bool, dynamic>(
   ((ref, arg) async {
     try {
       return await arg.canRedact();
-    } catch (error) {
-      _log.severe('Fetching canRedact failed for $arg', error);
+    } catch (e, s) {
+      _log.severe('Fetching canRedact failed for $arg', e, s);
       return false;
     }
   }),

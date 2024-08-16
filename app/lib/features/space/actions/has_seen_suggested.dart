@@ -12,7 +12,7 @@ Future<void> markHasSeenSuggested(WidgetRef ref, String roomId) async {
   }
   try {
     await room.setUserHasSeenSuggested(true);
-  } catch (error, stack) {
-    _log.severe("Could't mark $roomId suggested failed", error, stack);
+  } catch (e, s) {
+    _log.severe("Could't mark $roomId suggested failed", e, s);
   }
 }

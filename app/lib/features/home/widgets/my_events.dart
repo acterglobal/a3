@@ -47,9 +47,9 @@ class MyEventsSection extends ConsumerWidget {
               )
             : const SizedBox.shrink();
       },
-      error: (error, stackTrace) {
-        _log.severe('Failed to load cal events', error, stackTrace);
-        return Text(L10n.of(context).loadingEventsFailed(error));
+      error: (e, s) {
+        _log.severe('Failed to load cal events', e, s);
+        return Text(L10n.of(context).loadingEventsFailed(e));
       },
       loading: () => const EventListSkeleton(),
     );

@@ -99,8 +99,8 @@ class NewsSideBar extends ConsumerWidget {
               size: 42,
             ),
           ),
-          error: (e, st) {
-            _log.severe('Failed to load brief of space', e, st);
+          error: (e, s) {
+            _log.severe('Failed to load brief of space', e, s);
             return ActerAvatar(
               options: AvatarOptions(
                 AvatarInfo(

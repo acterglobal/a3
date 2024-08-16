@@ -149,9 +149,9 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
           },
         );
       },
-      error: (error, stack) {
-        _log.severe('Failed to load tabs in space', error, stack);
-        return Text(L10n.of(context).loadingFailed(error));
+      error: (e, s) {
+        _log.severe('Failed to load tabs in space', e, s);
+        return Text(L10n.of(context).loadingFailed(e));
       },
       loading: () => const SpaceDetailsSkeletons(),
     );

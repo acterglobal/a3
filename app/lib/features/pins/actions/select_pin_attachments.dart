@@ -44,8 +44,8 @@ Future<void> selectAttachment(
       );
       ref.read(createPinStateProvider.notifier).addAttachment(attachment);
     }
-  } catch (e, st) {
+  } catch (e, s) {
     debugPrint('Error => $e');
-    _log.severe('Error selecting attachment', e, st);
+    _log.severe('Error selecting attachment', e, s);
   }
 }

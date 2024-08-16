@@ -58,10 +58,10 @@ class TaskItem extends ConsumerWidget {
             subtitle: takeItemSubTitle(ref, context, task),
             trailing: trailing(ref, task),
           ),
-          error: (error, stack) {
-            _log.severe('Failed to load task', error, stack);
+          error: (e, s) {
+            _log.severe('Failed to load task', e, s);
             return ListTile(
-              title: Text(L10n.of(context).loadingFailed(error)),
+              title: Text(L10n.of(context).loadingFailed(e)),
             );
           },
           loading: () => ListTile(

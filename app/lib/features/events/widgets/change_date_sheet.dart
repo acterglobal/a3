@@ -339,8 +339,8 @@ class _ChangeDateSheetState extends ConsumerState<ChangeDateSheet> {
       EasyLoading.dismiss();
 
       if (mounted) Navigator.pop(context);
-    } catch (e, st) {
-      _log.severe('Failed to update calendar event', e, st);
+    } catch (e, s) {
+      _log.severe('Failed to update calendar event', e, s);
       EasyLoading.dismiss();
       if (!mounted) return;
       EasyLoading.showError(

@@ -20,8 +20,8 @@ class PinsBuilder extends ConsumerWidget {
     final foundPins = ref.watch(pinsFoundProvider);
     return foundPins.when(
       loading: () => Text(L10n.of(context).loading),
-      error: (e, st) {
-        _log.severe('Failed to search pins', e, st);
+      error: (e, s) {
+        _log.severe('Failed to search pins', e, s);
         return Text(L10n.of(context).searchingFailed(e));
       },
       data: (data) {

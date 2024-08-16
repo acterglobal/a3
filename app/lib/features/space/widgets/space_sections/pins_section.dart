@@ -26,10 +26,10 @@ class PinsSection extends ConsumerWidget {
     final pinList = ref.watch(pinListProvider(spaceId));
     return pinList.when(
       data: (pins) => buildPinsSectionUI(context, pins),
-      error: (error, stack) {
-        _log.severe('Failed to load pins in space', error, stack);
+      error: (e, s) {
+        _log.severe('Failed to load pins in space', e, s);
         return Center(
-          child: Text(L10n.of(context).loadingFailed(error)),
+          child: Text(L10n.of(context).loadingFailed(e)),
         );
       },
       loading: () => Center(

@@ -250,14 +250,14 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
       );
       ref.invalidate(superInvitesProvider);
       EasyLoading.dismiss();
-    } catch (error) {
-      _log.severe('Invite code activation failed', error);
+    } catch (e, s) {
+      _log.severe('Invite code activation failed', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).activateInviteCodeFailed(error),
+        L10n.of(context).activateInviteCodeFailed(e),
         duration: const Duration(seconds: 3),
       );
     }

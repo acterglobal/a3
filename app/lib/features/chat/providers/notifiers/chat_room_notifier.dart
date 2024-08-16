@@ -46,10 +46,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         await loadMore(failOnError: true);
         await Future.delayed(const Duration(milliseconds: 200), () => null);
       } while (state.hasMore && state.messages.where(msgFilter).length < 10);
-    } catch (error) {
-      _log.severe('Error loading more messages', error);
+    } catch (e, s) {
+      _log.severe('Error loading more messages', e, s);
       state = state.copyWith(
-        loading: ChatRoomLoadingState.error(error.toString()),
+        loading: ChatRoomLoadingState.error(e.toString()),
       );
     }
   }
@@ -66,10 +66,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           hasMore: hasMore,
           loading: const ChatRoomLoadingState.loaded(),
         );
-      } catch (error) {
-        _log.severe('Error loading more messages', error);
+      } catch (e, s) {
+        _log.severe('Error loading more messages', e, s);
         state = state.copyWith(
-          loading: ChatRoomLoadingState.error(error.toString()),
+          loading: ChatRoomLoadingState.error(e.toString()),
         );
         if (failOnError) {
           rethrow;
@@ -230,11 +230,11 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     RoomMessage roomMsg;
     try {
       roomMsg = await timeline.getMessage(originalId);
-    } catch (error, stack) {
+    } catch (e, s) {
       _log.severe(
         'Failing to load reference $replyId (from $originalId)',
-        error,
-        stack,
+        e,
+        s,
       );
       return;
     }

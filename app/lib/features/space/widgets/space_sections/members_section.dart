@@ -25,10 +25,10 @@ class MembersSection extends ConsumerWidget {
     final membersList = ref.watch(membersIdsProvider(spaceId));
     return membersList.when(
       data: (members) => buildMembersSectionUI(context, members),
-      error: (error, stack) {
-        _log.severe('Failed to load members in space', error, stack);
+      error: (e, s) {
+        _log.severe('Failed to load members in space', e, s);
         return Center(
-          child: Text(L10n.of(context).loadingMembersFailed(error)),
+          child: Text(L10n.of(context).loadingMembersFailed(e)),
         );
       },
       loading: () => Center(

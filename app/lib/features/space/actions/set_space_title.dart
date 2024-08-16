@@ -29,8 +29,8 @@ void showEditSpaceNameBottomSheet({
         EasyLoading.dismiss();
         if (!context.mounted) return;
         Navigator.pop(context);
-      } catch (e, st) {
-        _log.severe('Failed to edit space name', e, st);
+      } catch (e, s) {
+        _log.severe('Failed to edit space name', e, s);
         EasyLoading.dismiss();
         if (!context.mounted) return;
         EasyLoading.showError(L10n.of(context).updateNameFailed(e));

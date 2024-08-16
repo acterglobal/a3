@@ -25,9 +25,9 @@ class _JoinBtn extends ConsumerWidget {
     return ref.watch(roomMembershipProvider(item.roomIdStr())).when(
           data: (data) =>
               data == null ? noMember(context) : alreadyMember(context),
-          error: (error, st) {
-            _log.severe('Failed to load room membership', error, st);
-            return Text(L10n.of(context).loadingFailed(error));
+          error: (e, s) {
+            _log.severe('Failed to load room membership', e, s);
+            return Text(L10n.of(context).loadingFailed(e));
           },
           loading: () => Skeletonizer(
             child: OutlinedButton(

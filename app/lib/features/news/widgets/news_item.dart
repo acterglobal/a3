@@ -107,8 +107,8 @@ class _NewsItemState extends ConsumerState<NewsItem> {
                 padding: const EdgeInsets.all(16),
                 child: space.when(
                   data: (space) => Text(space.avatarInfo.displayName ?? roomId),
-                  error: (e, st) {
-                    _log.severe('Failed to load brief of space', e, st);
+                  error: (e, s) {
+                    _log.severe('Failed to load brief of space', e, s);
                     return Text(L10n.of(context).errorLoadingSpace(e));
                   },
                   loading: () => Skeletonizer(

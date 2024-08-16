@@ -25,10 +25,10 @@ class TasksSection extends ConsumerWidget {
     final taskList = ref.watch(taskListProvider(spaceId));
     return taskList.when(
       data: (tasks) => buildTasksSectionUI(context, tasks),
-      error: (error, stack) {
-        _log.severe('Failed to load tasks in space', error, stack);
+      error: (e, s) {
+        _log.severe('Failed to load tasks in space', e, s);
         return Center(
-          child: Text(L10n.of(context).loadingTasksFailed(error)),
+          child: Text(L10n.of(context).loadingTasksFailed(e)),
         );
       },
       loading: () => Center(

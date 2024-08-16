@@ -34,11 +34,11 @@ Future<String?> authGuardRedirect(
       await acterSdk.newGuestClient(setAsCurrent: true);
       return null;
     }
-  } catch (error, trace) {
-    _log.severe('AuthGuard Fatal error', error, trace);
+  } catch (e, s) {
+    _log.severe('AuthGuard Fatal error', e, s);
     return state.namedLocation(
       Routes.fatalFail.name,
-      queryParameters: {'error': error.toString(), 'trace': trace.toString()},
+      queryParameters: {'error': e.toString(), 'trace': s.toString()},
     );
   }
 
@@ -72,8 +72,8 @@ Future<String?> forwardRedirect(
       final ref = ProviderScope.containerOf(context);
       // ensure we have selected the right client
       ref.invalidate(clientProvider);
-    } catch (error, trace) {
-      _log.severe('Client not found', error, trace);
+    } catch (e, s) {
+      _log.severe('Client not found', e, s);
       return null;
     }
     final roomId = state.uri.queryParameters['roomId'];
@@ -91,11 +91,11 @@ Future<String?> forwardRedirect(
         pathParameters: {'spaceId': roomId},
       );
     }
-  } catch (error, trace) {
-    _log.severe('Forward fail', error, trace);
+  } catch (e, s) {
+    _log.severe('Forward fail', e, s);
     return state.namedLocation(
       Routes.fatalFail.name,
-      queryParameters: {'error': error.toString(), 'trace': trace.toString()},
+      queryParameters: {'error': e.toString(), 'trace': s.toString()},
     );
   }
 }

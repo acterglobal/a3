@@ -180,12 +180,12 @@ class MessageActions extends ConsumerWidget {
                 if (context.mounted) {
                   Navigator.pop(context);
                 }
-              } catch (error, stackTrace) {
-                _log.severe('Redacting message failed', error, stackTrace);
+              } catch (e, s) {
+                _log.severe('Redacting message failed', e, s);
                 if (context.mounted) {
                   Navigator.pop(context);
                 }
-                EasyLoading.showError(error.toString());
+                EasyLoading.showError(e.toString());
               }
             },
             child: Text(L10n.of(context).yes),

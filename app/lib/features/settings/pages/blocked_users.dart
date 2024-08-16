@@ -118,10 +118,10 @@ class BlockedUsersPage extends ConsumerWidget {
               : Center(
                   child: Text(L10n.of(context).hereYouCanSeeAllUsersYouBlocked),
                 ),
-          error: (error, stack) {
-            _log.severe('Failed to load the ignored users', error, stack);
+          error: (e, s) {
+            _log.severe('Failed to load the ignored users', e, s);
             return Center(
-              child: Text(L10n.of(context).loadingFailed(error)),
+              child: Text(L10n.of(context).loadingFailed(e)),
             );
           },
           loading: () => const Center(
@@ -151,8 +151,8 @@ class BlockedUsersPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showToast(L10n.of(context).userAddedToBlockList(userToAdd));
-    } catch (e, st) {
-      _log.severe('Failed to block user', e, st);
+    } catch (e, s) {
+      _log.severe('Failed to block user', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
@@ -178,8 +178,8 @@ class BlockedUsersPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showToast(L10n.of(context).userRemovedFromList);
-    } catch (e, st) {
-      _log.severe('Failed to unblock user', e, st);
+    } catch (e, s) {
+      _log.severe('Failed to unblock user', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;

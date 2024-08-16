@@ -295,8 +295,8 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
               onTap: () async => await conv?.setBookmarked(!isBookmarked),
             );
           },
-          error: (e, st) {
-            _log.severe('Failed to load convo', e, st);
+          error: (e, s) {
+            _log.severe('Failed to load convo', e, s);
             return Skeletonizer(
               child: IconButton.filled(
                 icon: const Icon(
@@ -329,8 +329,8 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
               onTap: () => _handleInvite(membership),
             );
           },
-          error: (e, st) {
-            _log.severe('Failed to load room membership', e, st);
+          error: (e, s) {
+            _log.severe('Failed to load room membership', e, s);
             return Text(L10n.of(context).errorLoadingTileDueTo(e));
           },
           loading: () => ActionItemSkeleton(
@@ -475,8 +475,8 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
             loading: () => Skeletonizer(
               child: Text(L10n.of(context).membersCount(0)),
             ),
-            error: (e, st) {
-              _log.severe('Failed to load room members', e, st);
+            error: (e, s) {
+              _log.severe('Failed to load room members', e, s);
               return Text(L10n.of(context).errorLoadingMembersCount(e));
             },
           ),

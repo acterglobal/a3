@@ -254,9 +254,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
   @override
   Widget build(BuildContext context) {
     final selectedMessage = ref.watch(
-      chatInputProvider.select(
-        (value) => value.selectedMessage,
-      ),
+      chatInputProvider.select((value) => value.selectedMessage),
     );
 
     if (selectedMessage == null) {
@@ -355,9 +353,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       return IconButton.filled(
         iconSize: 20,
         onPressed: () => onSendButtonPressed(ref),
-        icon: const Icon(
-          Icons.send,
-        ),
+        icon: const Icon(Icons.send),
       );
     }
 
@@ -644,10 +640,10 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       ref.read(chatInputProvider.notifier).messageSent();
 
       textController.clear();
-    } catch (error, stackTrace) {
-      _log.severe('Sending chat message failed', error, stackTrace);
+    } catch (e, s) {
+      _log.severe('Sending chat message failed', e, s);
       EasyLoading.showError(
-        lang.failedToSend(error),
+        lang.failedToSend(e),
         duration: const Duration(seconds: 3),
       );
       ref.read(chatInputProvider.notifier).sendingFailed();

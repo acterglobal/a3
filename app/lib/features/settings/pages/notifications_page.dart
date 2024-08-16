@@ -211,8 +211,8 @@ class NotificationsSettingsPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showToast(L10n.of(context).notificationStatusSubmitted);
-    } catch (e, st) {
-      _log.severe('Failed to update notification status', e, st);
+    } catch (e, s) {
+      _log.severe('Failed to update notification status', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;

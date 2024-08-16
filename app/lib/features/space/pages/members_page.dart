@@ -74,11 +74,11 @@ class SpaceMembersPage extends ConsumerWidget {
               },
             );
           },
-          error: (error, stack) {
-            _log.severe('Failed to load space members', error, stack);
+          error: (e, s) {
+            _log.severe('Failed to load space members', e, s);
             return SliverToBoxAdapter(
               child: Center(
-                child: Text(L10n.of(context).loadingFailed(error)),
+                child: Text(L10n.of(context).loadingFailed(e)),
               ),
             );
           },

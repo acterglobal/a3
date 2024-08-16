@@ -90,10 +90,10 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
         Expanded(
           child: pinList.when(
             data: (pins) => _buildPinsList(pins),
-            error: (error, stack) {
-              _log.severe('Failed to load pins', error, stack);
+            error: (e, s) {
+              _log.severe('Failed to load pins', e, s);
               return Center(
-                child: Text(L10n.of(context).loadingFailed(error)),
+                child: Text(L10n.of(context).loadingFailed(e)),
               );
             },
             loading: () => const PinListSkeleton(),

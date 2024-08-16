@@ -47,9 +47,9 @@ class MyTasksSection extends ConsumerWidget {
                 ),
               ],
             ),
-      error: (error, stack) {
-        _log.severe('Failed to load open tasks', error, stack);
-        return Text(L10n.of(context).loadingTasksFailed(error));
+      error: (e, s) {
+        _log.severe('Failed to load open tasks', e, s);
+        return Text(L10n.of(context).loadingTasksFailed(e));
       },
       loading: () => Text(L10n.of(context).loading),
     );

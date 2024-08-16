@@ -22,8 +22,8 @@ class AsyncDevicesNotifier extends AsyncNotifier<List<DeviceRecord>> {
         final sessions = (await manager.allSessions()).toList();
         state = AsyncValue.data(sessions);
       },
-      onError: (e, stack) {
-        _log.severe('stream errored', e, stack);
+      onError: (e, s) {
+        _log.severe('stream errored', e, s);
       },
       onDone: () {
         _log.info('stream ended');

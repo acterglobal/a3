@@ -88,12 +88,12 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
             isDownloading: false,
           );
         }
-      } catch (error, stackTrace) {
-        _log.severe('Error downloading media:', error, stackTrace);
+      } catch (e, s) {
+        _log.severe('Error downloading media:', e, s);
         state = state.copyWith(
           isDownloading: false,
           mediaChatLoadingState: MediaChatLoadingState.error(
-            'Some error occurred ${error.toString()}',
+            'Some error occurred ${e.toString()}',
           ),
         );
       }
@@ -128,9 +128,9 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
       if (thumbnailGenerated) {
         return destFile;
       }
-    } catch (err, s) {
+    } catch (e, s) {
       // Handle platform errors.
-      _log.severe('Error', err, s);
+      _log.severe('Error', e, s);
     }
     return null;
   }
