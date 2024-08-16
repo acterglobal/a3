@@ -4,7 +4,6 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/router/router.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
@@ -104,12 +103,11 @@ class _DesktopSupportState extends State<DesktopSupport>
   @override
   void onTrayIconMouseDown() async {
     // toggle visiblity
-    print("toggled");
     if (await windowManager.isVisible()) {
-      print('hiding');
+      _log.info('hiding window on toggle');
       await windowManager.hide();
     } else {
-      print('showing');
+      _log.info('showing window on toggle');
       await windowManager.show();
     }
   }
@@ -123,6 +121,7 @@ class _DesktopSupportState extends State<DesktopSupport>
   @override
   void onTrayMenuItemClick(MenuItem menuItem) async {
     if (menuItem.key == 'exit_app') {
+      _log.info('exit app');
       await windowManager.destroy();
       return;
     }
@@ -130,10 +129,13 @@ class _DesktopSupportState extends State<DesktopSupport>
     await windowManager.show();
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) async {
       if (menuItem.key == 'home') {
+        _log.info('route home');
         rootNavKey.currentContext!.pushNamed(Routes.main.name);
       } else if (menuItem.key == 'chat') {
+        _log.info('route chat');
         rootNavKey.currentContext!.pushNamed(Routes.chat.name);
       } else if (menuItem.key == 'activities') {
+        _log.info('route activities');
         rootNavKey.currentContext!.pushNamed(Routes.activities.name);
       }
     });
