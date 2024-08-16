@@ -19,7 +19,7 @@ class SpaceNameWidget extends ConsumerWidget {
 
   Widget _buildSpaceName(BuildContext context, WidgetRef ref) {
     String spaceName =
-        ref.watch(roomDisplayNameProvider(spaceId)).valueOrNull ?? '';
+        ref.watch(roomDisplayNameProvider(spaceId)).valueOrNull ?? spaceId;
     if (isShowBrackets) spaceName = '($spaceName)';
     return Text(
       spaceName,
