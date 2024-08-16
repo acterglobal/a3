@@ -562,7 +562,6 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         pathParameters: {'roomId': widget.roomId},
       );
     } else {
-      _log.severe('Not enough permission to invite');
       EasyLoading.showError(
         L10n.of(context).notEnoughPowerLevelForInvites,
         duration: const Duration(seconds: 3),

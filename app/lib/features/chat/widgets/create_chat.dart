@@ -650,7 +650,6 @@ class _CreateRoomFormWidgetConsumerState
     String title = titleInput.trim();
     if (title.isEmpty) return;
     if (isSpaceRoom && currentParentSpace == null) {
-      _log.severe('Parent space must be selected');
       EasyLoading.showError(
         L10n.of(context).parentSpaceMustBeSelected,
         duration: const Duration(seconds: 2),

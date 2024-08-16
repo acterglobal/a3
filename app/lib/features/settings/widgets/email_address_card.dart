@@ -377,7 +377,6 @@ class _TokenConfirmState extends State<TokenConfirm> {
 
   void onSubmit(BuildContext context) {
     if (!_formKey.currentState!.validate()) {
-      _log.severe('Token and password must be provided');
       EasyLoading.showError(
         L10n.of(context).tokenAndPasswordMustBeProvided,
         duration: const Duration(seconds: 3),
