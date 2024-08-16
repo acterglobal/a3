@@ -1,7 +1,6 @@
 import 'package:acter/common/actions/redact_content.dart';
 import 'package:acter/common/models/attachment_media_state/attachment_media_state.dart';
 import 'package:acter/common/models/types.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/image_dialog.dart';
 import 'package:acter/common/widgets/video_dialog.dart';
@@ -41,7 +40,7 @@ class AttachmentItem extends ConsumerWidget {
       decoration: BoxDecoration(
         color: containerColor,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: greyColor),
+        border: Border.all(color: Theme.of(context).unselectedWidgetColor),
       ),
       child: ListTile(
         leading: attachmentLeadingIcon(attachmentType),
