@@ -974,11 +974,11 @@
   "save": "Save",
   "@save": {},
   "saveFileAs": "Save file as",
-  "@saveFileAs" : {},
+  "@saveFileAs": {},
   "openFile": "Open",
-  "@openFile" : {},
+  "@openFile": {},
   "shareFile": "Share",
-  "@shareFile" : {},
+  "@shareFile": {},
   "saveChanges": "Save Changes",
   "@saveChanges": {},
   "savingCode": "Saving code",
@@ -2117,5 +2117,6 @@
   "text": "text",
   "audio": "Audio",
   "pinDetails": "Pin Details",
-  "inKey": "In"
+  "inKey": "In",
+  "comingSoon": "Not supported yet, coming soon!"
 }

@@ -10,6 +10,7 @@ import 'package:acter/features/files/actions/file_share.dart';
 import 'package:acter/features/pins/actions/attachment_leading_icon.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Attachment;
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -70,20 +71,48 @@ class AttachmentItem extends ConsumerWidget {
                       ),
                     ),
             if (canEdit)
-              IconButton(
-                onPressed: () => openRedactContentDialog(
-                  context,
-                  eventId: eventId,
-                  roomId: roomId,
-                  title: L10n.of(context).deleteAttachment,
-                  description: L10n.of(context)
-                      .areYouSureYouWantToRemoveAttachmentFromPin,
-                  isSpace: true,
-                ),
-                icon: Icon(
-                  Icons.delete_forever,
-                  color: Theme.of(context).colorScheme.error,
-                ),
+              PopupMenuButton<String>(
+                key: const Key('attachment-item-menu-options'),
+                icon: const Icon(Icons.more_vert),
+                itemBuilder: (context) {
+                  List<PopupMenuEntry<String>> actions = [];
+                  actions.add(
+                    PopupMenuItem<String>(
+                      key: const Key('attachment-edit'),
+                      onTap: () {
+                        EasyLoading.showToast(
+                          L10n.of(context).comingSoon,
+                          duration: const Duration(seconds: 3),
+                        );
+                      },
+                      child: Text(L10n.of(context).edit),
+                    ),
+                  );
+                  actions.add(
+                    PopupMenuItem<String>(
+                      key: const Key('attachment-delete'),
+                      onTap: () {
+                        openRedactContentDialog(
+                          context,
+                          eventId: eventId,
+                          roomId: roomId,
+                          title: L10n.of(context).deleteAttachment,
+                          description: L10n.of(context)
+                              .areYouSureYouWantToRemoveAttachmentFromPin,
+                          isSpace: true,
+                        );
+                      },
+                      child: Text(
+                        L10n.of(context).delete,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                      ),
+                    ),
+                  );
+
+                  return actions;
+                },
               ),
           ],
         ),
