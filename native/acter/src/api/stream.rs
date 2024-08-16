@@ -329,6 +329,7 @@ impl Client {
         MsgDraft::new(MsgContentDraft::Image {
             source,
             info: Some(info),
+            filename: None,
         })
     }
 
@@ -339,6 +340,7 @@ impl Client {
         MsgDraft::new(MsgContentDraft::Audio {
             source,
             info: Some(info),
+            filename: None,
         })
     }
 
@@ -349,6 +351,7 @@ impl Client {
         MsgDraft::new(MsgContentDraft::Video {
             source,
             info: Some(info),
+            filename: None,
         })
     }
 
