@@ -37,10 +37,10 @@ class SpaceChip extends ConsumerWidget {
         data: (space) {
           return renderSpace(context, space);
         },
-        error: (error, st) {
-          _log.severe('Failed to load brief of space', error, st);
+        error: (e, s) {
+          _log.severe('Failed to load brief of space', e, s);
           return Chip(
-            label: Text(L10n.of(context).loadingFailed(error)),
+            label: Text(L10n.of(context).loadingFailed(e)),
           );
         },
         loading: () => renderLoading(spaceId!),

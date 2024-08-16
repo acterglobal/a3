@@ -7,6 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::settings::email_address_card');
 
 class EmailAddressCard extends ConsumerWidget {
   final String emailAddress;
@@ -162,7 +165,8 @@ class EmailAddressCard extends ConsumerWidget {
         return;
       }
       EasyLoading.showToast(L10n.of(context).looksGoodAddressConfirmed);
-    } catch (e) {
+    } catch (e, s) {
+      _log.severe('Failed to confirm token', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
@@ -200,12 +204,14 @@ class EmailAddressCard extends ConsumerWidget {
         ref.invalidate(emailAddressesProvider);
         EasyLoading.showToast(L10n.of(context).looksGoodAddressConfirmed);
       } else {
+        _log.severe('Invalid token or password');
         EasyLoading.showError(
           L10n.of(context).invalidTokenOrPassword,
           duration: const Duration(seconds: 3),
         );
       }
-    } catch (e) {
+    } catch (e, s) {
+      _log.severe('Failed to confirm token', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;

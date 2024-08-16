@@ -468,13 +468,14 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       context.pushReplacementNamed(
         Routes.main.name,
       ); // go to the home / main updates
-    } catch (err) {
+    } catch (e, s) {
+      _log.severe('Failed to send news', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).error(err),
+        L10n.of(context).creatingNewsFailed(e),
         duration: const Duration(seconds: 3),
       );
     }

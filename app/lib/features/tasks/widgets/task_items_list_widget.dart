@@ -12,7 +12,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::tasks::list');
+final _log = Logger('a3::tasks::widgets::list');
 
 class TaskItemsListWidget extends ConsumerWidget {
   final TaskList taskList;
@@ -31,9 +31,9 @@ class TaskItemsListWidget extends ConsumerWidget {
     final tasks = ref.watch(taskItemsListProvider(taskList));
     return tasks.when(
       data: (overview) => taskData(context, overview),
-      error: (error, stack) {
-        _log.severe('Failed to load tasklist', error, stack);
-        return Text(L10n.of(context).errorLoadingTasks(error));
+      error: (e, s) {
+        _log.severe('Failed to load tasklist', e, s);
+        return Text(L10n.of(context).errorLoadingTasks(e));
       },
       loading: () => const TaskItemsSkeleton(),
     );
@@ -202,13 +202,13 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
     taskDraft.title(_textCtrl.text);
     try {
       await taskDraft.send();
-    } catch (e) {
-      if (context.mounted) {
-        EasyLoading.showError(
-          L10n.of(context).creatingTaskFailed(e),
-          duration: const Duration(seconds: 3),
-        );
-      }
+    } catch (e, s) {
+      _log.severe('Failed to change title of tasklist', e, s);
+      if (!context.mounted) return;
+      EasyLoading.showError(
+        L10n.of(context).updatingTaskFailed(e),
+        duration: const Duration(seconds: 3),
+      );
       return;
     }
     _textCtrl.text = '';

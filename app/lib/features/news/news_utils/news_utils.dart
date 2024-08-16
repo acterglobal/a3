@@ -39,9 +39,9 @@ class NewsUtils {
       if (thumbnailGenerated) {
         return destFile;
       }
-    } catch (err, s) {
+    } catch (e, s) {
       // Handle platform errors.
-      _log.severe('Error', err, s);
+      _log.severe('Failed to extract video thumbnail', e, s);
     }
     return null;
   }

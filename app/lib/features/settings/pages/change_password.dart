@@ -199,12 +199,14 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
       confirmPassword.clear();
       if (!context.mounted) return;
       EasyLoading.showSuccess(L10n.of(context).passwordChangedSuccessfully);
-    } catch (err) {
-      EasyLoading.dismiss();
-      _log.severe('Change password failed', err);
-      if (!context.mounted) return;
+    } catch (e, s) {
+      _log.severe('Failed to change password', e, s);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
-        L10n.of(context).changePasswordFailed(err),
+        L10n.of(context).changePasswordFailed(e),
         duration: const Duration(seconds: 3),
       );
     }

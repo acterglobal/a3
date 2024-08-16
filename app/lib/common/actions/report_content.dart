@@ -10,7 +10,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::common::report');
+final _log = Logger('a3::common::report_content');
 
 final _ignoreUserProvider = StateProvider.autoDispose<bool>((ref) => false);
 
@@ -159,12 +159,14 @@ class _ReportContentWidget extends ConsumerWidget {
         EasyLoading.showToast(L10n.of(context).reportSent);
         Navigator.pop(context);
       } else {
+        _log.severe('Failed to report content');
         EasyLoading.showError(
           L10n.of(context).reportSendingFailed,
           duration: const Duration(seconds: 3),
         );
       }
-    } catch (e) {
+    } catch (e, s) {
+      _log.severe('Failed to report content', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;

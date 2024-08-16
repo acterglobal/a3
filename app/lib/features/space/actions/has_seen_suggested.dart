@@ -7,12 +7,12 @@ final _log = Logger('a3::space::actions::suggested');
 Future<void> markHasSeenSuggested(WidgetRef ref, String roomId) async {
   final room = await ref.read(maybeRoomProvider(roomId).future);
   if (room == null) {
-    _log.warning("Could't mark $roomId suggested as seen. Room not found");
+    _log.warning('Could’t mark $roomId suggested as seen. Room not found');
     return;
   }
   try {
     await room.setUserHasSeenSuggested(true);
-  } catch (error, stack) {
-    _log.severe("Could't mark $roomId suggested failed", error, stack);
+  } catch (e, s) {
+    _log.severe('Could’t mark $roomId suggested failed', e, s);
   }
 }

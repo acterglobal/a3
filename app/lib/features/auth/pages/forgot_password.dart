@@ -173,9 +173,16 @@ class _AskForEmail extends StatelessWidget {
       );
       EasyLoading.dismiss();
       onSubmit(resp);
-    } catch (error, stack) {
-      _log.severe('Requesting password reset failed', error, stack);
-      EasyLoading.showError(lang.sendingEmailFailed(error));
+    } catch (e, s) {
+      _log.severe('Requesting password reset failed', e, s);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        lang.sendingEmailFailed(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 
@@ -298,9 +305,16 @@ class _NewPassword extends StatelessWidget {
       );
       EasyLoading.showToast(lang.resettingPasswordSuccessful);
       if (context.mounted) context.goNamed(Routes.authLogin.name);
-    } catch (error, stack) {
-      _log.severe('Requesting reset failed', error, stack);
-      EasyLoading.showError(lang.resettingPasswordFailed(error));
+    } catch (e, s) {
+      _log.severe('Requesting reset failed', e, s);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        lang.resettingPasswordFailed(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 

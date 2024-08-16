@@ -22,8 +22,8 @@ final shouldShowSuggestedProvider =
         await ref.watch(suggestedRoomsProvider(spaceId).future);
     // only if we really have some remote rooms that the user is suggested and not yet in
     return suggestedRooms.chats.isNotEmpty || suggestedRooms.spaces.isNotEmpty;
-  } catch (error, stack) {
-    _log.severe('Fetching suggestions showing failed', error, stack);
+  } catch (e, s) {
+    _log.severe('Fetching suggestions showing failed', e, s);
     return false;
   }
 });

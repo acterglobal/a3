@@ -424,8 +424,8 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
           pathParameters: {'calendarId': eventId.toString()},
         );
       }
-    } catch (e, st) {
-      _log.severe('Failed to create calendar event', e, st);
+    } catch (e, s) {
+      _log.severe('Failed to create calendar event', e, s);
       if (!mounted) {
         EasyLoading.dismiss();
         return;

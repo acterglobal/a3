@@ -34,9 +34,9 @@ class MentionProfileBuilder extends ConsumerWidget {
           child: Card(child: ListView()),
         ),
       ),
-      error: (error, st) {
-        _log.severe('Failed to load room members', error, st);
-        return ErrorWidget(L10n.of(context).loadingFailed(error));
+      error: (e, s) {
+        _log.severe('Failed to load room members', e, s);
+        return ErrorWidget(L10n.of(context).loadingFailed(e));
       },
       data: (data) {
         final users = data.fold<Map<String, String>>({}, (map, uId) {

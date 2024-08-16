@@ -13,6 +13,9 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::auth::login');
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -230,11 +233,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       password.text,
     );
 
-    if (!context.mounted) return;
     if (loginSuccess == null) {
-      // no message means, login was successful.
-      context.goNamed(Routes.analyticsOptIn.name);
+      if (context.mounted) {
+        // no message means, login was successful.
+        context.goNamed(Routes.analyticsOptIn.name);
+      }
     } else {
+      _log.severe('Failed to login', loginSuccess);
+      if (!context.mounted) return;
       EasyLoading.showError(
         loginSuccess,
         duration: const Duration(seconds: 3),

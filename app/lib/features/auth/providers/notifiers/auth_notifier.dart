@@ -27,8 +27,8 @@ class AuthStateNotifier extends StateNotifier<bool> {
       state = false;
       return null;
     } catch (e, s) {
-      state = false;
       _log.severe('Login failed', e, s);
+      state = false;
       return e.toString();
     }
   }

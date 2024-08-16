@@ -38,8 +38,8 @@ class SessionsPage extends ConsumerWidget {
         ),
         body: allSessions.when(
           data: (sessions) => buildSessions(context, sessions),
-          error: (error, stack) {
-            _log.severe('Failed to load unknown sessions', error, stack);
+          error: (e, s) {
+            _log.severe('Failed to load unknown sessions', e, s);
             return Center(
               child: Text(L10n.of(context).couldNotLoadAllSessions),
             );

@@ -161,8 +161,8 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
           _log.warning('Joining $roomId failed');
           hadFailures = true;
         }
-      } catch (error, stack) {
-        _log.severe('Joining $roomId failed', error, stack);
+      } catch (e, s) {
+        _log.severe('Joining $roomId failed', e, s);
         hadFailures = true;
       }
     }

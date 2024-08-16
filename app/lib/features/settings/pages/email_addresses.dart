@@ -101,10 +101,10 @@ class EmailAddressesPage extends ConsumerWidget {
         ),
         body: emailAddresses.when(
           data: (addresses) => buildAddresses(context, addresses),
-          error: (error, stack) {
-            _log.severe('Failed to load email addresses', error, stack);
+          error: (e, s) {
+            _log.severe('Failed to load email addresses', e, s);
             return Center(
-              child: Text(L10n.of(context).errorLoadingEmailAddresses(error)),
+              child: Text(L10n.of(context).errorLoadingEmailAddresses(e)),
             );
           },
           loading: () => const Center(
@@ -231,7 +231,8 @@ class EmailAddressesPage extends ConsumerWidget {
           return;
         }
         EasyLoading.showToast(L10n.of(context).pleaseCheckYourInbox);
-      } catch (e) {
+      } catch (e, s) {
+        _log.severe('Failed to submit email address', e, s);
         if (!context.mounted) {
           EasyLoading.dismiss();
           return;

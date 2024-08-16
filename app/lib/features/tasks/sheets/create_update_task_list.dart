@@ -7,6 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::tasks::create_update_tasklist');
 
 void showCreateUpdateTaskListBottomSheet(
   BuildContext context, {
@@ -201,7 +204,8 @@ class _CreateUpdateTaskListConsumerState
       EasyLoading.dismiss();
       if (!mounted) return;
       Navigator.pop(context);
-    } catch (e) {
+    } catch (e, s) {
+      _log.severe('Failed to create tasklist', e, s);
       if (!mounted) {
         EasyLoading.dismiss();
         return;

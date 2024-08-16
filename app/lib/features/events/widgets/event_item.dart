@@ -118,8 +118,8 @@ class EventItem extends StatelessWidget {
                 ? rsvpStatusWidget
                 : const SizedBox.shrink();
           },
-          error: (e, st) {
-            _log.severe('Failed to load RSVP status', e, st);
+          error: (e, s) {
+            _log.severe('Failed to load RSVP status', e, s);
             return Chip(
               label: Text(
                 L10n.of(context).errorLoadingRsvpStatus(e),

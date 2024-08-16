@@ -109,8 +109,8 @@ class _VisibilityAccessibilityPageState
                 },
         );
       },
-      error: (e, st) {
-        _log.severe('Failed to load room visibility', e, st);
+      error: (e, s) {
+        _log.severe('Failed to load room visibility', e, s);
         return const RoomVisibilityType(
           selectedVisibilityEnum: RoomVisibility.Private,
         );
@@ -152,11 +152,11 @@ class _VisibilityAccessibilityPageState
                 return _spaceItemUI(spacesList[index], hasPermission);
               },
             ),
-            error: (error, stack) {
-              _log.severe('Failed to load the allowed rooms', error, stack);
+            error: (e, s) {
+              _log.severe('Failed to load the allowed rooms', e, s);
               return _spaceItemCard(
-                'Loading Space Info failed',
-                subtitle: Text('$error'),
+                'Loading Spaces failed',
+                subtitle: Text(e.toString()),
               );
             },
             loading: _loadingSpaceItem,
@@ -216,11 +216,11 @@ class _VisibilityAccessibilityPageState
   Widget _spaceItemUI(String spaceId, bool canEdit) {
     return ref.watch(briefSpaceItemProvider(spaceId)).when(
           data: (d) => _spaceFoundUI(d, canEdit),
-          error: (error, stack) {
-            _log.severe('Failed to load brief of space', error, stack);
+          error: (e, s) {
+            _log.severe('Failed to load brief of space', e, s);
             return _spaceItemCard(
               spaceId,
-              subtitle: Text('Loading Space Info failed: $error'),
+              subtitle: Text(L10n.of(context).failedToLoadSpace(e)),
               removeAction: canEdit ? () => removeSpace(spaceId) : null,
             );
           },
@@ -271,8 +271,8 @@ class _VisibilityAccessibilityPageState
           );
         }
       }
-    } catch (e, st) {
-      _log.severe('Select Space Error =>>', e, st);
+    } catch (e, s) {
+      _log.severe('Failed to select space', e, s);
       if (!mounted) return;
       EasyLoading.showToast(
         L10n.of(context).failedToLoadSpace(e),
@@ -306,14 +306,21 @@ class _VisibilityAccessibilityPageState
           for (final roomId in (spaceIds ?? [])) {
             update.addRoom(roomId);
           }
+          break;
       }
 
       await room.setJoinRule(update);
       EasyLoading.dismiss();
-    } catch (e) {
-      _log.severe('Error updating visibility: $e');
-      EasyLoading.showError('Error updating visibility: $e');
-      return;
+    } catch (e, s) {
+      _log.severe('Failed to change room visibility', e, s);
+      if (!mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).updatingVisibilityFailed(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 }

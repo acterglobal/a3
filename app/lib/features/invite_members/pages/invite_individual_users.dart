@@ -175,9 +175,9 @@ class InviteIndividualUsers extends ConsumerWidget {
                       userId: data[index].userId().toString(),
                       roomId: roomId,
                     ),
-                    error: (err, st) {
-                      _log.severe('Failed to search users', err, st);
-                      return Text(L10n.of(context).searchingFailed(err));
+                    error: (e, s) {
+                      _log.severe('Failed to search users', e, s);
+                      return Text(L10n.of(context).searchingFailed(e));
                     },
                     loading: () => Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),

@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::space::topic');
 
 void showEditDescriptionBottomSheet({
   required BuildContext context,
@@ -22,10 +25,16 @@ void showEditDescriptionBottomSheet({
         EasyLoading.dismiss();
         if (!context.mounted) return;
         Navigator.pop(context);
-      } catch (e) {
-        EasyLoading.dismiss();
-        if (!context.mounted) return;
-        EasyLoading.showError(L10n.of(context).updateDescriptionFailed(e));
+      } catch (e, s) {
+        _log.severe('Failed to change space topic', e, s);
+        if (!context.mounted) {
+          EasyLoading.dismiss();
+          return;
+        }
+        EasyLoading.showError(
+          L10n.of(context).updateDescriptionFailed(e),
+          duration: const Duration(seconds: 3),
+        );
       }
     },
   );

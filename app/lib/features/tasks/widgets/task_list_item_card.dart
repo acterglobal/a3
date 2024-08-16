@@ -47,10 +47,10 @@ class TaskListItemCard extends ConsumerWidget {
               ],
             ),
           ),
-          error: (error, stack) {
-            _log.severe('Failed to load tasklist', error, stack);
+          error: (e, s) {
+            _log.severe('Failed to load tasklist', e, s);
             return Card(
-              child: Text(L10n.of(context).errorLoadingTasks(error)),
+              child: Text(L10n.of(context).errorLoadingTasks(e)),
             );
           },
           loading: () => Card(

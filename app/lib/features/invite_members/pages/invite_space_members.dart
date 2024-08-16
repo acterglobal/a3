@@ -106,10 +106,10 @@ class _InviteSpaceMembersConsumerState
         ref.watch(otherSpacesForInviteMembersProvider(widget.roomId));
     return otherSpaces.when(
       data: _buildOtherSpaceData,
-      error: (error, stack) {
-        _log.severe('Failed to load other spaces', error, stack);
+      error: (e, s) {
+        _log.severe('Failed to load other spaces', e, s);
         return ListTile(
-          title: Text(L10n.of(context).loadingFailed(error)),
+          title: Text(L10n.of(context).loadingFailed(e)),
         );
       },
       loading: () => _buildSkeletonizerLoading(),
@@ -169,17 +169,19 @@ class _InviteSpaceMembersConsumerState
 
     final lang = L10n.of(context);
 
-    EasyLoading.show(
-      status: lang.invitingSpaceMembersLoading,
-    );
+    EasyLoading.show(status: lang.invitingSpaceMembersLoading);
 
     try {
       final room = ref.read(maybeRoomProvider(widget.roomId)).valueOrNull;
       if (room == null) {
         _log.severe('Room failed to be found');
-        if (!mounted) return;
-        EasyLoading.showToast(
+        if (!mounted) {
+          EasyLoading.dismiss();
+          return;
+        }
+        EasyLoading.showError(
           lang.invitingSpaceMembersError('Missing room'),
+          duration: const Duration(seconds: 3),
         );
         return;
       }
@@ -215,10 +217,16 @@ class _InviteSpaceMembersConsumerState
       setState(() => selectedSpaces.clear());
       if (!mounted) return;
       EasyLoading.showToast(lang.membersInvited(inviteCount));
-    } catch (e, st) {
-      _log.severe('Invite Space Members Error', e, st);
-      if (!mounted) return;
-      EasyLoading.showToast(lang.invitingSpaceMembersError(e));
+    } catch (e, s) {
+      _log.severe('Invite Space Members Error', e, s);
+      if (!mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        lang.invitingSpaceMembersError(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 }

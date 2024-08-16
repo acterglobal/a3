@@ -122,13 +122,14 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
         L10n.of(context).addedToSpacesAndChats(rooms.length),
       );
       Navigator.of(context, rootNavigator: true).pop(true);
-    } catch (err) {
+    } catch (e, s) {
+      _log.severe('Failed to redeem', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).redeemingFailed(err),
+        L10n.of(context).redeemingFailed(e),
         duration: const Duration(seconds: 3),
       );
     }

@@ -278,10 +278,12 @@ class TaskItemDetailPage extends ConsumerWidget {
       await updater.send();
       EasyLoading.dismiss();
       if (context.mounted) Navigator.pop(context);
-    } catch (e, st) {
-      _log.severe('Failed to update event description', e, st);
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+    } catch (e, s) {
+      _log.severe('Failed to change description of task', e, s);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         L10n.of(context).errorUpdatingDescription(e),
         duration: const Duration(seconds: 3),
@@ -339,7 +341,8 @@ class TaskItemDetailPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showToast(L10n.of(context).dueSuccess);
-    } catch (e) {
+    } catch (e, s) {
+      _log.severe('Failed to change due date of task', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
@@ -420,8 +423,8 @@ class TaskItemDetailPage extends ConsumerWidget {
       await task.assignSelf();
       if (!context.mounted) return;
       EasyLoading.showToast(L10n.of(context).assignedYourself);
-    } catch (e, st) {
-      _log.severe('Failed to assign self', e, st);
+    } catch (e, s) {
+      _log.severe('Failed to self-assign task', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
@@ -442,8 +445,8 @@ class TaskItemDetailPage extends ConsumerWidget {
       await task.unassignSelf();
       if (!context.mounted) return;
       EasyLoading.showToast(L10n.of(context).assignmentWithdrawn);
-    } catch (e, st) {
-      _log.severe('Failed to unassign self', e, st);
+    } catch (e, s) {
+      _log.severe('Failed to self-unassign task', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
@@ -483,9 +486,12 @@ class TaskItemDetailPage extends ConsumerWidget {
       EasyLoading.dismiss();
       if (!context.mounted) return;
       Navigator.pop(context);
-    } catch (e) {
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+    } catch (e, s) {
+      _log.severe('Failed to change title of task', e, s);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         L10n.of(context).updatingTaskFailed(e),
         duration: const Duration(seconds: 3),

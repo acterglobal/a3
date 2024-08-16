@@ -135,6 +135,7 @@ class _NotificationSettingsTile extends ConsumerWidget {
     try {
       final room = await ref.read(maybeRoomProvider(roomId).future);
       if (room == null) {
+        _log.severe('Room not found');
         if (!context.mounted) {
           EasyLoading.dismiss();
           return;
@@ -167,8 +168,8 @@ class _NotificationSettingsTile extends ConsumerWidget {
         // let's hope that a second delay is reasonable enough
         ref.invalidate(maybeRoomProvider(roomId));
       });
-    } catch (e, st) {
-      _log.severe('Failed to change notification mode', e, st);
+    } catch (e, s) {
+      _log.severe('Failed to change notification mode', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;

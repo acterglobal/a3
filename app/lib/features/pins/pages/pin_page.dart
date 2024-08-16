@@ -202,10 +202,10 @@ class PinPage extends ConsumerWidget {
                 child: Text(L10n.of(context).loadingPin),
               ),
             ),
-            error: (err, st) {
-              _log.severe('Failed to load pin', err, st);
+            error: (e, s) {
+              _log.severe('Failed to load pin', e, s);
               return SliverAppBar(
-                title: Text(L10n.of(context).errorLoadingPin(err)),
+                title: Text(L10n.of(context).errorLoadingPin(e)),
               );
             },
           ),
@@ -221,9 +221,9 @@ class PinPage extends ConsumerWidget {
                   CommentsSection(manager: acterPin.comments()),
                 ],
               ),
-              error: (err, st) {
-                _log.severe('Failed to load pin', err, st);
-                return Text(L10n.of(context).errorLoadingPin(err));
+              error: (e, s) {
+                _log.severe('Failed to load pin', e, s);
+                return Text(L10n.of(context).errorLoadingPin(e));
               },
               loading: () => const Skeletonizer(
                 child: Card(),

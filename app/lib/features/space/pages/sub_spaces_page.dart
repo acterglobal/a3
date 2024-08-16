@@ -118,10 +118,10 @@ class SubSpacesPage extends ConsumerWidget {
                 return const SizedBox.shrink();
               }
             },
-            error: (error, stack) {
-              _log.severe('Failed to load the related spaces', error, stack);
+            error: (e, s) {
+              _log.severe('Failed to load the related spaces', e, s);
               return Center(
-                child: Text(L10n.of(context).loadingFailed(error)),
+                child: Text(L10n.of(context).loadingFailed(e)),
               );
             },
             loading: () => const SizedBox.shrink(),
@@ -145,10 +145,10 @@ class SubSpacesPage extends ConsumerWidget {
                       canLinkSpace,
                     );
               },
-              error: (error, stack) {
-                _log.severe('Failed to load the related spaces', error, stack);
+              error: (e, s) {
+                _log.severe('Failed to load the related spaces', e, s);
                 return Center(
-                  child: Text(L10n.of(context).loadingFailed(error)),
+                  child: Text(L10n.of(context).loadingFailed(e)),
                 );
               },
               loading: () => Center(

@@ -6,6 +6,9 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::common::deactivate');
 
 const deactivateConfirmBtn = Key('deactivate-account-confirm');
 const deactivateCancelBtn = Key('deactivate-account-cancel');
@@ -110,24 +113,28 @@ Future<void> _onConfirm(
   try {
     final result = await sdk.deactivateAndDestroyCurrentClient(password);
     if (!result) {
-      if (context.mounted) {
-        EasyLoading.showError(
-          L10n.of(context).deactivationAndRemovingFailed,
-          duration: const Duration(seconds: 3),
-        );
+      _log.severe('Failed to deactivate and remove this client');
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
       }
+      EasyLoading.showError(
+        L10n.of(context).deactivationAndRemovingFailed,
+        duration: const Duration(seconds: 3),
+      );
       return;
     }
     EasyLoading.dismiss();
     if (!context.mounted) return;
     context.goNamed(Routes.main.name);
-  } catch (err) {
+  } catch (e, s) {
+    _log.severe('Failed to deactivate and remove this client', e, s);
     if (!context.mounted) {
       EasyLoading.dismiss();
       return;
     }
     EasyLoading.showError(
-      L10n.of(context).deactivatingFailed(err),
+      L10n.of(context).deactivatingFailed(e),
       duration: const Duration(seconds: 3),
     );
   }

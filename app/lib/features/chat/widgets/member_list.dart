@@ -43,10 +43,10 @@ class MemberList extends ConsumerWidget {
           },
         );
       },
-      error: (error, stack) {
-        _log.severe('Failed to load room members', error, stack);
+      error: (e, s) {
+        _log.severe('Failed to load room members', e, s);
         return Center(
-          child: Text(L10n.of(context).loadingFailed(error)),
+          child: Text(L10n.of(context).loadingFailed(e)),
         );
       },
       loading: () => const MembersListSkeleton(),

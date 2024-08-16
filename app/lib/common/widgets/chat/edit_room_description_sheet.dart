@@ -109,13 +109,16 @@ class _EditRoomDescriptionSheetState
       EasyLoading.dismiss();
       if (!context.mounted) return;
       Navigator.pop(context);
-    } catch (e, st) {
-      _log.severe('Failed to edit chat description', e, st);
+    } catch (e, s) {
+      _log.severe('Failed to edit chat description', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
-      EasyLoading.showError(L10n.of(context).updateDescriptionFailed(e));
+      EasyLoading.showError(
+        L10n.of(context).updateDescriptionFailed(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 }

@@ -110,8 +110,8 @@ class RoomAvatar extends ConsumerWidget {
         }
       },
       skipLoadingOnReload: false,
-      error: (e, st) {
-        _log.severe('Failed to load room members', e, st);
+      error: (e, s) {
+        _log.severe('Failed to load room members', e, s);
         return errorAvatar(L10n.of(context).loadingMembersCountFailed(e));
       },
       loading: () => loadingAvatar(),

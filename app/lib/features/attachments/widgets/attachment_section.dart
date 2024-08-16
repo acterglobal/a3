@@ -34,8 +34,8 @@ class AttachmentSectionWidget extends ConsumerWidget {
             attachmentManager: manager,
             key: attachmentsKey,
           ),
-          error: (e, st) {
-            _log.severe('Failed to load attachment manager', e, st);
+          error: (e, s) {
+            _log.severe('Failed to load attachment manager', e, s);
             return onError(context, e);
           },
           loading: () => loading(context),
@@ -76,9 +76,9 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
 
     return attachments.when(
       data: (list) => attachmentData(list, context, ref),
-      error: (err, st) {
-        _log.severe('Failed to load attachments', err, st);
-        return Text(L10n.of(context).errorLoadingAttachments(err));
+      error: (e, s) {
+        _log.severe('Failed to load attachments', e, s);
+        return Text(L10n.of(context).errorLoadingAttachments(e));
       },
       loading: () => const Skeletonizer(
         child: Wrap(

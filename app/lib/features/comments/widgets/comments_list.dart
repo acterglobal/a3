@@ -35,8 +35,8 @@ class _CommentsListState extends ConsumerState<CommentsList> {
               return commentListUI(context, manager);
             }
           },
-          error: (e, st) {
-            _log.severe('Failed to load comments', e, st);
+          error: (e, s) {
+            _log.severe('Failed to load comments', e, s);
             return onError(context, e);
           },
           loading: () => loading(context),

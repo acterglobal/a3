@@ -2,10 +2,13 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::chat::actions::create_chat');
 
 /// Create Room Method
 Future<String?> createChat(
@@ -56,14 +59,18 @@ Future<String?> createChat(
       ref.invalidate(spaceRelationsProvider(parentId));
       ref.invalidate(spaceRemoteRelationsProvider(parentId));
     }
+    EasyLoading.dismiss();
     return roomIdStr;
-  } catch (e) {
-    if (context.mounted) {
-      EasyLoading.showError(
-        L10n.of(context).errorCreatingChat(e),
-        duration: const Duration(seconds: 3),
-      );
+  } catch (e, s) {
+    _log.severe('Failed to create chat', e, s);
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return null;
     }
+    EasyLoading.showError(
+      L10n.of(context).errorCreatingChat(e),
+      duration: const Duration(seconds: 3),
+    );
     return null;
   }
 }

@@ -3,6 +3,9 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::member::kick_and_ban');
 
 Future<void> showKickAndBanUserDialog(
   BuildContext context,
@@ -53,13 +56,14 @@ Future<void> showKickAndBanUserDialog(
                 }
                 EasyLoading.showToast(L10n.of(context).kickAndBanSuccess);
                 Navigator.pop(context);
-              } catch (error) {
+              } catch (e, s) {
+                _log.severe('Failed to kick and ban user', e, s);
                 if (!context.mounted) {
                   EasyLoading.dismiss();
                   return;
                 }
                 EasyLoading.showError(
-                  L10n.of(context).kickAndBanFailed(error),
+                  L10n.of(context).kickAndBanFailed(e),
                   duration: const Duration(seconds: 3),
                 );
               }

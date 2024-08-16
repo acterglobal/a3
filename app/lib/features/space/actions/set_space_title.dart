@@ -29,11 +29,16 @@ void showEditSpaceNameBottomSheet({
         EasyLoading.dismiss();
         if (!context.mounted) return;
         Navigator.pop(context);
-      } catch (e, st) {
-        _log.severe('Failed to edit space name', e, st);
-        EasyLoading.dismiss();
-        if (!context.mounted) return;
-        EasyLoading.showError(L10n.of(context).updateNameFailed(e));
+      } catch (e, s) {
+        _log.severe('Failed to edit space name', e, s);
+        if (!context.mounted) {
+          EasyLoading.dismiss();
+          return;
+        }
+        EasyLoading.showError(
+          L10n.of(context).updateNameFailed(e),
+          duration: const Duration(seconds: 3),
+        );
       }
     },
   );

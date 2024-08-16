@@ -67,8 +67,13 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       token.text,
       context,
     );
-    if (context.mounted && errorMsg != null) {
-      EasyLoading.showError(errorMsg, duration: const Duration(seconds: 3));
+    if (errorMsg != null) {
+      _log.severe('Failed to register', errorMsg);
+      if (!context.mounted) return;
+      EasyLoading.showError(
+        L10n.of(context).registerFailed(errorMsg),
+        duration: const Duration(seconds: 3),
+      );
       return;
     }
     if (token.text.isNotEmpty) {

@@ -129,9 +129,9 @@ class SpaceHeaderProfile extends ConsumerWidget {
           ),
         );
       },
-      error: (error, stack) {
-        _log.severe('Failed to load members in space', error, stack);
-        return Text(L10n.of(context).loadingMembersFailed(error));
+      error: (e, s) {
+        _log.severe('Failed to load members in space', e, s);
+        return Text(L10n.of(context).loadingMembersFailed(e));
       },
       loading: () => const Skeletonizer(
         child: Wrap(

@@ -63,9 +63,9 @@ class AboutSection extends ConsumerWidget {
           ),
         );
       },
-      error: (error, stack) {
-        _log.severe('Failed to load space', error, stack);
-        return Text(L10n.of(context).loadingFailed(error));
+      error: (e, s) {
+        _log.severe('Failed to load space', e, s);
+        return Text(L10n.of(context).failedToLoadSpace(e));
       },
       loading: () => Skeletonizer(
         child: Text(L10n.of(context).loading),
