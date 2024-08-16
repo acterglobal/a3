@@ -57,7 +57,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
     final pinData = ref.watch(pinProvider(widget.pinId));
     return pinData.when(
       data: (pin) {
-        managePinLink(context, ref, pin);
+        manageBackwardPinLinkSupport(context, ref, pin);
         return SingleChildScrollView(
           child: Column(
             children: [

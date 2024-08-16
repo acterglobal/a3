@@ -6,7 +6,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-void managePinLink(BuildContext context, WidgetRef ref, ActerPin pin) async {
+void manageBackwardPinLinkSupport(BuildContext context, WidgetRef ref, ActerPin pin) async {
   if (pin.isLink() && pin.url().toString().isNotEmpty) {
     String link = pin.url().toString();
     var manager =
