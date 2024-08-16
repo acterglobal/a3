@@ -95,7 +95,7 @@ class AttachmentItem extends ConsumerWidget {
     final msgContent = attachment.msgContent();
     final fileName = msgContent.body();
     final fileNameSplit = fileName.split('.');
-    final title = fileNameSplit.first;
+    final title = attachment.name().toString();
     final fileExtension = fileNameSplit.last;
     String fileSize = getHumanReadableFileSize(msgContent.size() ?? 0);
     return Column(
