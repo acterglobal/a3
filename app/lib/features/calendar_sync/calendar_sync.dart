@@ -54,7 +54,7 @@ T? _logError<T>(Result<T> result, String msg, {bool doThrow = false}) {
   return result.data;
 }
 
-Future<void> initCalendarSync() async {
+Future<void> initCalendarSync({bool ignoreRejection = false}) async {
   if (!await _isEnabled()) {
     _log.warning('Calendar Sync disabled');
     return;
@@ -68,7 +68,7 @@ Future<void> initCalendarSync() async {
   final hasPermission = await deviceCalendar.hasPermissions();
 
   if (hasPermission.data == false) {
-    if (preferences.getBool(rejectionKey) ?? false) {
+    if (!ignoreRejection && (preferences.getBool(rejectionKey) ?? false)) {
       _log.warning('user previously rejected calendar sync. quitting');
       return;
     }

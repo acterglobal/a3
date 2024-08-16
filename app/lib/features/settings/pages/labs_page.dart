@@ -90,7 +90,7 @@ class SettingsLabsPage extends ConsumerWidget {
                       newVal,
                     );
                     if (newVal) {
-                      initCalendarSync();
+                      initCalendarSync(ignoreRejection: true);
                     } else {
                       clearActerCalendars();
                     }
