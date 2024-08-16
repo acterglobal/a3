@@ -206,7 +206,7 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
       _log.severe('Failed to change title of tasklist', e, s);
       if (!context.mounted) return;
       EasyLoading.showError(
-        L10n.of(context).creatingTaskFailed(e),
+        L10n.of(context).updatingTaskFailed(e),
         duration: const Duration(seconds: 3),
       );
       return;

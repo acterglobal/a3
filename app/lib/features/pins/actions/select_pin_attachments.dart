@@ -46,6 +46,6 @@ Future<void> selectAttachment(
     }
   } catch (e, s) {
     debugPrint('Error => $e');
-    _log.severe('Error selecting attachment', e, s);
+    _log.severe('Failed to select attachment', e, s);
   }
 }

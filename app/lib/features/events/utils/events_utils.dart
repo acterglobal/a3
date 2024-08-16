@@ -21,7 +21,7 @@ Future<void> saveEventTitle({
     EasyLoading.dismiss();
     if (context.mounted) Navigator.pop(context);
   } catch (e, s) {
-    _log.severe('Failed to edit event name', e, s);
+    _log.severe('Failed to rename event', e, s);
     EasyLoading.dismiss();
     if (!context.mounted) return;
     EasyLoading.showError(L10n.of(context).updateNameFailed(e));

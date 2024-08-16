@@ -155,8 +155,8 @@ class _VisibilityAccessibilityPageState
             error: (e, s) {
               _log.severe('Failed to load the allowed rooms', e, s);
               return _spaceItemCard(
-                'Loading Space Info failed',
-                subtitle: Text('$e'),
+                'Loading Spaces failed',
+                subtitle: Text(e.toString()),
               );
             },
             loading: _loadingSpaceItem,
@@ -220,7 +220,7 @@ class _VisibilityAccessibilityPageState
             _log.severe('Failed to load brief of space', e, s);
             return _spaceItemCard(
               spaceId,
-              subtitle: Text('Loading Space Info failed: $e'),
+              subtitle: Text(L10n.of(context).failedToLoadSpace(e)),
               removeAction: canEdit ? () => removeSpace(spaceId) : null,
             );
           },
@@ -272,7 +272,7 @@ class _VisibilityAccessibilityPageState
         }
       }
     } catch (e, s) {
-      _log.severe('Select Space Error =>>', e, s);
+      _log.severe('Failed to select space', e, s);
       if (!mounted) return;
       EasyLoading.showToast(
         L10n.of(context).failedToLoadSpace(e),
