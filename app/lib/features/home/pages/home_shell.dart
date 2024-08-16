@@ -6,6 +6,7 @@ import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/device.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/calendar_sync/calendar_sync.dart';
 import 'package:acter/features/cross_signing/widgets/cross_signing.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/providers/navigation.dart';
@@ -73,6 +74,8 @@ class HomeShellState extends ConsumerState<HomeShell> {
     super.initState();
     initShake();
     initNotifications();
+    // calendar sync
+    initCalendarSync();
     Future.delayed(
       const Duration(seconds: 1),
       () => bottomNavigationTutorials(context: context),

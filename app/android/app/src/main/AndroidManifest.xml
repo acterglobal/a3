@@ -5,6 +5,9 @@
    <uses-permission android:name="android.permission.VIBRATE"/>
    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
+    <uses-permission android:name="android.permission.READ_CALENDAR" android:minSdkVersion="14" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" android:minSdkVersion="14" />
+
     <!-- File Picker Permissions issue on Android 10 https://github.com/miguelpruivo/flutter_file_picker/issues/1461 -->
    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />

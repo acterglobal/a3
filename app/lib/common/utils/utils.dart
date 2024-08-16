@@ -407,6 +407,9 @@ enum LabsFeature {
   // specific features
   chatUnread,
 
+  // system features
+  deviceCalendarSync,
+
   // not a lab anymore but needs to stay for backwards compat
   tasks,
   events,
