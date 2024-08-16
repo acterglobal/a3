@@ -43,7 +43,7 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
     WidgetRef ref,
     bool newVal,
   ) async {
-    updateFeatureState(ref, LabsFeature.mobilePushNotifications, newVal);
+    await updateFeatureState(ref, LabsFeature.mobilePushNotifications, newVal);
     if (!newVal) return;
     final client = ref.read(alwaysClientProvider);
     EasyLoading.show(status: L10n.of(context).changingSettings);
@@ -61,7 +61,7 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
       }
       // second attempt, even sending the user to the settings, they do not
       // approve. Let's kick it back off
-      updateFeatureState(ref, LabsFeature.mobilePushNotifications, false);
+      await updateFeatureState(ref, LabsFeature.mobilePushNotifications, false);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;

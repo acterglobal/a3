@@ -25,17 +25,18 @@ const calendarSyncIdsKey = 'calendar_sync_ids';
 
 // internal state
 
-late DeviceCalendarPlugin deviceCalendar;
-late ProviderSubscription<AsyncValue<List<EventAndRsvp>>> _subscription;
+// ignore: unnecessary_late
+late DeviceCalendarPlugin deviceCalendar = DeviceCalendarPlugin();
+ProviderSubscription<AsyncValue<List<EventAndRsvp>>>? _subscription;
 
-bool _isEnabled() {
+Future<bool> _isEnabled() async {
   try {
-    return rootNavKey.currentContext!
-        .read(isActiveProvider(LabsFeature.deviceCalendarSync));
+    return (await rootNavKey.currentContext!
+        .read(asyncIsActiveProvider(LabsFeature.deviceCalendarSync).future));
   } catch (e, s) {
     _log.severe('Reading current context failed', e, s);
+    return false;
   }
-  return false;
 }
 
 T? _logError<T>(Result<T> result, String msg, {bool doThrow = false}) {
@@ -54,17 +55,16 @@ T? _logError<T>(Result<T> result, String msg, {bool doThrow = false}) {
 }
 
 Future<void> initCalendarSync() async {
-  // if (!_isEnabled()) {
-  //   _log.warning('Calendar Sync disabled');
-  //   return;
-  // }
+  if (!await _isEnabled()) {
+    _log.warning('Calendar Sync disabled');
+    return;
+  }
   if (!isSupportedPlatform) {
     _log.warning('Calendar Sync not available on this device');
     return;
   }
   final SharedPreferences preferences = await sharedPrefs();
 
-  deviceCalendar = DeviceCalendarPlugin();
   final hasPermission = await deviceCalendar.hasPermissions();
 
   if (hasPermission.data == false) {
@@ -80,19 +80,26 @@ Future<void> initCalendarSync() async {
     }
   }
   // FOR DEBUGGING CLEAR Acter CALENDARS VIA:
-  await _clearActerCalendars();
+  // await clearActerCalendars();
 
   final calendarId = await _getOrCreateCalendar();
+  // clear if it existed before
+  _subscription?.close();
   // start listening
   _subscription =
       ProviderScope.containerOf(rootNavKey.currentContext!, listen: true)
-          .listen(eventsToSyncProvider, (prev, next) async {
-    if (!next.hasValue) {
-      _log.info('ignoring state change without value');
-      return;
-    }
-    await _refreshCalendar(calendarId, next.valueOrNull ?? []);
-  });
+          .listen(
+    eventsToSyncProvider,
+    (prev, next) async {
+      if (!next.hasValue) {
+        _log.info('ignoring state change without value');
+        return;
+      }
+      // FIXME: we probably want to debounce this ...
+      await _refreshCalendar(calendarId, next.valueOrNull ?? []);
+    },
+    fireImmediately: true,
+  );
 }
 
 Future<void> _refreshCalendar(
@@ -219,7 +226,7 @@ Future<List<String>> _findActerCalendars() async {
   return [];
 }
 
-Future<void> _clearActerCalendars() async {
+Future<void> clearActerCalendars() async {
   final calendars = await _findActerCalendars();
   if (calendars.isNotEmpty) {
     _log.info('Deleting acter named calendars', calendars);
@@ -257,7 +264,7 @@ Future<String> _getOrCreateCalendar() async {
   }
 
   // find old and remove them
-  await _clearActerCalendars();
+  await clearActerCalendars();
 
   _log.info('No previous calendar found, creating a new one');
 
