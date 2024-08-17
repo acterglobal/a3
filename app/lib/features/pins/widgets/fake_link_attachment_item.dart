@@ -1,4 +1,5 @@
 import 'package:acter/common/models/types.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/attachments/actions/add_edit_link_bottom_sheet.dart';
 import 'package:acter/features/attachments/actions/handle_selected_attachments.dart';
@@ -28,7 +29,7 @@ class FakeLinkAttachmentItem extends ConsumerWidget {
     final pinData = ref.watch(pinProvider(pinId));
     return pinData.when(
       data: (pin) {
-        return pinLinkUiForBackwardSupport(
+        return fakeLinkAttachmentItemUI(
           context,
           ref,
           pin,
@@ -46,7 +47,7 @@ class FakeLinkAttachmentItem extends ConsumerWidget {
     );
   }
 
-  Widget pinLinkUiForBackwardSupport(
+  Widget fakeLinkAttachmentItemUI(
     BuildContext context,
     WidgetRef ref,
     ActerPin pin,
@@ -79,30 +80,36 @@ class FakeLinkAttachmentItem extends ConsumerWidget {
     ActerPin pin,
     String link,
   ) {
+    //Get my membership details
+    final membership =
+        ref.watch(roomMembershipProvider(pin.roomIdStr())).valueOrNull;
+
     return PopupMenuButton<String>(
       key: const Key('fake-pink-link-menu-options'),
       icon: const Icon(Icons.more_vert),
       itemBuilder: (context) => [
-        PopupMenuItem<String>(
-          key: const Key('fake-pink-link-edit'),
-          onTap: () {
-            showAddEditLinkBottomSheet(
-              context: context,
-              pinLink: link,
-              onSave: (title, newLink) async {
-                if (link == newLink) Navigator.pop(context);
-                await handleLinkBackwardSupportOnEdit(
-                  context,
-                  ref,
-                  pin,
-                  title,
-                  newLink,
-                );
-              },
-            );
-          },
-          child: Text(L10n.of(context).edit),
-        ),
+        //Check for can post pin permission
+        if (membership?.canString('CanPostPin') == true)
+          PopupMenuItem<String>(
+            key: const Key('fake-pink-link-edit'),
+            onTap: () {
+              showAddEditLinkBottomSheet(
+                context: context,
+                pinLink: link,
+                onSave: (title, newLink) async {
+                  if (link == newLink) Navigator.pop(context);
+                  await handleLinkBackwardSupportOnEdit(
+                    context,
+                    ref,
+                    pin,
+                    title,
+                    newLink,
+                  );
+                },
+              );
+            },
+            child: Text(L10n.of(context).edit),
+          ),
         PopupMenuItem<String>(
           key: const Key('fake-pink-link-delete'),
           onTap: () {
