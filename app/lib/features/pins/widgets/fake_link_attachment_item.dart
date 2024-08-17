@@ -82,7 +82,7 @@ class FakeLinkAttachmentItem extends ConsumerWidget {
   ) {
     //Get my membership details
     final membership =
-        ref.watch(roomMembershipProvider(pin.roomIdStr())).valueOrNull;
+        ref.read(roomMembershipProvider(pin.roomIdStr())).valueOrNull;
 
     return PopupMenuButton<String>(
       key: const Key('fake-pink-link-menu-options'),
@@ -112,10 +112,7 @@ class FakeLinkAttachmentItem extends ConsumerWidget {
           ),
         PopupMenuItem<String>(
           key: const Key('fake-pink-link-delete'),
-          onTap: () {
-            savePinLink(context, pin, '');
-            ref.invalidate(pinProvider(pinId));
-          },
+          onTap: () => savePinLink(context, pin, ''),
           child: Text(
             L10n.of(context).delete,
             style: TextStyle(
@@ -135,7 +132,7 @@ class FakeLinkAttachmentItem extends ConsumerWidget {
     String link,
   ) async {
     var manager =
-        await ref.watch(attachmentsManagerProvider(pin.attachments()).future);
+        await ref.read(attachmentsManagerProvider(pin.attachments()).future);
     if (!context.mounted) return;
     //Make link empty on Pin Data
     await savePinLink(context, pin, '');
@@ -151,7 +148,6 @@ class FakeLinkAttachmentItem extends ConsumerWidget {
       attachments: [],
     );
     if (!context.mounted) return;
-    ref.invalidate(pinProvider(pinId));
     Navigator.pop(context);
   }
 }
