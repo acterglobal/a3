@@ -105,19 +105,19 @@ class AttachmentItem extends ConsumerWidget {
     final msgContent = attachment.msgContent();
     final fileName = msgContent.body();
     final fileNameSplit = fileName.split('.');
-    final title = attachment.name() ?? '';
+    final title = attachment.name() ?? fileName;
     final fileExtension = fileNameSplit.last;
     String fileSize = getHumanReadableFileSize(msgContent.size() ?? 0);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (title.isNotEmpty)
-          Text(
-            title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
         if (attachmentType == AttachmentType.link) ...[
+          if (title.isNotEmpty)
+            Text(
+              title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
           Text(
             attachment.link() ?? '',
             maxLines: 2,
@@ -125,6 +125,11 @@ class AttachmentItem extends ConsumerWidget {
             style: Theme.of(context).textTheme.labelMedium,
           ),
         ] else ...[
+          Text(
+            title,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
           Row(
             children: [
               Text(
