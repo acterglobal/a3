@@ -67,8 +67,8 @@ class SpaceChip extends ConsumerWidget {
     return useCompatView
         ? Row(
             children: [
-              Text(L10n.of(context).inKey),
-              const Text(' : '),
+              Text(L10n.of(context).inSpaceLabelInline),
+              Text(L10n.of(context).colonCharacter),
               InkWell(
                 onTap: () => (onTapSelectSpace != null && !onTapOpenSpaceDetail)
                     ? onTapSelectSpace!()

@@ -2117,6 +2117,7 @@
   "text": "text",
   "audio": "Audio",
   "pinDetails": "Pin Details",
-  "inKey": "In",
-  "comingSoon": "Not supported yet, coming soon!"
+  "inSpaceLabelInline": "In",
+  "comingSoon": "Not supported yet, coming soon!",
+  "colonCharacter": ":"
 }

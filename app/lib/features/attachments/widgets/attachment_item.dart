@@ -9,7 +9,6 @@ import 'package:acter/features/files/actions/file_share.dart';
 import 'package:acter/features/pins/actions/attachment_leading_icon.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Attachment;
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -73,45 +72,28 @@ class AttachmentItem extends ConsumerWidget {
               PopupMenuButton<String>(
                 key: const Key('attachment-item-menu-options'),
                 icon: const Icon(Icons.more_vert),
-                itemBuilder: (context) {
-                  List<PopupMenuEntry<String>> actions = [];
-                  actions.add(
-                    PopupMenuItem<String>(
-                      key: const Key('attachment-edit'),
-                      onTap: () {
-                        EasyLoading.showToast(
-                          L10n.of(context).comingSoon,
-                          duration: const Duration(seconds: 3),
-                        );
-                      },
-                      child: Text(L10n.of(context).edit),
-                    ),
-                  );
-                  actions.add(
-                    PopupMenuItem<String>(
-                      key: const Key('attachment-delete'),
-                      onTap: () {
-                        openRedactContentDialog(
-                          context,
-                          eventId: eventId,
-                          roomId: roomId,
-                          title: L10n.of(context).deleteAttachment,
-                          description: L10n.of(context)
-                              .areYouSureYouWantToRemoveAttachmentFromPin,
-                          isSpace: true,
-                        );
-                      },
-                      child: Text(
-                        L10n.of(context).delete,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.error,
-                        ),
+                itemBuilder: (context) => [
+                  PopupMenuItem<String>(
+                    key: const Key('attachment-delete'),
+                    onTap: () {
+                      openRedactContentDialog(
+                        context,
+                        eventId: eventId,
+                        roomId: roomId,
+                        title: L10n.of(context).deleteAttachment,
+                        description: L10n.of(context)
+                            .areYouSureYouWantToRemoveAttachmentFromPin,
+                        isSpace: true,
+                      );
+                    },
+                    child: Text(
+                      L10n.of(context).delete,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
                       ),
                     ),
-                  );
-
-                  return actions;
-                },
+                  ),
+                ],
               ),
           ],
         ),
@@ -123,19 +105,19 @@ class AttachmentItem extends ConsumerWidget {
     final msgContent = attachment.msgContent();
     final fileName = msgContent.body();
     final fileNameSplit = fileName.split('.');
-    final title = attachment.name().toString();
+    final title = attachment.name() ?? '';
     final fileExtension = fileNameSplit.last;
     String fileSize = getHumanReadableFileSize(msgContent.size() ?? 0);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (title.isNotEmpty)
+          Text(
+            title,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
         if (attachmentType == AttachmentType.link) ...[
-          if (attachment.name() != null && attachment.name()!.isNotEmpty)
-            Text(
-              attachment.name()!,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
           Text(
             attachment.link() ?? '',
             maxLines: 2,
@@ -143,11 +125,6 @@ class AttachmentItem extends ConsumerWidget {
             style: Theme.of(context).textTheme.labelMedium,
           ),
         ] else ...[
-          Text(
-            title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
           Row(
             children: [
               Text(

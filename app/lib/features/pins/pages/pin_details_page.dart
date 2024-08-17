@@ -17,7 +17,10 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::pin::detail-page');
 
 class PinDetailsPage extends ConsumerStatefulWidget {
   static const pinPageKey = Key('pin-page');
@@ -71,10 +74,15 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
           ),
         );
       },
-      loading: () => Skeletonizer(child: Text(L10n.of(context).loadingPin)),
-      error: (err, st) => Text(
-        L10n.of(context).errorLoadingPin(err),
+      loading: () => Skeletonizer(
+        child: Text(L10n.of(context).loadingPin),
       ),
+      error: (err, st) {
+        _log.severe('Error loading pin', err, st);
+        return Text(
+          L10n.of(context).errorLoadingPin(err),
+        );
+      },
     );
   }
 
@@ -100,63 +108,62 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
     //Get my membership details
     final membership =
         ref.watch(roomMembershipProvider(pin.roomIdStr())).valueOrNull;
-    if (membership != null) {
-      //Check for can post pin permission
-      if (membership.canString('CanPostPin')) {
-        //EDIT PIN TITLE MENU ITEM
-        actions.add(
-          PopupMenuItem<String>(
-            key: PinDetailsPage.editBtnKey,
-            onTap: () => showEditPintTitleDialog(context, ref, pin),
-            child: Text(L10n.of(context).editTitle),
-          ),
-        );
 
-        //EDIT PIN DESCRIPTION MENU ITEM
-        actions.add(
-          PopupMenuItem<String>(
-            key: PinDetailsPage.editBtnKey,
-            onTap: () => showEditPintDescriptionDialog(context, ref, pin),
-            child: Text(L10n.of(context).editDescription),
-          ),
-        );
-      }
+    //Check for can post pin permission
+    if (membership?.canString('CanPostPin') == true) {
+      //EDIT PIN TITLE MENU ITEM
+      actions.add(
+        PopupMenuItem<String>(
+          key: PinDetailsPage.editBtnKey,
+          onTap: () => showEditPintTitleDialog(context, ref, pin),
+          child: Text(L10n.of(context).editTitle),
+        ),
+      );
 
-      final canRedact = ref.watch(canRedactProvider(pin));
-      if (canRedact.valueOrNull == true) {
-        final roomId = pin.roomIdStr();
-        //DELETE PIN MENU ITEM
-        actions.add(
-          PopupMenuItem<String>(
-            onTap: () => showRedactDialog(
-              context: context,
-              pin: pin,
-              roomId: roomId,
+      //EDIT PIN DESCRIPTION MENU ITEM
+      actions.add(
+        PopupMenuItem<String>(
+          key: PinDetailsPage.editBtnKey,
+          onTap: () => showEditPintDescriptionDialog(context, ref, pin),
+          child: Text(L10n.of(context).editDescription),
+        ),
+      );
+    }
+
+    //REPORT PIN MENU ITEM
+    actions.add(
+      PopupMenuItem<String>(
+        onTap: () => showReportDialog(context, pin),
+        child: Row(
+          children: <Widget>[
+            Icon(
+              Atlas.warning_thin,
+              color: Theme.of(context).colorScheme.error,
             ),
-            child: Text(
-              L10n.of(context).removePin,
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
-            ),
+            const SizedBox(width: 10),
+            Text(L10n.of(context).reportPin),
+          ],
+        ),
+      ),
+    );
+
+    //DELETE PIN MENU ITEM
+    final canRedact = ref.watch(canRedactProvider(pin));
+    if (canRedact.valueOrNull == true) {
+      final roomId = pin.roomIdStr();
+      actions.add(
+        PopupMenuItem<String>(
+          onTap: () => showRedactDialog(
+            context: context,
+            pin: pin,
+            roomId: roomId,
           ),
-        );
-      } else {
-        //REPORT PIN MENU ITEM
-        actions.add(
-          PopupMenuItem<String>(
-            onTap: () => showReportDialog(context, pin),
-            child: Row(
-              children: <Widget>[
-                Icon(
-                  Atlas.warning_thin,
-                  color: Theme.of(context).colorScheme.error,
-                ),
-                const SizedBox(width: 10),
-                Text(L10n.of(context).reportPin),
-              ],
-            ),
+          child: Text(
+            L10n.of(context).removePin,
+            style: TextStyle(color: Theme.of(context).colorScheme.error),
           ),
-        );
-      }
+        ),
+      );
     }
 
     return actions;
@@ -208,15 +215,15 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
       child: GestureDetector(
         onTap: () {
           final membership =
-              ref.watch(roomMembershipProvider(pin.roomIdStr())).valueOrNull;
-          if (membership != null && membership.canString('CanPostPin')) {
+              ref.read(roomMembershipProvider(pin.roomIdStr())).valueOrNull;
+          if (membership?.canString('CanPostPin') == true) {
             showEditTitleBottomSheet(
               context: context,
               bottomSheetTitle: L10n.of(context).editName,
               titleValue: pin.title(),
               onSave: (newTitle) async {
                 final pinEditNotifier =
-                    ref.watch(pinEditProvider(pin).notifier);
+                    ref.read(pinEditProvider(pin).notifier);
                 pinEditNotifier.setTitle(newTitle);
                 savePinTitle(context, pin, newTitle);
               },
@@ -241,9 +248,9 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
   Widget pinDescriptionUI(ActerPin pin) {
     final description = pin.content();
     if (description == null) return const SizedBox.shrink();
-    final formattedBody = description.formattedBody();
-
-    if (formattedBody == null && description.body().trim().isEmpty) {
+    final htmlBody = description.formattedBody();
+    final plainBody = description.body();
+    if (htmlBody == null && plainBody.trim().isEmpty) {
       return const SizedBox.shrink();
     }
 
@@ -258,7 +265,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
               showEditHtmlDescriptionBottomSheet(
                 context: context,
                 descriptionHtmlValue: description.formattedBody(),
-                descriptionMarkdownValue: description.body(),
+                descriptionMarkdownValue: plainBody,
                 onSave: (htmlBodyDescription, plainDescription) async {
                   saveDescription(
                     context,
@@ -269,13 +276,13 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
                 },
               );
             },
-            child: formattedBody != null
+            child: htmlBody != null
                 ? RenderHtml(
-                    text: formattedBody,
+                    text: htmlBody,
                     defaultTextStyle: Theme.of(context).textTheme.labelLarge,
                   )
                 : Text(
-                    description.body(),
+                    plainBody,
                     style: Theme.of(context).textTheme.labelLarge,
                   ),
           ),

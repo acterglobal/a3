@@ -17,7 +17,7 @@ void showEditPintTitleDialog(
     bottomSheetTitle: L10n.of(context).editName,
     titleValue: pin.title(),
     onSave: (newTitle) async {
-      final pinEditNotifier = ref.watch(pinEditProvider(pin).notifier);
+      final pinEditNotifier = ref.read(pinEditProvider(pin).notifier);
       pinEditNotifier.setTitle(newTitle);
       savePinTitle(context, pin, newTitle);
     },
