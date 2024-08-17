@@ -8,10 +8,10 @@ import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/pins/Utils/pins_utils.dart';
 import 'package:acter/features/pins/actions/edit_pin_actions.dart';
-import 'package:acter/features/pins/actions/pin_link_backward_support.dart';
 import 'package:acter/features/pins/actions/reduct_pin_action.dart';
 import 'package:acter/features/pins/actions/report_pin_action.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
+import 'package:acter/features/pins/widgets/fake_link_attachment_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -60,7 +60,6 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
     final pinData = ref.watch(pinProvider(widget.pinId));
     return pinData.when(
       data: (pin) {
-        manageBackwardPinLinkSupport(context, ref, pin);
         return SingleChildScrollView(
           child: Column(
             children: [
@@ -68,6 +67,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
               _buildPinHeaderUI(pin),
               const SizedBox(height: 20),
               AttachmentSectionWidget(manager: pin.attachments()),
+              FakeLinkAttachmentItem(pinId: pin.eventIdStr()),
               const SizedBox(height: 20),
               CommentsSection(manager: pin.comments()),
             ],
@@ -222,8 +222,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
               bottomSheetTitle: L10n.of(context).editName,
               titleValue: pin.title(),
               onSave: (newTitle) async {
-                final pinEditNotifier =
-                    ref.read(pinEditProvider(pin).notifier);
+                final pinEditNotifier = ref.read(pinEditProvider(pin).notifier);
                 pinEditNotifier.setTitle(newTitle);
                 savePinTitle(context, pin, newTitle);
               },
