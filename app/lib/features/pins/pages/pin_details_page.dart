@@ -91,10 +91,17 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
     final pinData = ref.watch(pinProvider(widget.pinId));
     return pinData.when(
       data: (pin) {
+        //Get my membership details
+        final membership =
+            ref.watch(roomMembershipProvider(pin.roomIdStr())).valueOrNull;
+        final canRedactData = ref.watch(canRedactProvider(pin));
+        bool canPost = membership?.canString('CanPostPin') == true;
+        bool canRedact = canRedactData.valueOrNull == true;
         return PopupMenuButton<String>(
           key: PinDetailsPage.actionMenuKey,
           icon: const Icon(Atlas.dots_vertical_thin),
-          itemBuilder: (context) => _buildAppBarActionMenuItems(pin),
+          itemBuilder: (context) =>
+              _buildAppBarActionMenuItems(pin, canPost, canRedact),
         );
       },
       loading: () => Skeletonizer(child: Text(L10n.of(context).loadingPin)),
@@ -102,15 +109,15 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
     );
   }
 
-  List<PopupMenuEntry<String>> _buildAppBarActionMenuItems(ActerPin pin) {
+  List<PopupMenuEntry<String>> _buildAppBarActionMenuItems(
+    ActerPin pin,
+    bool canPost,
+    bool canRedact,
+  ) {
     List<PopupMenuEntry<String>> actions = [];
 
-    //Get my membership details
-    final membership =
-        ref.watch(roomMembershipProvider(pin.roomIdStr())).valueOrNull;
-
     //Check for can post pin permission
-    if (membership?.canString('CanPostPin') == true) {
+    if (canPost) {
       //EDIT PIN TITLE MENU ITEM
       actions.add(
         PopupMenuItem<String>(
@@ -148,8 +155,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
     );
 
     //DELETE PIN MENU ITEM
-    final canRedact = ref.watch(canRedactProvider(pin));
-    if (canRedact.valueOrNull == true) {
+    if (canRedact) {
       final roomId = pin.roomIdStr();
       actions.add(
         PopupMenuItem<String>(
