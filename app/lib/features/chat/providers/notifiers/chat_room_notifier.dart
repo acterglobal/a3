@@ -40,7 +40,15 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     try {
       timeline = await ref.read(timelineStreamProvider(roomId).future);
       _listener = timeline.messagesStream(); // keep it resident in memory
-      _poller = _listener.listen(handleDiff);
+      _poller = _listener.listen(
+        handleDiff,
+        onError: (e, s) {
+          _log.severe('msg stream errored', e, s);
+        },
+        onDone: () {
+          _log.info('msg stream ended');
+        },
+      );
       ref.onDispose(() => _poller.cancel());
       do {
         await loadMore(failOnError: true);

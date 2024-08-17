@@ -15,14 +15,14 @@ class ReactionManagerNotifier
   ReactionManager build(ReactionManager arg) {
     _listener = arg.subscribeStream(); // keep it resident in memory
     _poller = _listener.listen(
-      (e) async {
+      (data) async {
         _log.info('attempting to reload');
         final newManager = await arg.reload();
         _log.info('manager updated. likes: ${newManager.likesCount()}');
         state = newManager;
       },
-      onError: (e, stack) {
-        _log.severe('stream errored.', e, stack);
+      onError: (e, s) {
+        _log.severe('stream errored', e, s);
       },
       onDone: () {
         _log.info('stream ended');

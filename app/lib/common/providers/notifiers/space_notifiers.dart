@@ -21,15 +21,15 @@ class AsyncMaybeSpaceNotifier extends FamilyAsyncNotifier<Space?, String> {
     final client = ref.watch(alwaysClientProvider);
     _listener = client.subscribeStream(arg); // keep it resident in memory
     _poller = _listener.listen(
-      (e) async {
+      (data) async {
         _log.info('seen update $arg');
         state = await AsyncValue.guard(_getSpace);
       },
-      onError: (e, stack) {
-        _log.severe('stream errored', e, stack);
+      onError: (e, s) {
+        _log.severe('space stream errored', e, s);
       },
       onDone: () {
-        _log.info('stream ended');
+        _log.info('space stream ended');
       },
     );
     ref.onDispose(() => _poller.cancel());
@@ -52,7 +52,15 @@ class SpaceListNotifier extends StateNotifier<List<Space>> {
 
   void _init() async {
     _listener = client.spacesStream(); // keep it resident in memory
-    _poller = _listener.listen(_handleDiff);
+    _poller = _listener.listen(
+      _handleDiff,
+      onError: (e, s) {
+        _log.severe('space list stream errored', e, s);
+      },
+      onDone: () {
+        _log.info('space list stream ended');
+      },
+    );
     ref.onDispose(() => _poller.cancel());
   }
 
