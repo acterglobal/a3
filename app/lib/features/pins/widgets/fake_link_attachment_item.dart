@@ -75,7 +75,7 @@ class FakeLinkAttachmentItem extends ConsumerWidget {
     );
   }
 
-  Widget optionMenu(
+  Widget? optionMenu(
     WidgetRef ref,
     ActerPin pin,
     String link,
@@ -83,33 +83,33 @@ class FakeLinkAttachmentItem extends ConsumerWidget {
     //Get my membership details
     final membership =
         ref.read(roomMembershipProvider(pin.roomIdStr())).valueOrNull;
+    if (membership?.canString('CanPostPin') != true) return null;
 
     return PopupMenuButton<String>(
       key: const Key('fake-pink-link-menu-options'),
       icon: const Icon(Icons.more_vert),
       itemBuilder: (context) => [
         //Check for can post pin permission
-        if (membership?.canString('CanPostPin') == true)
-          PopupMenuItem<String>(
-            key: const Key('fake-pink-link-edit'),
-            onTap: () {
-              showAddEditLinkBottomSheet(
-                context: context,
-                pinLink: link,
-                onSave: (title, newLink) async {
-                  if (link == newLink) Navigator.pop(context);
-                  await handleLinkBackwardSupportOnEdit(
-                    context,
-                    ref,
-                    pin,
-                    title,
-                    newLink,
-                  );
-                },
-              );
-            },
-            child: Text(L10n.of(context).edit),
-          ),
+        PopupMenuItem<String>(
+          key: const Key('fake-pink-link-edit'),
+          onTap: () {
+            showAddEditLinkBottomSheet(
+              context: context,
+              pinLink: link,
+              onSave: (title, newLink) async {
+                if (link == newLink) Navigator.pop(context);
+                await handleLinkBackwardSupportOnEdit(
+                  context,
+                  ref,
+                  pin,
+                  title,
+                  newLink,
+                );
+              },
+            );
+          },
+          child: Text(L10n.of(context).edit),
+        ),
         PopupMenuItem<String>(
           key: const Key('fake-pink-link-delete'),
           onTap: () => savePinLink(context, pin, ''),
