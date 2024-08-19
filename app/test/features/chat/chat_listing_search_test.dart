@@ -25,8 +25,27 @@ void main() {
           ),
         );
         expect(
-          find.byKey(RoomsListWidget.openSearchActionButton),
+          find.byKey(RoomsListWidget.openSearchActionButtonKey),
           findsOneWidget,
+        );
+        expect(
+          find.byKey(RoomsListWidget.searchBarKey),
+          findsNothing,
+        );
+        await tester.tap(find.byKey(RoomsListWidget.openSearchActionButtonKey));
+        await tester.pump();
+        // opening the search area
+        expect(
+          find.byKey(RoomsListWidget.searchBarKey),
+          findsOneWidget,
+        );
+        // close again
+        await tester
+            .tap(find.byKey(RoomsListWidget.closeSearchActionButtonKey));
+        await tester.pump();
+        expect(
+          find.byKey(RoomsListWidget.searchBarKey),
+          findsNothing,
         );
       },
     );

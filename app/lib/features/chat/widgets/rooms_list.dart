@@ -5,7 +5,6 @@ import 'package:acter/common/widgets/plus_icon_widget.dart';
 import 'package:acter/features/chat/models/room_list_filter_state/room_list_filter_state.dart';
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
 import 'package:acter/features/chat/widgets/chats_list.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -18,8 +17,11 @@ final bucketGlobal = PageStorageBucket();
 class RoomsListWidget extends ConsumerStatefulWidget {
   final Function(String) onSelected;
   static const roomListMenuKey = Key('chat-room-list');
-  static const openSearchActionButton =
+  static const openSearchActionButtonKey =
       Key('chat-rooms-list-open-search-action-btn');
+  static const closeSearchActionButtonKey =
+      Key('chat-rooms-list-close-search-action-btn');
+  static const searchBarKey = Key('chat-rooms-list-search-bar');
 
   const RoomsListWidget({
     required this.onSelected,
@@ -118,6 +120,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
       children: [
         const SizedBox(height: 5),
         SearchBar(
+          key: RoomsListWidget.searchBarKey,
           shape: WidgetStateProperty.all<RoundedRectangleBorder>(
             const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(16)),
@@ -251,6 +254,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
             children: [
               if (hasFilters)
                 TextButton(
+                  key: RoomsListWidget.closeSearchActionButtonKey,
                   onPressed: () {
                     searchTextController.clear();
                     ref.read(roomListFilterProvider.notifier).clear();
@@ -262,6 +266,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
                 ),
               if (!hasFilters)
                 TextButton(
+                  key: RoomsListWidget.closeSearchActionButtonKey,
                   onPressed: () {
                     setState(() {
                       _isSearchVisible = false;
@@ -277,7 +282,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
     return [
       if (!hasFilters)
         IconButton(
-          key: RoomsListWidget.openSearchActionButton,
+          key: RoomsListWidget.openSearchActionButtonKey,
           onPressed: () {
             setState(() {
               _isSearchVisible = true;
@@ -289,7 +294,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
         ),
       if (hasFilters)
         IconButton(
-          key: RoomsListWidget.openSearchActionButton,
+          key: RoomsListWidget.openSearchActionButtonKey,
           onPressed: () {
             setState(() {
               _isSearchVisible = true;
