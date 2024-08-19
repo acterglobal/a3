@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/plus_icon_widget.dart';
@@ -16,7 +17,9 @@ final bucketGlobal = PageStorageBucket();
 
 class RoomsListWidget extends ConsumerStatefulWidget {
   final Function(String) onSelected;
-  static const roomListMenuKey = Key('room-list');
+  static const roomListMenuKey = Key('chat-room-list');
+  static const openSearchActionButton =
+      Key('chat-rooms-list-open-search-action-btn');
 
   const RoomsListWidget({
     required this.onSelected,
@@ -193,8 +196,6 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final client = ref.watch(alwaysClientProvider);
-    final hasFilters = ref.watch(hasRoomFilters);
     return PageStorage(
       bucket: bucketGlobal,
       child: CustomScrollView(
@@ -202,84 +203,16 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
         key: const PageStorageKey<String>('convo-list'),
         physics: const BouncingScrollPhysics(),
         slivers: [
-          SliverLayoutBuilder(
-            builder: (context, constraints) {
-              return SliverAppBar(
-                automaticallyImplyLeading: false,
-                floating: true,
-                elevation: 0,
-                leading: Padding(
-                  padding: const EdgeInsets.all(15),
-                  child: roomListTitle(context),
-                ),
-                leadingWidth: double.infinity,
-                actions: _isSearchVisible
-                    ? [
-                        Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              if (hasFilters)
-                                TextButton(
-                                  onPressed: () {
-                                    searchTextController.clear();
-                                    ref
-                                        .read(roomListFilterProvider.notifier)
-                                        .clear();
-                                    setState(() {
-                                      _isSearchVisible = false;
-                                    });
-                                  },
-                                  child: Text(L10n.of(context).clear),
-                                ),
-                              if (!hasFilters)
-                                TextButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      _isSearchVisible = false;
-                                    });
-                                  },
-                                  child: Text(L10n.of(context).close),
-                                ),
-                            ],
-                          ),
-                        ),
-                      ]
-                    : [
-                        if (!hasFilters)
-                          IconButton(
-                            onPressed: () {
-                              setState(() {
-                                _isSearchVisible = true;
-                                searchFocus.requestFocus();
-                              });
-                            },
-                            padding: const EdgeInsets.only(right: 10, left: 5),
-                            icon: const Icon(Atlas.magnifying_glass),
-                          ),
-                        if (hasFilters)
-                          IconButton(
-                            onPressed: () {
-                              setState(() {
-                                _isSearchVisible = true;
-                              });
-                            },
-                            padding: const EdgeInsets.only(right: 10, left: 5),
-                            icon: Badge(
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.badgeImportant,
-                              child: const Icon(Atlas.filter_thin),
-                            ),
-                          ),
-                        PlusIconWidget(
-                          onPressed: () async => context.pushNamed(
-                            Routes.createChat.name,
-                          ),
-                        ),
-                      ],
-              );
-            },
+          SliverAppBar(
+            automaticallyImplyLeading: false,
+            floating: true,
+            elevation: 0,
+            leading: Padding(
+              padding: const EdgeInsets.all(15),
+              child: roomListTitle(context),
+            ),
+            leadingWidth: double.infinity,
+            actions: renderActions(),
           ),
           SliverToBoxAdapter(
             child: AnimatedOpacity(
@@ -297,7 +230,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
           SliverToBoxAdapter(
             child: searchTerms(context),
           ),
-          client.isGuest()
+          !ref.watch(isGuestProvider)
               ? empty
               : ChatsList(
                   onSelected: widget.onSelected,
@@ -305,6 +238,75 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
         ],
       ),
     );
+  }
+
+  List<Widget> renderActions() {
+    final hasFilters = ref.watch(hasRoomFilters);
+    if (_isSearchVisible) {
+      return [
+        Padding(
+          padding: const EdgeInsets.only(right: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              if (hasFilters)
+                TextButton(
+                  onPressed: () {
+                    searchTextController.clear();
+                    ref.read(roomListFilterProvider.notifier).clear();
+                    setState(() {
+                      _isSearchVisible = false;
+                    });
+                  },
+                  child: Text(L10n.of(context).clear),
+                ),
+              if (!hasFilters)
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      _isSearchVisible = false;
+                    });
+                  },
+                  child: Text(L10n.of(context).close),
+                ),
+            ],
+          ),
+        ),
+      ];
+    }
+    return [
+      if (!hasFilters)
+        IconButton(
+          key: RoomsListWidget.openSearchActionButton,
+          onPressed: () {
+            setState(() {
+              _isSearchVisible = true;
+              searchFocus.requestFocus();
+            });
+          },
+          padding: const EdgeInsets.only(right: 10, left: 5),
+          icon: const Icon(Atlas.magnifying_glass),
+        ),
+      if (hasFilters)
+        IconButton(
+          key: RoomsListWidget.openSearchActionButton,
+          onPressed: () {
+            setState(() {
+              _isSearchVisible = true;
+            });
+          },
+          padding: const EdgeInsets.only(right: 10, left: 5),
+          icon: Badge(
+            backgroundColor: Theme.of(context).colorScheme.badgeImportant,
+            child: const Icon(Atlas.filter_thin),
+          ),
+        ),
+      PlusIconWidget(
+        onPressed: () async => context.pushNamed(
+          Routes.createChat.name,
+        ),
+      ),
+    ];
   }
 
   Widget get empty {
