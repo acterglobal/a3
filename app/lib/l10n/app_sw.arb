@@ -1,1 +1,26 @@
-{}
+{
+  "accept": "Kubali",
+  "@accept": {},
+  "access": "Ufikiaji",
+  "@access": {},
+  "accessAndVisibility": "Ufikiaji na Mwonekano",
+  "@accessAndVisibility": {},
+  "account": "Akaunti",
+  "@account": {},
+  "actionName": "Jina la Kitendo",
+  "@actionName": {},
+  "actions": "Kitendo",
+  "@actions": {},
+  "add": "Ongeza",
+  "@add": {},
+  "addActionWidget": "Ongeza wijeti ya kitendo",
+  "@addActionWidget": {},
+  "addChat": "Ongeza Gumzo",
+  "@addChat": {},
+  "about": "kuhusu",
+  "@about": {},
+  "acceptRequest": "Kubali Ombi",
+  "@acceptRequest": {},
+  "addedToPusherList": "{Baruapepe} imeongezwa kwenye orodha ya visukuma",
+  "@addedToPusherList": {}
+}
