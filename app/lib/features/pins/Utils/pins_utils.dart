@@ -46,7 +46,6 @@ Future<void> savePinLink(
     await updateBuilder.send();
     EasyLoading.dismiss();
     if (!context.mounted) return;
-    Navigator.pop(context);
   } catch (e, s) {
     _log.severe('Failed to change url of pin', e, s);
     if (!context.mounted) {

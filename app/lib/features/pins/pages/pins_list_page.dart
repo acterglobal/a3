@@ -52,7 +52,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
           Text(L10n.of(context).pins),
           if (widget.spaceId != null)
             SpaceNameWidget(
-              spaceId: widget.spaceId,
+              spaceId: widget.spaceId!,
             ),
         ],
       ),

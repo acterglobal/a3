@@ -54,7 +54,7 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
           Text(L10n.of(context).tasks),
           if (widget.spaceId != null)
             SpaceNameWidget(
-              spaceId: widget.spaceId,
+              spaceId: widget.spaceId!,
             ),
         ],
       ),

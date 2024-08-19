@@ -9,7 +9,7 @@ import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/invite_members/pages/invite_pending.dart';
 import 'package:acter/features/invite_members/pages/invite_space_members.dart';
 import 'package:acter/features/invite_members/pages/share_invite_code.dart';
-import 'package:acter/features/pins/pages/pin_page.dart';
+import 'package:acter/features/pins/pages/pin_details_page.dart';
 import 'package:acter/features/pins/pages/pins_list_page.dart';
 import 'package:acter/features/settings/pages/backup_page.dart';
 import 'package:acter/features/settings/pages/change_password.dart';
@@ -441,7 +441,7 @@ final homeShellRoutes = [
     pageBuilder: (context, state) {
       return NoTransitionPage(
         key: state.pageKey,
-        child: PinPage(pinId: state.pathParameters['pinId']!),
+        child: PinDetailsPage(pinId: state.pathParameters['pinId']!),
       );
     },
   ),

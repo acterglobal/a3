@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
@@ -65,21 +64,29 @@ class SpaceChip extends ConsumerWidget {
 
   Widget renderSpace(BuildContext context, SpaceItem space) {
     String spaceName = space.avatarInfo.displayName ?? space.roomId;
-    return InkWell(
-      onTap:
-          onTapOpenSpaceDetail ? () => goToSpace(context, space.roomId) : null,
-      child: useCompatView
-          ? Row(
-              children: [
-                const Text('In'),
-                ActerInlineTextButton(
-                  onPressed: () =>
-                      onTapSelectSpace != null ? onTapSelectSpace!() : null,
-                  child: Text(spaceName),
+    return useCompatView
+        ? Row(
+            children: [
+              Text(L10n.of(context).inSpaceLabelInline),
+              Text(L10n.of(context).colonCharacter),
+              InkWell(
+                onTap: () => (onTapSelectSpace != null && !onTapOpenSpaceDetail)
+                    ? onTapSelectSpace!()
+                    : goToSpace(context, space.roomId),
+                child: Text(
+                  spaceName,
+                  style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                        decoration: TextDecoration.underline,
+                      ),
                 ),
-              ],
-            )
-          : Chip(
+              ),
+            ],
+          )
+        : InkWell(
+            onTap: onTapOpenSpaceDetail
+                ? () => goToSpace(context, space.roomId)
+                : null,
+            child: Chip(
               avatar: ActerAvatar(
                 options: AvatarOptions(
                   AvatarInfo(
@@ -92,6 +99,6 @@ class SpaceChip extends ConsumerWidget {
               ),
               label: Text(spaceName),
             ),
-    );
+          );
   }
 }

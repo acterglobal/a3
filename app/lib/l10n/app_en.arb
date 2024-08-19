@@ -974,11 +974,11 @@
   "save": "Save",
   "@save": {},
   "saveFileAs": "Save file as",
-  "@saveFileAs" : {},
+  "@saveFileAs": {},
   "openFile": "Open",
-  "@openFile" : {},
+  "@openFile": {},
   "shareFile": "Share",
-  "@shareFile" : {},
+  "@shareFile": {},
   "saveChanges": "Save Changes",
   "@saveChanges": {},
   "savingCode": "Saving code",
@@ -2115,5 +2115,9 @@
   "addLink": "Add Link",
   "attachmentEmptyStateTitle": "No attachments found.",
   "text": "text",
-  "audio": "Audio"
+  "audio": "Audio",
+  "pinDetails": "Pin Details",
+  "inSpaceLabelInline": "In",
+  "comingSoon": "Not supported yet, coming soon!",
+  "colonCharacter": ":"
 }
