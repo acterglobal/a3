@@ -88,5 +88,5 @@ jobs:
               issue_number: ${{needs.run_checker.outputs.pr_num}},
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '[Your demo build ${{ needs.tags.outputs.tag }} is ready](${{GITHUB_SERVER_URL}}/${{GITHUB_REPOSITORY}}/actions/runs/${{GITHUB_RUN_ID}})'
+              body: '[Your demo build ${{ needs.tags.outputs.tag }} is ready](${{env.GITHUB_SERVER_URL}}/${{env.GITHUB_REPOSITORY}}/actions/runs/${{env.GITHUB_RUN_ID}})'
             })
