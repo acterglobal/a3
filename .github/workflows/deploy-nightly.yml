@@ -305,10 +305,6 @@ jobs:
 
       - name: Tag for nightly release
         run: |
-          echo "Tagging ${{ needs.tags.outputs.tag }}" > notes.md
-          echo "" >> notes.md
-          cat CHANGELOG.md >> notes.md
-          git commit -F notes.md
           git tag nightly-${{ needs.tags.outputs.tag }}
           git tag -f nightly-latest
           git push -f origin main nightly-${{ needs.tags.outputs.tag }} nightly-latest
