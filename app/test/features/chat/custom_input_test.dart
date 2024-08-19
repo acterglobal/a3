@@ -375,5 +375,111 @@ void main() {
         await tester.pump(Durations.medium2);
       },
     );
+
+    /// FIXME: implement composer state provider to check message states
+    /// skipping for now
+    testWidgets(
+      'Switching to room stores previous message state of room',
+      (tester) async {
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              sdkProvider.overrideWith((ref) => MockActerSdk()),
+              ...overrides,
+            ],
+            child: const InActerContextTestWrapper(
+              child: CustomChatInput(
+                roomId: 'roomId-1',
+              ),
+            ),
+          ),
+        );
+
+        // not visible
+        expect(find.byKey(CustomChatInput.noAccessKey), findsNothing);
+        expect(find.byKey(CustomChatInput.loadingKey), findsNothing);
+
+        final TextField textField = tester.widget(find.byType(TextField));
+        final controller = textField.controller!;
+
+        // initial state should be empty
+        assert(controller.text.trim().isEmpty, true);
+
+        await tester.enterTextWithoutReplace(
+          find.byType(TextField),
+          'Hello Room 1',
+        );
+
+        // open new room with fresh input
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              sdkProvider.overrideWith((ref) => MockActerSdk()),
+              ...overrides,
+            ],
+            child: const InActerContextTestWrapper(
+              child: CustomChatInput(
+                roomId: 'roomId-2',
+              ),
+            ),
+          ),
+        );
+
+        // not visible
+        expect(find.byKey(CustomChatInput.noAccessKey), findsNothing);
+        expect(find.byKey(CustomChatInput.loadingKey), findsNothing);
+
+        // switched to new room, initial state should be empty
+        assert(controller.text.trim().isEmpty, true);
+
+        await tester.enterTextWithoutReplace(
+          find.byType(TextField),
+          'Greetings Room 2',
+        );
+
+        // switch to previous room again
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              sdkProvider.overrideWith((ref) => MockActerSdk()),
+              ...overrides,
+            ],
+            child: const InActerContextTestWrapper(
+              child: CustomChatInput(
+                roomId: 'roomId-1',
+              ),
+            ),
+          ),
+        );
+
+        // not visible
+        expect(find.byKey(CustomChatInput.noAccessKey), findsNothing);
+        expect(find.byKey(CustomChatInput.loadingKey), findsNothing);
+
+        expect(find.text('Hello, Room 1'), findsOneWidget);
+
+        // switch to next room again
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              sdkProvider.overrideWith((ref) => MockActerSdk()),
+              ...overrides,
+            ],
+            child: const InActerContextTestWrapper(
+              child: CustomChatInput(
+                roomId: 'roomId-2',
+              ),
+            ),
+          ),
+        );
+
+        // not visible
+        expect(find.byKey(CustomChatInput.noAccessKey), findsNothing);
+        expect(find.byKey(CustomChatInput.loadingKey), findsNothing);
+
+        expect(find.text('Greetings, Room 2'), findsOneWidget);
+      },
+      skip: true,
+    );
   });
 }
