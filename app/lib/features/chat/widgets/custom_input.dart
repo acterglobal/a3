@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:acter/common/models/types.dart';
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
@@ -192,18 +194,33 @@ class _ChatInput extends ConsumerStatefulWidget {
 }
 
 class __ChatInputState extends ConsumerState<_ChatInput> {
-  late ActerTriggerAutoCompleteTextController textController;
+  ActerTriggerAutoCompleteTextController textController =
+      ActerTriggerAutoCompleteTextController();
   final FocusNode chatFocus = FocusNode();
   final ValueNotifier<bool> _isInputEmptyNotifier = ValueNotifier(true);
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _setController();
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _setController();
+      loadDraft();
+    });
   }
+
+  // @override
+  // void didUpdateWidget(covariant _ChatInput oldWidget) {
+  //   super.didUpdateWidget(oldWidget);
+  //   // useful lifecycle method for desktop UI where room selection is done in side-view.
+  //   // re-builds when roomId update occurs and loads the room composer draft state.
+  //   if (widget.roomId != oldWidget.roomId) {
+  //     loadDraft();
+  //   }
+  // }
 
   @override
   void dispose() {
+    textController.dispose();
     _isInputEmptyNotifier.dispose();
     super.dispose();
   }
@@ -223,7 +240,30 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     textController =
         ActerTriggerAutoCompleteTextController(triggerStyles: triggerStyles);
     textController.addListener(_updateInputState);
-    setState(() {});
+  }
+
+  // composer draft load state handler
+  Future<void> loadDraft() async {
+    final draft =
+        await ref.read(chatComposerDraftProvider(widget.roomId).future);
+    if (draft != null) {
+      if (draft.eventId() != null) {
+        final eventId = draft.eventId()!;
+        final draftType = draft.draftType();
+        final inputNotifier = ref.read(chatInputProvider.notifier);
+        inputNotifier.unsetSelectedMessage();
+        final m = ref
+            .read(chatMessagesProvider(widget.roomId))
+            .firstWhere((x) => x.id == eventId);
+        if (draftType == 'edit') {
+          inputNotifier.setEditMessage(m);
+        } else if (draftType == 'reply') {
+          inputNotifier.setReplyToMessage(m);
+        }
+      }
+      textController.text = draft.htmlText() ?? draft.plainText();
+      _log.info('compose draft loaded for room: ${widget.roomId}');
+    }
   }
 
   // listener for handling send state
@@ -698,6 +738,7 @@ class _TextInputWidget extends ConsumerStatefulWidget {
 }
 
 class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
+  Timer? _debounceTimer;
   @override
   void initState() {
     super.initState();
@@ -709,6 +750,8 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         // to edit, force refresh the inner text controller to reflect that
         if (next.selectedMessage != null) {
           widget.controller.text = parseEditMsg(next.selectedMessage!);
+          // save edit UI state also by pointing reference event id.
+          saveDraft(widget.controller.text, next.selectedMessage!.id);
           // frame delay to keep focus connected with keyboard.
           WidgetsBinding.instance.addPostFrameCallback((_) {
             widget.chatFocus.requestFocus();
@@ -717,6 +760,8 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
       } else if (next.selectedMessageState == SelectedMessageState.replyTo &&
           (next.selectedMessage != prev?.selectedMessage ||
               prev?.selectedMessageState != next.selectedMessageState)) {
+        // save reply UI state also by pointing reference event id.
+        saveDraft(widget.controller.text, next.selectedMessage!.id);
         // frame delay to keep focus connected with keyboard..
         WidgetsBinding.instance.addPostFrameCallback((_) {
           widget.chatFocus.requestFocus();
@@ -762,6 +807,43 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         selection: TextSelection.collapsed(offset: start + 1),
       );
     }
+  }
+
+  // save composer draft object handler
+  Future<void> saveDraft(String text, String? eventId) async {
+    // get the convo object to initiate draft
+    final chat = await ref.read(chatProvider(widget.roomId).future);
+    bool res = false;
+    if (chat != null) {
+      if (eventId != null) {
+        final selectedMessageState =
+            ref.read(chatInputProvider).selectedMessageState;
+        if (selectedMessageState == SelectedMessageState.edit) {
+          /// FIXME: how html can be passed down here?
+          res = await chat.saveMsgDraft(text, text, 'edit', eventId);
+        } else if (selectedMessageState == SelectedMessageState.replyTo) {
+          /// FIXME: how html can be passed down here?
+          res = await chat.saveMsgDraft(text, text, 'reply', eventId);
+        }
+      }
+      res = await chat.saveMsgDraft(text, text, 'new', null);
+      _log.info('compose message state stored for room? $res|${widget.roomId}');
+    }
+  }
+
+  // chat text field onChanged callback
+  void _onTextChanged(String text) {
+    // send typing notice
+    if (widget.onTyping != null) {
+      widget.onTyping!(text.isNotEmpty);
+    }
+
+    // Debounce the save operation to avoid excessive writes
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+      // save composing draft
+      saveDraft(text, ref.read(chatInputProvider).selectedMessage?.id);
+    });
   }
 
   @override
@@ -818,11 +900,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         controller: widget.controller,
         focusNode: chatFocus,
         enabled: ref.watch(_allowEdit(widget.roomId)),
-        onChanged: (val) {
-          if (widget.onTyping != null) {
-            widget.onTyping!(val.isNotEmpty);
-          }
-        },
+        onChanged: _onTextChanged,
         onSubmitted: (_) => widget.onSendButtonPressed(),
         style: Theme.of(context).textTheme.bodySmall,
         decoration: InputDecoration(
