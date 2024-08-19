@@ -278,39 +278,22 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
   }
 
   Widget _actions(BuildContext context, Convo? convo, bool isDirectChat) {
-    final convoLoader = ref.watch(chatProvider(widget.roomId));
     final myMembership = ref.watch(roomMembershipProvider(widget.roomId));
+    final isBookmarked =
+        ref.watch(isConvoBookmarked(widget.roomId)).valueOrNull ?? false;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         // Bookmark
-        convoLoader.when(
-          data: (conv) {
-            final isBookmarked = conv?.isBookmarked() == true;
-            return _actionItem(
-              context: context,
-              iconData: isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-              actionName: L10n.of(context).bookmark,
-              onTap: () async => await conv?.setBookmarked(!isBookmarked),
-            );
+        _actionItem(
+          context: context,
+          iconData: isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+          actionName: L10n.of(context).bookmark,
+          onTap: () async {
+            (await ref.read(chatProvider(widget.roomId).future))
+                ?.setBookmarked(!isBookmarked);
           },
-          error: (e, s) {
-            _log.severe('Failed to load convo', e, s);
-            return Skeletonizer(
-              child: IconButton.filled(
-                icon: const Icon(
-                  Icons.bookmark_add_outlined,
-                  size: 20,
-                ),
-                onPressed: () {},
-              ),
-            );
-          },
-          loading: () => ActionItemSkeleton(
-            iconData: Icons.bookmark_add_outlined,
-            actionName: L10n.of(context).bookmark,
-          ),
         ),
 
         // Invite

@@ -22,8 +22,7 @@ class ChatsList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final hasSearchFilter = ref.watch(hasRoomFilters);
-    if (hasSearchFilter) {
+    if (ref.watch(hasRoomFilters)) {
       return _renderFiltered(context, ref);
     }
     final chats = ref.watch(chatIdsProvider);
@@ -38,38 +37,40 @@ class ChatsList extends ConsumerWidget {
   }
 
   Widget _renderFiltered(BuildContext context, WidgetRef ref) {
-    return ref.watch(filteredChatsProvider).when(
-          data: (chats) {
-            if (chats.isEmpty) {
-              return SliverToBoxAdapter(
-                child: Center(
-                  heightFactor: 10,
-                  child: Text(L10n.of(context).noChatsFoundMatchingYourFilter),
-                ),
-              );
-            }
-            return _renderList(
-              context,
-              chats.map((e) => e.getRoomIdStr()).toList(),
-            );
-          },
-          loading: () => const SliverToBoxAdapter(
+    final filteredChats = ref.watch(filteredChatsProvider);
+    return filteredChats.when(
+      data: (chatsIds) {
+        if (chatsIds.isEmpty) {
+          return SliverToBoxAdapter(
             child: Center(
               heightFactor: 10,
-              child: CircularProgressIndicator(),
+              child: Text(L10n.of(context).noChatsFoundMatchingYourFilter),
             ),
-          ),
-          error: (e, s) {
-            _log.severe('Failed to filter convos', e, s);
-            return SliverToBoxAdapter(
-              child: Center(
-                heightFactor: 10,
-                child: Text(L10n.of(context).searchingFailed(e)),
-              ),
-            );
-          },
-          skipLoadingOnReload: true,
+          );
+        }
+        return _renderList(
+          context,
+          chatsIds,
         );
+      },
+      loading: () => const SliverToBoxAdapter(
+        child: Center(
+          heightFactor: 10,
+          child: CircularProgressIndicator(),
+        ),
+      ),
+      error: (e, s) {
+        _log.severe('Failed to filter convos', e, s);
+        return SliverToBoxAdapter(
+          child: Center(
+            heightFactor: 10,
+            child: Text(L10n.of(context).searchingFailed(e)),
+          ),
+        );
+      },
+      skipLoadingOnReload: true,
+      skipLoadingOnRefresh: true,
+    );
   }
 
   Widget _renderSyncing(BuildContext context) {
@@ -126,23 +127,39 @@ class _AnimatedChatsList extends StatefulWidget {
 }
 
 class __AnimatedChatsListState extends State<_AnimatedChatsList> {
-  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
+  late GlobalKey<AnimatedListState> _listKey;
   late List<String> _currentList;
 
   @override
   void initState() {
     super.initState();
-    _currentList = widget.entries;
+    _reset();
+  }
+
+  void _reset() {
+    _listKey = GlobalKey<AnimatedListState>(debugLabel: 'chat rooms list');
+    _currentList = List.of(widget.entries);
   }
 
   @override
   void didUpdateWidget(_AnimatedChatsList oldWidget) {
     super.didUpdateWidget(oldWidget);
-    refreshList();
+    if (_listKey.currentState == null) {
+      _log.fine('no state, hard reset');
+      // we can ignore the diffing as we aren't live, just reset
+      setState(() {
+        _reset();
+      });
+      return;
+    } else {
+      refreshList();
+    }
   }
 
   void refreshList() {
+    _log.fine('refreshing');
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+      _log.fine('diffing $_currentList, ${widget.entries}');
       final diffResult = calculateListDiff<String>(
         _currentList,
         widget.entries,
@@ -162,20 +179,30 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
           },
         );
       }
+      _log.fine('done diffing');
     });
   }
 
   void _insert(int pos, String data) {
+    _log.fine('insert $pos: $data');
     _currentList.insert(pos, data);
-    _listKey.currentState?.insertItem(pos);
+    if (_listKey.currentState != null) {
+      _listKey.currentState!.insertItem(pos);
+    } else {
+      _log.fine('we are not');
+    }
   }
 
   void _remove(int pos, String data) {
     _currentList.removeAt(pos);
-    _listKey.currentState?.removeItem(
-      pos,
-      (context, animation) => _removedItemBuilder(data, context, animation),
-    );
+    if (_listKey.currentState != null) {
+      _listKey.currentState!.removeItem(
+        pos,
+        (context, animation) => _removedItemBuilder(data, context, animation),
+      );
+    } else {
+      _log.fine('we are not');
+    }
   }
 
   Widget _removedItemBuilder(
@@ -203,6 +230,7 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
       return const SizedBox.shrink();
     }
     final roomId = _currentList[index];
+    _log.fine('render $roomId');
     return ConvoCard(
       animation: animation,
       key: Key('convo-card-$roomId'),
@@ -214,6 +242,7 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
 
   @override
   Widget build(BuildContext context) {
+    _log.fine('render list $_currentList');
     return SliverAnimatedList(
       key: _listKey,
       initialItemCount: _currentList.length,

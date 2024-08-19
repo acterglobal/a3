@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -8,16 +7,17 @@ part 'room_list_filter_state.freezed.dart';
 Future<bool> roomListFilterStateAppliesToRoom(
   RoomListFilterState state,
   Ref ref,
-  Convo convo,
+  String convoId,
 ) async {
   switch (state.selection) {
     case FilterSelection.dmsOnly:
-      if (!convo.isDm()) {
+      final isDm = await ref.watch(isDirectChatProvider(convoId).future);
+      if (!isDm) {
         return false;
       }
       break;
     case FilterSelection.favorites:
-      if (!convo.isBookmarked()) {
+      if (!await ref.watch(isConvoBookmarked(convoId).future)) {
         return false;
       }
       break;
@@ -26,16 +26,12 @@ Future<bool> roomListFilterStateAppliesToRoom(
   }
   if (state.searchTerm?.isNotEmpty == true) {
     final searchTerm = state.searchTerm!.toLowerCase();
-    final convoId = convo.getRoomIdStr();
     if (convoId.toLowerCase().contains(searchTerm)) {
       return true;
     }
-    final avatarInfo = ref.read(roomAvatarInfoProvider(convoId));
-    if (avatarInfo.displayName != null &&
-        avatarInfo.displayName!.toLowerCase().contains(searchTerm)) {
-      return true;
-    }
-    return false;
+    final displayName = await ref.read(roomDisplayNameProvider(convoId).future);
+    return (displayName != null &&
+        displayName.toLowerCase().contains(searchTerm));
   }
   return true;
 }

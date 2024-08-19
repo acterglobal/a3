@@ -1,17 +1,25 @@
 import 'dart:async';
 
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/notifiers/chat_notifiers.dart';
+import 'package:acter/common/providers/notifiers/client_pref_notifier.dart';
 import 'package:acter/common/providers/notifiers/room_notifiers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
+import 'package:acter/features/chat/models/room_list_filter_state/room_list_filter_state.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/providers/notifiers/chat_room_notifier.dart';
+import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_chat_types/src/message.dart';
 import 'package:flutter_chat_types/src/messages/text_message.dart';
 import 'package:flutter_chat_types/src/preview_data.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:riverpod/riverpod.dart';
+
+typedef MockedRoomData = Map<String, AvatarInfo>;
 
 class MockChatRoomNotifier extends StateNotifier<ChatRoomState>
     with Mock
@@ -27,7 +35,7 @@ class MockChatRoomNotifier extends StateNotifier<ChatRoomState>
           hasMore: false,
           messages: [],
           loading: ChatRoomLoadingState.loaded(),
-        ));
+        ),);
 
   @override
   Future<void> fetchMediaBinary(String? msgType, String eventId) {
@@ -115,7 +123,7 @@ class MockChatRoomNotifier extends StateNotifier<ChatRoomState>
 class MockRoomAvatarInfoNotifier extends FamilyNotifier<AvatarInfo, String>
     with Mock
     implements RoomAvatarInfoNotifier {
-  final Map<String, AvatarInfo>? avatarInfos;
+  final MockedRoomData? avatarInfos;
   MockRoomAvatarInfoNotifier({this.avatarInfos});
 
   @override
@@ -141,4 +149,46 @@ class MockAsyncLatestMsgNotifier
   FutureOr<RoomMessage?> build(String arg) {
     return null;
   }
+}
+
+class MockRoomListFilterNotifier extends StateNotifier<RoomListFilterState>
+    with Mock
+    implements RoomListFilterNotifier {
+  MockRoomListFilterNotifier()
+      : super(
+          const RoomListFilterState(
+            searchTerm: null,
+            selection: FilterSelection.all,
+          ),
+        );
+}
+
+class MockPersistentPrefNotifier extends StateNotifier<FilterSelection>
+    with Mock
+    implements MapPrefNotifier<FilterSelection> {
+  MockPersistentPrefNotifier() : super(FilterSelection.all);
+
+  /// Updates the value asynchronously.
+  @override
+  Future<void> update(FilterSelection value) async {
+    super.state = value;
+  }
+}
+
+List<Override> mockChatRoomProviders(MockedRoomData roomsData) {
+  return [
+    persistentRoomListFilterSelector
+        .overrideWith((_) => MockPersistentPrefNotifier()),
+    chatIdsProvider.overrideWithValue(roomsData.keys.toList()),
+    chatTypingEventProvider.overrideWith((ref, roomId) => const Stream.empty()),
+    roomIsMutedProvider.overrideWith((ref, roomId) => false),
+    latestMessageProvider.overrideWith(() => MockAsyncLatestMsgNotifier()),
+    chatProvider.overrideWith(() => MockAsyncConvoNotifier()),
+    roomDisplayNameProvider
+        .overrideWith((ref, roomId) => roomsData[roomId]?.displayName),
+    chatStateProvider
+        .overrideWith((ref, roomId) => MockChatRoomNotifier(roomId)),
+    roomAvatarInfoProvider
+        .overrideWith(() => MockRoomAvatarInfoNotifier(avatarInfos: roomsData)),
+  ];
 }

@@ -149,18 +149,18 @@ final timelineStreamProvider =
 });
 
 final filteredChatsProvider =
-    FutureProvider.autoDispose<List<Convo>>((ref) async {
-  final allRooms = ref.watch(chatsProvider);
+    FutureProvider.autoDispose<List<String>>((ref) async {
+  final allRooms = ref.watch(chatIdsProvider);
   if (!ref.watch(hasRoomFilters)) {
     throw 'No filters selected';
   }
 
-  final foundRooms = List<Convo>.empty(growable: true);
+  final foundRooms = List<String>.empty(growable: true);
 
   final search = ref.watch(roomListFilterProvider);
-  for (final convo in allRooms) {
-    if (await roomListFilterStateAppliesToRoom(search, ref, convo)) {
-      foundRooms.add(convo);
+  for (final convoId in allRooms) {
+    if (await roomListFilterStateAppliesToRoom(search, ref, convoId)) {
+      foundRooms.add(convoId);
     }
   }
 
