@@ -16,7 +16,6 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$ChatInputState {
-  String get message => throw _privateConstructorUsedError;
   SelectedMessageState get selectedMessageState =>
       throw _privateConstructorUsedError;
   SendingState get sendingState => throw _privateConstructorUsedError;
@@ -37,8 +36,7 @@ abstract class $ChatInputStateCopyWith<$Res> {
       _$ChatInputStateCopyWithImpl<$Res, ChatInputState>;
   @useResult
   $Res call(
-      {String message,
-      SelectedMessageState selectedMessageState,
+      {SelectedMessageState selectedMessageState,
       SendingState sendingState,
       bool emojiPickerVisible,
       types.Message? selectedMessage,
@@ -59,7 +57,6 @@ class _$ChatInputStateCopyWithImpl<$Res, $Val extends ChatInputState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? message = null,
     Object? selectedMessageState = null,
     Object? sendingState = null,
     Object? emojiPickerVisible = null,
@@ -68,10 +65,6 @@ class _$ChatInputStateCopyWithImpl<$Res, $Val extends ChatInputState>
     Object? editBtnVisible = null,
   }) {
     return _then(_value.copyWith(
-      message: null == message
-          ? _value.message
-          : message // ignore: cast_nullable_to_non_nullable
-              as String,
       selectedMessageState: null == selectedMessageState
           ? _value.selectedMessageState
           : selectedMessageState // ignore: cast_nullable_to_non_nullable
@@ -109,8 +102,7 @@ abstract class _$$ChatInputStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String message,
-      SelectedMessageState selectedMessageState,
+      {SelectedMessageState selectedMessageState,
       SendingState sendingState,
       bool emojiPickerVisible,
       types.Message? selectedMessage,
@@ -129,7 +121,6 @@ class __$$ChatInputStateImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? message = null,
     Object? selectedMessageState = null,
     Object? sendingState = null,
     Object? emojiPickerVisible = null,
@@ -138,10 +129,6 @@ class __$$ChatInputStateImplCopyWithImpl<$Res>
     Object? editBtnVisible = null,
   }) {
     return _then(_$ChatInputStateImpl(
-      message: null == message
-          ? _value.message
-          : message // ignore: cast_nullable_to_non_nullable
-              as String,
       selectedMessageState: null == selectedMessageState
           ? _value.selectedMessageState
           : selectedMessageState // ignore: cast_nullable_to_non_nullable
@@ -174,8 +161,7 @@ class __$$ChatInputStateImplCopyWithImpl<$Res>
 
 class _$ChatInputStateImpl implements _ChatInputState {
   const _$ChatInputStateImpl(
-      {this.message = '',
-      this.selectedMessageState = SelectedMessageState.none,
+      {this.selectedMessageState = SelectedMessageState.none,
       this.sendingState = SendingState.preparing,
       this.emojiPickerVisible = false,
       this.selectedMessage = null,
@@ -183,9 +169,6 @@ class _$ChatInputStateImpl implements _ChatInputState {
       this.editBtnVisible = false})
       : _mentions = mentions;
 
-  @override
-  @JsonKey()
-  final String message;
   @override
   @JsonKey()
   final SelectedMessageState selectedMessageState;
@@ -213,7 +196,7 @@ class _$ChatInputStateImpl implements _ChatInputState {
 
   @override
   String toString() {
-    return 'ChatInputState(message: $message, selectedMessageState: $selectedMessageState, sendingState: $sendingState, emojiPickerVisible: $emojiPickerVisible, selectedMessage: $selectedMessage, mentions: $mentions, editBtnVisible: $editBtnVisible)';
+    return 'ChatInputState(selectedMessageState: $selectedMessageState, sendingState: $sendingState, emojiPickerVisible: $emojiPickerVisible, selectedMessage: $selectedMessage, mentions: $mentions, editBtnVisible: $editBtnVisible)';
   }
 
   @override
@@ -221,7 +204,6 @@ class _$ChatInputStateImpl implements _ChatInputState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ChatInputStateImpl &&
-            (identical(other.message, message) || other.message == message) &&
             (identical(other.selectedMessageState, selectedMessageState) ||
                 other.selectedMessageState == selectedMessageState) &&
             (identical(other.sendingState, sendingState) ||
@@ -238,7 +220,6 @@ class _$ChatInputStateImpl implements _ChatInputState {
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      message,
       selectedMessageState,
       sendingState,
       emojiPickerVisible,
@@ -256,16 +237,13 @@ class _$ChatInputStateImpl implements _ChatInputState {
 
 abstract class _ChatInputState implements ChatInputState {
   const factory _ChatInputState(
-      {final String message,
-      final SelectedMessageState selectedMessageState,
+      {final SelectedMessageState selectedMessageState,
       final SendingState sendingState,
       final bool emojiPickerVisible,
       final types.Message? selectedMessage,
       final Map<String, String> mentions,
       final bool editBtnVisible}) = _$ChatInputStateImpl;
 
-  @override
-  String get message;
   @override
   SelectedMessageState get selectedMessageState;
   @override

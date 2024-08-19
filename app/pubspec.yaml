@@ -71,6 +71,7 @@ dependencies:
   freezed: ^2.3.3
   acter_flutter_sdk:
     path: ../packages/rust_sdk
+  mockito: ^5.4.4
 
   # State Management
   flutter_riverpod: ^2.5.1
