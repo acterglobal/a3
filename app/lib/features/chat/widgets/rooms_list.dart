@@ -233,7 +233,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
           SliverToBoxAdapter(
             child: searchTerms(context),
           ),
-          !ref.watch(isGuestProvider)
+          ref.watch(isGuestProvider)
               ? empty
               : ChatsList(
                   onSelected: widget.onSelected,

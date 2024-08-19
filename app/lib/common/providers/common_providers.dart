@@ -39,6 +39,10 @@ final accountProvider = Provider(
   ),
 );
 
+final hasFirstSyncedProvider = Provider(
+  (ref) => ref.watch(syncStateProvider.select((v) => !v.initialSync)),
+);
+
 final isGuestProvider =
     Provider((ref) => ref.watch(alwaysClientProvider).isGuest());
 

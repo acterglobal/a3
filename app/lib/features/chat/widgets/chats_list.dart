@@ -1,11 +1,11 @@
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:diffutil_dart/diffutil.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -15,95 +15,99 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::chat::chats_list');
 
-class ChatsList extends ConsumerStatefulWidget {
+class ChatsList extends ConsumerWidget {
   final Function(String)? onSelected;
 
   const ChatsList({this.onSelected, super.key});
 
   @override
-  ConsumerState<ChatsList> createState() => _ChatsListConsumerState();
-}
-
-class _ChatsListConsumerState extends ConsumerState<ChatsList> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final hasSearchFilter = ref.watch(hasRoomFilters);
     if (hasSearchFilter) {
-      return ref.watch(filteredChatsProvider).when(
-            data: (chats) {
-              if (chats.isEmpty) {
-                return SliverToBoxAdapter(
-                  child: Center(
-                    heightFactor: 10,
-                    child:
-                        Text(L10n.of(context).noChatsFoundMatchingYourFilter),
-                  ),
-                );
-              }
-              return renderList(
-                context,
-                chats.map((e) => e.getRoomIdStr()).toList(),
-              );
-            },
-            loading: () => const SliverToBoxAdapter(
-              child: Center(
-                heightFactor: 10,
-                child: CircularProgressIndicator(),
-              ),
-            ),
-            error: (e, s) {
-              _log.severe('Failed to filter convos', e, s);
-              return SliverToBoxAdapter(
-                child: Center(
-                  heightFactor: 10,
-                  child: Text(L10n.of(context).searchingFailed(e)),
-                ),
-              );
-            },
-            skipLoadingOnReload: true,
-          );
+      return _renderFiltered(context, ref);
     }
     final chats = ref.watch(chatIdsProvider);
 
     if (chats.isEmpty) {
-      final hasFirstSynced =
-          ref.watch(syncStateProvider.select((x) => !x.initialSync));
-      if (!hasFirstSynced) {
-        return SliverToBoxAdapter(
-          child: Center(
-            heightFactor: 1.5,
-            child: EmptyState(
-              title: L10n.of(context).noChatsStillSyncing,
-              subtitle: L10n.of(context).noChatsStillSyncingSubtitle,
-              image: 'assets/images/empty_chat.svg',
-            ),
-          ),
-        );
+      if (!ref.watch(hasFirstSyncedProvider)) {
+        return _renderSyncing(context);
       }
-      return SliverToBoxAdapter(
-        child: Center(
-          heightFactor: 1.5,
-          child: EmptyState(
-            title: L10n.of(context).youHaveNoDMsAtTheMoment,
-            subtitle: L10n.of(context).getInTouchWithOtherChangeMakers,
-            image: 'assets/images/empty_chat.svg',
-            primaryButton: ActerPrimaryActionButton(
-              onPressed: () async => context.pushNamed(
-                Routes.createChat.name,
-              ),
-              child: Text(L10n.of(context).sendDM),
-            ),
-          ),
-        ),
-      );
+      return _renderEmpty(context);
     }
-    return renderList(context, chats);
+    return _renderList(context, chats);
   }
 
-  Widget renderList(BuildContext context, List<String> chats) {
+  Widget _renderFiltered(BuildContext context, WidgetRef ref) {
+    return ref.watch(filteredChatsProvider).when(
+          data: (chats) {
+            if (chats.isEmpty) {
+              return SliverToBoxAdapter(
+                child: Center(
+                  heightFactor: 10,
+                  child: Text(L10n.of(context).noChatsFoundMatchingYourFilter),
+                ),
+              );
+            }
+            return _renderList(
+              context,
+              chats.map((e) => e.getRoomIdStr()).toList(),
+            );
+          },
+          loading: () => const SliverToBoxAdapter(
+            child: Center(
+              heightFactor: 10,
+              child: CircularProgressIndicator(),
+            ),
+          ),
+          error: (e, s) {
+            _log.severe('Failed to filter convos', e, s);
+            return SliverToBoxAdapter(
+              child: Center(
+                heightFactor: 10,
+                child: Text(L10n.of(context).searchingFailed(e)),
+              ),
+            );
+          },
+          skipLoadingOnReload: true,
+        );
+  }
+
+  Widget _renderSyncing(BuildContext context) {
+    return SliverToBoxAdapter(
+      child: Center(
+        heightFactor: 1.5,
+        child: EmptyState(
+          title: L10n.of(context).noChatsStillSyncing,
+          subtitle: L10n.of(context).noChatsStillSyncingSubtitle,
+          image: 'assets/images/empty_chat.svg',
+        ),
+      ),
+    );
+  }
+
+  Widget _renderEmpty(BuildContext context) {
+    return SliverToBoxAdapter(
+      child: Center(
+        heightFactor: 1.5,
+        child: EmptyState(
+          title: L10n.of(context).youHaveNoDMsAtTheMoment,
+          subtitle: L10n.of(context).getInTouchWithOtherChangeMakers,
+          image: 'assets/images/empty_chat.svg',
+          primaryButton: ActerPrimaryActionButton(
+            onPressed: () async => context.pushNamed(
+              Routes.createChat.name,
+            ),
+            child: Text(L10n.of(context).sendDM),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _renderList(BuildContext context, List<String> chats) {
     return _AnimatedChatsList(
       entries: chats,
-      onSelected: widget.onSelected,
+      onSelected: onSelected,
     );
   }
 }

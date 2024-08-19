@@ -1,4 +1,5 @@
 import 'package:acter/common/models/types.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
@@ -28,12 +29,11 @@ class ActivitiesPage extends ConsumerWidget {
 
   Widget? renderSyncingState(BuildContext context, WidgetRef ref) {
     final syncState = ref.watch(syncStateProvider);
-    final hasFirstSynced = !syncState.initialSync;
     final errorMsg = syncState.errorMsg;
     final retryDuration = syncState.countDown != null
         ? Duration(seconds: syncState.countDown!)
         : null;
-    if (!hasFirstSynced) {
+    if (!ref.watch(hasFirstSyncedProvider)) {
       return SliverToBoxAdapter(
         child: Card(
           child: ListTile(
