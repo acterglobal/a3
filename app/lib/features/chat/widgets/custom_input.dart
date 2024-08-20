@@ -34,7 +34,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 final _log = Logger('a3::chat::custom_input');
 
-final _allowEdit = StateProvider.family<bool, String>(
+final _allowEdit = StateProvider.family.autoDispose<bool, String>(
   (ref, roomId) => ref.watch(
     chatInputProvider
         .select((state) => state.sendingState == SendingState.preparing),
@@ -208,16 +208,6 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     });
   }
 
-  // @override
-  // void didUpdateWidget(covariant _ChatInput oldWidget) {
-  //   super.didUpdateWidget(oldWidget);
-  //   // useful lifecycle method for desktop UI where room selection is done in side-view.
-  //   // re-builds when roomId update occurs and loads the room composer draft state.
-  //   if (widget.roomId != oldWidget.roomId) {
-  //     loadDraft();
-  //   }
-  // }
-
   @override
   void dispose() {
     textController.dispose();
@@ -251,7 +241,6 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         final eventId = draft.eventId()!;
         final draftType = draft.draftType();
         final inputNotifier = ref.read(chatInputProvider.notifier);
-        inputNotifier.unsetSelectedMessage();
         final m = ref
             .read(chatMessagesProvider(widget.roomId))
             .firstWhere((x) => x.id == eventId);
@@ -261,7 +250,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           inputNotifier.setReplyToMessage(m);
         }
       }
-      textController.text = draft.htmlText() ?? draft.plainText();
+      textController.text = draft.plainText();
       _log.info('compose draft loaded for room: ${widget.roomId}');
     }
   }
@@ -607,7 +596,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         ),
         const Spacer(),
         GestureDetector(
-          onTap: () {
+          onTap: () async {
             inputNotifier.unsetSelectedMessage();
             // frame delay to keep focus connected with keyboard.
             WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -641,7 +630,9 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         ),
         const Spacer(),
         GestureDetector(
-          onTap: () {
+          onTap: () async {
+            final convo = await ref.read(chatProvider(widget.roomId).future);
+            await convo?.saveMsgDraft('', null, 'new', null);
             textController.clear();
             inputNotifier.unsetSelectedMessage();
             // frame delay to keep focus connected with keyboard..
@@ -742,7 +733,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
   @override
   void initState() {
     super.initState();
-    ref.listenManual(chatInputProvider, (prev, next) {
+    ref.listenManual(chatInputProvider, (prev, next) async {
       if (next.selectedMessageState == SelectedMessageState.edit &&
           (prev?.selectedMessageState != next.selectedMessageState ||
               next.selectedMessage != prev?.selectedMessage)) {
@@ -751,21 +742,21 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         if (next.selectedMessage != null) {
           widget.controller.text = parseEditMsg(next.selectedMessage!);
           // save edit UI state also by pointing reference event id.
-          saveDraft(widget.controller.text, next.selectedMessage!.id);
+          await saveDraft(widget.controller.text, next.selectedMessage!.id);
           // frame delay to keep focus connected with keyboard.
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            widget.chatFocus.requestFocus();
-          });
+          // WidgetsBinding.instance.addPostFrameCallback((_) {
+          widget.chatFocus.requestFocus();
+          // });
         }
       } else if (next.selectedMessageState == SelectedMessageState.replyTo &&
           (next.selectedMessage != prev?.selectedMessage ||
               prev?.selectedMessageState != next.selectedMessageState)) {
         // save reply UI state also by pointing reference event id.
-        saveDraft(widget.controller.text, next.selectedMessage!.id);
+        await saveDraft(widget.controller.text, next.selectedMessage!.id);
         // frame delay to keep focus connected with keyboard..
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          widget.chatFocus.requestFocus();
-        });
+        // WidgetsBinding.instance.addPostFrameCallback((_) {
+        widget.chatFocus.requestFocus();
+        // });
       }
     });
   }
@@ -819,14 +810,14 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         final selectedMessageState =
             ref.read(chatInputProvider).selectedMessageState;
         if (selectedMessageState == SelectedMessageState.edit) {
-          /// FIXME: how html can be passed down here?
-          res = await chat.saveMsgDraft(text, text, 'edit', eventId);
+          res = await chat.saveMsgDraft(text, null, 'edit', eventId);
         } else if (selectedMessageState == SelectedMessageState.replyTo) {
-          /// FIXME: how html can be passed down here?
-          res = await chat.saveMsgDraft(text, text, 'reply', eventId);
+          res = await chat.saveMsgDraft(text, null, 'reply', eventId);
         }
+      } else {
+        res = await chat.saveMsgDraft(text, null, 'new', null);
       }
-      res = await chat.saveMsgDraft(text, text, 'new', null);
+
       _log.info('compose message state stored for room? $res|${widget.roomId}');
     }
   }
