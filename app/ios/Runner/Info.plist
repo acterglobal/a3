@@ -38,9 +38,9 @@
 	<string>Access most functions for calendar viewing and editing.</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Access contacts for event attendee editing.</string>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<key>NSCalendarsFullAccessUsageDescription</key>
 	<string>Access most functions for calendar viewing and editing.</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>
 	<array>

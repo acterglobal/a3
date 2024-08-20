@@ -114,14 +114,18 @@ Future<void> _refreshCalendar(
     currentLinks[parts.first] = parts.sublist(1).join('=');
   }
 
-  final foundEventsResult = await deviceCalendar.retrieveEvents(
-    calendarId,
-    RetrieveEventsParams(eventIds: currentLinks.values.toList()),
-  );
+  final currentLinkKeys = currentLinks.values;
+  List<Event> foundEvents = [];
+  if (currentLinkKeys.isNotEmpty) {
+    final foundEventsResult = await deviceCalendar.retrieveEvents(
+      calendarId,
+      RetrieveEventsParams(eventIds: currentLinks.values.toList()),
+    );
 
-  final List<Event> foundEvents = List.of(
-    _logError(foundEventsResult, 'Failed to load calendar events') ?? [],
-  );
+    foundEvents = List.of(
+      _logError(foundEventsResult, 'Failed to load calendar events') ?? [],
+    );
+  }
 
   final newLinks = {};
   final foundEventIds = [];
@@ -217,13 +221,18 @@ Future<List<String>> _findActerCalendars() async {
   }
   if (Platform.isAndroid) {
     return calendars
-        .where((c) => c.accountName == 'Acter' && c.name == 'Acter')
+        .where((c) => c.accountType == 'Local' && c.accountName == 'Acter' && c.name == 'Acter')
         .map((c) {
       _log.info('Scheduling to delete ${c.id} (${c.accountType})');
       return c.id!;
     }).toList();
   }
-  return [];
+  return calendars
+        .where((c) => c.accountType == 'Local' && c.name == 'Acter')
+        .map((c) {
+      _log.info('Scheduling to delete ${c.id} (${c.accountType})');
+      return c.id!;
+    }).toList();
 }
 
 Future<void> clearActerCalendars() async {
