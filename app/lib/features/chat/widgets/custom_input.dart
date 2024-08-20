@@ -744,9 +744,9 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
           // save edit UI state also by pointing reference event id.
           await saveDraft(widget.controller.text, next.selectedMessage!.id);
           // frame delay to keep focus connected with keyboard.
-          // WidgetsBinding.instance.addPostFrameCallback((_) {
-          widget.chatFocus.requestFocus();
-          // });
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            widget.chatFocus.requestFocus();
+          });
         }
       } else if (next.selectedMessageState == SelectedMessageState.replyTo &&
           (next.selectedMessage != prev?.selectedMessage ||
@@ -754,9 +754,9 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         // save reply UI state also by pointing reference event id.
         await saveDraft(widget.controller.text, next.selectedMessage!.id);
         // frame delay to keep focus connected with keyboard..
-        // WidgetsBinding.instance.addPostFrameCallback((_) {
-        widget.chatFocus.requestFocus();
-        // });
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          widget.chatFocus.requestFocus();
+        });
       }
     });
   }
