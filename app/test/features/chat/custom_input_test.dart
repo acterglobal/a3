@@ -1,13 +1,15 @@
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/custom_input.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../helpers/mock_chat_message.dart';
-import '../../helpers/mock_sdk.dart';
+import '../../helpers/mocks.dart';
 import '../../helpers/test_wrapper_widget.dart';
 
 void main() {
@@ -22,6 +24,8 @@ void main() {
               overrides: [
                 // Same as before
                 canSendProvider.overrideWith((ref, roomId) => false),
+                sdkProvider.overrideWith((ref) => MockActerSdk()),
+                alwaysClientProvider.overrideWith((ref) => MockClient()),
               ],
               child: const InActerContextTestWrapper(
                 child: CustomChatInput(
@@ -43,6 +47,7 @@ void main() {
                 // Same as before
                 canSendProvider
                     .overrideWith((ref, roomId) => null), // null means loading
+                sdkProvider.overrideWith((ref) => MockActerSdk()),
               ],
               child: const InActerContextTestWrapper(
                 child: CustomChatInput(
@@ -64,6 +69,10 @@ void main() {
                 // Same as before
                 canSendProvider.overrideWith((ref, roomId) => true),
                 isRoomEncryptedProvider.overrideWith((ref, roomId) => true),
+                sdkProvider.overrideWith((ref) => MockActerSdk()),
+                alwaysClientProvider.overrideWith((ref) => MockClient()),
+                chatComposerDraftProvider
+                    .overrideWith((ref, roomId) => MockComposeDraft()),
               ],
               child: const InActerContextTestWrapper(
                 child: CustomChatInput(
@@ -83,6 +92,11 @@ void main() {
     final overrides = [
       canSendProvider.overrideWith((ref, roomId) => true),
       isRoomEncryptedProvider.overrideWith((ref, roomId) => true),
+      sdkProvider.overrideWith((ref) => MockActerSdk()),
+      alwaysClientProvider.overrideWith((ref) => MockClient()),
+      chatProvider.overrideWith(() => MockAsyncConvoNotifier()),
+      chatComposerDraftProvider
+          .overrideWith((ref, roomId) => MockComposeDraft()),
     ];
     testWidgets(
       'Showing and hiding send button simple',
@@ -106,7 +120,7 @@ void main() {
 
         await tester.enterText(find.byType(TextField), 'testing code');
 
-        await tester.pump();
+        await tester.pump(Durations.extralong4);
         // now visible
         expect(find.byKey(CustomChatInput.sendBtnKey), findsOneWidget);
 
@@ -114,7 +128,7 @@ void main() {
         final TextField textField = tester.widget(find.byType(TextField));
         textField.controller!.clear();
 
-        await tester.pump();
+        await tester.pump(Durations.medium2);
         // not visible
         expect(find.byKey(CustomChatInput.sendBtnKey), findsNothing);
       },
@@ -166,6 +180,7 @@ void main() {
     final overrides = [
       canSendProvider.overrideWith((ref, roomId) => true),
       isRoomEncryptedProvider.overrideWith((ref, roomId) => true),
+      sdkProvider.overrideWith((ref) => MockActerSdk()),
     ];
     testWidgets(
       'Adding text in the middle',
@@ -216,10 +231,7 @@ void main() {
       (tester) async {
         await tester.pumpWidget(
           ProviderScope(
-            overrides: [
-              sdkProvider.overrideWith((ref) => MockActerSdk()),
-              ...overrides,
-            ],
+            overrides: overrides,
             child: const InActerContextTestWrapper(
               child: CustomChatInput(
                 roomId: 'roomId',
@@ -274,10 +286,7 @@ void main() {
       (tester) async {
         await tester.pumpWidget(
           ProviderScope(
-            overrides: [
-              sdkProvider.overrideWith((ref) => MockActerSdk()),
-              ...overrides,
-            ],
+            overrides: overrides,
             child: const InActerContextTestWrapper(
               child: CustomChatInput(
                 roomId: 'roomId',
@@ -321,10 +330,7 @@ void main() {
       (tester) async {
         await tester.pumpWidget(
           ProviderScope(
-            overrides: [
-              sdkProvider.overrideWith((ref) => MockActerSdk()),
-              ...overrides,
-            ],
+            overrides: overrides,
             child: const InActerContextTestWrapper(
               child: CustomChatInput(
                 roomId: 'roomId',
@@ -383,10 +389,7 @@ void main() {
       (tester) async {
         await tester.pumpWidget(
           ProviderScope(
-            overrides: [
-              sdkProvider.overrideWith((ref) => MockActerSdk()),
-              ...overrides,
-            ],
+            overrides: overrides,
             child: const InActerContextTestWrapper(
               child: CustomChatInput(
                 roomId: 'roomId-1',
