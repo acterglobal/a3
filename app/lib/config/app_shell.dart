@@ -1,4 +1,3 @@
-import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/config/notifications/init.dart';
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
@@ -7,6 +6,8 @@ import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/device.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/auth/pages/logged_out_screen.dart';
+import 'package:acter/features/calendar_sync/calendar_sync.dart';
 import 'package:acter/features/cross_signing/widgets/cross_signing.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/providers/navigation.dart';
@@ -20,7 +21,6 @@ import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:screenshot/screenshot.dart';
@@ -55,16 +55,16 @@ Future<void> openBugReport(BuildContext context) async {
   }
 }
 
-class HomeShell extends ConsumerStatefulWidget {
+class AppShell extends ConsumerStatefulWidget {
   final StatefulNavigationShell navigationShell;
 
-  const HomeShell({super.key, required this.navigationShell});
+  const AppShell({super.key, required this.navigationShell});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => HomeShellState();
+  ConsumerState<ConsumerStatefulWidget> createState() => AppShellState();
 }
 
-class HomeShellState extends ConsumerState<HomeShell> {
+class AppShellState extends ConsumerState<AppShell> {
   final GlobalKey<ScaffoldState> _key =
       GlobalKey<ScaffoldState>(debugLabel: 'home shell scaffold');
   late ShakeDetector detector;
@@ -72,12 +72,21 @@ class HomeShellState extends ConsumerState<HomeShell> {
   @override
   void initState() {
     super.initState();
-    initShake();
-    initNotifications();
+    _init();
+  }
+
+  Future<void> _init() async {
+    // no wait goes there
     Future.delayed(
       const Duration(seconds: 1),
       () => bottomNavigationTutorials(context: context),
     );
+    initShake();
+
+    // these want to be sure to execute in order
+    await initNotifications();
+    // calendar sync
+    await initCalendarSync();
   }
 
   Future<void> initShake() async {
@@ -114,64 +123,6 @@ class HomeShellState extends ConsumerState<HomeShell> {
     setupPushNotifications(client);
   }
 
-  Widget buildLoggedOutScreen(BuildContext context, bool softLogout) {
-    // We have a special case
-    return Scaffold(
-      body: Container(
-        margin: const EdgeInsets.only(top: kToolbarHeight),
-        child: Center(
-          child: Column(
-            children: [
-              Container(
-                margin: const EdgeInsets.symmetric(vertical: 15),
-                height: 100,
-                width: 100,
-                child: SvgPicture.asset(
-                  'assets/images/undraw_access_denied_re_awnf.svg',
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.symmetric(vertical: 15),
-                child: RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    text: L10n.of(context).access,
-                    style: Theme.of(context).textTheme.headlineLarge,
-                    children: <TextSpan>[
-                      TextSpan(
-                        text: ' ${L10n.of(context).denied}',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.error,
-                          fontSize: 32,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.symmetric(vertical: 15),
-                child: Text(
-                  L10n.of(context).yourSessionHasBeenTerminatedByServer,
-                ),
-              ),
-              softLogout
-                  ? OutlinedButton(
-                      onPressed: onLoginAgain,
-                      child: Text(L10n.of(context).loginAgain),
-                    )
-                  : OutlinedButton(
-                      onPressed: onClearDB,
-                      child: Text(L10n.of(context).clearDBAndReLogin),
-                    ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     // get platform of context.
@@ -188,7 +139,7 @@ class HomeShellState extends ConsumerState<HomeShell> {
     if (errorMsg != null) {
       final softLogout = errorMsg == 'SoftLogout';
       if (softLogout || errorMsg == 'Unauthorized') {
-        return buildLoggedOutScreen(context, softLogout);
+        return LoggedOutScreen(softLogout: softLogout);
       }
     }
 
@@ -218,15 +169,6 @@ class HomeShellState extends ConsumerState<HomeShell> {
         ),
       ),
     );
-  }
-
-  void onLoginAgain() {
-    // FIXME: not yet properly supported
-    context.goNamed(Routes.intro.name);
-  }
-
-  void onClearDB() {
-    logoutConfirmationDialog(context, ref);
   }
 
   Widget topNavigationWidget(BuildContext context) {

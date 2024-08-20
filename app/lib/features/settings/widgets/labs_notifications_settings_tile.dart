@@ -43,10 +43,11 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
     WidgetRef ref,
     bool newVal,
   ) async {
-    updateFeatureState(ref, LabsFeature.mobilePushNotifications, newVal);
+    final lang = L10n.of(context);
+    await updateFeatureState(ref, LabsFeature.mobilePushNotifications, newVal);
     if (!newVal) return;
     final client = ref.read(alwaysClientProvider);
-    EasyLoading.show(status: L10n.of(context).changingSettings);
+    EasyLoading.show(status: lang.changingSettings);
     try {
       var granted = await setupPushNotifications(client, forced: true);
       if (granted) {
@@ -61,13 +62,13 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
       }
       // second attempt, even sending the user to the settings, they do not
       // approve. Let's kick it back off
-      updateFeatureState(ref, LabsFeature.mobilePushNotifications, false);
+      await updateFeatureState(ref, LabsFeature.mobilePushNotifications, false);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
       EasyLoading.showToast(
-        L10n.of(context).changedPushNotificationSettingsSuccessfully,
+        lang.changedPushNotificationSettingsSuccessfully,
       );
     } catch (e, s) {
       _log.severe('Failed to change settings of push notification', e, s);
@@ -76,7 +77,7 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).failedToChangePushNotificationSettings(e),
+        lang.failedToChangePushNotificationSettings(e),
         duration: const Duration(seconds: 3),
       );
     }
