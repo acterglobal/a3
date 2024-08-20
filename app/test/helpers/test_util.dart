@@ -21,7 +21,6 @@ extension PumpUntilFound on WidgetTester {
   }) async {
     for (var i = 1; i <= tries; i++) {
       await pump(duration);
-      print('$i');
 
       try {
         expect(finder, matches);
