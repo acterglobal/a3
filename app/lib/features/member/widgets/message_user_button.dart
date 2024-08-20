@@ -6,9 +6,11 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class MessageUserButton extends ConsumerWidget {
   final Member member;
+
   const MessageUserButton({super.key, required this.member});
 
   @override
@@ -36,10 +38,7 @@ class MessageUserButton extends ConsumerWidget {
               profile,
             ];
             Navigator.pop(context);
-            Navigator.pushNamed(
-              context,
-              Routes.createChat.name,
-            );
+            context.pushNamed(Routes.createChat.name);
           },
           label: const Text('Start DM'),
         ),
