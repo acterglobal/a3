@@ -72,14 +72,16 @@ void main() {
     testWidgets(
       'Search by title',
       (tester) async {
-        await tester.pumpWidget(ProviderScope(
-          overrides: mockedProviders,
-          child: InActerContextTestWrapper(
-            child: RoomsListWidget(
-              onSelected: (_) {},
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: mockedProviders,
+            child: InActerContextTestWrapper(
+              child: RoomsListWidget(
+                onSelected: (_) {},
+              ),
             ),
           ),
-        ),);
+        );
 
         expect(
           find.byKey(RoomsListWidget.openSearchActionButtonKey),
@@ -117,17 +119,18 @@ void main() {
           findsExactly(2),
         );
 
-        // try another
-        await tester.enterText(find.byKey(RoomsListWidget.searchBarKey), 'E');
-        await tester.pumpProviderScope(times: 2);
-        // -- we only see subset
+        // and we clear
+        await tester
+            .tap(find.byKey(RoomsListWidget.clearSearchActionButtonKey));
+        await tester.pumpProviderScope(times: 1);
+        // -- we should see all of them again
         expect(
           find.byType(
             ConvoCard,
             skipOffstage:
                 false, // include off-stage or we don't find all of them
           ),
-          findsExactly(3),
+          findsExactly(10),
         );
       },
     );

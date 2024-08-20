@@ -21,6 +21,8 @@ class RoomsListWidget extends ConsumerStatefulWidget {
       Key('chat-rooms-list-open-search-action-btn');
   static const closeSearchActionButtonKey =
       Key('chat-rooms-list-close-search-action-btn');
+  static const clearSearchActionButtonKey =
+      Key('chat-rooms-list-clear-search-action-btn');
   static const searchBarKey = Key('chat-rooms-list-search-bar');
 
   const RoomsListWidget({
@@ -254,7 +256,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
             children: [
               if (hasFilters)
                 TextButton(
-                  key: RoomsListWidget.closeSearchActionButtonKey,
+                  key: RoomsListWidget.clearSearchActionButtonKey,
                   onPressed: () {
                     searchTextController.clear();
                     ref.read(roomListFilterProvider.notifier).clear();
