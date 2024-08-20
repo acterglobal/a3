@@ -1,5 +1,5 @@
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/home/widgets/space_chip.dart';
+import 'package:acter/common/widgets/space_name_widget.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/pin_icon.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -47,10 +47,7 @@ class PinListItemWidget extends ConsumerWidget {
         leading: const PinIcon(),
         title: Text(pin.title(), overflow: TextOverflow.ellipsis),
         subtitle: showSpace
-            ? SpaceChip(
-                spaceId: pin.roomIdStr(),
-                useCompatView: true,
-              )
+            ? SpaceNameWidget(spaceId: pin.roomIdStr(), isShowBrackets: false)
             : null,
       ),
     );
