@@ -8,7 +8,7 @@ import 'package:acter/common/widgets/add_button_with_can_permission.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/common/widgets/space_name_widget.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
-import 'package:acter/features/pins/widgets/pin_list_item.dart';
+import 'package:acter/features/pins/widgets/pin_list_item_widget.dart';
 import 'package:acter/features/pins/widgets/pin_list_skeleton.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -115,7 +115,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
         crossAxisCount: max(1, min(widthCount, minCount)),
         children: [
           for (var pin in pins)
-            PinListItemById(
+            PinListItemWidget(
               pinId: pin.eventIdStr(),
               showSpace: widget.spaceId == null,
             ),
