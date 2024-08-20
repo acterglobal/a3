@@ -4,7 +4,6 @@ import 'package:acter/common/providers/notifiers/chat_notifiers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mockito/mockito.dart';
 
@@ -27,8 +26,12 @@ class MockClient extends Mock implements Client {
 /// Mocked version of Convo
 class MockConvo extends Mock implements Convo {
   @override
-  Future<bool> saveMsgDraft(String plainText, String? htmlText,
-      String draftType, String? eventId) async {
+  Future<bool> saveMsgDraft(
+    String plainText,
+    String? htmlText,
+    String draftType,
+    String? eventId,
+  ) async {
     return true; // Default implementation returns true
   }
 }
@@ -52,10 +55,3 @@ class MockAsyncConvoNotifier extends AsyncConvoNotifier {
     return await client.convoWithRetry(roomId, 0);
   }
 }
-
-final mockClientProvider = Provider<Client>((ref) => MockClient());
-
-final mockChatComposerDraftProvider =
-    FutureProvider.family<ComposeDraft?, String>((ref, roomId) async {
-  return MockComposeDraft();
-});

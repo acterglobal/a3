@@ -194,8 +194,7 @@ class _ChatInput extends ConsumerStatefulWidget {
 }
 
 class __ChatInputState extends ConsumerState<_ChatInput> {
-  ActerTriggerAutoCompleteTextController textController =
-      ActerTriggerAutoCompleteTextController();
+  late ActerTriggerAutoCompleteTextController textController;
   final FocusNode chatFocus = FocusNode();
   final ValueNotifier<bool> _isInputEmptyNotifier = ValueNotifier(true);
 
@@ -203,9 +202,14 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _setController();
       loadDraft();
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _setController();
   }
 
   @override
@@ -216,7 +220,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
   }
 
   void _setController() {
-    final Map<String, TextStyle> triggerStyles = {
+    Map<String, TextStyle> triggerStyles = {
       '@': TextStyle(
         color: Theme.of(context).colorScheme.onSecondary,
         height: 0.5,
