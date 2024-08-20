@@ -221,18 +221,23 @@ Future<List<String>> _findActerCalendars() async {
   }
   if (Platform.isAndroid) {
     return calendars
-        .where((c) => c.accountType == 'Local' && c.accountName == 'Acter' && c.name == 'Acter')
+        .where(
+      (c) =>
+          c.accountType == 'LOCAL' &&
+          c.accountName == 'Acter' &&
+          c.name == 'Acter',
+    )
         .map((c) {
       _log.info('Scheduling to delete ${c.id} (${c.accountType})');
       return c.id!;
     }).toList();
   }
   return calendars
-        .where((c) => c.accountType == 'Local' && c.name == 'Acter')
-        .map((c) {
-      _log.info('Scheduling to delete ${c.id} (${c.accountType})');
-      return c.id!;
-    }).toList();
+      .where((c) => c.accountType == 'Local' && c.name == 'Acter')
+      .map((c) {
+    _log.info('Scheduling to delete ${c.id} (${c.accountType})');
+    return c.id!;
+  }).toList();
 }
 
 Future<void> clearActerCalendars() async {
