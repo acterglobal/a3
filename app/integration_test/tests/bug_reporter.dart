@@ -1,6 +1,6 @@
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/home/data/keys.dart';
-import 'package:acter/features/home/pages/home_shell.dart';
+import 'package:acter/config/app_shell.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/router/router.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
@@ -220,7 +220,7 @@ void bugReporterTests() {
     final prevReports = await latestReported();
     // totally clean
     await t.freshAccount();
-    final HomeShellState home = t.tester.state(find.byKey(homeShellKey));
+    final AppShellState home = t.tester.state(find.byKey(appShellKey));
     // as if we shaked
     openBugReport(home.context);
 

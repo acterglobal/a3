@@ -1,7 +1,7 @@
 import 'package:acter/common/pages/not_found.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/home/pages/home_shell.dart';
+import 'package:acter/config/app_shell.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/router/general_router.dart';
 import 'package:acter/router/shell_routers/activities_shell_router.dart';
@@ -104,7 +104,7 @@ final GlobalKey<NavigatorState> rootNavKey = GlobalKey<NavigatorState>(
   debugLabel: 'root',
 );
 
-final homeShellKey = GlobalKey(debugLabel: 'home-shell');
+final appShellKey = GlobalKey(debugLabel: 'home-shell');
 
 final GlobalKey<NavigatorState> homeTabNavKey = GlobalKey<NavigatorState>(
   debugLabel: 'homeTabNavKey',
@@ -158,7 +158,7 @@ final goRouter = GoRouter(
         GoRouterState state,
         StatefulNavigationShell navigationShell,
       ) {
-        return HomeShell(key: homeShellKey, navigationShell: navigationShell);
+        return AppShell(key: appShellKey, navigationShell: navigationShell);
       },
       branches: shellBranches,
     ),

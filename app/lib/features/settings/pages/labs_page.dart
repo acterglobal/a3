@@ -1,5 +1,6 @@
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
+import 'package:acter/features/calendar_sync/calendar_sync.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/settings/widgets/labs_notifications_settings_tile.dart';
@@ -66,6 +67,34 @@ class SettingsLabsPage extends ConsumerWidget {
                       ref.watch(isActiveProvider(LabsFeature.chatUnread)),
                   onToggle: (newVal) =>
                       updateFeatureState(ref, LabsFeature.chatUnread, newVal),
+                ),
+              ],
+            ),
+            SettingsSection(
+              title: Text(L10n.of(context).calendar),
+              tiles: [
+                SettingsTile.switchTile(
+                  enabled: isSupportedPlatform,
+                  title: Text(L10n.of(context).calendarSyncFeatureTitle),
+                  description: Text(
+                    L10n.of(context).calendarSyncFeatureDesc,
+                  ),
+                  initialValue: isSupportedPlatform &&
+                      ref.watch(
+                        isActiveProvider(LabsFeature.deviceCalendarSync),
+                      ),
+                  onToggle: (newVal) async {
+                    await updateFeatureState(
+                      ref,
+                      LabsFeature.deviceCalendarSync,
+                      newVal,
+                    );
+                    if (newVal) {
+                      initCalendarSync(ignoreRejection: true);
+                    } else {
+                      clearActerCalendars();
+                    }
+                  },
                 ),
               ],
             ),
