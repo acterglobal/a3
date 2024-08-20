@@ -134,7 +134,10 @@ void main() {
         // and we clear
         await tester
             .tap(find.byKey(RoomsListWidget.clearSearchActionButtonKey));
-        await tester.pumpProviderScope(times: 1);
+        // and we close
+        await tester
+            .tap(find.byKey(RoomsListWidget.closeSearchActionButtonKey));
+        await tester.pumpProviderScope(times: 2);
         // -- we should see all of them again
         expect(
           find.byType(
@@ -224,6 +227,9 @@ void main() {
         // and we clear
         await tester
             .tap(find.byKey(RoomsListWidget.clearSearchActionButtonKey));
+        // and we close
+        await tester
+            .tap(find.byKey(RoomsListWidget.closeSearchActionButtonKey));
         await tester.pumpProviderScope(times: 1);
         // -- we should see all of them again
         expect(
@@ -236,5 +242,76 @@ void main() {
         );
       },
     );
+
+    testWidgets('sticky on close', (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: mockedProviders,
+          child: InActerContextTestWrapper(
+            child: RoomsListWidget(
+              onSelected: (_) {},
+            ),
+          ),
+        ),
+      );
+
+      expect(
+        find.byKey(RoomsListWidget.openSearchActionButtonKey),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(RoomsListWidget.searchBarKey),
+        findsNothing,
+      );
+      // -- we see all
+      expect(
+        find.byType(
+          ConvoCard,
+          skipOffstage: false, // include off-stage or we don't find all of them
+        ),
+        findsExactly(10),
+      );
+      await tester.tap(find.byKey(RoomsListWidget.openSearchActionButtonKey));
+      await tester.pump();
+      // opening the search area
+      expect(
+        find.byKey(RoomsListWidget.searchBarKey),
+        findsOneWidget,
+      );
+      await tester.enterText(
+        find.byKey(RoomsListWidget.searchBarKey), 'mA', // part of one room ID
+      );
+      await tester.pumpProviderScope(times: 2);
+      // -- we only see subset
+      expect(
+        find.byType(
+          ConvoCard,
+          skipOffstage: false, // include off-stage or we don't find all of them
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.text('Room ABC'),
+        findsOne,
+      );
+      await tester.tap(find.byKey(RoomsListWidget.closeSearchActionButtonKey));
+      await tester.pumpProviderScope(times: 2);
+      expect(
+        find.byKey(RoomsListWidget.searchBarKey),
+        findsNothing,
+      );
+      // -- we still only see the subset
+      expect(
+        find.byType(
+          ConvoCard,
+          skipOffstage: false, // include off-stage or we don't find all of them
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.text('Room ABC'),
+        findsOne,
+      );
+    });
   });
 }

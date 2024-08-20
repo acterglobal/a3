@@ -138,6 +138,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
           trailing: hasSearchTerm
               ? [
                   InkWell(
+                    key: RoomsListWidget.clearSearchActionButtonKey,
                     onTap: () {
                       searchTextController.clear();
                       ref
@@ -254,28 +255,15 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              if (hasFilters)
-                TextButton(
-                  key: RoomsListWidget.clearSearchActionButtonKey,
-                  onPressed: () {
-                    searchTextController.clear();
-                    ref.read(roomListFilterProvider.notifier).clear();
-                    setState(() {
-                      _isSearchVisible = false;
-                    });
-                  },
-                  child: Text(L10n.of(context).clear),
-                ),
-              if (!hasFilters)
-                TextButton(
-                  key: RoomsListWidget.closeSearchActionButtonKey,
-                  onPressed: () {
-                    setState(() {
-                      _isSearchVisible = false;
-                    });
-                  },
-                  child: Text(L10n.of(context).close),
-                ),
+              TextButton(
+                key: RoomsListWidget.closeSearchActionButtonKey,
+                onPressed: () {
+                  setState(() {
+                    _isSearchVisible = false;
+                  });
+                },
+                child: Text(L10n.of(context).close),
+              ),
             ],
           ),
         ),
