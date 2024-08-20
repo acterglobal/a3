@@ -12,6 +12,7 @@ import 'package:acter/features/pins/actions/reduct_pin_action.dart';
 import 'package:acter/features/pins/actions/report_pin_action.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/fake_link_attachment_item.dart';
+import 'package:acter/features/pins/widgets/pin_icon.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -184,7 +185,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
         children: [
           Row(
             children: [
-              pinIconUI(),
+              const PinIcon(),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -201,18 +202,6 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
           pinDescriptionUI(pin),
         ],
       ),
-    );
-  }
-
-  Widget pinIconUI() {
-    return Container(
-      height: 50,
-      width: 50,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.secondary,
-        borderRadius: const BorderRadius.all(Radius.circular(100)),
-      ),
-      child: const Icon(Atlas.pin),
     );
   }
 
