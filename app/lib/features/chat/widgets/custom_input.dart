@@ -240,11 +240,13 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
   Future<void> loadDraft() async {
     final draft =
         await ref.read(chatComposerDraftProvider(widget.roomId).future);
+    final inputNotifier = ref.read(chatInputProvider.notifier);
+    inputNotifier.unsetSelectedMessage();
     if (draft != null) {
       if (draft.eventId() != null) {
         final eventId = draft.eventId()!;
         final draftType = draft.draftType();
-        final inputNotifier = ref.read(chatInputProvider.notifier);
+
         final m = ref
             .read(chatMessagesProvider(widget.roomId))
             .firstWhere((x) => x.id == eventId);
@@ -601,6 +603,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         const Spacer(),
         GestureDetector(
           onTap: () async {
+            final convo = await ref.read(chatProvider(widget.roomId).future);
+            await convo?.saveMsgDraft(textController.text, null, 'new', null);
             inputNotifier.unsetSelectedMessage();
             // frame delay to keep focus connected with keyboard.
             WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -696,6 +700,9 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       ref.read(chatInputProvider.notifier).messageSent();
 
       textController.clear();
+      // also clear composed state
+      final convo = await ref.read(chatProvider(widget.roomId).future);
+      await convo?.saveMsgDraft(textController.text, null, 'new', null);
     } catch (e, s) {
       _log.severe('Sending chat message failed', e, s);
       EasyLoading.showError(
@@ -704,6 +711,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       );
       ref.read(chatInputProvider.notifier).sendingFailed();
     }
+
     if (!chatFocus.hasFocus) {
       chatFocus.requestFocus();
     }
