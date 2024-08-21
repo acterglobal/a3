@@ -43,8 +43,9 @@ class LimitedSpaceList extends ConsumerWidget {
         _log.severe('Failed to load pin', e, s);
         return Text(L10n.of(context).errorLoadingSpaces(e));
       },
-      loading: () =>
-          const Skeletonizer(child: SizedBox(height: 100, width: 100)),
+      loading: () => const Skeletonizer(
+        child: SizedBox(height: 100, width: 100),
+      ),
     );
   }
 

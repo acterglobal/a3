@@ -22,15 +22,13 @@ class VisibilityChip extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final visibilityLoader = ref.watch(roomVisibilityProvider(roomId));
     return visibilityLoader.when(
-      data: (visibility) {
-        return GestureDetector(
-          onTap: () {
-            if (visibility != RoomVisibility.SpaceVisible) return;
-            showLimitedSpaceList(context, ref, roomId);
-          },
-          child: renderSpaceChip(context, visibility),
-        );
-      },
+      data: (visibility) => GestureDetector(
+        onTap: () {
+          if (visibility != RoomVisibility.SpaceVisible) return;
+          showLimitedSpaceList(context, ref, roomId);
+        },
+        child: renderSpaceChip(context, visibility),
+      ),
       error: (e, s) {
         _log.severe('Failed to load room visibility', e, s);
         return Chip(

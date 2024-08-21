@@ -206,16 +206,16 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
   //Show selected Action Buttons
   Widget selectedActionButtonsUI() {
     final newsReferences = selectedNewsPost?.newsReferencesModel;
-
     if (newsReferences == null) return const SizedBox();
+    final calEventId = newsReferences.id;
     return Positioned(
       bottom: 10,
       left: 10,
       child: Row(
         children: [
           if (newsReferences.type == NewsReferencesType.shareEvent &&
-              newsReferences.id != null)
-            ref.watch(calendarEventProvider(newsReferences.id!)).when(
+              calEventId != null)
+            ref.watch(calendarEventProvider(calEventId)).when(
                   data: (calendarEvent) {
                     return SizedBox(
                       width: 300,

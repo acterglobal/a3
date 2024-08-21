@@ -28,20 +28,14 @@ class FakeLinkAttachmentItem extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final pinData = ref.watch(pinProvider(pinId));
     return pinData.when(
-      data: (pin) {
-        return fakeLinkAttachmentItemUI(
-          context,
-          ref,
-          pin,
-        );
-      },
+      data: (pin) => fakeLinkAttachmentItemUI(context, ref, pin),
       loading: () => Skeletonizer(
         child: Text(L10n.of(context).loadingPin),
       ),
-      error: (err, st) {
-        _log.severe('Error loading pin', err, st);
+      error: (e, s) {
+        _log.severe('Error loading pin', e, s);
         return Text(
-          L10n.of(context).errorLoadingPin(err),
+          L10n.of(context).errorLoadingPin(e),
         );
       },
     );

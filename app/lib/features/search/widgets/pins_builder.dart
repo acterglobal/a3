@@ -25,49 +25,45 @@ class PinsBuilder extends ConsumerWidget {
         _log.severe('Failed to search pins', e, s);
         return Text(L10n.of(context).searchingFailed(e));
       },
-      data: (pins) {
-        final Widget body;
-        if (pins.isEmpty) {
-          body = Text(L10n.of(context).noMatchingPinsFound);
-        } else {
-          final children = pins.map((pin) {
-            return InkWell(
-              child: Padding(
-                padding: const EdgeInsets.all(10),
+      data: (pins) => Padding(
+        padding: const EdgeInsets.only(top: 10),
+        child: Column(
+          children: [
+            Text(L10n.of(context).pins),
+            const SizedBox(height: 15),
+            if (pins.isEmpty)
+              Text(L10n.of(context).noMatchingPinsFound)
+            else
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: [
-                    pin.icon,
-                    const SizedBox(width: 5),
-                    Text(pin.name),
-                  ],
+                  children: pins.map((pin) {
+                    return InkWell(
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Row(
+                          children: [
+                            pin.icon,
+                            const SizedBox(width: 5),
+                            Text(pin.name),
+                          ],
+                        ),
+                      ),
+                      onTap: () {
+                        if (popBeforeRoute) Navigator.pop(context);
+                        context.pushNamed(
+                          Routes.pin.name,
+                          pathParameters: {'pinId': pin.navigationTargetId},
+                        );
+                      },
+                    );
+                  }).toList(),
                 ),
               ),
-              onTap: () {
-                if (popBeforeRoute) Navigator.pop(context);
-                context.pushNamed(
-                  Routes.pin.name,
-                  pathParameters: {'pinId': pin.navigationTargetId},
-                );
-              },
-            );
-          }).toList();
-          body = SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(children: children),
-          );
-        }
-        return Padding(
-          padding: const EdgeInsets.only(top: 10),
-          child: Column(
-            children: [
-              Text(L10n.of(context).pins),
-              const SizedBox(height: 15),
-              body,
-              const SizedBox(height: 10),
-            ],
-          ),
-        );
-      },
+            const SizedBox(height: 10),
+          ],
+        ),
+      ),
     );
   }
 }

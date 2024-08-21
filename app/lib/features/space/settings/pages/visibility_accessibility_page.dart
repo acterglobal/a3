@@ -89,27 +89,25 @@ class _VisibilityAccessibilityPageState
     final visibilityLoader = ref.watch(roomVisibilityProvider(spaceId));
     final allowedSpaces = ref.watch(joinRulesAllowedRoomsProvider(spaceId));
     return visibilityLoader.when(
-      data: (visibility) {
-        return RoomVisibilityType(
-          selectedVisibilityEnum: visibility,
-          canChange: hasPermission,
-          onVisibilityChange: (value) {
-            if (!hasPermission) {
-              EasyLoading.showToast(L10n.of(context).visibilityNoPermission);
-              return;
-            }
-            if (value == RoomVisibility.SpaceVisible &&
-                allowedSpaces.valueOrNull?.isEmpty == true) {
-              selectSpace(spaceId);
-            } else {
-              updateSpaceVisibility(
-                value ?? RoomVisibility.Private,
-                spaceIds: (allowedSpaces.valueOrNull ?? []),
-              );
-            }
-          },
-        );
-      },
+      data: (visibility) => RoomVisibilityType(
+        selectedVisibilityEnum: visibility,
+        canChange: hasPermission,
+        onVisibilityChange: (value) {
+          if (!hasPermission) {
+            EasyLoading.showToast(L10n.of(context).visibilityNoPermission);
+            return;
+          }
+          if (value == RoomVisibility.SpaceVisible &&
+              allowedSpaces.valueOrNull?.isEmpty == true) {
+            selectSpace(spaceId);
+          } else {
+            updateSpaceVisibility(
+              value ?? RoomVisibility.Private,
+              spaceIds: (allowedSpaces.valueOrNull ?? []),
+            );
+          }
+        },
+      ),
       error: (e, s) {
         _log.severe('Failed to load room visibility', e, s);
         return const RoomVisibilityType(

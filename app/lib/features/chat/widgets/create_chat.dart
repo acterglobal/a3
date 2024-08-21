@@ -706,18 +706,16 @@ class _UserWidget extends ConsumerWidget {
               style: Theme.of(context).textTheme.labelMedium,
             ),
       leading: avatarLoader.when(
-        data: (avatar) {
-          return ActerAvatar(
-            options: AvatarOptions.DM(
-              AvatarInfo(
-                uniqueId: userId,
-                displayName: displayName,
-                avatar: avatar,
-              ),
-              size: 18,
+        data: (avatar) => ActerAvatar(
+          options: AvatarOptions.DM(
+            AvatarInfo(
+              uniqueId: userId,
+              displayName: displayName,
+              avatar: avatar,
             ),
-          );
-        },
+            size: 18,
+          ),
+        ),
         error: (e, s) {
           _log.severe('Failed to load binary data of avatar', e, s);
           return Text(L10n.of(context).errorLoadingAvatar(e));
