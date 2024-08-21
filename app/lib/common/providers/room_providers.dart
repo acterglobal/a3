@@ -326,6 +326,12 @@ final isDirectChatProvider =
   return convo?.isDm() == true && members.length == 2;
 });
 
+final isConvoBookmarked =
+    FutureProvider.family<bool, String>((ref, roomIdOrAlias) async {
+  final convo = await ref.watch(chatProvider(roomIdOrAlias).future);
+  return convo?.isBookmarked() == true;
+});
+
 /// Caching the MemoryImage of each entry
 final roomHierarchyAvatarProvider =
     FutureProvider.family<MemoryImage?, SpaceHierarchyRoomInfo>(

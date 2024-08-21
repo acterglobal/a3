@@ -27,15 +27,30 @@ final genericUpdatesStream =
   }
 });
 
-final myUserIdStrProvider = StateProvider(
+final myUserIdStrProvider = Provider(
   (ref) => ref.watch(
     alwaysClientProvider.select((client) => client.userId().toString()),
   ),
 );
 
-final accountProvider = StateProvider(
+final accountProvider = Provider(
   (ref) => ref.watch(
     alwaysClientProvider.select((client) => client.account()),
+  ),
+);
+
+final hasFirstSyncedProvider = Provider(
+  (ref) => ref.watch(syncStateProvider.select((v) => !v.initialSync)),
+);
+
+final isGuestProvider =
+    Provider((ref) => ref.watch(alwaysClientProvider).isGuest());
+
+final deviceIdProvider = Provider(
+  (ref) => ref.watch(
+    alwaysClientProvider.select(
+      (v) => v.deviceId().toString(),
+    ),
   ),
 );
 
