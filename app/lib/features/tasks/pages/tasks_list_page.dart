@@ -94,14 +94,11 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
   }
 
   Widget _buildBody() {
-    AsyncValue<List<String>> tasksList;
-
-    tasksList = ref.watch(
+    final tasklistsLoader = ref.watch(
       tasksListSearchProvider(
         (spaceId: widget.spaceId, searchText: searchValue),
       ),
     );
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -109,8 +106,8 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
           searchTextController: searchTextController,
         ),
         Expanded(
-          child: tasksList.when(
-            data: (tasks) => _buildTasksList(tasks),
+          child: tasklistsLoader.when(
+            data: (tasklists) => _buildTasksList(tasklists),
             error: (e, s) {
               _log.severe('Failed to search tasklists in space', e, s);
               return Center(

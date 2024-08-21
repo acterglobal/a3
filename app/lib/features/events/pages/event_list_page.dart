@@ -71,7 +71,7 @@ class _EventListPageState extends ConsumerState<EventListPage> {
   }
 
   Widget _buildBody() {
-    final eventList = ref.watch(
+    final calEventsLoader = ref.watch(
       eventListSearchFilterProvider(
         (spaceId: widget.spaceId, searchText: searchValue),
       ),
@@ -83,8 +83,8 @@ class _EventListPageState extends ConsumerState<EventListPage> {
         ActerSearchWidget(searchTextController: searchTextController),
         filterChipsButtons(),
         Expanded(
-          child: eventList.when(
-            data: (events) => _buildEventList(events),
+          child: calEventsLoader.when(
+            data: (calEvents) => _buildEventList(calEvents),
             error: (e, s) {
               _log.severe('Failed to search events in space', e, s);
               return Center(

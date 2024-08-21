@@ -16,11 +16,9 @@ class VisibilityChip extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final spaceVisibility = ref.watch(roomVisibilityProvider(roomId));
-    return spaceVisibility.when(
-      data: (visibility) {
-        return renderSpaceChip(context, visibility);
-      },
+    final visibilityLoader = ref.watch(roomVisibilityProvider(roomId));
+    return visibilityLoader.when(
+      data: (visibility) => renderSpaceChip(context, visibility),
       error: (e, s) {
         _log.severe('Failed to load room visibility', e, s);
         return Chip(

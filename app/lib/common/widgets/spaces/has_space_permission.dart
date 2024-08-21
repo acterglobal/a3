@@ -22,14 +22,17 @@ class HasSpacePermission extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final otherwise = fallback ?? const SizedBox.shrink();
-    return ref.watch(roomMembershipProvider(spaceId)).when(
-          data: (membership) =>
-              membership?.canString(permission) == true ? child : otherwise,
-          error: (e, s) {
-            _log.severe('Failed to load membership', e, s);
-            return otherwise;
-          },
-          loading: () => otherwise,
-        );
+    final membershipLoader = ref.watch(roomMembershipProvider(spaceId));
+    return membershipLoader.when(
+      data: (membership) {
+        if (membership?.canString(permission) == true) return child;
+        return otherwise;
+      },
+      error: (e, s) {
+        _log.severe('Failed to load membership', e, s);
+        return otherwise;
+      },
+      loading: () => otherwise,
+    );
   }
 }

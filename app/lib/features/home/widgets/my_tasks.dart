@@ -18,35 +18,36 @@ class MyTasksSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tasks = ref.watch(myOpenTasksProvider);
-    return tasks.when(
-      data: (tasks) => tasks.isEmpty
-          ? const SizedBox.shrink()
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                myTaskHeader(context),
-                ListView.separated(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  separatorBuilder: (context, index) => const Divider(
-                    color: Colors.white24,
-                    indent: 30,
+    final tasksLoader = ref.watch(myOpenTasksProvider);
+    return tasksLoader.when(
+      data: (tasks) {
+        if (tasks.isEmpty) return const SizedBox.shrink();
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            myTaskHeader(context),
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              separatorBuilder: (context, index) => const Divider(
+                color: Colors.white24,
+                indent: 30,
+              ),
+              itemCount: tasks.length,
+              itemBuilder: (context, index) {
+                return TaskItem(
+                  taskListId: tasks[index].taskListIdStr(),
+                  taskId: tasks[index].eventIdStr(),
+                  showBreadCrumb: true,
+                  onDone: () => EasyLoading.showToast(
+                    L10n.of(context).markedAsDone,
                   ),
-                  itemCount: tasks.length,
-                  itemBuilder: (context, index) {
-                    return TaskItem(
-                      taskListId: tasks[index].taskListIdStr(),
-                      taskId: tasks[index].eventIdStr(),
-                      showBreadCrumb: true,
-                      onDone: () => EasyLoading.showToast(
-                        L10n.of(context).markedAsDone,
-                      ),
-                    );
-                  },
-                ),
-              ],
+                );
+              },
             ),
+          ],
+        );
+      },
       error: (e, s) {
         _log.severe('Failed to load open tasks', e, s);
         return Text(L10n.of(context).loadingTasksFailed(e));

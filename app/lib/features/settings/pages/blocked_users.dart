@@ -69,7 +69,7 @@ class BlockedUsersPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final users = ref.watch(ignoredUsersProvider);
+    final usersLoader = ref.watch(ignoredUsersProvider);
     return WithSidebar(
       sidebar: const SettingsPage(),
       child: Scaffold(
@@ -86,38 +86,41 @@ class BlockedUsersPage extends ConsumerWidget {
             ),
           ],
         ),
-        body: users.when(
-          data: (users) => users.isNotEmpty
-              ? CustomScrollView(
-                  slivers: [
-                    SliverList.builder(
-                      itemBuilder: (BuildContext context, int index) {
-                        final userId = users[index].toString();
-                        return Card(
-                          margin: const EdgeInsets.all(5),
-                          child: ListTile(
-                            title: Padding(
-                              padding: const EdgeInsets.all(10),
-                              child: Text(userId),
-                            ),
-                            trailing: OutlinedButton(
-                              child: Text(L10n.of(context).unblock),
-                              onPressed: () async => await onDelete(
-                                context,
-                                ref,
-                                userId,
-                              ),
-                            ),
+        body: usersLoader.when(
+          data: (users) {
+            if (users.isEmpty) {
+              return Center(
+                child: Text(L10n.of(context).hereYouCanSeeAllUsersYouBlocked),
+              );
+            }
+            return CustomScrollView(
+              slivers: [
+                SliverList.builder(
+                  itemBuilder: (BuildContext context, int index) {
+                    final userId = users[index].toString();
+                    return Card(
+                      margin: const EdgeInsets.all(5),
+                      child: ListTile(
+                        title: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Text(userId),
+                        ),
+                        trailing: OutlinedButton(
+                          child: Text(L10n.of(context).unblock),
+                          onPressed: () async => await onDelete(
+                            context,
+                            ref,
+                            userId,
                           ),
-                        );
-                      },
-                      itemCount: users.length,
-                    ),
-                  ],
-                )
-              : Center(
-                  child: Text(L10n.of(context).hereYouCanSeeAllUsersYouBlocked),
+                        ),
+                      ),
+                    );
+                  },
+                  itemCount: users.length,
                 ),
+              ],
+            );
+          },
           error: (e, s) {
             _log.severe('Failed to load the ignored users', e, s);
             return Center(

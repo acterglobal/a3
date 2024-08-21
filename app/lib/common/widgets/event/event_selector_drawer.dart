@@ -24,9 +24,9 @@ Future<String?> selectEventDrawer({
     isDismissible: true,
     builder: (context) => Consumer(
       builder: (context, ref, child) {
-        final events = ref.watch(allEventListProvider(spaceId));
-        return events.when(
-          data: (eventsList) {
+        final calEventsLoader = ref.watch(allEventListProvider(spaceId));
+        return calEventsLoader.when(
+          data: (calEvents) {
             return Column(
               key: key,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -51,7 +51,7 @@ Future<String?> selectEventDrawer({
                   ),
                 ),
                 Flexible(
-                  child: eventsList.isEmpty
+                  child: calEvents.isEmpty
                       ? Container(
                           height: 200,
                           alignment: Alignment.center,
@@ -59,9 +59,9 @@ Future<String?> selectEventDrawer({
                         )
                       : ListView.builder(
                           padding: const EdgeInsets.all(8),
-                          itemCount: eventsList.length,
+                          itemCount: calEvents.length,
                           itemBuilder: (context, index) => EventItem(
-                            event: eventsList[index],
+                            event: calEvents[index],
                             isShowRsvp: false,
                             onTapEventItem: (event) {
                               Navigator.pop(context, event);
@@ -72,10 +72,10 @@ Future<String?> selectEventDrawer({
               ],
             );
           },
-          error: (error, stack) {
-            _log.severe('Failed to load all cal events', error, stack);
+          error: (e, s) {
+            _log.severe('Failed to load all cal events', e, s);
             return Center(
-              child: Text(L10n.of(context).failedToLoadEventsDueTo(error)),
+              child: Text(L10n.of(context).failedToLoadEventsDueTo(e)),
             );
           },
           loading: () => const SizedBox(

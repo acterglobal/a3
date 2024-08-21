@@ -23,8 +23,8 @@ class PinsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final pinList = ref.watch(pinListProvider(spaceId));
-    return pinList.when(
+    final pinsLoader = ref.watch(pinListProvider(spaceId));
+    return pinsLoader.when(
       data: (pins) => buildPinsSectionUI(context, pins),
       error: (e, s) {
         _log.severe('Failed to load pins in space', e, s);

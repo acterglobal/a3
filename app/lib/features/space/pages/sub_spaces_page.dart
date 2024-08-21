@@ -78,7 +78,8 @@ class SubSpacesPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final spaces = ref.watch(spaceRelationsOverviewProvider(spaceIdOrAlias));
+    final spacesLoader =
+        ref.watch(spaceRelationsOverviewProvider(spaceIdOrAlias));
     final widthCount = (MediaQuery.of(context).size.width ~/ 300).toInt();
     const int minCount = 3;
     final crossAxisCount = max(1, min(widthCount, minCount));
@@ -110,7 +111,7 @@ class SubSpacesPage extends ConsumerWidget {
               ref.invalidate(spaceRelationsProvider);
             },
           ),
-          spaces.when(
+          spacesLoader.when(
             data: (spaces) {
               if (canLinkSpace) {
                 return _renderTools(context);
@@ -131,7 +132,7 @@ class SubSpacesPage extends ConsumerWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            spaces.when(
+            spacesLoader.when(
               data: (spaces) {
                 return renderSubSpaces(
                       context,

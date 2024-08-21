@@ -27,36 +27,37 @@ class TaskListItemCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(taskListItemProvider(taskListId)).when(
-          data: (taskList) => Card(
-            key: Key('task-list-card-$taskListId'),
-            child: ExpansionTile(
-              initiallyExpanded: initiallyExpanded,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              iconColor: Theme.of(context).colorScheme.onSurface,
-              childrenPadding: const EdgeInsets.symmetric(horizontal: 10),
-              title: title(context, taskList),
-              subtitle: subtitle(ref, taskList),
-              children: [
-                TaskItemsListWidget(
-                  taskList: taskList,
-                  showCompletedTask: showCompletedTask,
-                ),
-              ],
+    final tasklistLoader = ref.watch(taskListItemProvider(taskListId));
+    return tasklistLoader.when(
+      data: (taskList) => Card(
+        key: Key('task-list-card-$taskListId'),
+        child: ExpansionTile(
+          initiallyExpanded: initiallyExpanded,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          iconColor: Theme.of(context).colorScheme.onSurface,
+          childrenPadding: const EdgeInsets.symmetric(horizontal: 10),
+          title: title(context, taskList),
+          subtitle: subtitle(ref, taskList),
+          children: [
+            TaskItemsListWidget(
+              taskList: taskList,
+              showCompletedTask: showCompletedTask,
             ),
-          ),
-          error: (e, s) {
-            _log.severe('Failed to load tasklist', e, s);
-            return Card(
-              child: Text(L10n.of(context).errorLoadingTasks(e)),
-            );
-          },
-          loading: () => Card(
-            child: Text(L10n.of(context).loading),
-          ),
+          ],
+        ),
+      ),
+      error: (e, s) {
+        _log.severe('Failed to load tasklist', e, s);
+        return Card(
+          child: Text(L10n.of(context).errorLoadingTasks(e)),
         );
+      },
+      loading: () => Card(
+        child: Text(L10n.of(context).loading),
+      ),
+    );
   }
 
   Widget title(BuildContext context, TaskList taskList) {

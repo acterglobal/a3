@@ -57,10 +57,9 @@ Widget renderMoreSubspaces(
   int? maxLength,
   EdgeInsetsGeometry? padding,
 }) {
-  final otherSubspaces =
+  final relatedSpacesLoader =
       ref.watch(remoteSubspaceRelationsProvider(spaceIdOrAlias));
-
-  return otherSubspaces.when(
+  return relatedSpacesLoader.when(
     data: (spaces) {
       if (spaces.isEmpty) {
         return const SizedBox.shrink();
@@ -82,10 +81,10 @@ Widget renderMoreSubspaces(
         ),
         shrinkWrap: true,
         itemBuilder: (context, index) {
-          final item = spaces[index];
+          final space = spaces[index];
           return SpaceHierarchyCard(
-            key: Key('subspace-list-item-${item.roomIdStr()}'),
-            roomInfo: item,
+            key: Key('subspace-list-item-${space.roomIdStr()}'),
+            roomInfo: space,
             parentId: spaceIdOrAlias,
             showIconIfSuggested: true,
           );

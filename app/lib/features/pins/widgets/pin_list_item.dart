@@ -27,8 +27,8 @@ class PinListItemById extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final pin = ref.watch(pinProvider(pinId));
-    return pin.when(
+    final pinLoader = ref.watch(pinProvider(pinId));
+    return pinLoader.when(
       data: (acterPin) => PinListItem(
         key: Key('pin-list-item-$pinId'),
         pin: acterPin,

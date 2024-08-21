@@ -45,7 +45,7 @@ class RoomPage extends ConsumerWidget {
 
   Widget appBar(BuildContext context, WidgetRef ref) {
     final roomAvatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
-    final activeMembers = ref.watch(membersIdsProvider(roomId));
+    final membersLoader = ref.watch(membersIdsProvider(roomId));
     return AppBar(
       elevation: 0,
       automaticallyImplyLeading: !context.isLargeScreen,
@@ -69,14 +69,11 @@ class RoomPage extends ConsumerWidget {
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: 5),
-            activeMembers.when(
-              data: (members) {
-                int count = members.length;
-                return Text(
-                  L10n.of(context).membersCount(count),
-                  style: Theme.of(context).textTheme.bodySmall,
-                );
-              },
+            membersLoader.when(
+              data: (members) => Text(
+                L10n.of(context).membersCount(members.length),
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
               skipLoadingOnReload: false,
               error: (e, s) {
                 _log.severe('Failed to load active members', e, s);
@@ -231,6 +228,8 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
     final userId = ref.watch(myUserIdStrProvider);
     final isDirectChat =
         ref.watch(isDirectChatProvider(roomId)).valueOrNull ?? false;
+    final typingUsers =
+        ref.watch(chatTypingEventProvider(roomId)).valueOrNull ?? [];
 
     return Expanded(
       child: Chat(
@@ -333,8 +332,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
             ref.read(chatInputProvider.notifier).unsetActions(),
         typingIndicatorOptions: TypingIndicatorOptions(
           typingMode: TypingIndicatorMode.name,
-          typingUsers:
-              ref.watch(chatTypingEventProvider(roomId)).valueOrNull ?? [],
+          typingUsers: typingUsers,
         ),
         //Custom Theme class, see lib/common/store/chatTheme.dart
         theme: Theme.of(context).chatTheme,

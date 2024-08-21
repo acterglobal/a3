@@ -29,39 +29,39 @@ class _ChatsListConsumerState extends ConsumerState<ChatsList> {
   Widget build(BuildContext context) {
     final hasSearchFilter = ref.watch(hasRoomFilters);
     if (hasSearchFilter) {
-      return ref.watch(filteredChatsProvider).when(
-            data: (chats) {
-              if (chats.isEmpty) {
-                return SliverToBoxAdapter(
-                  child: Center(
-                    heightFactor: 10,
-                    child:
-                        Text(L10n.of(context).noChatsFoundMatchingYourFilter),
-                  ),
-                );
-              }
-              return renderList(
-                context,
-                chats.map((e) => e.getRoomIdStr()).toList(),
-              );
-            },
-            loading: () => const SliverToBoxAdapter(
+      final convosLoader = ref.watch(filteredChatsProvider);
+      return convosLoader.when(
+        data: (convos) {
+          if (convos.isEmpty) {
+            return SliverToBoxAdapter(
               child: Center(
                 heightFactor: 10,
-                child: CircularProgressIndicator(),
+                child: Text(L10n.of(context).noChatsFoundMatchingYourFilter),
               ),
-            ),
-            error: (e, s) {
-              _log.severe('Failed to filter convos', e, s);
-              return SliverToBoxAdapter(
-                child: Center(
-                  heightFactor: 10,
-                  child: Text(L10n.of(context).searchingFailed(e)),
-                ),
-              );
-            },
-            skipLoadingOnReload: true,
+            );
+          }
+          return renderList(
+            context,
+            convos.map((e) => e.getRoomIdStr()).toList(),
           );
+        },
+        loading: () => const SliverToBoxAdapter(
+          child: Center(
+            heightFactor: 10,
+            child: CircularProgressIndicator(),
+          ),
+        ),
+        error: (e, s) {
+          _log.severe('Failed to filter convos', e, s);
+          return SliverToBoxAdapter(
+            child: Center(
+              heightFactor: 10,
+              child: Text(L10n.of(context).searchingFailed(e)),
+            ),
+          );
+        },
+        skipLoadingOnReload: true,
+      );
     }
     final chats = ref.watch(chatIdsProvider);
 

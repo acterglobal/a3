@@ -25,27 +25,25 @@ class MyEventsSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     //Get my events data
-    AsyncValue<List<CalendarEvent>> myEvents;
-    String sectionTitle = '';
-    if (eventFilters == EventFilters.ongoing) {
-      myEvents = ref.watch(myOngoingEventListProvider(null));
-      sectionTitle = L10n.of(context).happeningNow;
-    } else {
-      myEvents = ref.watch(myUpcomingEventListProvider(null));
-      sectionTitle = L10n.of(context).myUpcomingEvents;
-    }
+    final calEventsLoader = switch (eventFilters) {
+      EventFilters.ongoing => ref.watch(myOngoingEventListProvider(null)),
+      _ => ref.watch(myUpcomingEventListProvider(null)),
+    };
+    final sectionTitle = switch (eventFilters) {
+      EventFilters.ongoing => L10n.of(context).happeningNow,
+      _ => L10n.of(context).myUpcomingEvents,
+    };
 
-    return myEvents.when(
-      data: (events) {
-        return events.isNotEmpty
-            ? Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  sectionHeader(context, sectionTitle),
-                  eventListUI(context, events),
-                ],
-              )
-            : const SizedBox.shrink();
+    return calEventsLoader.when(
+      data: (calEvents) {
+        if (calEvents.isEmpty) return const SizedBox.shrink();
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            sectionHeader(context, sectionTitle),
+            eventListUI(context, calEvents),
+          ],
+        );
       },
       error: (e, s) {
         _log.severe('Failed to load cal events', e, s);

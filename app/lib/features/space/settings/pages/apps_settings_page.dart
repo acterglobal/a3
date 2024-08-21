@@ -64,11 +64,11 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final spaceSettingsWatcher = ref.watch(spaceAppSettingsProvider(spaceId));
+    final settingsLoader = ref.watch(spaceAppSettingsProvider(spaceId));
 
     return WithSidebar(
       sidebar: SpaceSettingsMenu(spaceId: spaceId),
-      child: spaceSettingsWatcher.when(
+      child: settingsLoader.when(
         data: (appSettingsAndMembership) {
           final appSettings = appSettingsAndMembership.settings;
           final powerLevels = appSettingsAndMembership.powerLevels;

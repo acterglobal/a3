@@ -69,26 +69,23 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
   }
 
   Widget _buildBody() {
-    AsyncValue<List<ActerPin>> pinList;
-
+    AsyncValue<List<ActerPin>> pinsLoader;
     if (searchValue.isNotEmpty) {
-      pinList = ref.watch(
+      pinsLoader = ref.watch(
         pinListSearchProvider(
           (spaceId: widget.spaceId, searchText: searchValue),
         ),
       );
     } else {
-      pinList = ref.watch(pinListProvider(widget.spaceId));
+      pinsLoader = ref.watch(pinListProvider(widget.spaceId));
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        ActerSearchWidget(
-          searchTextController: searchTextController,
-        ),
+        ActerSearchWidget(searchTextController: searchTextController),
         Expanded(
-          child: pinList.when(
+          child: pinsLoader.when(
             data: (pins) => _buildPinsList(pins),
             error: (e, s) {
               _log.severe('Failed to load pins', e, s);

@@ -180,12 +180,11 @@ class PinPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final pin = ref.watch(pinProvider(pinId));
-
+    final pinLoader = ref.watch(pinProvider(pinId));
     return Scaffold(
       body: CustomScrollView(
         slivers: <Widget>[
-          pin.when(
+          pinLoader.when(
             data: (acterPin) {
               return SliverAppBar(
                 centerTitle: false,
@@ -210,7 +209,7 @@ class PinPage extends ConsumerWidget {
             },
           ),
           SliverToBoxAdapter(
-            child: pin.when(
+            child: pinLoader.when(
               data: (acterPin) => Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[

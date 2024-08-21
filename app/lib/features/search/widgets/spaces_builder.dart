@@ -22,8 +22,8 @@ class SpacesBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final foundSpaces = ref.watch(spacesFoundProvider);
-    return foundSpaces.when(
+    final spacesLoader = ref.watch(spacesFoundProvider);
+    return spacesLoader.when(
       loading: () => renderLoading(context),
       error: (e, s) {
         _log.severe('Failed to search spaces', e, s);
@@ -32,11 +32,9 @@ class SpacesBuilder extends ConsumerWidget {
           Text(L10n.of(context).searchingFailed(e)),
         );
       },
-      data: (data) {
-        if (data.isEmpty) {
-          return renderEmpty(context, ref);
-        }
-        return renderItems(context, ref, data);
+      data: (spaces) {
+        if (spaces.isEmpty) return renderEmpty(context, ref);
+        return renderItems(context, ref, spaces);
       },
     );
   }

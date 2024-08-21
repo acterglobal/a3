@@ -18,9 +18,8 @@ class MemberList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final members = ref.watch(membersIdsProvider(roomId));
-
-    return members.when(
+    final membersLoader = ref.watch(membersIdsProvider(roomId));
+    return membersLoader.when(
       data: (members) {
         if (members.isEmpty) {
           return Center(

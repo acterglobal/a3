@@ -78,7 +78,7 @@ class EmailAddressesPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final emailAddresses = ref.watch(emailAddressesProvider);
+    final addressesLoader = ref.watch(emailAddressesProvider);
     return WithSidebar(
       sidebar: const SettingsPage(),
       child: Scaffold(
@@ -99,7 +99,7 @@ class EmailAddressesPage extends ConsumerWidget {
             ),
           ],
         ),
-        body: emailAddresses.when(
+        body: addressesLoader.when(
           data: (addresses) => buildAddresses(context, addresses),
           error: (e, s) {
             _log.severe('Failed to load email addresses', e, s);

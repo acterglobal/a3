@@ -228,15 +228,14 @@ class NotificationsSettingsPage extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) {
-    final potentialEmails = ref.watch(possibleEmailToAddForPushProvider);
+    final emailsLoader = ref.watch(possibleEmailToAddForPushProvider);
+    final pushersLoader = ref.watch(pushersProvider);
     return SettingsSectionWithTitleActions(
       title: Text(L10n.of(context).notificationTargets),
-      actions: potentialEmails.maybeWhen(
+      actions: emailsLoader.maybeWhen(
         orElse: () => [],
         data: (emails) {
-          if (emails.isEmpty) {
-            return [];
-          }
+          if (emails.isEmpty) return [];
           return [
             IconButton(
               icon: const Icon(Atlas.plus_circle_thin),
@@ -247,33 +246,33 @@ class NotificationsSettingsPage extends ConsumerWidget {
           ];
         },
       ),
-      tiles: ref.watch(pushersProvider).when(
-            data: (items) {
-              if (items.isEmpty) {
-                return [
-                  SettingsTile(
-                    title: Text(L10n.of(context).noPushTargetsAddedYet),
-                  ),
-                ];
-              }
-              return items
-                  .map((item) => _pusherTile(context, ref, item))
-                  .toList();
-            },
-            error: (e, s) {
-              _log.severe('Failed to load pushers', e, s);
-              return [
-                SettingsTile(
-                  title: Text(L10n.of(context).failedToLoadPushTargets(e)),
-                ),
-              ];
-            },
-            loading: () => [
+      tiles: pushersLoader.when(
+        data: (pushers) {
+          if (pushers.isEmpty) {
+            return [
               SettingsTile(
-                title: Text(L10n.of(context).loadingTargets),
+                title: Text(L10n.of(context).noPushTargetsAddedYet),
               ),
-            ],
+            ];
+          }
+          return pushers
+              .map((pusher) => _pusherTile(context, ref, pusher))
+              .toList();
+        },
+        error: (e, s) {
+          _log.severe('Failed to load pushers', e, s);
+          return [
+            SettingsTile(
+              title: Text(L10n.of(context).failedToLoadPushTargets(e)),
+            ),
+          ];
+        },
+        loading: () => [
+          SettingsTile(
+            title: Text(L10n.of(context).loadingTargets),
           ),
+        ],
+      ),
     );
   }
 

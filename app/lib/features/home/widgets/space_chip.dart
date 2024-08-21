@@ -32,11 +32,9 @@ class SpaceChip extends ConsumerWidget {
       if (spaceId == null) {
         throw L10n.of(context).spaceOrSpaceIdMustBeProvided;
       }
-      final brief = ref.watch(briefSpaceItemProvider(spaceId!));
-      return brief.when(
-        data: (space) {
-          return renderSpace(context, space);
-        },
+      final spaceLoader = ref.watch(briefSpaceItemProvider(spaceId!));
+      return spaceLoader.when(
+        data: (space) => renderSpace(context, space),
         error: (e, s) {
           _log.severe('Failed to load brief of space', e, s);
           return Chip(

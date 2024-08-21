@@ -23,26 +23,27 @@ class _AppNotificationSettingsTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(appContentNotificationSetting(appKey)).when(
-          data: (v) => innerBuild(context, ref, v),
-          error: (e, s) {
-            _log.severe(
-              'Fetching of app content notification setting failed',
-              e,
-              s,
-            );
-            return SettingsTile(
-              title: Text(L10n.of(context).loadingFailed(e)),
-            );
-          },
-          loading: () => Skeletonizer(
-            child: SettingsTile.switchTile(
-              initialValue: true,
-              onToggle: null,
-              title: Text(title),
-            ),
-          ),
+    final settingLoader = ref.watch(appContentNotificationSetting(appKey));
+    return settingLoader.when(
+      data: (v) => innerBuild(context, ref, v),
+      error: (e, s) {
+        _log.severe(
+          'Fetching of app content notification setting failed',
+          e,
+          s,
         );
+        return SettingsTile(
+          title: Text(L10n.of(context).loadingFailed(e)),
+        );
+      },
+      loading: () => Skeletonizer(
+        child: SettingsTile.switchTile(
+          initialValue: true,
+          onToggle: null,
+          title: Text(title),
+        ),
+      ),
+    );
   }
 
   Widget innerBuild(

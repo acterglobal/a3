@@ -24,12 +24,12 @@ class ChatsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final chatsList = ref.watch(spaceRelationsOverviewProvider(spaceId));
-    return chatsList.when(
-      data: (spaceRelationsOverview) => buildChatsSectionUI(
+    final overviewLoader = ref.watch(spaceRelationsOverviewProvider(spaceId));
+    return overviewLoader.when(
+      data: (overview) => buildChatsSectionUI(
         context,
         ref,
-        spaceRelationsOverview.knownChats,
+        overview.knownChats,
       ),
       error: (e, s) {
         _log.severe('Failed to load the related spaces', e, s);
@@ -50,12 +50,12 @@ class ChatsSection extends ConsumerWidget {
     WidgetRef ref,
     List<String> chats,
   ) {
+    final relatedChats =
+        ref.watch(remoteChatRelationsProvider(spaceId)).valueOrNull ?? [];
     final config = calculateSectionConfig(
       localListLen: chats.length,
       limit: limit,
-      remoteListLen:
-          (ref.watch(remoteChatRelationsProvider(spaceId)).valueOrNull ?? [])
-              .length,
+      remoteListLen: relatedChats.length,
     );
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,

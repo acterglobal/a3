@@ -55,17 +55,17 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final event = ref.watch(calendarEventProvider(widget.calendarId));
+    final calEventLoader = ref.watch(calendarEventProvider(widget.calendarId));
     return Scaffold(
-      body: event.when(
-        data: (calendarEvent) {
+      body: calEventLoader.when(
+        data: (calEvent) {
           // Update event participants list
-          updateEventParticipantsList(calendarEvent);
+          updateEventParticipantsList(calEvent);
 
           return CustomScrollView(
             slivers: [
-              _buildEventAppBar(calendarEvent),
-              _buildEventBody(calendarEvent),
+              _buildEventAppBar(calEvent),
+              _buildEventBody(calEvent),
             ],
           );
         },

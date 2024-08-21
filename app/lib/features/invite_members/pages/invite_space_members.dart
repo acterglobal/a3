@@ -102,9 +102,9 @@ class _InviteSpaceMembersConsumerState
   }
 
   Widget _buildOtherSpace() {
-    final otherSpaces =
+    final spacesLoader =
         ref.watch(otherSpacesForInviteMembersProvider(widget.roomId));
-    return otherSpaces.when(
+    return spacesLoader.when(
       data: _buildOtherSpaceData,
       error: (e, s) {
         _log.severe('Failed to load other spaces', e, s);
@@ -116,13 +116,13 @@ class _InviteSpaceMembersConsumerState
     );
   }
 
-  Widget _buildOtherSpaceData(List<Space> data) {
+  Widget _buildOtherSpaceData(List<Space> spaces) {
     return Expanded(
       child: ListView.builder(
-        itemCount: data.length,
+        itemCount: spaces.length,
         shrinkWrap: true,
         itemBuilder: (context, index) {
-          final roomId = data[index].getRoomIdStr();
+          final roomId = spaces[index].getRoomIdStr();
           return SpaceMemberInviteCard(
             roomId: roomId,
             isSelected: selectedSpaces.contains(roomId),

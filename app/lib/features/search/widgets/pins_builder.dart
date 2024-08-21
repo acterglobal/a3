@@ -10,6 +10,7 @@ final _log = Logger('a3::search::pins_builder');
 
 class PinsBuilder extends ConsumerWidget {
   final bool popBeforeRoute;
+
   const PinsBuilder({
     super.key,
     required this.popBeforeRoute,
@@ -17,43 +18,39 @@ class PinsBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final foundPins = ref.watch(pinsFoundProvider);
-    return foundPins.when(
+    final pinsLoader = ref.watch(pinsFoundProvider);
+    return pinsLoader.when(
       loading: () => Text(L10n.of(context).loading),
       error: (e, s) {
         _log.severe('Failed to search pins', e, s);
         return Text(L10n.of(context).searchingFailed(e));
       },
-      data: (data) {
+      data: (pins) {
         final Widget body;
-        if (data.isEmpty) {
+        if (pins.isEmpty) {
           body = Text(L10n.of(context).noMatchingPinsFound);
         } else {
-          final List<Widget> children = data
-              .map(
-                (e) => InkWell(
-                  child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Row(
-                      children: [
-                        e.icon,
-                        const SizedBox(width: 5),
-                        Text(e.name),
-                      ],
-                    ),
-                  ),
-                  onTap: () async {
-                    if (popBeforeRoute) {
-                      Navigator.pop(context);
-                    }
-                    context.pushNamed(
-                      Routes.pin.name,
-                      pathParameters: {'pinId': e.navigationTargetId},
-                    );
-                  },
+          final children = pins.map((pin) {
+            return InkWell(
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Row(
+                  children: [
+                    pin.icon,
+                    const SizedBox(width: 5),
+                    Text(pin.name),
+                  ],
                 ),
-              )
-              .toList();
+              ),
+              onTap: () {
+                if (popBeforeRoute) Navigator.pop(context);
+                context.pushNamed(
+                  Routes.pin.name,
+                  pathParameters: {'pinId': pin.navigationTargetId},
+                );
+              },
+            );
+          }).toList();
           body = SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(children: children),

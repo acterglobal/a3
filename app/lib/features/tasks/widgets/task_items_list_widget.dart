@@ -28,8 +28,8 @@ class TaskItemsListWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tasks = ref.watch(taskItemsListProvider(taskList));
-    return tasks.when(
+    final overviewLoader = ref.watch(taskItemsListProvider(taskList));
+    return overviewLoader.when(
       data: (overview) => taskData(context, overview),
       error: (e, s) {
         _log.severe('Failed to load tasklist', e, s);

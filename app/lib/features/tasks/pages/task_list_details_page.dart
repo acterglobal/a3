@@ -42,21 +42,20 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   }
 
   AppBar _buildAppbar() {
-    final taskList = ref.watch(taskListItemProvider(widget.taskListId));
-
-    return taskList.when(
-      data: (d) => AppBar(
+    final tasklistLoader = ref.watch(taskListItemProvider(widget.taskListId));
+    return tasklistLoader.when(
+      data: (tasklist) => AppBar(
         title: SelectionArea(
           child: GestureDetector(
             onTap: () => showEditTaskListNameBottomSheet(
               context: context,
               ref: ref,
-              taskList: d,
-              titleValue: d.name(),
+              taskList: tasklist,
+              titleValue: tasklist.name(),
             ),
             child: Text(
               key: TaskListDetailPage.taskListTitleKey,
-              d.name(),
+              tasklist.name(),
               style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
@@ -67,21 +66,21 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
             itemBuilder: (context) {
               return [
                 PopupMenuItem(
-                  onTap: () => showEditDescriptionSheet(d),
+                  onTap: () => showEditDescriptionSheet(tasklist),
                   child: Text(
                     L10n.of(context).editDescription,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
                 PopupMenuItem(
-                  onTap: () => showRedactDialog(taskList: d),
+                  onTap: () => showRedactDialog(taskList: tasklist),
                   child: Text(
                     L10n.of(context).delete,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
                 PopupMenuItem(
-                  onTap: () => showReportDialog(d),
+                  onTap: () => showReportDialog(tasklist),
                   child: Text(
                     L10n.of(context).report,
                     style: Theme.of(context).textTheme.bodyMedium,
@@ -130,9 +129,9 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   }
 
   Widget _buildBody() {
-    final taskList = ref.watch(taskListItemProvider(widget.taskListId));
-    return taskList.when(
-      data: (data) => _buildTaskListData(data),
+    final tasklistLoader = ref.watch(taskListItemProvider(widget.taskListId));
+    return tasklistLoader.when(
+      data: (tasklist) => _buildTaskListData(tasklist),
       error: (e, s) {
         _log.severe('Failed to load tasklist', e, s);
         return Text(L10n.of(context).loadingFailed(e));

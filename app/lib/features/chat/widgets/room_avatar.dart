@@ -87,8 +87,8 @@ class RoomAvatar extends ConsumerWidget {
 
   Widget dmAvatar(WidgetRef ref, BuildContext context) {
     final client = ref.watch(alwaysClientProvider);
-    final convoMembers = ref.watch(membersIdsProvider(roomId));
-    return convoMembers.when(
+    final membersLoader = ref.watch(membersIdsProvider(roomId));
+    return membersLoader.when(
       data: (members) {
         int count = members.length;
 

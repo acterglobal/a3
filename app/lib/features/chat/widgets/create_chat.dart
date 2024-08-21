@@ -346,7 +346,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
 
   Widget renderFoundUsers(BuildContext context) {
     final searchCtrl = ref.watch(searchController);
-    final foundUsers = ref.watch(searchResultProvider);
+    final usersLoader = ref.watch(searchResultProvider);
     return Visibility(
       visible: searchCtrl.text.isNotEmpty,
       child: Column(
@@ -356,24 +356,27 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
             L10n.of(context).foundUsers,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
-          foundUsers.when(
-            data: (data) => data.isEmpty
-                ? Center(
-                    heightFactor: 10,
-                    child: Text(
-                      L10n.of(context).noUsersFoundWithSpecifiedSearchTerm,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  )
-                : ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: data.length,
-                    itemBuilder: (context, index) => _UserWidget(
-                      profile: data[index],
-                      onUp: _onUp,
-                    ),
+          usersLoader.when(
+            data: (users) {
+              if (users.isEmpty) {
+                return Center(
+                  heightFactor: 10,
+                  child: Text(
+                    L10n.of(context).noUsersFoundWithSpecifiedSearchTerm,
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
+                );
+              }
+              return ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: users.length,
+                itemBuilder: (context, index) => _UserWidget(
+                  profile: users[index],
+                  onUp: _onUp,
+                ),
+              );
+            },
             error: (e, s) {
               _log.severe('Failed to search users', e, s);
               return Text(L10n.of(context).errorLoadingUsers(e));
@@ -687,7 +690,7 @@ class _UserWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final avatarProv = ref.watch(userAvatarProvider(profile));
+    final avatarLoader = ref.watch(userAvatarProvider(profile));
     final displayName = profile.getDisplayName();
     final userId = profile.userId().toString();
     return ListTile(
@@ -702,14 +705,14 @@ class _UserWidget extends ConsumerWidget {
               userId,
               style: Theme.of(context).textTheme.labelMedium,
             ),
-      leading: avatarProv.when(
-        data: (data) {
+      leading: avatarLoader.when(
+        data: (avatar) {
           return ActerAvatar(
             options: AvatarOptions.DM(
               AvatarInfo(
                 uniqueId: userId,
                 displayName: displayName,
-                avatar: data,
+                avatar: avatar,
               ),
               size: 18,
             ),

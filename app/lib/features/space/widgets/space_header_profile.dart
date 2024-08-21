@@ -88,8 +88,8 @@ class SpaceHeaderProfile extends ConsumerWidget {
     WidgetRef ref,
     Widget? child,
   ) {
-    final spaceMembers = ref.watch(membersIdsProvider(spaceId));
-    return spaceMembers.when(
+    final membersLoader = ref.watch(membersIdsProvider(spaceId));
+    return membersLoader.when(
       data: (members) {
         final membersCount = members.length;
         if (membersCount > 5) {

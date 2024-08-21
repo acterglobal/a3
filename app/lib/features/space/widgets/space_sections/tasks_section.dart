@@ -22,8 +22,8 @@ class TasksSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final taskList = ref.watch(taskListProvider(spaceId));
-    return taskList.when(
+    final tasksLoader = ref.watch(taskListProvider(spaceId));
+    return tasksLoader.when(
       data: (tasks) => buildTasksSectionUI(context, tasks),
       error: (e, s) {
         _log.severe('Failed to load tasks in space', e, s);

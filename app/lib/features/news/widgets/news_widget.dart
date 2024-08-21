@@ -38,10 +38,10 @@ class _NewsWidgetState extends ConsumerState<NewsWidget> {
   @override
   Widget build(BuildContext context) {
     final client = ref.watch(alwaysClientProvider);
-    final newsList = ref.watch(newsListProvider);
-    return newsList.when(
-      data: (data) {
-        if (data.isEmpty) {
+    final newsListLoader = ref.watch(newsListProvider);
+    return newsListLoader.when(
+      data: (newsList) {
+        if (newsList.isEmpty) {
           return Center(
             child: EmptyState(
               title: L10n.of(context).youHaveNoUpdates,
@@ -56,12 +56,12 @@ class _NewsWidgetState extends ConsumerState<NewsWidget> {
         }
         return PageView.builder(
           controller: _pageController,
-          itemCount: data.length,
+          itemCount: newsList.length,
           scrollDirection: Axis.vertical,
           itemBuilder: (context, index) => InkWell(
             onDoubleTap: () async {
               LikeAnimation.run(index);
-              final news = data[index];
+              final news = newsList[index];
               final manager =
                   await ref.read(newsReactionsProvider(news).future);
               final status = manager.likedByMe();
@@ -71,7 +71,7 @@ class _NewsWidgetState extends ConsumerState<NewsWidget> {
             },
             child: NewsItem(
               client: client,
-              news: data[index],
+              news: newsList[index],
               index: index,
               pageController: _pageController,
             ),

@@ -43,7 +43,7 @@ class _NewsItemState extends ConsumerState<NewsItem> {
   @override
   Widget build(BuildContext context) {
     final roomId = widget.news.roomId().toString();
-    final space = ref.watch(briefSpaceItemProvider(roomId));
+    final spaceLoader = ref.watch(briefSpaceItemProvider(roomId));
     final slides = widget.news.slides().toList();
 
     return Stack(
@@ -54,39 +54,36 @@ class _NewsItemState extends ConsumerState<NewsItem> {
           onPageChanged: (page) {
             currentSlideIndex.value = page;
           },
-          itemBuilder: (context, idx) {
-            final slideType = slides[idx].typeStr();
-            final bgColor = getBackgroundColor(slides[idx]);
-            final fgColor = getForegroundColor(slides[idx]);
+          itemBuilder: (context, index) {
+            final slide = slides[index];
+            final slideType = slide.typeStr();
+            final bgColor = getBackgroundColor(slide);
+            final fgColor = getForegroundColor(slide);
             switch (slideType) {
               case 'image':
                 return ImageSlide(
-                  slide: slides[idx],
+                  slide: slide,
                   bgColor: bgColor,
                   fgColor: fgColor,
                 );
-
               case 'video':
                 return VideoSlide(
-                  slide: slides[idx],
+                  slide: slide,
                   bgColor: bgColor,
                   fgColor: fgColor,
                 );
-
               case 'text':
                 return TextSlide(
-                  slide: slides[idx],
+                  slide: slide,
                   bgColor: bgColor,
                   fgColor: fgColor,
                   pageController: widget.pageController,
                 );
-
               default:
                 return Expanded(
                   child: Center(
-                    child: Text(
-                      L10n.of(context).slidesNotYetSupported(slideType),
-                    ),
+                    child:
+                        Text(L10n.of(context).slidesNotYetSupported(slideType)),
                   ),
                 );
             }
@@ -105,7 +102,7 @@ class _NewsItemState extends ConsumerState<NewsItem> {
               onTap: () => goToSpace(context, roomId),
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: space.when(
+                child: spaceLoader.when(
                   data: (space) => Text(space.avatarInfo.displayName ?? roomId),
                   error: (e, s) {
                     _log.severe('Failed to load brief of space', e, s);
@@ -168,9 +165,7 @@ class _NewsItemState extends ConsumerState<NewsItem> {
     );
   }
 
-  Widget newsActionButtons({
-    required NewsSlide newsSlide,
-  }) {
+  Widget newsActionButtons({required NewsSlide newsSlide}) {
     final newsReferencesList = newsSlide.references().toList();
     if (newsReferencesList.isEmpty) return const SizedBox();
 
@@ -179,20 +174,17 @@ class _NewsItemState extends ConsumerState<NewsItem> {
     final title = referenceDetails.title() ?? '';
 
     if (title == NewsReferencesType.shareEvent.name) {
-      return ref.watch(calendarEventProvider(uriId)).when(
-            data: (calendarEvent) {
-              return EventItem(
-                event: calendarEvent,
-              );
-            },
-            loading: () => const EventItemSkeleton(),
-            error: (e, s) {
-              _log.severe('Failed to load cal event', e, s);
-              return Center(
-                child: Text(L10n.of(context).failedToLoadEvent(e)),
-              );
-            },
+      final calEventLoader = ref.watch(calendarEventProvider(uriId));
+      return calEventLoader.when(
+        data: (calEvent) => EventItem(event: calEvent),
+        loading: () => const EventItemSkeleton(),
+        error: (e, s) {
+          _log.severe('Failed to load cal event', e, s);
+          return Center(
+            child: Text(L10n.of(context).failedToLoadEvent(e)),
           );
+        },
+      );
     } else {
       return Card(
         child: Padding(

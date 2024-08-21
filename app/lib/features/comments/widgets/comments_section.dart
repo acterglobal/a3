@@ -25,14 +25,15 @@ class CommentsSection extends ConsumerWidget {
     if (!provider.isActive(LabsFeature.comments)) {
       return const SizedBox.shrink();
     }
-    return ref.watch(commentsManagerProvider(manager)).when(
-          data: (manager) => found(context, manager),
-          error: (e, s) {
-            _log.severe('Failed to load comment manager', e, s);
-            return onError(context, e);
-          },
-          loading: () => loading(context),
-        );
+    final managerLoader = ref.watch(commentsManagerProvider(manager));
+    return managerLoader.when(
+      data: (manager) => found(context, manager),
+      error: (e, s) {
+        _log.severe('Failed to load comment manager', e, s);
+        return onError(context, e);
+      },
+      loading: () => loading(context),
+    );
   }
 
   Widget inBox(BuildContext context, Widget child) {

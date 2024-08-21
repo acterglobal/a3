@@ -26,8 +26,8 @@ class MentionProfileBuilder extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final client = ref.watch(alwaysClientProvider);
     final userId = client.userId().toString();
-    var memberIds = ref.watch(membersIdsProvider(roomQuery.roomId));
-    return memberIds.when(
+    final membersLoader = ref.watch(membersIdsProvider(roomQuery.roomId));
+    return membersLoader.when(
       loading: () => Skeletonizer(
         child: SizedBox(
           height: MediaQuery.of(context).size.height * 0.3,
@@ -38,19 +38,17 @@ class MentionProfileBuilder extends ConsumerWidget {
         _log.severe('Failed to load room members', e, s);
         return ErrorWidget(L10n.of(context).loadingFailed(e));
       },
-      data: (data) {
-        final users = data.fold<Map<String, String>>({}, (map, uId) {
+      data: (members) {
+        final users = members.fold<Map<String, String>>({}, (map, uId) {
           if (uId != userId) {
-            final displayName = ref
-                .watch(
-                  memberDisplayNameProvider(
-                    (roomId: roomQuery.roomId, userId: uId),
-                  ),
-                )
-                .valueOrNull;
+            final displayName = ref.watch(
+              memberDisplayNameProvider(
+                (roomId: roomQuery.roomId, userId: uId),
+              ),
+            );
 
             final normalizedId = uId.toLowerCase();
-            final normalizedName = displayName ?? '';
+            final normalizedName = displayName.valueOrNull ?? '';
             final normalizedQuery = roomQuery.query.toLowerCase();
 
             if (normalizedId.contains(normalizedQuery) ||

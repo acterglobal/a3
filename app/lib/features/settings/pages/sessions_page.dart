@@ -17,7 +17,7 @@ class SessionsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final allSessions = ref.watch(unknownSessionsProvider);
+    final sessionsLoader = ref.watch(unknownSessionsProvider);
     return WithSidebar(
       sidebar: const SettingsPage(),
       child: Scaffold(
@@ -36,7 +36,7 @@ class SessionsPage extends ConsumerWidget {
             ),
           ],
         ),
-        body: allSessions.when(
+        body: sessionsLoader.when(
           data: (sessions) => buildSessions(context, sessions),
           error: (e, s) {
             _log.severe('Failed to load unknown sessions', e, s);

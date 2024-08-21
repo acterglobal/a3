@@ -145,14 +145,13 @@ class _SelectRoomDrawerState extends ConsumerState<SelectRoomDrawer> {
 
 //Show space list based on the search term
   Widget searchedRoomsList(BuildContext context) {
-    final searched = ref.watch(
+    final roomsLoader = ref.watch(
       switch (widget.roomType) {
         RoomType.space => searchedSpacesProvider,
         RoomType.groupChat => roomSearchedChatsProvider,
       },
     );
-
-    return searched.when(
+    return roomsLoader.when(
       data: (rooms) {
         if (rooms.isEmpty) {
           return Center(

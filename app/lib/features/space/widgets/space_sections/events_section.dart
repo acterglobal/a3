@@ -23,11 +23,11 @@ class EventsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final eventsList = ref.watch(
+    final calEventsLoader = ref.watch(
       eventListSearchFilterProvider((spaceId: spaceId, searchText: '')),
     );
-    return eventsList.when(
-      data: (events) => buildEventsSectionUI(context, events),
+    return calEventsLoader.when(
+      data: (calEvents) => buildEventsSectionUI(context, calEvents),
       error: (e, s) {
         _log.severe('Failed to search cal events in space', e, s);
         return Center(
