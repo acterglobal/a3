@@ -150,12 +150,12 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
   }
 
   Widget _buildTasksListEmptyState() {
-    bool canAdd = false;
+    var canAdd = false;
     if (searchValue.isEmpty) {
-      canAdd = ref
-              .watch(hasSpaceWithPermissionProvider('CanPostTaskList'))
-              .valueOrNull ??
-          false;
+      final canPostLoader = ref.watch(
+        hasSpaceWithPermissionProvider('CanPostTaskList'),
+      );
+      if (canPostLoader.valueOrNull == true) canAdd = true;
     }
     return Center(
       heightFactor: 1,

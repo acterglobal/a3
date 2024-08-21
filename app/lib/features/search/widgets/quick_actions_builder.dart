@@ -28,24 +28,27 @@ class QuickActionsBuilder extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final features = ref.watch(featuresProvider);
     bool isActive(f) => features.isActive(f);
-    final canPostNewsProvider = ref.watch(
+
+    final canPostNewsLoader = ref.watch(
       hasSpaceWithPermissionProvider('CanPostNews'),
     );
-    final canPostNews = canPostNewsProvider.valueOrNull ?? false;
+    final canPostNews = canPostNewsLoader.valueOrNull ?? false;
 
-    final canPostPinProvider = ref.watch(
+    final canPostPinLoader = ref.watch(
       hasSpaceWithPermissionProvider('CanPostPin'),
     );
-    final canPostPin = canPostPinProvider.valueOrNull ?? false;
+    final canPostPin = canPostPinLoader.valueOrNull ?? false;
 
-    final canPostEventProvider = ref.watch(
+    final canPostEventLoader = ref.watch(
       hasSpaceWithPermissionProvider('CanPostEvent'),
     );
-    final canCreateTaskListProvider = ref.watch(
+    final canPostEvent = canPostEventLoader.valueOrNull ?? false;
+
+    final canPostTasklistLoader = ref.watch(
       hasSpaceWithPermissionProvider('CanPostTaskList'),
     );
-    final canPostEvent = (canPostEventProvider.valueOrNull ?? false);
-    final canPostTaskList = canCreateTaskListProvider.valueOrNull ?? false;
+    final canPostTasklist = canPostTasklistLoader.valueOrNull ?? false;
+
     return Wrap(
       alignment: WrapAlignment.spaceEvenly,
       spacing: 8,
@@ -88,7 +91,7 @@ class QuickActionsBuilder extends ConsumerWidget {
                 style: Theme.of(context).textTheme.labelMedium,
               ),
             ),
-          if (canPostTaskList)
+          if (canPostTasklist)
             OutlinedButton.icon(
               key: QuickJumpKeys.createTaskListAction,
               onPressed: () => showCreateUpdateTaskListBottomSheet(context),

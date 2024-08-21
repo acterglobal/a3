@@ -172,12 +172,12 @@ class _EventListPageState extends ConsumerState<EventListPage> {
   }
 
   Widget _buildEventsEmptyState() {
-    bool canAdd = false;
+    var canAdd = false;
     if (searchValue.isEmpty) {
-      canAdd = ref
-              .watch(hasSpaceWithPermissionProvider('CanPostEvent'))
-              .valueOrNull ??
-          false;
+      final canPostLoader = ref.watch(
+        hasSpaceWithPermissionProvider('CanPostEvent'),
+      );
+      if (canPostLoader.valueOrNull == true) canAdd = true;
     }
     return Center(
       heightFactor: 1,
