@@ -197,6 +197,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
   late ActerTriggerAutoCompleteTextController textController;
   final FocusNode chatFocus = FocusNode();
   final ValueNotifier<bool> _isInputEmptyNotifier = ValueNotifier(true);
+  Timer? _debounceTimer;
 
   @override
   void initState() {
@@ -212,15 +213,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     _setController();
   }
 
-  @override
-  void dispose() {
-    textController.dispose();
-    _isInputEmptyNotifier.dispose();
-    super.dispose();
-  }
-
   void _setController() {
-    Map<String, TextStyle> triggerStyles = {
+    final triggerStyles = {
       '@': TextStyle(
         color: Theme.of(context).colorScheme.onSecondary,
         height: 0.5,
@@ -240,9 +234,10 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
   Future<void> loadDraft() async {
     final draft =
         await ref.read(chatComposerDraftProvider(widget.roomId).future);
-    final inputNotifier = ref.read(chatInputProvider.notifier);
-    inputNotifier.unsetSelectedMessage();
+
     if (draft != null) {
+      final inputNotifier = ref.read(chatInputProvider.notifier);
+      inputNotifier.unsetSelectedMessage();
       if (draft.eventId() != null) {
         final eventId = draft.eventId()!;
         final draftType = draft.draftType();
@@ -264,6 +259,13 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
   // listener for handling send state
   void _updateInputState() {
     _isInputEmptyNotifier.value = textController.text.trim().isEmpty;
+    _debounceTimer?.cancel();
+    // delay operation to avoid excessive re-writes
+    _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+      // save composing draft
+      saveDraft(textController.text, widget.roomId, ref);
+      _log.info('compose draft saved for room: ${widget.roomId}');
+    });
   }
 
   void handleEmojiSelected(Category? category, Emoji emoji) {
@@ -741,7 +743,6 @@ class _TextInputWidget extends ConsumerStatefulWidget {
 }
 
 class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
-  Timer? _debounceTimer;
   @override
   void initState() {
     super.initState();
@@ -753,8 +754,6 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         // to edit, force refresh the inner text controller to reflect that
         if (next.selectedMessage != null) {
           widget.controller.text = parseEditMsg(next.selectedMessage!);
-          // save edit UI state also by pointing reference event id.
-          await saveDraft(widget.controller.text, next.selectedMessage!.id);
           // frame delay to keep focus connected with keyboard.
           WidgetsBinding.instance.addPostFrameCallback((_) {
             widget.chatFocus.requestFocus();
@@ -763,8 +762,8 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
       } else if (next.selectedMessageState == SelectedMessageState.replyTo &&
           (next.selectedMessage != prev?.selectedMessage ||
               prev?.selectedMessageState != next.selectedMessageState)) {
-        // save reply UI state also by pointing reference event id.
-        await saveDraft(widget.controller.text, next.selectedMessage!.id);
+        // controller doesn't update text so manually save draft state
+        await saveDraft(widget.controller.text, widget.roomId, ref);
         // frame delay to keep focus connected with keyboard..
         WidgetsBinding.instance.addPostFrameCallback((_) {
           widget.chatFocus.requestFocus();
@@ -810,43 +809,6 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         selection: TextSelection.collapsed(offset: start + 1),
       );
     }
-  }
-
-  // save composer draft object handler
-  Future<void> saveDraft(String text, String? eventId) async {
-    // get the convo object to initiate draft
-    final chat = await ref.read(chatProvider(widget.roomId).future);
-    bool res = false;
-    if (chat != null) {
-      if (eventId != null) {
-        final selectedMessageState =
-            ref.read(chatInputProvider).selectedMessageState;
-        if (selectedMessageState == SelectedMessageState.edit) {
-          res = await chat.saveMsgDraft(text, null, 'edit', eventId);
-        } else if (selectedMessageState == SelectedMessageState.replyTo) {
-          res = await chat.saveMsgDraft(text, null, 'reply', eventId);
-        }
-      } else {
-        res = await chat.saveMsgDraft(text, null, 'new', null);
-      }
-
-      _log.info('compose message state stored for room? $res|${widget.roomId}');
-    }
-  }
-
-  // chat text field onChanged callback
-  void _onTextChanged(String text) {
-    // send typing notice
-    if (widget.onTyping != null) {
-      widget.onTyping!(text.isNotEmpty);
-    }
-
-    // Debounce the save operation to avoid excessive writes
-    _debounceTimer?.cancel();
-    _debounceTimer = Timer(const Duration(milliseconds: 300), () {
-      // save composing draft
-      saveDraft(text, ref.read(chatInputProvider).selectedMessage?.id);
-    });
   }
 
   @override
@@ -903,7 +865,12 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         controller: widget.controller,
         focusNode: chatFocus,
         enabled: ref.watch(_allowEdit(widget.roomId)),
-        onChanged: _onTextChanged,
+        onChanged: (String val) {
+          // send typing notice
+          if (widget.onTyping != null) {
+            widget.onTyping!(val.isNotEmpty);
+          }
+        },
         onSubmitted: (_) => widget.onSendButtonPressed(),
         style: Theme.of(context).textTheme.bodySmall,
         decoration: InputDecoration(
