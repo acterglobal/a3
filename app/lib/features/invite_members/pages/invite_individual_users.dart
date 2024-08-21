@@ -8,10 +8,6 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logging/logging.dart';
-import 'package:skeletonizer/skeletonizer.dart';
-
-final _log = Logger('a3::invite::individual_users');
 
 class InviteIndividualUsers extends ConsumerWidget {
   final String roomId;
