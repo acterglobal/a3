@@ -1,6 +1,8 @@
+import 'package:acter/features/bug_report/actions/open_bug_report.dart';
 import 'package:flutter/material.dart';
 import 'package:quickalert/models/quickalert_options.dart';
 import 'package:quickalert/quickalert.dart';
+import 'package:quickalert/widgets/quickalert_buttons.dart';
 import 'package:quickalert/widgets/quickalert_container.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
@@ -30,6 +32,7 @@ class ErrorPage extends StatelessWidget {
   final String? title;
   final String? text;
   final String Function(Object error)? textBuilder;
+  final bool includeBugReportButton;
 
   /// Dialog Border Radius
   final double borderRadius;
@@ -44,6 +47,7 @@ class ErrorPage extends StatelessWidget {
     this.textBuilder,
     this.onRetryTap,
     this.borderRadius = 15.0,
+    this.includeBugReportButton = true,
   });
 
   @override
@@ -93,10 +97,45 @@ class ErrorPage extends StatelessWidget {
 
     return _ActerErrorAlert(
       options: options,
+      includeBugReportButton: includeBugReportButton,
     );
   }
 }
 
 class _ActerErrorAlert extends QuickAlertContainer {
-  const _ActerErrorAlert({required super.options});
+  final bool includeBugReportButton;
+  const _ActerErrorAlert({
+    required super.options,
+    this.includeBugReportButton = true,
+  });
+
+  @override
+  Widget buildButtons() {
+    return _ActerErrorActionButtons(options: options);
+  }
+
+  @override
+  Widget buildHeader(context) {
+    final orginalHeader = super.buildHeader(context);
+    if (!includeBugReportButton) {
+      return orginalHeader;
+    }
+    return Stack(
+      children: [
+        orginalHeader,
+        Positioned(
+          right: 10,
+          top: 10,
+          child: TextButton(
+            child: Text(L10n.of(context).reportBug),
+            onPressed: () => openBugReport(context),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ActerErrorActionButtons extends QuickAlertButtons {
+  const _ActerErrorActionButtons({required super.options});
 }
