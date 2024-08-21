@@ -38,29 +38,29 @@ class TasksSection extends ConsumerWidget {
   }
 
   Widget buildTasksSectionUI(BuildContext context, List<String> tasks) {
-    int taskLimit = (tasks.length > limit) ? limit : tasks.length;
-    bool isShowSeeAllButton = tasks.length > taskLimit;
+    final hasMore = tasks.length > limit;
+    final count = hasMore ? limit : tasks.length;
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionHeader(
           title: L10n.of(context).tasks,
-          isShowSeeAllButton: isShowSeeAllButton,
+          isShowSeeAllButton: hasMore,
           onTapSeeAll: () => context.pushNamed(
             Routes.spaceTasks.name,
             pathParameters: {'spaceId': spaceId},
           ),
         ),
-        taskListUI(tasks, taskLimit),
+        taskListUI(tasks, count),
       ],
     );
   }
 
-  Widget taskListUI(List<String> tasks, int taskLimit) {
+  Widget taskListUI(List<String> tasks, int count) {
     return ListView.builder(
       shrinkWrap: true,
-      itemCount: taskLimit,
+      itemCount: count,
       padding: EdgeInsets.zero,
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
@@ -69,20 +71,16 @@ class MyEventsSection extends ConsumerWidget {
     );
   }
 
-  Widget eventListUI(
-    BuildContext context,
-    List<CalendarEvent> events,
-  ) {
-    int eventsLimit =
-        (limit != null && events.length > limit!) ? limit! : events.length;
+  Widget eventListUI(BuildContext context, List<CalendarEvent> events) {
+    final count = limit == null ? events.length : min(events.length, limit!);
     return ListView.builder(
       shrinkWrap: true,
-      itemCount: eventsLimit,
+      itemCount: count,
       physics: const NeverScrollableScrollPhysics(),
-      itemBuilder: (context, idx) => EventItem(
+      itemBuilder: (context, index) => EventItem(
         isShowSpaceName: true,
         margin: const EdgeInsets.only(bottom: 14),
-        event: events[idx],
+        event: events[index],
       ),
     );
   }

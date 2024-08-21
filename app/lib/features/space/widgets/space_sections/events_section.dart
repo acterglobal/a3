@@ -44,29 +44,29 @@ class EventsSection extends ConsumerWidget {
     BuildContext context,
     List<CalendarEvent> events,
   ) {
-    int eventsLimit = (events.length > limit) ? limit : events.length;
-    bool isShowSeeAllButton = events.length > eventsLimit;
+    final hasMore = events.length > limit;
+    final count = hasMore ? limit : events.length;
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionHeader(
           title: L10n.of(context).events,
-          isShowSeeAllButton: isShowSeeAllButton,
+          isShowSeeAllButton: hasMore,
           onTapSeeAll: () => context.pushNamed(
             Routes.spaceEvents.name,
             pathParameters: {'spaceId': spaceId},
           ),
         ),
-        eventsListUI(events, eventsLimit),
+        eventsListUI(events, count),
       ],
     );
   }
 
-  Widget eventsListUI(List<CalendarEvent> events, int eventsLimit) {
+  Widget eventsListUI(List<CalendarEvent> events, int count) {
     return ListView.builder(
       shrinkWrap: true,
-      itemCount: eventsLimit,
+      itemCount: count,
       padding: EdgeInsets.zero,
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {

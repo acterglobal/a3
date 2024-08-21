@@ -39,29 +39,29 @@ class PinsSection extends ConsumerWidget {
   }
 
   Widget buildPinsSectionUI(BuildContext context, List<ActerPin> pins) {
-    int pinsLimit = (pins.length > limit) ? limit : pins.length;
-    bool isShowSeeAllButton = pins.length > pinsLimit;
+    final hasMore = pins.length > limit;
+    final count = hasMore ? limit : pins.length;
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionHeader(
           title: L10n.of(context).pins,
-          isShowSeeAllButton: isShowSeeAllButton,
+          isShowSeeAllButton: hasMore,
           onTapSeeAll: () => context.pushNamed(
             Routes.spacePins.name,
             pathParameters: {'spaceId': spaceId},
           ),
         ),
-        pinsListUI(pins, pinsLimit),
+        pinsListUI(pins, count),
       ],
     );
   }
 
-  Widget pinsListUI(List<ActerPin> pins, int pinsLimit) {
+  Widget pinsListUI(List<ActerPin> pins, int count) {
     return ListView.builder(
       shrinkWrap: true,
-      itemCount: pinsLimit,
+      itemCount: count,
       padding: EdgeInsets.zero,
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {

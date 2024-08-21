@@ -38,29 +38,29 @@ class MembersSection extends ConsumerWidget {
   }
 
   Widget buildMembersSectionUI(BuildContext context, List<String> members) {
-    int membersLimit = (members.length > limit) ? limit : members.length;
-    bool isShowSeeAllButton = members.length > membersLimit;
+    final hasMore = members.length > limit;
+    final count = hasMore ? limit : members.length;
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionHeader(
           title: L10n.of(context).members,
-          isShowSeeAllButton: isShowSeeAllButton,
+          isShowSeeAllButton: hasMore,
           onTapSeeAll: () => context.pushNamed(
             Routes.spaceMembers.name,
             pathParameters: {'spaceId': spaceId},
           ),
         ),
-        membersListUI(members, membersLimit),
+        membersListUI(members, count),
       ],
     );
   }
 
-  Widget membersListUI(List<String> members, int membersLimit) {
+  Widget membersListUI(List<String> members, int count) {
     return ListView.builder(
       shrinkWrap: true,
-      itemCount: membersLimit,
+      itemCount: count,
       padding: EdgeInsets.zero,
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
