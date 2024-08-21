@@ -23,7 +23,10 @@ final _log = Logger('a3::pins::list');
 class PinsListPage extends ConsumerStatefulWidget {
   final String? spaceId;
 
-  const PinsListPage({super.key, this.spaceId});
+  const PinsListPage({
+    super.key,
+    this.spaceId,
+  });
 
   @override
   ConsumerState<PinsListPage> createState() => _AllPinsPageConsumerState();
@@ -50,10 +53,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(L10n.of(context).pins),
-          if (widget.spaceId != null)
-            SpaceNameWidget(
-              spaceId: widget.spaceId,
-            ),
+          if (widget.spaceId != null) SpaceNameWidget(spaceId: widget.spaceId),
         ],
       ),
       actions: [
@@ -137,7 +137,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
             : L10n.of(context).noPinsAvailableYet,
         subtitle: L10n.of(context).noPinsAvailableDescription,
         image: 'assets/images/empty_pin.svg',
-        primaryButton: canAdd && searchValue.isEmpty
+        primaryButton: canAdd
             ? ActerPrimaryActionButton(
                 onPressed: () => context.pushNamed(
                   Routes.createPin.name,

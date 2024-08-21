@@ -134,17 +134,15 @@ class SubSpacesPage extends ConsumerWidget {
           children: [
             spacesLoader.when(
               data: (spaces) {
-                return renderSubSpaces(
-                      context,
-                      ref,
-                      spaceIdOrAlias,
-                      spaces,
-                      crossAxisCount: crossAxisCount,
-                    ) ??
-                    renderFallback(
-                      context,
-                      canLinkSpace,
-                    );
+                final subspaces = renderSubSpaces(
+                  context,
+                  ref,
+                  spaceIdOrAlias,
+                  spaces,
+                  crossAxisCount: crossAxisCount,
+                );
+                if (subspaces != null) return subspaces;
+                return renderFallback(context, canLinkSpace);
               },
               error: (e, s) {
                 _log.severe('Failed to load the related spaces', e, s);

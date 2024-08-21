@@ -12,7 +12,10 @@ final _log = Logger('a3::common::visibility::chip');
 class VisibilityChip extends ConsumerWidget {
   final String roomId;
 
-  const VisibilityChip({super.key, required this.roomId});
+  const VisibilityChip({
+    super.key,
+    required this.roomId,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -67,8 +67,8 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
   final AttachmentsManager attachmentManager;
 
   const FoundAttachmentSectionWidget({
-    required this.attachmentManager,
     super.key,
+    required this.attachmentManager,
   });
 
   @override

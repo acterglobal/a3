@@ -64,8 +64,9 @@ class SpaceChip extends ConsumerWidget {
   Widget renderSpace(BuildContext context, SpaceItem space) {
     String spaceName = space.avatarInfo.displayName ?? space.roomId;
     return InkWell(
-      onTap:
-          onTapOpenSpaceDetail ? () => goToSpace(context, space.roomId) : null,
+      onTap: () {
+        if (onTapOpenSpaceDetail) goToSpace(context, space.roomId);
+      },
       child: useCompatView
           ? Row(
               children: [

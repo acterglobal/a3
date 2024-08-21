@@ -19,7 +19,11 @@ class SpaceInfo extends ConsumerWidget {
   final String spaceId;
   final double size;
 
-  const SpaceInfo({super.key, this.size = 16, required this.spaceId});
+  const SpaceInfo({
+    super.key,
+    this.size = 16,
+    required this.spaceId,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -76,9 +76,8 @@ class TaskListItemCard extends ConsumerWidget {
   }
 
   Widget? subtitle(WidgetRef ref, TaskList taskList) {
-    final spaceProfile =
-        ref.watch(roomAvatarInfoProvider(taskList.spaceIdStr()));
-
+    final spaceId = taskList.spaceIdStr();
+    final spaceProfile = ref.watch(roomAvatarInfoProvider(spaceId));
     return showSpace ? Text(spaceProfile.displayName ?? '') : null;
   }
 }

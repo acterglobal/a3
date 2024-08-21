@@ -46,20 +46,15 @@ class _AppNotificationSettingsTile extends ConsumerWidget {
     );
   }
 
-  Widget innerBuild(
-    BuildContext context,
-    WidgetRef ref,
-    bool currentValue,
-  ) {
+  Widget innerBuild(BuildContext context, WidgetRef ref, bool currentValue) {
     return SettingsTile.switchTile(
       title: Text(title),
       description: description != null ? Text(description!) : null,
       initialValue: currentValue,
       enabled: enabled ?? true,
       onToggle: (newVal) async {
-        final settingsSetter =
-            await ref.read(notificationSettingsProvider.future);
-        await settingsSetter.setGlobalContentSetting(appKey, newVal);
+        final settings = await ref.read(notificationSettingsProvider.future);
+        await settings.setGlobalContentSetting(appKey, newVal);
       },
     );
   }
@@ -72,11 +67,11 @@ class AppsNotificationsSettingsTile extends AbstractSettingsTile {
   final bool? enabled;
 
   const AppsNotificationsSettingsTile({
-    required this.title,
-    required this.appKey,
-    this.description,
-    this.enabled,
     super.key,
+    required this.title,
+    this.description,
+    required this.appKey,
+    this.enabled,
   });
 
   @override

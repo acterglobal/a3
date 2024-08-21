@@ -32,8 +32,8 @@ class RoomProfilePage extends ConsumerStatefulWidget {
   final String roomId;
 
   const RoomProfilePage({
-    required this.roomId,
     super.key,
+    required this.roomId,
   });
 
   @override
@@ -86,13 +86,11 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     if (membership?.canString('CanSetTopic') == true) {
       menuListItems.add(
         PopupMenuItem(
-          onTap: () {
-            showEditDescriptionBottomSheet(
-              context: context,
-              convo: convo,
-              descriptionValue: convo?.topic() ?? '',
-            );
-          },
+          onTap: () => showEditDescriptionBottomSheet(
+            context: context,
+            convo: convo,
+            descriptionValue: convo?.topic() ?? '',
+          ),
           child: Text(L10n.of(context).editDescription),
         ),
       );
@@ -187,9 +185,9 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
       mainAxisSize: MainAxisSize.min,
       children: [
         InkWell(
-          onTap: isDirectChat
-              ? null
-              : () => openAvatar(context, ref, widget.roomId),
+          onTap: () {
+            if (!isDirectChat) openAvatar(context, ref, widget.roomId);
+          },
           child: RoomAvatar(
             roomId: widget.roomId,
             avatarSize: 75,
@@ -395,11 +393,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     );
   }
 
-  Widget _optionsBody(
-    BuildContext context,
-    Convo? convo,
-    bool isDirectChat,
-  ) {
+  Widget _optionsBody(BuildContext context, Convo? convo, bool isDirectChat) {
     return Column(
       children: [
         // Notification section

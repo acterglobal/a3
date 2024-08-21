@@ -43,7 +43,10 @@ final _log = Logger('a3::cal_event::details');
 class EventDetailPage extends ConsumerStatefulWidget {
   final String calendarId;
 
-  const EventDetailPage({super.key, required this.calendarId});
+  const EventDetailPage({
+    super.key,
+    required this.calendarId,
+  });
 
   @override
   ConsumerState<EventDetailPage> createState() =>

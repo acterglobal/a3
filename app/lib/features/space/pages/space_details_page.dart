@@ -195,16 +195,13 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   Widget spaceAvatar() {
     final avatarData =
         ref.watch(roomAvatarProvider(widget.spaceId)).valueOrNull;
-    if (avatarData != null) {
-      return Image.memory(
-        avatarData.bytes,
-        height: 300,
-        width: MediaQuery.of(context).size.width,
-        fit: BoxFit.cover,
-      );
-    } else {
-      return Container(height: 200, color: Colors.red);
-    }
+    if (avatarData == null) return Container(height: 200, color: Colors.red);
+    return Image.memory(
+      avatarData.bytes,
+      height: 300,
+      width: MediaQuery.of(context).size.width,
+      fit: BoxFit.cover,
+    );
   }
 
   Widget spaceTabMenuUI(TabEntry tabItem, bool active) {

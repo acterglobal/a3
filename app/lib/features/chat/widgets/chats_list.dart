@@ -18,7 +18,10 @@ final _log = Logger('a3::chat::chats_list');
 class ChatsList extends ConsumerStatefulWidget {
   final Function(String)? onSelected;
 
-  const ChatsList({this.onSelected, super.key});
+  const ChatsList({
+    super.key,
+    this.onSelected,
+  });
 
   @override
   ConsumerState<ChatsList> createState() => _ChatsListConsumerState();
@@ -88,9 +91,7 @@ class _ChatsListConsumerState extends ConsumerState<ChatsList> {
             subtitle: L10n.of(context).getInTouchWithOtherChangeMakers,
             image: 'assets/images/empty_chat.svg',
             primaryButton: ActerPrimaryActionButton(
-              onPressed: () async => context.pushNamed(
-                Routes.createChat.name,
-              ),
+              onPressed: () => context.pushNamed(Routes.createChat.name),
               child: Text(L10n.of(context).sendDM),
             ),
           ),
@@ -183,8 +184,10 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
       animation: animation,
       key: Key('convo-card-$roomId-removed'),
       roomId: roomId,
-      onTap: () =>
-          widget.onSelected != null ? widget.onSelected!(roomId) : null,
+      onTap: () {
+        final onSelected = widget.onSelected;
+        if (onSelected != null) onSelected(roomId);
+      },
     );
   }
 
@@ -203,8 +206,10 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
       animation: animation,
       key: Key('convo-card-$roomId'),
       roomId: roomId,
-      onTap: () =>
-          widget.onSelected != null ? widget.onSelected!(roomId) : null,
+      onTap: () {
+        final onSelected = widget.onSelected;
+        if (onSelected != null) onSelected(roomId);
+      },
     );
   }
 

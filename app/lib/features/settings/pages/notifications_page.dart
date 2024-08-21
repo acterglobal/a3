@@ -200,8 +200,8 @@ class NotificationsSettingsPage extends ConsumerWidget {
   ) async {
     EasyLoading.show(status: L10n.of(context).changingNotificationMode);
     try {
-      final notifier = ref.read(notificationSettingsProvider).valueOrNull!;
-      await notifier.setDefaultNotificationMode(
+      final settings = await ref.read(notificationSettingsProvider.future);
+      await settings.setDefaultNotificationMode(
         isEncrypted,
         isOneToOne,
         newMode,
@@ -367,9 +367,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
             ),
             ActerDangerActionButton(
               onPressed: () => _onTargetDelete(context, ref, item),
-              child: Text(
-                L10n.of(context).deleteTarget,
-              ),
+              child: Text(L10n.of(context).deleteTarget),
             ),
           ],
         ),

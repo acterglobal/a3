@@ -20,9 +20,9 @@ class PinListItemById extends ConsumerWidget {
   final bool showSpace;
 
   const PinListItemById({
+    super.key,
     required this.pinId,
     this.showSpace = false,
-    super.key,
   });
 
   @override

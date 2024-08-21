@@ -5,13 +5,14 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quds_popup_menu/quds_popup_menu.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class MessageMetadataBuilder extends ConsumerWidget {
   final String roomId;
   final types.Message message;
+
   const MessageMetadataBuilder({
     super.key,
     required this.roomId,
@@ -62,7 +63,10 @@ class _UserReceiptsWidget extends ConsumerWidget {
   final List<String> seenList;
   static int limit = 5;
 
-  const _UserReceiptsWidget({required this.roomId, required this.seenList});
+  const _UserReceiptsWidget({
+    required this.roomId,
+    required this.seenList,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

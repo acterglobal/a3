@@ -128,20 +128,20 @@ class RoomAvatar extends ConsumerWidget {
   }
 
   Widget groupAvatarDM(List<String> members, WidgetRef ref) {
-    final profile = ref
-        .watch(memberAvatarInfoProvider((userId: members[0], roomId: roomId)));
-    final secondaryProfile = ref
-        .watch(memberAvatarInfoProvider((userId: members[1], roomId: roomId)));
+    final profile = ref.watch(
+      memberAvatarInfoProvider((userId: members[0], roomId: roomId)),
+    );
+    final secondaryProfile = ref.watch(
+      memberAvatarInfoProvider((userId: members[1], roomId: roomId)),
+    );
 
     return ActerAvatar(
       options: AvatarOptions.GroupDM(
         profile,
         groupAvatars: [
           secondaryProfile,
-          for (int i = 2; i < members.length; i++)
-            AvatarInfo(
-              uniqueId: members[i],
-            ),
+          for (var i = 2; i < members.length; i++)
+            AvatarInfo(uniqueId: members[i]),
         ],
         size: avatarSize / 2,
       ),

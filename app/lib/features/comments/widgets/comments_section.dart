@@ -44,7 +44,10 @@ class CommentsSection extends ConsumerWidget {
         children: <Widget>[
           Row(
             children: [
-              const Icon(Atlas.comment_blank_thin, size: 14),
+              const Icon(
+                Atlas.comment_blank_thin,
+                size: 14,
+              ),
               const SizedBox(width: 5),
               Text(
                 L10n.of(context).comments,

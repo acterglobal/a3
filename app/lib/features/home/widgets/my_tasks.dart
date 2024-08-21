@@ -14,7 +14,10 @@ final _log = Logger('a3::home::my_tasks');
 class MyTasksSection extends ConsumerWidget {
   final int limit;
 
-  const MyTasksSection({super.key, required this.limit});
+  const MyTasksSection({
+    super.key,
+    required this.limit,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -63,12 +63,10 @@ class TasksSection extends ConsumerWidget {
       itemCount: count,
       padding: EdgeInsets.zero,
       physics: const NeverScrollableScrollPhysics(),
-      itemBuilder: (context, index) {
-        return TaskListItemCard(
-          taskListId: tasks[index],
-          initiallyExpanded: false,
-        );
-      },
+      itemBuilder: (context, index) => TaskListItemCard(
+        taskListId: tasks[index],
+        initiallyExpanded: false,
+      ),
     );
   }
 }

@@ -107,7 +107,7 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
         ),
         Expanded(
           child: tasklistsLoader.when(
-            data: (tasklists) => _buildTasksList(tasklists),
+            data: (tasklists) => _buildTasklists(tasklists),
             error: (e, s) {
               _log.severe('Failed to search tasklists in space', e, s);
               return Center(
@@ -121,35 +121,33 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
     );
   }
 
-  Widget _buildTasksList(List<String> tasksList) {
+  Widget _buildTasklists(List<String> tasklists) {
     final size = MediaQuery.of(context).size;
     final widthCount = (size.width ~/ 500).toInt();
     const int minCount = 2;
 
-    if (tasksList.isEmpty) return _buildTasksListEmptyState();
+    if (tasklists.isEmpty) return _buildTasklistsEmptyState();
 
     return SingleChildScrollView(
       key: TasksListPage.scrollView,
       child: StaggeredGrid.count(
         crossAxisCount: max(1, min(widthCount, minCount)),
         children: [
-          for (var taskListId in tasksList)
+          for (var tasklistId in tasklists)
             ValueListenableBuilder(
               valueListenable: showCompletedTask,
-              builder: (context, value, child) {
-                return TaskListItemCard(
-                  taskListId: taskListId,
-                  showCompletedTask: value,
-                  showSpace: widget.spaceId == null,
-                );
-              },
+              builder: (context, value, child) => TaskListItemCard(
+                taskListId: tasklistId,
+                showCompletedTask: value,
+                showSpace: widget.spaceId == null,
+              ),
             ),
         ],
       ),
     );
   }
 
-  Widget _buildTasksListEmptyState() {
+  Widget _buildTasklistsEmptyState() {
     var canAdd = false;
     if (searchValue.isEmpty) {
       final canPostLoader = ref.watch(
@@ -165,7 +163,7 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
             : L10n.of(context).noTasksListAvailableYet,
         subtitle: L10n.of(context).noTasksListAvailableDescription,
         image: 'assets/images/tasks.svg',
-        primaryButton: canAdd && searchValue.isEmpty
+        primaryButton: canAdd
             ? ActerPrimaryActionButton(
                 onPressed: () => showCreateUpdateTaskListBottomSheet(
                   context,

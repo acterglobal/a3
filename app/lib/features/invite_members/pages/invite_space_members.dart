@@ -15,7 +15,10 @@ final _log = Logger('a3::invite::space_members');
 class InviteSpaceMembers extends ConsumerStatefulWidget {
   final String roomId;
 
-  const InviteSpaceMembers({super.key, required this.roomId});
+  const InviteSpaceMembers({
+    super.key,
+    required this.roomId,
+  });
 
   @override
   ConsumerState<InviteSpaceMembers> createState() =>

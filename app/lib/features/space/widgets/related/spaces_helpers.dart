@@ -142,19 +142,14 @@ Widget? renderSubSpaces(
     if (moreSubspaces != null) moreSubspaces,
   ];
 
-  if (items.isNotEmpty) {
-    if (titleBuilder != null) {
-      final title = titleBuilder();
-      if (title != null) {
-        items.insert(0, title);
-      }
+  if (items.isEmpty) return null;
+  if (titleBuilder != null) {
+    final title = titleBuilder();
+    if (title != null) {
+      items.insert(0, title);
     }
-    return SingleChildScrollView(
-      child: Column(
-        children: items,
-      ),
-    );
-  } else {
-    return null;
   }
+  return SingleChildScrollView(
+    child: Column(children: items),
+  );
 }

@@ -71,25 +71,17 @@ class MentionProfileBuilder extends ConsumerWidget {
               shrinkWrap: true,
               padding: const EdgeInsets.all(0),
               itemCount: users.length,
-              itemBuilder: (_, index) {
-                final id = users.keys.elementAt(index);
+              itemBuilder: (context, index) {
+                final userId = users.keys.elementAt(index);
                 final displayName = users.values.elementAt(index);
                 return ListTile(
                   dense: true,
-                  onTap: () {
-                    final autocomplete = MultiTriggerAutocomplete.of(context);
-                    ref
-                        .read(chatInputProvider.notifier)
-                        .addMention(displayName, id);
-                    return autocomplete.acceptAutocompleteOption(
-                      displayName.isNotEmpty ? displayName : id.substring(1),
-                    );
-                  },
+                  onTap: () => onComplete(ref, userId, displayName),
                   leading: Consumer(
                     builder: (context, ref, child) {
                       final avatarInfo = ref.watch(
                         memberAvatarInfoProvider(
-                          (roomId: roomQuery.roomId, userId: id),
+                          (roomId: roomQuery.roomId, userId: userId),
                         ),
                       );
                       return ActerAvatar(
@@ -103,7 +95,7 @@ class MentionProfileBuilder extends ConsumerWidget {
                   title: Text(displayName),
                   titleTextStyle: Theme.of(context).textTheme.bodyMedium,
                   subtitleTextStyle: Theme.of(context).textTheme.labelMedium,
-                  subtitle: displayName.isNotEmpty ? Text(id) : null,
+                  subtitle: displayName.isNotEmpty ? Text(userId) : null,
                 );
               },
             ),
@@ -111,5 +103,12 @@ class MentionProfileBuilder extends ConsumerWidget {
         );
       },
     );
+  }
+
+  void onComplete(WidgetRef ref, String userId, String displayName) {
+    final autocomplete = MultiTriggerAutocomplete.of(context);
+    ref.read(chatInputProvider.notifier).addMention(displayName, userId);
+    final option = displayName.isNotEmpty ? displayName : userId.substring(1);
+    return autocomplete.acceptAutocompleteOption(option);
   }
 }

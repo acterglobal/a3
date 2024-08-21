@@ -112,8 +112,11 @@ class TaskItemDetailPage extends ConsumerWidget {
                   ),
                 ),
                 PopupMenuItem(
-                  onTap: () =>
-                      showRedactDialog(context: context, ref: ref, task: task),
+                  onTap: () => showRedactDialog(
+                    context: context,
+                    ref: ref,
+                    task: task,
+                  ),
                   child: Text(
                     L10n.of(context).delete,
                     style: Theme.of(context).textTheme.bodyMedium,
@@ -386,11 +389,7 @@ class TaskItemDetailPage extends ConsumerWidget {
     );
   }
 
-  Widget assigneeName(
-    BuildContext context,
-    Task task,
-    WidgetRef ref,
-  ) {
+  Widget assigneeName(BuildContext context, Task task, WidgetRef ref) {
     final assignees = task.assigneesStr().map((s) => s.toDartString()).toList();
 
     return Wrap(
@@ -398,9 +397,7 @@ class TaskItemDetailPage extends ConsumerWidget {
       children: assignees.map((i) {
         final displayName = ref
             .watch(
-              memberDisplayNameProvider(
-                (roomId: task.roomIdStr(), userId: i),
-              ),
+              memberDisplayNameProvider((roomId: task.roomIdStr(), userId: i)),
             )
             .valueOrNull;
         return Padding(
@@ -436,10 +433,7 @@ class TaskItemDetailPage extends ConsumerWidget {
     }
   }
 
-  Future<void> onUnAssign(
-    BuildContext context,
-    Task task,
-  ) async {
+  Future<void> onUnAssign(BuildContext context, Task task) async {
     EasyLoading.show(status: L10n.of(context).unassigningSelf);
     try {
       await task.unassignSelf();

@@ -59,12 +59,7 @@ class _CommentsListState extends ConsumerState<CommentsList> {
       children: [
         Column(
           children: comments
-              .map(
-                (c) => CommentWidget(
-                  comment: c,
-                  manager: widget.manager,
-                ),
-              )
+              .map((c) => CommentWidget(comment: c, manager: widget.manager))
               .toList(),
         ),
         if (editorOpened)

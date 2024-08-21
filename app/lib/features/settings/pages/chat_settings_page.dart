@@ -148,9 +148,8 @@ class ChatSettingsPage extends ConsumerWidget {
                 _typingNotice(context, ref),
                 SettingsTile.switchTile(
                   title: Text(L10n.of(context).chatSettingsReadReceipts),
-                  description: Text(
-                    L10n.of(context).chatSettingsReadReceiptsExplainer,
-                  ),
+                  description:
+                      Text(L10n.of(context).chatSettingsReadReceiptsExplainer),
                   enabled: false,
                   initialValue: false,
                   onToggle: (newVal) {},

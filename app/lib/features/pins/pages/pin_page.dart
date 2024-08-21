@@ -237,34 +237,19 @@ class PinPage extends ConsumerWidget {
   // pin title builder
   Widget _buildTitle(BuildContext context, WidgetRef ref, ActerPin pin) {
     final pinEdit = ref.watch(pinEditProvider(pin));
-    final pinEditNotifier = ref.watch(pinEditProvider(pin).notifier);
     return Visibility(
       visible: !pinEdit.editMode,
       replacement: TextFormField(
         key: PinPage.titleFieldKey,
         initialValue: pin.title(),
         style: Theme.of(context).textTheme.titleLarge,
-        onChanged: (val) => pinEditNotifier.setTitle(val),
+        onChanged: (val) {
+          ref.read(pinEditProvider(pin).notifier).setTitle(val);
+        },
       ),
       child: SelectionArea(
         child: GestureDetector(
-          onTap: () {
-            final membership =
-                ref.watch(roomMembershipProvider(pin.roomIdStr())).valueOrNull;
-            if (membership != null) {
-              if (membership.canString('CanPostPin')) {
-                showEditTitleBottomSheet(
-                  context: context,
-                  bottomSheetTitle: L10n.of(context).editName,
-                  titleValue: pin.title(),
-                  onSave: (newTitle) async {
-                    pinEditNotifier.setTitle(newTitle);
-                    savePinTitle(context, pin, newTitle);
-                  },
-                );
-              }
-            }
-          },
+          onTap: () => onEditTitle(context, ref, pin),
           child: Text(
             pin.title(),
             overflow: TextOverflow.ellipsis,
@@ -272,6 +257,27 @@ class PinPage extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> onEditTitle(
+    BuildContext context,
+    WidgetRef ref,
+    ActerPin pin,
+  ) async {
+    final roomId = pin.roomIdStr();
+    final membership = await ref.read(roomMembershipProvider(roomId).future);
+    if (membership == null) return;
+    if (!membership.canString('CanPostPin')) return;
+    if (!context.mounted) return;
+    showEditTitleBottomSheet(
+      context: context,
+      bottomSheetTitle: L10n.of(context).editName,
+      titleValue: pin.title(),
+      onSave: (newTitle) async {
+        ref.read(pinEditProvider(pin).notifier).setTitle(newTitle);
+        await savePinTitle(context, pin, newTitle);
+      },
     );
   }
 }

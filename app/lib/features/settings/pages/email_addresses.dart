@@ -151,12 +151,10 @@ class EmailAddressesPage extends ConsumerWidget {
           ),
         ),
         SliverList.builder(
-          itemBuilder: (BuildContext context, int index) {
-            return EmailAddressCard(
-              emailAddress: addresses.unconfirmed[index],
-              isConfirmed: false,
-            );
-          },
+          itemBuilder: (context, index) => EmailAddressCard(
+            emailAddress: addresses.unconfirmed[index],
+            isConfirmed: false,
+          ),
           itemCount: addresses.unconfirmed.length,
         ),
       ];
@@ -175,12 +173,10 @@ class EmailAddressesPage extends ConsumerWidget {
             ),
           ),
           SliverList.builder(
-            itemBuilder: (BuildContext context, int index) {
-              return EmailAddressCard(
-                emailAddress: addresses.confirmed[index],
-                isConfirmed: true,
-              );
-            },
+            itemBuilder: (context, index) => EmailAddressCard(
+              emailAddress: addresses.confirmed[index],
+              isConfirmed: true,
+            ),
             itemCount: addresses.confirmed.length,
           ),
         ]);
@@ -203,12 +199,10 @@ class EmailAddressesPage extends ConsumerWidget {
           ),
         ),
         SliverList.builder(
-          itemBuilder: (BuildContext context, int index) {
-            return EmailAddressCard(
-              emailAddress: addresses.confirmed[index],
-              isConfirmed: true,
-            );
-          },
+          itemBuilder: (context, index) => EmailAddressCard(
+            emailAddress: addresses.confirmed[index],
+            isConfirmed: true,
+          ),
           itemCount: addresses.confirmed.length,
         ),
       ],

@@ -170,9 +170,7 @@ class _VisibilityAccessibilityPageState
 
   Widget _loadingSpaceItem() {
     return Skeletonizer(
-      child: _spaceItemCard(
-        'loading',
-      ),
+      child: _spaceItemCard('loading'),
     );
   }
 
@@ -196,9 +194,7 @@ class _VisibilityAccessibilityPageState
         leading: avatar ??
             ActerAvatar(
               options: const AvatarOptions(
-                AvatarInfo(
-                  uniqueId: 'unknown',
-                ),
+                AvatarInfo(uniqueId: 'unknown'),
                 size: 45,
                 badgesSize: 45 / 2,
               ),
@@ -245,7 +241,9 @@ class _VisibilityAccessibilityPageState
           badgesSize: 45 / 2,
         ),
       ),
-      removeAction: canEdit ? () => removeSpace(spaceItem.roomId) : null,
+      removeAction: () {
+        if (canEdit) removeSpace(spaceItem.roomId);
+      },
     );
   }
 
@@ -289,7 +287,10 @@ class _VisibilityAccessibilityPageState
     List<String>? spaceIds,
   }) async {
     try {
-      EasyLoading.show(status: 'Updating space settings', dismissOnTap: false);
+      EasyLoading.show(
+        status: 'Updating space settings',
+        dismissOnTap: false,
+      );
       final sdk = await ref.read(sdkProvider.future);
       final update = sdk.api.newJoinRuleBuilder();
       final room = await ref.read(maybeRoomProvider(widget.roomId).future);
@@ -306,7 +307,7 @@ class _VisibilityAccessibilityPageState
           break;
         case RoomVisibility.SpaceVisible:
           update.joinRule('restricted');
-          for (final roomId in (spaceIds ?? [])) {
+          for (var roomId in (spaceIds ?? [])) {
             update.addRoom(roomId);
           }
           break;

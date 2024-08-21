@@ -66,12 +66,10 @@ class SpaceMembersPage extends ConsumerWidget {
                 crossAxisCount: max(1, min(widthCount, minCount)),
                 childAspectRatio: 5.0,
               ),
-              itemBuilder: (context, index) {
-                return MemberListEntry(
-                  memberId: members[index],
-                  roomId: spaceIdOrAlias,
-                );
-              },
+              itemBuilder: (context, index) => MemberListEntry(
+                memberId: members[index],
+                roomId: spaceIdOrAlias,
+              ),
             );
           },
           error: (e, s) {

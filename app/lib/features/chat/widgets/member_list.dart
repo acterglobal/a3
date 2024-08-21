@@ -12,8 +12,8 @@ class MemberList extends ConsumerWidget {
   final String roomId;
 
   const MemberList({
-    required this.roomId,
     super.key,
+    required this.roomId,
   });
 
   @override
@@ -31,15 +31,13 @@ class MemberList extends ConsumerWidget {
           physics: const NeverScrollableScrollPhysics(),
           padding: const EdgeInsets.symmetric(vertical: 5),
           itemCount: members.length,
-          itemBuilder: (context, index) {
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: MemberListEntry(
-                memberId: members[index],
-                roomId: roomId,
-              ),
-            );
-          },
+          itemBuilder: (context, index) => Padding(
+            padding: const EdgeInsets.all(8),
+            child: MemberListEntry(
+              memberId: members[index],
+              roomId: roomId,
+            ),
+          ),
         );
       },
       error: (e, s) {
