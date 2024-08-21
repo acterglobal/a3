@@ -44,7 +44,7 @@ Widget _buildLimitedSpaceListUI(
             return SpaceCard(
               key: Key('limited-space-list-item-$roomId'),
               roomId: roomId,
-              showParents: false,
+              showParents: true,
             );
           },
         ),
