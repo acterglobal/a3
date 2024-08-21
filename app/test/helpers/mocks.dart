@@ -23,8 +23,25 @@ class MockClient extends Mock implements Client {
   }
 }
 
+/// Mocked version of OptionComposeDraft
+class MockOptionComposeDraft extends Mock implements OptionComposeDraft {
+  final MockComposeDraft? _draft;
+
+  MockOptionComposeDraft(this._draft);
+
+  @override
+  ComposeDraft? draft() => _draft;
+}
+
 /// Mocked version of Convo
 class MockConvo extends Mock implements Convo {
+  MockComposeDraft? _savedDraft;
+
+  @override
+  Future<OptionComposeDraft> msgDraft() async {
+    return MockOptionComposeDraft(_savedDraft);
+  }
+
   @override
   Future<bool> saveMsgDraft(
     String plainText,
@@ -32,18 +49,47 @@ class MockConvo extends Mock implements Convo {
     String draftType,
     String? eventId,
   ) async {
-    return true; // Default implementation returns true
+    _savedDraft = MockComposeDraft()
+      ..setPlainText(plainText)
+      ..setHtmlText(htmlText)
+      ..setDraftType(draftType)
+      ..setEventId(eventId);
+    return true;
   }
 }
 
 class MockComposeDraft extends Mock implements ComposeDraft {
   String _plainText = '';
+  String? _htmlText;
+  String _draftType = 'new';
+  String? _eventId;
 
   @override
   String plainText() => _plainText;
 
+  @override
+  String? htmlText() => _htmlText;
+
+  @override
+  String draftType() => _draftType;
+
+  @override
+  String? eventId() => _eventId;
+
   void setPlainText(String text) {
     _plainText = text;
+  }
+
+  void setHtmlText(String? text) {
+    _htmlText = text;
+  }
+
+  void setDraftType(String type) {
+    _draftType = type;
+  }
+
+  void setEventId(String? id) {
+    _eventId = id;
   }
 }
 

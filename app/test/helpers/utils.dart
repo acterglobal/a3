@@ -14,7 +14,6 @@ TextMessage buildMockTextMessage() {
   );
 }
 
-// builds dummy compose draft by providing text
 MockComposeDraft buildMockDraft(String text) {
   var mockComposeDraft = MockComposeDraft();
   mockComposeDraft.setPlainText(text);

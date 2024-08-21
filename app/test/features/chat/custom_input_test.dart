@@ -120,7 +120,7 @@ void main() {
 
         await tester.enterText(find.byType(TextField), 'testing code');
 
-        await tester.pump(Durations.medium2);
+        await tester.pump();
         // now visible
         expect(find.byKey(CustomChatInput.sendBtnKey), findsOneWidget);
 
@@ -128,6 +128,10 @@ void main() {
         final TextField textField = tester.widget(find.byType(TextField));
         textField.controller!.clear();
 
+        // This test is timing out due to a pending timer.
+        // See MultiTriggerAutocompleteState._onChangedField in:
+        // acter_trigger_autocomplete.dart:279
+        // put 300ms delay as (debounceTimerDuration)
         await tester.pump(Durations.medium2);
         // not visible
         expect(find.byKey(CustomChatInput.sendBtnKey), findsNothing);
@@ -168,6 +172,11 @@ void main() {
 
         // Enter only whitespace
         await tester.enterText(find.byType(TextField), '     ');
+
+        // This test is timing out due to a pending timer.
+        // See MultiTriggerAutocompleteState._onChangedField in:
+        // acter_trigger_autocomplete.dart:279
+        // put 300ms delay as (debounceTimerDuration)
         await tester.pump(Durations.medium2);
 
         // The send button should not be visible
@@ -177,11 +186,10 @@ void main() {
   });
 
   group('Custom Chat Input - Controller states', () {
-    final roomDrafts = {
+    Map<String, MockComposeDraft> roomDrafts = {
       'roomId-1': buildMockDraft(''),
       'roomId-2': buildMockDraft(''),
     };
-
     final overrides = [
       canSendProvider.overrideWith((ref, roomId) => true),
       isRoomEncryptedProvider.overrideWith((ref, roomId) => true),
@@ -228,8 +236,13 @@ void main() {
 
         await tester.pump();
         await tester.enterTextWithoutReplace(find.byType(TextField), 's');
-        await tester.pump(Durations.medium2);
+        await tester.pump();
         await tester.enterTextWithoutReplace(find.byType(TextField), 't');
+
+        // This test is timing out due to a pending timer.
+        // See MultiTriggerAutocompleteState._onChangedField in:
+        // acter_trigger_autocomplete.dart:279
+        // put 300ms delay as (debounceTimerDuration)
         await tester.pump(Durations.medium2);
         expect(controller.text, 'testing code');
       },
@@ -272,7 +285,7 @@ void main() {
 
         await tester.pump();
         await tester.enterTextWithoutReplace(find.byType(TextField), 's');
-        await tester.pump(Durations.medium2);
+        await tester.pump();
 
         // now we select the one we want to reply to
         final chatInputNotifier = container.read(chatInputProvider.notifier);
@@ -411,44 +424,42 @@ void main() {
         }
 
         await switchToRoom('roomId-1');
+        final element1 = tester.element(find.byType(CustomChatInput));
+        final container1 = ProviderScope.containerOf(element1);
 
         await tester.enterText(find.byType(TextField), 'Hello Room 1');
 
         await tester.pump(Durations.medium2);
-        roomDrafts['roomId-1']!.setPlainText('Hello Room 1');
+
+        final convo1 = await container1.read(chatProvider('roomId-1').future);
+        final draft1 = await convo1?.msgDraft().then((val) => val.draft());
+        final textField1 = tester.widget<TextField>(find.byType(TextField));
+        expect(textField1.controller?.text, equals(draft1?.plainText()));
+
         // switch to another room
         await switchToRoom('roomId-2');
+        final element2 = tester.element(find.byType(CustomChatInput));
+        final container2 = ProviderScope.containerOf(element2);
 
         await tester.enterText(find.byType(TextField), 'Greetings Room 2');
 
         await tester.pump(Durations.medium2);
-        roomDrafts['roomId-2']!.setPlainText('Greetings Room 2');
+
+        final convo2 = await container2.read(chatProvider('roomId-2').future);
+        final draft2 = await convo2?.msgDraft().then((val) => val.draft());
+        final textField2 = tester.widget<TextField>(find.byType(TextField));
+        expect(textField2.controller?.text, equals(draft2?.plainText()));
 
         // switch back to room
         await switchToRoom('roomId-1');
-        // load fake draft
-        final roomDraft1 = roomDrafts['roomId-1']!.plainText();
-        // copy draft over textfield
-        await tester.enterText(find.byType(TextField), roomDraft1);
 
-        await tester.pump(Durations.medium2);
-        // verify copied draft is same as written
-        final TextField textField1 = tester.widget(find.byType(TextField));
-        expect(textField1.controller!.text, roomDraft1);
+        expect(find.text('Hello Room 1'), findsOneWidget);
 
-        await tester.pump(Durations.medium2);
+        await tester.pump();
         // switch to next room again
         await switchToRoom('roomId-2');
 
-        // load fake draft
-        final roomDraft2 = roomDrafts['roomId-2']!.plainText();
-        // copy draft over textfield
-        await tester.enterText(find.byType(TextField), roomDraft2);
-
-        await tester.pump(Durations.medium2);
-        // verify copied draft is same as written
-        final TextField textField2 = tester.widget(find.byType(TextField));
-        expect(textField2.controller!.text, roomDraft2);
+        expect(find.text('Greetings Room 2'), findsOneWidget);
 
         // This test is timing out due to a pending timer.
         // See MultiTriggerAutocompleteState._onChangedField in:
