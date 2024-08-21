@@ -1,7 +1,6 @@
 import 'package:acter/common/actions/redact_content.dart';
 import 'package:acter/common/models/attachment_media_state/attachment_media_state.dart';
 import 'package:acter/common/models/types.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/image_dialog.dart';
 import 'package:acter/common/widgets/video_dialog.dart';
@@ -40,7 +39,7 @@ class AttachmentItem extends ConsumerWidget {
       decoration: BoxDecoration(
         color: containerColor,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: greyColor),
+        border: Border.all(color: Theme.of(context).unselectedWidgetColor),
       ),
       child: ListTile(
         leading: attachmentLeadingIcon(attachmentType),
@@ -70,20 +69,31 @@ class AttachmentItem extends ConsumerWidget {
                       ),
                     ),
             if (canEdit)
-              IconButton(
-                onPressed: () => openRedactContentDialog(
-                  context,
-                  eventId: eventId,
-                  roomId: roomId,
-                  title: L10n.of(context).deleteAttachment,
-                  description: L10n.of(context)
-                      .areYouSureYouWantToRemoveAttachmentFromPin,
-                  isSpace: true,
-                ),
-                icon: Icon(
-                  Icons.delete_forever,
-                  color: Theme.of(context).colorScheme.error,
-                ),
+              PopupMenuButton<String>(
+                key: const Key('attachment-item-menu-options'),
+                icon: const Icon(Icons.more_vert),
+                itemBuilder: (context) => [
+                  PopupMenuItem<String>(
+                    key: const Key('attachment-delete'),
+                    onTap: () {
+                      openRedactContentDialog(
+                        context,
+                        eventId: eventId,
+                        roomId: roomId,
+                        title: L10n.of(context).deleteAttachment,
+                        description: L10n.of(context)
+                            .areYouSureYouWantToRemoveAttachmentFromPin,
+                        isSpace: true,
+                      );
+                    },
+                    child: Text(
+                      L10n.of(context).delete,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                    ),
+                  ),
+                ],
               ),
           ],
         ),
@@ -95,18 +105,19 @@ class AttachmentItem extends ConsumerWidget {
     final msgContent = attachment.msgContent();
     final fileName = msgContent.body();
     final fileNameSplit = fileName.split('.');
-    final title = fileNameSplit.first;
+    final title = attachment.name() ?? fileName;
     final fileExtension = fileNameSplit.last;
     String fileSize = getHumanReadableFileSize(msgContent.size() ?? 0);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (attachmentType == AttachmentType.link) ...[
-          Text(
-            attachment.name() ?? '',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
+          if (title.isNotEmpty)
+            Text(
+              title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
           Text(
             attachment.link() ?? '',
             maxLines: 2,

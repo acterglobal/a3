@@ -1,4 +1,4 @@
-use super::{Colorize, Icon};
+use super::Display;
 use derive_builder::Builder;
 use ruma_events::{EventContent, PossiblyRedactedStateEventContent, StateEventType};
 use ruma_macros::EventContent;
@@ -34,11 +34,8 @@ pub struct Category {
     pub id: String,
     pub title: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[builder(default, setter(name = "icon_typed"))]
-    pub icon: Option<Icon>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[builder(default)]
-    pub colorize: Option<Colorize>,
+    #[builder(default, setter(name = "display_typed"))]
+    pub display: Option<Display>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     #[builder(default)]
     pub entries: Vec<String>,
@@ -54,11 +51,8 @@ impl Category {
     pub fn entries(&self) -> Vec<String> {
         self.entries.clone()
     }
-    pub fn icon_type_str(&self) -> Option<String> {
-        self.icon.as_ref().map(|i| i.icon_type_str())
-    }
-    pub fn icon_str(&self) -> Option<String> {
-        self.icon.as_ref().map(|i| i.icon_str())
+    pub fn display(&self) -> Option<Display> {
+        self.display.clone()
     }
 
     pub fn update_builder(&self) -> CategoryBuilder {
@@ -66,8 +60,7 @@ impl Category {
             .entries(self.entries())
             .id(self.id.clone())
             .title(self.title.clone())
-            .icon_typed(self.icon.clone())
-            .colorize(self.colorize.clone())
+            .display_typed(self.display.clone())
             .to_owned()
     }
 }
@@ -84,10 +77,12 @@ impl CategoryBuilder {
             }
         }
     }
-    pub fn unset_icon(&mut self) {
-        self.icon_typed(None);
+    pub fn unset_display(&mut self) {
+        self.display_typed(None);
     }
-    pub fn icon(&mut self, icon_type: String, key: String) {
-        self.icon_typed(Some(Icon::parse(icon_type, key)));
+
+    #[allow(clippy::boxed_local)]
+    pub fn display(&mut self, display: Box<Display>) {
+        self.display_typed(Some(*display));
     }
 }

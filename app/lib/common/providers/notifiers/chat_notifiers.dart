@@ -15,7 +15,7 @@ class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, String> {
   late StreamSubscription<bool> _poller;
 
   @override
-  FutureOr<Convo> build(String arg) async {
+  FutureOr<Convo?> build(String arg) async {
     final convoId = arg;
     final client = ref.watch(alwaysClientProvider);
     _listener = client.subscribeStream(convoId); // keep it resident in memory

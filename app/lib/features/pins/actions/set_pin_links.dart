@@ -1,7 +1,7 @@
 import 'package:acter/common/models/types.dart';
 import 'package:acter/features/pins/models/create_pin_state/pin_attachment_model.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
-import 'package:acter/features/pins/widgets/pin_link_bottom_sheet.dart';
+import 'package:acter/features/attachments/actions/add_edit_link_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -11,7 +11,7 @@ void showAddPinLinkBottomSheet({
   required WidgetRef ref,
   required bool isBottomSheetOpen,
 }) {
-  showPinLinkBottomSheet(
+  showAddEditLinkBottomSheet(
     context: context,
     bottomSheetTitle: L10n.of(context).addLink,
     onSave: (title, link) {
@@ -33,7 +33,7 @@ void showEditPinLinkBottomSheet({
   required PinAttachment attachmentData,
   required int index,
 }) {
-  showPinLinkBottomSheet(
+  showAddEditLinkBottomSheet(
     context: context,
     pinTitle: attachmentData.title,
     pinLink: attachmentData.link,

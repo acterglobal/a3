@@ -1,6 +1,6 @@
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
-import 'package:acter/features/pins/widgets/pin_list_item.dart';
+import 'package:acter/features/pins/widgets/pin_list_item_widget.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -65,7 +65,7 @@ class PinsSection extends ConsumerWidget {
       padding: EdgeInsets.zero,
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
-        return PinListItemById(pinId: pins[index].eventIdStr());
+        return PinListItemWidget(pinId: pins[index].eventIdStr());
       },
     );
   }

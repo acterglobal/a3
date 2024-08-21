@@ -303,23 +303,8 @@ jobs:
           git config --global user.name 'Sari'
           git config --global user.email 'acter-sari@users.noreply.github.com'
 
-      - name: "Generate docs"
-        run: |
-          echo "+++" > docs/content/nightly/${{ needs.tags.outputs.tag }}.md
-          echo "title = \" Nightly ${{ needs.tags.outputs.tag }}\"" >> docs/content/nightly/${{ needs.tags.outputs.tag }}.md
-          echo "template = \"nightlies/release.html\"" >> docs/content/nightly/${{ needs.tags.outputs.tag }}.md
-          echo "date = ${{ needs.tags.outputs.tag }}" >> docs/content/nightly/${{ needs.tags.outputs.tag }}.md
-          echo "+++" >>docs/content/nightly/${{ needs.tags.outputs.tag }}.md
-          echo "" >>docs/content/nightly/${{ needs.tags.outputs.tag }}.md
-          cat CHANGELOG.md >> docs/content/nightly/${{ needs.tags.outputs.tag }}.md
-
       - name: Tag for nightly release
         run: |
-          git add "docs/content/nightly/${{ needs.tags.outputs.tag }}.md"
-          echo "Tagging ${{ needs.tags.outputs.tag }}" > notes.md
-          echo "" >> notes.md
-          cat CHANGELOG.md >> notes.md
-          git commit -F notes.md
           git tag nightly-${{ needs.tags.outputs.tag }}
           git tag -f nightly-latest
           git push -f origin main nightly-${{ needs.tags.outputs.tag }} nightly-latest

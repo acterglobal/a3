@@ -11,7 +11,7 @@ use crate::{models::TextMessageContent, util::deserialize_some, Result};
 /// modeled after [JMAP Calendar Events](https://jmap.io/spec-calendars.html#calendar-events), extensions to
 /// [ietf rfc8984](https://www.rfc-editor.org/rfc/rfc8984.html#name-event).
 ///
-use super::{Color, Icon, Update, UtcDateTime};
+use super::{Display, Icon, Update, UtcDateTime};
 
 /// Event Location
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -154,20 +154,15 @@ pub struct CalendarEventEventContent {
     /// The title of the CalendarEvent
     pub title: String,
 
-    /// an Icon to show with with this event
-    #[builder(setter(into), default)]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub icon: Option<Icon>,
-
-    /// colorizing this event
-    #[builder(setter(into), default)]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub color: Option<Color>,
-
     /// Further information describing the calendar_event
     #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<TextMessageEventContent>,
+
+    /// Further information describing the calendar_event
+    #[builder(setter(into), default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub display: Option<Display>,
 
     /// When will this event start?
     #[builder(setter(into))]
@@ -254,24 +249,6 @@ pub struct CalendarEventUpdateEventContent {
     )]
     pub utc_end: Option<UtcDateTime>,
 
-    /// Color this calendar_event
-    #[builder(default)]
-    #[serde(
-        default,
-        skip_serializing_if = "Option::is_none",
-        deserialize_with = "deserialize_some"
-    )]
-    pub color: Option<Option<Color>>,
-
-    /// Icon this calendar_event
-    #[builder(default)]
-    #[serde(
-        default,
-        skip_serializing_if = "Option::is_none",
-        deserialize_with = "deserialize_some"
-    )]
-    pub icon: Option<Option<Icon>>,
-
     /// Should this event been shown without the time?
     #[builder(default)]
     #[serde(
@@ -306,6 +283,15 @@ pub struct CalendarEventUpdateEventContent {
         deserialize_with = "deserialize_some"
     )]
     pub categories: Option<Vec<String>>,
+
+    /// Optionally some displaying parameters
+    #[builder(setter(into), default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        deserialize_with = "deserialize_some"
+    )]
+    pub display: Option<Option<Display>>,
 }
 
 impl CalendarEventUpdateEventContent {
@@ -341,13 +327,8 @@ impl CalendarEventUpdateEventContent {
             updated = true;
         }
 
-        if let Some(color) = &self.color {
-            calendar_event.color = *color;
-            updated = true;
-        }
-
-        if let Some(icon) = &self.icon {
-            calendar_event.icon.clone_from(icon);
+        if let Some(display) = &self.display {
+            calendar_event.display.clone_from(display);
             updated = true;
         }
 

@@ -5,7 +5,7 @@ import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/features/home/data/keys.dart';
-import 'package:acter/features/home/pages/home_shell.dart';
+import 'package:acter/config/app_shell.dart';
 import 'package:acter/features/home/widgets/activities_icon.dart';
 import 'package:acter/features/home/widgets/chats_icon.dart';
 import 'package:acter/router/providers/router_providers.dart';

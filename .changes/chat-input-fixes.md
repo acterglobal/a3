@@ -1,0 +1,2 @@
+- fix bug where chat input cursor jumps to end of text in middle of edit.
+- make chat send button more robust to respond to text composing state.

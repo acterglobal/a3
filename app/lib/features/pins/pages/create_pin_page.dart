@@ -29,7 +29,7 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::pins::create_pin');
 
-class CreatePin extends ConsumerStatefulWidget {
+class CreatePinPage extends ConsumerStatefulWidget {
   static const createPinPageKey = Key('create-pin-page');
   static const titleFieldKey = Key('create-pin-title-field');
   static const descriptionFieldKey = Key('create-pin-description-field');
@@ -37,16 +37,16 @@ class CreatePin extends ConsumerStatefulWidget {
 
   final String? initialSelectedSpace;
 
-  const CreatePin({
+  const CreatePinPage({
     super.key = createPinPageKey,
     this.initialSelectedSpace,
   });
 
   @override
-  ConsumerState<CreatePin> createState() => _CreatePinConsumerState();
+  ConsumerState<CreatePinPage> createState() => _CreatePinConsumerState();
 }
 
-class _CreatePinConsumerState extends ConsumerState<CreatePin> {
+class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
 
@@ -95,6 +95,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePin> {
                     children: <Widget>[
                       const SizedBox(height: 14),
                       _buildTitleField(),
+                      const SizedBox(height: 14),
                       const Align(
                         alignment: Alignment.centerLeft,
                         child: SelectSpaceFormField(
@@ -130,7 +131,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePin> {
         const SizedBox(height: 6),
         InputTextField(
           hintText: L10n.of(context).pinName,
-          key: CreatePin.titleFieldKey,
+          key: CreatePinPage.titleFieldKey,
           textInputType: TextInputType.text,
           textInputAction: TextInputAction.done,
           controller: _titleController,
@@ -288,7 +289,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePin> {
 
   Widget _buildCreateButton() {
     return ActerPrimaryActionButton(
-      key: CreatePin.submitBtn,
+      key: CreatePinPage.submitBtn,
       onPressed: _createPin,
       child: Text(L10n.of(context).create),
     );

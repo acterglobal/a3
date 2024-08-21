@@ -8,7 +8,7 @@ import 'package:acter/common/widgets/add_button_with_can_permission.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/common/widgets/space_name_widget.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
-import 'package:acter/features/pins/widgets/pin_list_item.dart';
+import 'package:acter/features/pins/widgets/pin_list_item_widget.dart';
 import 'package:acter/features/pins/widgets/pin_list_skeleton.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +46,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
   }
 
   AppBar _buildAppBar() {
+    final spaceId = widget.spaceId;
     return AppBar(
       centerTitle: false,
       title: Column(
@@ -53,7 +54,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(L10n.of(context).pins),
-          if (widget.spaceId != null) SpaceNameWidget(spaceId: widget.spaceId),
+          if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
         ],
       ),
       actions: [
@@ -112,7 +113,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
         crossAxisCount: max(1, min(widthCount, minCount)),
         children: [
           for (var pin in pins)
-            PinListItemById(
+            PinListItemWidget(
               pinId: pin.eventIdStr(),
               showSpace: widget.spaceId == null,
             ),

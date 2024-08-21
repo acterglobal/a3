@@ -54,7 +54,7 @@ class _EventListPageState extends ConsumerState<EventListPage> {
           Text(L10n.of(context).events),
           if (widget.spaceId != null)
             SpaceNameWidget(
-              spaceId: widget.spaceId,
+              spaceId: widget.spaceId!,
             ),
         ],
       ),

@@ -1,7 +1,7 @@
 use acter_core::{
     events::{
         tasks::{self, Priority, TaskBuilder, TaskListBuilder},
-        Color,
+        Color, Display,
     },
     models::{self, can_redact, ActerModel, AnyActerModel, TaskStats},
     statics::KEYS,
@@ -239,16 +239,6 @@ impl TaskListDraft {
         self
     }
 
-    pub fn color(&mut self, color: Color) -> &mut Self {
-        self.content.color(Some(color));
-        self
-    }
-
-    pub fn unset_color(&mut self) -> &mut Self {
-        self.content.color(None);
-        self
-    }
-
     #[allow(clippy::ptr_arg)]
     pub fn keywords(&mut self, keywords: &mut Vec<String>) -> &mut Self {
         self.content.keywords(keywords.to_vec());
@@ -268,6 +258,17 @@ impl TaskListDraft {
 
     pub fn unset_categories(&mut self) -> &mut Self {
         self.content.categories(vec![]);
+        self
+    }
+
+    #[allow(clippy::boxed_local)]
+    pub fn display(&mut self, display: Box<Display>) -> &mut Self {
+        self.content.display(Some(*display));
+        self
+    }
+
+    pub fn unset_display(&mut self) -> &mut Self {
+        self.content.display(None);
         self
     }
 
@@ -326,8 +327,8 @@ impl TaskList {
         self.content.sort_order
     }
 
-    pub fn color(&self) -> Option<u32> {
-        self.content.color
+    pub fn display(&self) -> Option<Display> {
+        self.content.display.clone()
     }
 
     pub fn event_id_str(&self) -> String {
@@ -532,6 +533,10 @@ impl Task {
         self.content.event_id().to_string()
     }
 
+    pub fn display(&self) -> Option<Display> {
+        self.content.display.clone()
+    }
+
     pub fn task_list_id_str(&self) -> String {
         self.content.task_list_id.event_id.to_string()
     }
@@ -542,10 +547,6 @@ impl Task {
 
     pub fn sort_order(&self) -> u32 {
         self.content.sort_order
-    }
-
-    pub fn color(&self) -> Option<u32> {
-        self.content.color
     }
 
     pub fn room_id_str(&self) -> String {
@@ -773,16 +774,6 @@ impl TaskDraft {
         self
     }
 
-    pub fn color(&mut self, color: Color) -> &mut Self {
-        self.content.color(Some(color));
-        self
-    }
-
-    pub fn unset_color(&mut self) -> &mut Self {
-        self.content.color(None);
-        self
-    }
-
     pub fn due_date(&mut self, year: i32, month: u32, day: u32) -> &mut Self {
         self.content
             .due_date(chrono::NaiveDate::from_ymd_opt(year, month, day));
@@ -862,6 +853,17 @@ impl TaskDraft {
         self
     }
 
+    #[allow(clippy::boxed_local)]
+    pub fn display(&mut self, display: Box<Display>) -> &mut Self {
+        self.content.display(Some(*display));
+        self
+    }
+
+    pub fn unset_display(&mut self) -> &mut Self {
+        self.content.display(None);
+        self
+    }
+
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
         let my_id = self.client.user_id()?;
@@ -933,18 +935,19 @@ impl TaskUpdateBuilder {
         self
     }
 
-    pub fn color(&mut self, color: u32) -> &mut Self {
-        self.content.color(Some(Some(color)));
+    #[allow(clippy::boxed_local)]
+    pub fn display(&mut self, display: Box<Display>) -> &mut Self {
+        self.content.display(Some(Some(*display)));
         self
     }
 
-    pub fn unset_color(&mut self) -> &mut Self {
-        self.content.color(Some(None));
+    pub fn unset_display(&mut self) -> &mut Self {
+        self.content.display(Some(None));
         self
     }
 
-    pub fn unset_color_update(&mut self) -> &mut Self {
-        self.content.color(None::<Option<Color>>);
+    pub fn unset_display_update(&mut self) -> &mut Self {
+        self.content.display(None::<Option<Display>>);
         self
     }
 
@@ -1131,21 +1134,6 @@ impl TaskListUpdateBuilder {
         self
     }
 
-    pub fn color(&mut self, color: Color) -> &mut Self {
-        self.content.color(Some(color));
-        self
-    }
-
-    pub fn unset_color(&mut self) -> &mut Self {
-        self.content.color(Some(None));
-        self
-    }
-
-    pub fn unset_color_update(&mut self) -> &mut Self {
-        self.content.color(None::<Option<Color>>);
-        self
-    }
-
     #[allow(clippy::ptr_arg)]
     pub fn keywords(&mut self, keywords: &mut Vec<String>) -> &mut Self {
         self.content.keywords(Some(keywords.to_vec()));
@@ -1175,6 +1163,22 @@ impl TaskListUpdateBuilder {
 
     pub fn unset_categories_update(&mut self) -> &mut Self {
         self.content.categories(None);
+        self
+    }
+
+    #[allow(clippy::boxed_local)]
+    pub fn display(&mut self, display: Box<Display>) -> &mut Self {
+        self.content.display(Some(Some(*display)));
+        self
+    }
+
+    pub fn unset_display(&mut self) -> &mut Self {
+        self.content.display(Some(None));
+        self
+    }
+
+    pub fn unset_display_update(&mut self) -> &mut Self {
+        self.content.display(None::<Option<Display>>);
         self
     }
 

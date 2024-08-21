@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 
 mod categories;
 mod color;
+mod display;
 mod labels;
 mod object_reference;
 mod rendering;
@@ -18,6 +19,8 @@ pub use object_reference::{
     TaskListAction,
 };
 pub use rendering::{ActerIcon, BrandLogo, Colorize, ColorizeBuilder, Icon, Position};
+
+pub use display::{Display, DisplayBuilder};
 
 /// Default UTC DateTime Object
 pub type UtcDateTime = DateTime<Utc>;

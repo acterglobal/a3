@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
-void showPinLinkBottomSheet({
+void showAddEditLinkBottomSheet({
   required BuildContext context,
   String? bottomSheetTitle,
   String? pinTitle,
@@ -18,7 +18,7 @@ void showPinLinkBottomSheet({
     isDismissible: true,
     isScrollControlled: true,
     builder: (context) {
-      return PinLinkBottomSheet(
+      return LinkBottomSheet(
         bottomSheetTitle: bottomSheetTitle,
         pinTitle: pinTitle,
         pinLink: pinLink,
@@ -28,13 +28,13 @@ void showPinLinkBottomSheet({
   );
 }
 
-class PinLinkBottomSheet extends ConsumerStatefulWidget {
+class LinkBottomSheet extends ConsumerStatefulWidget {
   final String? bottomSheetTitle;
   final String? pinTitle;
   final String? pinLink;
   final Function(String, String) onSave;
 
-  const PinLinkBottomSheet({
+  const LinkBottomSheet({
     super.key,
     this.bottomSheetTitle,
     this.pinTitle,
@@ -46,7 +46,7 @@ class PinLinkBottomSheet extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _PinLinkBottomSheet();
 }
 
-class _PinLinkBottomSheet extends ConsumerState<PinLinkBottomSheet> {
+class _PinLinkBottomSheet extends ConsumerState<LinkBottomSheet> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _linkController = TextEditingController();

@@ -6,6 +6,8 @@ PODS:
   - connectivity_plus (0.0.1):
     - Flutter
     - FlutterMacOS
+  - device_calendar (0.0.1):
+    - Flutter
   - device_info_plus (0.0.1):
     - Flutter
   - DKImagePickerController/Core (4.3.4):
@@ -86,6 +88,8 @@ PODS:
     - Flutter
   - media_kit_video (0.0.1):
     - Flutter
+  - open_filex (0.0.2):
+    - Flutter
   - package_info (0.0.1):
     - Flutter
   - package_info_plus (0.4.5):
@@ -105,6 +109,11 @@ PODS:
   - SDWebImage/Core (5.13.0)
   - sensors_plus (0.0.1):
     - Flutter
+  - Sentry/HybridSDK (8.30.1)
+  - sentry_flutter (8.4.0):
+    - Flutter
+    - FlutterMacOS
+    - Sentry/HybridSDK (= 8.30.1)
   - share_plus (0.0.1):
     - Flutter
   - shared_preferences_foundation (0.0.1):
@@ -128,6 +137,7 @@ DEPENDENCIES:
   - acter_flutter_sdk (from `.symlinks/plugins/acter_flutter_sdk/ios`)
   - app_settings (from `.symlinks/plugins/app_settings/ios`)
   - connectivity_plus (from `.symlinks/plugins/connectivity_plus/darwin`)
+  - device_calendar (from `.symlinks/plugins/device_calendar/ios`)
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
   - emoji_picker_flutter (from `.symlinks/plugins/emoji_picker_flutter/ios`)
   - fc_native_video_thumbnail (from `.symlinks/plugins/fc_native_video_thumbnail/darwin`)
@@ -143,6 +153,7 @@ DEPENDENCIES:
   - media_kit_libs_ios_video (from `.symlinks/plugins/media_kit_libs_ios_video/ios`)
   - media_kit_native_event_loop (from `.symlinks/plugins/media_kit_native_event_loop/ios`)
   - media_kit_video (from `.symlinks/plugins/media_kit_video/ios`)
+  - open_filex (from `.symlinks/plugins/open_filex/ios`)
   - package_info (from `.symlinks/plugins/package_info/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
@@ -150,6 +161,7 @@ DEPENDENCIES:
   - push_ios (from `.symlinks/plugins/push_ios/ios`)
   - screen_brightness_ios (from `.symlinks/plugins/screen_brightness_ios/ios`)
   - sensors_plus (from `.symlinks/plugins/sensors_plus/ios`)
+  - sentry_flutter (from `.symlinks/plugins/sentry_flutter/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - sqflite (from `.symlinks/plugins/sqflite/darwin`)
@@ -168,6 +180,7 @@ SPEC REPOS:
     - GoogleUtilities
     - PromisesObjC
     - SDWebImage
+    - Sentry
     - SwiftyGif
 
 EXTERNAL SOURCES:
@@ -177,6 +190,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/app_settings/ios"
   connectivity_plus:
     :path: ".symlinks/plugins/connectivity_plus/darwin"
+  device_calendar:
+    :path: ".symlinks/plugins/device_calendar/ios"
   device_info_plus:
     :path: ".symlinks/plugins/device_info_plus/ios"
   emoji_picker_flutter:
@@ -207,6 +222,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/media_kit_native_event_loop/ios"
   media_kit_video:
     :path: ".symlinks/plugins/media_kit_video/ios"
+  open_filex:
+    :path: ".symlinks/plugins/open_filex/ios"
   package_info:
     :path: ".symlinks/plugins/package_info/ios"
   package_info_plus:
@@ -221,6 +238,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/screen_brightness_ios/ios"
   sensors_plus:
     :path: ".symlinks/plugins/sensors_plus/ios"
+  sentry_flutter:
+    :path: ".symlinks/plugins/sentry_flutter/ios"
   share_plus:
     :path: ".symlinks/plugins/share_plus/ios"
   shared_preferences_foundation:
@@ -240,6 +259,7 @@ SPEC CHECKSUMS:
   acter_flutter_sdk: e60481171e46975418babb7d0ec8809eaacaaa03
   app_settings: 017320c6a680cdc94c799949d95b84cb69389ebc
   connectivity_plus: ddd7f30999e1faaef5967c23d5b6d503d10434db
+  device_calendar: 9cb33f88a02e19652ec7b8b122ca778f751b1f7b
   device_info_plus: 97af1d7e84681a90d0693e63169a5d50e0839a0d
   DKImagePickerController: b512c28220a2b8ac7419f21c491fc8534b7601ac
   DKPhotoGallery: fdfad5125a9fdda9cc57df834d49df790dbb4179
@@ -256,11 +276,12 @@ SPEC CHECKSUMS:
   flutter_secure_storage: d33dac7ae2ea08509be337e775f6b59f1ff45f12
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
   image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
-  integration_test: ce0a3ffa1de96d1a89ca0ac26fca7ea18a749ef4
+  integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
   keyboard_height_plugin: 43fa8bba20fd5c4fdeed5076466b8b9d43cc6b86
   media_kit_libs_ios_video: a5fe24bc7875ccd6378a0978c13185e1344651c1
   media_kit_native_event_loop: e6b2ab20cf0746eb1c33be961fcf79667304fa2a
   media_kit_video: 5da63f157170e5bf303bf85453b7ef6971218a2e
+  open_filex: 6e26e659846ec990262224a12ef1c528bb4edbe4
   package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62
   package_info_plus: 58f0028419748fad15bf008b270aaa8e54380b1c
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
@@ -269,7 +290,9 @@ SPEC CHECKSUMS:
   push_ios: 2bd1b4d3f782209da1f571db1250af236957e807
   screen_brightness_ios: 715ca807df953bf676d339f11464e438143ee625
   SDWebImage: 0327043dbb9533e75f2eff8445b3df0f2ceca6ac
-  sensors_plus: 5717760720f7e6acd96fdbd75b7428f5ad755ec2
+  sensors_plus: 4b7c4bd9c9be2efbd575649368fe77ef09b429ad
+  Sentry: 514a3ea653886e9a48c6287d8b7bf05ec24bf3be
+  sentry_flutter: edc037f7af0dc1512d6c33a5c2c7c838bd0d6806
   share_plus: 8875f4f2500512ea181eef553c3e27dba5135aad
   shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
   sqflite: 673a0e54cc04b7d6dba8d24fb8095b31c3a99eec
@@ -281,4 +304,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: c4c93c5f6502fe2754f48404d3594bf779584011
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.15.2
