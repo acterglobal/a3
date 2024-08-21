@@ -2,7 +2,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/config/app_shell.dart';
+import 'package:acter/features/bug_report/actions/open_bug_report.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/spaces/model/keys.dart';

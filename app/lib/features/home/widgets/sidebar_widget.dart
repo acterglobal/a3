@@ -4,8 +4,8 @@ import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
+import 'package:acter/features/bug_report/actions/open_bug_report.dart';
 import 'package:acter/features/home/data/keys.dart';
-import 'package:acter/config/app_shell.dart';
 import 'package:acter/features/home/widgets/activities_icon.dart';
 import 'package:acter/features/home/widgets/chats_icon.dart';
 import 'package:acter/router/providers/router_providers.dart';
