@@ -1,3 +1,4 @@
+import 'package:acter/common/actions/show_limited_space_list.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -21,7 +22,15 @@ class VisibilityChip extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final visibilityLoader = ref.watch(roomVisibilityProvider(roomId));
     return visibilityLoader.when(
-      data: (visibility) => renderSpaceChip(context, visibility),
+      data: (visibility) {
+        return GestureDetector(
+          onTap: () {
+            if (visibility != RoomVisibility.SpaceVisible) return;
+            showLimitedSpaceList(context, ref, roomId);
+          },
+          child: renderSpaceChip(context, visibility),
+        );
+      },
       error: (e, s) {
         _log.severe('Failed to load room visibility', e, s);
         return Chip(
