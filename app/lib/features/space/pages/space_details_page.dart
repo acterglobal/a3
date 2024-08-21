@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/widgets/scrollable_list_tab_scroller.dart';
 import 'package:acter/features/space/dialogs/suggested_rooms.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
@@ -149,11 +150,21 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
           },
         );
       },
-      error: (e, s) {
-        _log.severe('Failed to load tabs in space', e, s);
-        return Text(L10n.of(context).loadingFailed(e));
-      },
+      error: (e, s) => loadingError(e, s),
       loading: () => const SpaceDetailsSkeletons(),
+    );
+  }
+
+  Widget loadingError(Object error, StackTrace stack) {
+    _log.severe('Failed to load tabs in space', error, stack);
+    return ErrorPage(
+      background: const SpaceDetailsSkeletons(),
+      error: error,
+      stack: stack,
+      textBuilder: L10n.of(context).loadingFailed,
+      onRetryTap: () {
+        ref.invalidate(spaceProvider(widget.spaceId));
+      },
     );
   }
 

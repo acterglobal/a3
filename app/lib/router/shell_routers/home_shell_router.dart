@@ -309,8 +309,8 @@ final homeShellRoutes = [
     pageBuilder: (context, state) {
       return NoTransitionPage(
         key: state.pageKey,
-        child: SpaceDetailsPage(
-          spaceId: state.pathParameters['spaceId']!,
+        child: const SpaceDetailsPage(
+          spaceId: '!asdf', //state.pathParameters['spaceId']!,
         ),
       );
     },
