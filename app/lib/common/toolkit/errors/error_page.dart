@@ -1,28 +1,11 @@
-import 'package:acter/features/bug_report/actions/open_bug_report.dart';
+import 'package:acter/common/toolkit/errors/error_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:quickalert/models/quickalert_options.dart';
-import 'package:quickalert/quickalert.dart';
-import 'package:quickalert/widgets/quickalert_buttons.dart';
-import 'package:quickalert/widgets/quickalert_container.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
-
-enum ErrorCode {
-  notFound,
-  other,
-}
-
-ErrorCode _guessError(Object error) {
-  final errorStr = error.toString();
-  // yay, string-based error guessing!
-  if (errorStr.contains('not found')) {
-    return ErrorCode.notFound;
-  }
-  return ErrorCode.other;
-}
 
 /// ErrorPage shows a full-screen error to the user (covering other internal errors)
 ///
 class ErrorPage extends StatelessWidget {
+  static const dialogKey = Key('error-page-dialog');
+
   /// Put this widget in the Background of the screen to give context
   final Widget background;
   final Object error;
@@ -55,87 +38,18 @@ class ErrorPage extends StatelessWidget {
     return Stack(
       children: [
         background,
-        AlertDialog(
-          contentPadding: EdgeInsets.zero,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(borderRadius),
-          ),
-          content: errorDialog(context),
+        ActerErrorDialog(
+          key: dialogKey,
+          error: error,
+          stack: stack,
+          includeBugReportButton: includeBugReportButton,
+          text: text,
+          textBuilder: textBuilder,
+          title: title,
+          onRetryTap: onRetryTap,
+          borderRadius: borderRadius,
         ),
       ],
     );
   }
-
-  Widget errorDialog(BuildContext context) {
-    final theme = Theme.of(context);
-    final lang = L10n.of(context);
-    final err = _guessError(error);
-    QuickAlertOptions options = QuickAlertOptions(
-      title: title ??
-          switch (err) {
-            ErrorCode.notFound => lang.notFound,
-            _ => lang.fatalError,
-          },
-      text: text ?? (textBuilder != null ? textBuilder!(error) : null),
-      type: switch (err) {
-        ErrorCode.notFound => QuickAlertType.warning,
-        _ => QuickAlertType.error,
-      },
-      showCancelBtn: true,
-      showConfirmBtn: false,
-      cancelBtnText: lang.back,
-      borderRadius: borderRadius,
-    );
-    if (onRetryTap != null) {
-      options.showConfirmBtn = true;
-      options.confirmBtnColor = theme.primaryColor;
-      options.confirmBtnText = lang.retry;
-      options.onConfirmBtnTap = () {
-        onRetryTap!();
-      };
-    }
-
-    return _ActerErrorAlert(
-      options: options,
-      includeBugReportButton: includeBugReportButton,
-    );
-  }
-}
-
-class _ActerErrorAlert extends QuickAlertContainer {
-  final bool includeBugReportButton;
-  const _ActerErrorAlert({
-    required super.options,
-    this.includeBugReportButton = true,
-  });
-
-  @override
-  Widget buildButtons() {
-    return _ActerErrorActionButtons(options: options);
-  }
-
-  @override
-  Widget buildHeader(context) {
-    final orginalHeader = super.buildHeader(context);
-    if (!includeBugReportButton) {
-      return orginalHeader;
-    }
-    return Stack(
-      children: [
-        orginalHeader,
-        Positioned(
-          right: 10,
-          top: 10,
-          child: TextButton(
-            child: Text(L10n.of(context).reportBug),
-            onPressed: () => openBugReport(context),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _ActerErrorActionButtons extends QuickAlertButtons {
-  const _ActerErrorActionButtons({required super.options});
 }
