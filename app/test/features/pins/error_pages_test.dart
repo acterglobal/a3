@@ -1,4 +1,6 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/features/pins/pages/pins_list_page.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,15 +10,73 @@ import '../../helpers/mock_pins_providers.dart';
 import '../../helpers/test_util.dart';
 
 void main() {
-  group('Pins Error Pages', () {
+  group('Pin List Error Pages', () {
     testWidgets('full list', (tester) async {
-      final mockedPinListNotifier = MockAsyncPinListNotifier();
+      final mockedPinListNotifier = RetryMockAsyncPinListNotifier();
       await tester.pumpProviderWidget(
         overrides: [
           pinListProvider.overrideWith(() => mockedPinListNotifier),
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
         ],
         child: const PinsListPage(),
+      );
+      await tester.ensureErrorPageWithRetryWorks();
+    });
+    testWidgets('full list with search', (tester) async {
+      bool shouldFail = true;
+
+      await tester.pumpProviderWidget(
+        overrides: [
+          searchValueProvider
+              .overrideWith((_) => 'some string'), // set a search string
+          pinListSearchProvider.overrideWith((_, params) async {
+            if (shouldFail) {
+              shouldFail = false;
+              throw 'Some Error';
+            } else {
+              return [];
+            }
+          }),
+          hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
+        ],
+        child: const PinsListPage(),
+      );
+      await tester.ensureErrorPageWithRetryWorks();
+    });
+
+    testWidgets('space list', (tester) async {
+      final mockedPinListNotifier = RetryMockAsyncPinListNotifier();
+      await tester.pumpProviderWidget(
+        overrides: [
+          roomDisplayNameProvider.overrideWith((a, b) => 'test'),
+          pinListProvider.overrideWith(() => mockedPinListNotifier),
+          hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
+        ],
+        child: const PinsListPage(
+          spaceId: '!test',
+        ),
+      );
+      await tester.ensureErrorPageWithRetryWorks();
+    });
+    testWidgets('space list with search', (tester) async {
+      bool shouldFail = true;
+
+      await tester.pumpProviderWidget(
+        overrides: [
+          roomDisplayNameProvider.overrideWith((a, b) => 'test'),
+          searchValueProvider
+              .overrideWith((_) => 'some other string'), // set a search string
+          pinListSearchProvider.overrideWith((_, params) async {
+            if (shouldFail) {
+              shouldFail = false;
+              throw 'Some Error';
+            } else {
+              return [];
+            }
+          }),
+          hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
+        ],
+        child: const PinsListPage(spaceId: '!something'),
       );
       await tester.ensureErrorPageWithRetryWorks();
     });

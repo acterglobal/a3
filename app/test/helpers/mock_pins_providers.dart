@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mockito/mockito.dart';
 import 'package:riverpod/riverpod.dart';
 
-class MockAsyncPinListNotifier
+class RetryMockAsyncPinListNotifier
     extends FamilyAsyncNotifier<List<ActerPin>, String?>
     with Mock
     implements AsyncPinListNotifier {
@@ -14,6 +14,7 @@ class MockAsyncPinListNotifier
   @override
   Future<List<ActerPin>> build(String? arg) async {
     if (shouldFail) {
+      // toggle failure so the retry works
       shouldFail = !shouldFail;
       throw 'Expected fail';
     }
