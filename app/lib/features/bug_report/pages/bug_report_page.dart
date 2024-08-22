@@ -1,101 +1,16 @@
-import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
-
-import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/config/env.g.dart';
-import 'package:acter/config/setup.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:acter/features/bug_report/actions/submit_bug_report.dart';
+import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
 import 'package:logging/logging.dart';
-import 'package:path/path.dart';
 
 final _log = Logger('a3::bug_report');
-
-Future<String> report({
-  bool withLog = false,
-  bool withPrevLogFile = false,
-  bool withUserId = false,
-  required String description,
-  String? screenshotPath,
-}) async {
-  final sdk = await ActerSdk.instance;
-
-  final request = http.MultipartRequest('POST', Uri.parse(Env.rageshakeUrl));
-  request.fields.addAll({
-    'text': description,
-    'user_agent': userAgent,
-    'app': Env
-        .rageshakeAppName, // should be same as one among github_project_mappings
-    'version': Env.rageshakeAppVersion,
-  });
-  if (withUserId) {
-    final client = sdk.currentClient;
-    if (client != null) {
-      request.fields.addAll({'UserId': client.userId().toString()});
-    }
-  }
-  if (withLog) {
-    String logFile = sdk.api.rotateLogFile();
-    if (logFile.isNotEmpty) {
-      request.files.add(
-        http.MultipartFile.fromBytes(
-          'log',
-          File(logFile).readAsBytesSync(),
-          filename: basename(logFile),
-          contentType: MediaType('text', 'plain'),
-        ),
-      );
-    }
-  }
-  if (withPrevLogFile) {
-    String? prevLogFile = sdk.previousLogPath;
-    if (prevLogFile != null) {
-      request.files.add(
-        http.MultipartFile.fromBytes(
-          'log',
-          File(prevLogFile).readAsBytesSync(),
-          filename:
-              '${basenameWithoutExtension(prevLogFile)}-${Random().nextInt(10000)}.log', // randomize to ensure the server doesn't overwrite any previous one...
-          contentType: MediaType('text', 'plain'),
-        ),
-      );
-    }
-  }
-  if (screenshotPath != null) {
-    _log.info('sending with screenshot');
-    request.files.add(
-      http.MultipartFile.fromBytes(
-        'file',
-        File(screenshotPath).readAsBytesSync(),
-        filename: basename(screenshotPath),
-        contentType: MediaType('image', 'png'),
-      ),
-    );
-  }
-  _log.info('sending ${Env.rageshakeUrl}');
-  final resp = await request.send();
-  if (resp.statusCode == HttpStatus.ok) {
-    Map<String, dynamic> json = jsonDecode(await resp.stream.bytesToString());
-    if (screenshotPath != null) {
-      await File(screenshotPath).delete();
-    }
-    // example - https://github.com/bitfriend/acter-bugs/issues/9
-    return json['report_url'] ?? '';
-  } else {
-    String body = await resp.stream.bytesToString();
-    _log.severe('Sending bug report failed with ${resp.statusCode}: $body');
-    throw '${resp.statusCode}: $body';
-  }
-}
 
 class BugReportPage extends ConsumerStatefulWidget {
   static const titleField = Key('bug-report-title');
@@ -123,10 +38,10 @@ class _BugReportState extends ConsumerState<BugReportPage> {
   bool withUserId = false;
 
   Future<bool> reportBug(BuildContext context) async {
-    final loadingNotifier = ref.read(loadingProvider.notifier);
+    final loadingNotifier = ref.read(bugReporterLoadingProvider.notifier);
     try {
       loadingNotifier.update((state) => true);
-      String reportUrl = await report(
+      String reportUrl = await submitBugReport(
         withLog: withLogFile,
         withPrevLogFile: withPrevLogFile,
         withUserId: withUserId,
@@ -156,7 +71,7 @@ class _BugReportState extends ConsumerState<BugReportPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = ref.watch(loadingProvider);
+    final isLoading = ref.watch(bugReporterLoadingProvider);
     return ConstrainedBox(
       constraints: const BoxConstraints(minWidth: 350),
       child: Form(

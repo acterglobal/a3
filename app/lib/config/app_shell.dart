@@ -7,6 +7,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/auth/pages/logged_out_screen.dart';
 import 'package:acter/features/bug_report/actions/open_bug_report.dart';
+import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
 import 'package:acter/features/calendar_sync/calendar_sync.dart';
 import 'package:acter/features/cross_signing/widgets/cross_signing.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -65,7 +66,7 @@ class AppShellState extends ConsumerState<AppShell> {
 
   Future<void> initShake() async {
     // shake is possible in only actual mobile devices
-    if (await isRealPhone()) {
+    if (isBugReportingEnabled && await isRealPhone()) {
       detector = ShakeDetector.autoStart(
         shakeThresholdGravity: 30.0,
         onShake: () {
