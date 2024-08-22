@@ -1,3 +1,4 @@
+import 'package:acter/common/actions/show_parent_space_list.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -43,6 +44,7 @@ class SpaceHeaderProfile extends ConsumerWidget {
               parentBadges: parentBadges,
               size: 100,
               badgesSize: 30,
+              onTapParentBadges: () => showParentSpaceList(context, spaceId),
             ),
           ),
           const SizedBox(width: 8),

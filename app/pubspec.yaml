@@ -56,7 +56,12 @@ dependencies:
       url: https://github.com/acterglobal/flutter_matrix_html.git
   flutter_slidable: ^3.0.0
   quds_popup_menu: ^0.0.1+1
-  acter_avatar: ^2.0.1+1
+  acter_avatar:
+#    path: "../../acter-avatar"
+    git:
+      url: https://github.com/acterglobal/acter-avatar
+      ref: main
+
   flutter_easyloading: ^3.0.5
   appflowy_editor: ^3.0.0
   acter_trigger_auto_complete:

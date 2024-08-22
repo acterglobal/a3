@@ -25,7 +25,7 @@ class VisibilityChip extends ConsumerWidget {
       data: (visibility) => GestureDetector(
         onTap: () {
           if (visibility != RoomVisibility.SpaceVisible) return;
-          showLimitedSpaceList(context, ref, roomId);
+          showLimitedSpaceList(context, roomId);
         },
         child: renderSpaceChip(context, visibility),
       ),
