@@ -1,0 +1,1 @@
+- [New] : Space Details : Now you can see list of parent spaces when you click on the parent spaces badge
