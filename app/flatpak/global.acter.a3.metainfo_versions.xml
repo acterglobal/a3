@@ -1,3 +1,24 @@
+    <release version="1.24.8220" date="2024-08-22">
+        <url type="details">https://github.com/acterglobal/a3/releases/tag/v1.24.8220</url>
+        <description>
+- [New] : Now you can see list of space with access on click of Limited Visibility button
+- [New Labs] You can now ask Acter to sync the events you haven't declined yet to your system calendar (on certain devices) including a reminder. As of now, this is behind a labs-feature flag you need to activate manually while we are rolling this out.
+
+- Rename process from app to acter in task manager on windows
+
+- [Enhancement] : UI-UX improvement of pin details page
+- [Enhancement] : UI-UX improvement of Attachment List
+- [New] : You can now add one or more links to attachments 
+- [New] : While creating pin, you can give customised name to your selected attachments by setting relevant title data
+- Keep the app alive in background and close to the tray icon only (on supported platforms)
+
+- fix bug where chat input cursor jumps to end of text in middle of edit.
+- make chat send button more robust to respond to text composing state.
+
+- Fix a bug that the chat list search results wouldn't properly update upon keystrokes
+
+        </description>
+    </release>
     <release version="1.24.8080" date="2024-08-08">
         <url type="details">https://github.com/acterglobal/a3/releases/tag/v1.24.8080</url>
         <description>
