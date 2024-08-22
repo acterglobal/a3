@@ -22,3 +22,41 @@ class RetryMockAsyncPinListNotifier
     return [];
   }
 }
+
+class RetryMockAsyncPinNotifier
+    extends AutoDisposeFamilyAsyncNotifier<ActerPin, String>
+    with Mock
+    implements AsyncPinNotifier {
+  bool shouldFail = true;
+
+  @override
+  Future<ActerPin> build(String arg) async {
+    if (shouldFail) {
+      // toggle failure so the retry works
+      shouldFail = !shouldFail;
+      throw 'Expected fail';
+    }
+    return MockActerPin();
+  }
+}
+
+class MockActerPin extends Fake implements ActerPin {
+  @override
+  String roomIdStr() => '!roomId';
+
+  @override
+  String eventIdStr() => '\$evtId';
+
+  @override
+  String title() => 'Pin Title';
+
+  @override
+  Future<AttachmentsManager> attachments() =>
+      Completer<AttachmentsManager>().future;
+
+  @override
+  Future<CommentsManager> comments() => Completer<CommentsManager>().future;
+
+  @override
+  MsgContent? content() => null;
+}

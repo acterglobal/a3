@@ -134,7 +134,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
             children: [
               Text(L10n.of(context).parentSpace),
               SpaceChip(
-                space: space,
+                spaceId: space.roomId,
                 onTapOpenSpaceDetail: false,
               ),
             ],

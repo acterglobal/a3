@@ -1,6 +1,8 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
+import 'package:acter/features/pins/pages/pin_details_page.dart';
 import 'package:acter/features/pins/pages/pins_list_page.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -77,6 +79,22 @@ void main() {
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
         ],
         child: const PinsListPage(spaceId: '!something'),
+      );
+      await tester.ensureErrorPageWithRetryWorks();
+    });
+  });
+
+  group('Pin Details Error Page', () {
+    testWidgets('shows error and retries', (tester) async {
+      final mockedPinNotifier = RetryMockAsyncPinNotifier();
+      await tester.pumpProviderWidget(
+        overrides: [
+          roomDisplayNameProvider.overrideWith((a, b) => 'no name'),
+          roomMembershipProvider.overrideWith((a, b) => null),
+          canRedactProvider.overrideWith((a, b) => false),
+          pinProvider.overrideWith(() => mockedPinNotifier),
+        ],
+        child: const PinDetailsPage(pinId: 'pinId'),
       );
       await tester.ensureErrorPageWithRetryWorks();
     });
