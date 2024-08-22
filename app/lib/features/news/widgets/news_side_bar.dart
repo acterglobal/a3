@@ -36,7 +36,7 @@ class NewsSideBar extends ConsumerWidget {
     final userId = ref.watch(myUserIdStrProvider);
     final isLikedByMe = ref.watch(likedByMeProvider(news));
     final likesCount = ref.watch(totalLikesForNewsProvider(news));
-    final space = ref.watch(briefSpaceItemProvider(roomId));
+    final spaceLoader = ref.watch(briefSpaceItemProvider(roomId));
     final style = Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 13);
 
     return Column(
@@ -61,7 +61,7 @@ class NewsSideBar extends ConsumerWidget {
           },
         ),
         const SizedBox(height: 10),
-        space.maybeWhen(
+        spaceLoader.maybeWhen(
           data: (space) => InkWell(
             key: NewsUpdateKeys.newsSidebarActionBottomSheet,
             onTap: () => showModalBottomSheet(
@@ -87,7 +87,7 @@ class NewsSideBar extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 10),
-        space.when(
+        spaceLoader.when(
           data: (space) => ActerAvatar(
             options: AvatarOptions(
               AvatarInfo(

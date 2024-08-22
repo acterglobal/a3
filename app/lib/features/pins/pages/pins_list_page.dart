@@ -23,7 +23,10 @@ final _log = Logger('a3::pins::list');
 class PinsListPage extends ConsumerStatefulWidget {
   final String? spaceId;
 
-  const PinsListPage({super.key, this.spaceId});
+  const PinsListPage({
+    super.key,
+    this.spaceId,
+  });
 
   @override
   ConsumerState<PinsListPage> createState() => _AllPinsPageConsumerState();
@@ -43,6 +46,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
   }
 
   AppBar _buildAppBar() {
+    final spaceId = widget.spaceId;
     return AppBar(
       centerTitle: false,
       title: Column(
@@ -50,10 +54,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(L10n.of(context).pins),
-          if (widget.spaceId != null)
-            SpaceNameWidget(
-              spaceId: widget.spaceId!,
-            ),
+          if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
         ],
       ),
       actions: [
@@ -69,26 +70,23 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
   }
 
   Widget _buildBody() {
-    AsyncValue<List<ActerPin>> pinList;
-
+    AsyncValue<List<ActerPin>> pinsLoader;
     if (searchValue.isNotEmpty) {
-      pinList = ref.watch(
+      pinsLoader = ref.watch(
         pinListSearchProvider(
           (spaceId: widget.spaceId, searchText: searchValue),
         ),
       );
     } else {
-      pinList = ref.watch(pinListProvider(widget.spaceId));
+      pinsLoader = ref.watch(pinListProvider(widget.spaceId));
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        ActerSearchWidget(
-          searchTextController: searchTextController,
-        ),
+        ActerSearchWidget(searchTextController: searchTextController),
         Expanded(
-          child: pinList.when(
+          child: pinsLoader.when(
             data: (pins) => _buildPinsList(pins),
             error: (e, s) {
               _log.severe('Failed to load pins', e, s);
@@ -125,11 +123,12 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
   }
 
   Widget _buildPinsEmptyState() {
-    bool canAdd = false;
+    var canAdd = false;
     if (searchValue.isEmpty) {
-      canAdd =
-          ref.watch(hasSpaceWithPermissionProvider('CanPostPin')).valueOrNull ??
-              false;
+      final canPostLoader = ref.watch(
+        hasSpaceWithPermissionProvider('CanPostPin'),
+      );
+      if (canPostLoader.valueOrNull == true) canAdd = true;
     }
     return Center(
       heightFactor: 1,
@@ -139,7 +138,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
             : L10n.of(context).noPinsAvailableYet,
         subtitle: L10n.of(context).noPinsAvailableDescription,
         image: 'assets/images/empty_pin.svg',
-        primaryButton: canAdd && searchValue.isEmpty
+        primaryButton: canAdd
             ? ActerPrimaryActionButton(
                 onPressed: () => context.pushNamed(
                   Routes.createPin.name,

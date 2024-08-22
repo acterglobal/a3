@@ -24,15 +24,30 @@ final genericUpdatesStream =
   }
 });
 
-final myUserIdStrProvider = StateProvider(
+final myUserIdStrProvider = Provider(
   (ref) => ref.watch(
     alwaysClientProvider.select((client) => client.userId().toString()),
   ),
 );
 
-final accountProvider = StateProvider(
+final accountProvider = Provider(
   (ref) => ref.watch(
     alwaysClientProvider.select((client) => client.account()),
+  ),
+);
+
+final hasFirstSyncedProvider = Provider(
+  (ref) => ref.watch(syncStateProvider.select((v) => !v.initialSync)),
+);
+
+final isGuestProvider =
+    Provider((ref) => ref.watch(alwaysClientProvider).isGuest());
+
+final deviceIdProvider = Provider(
+  (ref) => ref.watch(
+    alwaysClientProvider.select(
+      (v) => v.deviceId().toString(),
+    ),
   ),
 );
 
@@ -87,9 +102,8 @@ final notificationSettingsProvider = AsyncNotifierProvider<
 
 final appContentNotificationSetting =
     FutureProvider.family<bool, String>((ref, appKey) async {
-  final notificationsSettings =
-      await ref.watch(notificationSettingsProvider.future);
-  return await notificationsSettings.globalContentSetting(appKey);
+  final settings = await ref.watch(notificationSettingsProvider.future);
+  return await settings.globalContentSetting(appKey);
 });
 
 // Email addresses that registered by user

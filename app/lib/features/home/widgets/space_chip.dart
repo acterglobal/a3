@@ -31,11 +31,9 @@ class SpaceChip extends ConsumerWidget {
       if (spaceId == null) {
         throw L10n.of(context).spaceOrSpaceIdMustBeProvided;
       }
-      final brief = ref.watch(briefSpaceItemProvider(spaceId!));
-      return brief.when(
-        data: (space) {
-          return renderSpace(context, space);
-        },
+      final spaceLoader = ref.watch(briefSpaceItemProvider(spaceId!));
+      return spaceLoader.when(
+        data: (space) => renderSpace(context, space),
         error: (e, s) {
           _log.severe('Failed to load brief of space', e, s);
           return Chip(
@@ -70,9 +68,15 @@ class SpaceChip extends ConsumerWidget {
               Text(L10n.of(context).inSpaceLabelInline),
               Text(L10n.of(context).colonCharacter),
               InkWell(
-                onTap: () => (onTapSelectSpace != null && !onTapOpenSpaceDetail)
-                    ? onTapSelectSpace!()
-                    : goToSpace(context, space.roomId),
+                onTap: () {
+                  if (!onTapOpenSpaceDetail) {
+                    if (onTapSelectSpace != null) {
+                      onTapSelectSpace!();
+                      return;
+                    }
+                  }
+                  goToSpace(context, space.roomId);
+                },
                 child: Text(
                   spaceName,
                   style: Theme.of(context).textTheme.labelLarge!.copyWith(
@@ -83,9 +87,9 @@ class SpaceChip extends ConsumerWidget {
             ],
           )
         : InkWell(
-            onTap: onTapOpenSpaceDetail
-                ? () => goToSpace(context, space.roomId)
-                : null,
+            onTap: () {
+              if (onTapOpenSpaceDetail) goToSpace(context, space.roomId);
+            },
             child: Chip(
               avatar: ActerAvatar(
                 options: AvatarOptions(

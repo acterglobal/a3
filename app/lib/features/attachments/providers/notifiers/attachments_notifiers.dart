@@ -22,13 +22,12 @@ class AttachmentsManagerNotifier extends AutoDisposeFamilyAsyncNotifier<
       (e) async {
         _log.info('attempting to reload');
         final newManager = await manager.reload();
-        _log.info(
-          'manager updated. attachments: ${newManager.attachmentsCount()}',
-        );
+        final count = newManager.attachmentsCount();
+        _log.info('manager updated. attachments: $count');
         state = AsyncValue.data(newManager);
       },
-      onError: (e, stack) {
-        _log.severe('stream errored.', e, stack);
+      onError: (e, s) {
+        _log.severe('stream errored', e, s);
       },
       onDone: () {
         _log.info('stream ended');

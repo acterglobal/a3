@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/config/notifications/init.dart';
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';
@@ -147,9 +148,7 @@ class AppShellState extends ConsumerState<AppShell> {
   }
 
   Widget topNavigationWidget(BuildContext context) {
-    final hasFirstSynced =
-        ref.watch(syncStateProvider.select((v) => !v.initialSync));
-    if (hasFirstSynced) {
+    if (ref.watch(hasFirstSyncedProvider)) {
       return const SizedBox.shrink();
     }
     return LinearProgressIndicator(

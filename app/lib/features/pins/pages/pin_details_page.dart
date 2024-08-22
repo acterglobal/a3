@@ -78,10 +78,10 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
       loading: () => Skeletonizer(
         child: Text(L10n.of(context).loadingPin),
       ),
-      error: (err, st) {
-        _log.severe('Error loading pin', err, st);
+      error: (e, s) {
+        _log.severe('Error loading pin', e, s);
         return Text(
-          L10n.of(context).errorLoadingPin(err),
+          L10n.of(context).errorLoadingPin(e),
         );
       },
     );
@@ -106,7 +106,10 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
         );
       },
       loading: () => Skeletonizer(child: Text(L10n.of(context).loadingPin)),
-      error: (err, st) => const SizedBox.shrink(),
+      error: (e, s) {
+        _log.severe('Error loading pin', e, s);
+        return const SizedBox.shrink();
+      },
     );
   }
 

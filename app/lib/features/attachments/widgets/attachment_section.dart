@@ -29,17 +29,18 @@ class AttachmentSectionWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(attachmentsManagerProvider(manager)).when(
-          data: (manager) => FoundAttachmentSectionWidget(
-            attachmentManager: manager,
-            key: attachmentsKey,
-          ),
-          error: (e, s) {
-            _log.severe('Failed to load attachment manager', e, s);
-            return onError(context, e);
-          },
-          loading: () => loading(context),
-        );
+    final managerLoader = ref.watch(attachmentsManagerProvider(manager));
+    return managerLoader.when(
+      data: (manager) => FoundAttachmentSectionWidget(
+        attachmentManager: manager,
+        key: attachmentsKey,
+      ),
+      error: (e, s) {
+        _log.severe('Failed to load attachment manager', e, s);
+        return onError(context, e);
+      },
+      loading: () => loading(context),
+    );
   }
 
   Widget onError(BuildContext context, Object error) {
@@ -66,16 +67,15 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
   final AttachmentsManager attachmentManager;
 
   const FoundAttachmentSectionWidget({
-    required this.attachmentManager,
     super.key,
+    required this.attachmentManager,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final attachments = ref.watch(attachmentsProvider(attachmentManager));
-
-    return attachments.when(
-      data: (list) => attachmentData(list, context, ref),
+    final attachmentsLoader = ref.watch(attachmentsProvider(attachmentManager));
+    return attachmentsLoader.when(
+      data: (attachments) => attachmentData(attachments, context, ref),
       error: (e, s) {
         _log.severe('Failed to load attachments', e, s);
         return Text(L10n.of(context).errorLoadingAttachments(e));

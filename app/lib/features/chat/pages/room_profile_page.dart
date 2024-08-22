@@ -32,8 +32,8 @@ class RoomProfilePage extends ConsumerStatefulWidget {
   final String roomId;
 
   const RoomProfilePage({
-    required this.roomId,
     super.key,
+    required this.roomId,
   });
 
   @override
@@ -86,13 +86,11 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     if (membership?.canString('CanSetTopic') == true) {
       menuListItems.add(
         PopupMenuItem(
-          onTap: () {
-            showEditDescriptionBottomSheet(
-              context: context,
-              convo: convo,
-              descriptionValue: convo?.topic() ?? '',
-            );
-          },
+          onTap: () => showEditDescriptionBottomSheet(
+            context: context,
+            convo: convo,
+            descriptionValue: convo?.topic() ?? '',
+          ),
           child: Text(L10n.of(context).editDescription),
         ),
       );
@@ -187,9 +185,9 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
       mainAxisSize: MainAxisSize.min,
       children: [
         InkWell(
-          onTap: isDirectChat
-              ? null
-              : () => openAvatar(context, ref, widget.roomId),
+          onTap: () {
+            if (!isDirectChat) openAvatar(context, ref, widget.roomId);
+          },
           child: RoomAvatar(
             roomId: widget.roomId,
             avatarSize: 75,
@@ -278,47 +276,28 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
   }
 
   Widget _actions(BuildContext context, Convo? convo, bool isDirectChat) {
-    final convoLoader = ref.watch(chatProvider(widget.roomId));
-    final myMembership = ref.watch(roomMembershipProvider(widget.roomId));
+    final membershipLoader = ref.watch(roomMembershipProvider(widget.roomId));
+    final isBookmarked =
+        ref.watch(isConvoBookmarked(widget.roomId)).valueOrNull ?? false;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         // Bookmark
-        convoLoader.when(
-          data: (conv) {
-            final isBookmarked = conv?.isBookmarked() == true;
-            return _actionItem(
-              context: context,
-              iconData: isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-              actionName: L10n.of(context).bookmark,
-              onTap: () async => await conv?.setBookmarked(!isBookmarked),
-            );
+        _actionItem(
+          context: context,
+          iconData: isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+          actionName: L10n.of(context).bookmark,
+          onTap: () async {
+            (await ref.read(chatProvider(widget.roomId).future))
+                ?.setBookmarked(!isBookmarked);
           },
-          error: (e, s) {
-            _log.severe('Failed to load convo', e, s);
-            return Skeletonizer(
-              child: IconButton.filled(
-                icon: const Icon(
-                  Icons.bookmark_add_outlined,
-                  size: 20,
-                ),
-                onPressed: () {},
-              ),
-            );
-          },
-          loading: () => ActionItemSkeleton(
-            iconData: Icons.bookmark_add_outlined,
-            actionName: L10n.of(context).bookmark,
-          ),
         ),
 
         // Invite
-        myMembership.when(
+        membershipLoader.when(
           data: (membership) {
-            if (membership == null || (isDirectChat)) {
-              return const SizedBox();
-            }
+            if (membership == null || isDirectChat) return const SizedBox();
             return _actionItem(
               context: context,
               iconData: Atlas.user_plus_thin,
@@ -397,11 +376,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     );
   }
 
-  Widget _optionsBody(
-    BuildContext context,
-    Convo? convo,
-    bool isDirectChat,
-  ) {
+  Widget _optionsBody(BuildContext context, Convo? convo, bool isDirectChat) {
     return Column(
       children: [
         // Notification section
@@ -447,7 +422,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
   }
 
   Widget _convoMembersList() {
-    final members = ref.watch(membersIdsProvider(widget.roomId));
+    final membersLoader = ref.watch(membersIdsProvider(widget.roomId));
 
     return Container(
       width: double.infinity,
@@ -459,19 +434,17 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 10),
-          members.when(
-            data: (list) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                child: Text(
-                  L10n.of(context).membersCount(list.length),
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-              );
-            },
+          membersLoader.when(
+            data: (members) => Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 8,
+              ),
+              child: Text(
+                L10n.of(context).membersCount(members.length),
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+            ),
             loading: () => Skeletonizer(
               child: Text(L10n.of(context).membersCount(0)),
             ),

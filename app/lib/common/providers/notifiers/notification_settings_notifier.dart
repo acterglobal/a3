@@ -18,13 +18,13 @@ class AsyncNotificationSettingsNotifier
     final settings = await client.notificationSettings();
     _listener = settings.changesStream();
     _poller = _listener.listen(
-      (e) {
+      (data) {
         // reset the state of this to trigger the notification
         // cascade
         state = AsyncValue.data(settings);
       },
-      onError: (e, stack) {
-        _log.severe('stream errored', e, stack);
+      onError: (e, s) {
+        _log.severe('stream errored', e, s);
       },
       onDone: () {
         _log.info('stream ended');

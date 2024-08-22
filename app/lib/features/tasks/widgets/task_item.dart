@@ -35,39 +35,39 @@ class TaskItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref
-        .watch(taskItemProvider((taskListId: taskListId, taskId: taskId)))
-        .when(
-          data: (task) => ListTile(
-            onTap: () {
-              context.pushNamed(
-                Routes.taskItemDetails.name,
-                pathParameters: {
-                  'taskId': taskId,
-                  'taskListId': taskListId,
-                },
-              );
+    final taskLoader =
+        ref.watch(taskItemProvider((taskListId: taskListId, taskId: taskId)));
+    return taskLoader.when(
+      data: (task) => ListTile(
+        onTap: () {
+          context.pushNamed(
+            Routes.taskItemDetails.name,
+            pathParameters: {
+              'taskId': taskId,
+              'taskListId': taskListId,
             },
-            horizontalTitleGap: 0,
-            minVerticalPadding: 0,
-            contentPadding: const EdgeInsets.all(3),
-            visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
-            minLeadingWidth: 35,
-            leading: leadingWidget(task),
-            title: takeItemTitle(context, task),
-            subtitle: takeItemSubTitle(ref, context, task),
-            trailing: trailing(ref, task),
-          ),
-          error: (e, s) {
-            _log.severe('Failed to load task', e, s);
-            return ListTile(
-              title: Text(L10n.of(context).loadingFailed(e)),
-            );
-          },
-          loading: () => ListTile(
-            title: Text(L10n.of(context).loading),
-          ),
+          );
+        },
+        horizontalTitleGap: 0,
+        minVerticalPadding: 0,
+        contentPadding: const EdgeInsets.all(3),
+        visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
+        minLeadingWidth: 35,
+        leading: leadingWidget(task),
+        title: takeItemTitle(context, task),
+        subtitle: takeItemSubTitle(ref, context, task),
+        trailing: trailing(ref, task),
+      ),
+      error: (e, s) {
+        _log.severe('Failed to load task', e, s);
+        return ListTile(
+          title: Text(L10n.of(context).loadingFailed(e)),
         );
+      },
+      loading: () => ListTile(
+        title: Text(L10n.of(context).loading),
+      ),
+    );
   }
 
   Widget takeItemTitle(BuildContext context, Task task) {
@@ -106,35 +106,37 @@ class TaskItem extends ConsumerWidget {
 
   Widget takeItemSubTitle(WidgetRef ref, BuildContext context, Task task) {
     final description = task.description();
+    final tasklistId = task.taskListIdStr();
+    final tasklistLoader = ref.watch(taskListItemProvider(tasklistId));
     return Padding(
       padding: const EdgeInsets.only(right: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (showBreadCrumb)
-            ref.watch(taskListItemProvider(task.taskListIdStr())).when(
-                  data: (taskList) => Row(
-                    children: [
-                      const Icon(
-                        Icons.list,
-                        color: Colors.white54,
-                        size: 22,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        taskList.name(),
-                        style: Theme.of(context).textTheme.labelMedium,
-                      ),
-                    ],
+            tasklistLoader.when(
+              data: (taskList) => Row(
+                children: [
+                  const Icon(
+                    Icons.list,
+                    color: Colors.white54,
+                    size: 22,
                   ),
-                  error: (e, s) {
-                    _log.severe('Failed to load task', e, s);
-                    return Text(L10n.of(context).loadingFailed(e));
-                  },
-                  loading: () => Skeletonizer(
-                    child: Text(L10n.of(context).loading),
+                  const SizedBox(width: 6),
+                  Text(
+                    taskList.name(),
+                    style: Theme.of(context).textTheme.labelMedium,
                   ),
-                ),
+                ],
+              ),
+              error: (e, s) {
+                _log.severe('Failed to load task', e, s);
+                return Text(L10n.of(context).loadingFailed(e));
+              },
+              loading: () => Skeletonizer(
+                child: Text(L10n.of(context).loading),
+              ),
+            ),
           if (description?.body() != null && !showBreadCrumb)
             Text(
               description!.body(),

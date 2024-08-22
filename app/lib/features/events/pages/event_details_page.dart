@@ -43,7 +43,10 @@ final _log = Logger('a3::cal_event::details');
 class EventDetailPage extends ConsumerStatefulWidget {
   final String calendarId;
 
-  const EventDetailPage({super.key, required this.calendarId});
+  const EventDetailPage({
+    super.key,
+    required this.calendarId,
+  });
 
   @override
   ConsumerState<EventDetailPage> createState() =>
@@ -55,17 +58,17 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final event = ref.watch(calendarEventProvider(widget.calendarId));
+    final calEventLoader = ref.watch(calendarEventProvider(widget.calendarId));
     return Scaffold(
-      body: event.when(
-        data: (calendarEvent) {
+      body: calEventLoader.when(
+        data: (calEvent) {
           // Update event participants list
-          updateEventParticipantsList(calendarEvent);
+          updateEventParticipantsList(calEvent);
 
           return CustomScrollView(
             slivers: [
-              _buildEventAppBar(calendarEvent),
-              _buildEventBody(calendarEvent),
+              _buildEventAppBar(calEvent),
+              _buildEventBody(calEvent),
             ],
           );
         },

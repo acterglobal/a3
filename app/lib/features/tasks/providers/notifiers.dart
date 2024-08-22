@@ -36,13 +36,21 @@ class TaskItemsListNotifier
     // Load initial todo list from the remote repository
     final taskList = arg;
     _listener = taskList.subscribeStream(); // keep it resident in memory
-    _poller = _listener.listen((element) async {
-      _log.info('got tasks list update');
-      state = await AsyncValue.guard(() async {
-        final freshTaskList = await taskList.refresh();
-        return await _refresh(freshTaskList);
-      });
-    });
+    _poller = _listener.listen(
+      (data) async {
+        _log.info('got tasks list update');
+        state = await AsyncValue.guard(() async {
+          final freshTaskList = await taskList.refresh();
+          return await _refresh(freshTaskList);
+        });
+      },
+      onError: (e, s) {
+        _log.severe('tasks overview stream errored', e, s);
+      },
+      onDone: () {
+        _log.info('tasks overview stream ended');
+      },
+    );
     ref.onDispose(() => _poller.cancel());
     return await _refresh(taskList);
   }
@@ -63,10 +71,18 @@ class TaskListItemNotifier extends FamilyAsyncNotifier<TaskList, String> {
     final client = ref.watch(alwaysClientProvider);
     final taskList = await _refresh(client, arg);
     _listener = taskList.subscribeStream(); // keep it resident in memory
-    _poller = _listener.listen((element) async {
-      _log.info('got taskList update');
-      state = await AsyncValue.guard(() async => await _refresh(client, arg));
-    });
+    _poller = _listener.listen(
+      (data) async {
+        _log.info('got taskList update');
+        state = await AsyncValue.guard(() async => await _refresh(client, arg));
+      },
+      onError: (e, s) {
+        _log.severe('tasklist stream errored', e, s);
+      },
+      onDone: () {
+        _log.info('tasklist stream ended');
+      },
+    );
     ref.onDispose(() => _poller.cancel());
     return taskList;
   }
@@ -82,10 +98,18 @@ class TaskItemNotifier extends FamilyAsyncNotifier<Task, Task> {
     // Load initial todo list from the remote repository
     final task = arg;
     _listener = task.subscribeStream(); // keep it resident in memory
-    _poller = _listener.listen((element) async {
-      _log.info('got tasks list update');
-      state = await AsyncValue.guard(() async => await task.refresh());
-    });
+    _poller = _listener.listen(
+      (data) async {
+        _log.info('got tasks list update');
+        state = await AsyncValue.guard(() async => await task.refresh());
+      },
+      onError: (e, s) {
+        _log.severe('task stream errored', e, s);
+      },
+      onDone: () {
+        _log.info('task stream ended');
+      },
+    );
     ref.onDispose(() => _poller.cancel());
     return task;
   }
@@ -104,9 +128,17 @@ class AsyncAllTaskListsNotifier extends AsyncNotifier<List<TaskList>> {
     //GET ALL TASKS LIST
     _listener = client.subscribeStream('tasks');
 
-    _poller = _listener.listen((e) async {
-      state = await AsyncValue.guard(() => _getTasksList(client));
-    });
+    _poller = _listener.listen(
+      (data) async {
+        state = await AsyncValue.guard(() => _getTasksList(client));
+      },
+      onError: (e, s) {
+        _log.severe('all tasks stream errored', e, s);
+      },
+      onDone: () {
+        _log.info('all tasks stream ended');
+      },
+    );
     ref.onDispose(() => _poller.cancel());
 
     return await _getTasksList(client);

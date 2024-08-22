@@ -108,15 +108,12 @@ class EventItem extends StatelessWidget {
     return Consumer(
       builder: (context, ref, child) {
         final eventId = event.eventId().toString();
-        final myRsvpStatus = ref.watch(myRsvpStatusProvider(eventId));
-        return myRsvpStatus.when(
-          data: (data) {
-            final status = data.statusStr(); // kebab-case
-            final rsvpStatusWidget =
-                _getRsvpStatus(context, status); // kebab-case
-            return (rsvpStatusWidget != null)
-                ? rsvpStatusWidget
-                : const SizedBox.shrink();
+        final rsvpLoader = ref.watch(myRsvpStatusProvider(eventId));
+        return rsvpLoader.when(
+          data: (rsvp) {
+            final status = rsvp.statusStr(); // kebab-case
+            final widget = _getRsvpStatus(context, status); // kebab-case
+            return widget ?? const SizedBox.shrink();
           },
           error: (e, s) {
             _log.severe('Failed to load RSVP status', e, s);

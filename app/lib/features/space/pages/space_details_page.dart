@@ -119,27 +119,25 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   }
 
   Widget spaceBodyUI() {
-    final spaceMenus = ref.watch(tabsProvider(widget.spaceId));
-    return spaceMenus.when(
+    final tabsLoader = ref.watch(tabsProvider(widget.spaceId));
+    return tabsLoader.when(
       skipLoadingOnReload: true,
-      data: (tabsList) {
+      data: (tabs) {
         return ScrollableListTabScroller(
           headerKey: SpaceDetailsPage.headerKey,
-          itemCount: tabsList.length,
+          itemCount: tabs.length,
           itemPositionsListener: itemPositionsListener,
 
           //Space Details Header UI
-          headerContainerBuilder:
-              (BuildContext context, Widget menuBarWidget) =>
-                  spaceHeaderUI(menuBarWidget),
+          headerContainerBuilder: (context, menuBarWidget) =>
+              spaceHeaderUI(menuBarWidget),
 
           //Space Details Tab Menu UI
-          tabBuilder: (BuildContext context, int index, bool active) =>
-              spaceTabMenuUI(tabsList[index], active),
+          tabBuilder: (context, index, active) =>
+              spaceTabMenuUI(tabs[index], active),
 
           //Space Details Page UI
-          itemBuilder: (BuildContext context, int index) =>
-              spacePageUI(tabsList[index]),
+          itemBuilder: (context, index) => spacePageUI(tabs[index]),
 
           // we allow this to be refreshed by over-pulling
           onRefresh: () async {
@@ -208,16 +206,13 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   Widget spaceAvatar() {
     final avatarData =
         ref.watch(roomAvatarProvider(widget.spaceId)).valueOrNull;
-    if (avatarData != null) {
-      return Image.memory(
-        avatarData.bytes,
-        height: 300,
-        width: MediaQuery.of(context).size.width,
-        fit: BoxFit.cover,
-      );
-    } else {
-      return Container(height: 200, color: Colors.red);
-    }
+    if (avatarData == null) return Container(height: 200, color: Colors.red);
+    return Image.memory(
+      avatarData.bytes,
+      height: 300,
+      width: MediaQuery.of(context).size.width,
+      fit: BoxFit.cover,
+    );
   }
 
   Widget spaceTabMenuUI(TabEntry tabItem, bool active) {

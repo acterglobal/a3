@@ -15,28 +15,25 @@ class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, String> {
   late StreamSubscription<bool> _poller;
 
   @override
-  FutureOr<Convo> build(String arg) async {
+  FutureOr<Convo?> build(String arg) async {
     final convoId = arg;
     final client = ref.watch(alwaysClientProvider);
     _listener = client.subscribeStream(convoId); // keep it resident in memory
     _poller = _listener.listen(
-      (e) async {
+      (data) async {
         final newConvo = await client.convo(convoId);
         state = AsyncValue.data(newConvo);
       },
-      onError: (e, stack) {
-        state = AsyncValue.error(e, stack);
-        _log.severe('stream errored.', e, stack);
+      onError: (e, s) {
+        _log.severe('convo stream errored', e, s);
+        state = AsyncValue.error(e, s);
       },
       onDone: () {
-        _log.info('stream ended');
+        _log.info('convo stream ended');
       },
     );
     ref.onDispose(() => _poller.cancel());
-    return await client.convoWithRetry(
-      convoId,
-      120,
-    );
+    return await client.convoWithRetry(convoId, 120);
   }
 }
 
@@ -50,17 +47,18 @@ class AsyncLatestMsgNotifier extends FamilyAsyncNotifier<RoomMessage?, String> {
     final client = ref.watch(alwaysClientProvider);
     _listener = client.subscribeStream('$roomId::latest_message');
     _poller = _listener.listen(
-      (e) {
+      (data) {
         _log.info('received new latest message call for $roomId');
         state = ref
             .watch(chatProvider(roomId))
             .whenData((cb) => cb?.latestMessage());
       },
-      onError: (e, stack) {
-        _log.severe('stream errored', e, stack);
+      onError: (e, s) {
+        _log.severe('latest msg stream errored', e, s);
+        state = AsyncValue.error(e, s);
       },
       onDone: () {
-        _log.info('stream ended');
+        _log.info('latest msg stream ended');
       },
     );
     ref.onDispose(() => _poller.cancel());
@@ -82,7 +80,15 @@ class ChatRoomsListNotifier extends StateNotifier<List<Convo>> {
 
   void _init(Ref ref) {
     _listener = client.convosStream(); // keep it resident in memory
-    _poller = _listener.listen(_handleDiff);
+    _poller = _listener.listen(
+      _handleDiff,
+      onError: (e, s) {
+        _log.severe('convo list stream errored', e, s);
+      },
+      onDone: () {
+        _log.info('convo list stream ended');
+      },
+    );
     ref.onDispose(() => _poller.cancel());
   }
 

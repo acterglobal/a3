@@ -29,15 +29,15 @@ class AsyncMaybeRoomNotifier extends FamilyAsyncNotifier<Room?, String> {
     final client = ref.watch(alwaysClientProvider);
     _listener = client.subscribeStream(arg); // keep it resident in memory
     _poller = _listener.listen(
-      (e) async {
+      (data) async {
         _log.info('seen update for room $arg');
         state = await AsyncValue.guard(_getRoom);
       },
-      onError: (e, stack) {
-        _log.severe('stream errored', e, stack);
+      onError: (e, s) {
+        _log.severe('room stream errored', e, s);
       },
       onDone: () {
-        _log.info('stream ended');
+        _log.info('room stream ended');
       },
     );
     ref.onDispose(() => _poller.cancel());

@@ -18,7 +18,7 @@ class AsyncDevicesNotifier extends AsyncNotifier<List<DeviceRecord>> {
 
     _listener = client.deviceEventRx();
     _poller = _listener?.listen(
-      (evt) async {
+      (data) async {
         final sessions = (await manager.allSessions()).toList();
         state = AsyncValue.data(sessions);
       },

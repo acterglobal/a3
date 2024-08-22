@@ -34,27 +34,20 @@ Widget renderFurther(
   String spaceId,
   int? maxItems,
 ) {
-  final remoteChats = ref.watch(remoteChatRelationsProvider(spaceId));
-
-  return remoteChats.when(
+  final relatedChatsLoader = ref.watch(remoteChatRelationsProvider(spaceId));
+  return relatedChatsLoader.when(
     data: (chats) {
-      if (chats.isEmpty) {
-        return const SizedBox.shrink();
-      }
-
+      if (chats.isEmpty) return const SizedBox.shrink();
       return ListView.builder(
         shrinkWrap: true,
         padding: EdgeInsets.zero,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: maxItems ?? chats.length,
-        itemBuilder: (context, idx) {
-          final item = chats[idx];
-          return ConvoHierarchyCard(
-            showIconIfSuggested: true,
-            parentId: spaceId,
-            roomInfo: item,
-          );
-        },
+        itemBuilder: (context, index) => ConvoHierarchyCard(
+          showIconIfSuggested: true,
+          parentId: spaceId,
+          roomInfo: chats[index],
+        ),
       );
     },
     error: (e, s) {

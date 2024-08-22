@@ -32,16 +32,11 @@ class SpaceActionsSection extends ConsumerWidget {
   }
 
   Widget actionButtons(BuildContext context, WidgetRef ref) {
-    final membership = ref.watch(roomMembershipProvider(spaceId));
-    bool canAddPin = membership.valueOrNull?.canString('CanPostPin') == true;
-    bool canAddEvent =
-        membership.valueOrNull?.canString('CanPostEvent') == true;
-
-    bool canAddTask =
-        membership.valueOrNull?.canString('CanPostTaskList') == true;
-
-    bool canLinkSpaces =
-        membership.valueOrNull?.canString('CanLinkSpaces') == true;
+    final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
+    bool canAddPin = membership?.canString('CanPostPin') == true;
+    bool canAddEvent = membership?.canString('CanPostEvent') == true;
+    bool canAddTask = membership?.canString('CanPostTaskList') == true;
+    bool canLinkSpaces = membership?.canString('CanLinkSpaces') == true;
 
     return Wrap(
       crossAxisAlignment: WrapCrossAlignment.start,
@@ -71,12 +66,10 @@ class SpaceActionsSection extends ConsumerWidget {
           iconData: Atlas.list,
           title: L10n.of(context).addTask,
           isShow: canAddTask,
-          onPressed: () {
-            showCreateUpdateTaskListBottomSheet(
-              context,
-              initialSelectedSpace: spaceId,
-            );
-          },
+          onPressed: () => showCreateUpdateTaskListBottomSheet(
+            context,
+            initialSelectedSpace: spaceId,
+          ),
         ),
         spaceActionButton(
           context: context,
@@ -130,15 +123,14 @@ class SpaceActionsSection extends ConsumerWidget {
     VoidCallback? onPressed,
     bool isShow = true,
   }) {
-    return isShow
-        ? TextButton.icon(
-            onPressed: onPressed,
-            icon: Icon(iconData),
-            label: Text(
-              title,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          )
-        : const SizedBox.shrink();
+    if (!isShow) return const SizedBox.shrink();
+    return TextButton.icon(
+      onPressed: onPressed,
+      icon: Icon(iconData),
+      label: Text(
+        title,
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
+    );
   }
 }

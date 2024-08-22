@@ -164,88 +164,81 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
   }
 
   List<Widget> _roomMenu(BuildContext context, WidgetRef ref) {
-    return ref.watch(roomMembershipProvider(member.roomIdStr())).when(
-          data: (myMembership) {
-            if (myMembership == null) {
-              // showing just the power level
-              return [_roomTitle(context, ref), _showPowerLevel(context, null)];
-            }
+    final roomId = member.roomIdStr();
+    final membershipLoader = ref.watch(roomMembershipProvider(roomId));
+    return membershipLoader.when(
+      data: (membership) {
+        if (membership == null) {
+          // showing just the power level
+          return [_roomTitle(context, ref), _showPowerLevel(context, null)];
+        }
 
-            final menu = [_roomTitle(context, ref)];
+        final menu = [_roomTitle(context, ref)];
 
-            if (myMembership.canString('CanUpdatePowerLevels')) {
-              menu.add(
-                _showPowerLevel(
-                  context,
-                  () async {
-                    await changePowerLevel(context, ref);
-                    if (context.mounted) {
-                      Navigator.pop(context);
-                    }
-                  },
-                ),
-              );
-            } else {
-              menu.add(_showPowerLevel(context, null));
-            }
+        if (membership.canString('CanUpdatePowerLevels')) {
+          menu.add(
+            _showPowerLevel(context, () async {
+              await changePowerLevel(context, ref);
+              if (context.mounted) Navigator.pop(context);
+            }),
+          );
+        } else {
+          menu.add(_showPowerLevel(context, null));
+        }
 
-            if (myMembership.canString('CanKick')) {
-              menu.add(
-                MenuItemWidget(
-                  iconData: Icons.eject_outlined,
-                  title: L10n.of(context).kickUser,
-                  withMenu: false,
-                  onTap: () async {
-                    await showKickUserDialog(context, member);
-                    if (context.mounted) {
-                      Navigator.pop(context);
-                    }
-                  },
-                ),
-              );
-
-              if (myMembership.canString('CanBan')) {
-                menu.add(
-                  MenuItemWidget(
-                    iconData: Icons.gpp_bad_outlined,
-                    title: L10n.of(context).kickAndBanUser,
-                    withMenu: false,
-                    onTap: () async {
-                      await showKickAndBanUserDialog(context, member);
-                      if (context.mounted) {
-                        Navigator.pop(context);
-                      }
-                    },
-                  ),
-                );
-              }
-            }
-            return menu;
-          },
-          error: (e, s) {
-            _log.severe('Failed to load room membership', e, s);
-            return [
-              _roomTitle(context, ref),
-              MenuItemWidget(
-                iconData: Atlas.triangle_exclamation_thin,
-                title: L10n.of(context).loadingFailed(e),
-                withMenu: false,
-                onTap: () {},
-              ),
-            ];
-          },
-          loading: () => [
-            _roomTitle(context, ref),
-            Skeletonizer(
-              child: MenuItemWidget(
-                iconData: Atlas.medal_badge_award_thin,
-                title: L10n.of(context).changePowerLevel,
-                withMenu: false,
-                onTap: () {},
-              ),
+        if (membership.canString('CanKick')) {
+          menu.add(
+            MenuItemWidget(
+              iconData: Icons.eject_outlined,
+              title: L10n.of(context).kickUser,
+              withMenu: false,
+              onTap: () async {
+                await showKickUserDialog(context, member);
+                if (context.mounted) Navigator.pop(context);
+              },
             ),
-          ],
-        );
+          );
+
+          if (membership.canString('CanBan')) {
+            menu.add(
+              MenuItemWidget(
+                iconData: Icons.gpp_bad_outlined,
+                title: L10n.of(context).kickAndBanUser,
+                withMenu: false,
+                onTap: () async {
+                  await showKickAndBanUserDialog(context, member);
+                  if (context.mounted) Navigator.pop(context);
+                },
+              ),
+            );
+          }
+        }
+        return menu;
+      },
+      error: (e, s) {
+        _log.severe('Failed to load room membership', e, s);
+        return [
+          _roomTitle(context, ref),
+          MenuItemWidget(
+            iconData: Atlas.triangle_exclamation_thin,
+            title: L10n.of(context).loadingFailed(e),
+            withMenu: false,
+            onTap: () {},
+          ),
+        ];
+      },
+      loading: () => [
+        _roomTitle(context, ref),
+        Skeletonizer(
+          child: MenuItemWidget(
+            iconData: Atlas.medal_badge_award_thin,
+            title: L10n.of(context).changePowerLevel,
+            withMenu: false,
+            onTap: () {},
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _roomTitle(BuildContext context, WidgetRef ref) {
@@ -315,20 +308,23 @@ class MemberInfoDrawer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(memberProvider((roomId: roomId, userId: memberId))).when(
-          data: (data) => _MemberInfoDrawerInner(
-            member: data,
-            memberId: memberId,
-            isShowActions: isShowActions,
-          ),
-          error: (e, s) {
-            _log.severe('Failed to load room member', e, s);
-            return Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Text(L10n.of(context).errorLoadingProfile(e)),
-            );
-          },
-          loading: () => const MemberInfoSkeleton(),
+    final memberLoader = ref.watch(
+      memberProvider((roomId: roomId, userId: memberId)),
+    );
+    return memberLoader.when(
+      data: (member) => _MemberInfoDrawerInner(
+        member: member,
+        memberId: memberId,
+        isShowActions: isShowActions,
+      ),
+      error: (e, s) {
+        _log.severe('Failed to load room member', e, s);
+        return Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Text(L10n.of(context).errorLoadingProfile(e)),
         );
+      },
+      loading: () => const MemberInfoSkeleton(),
+    );
   }
 }

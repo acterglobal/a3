@@ -78,7 +78,7 @@ class EmailAddressesPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final emailAddresses = ref.watch(emailAddressesProvider);
+    final addressesLoader = ref.watch(emailAddressesProvider);
     return WithSidebar(
       sidebar: const SettingsPage(),
       child: Scaffold(
@@ -99,7 +99,7 @@ class EmailAddressesPage extends ConsumerWidget {
             ),
           ],
         ),
-        body: emailAddresses.when(
+        body: addressesLoader.when(
           data: (addresses) => buildAddresses(context, addresses),
           error: (e, s) {
             _log.severe('Failed to load email addresses', e, s);
@@ -151,12 +151,10 @@ class EmailAddressesPage extends ConsumerWidget {
           ),
         ),
         SliverList.builder(
-          itemBuilder: (BuildContext context, int index) {
-            return EmailAddressCard(
-              emailAddress: addresses.unconfirmed[index],
-              isConfirmed: false,
-            );
-          },
+          itemBuilder: (context, index) => EmailAddressCard(
+            emailAddress: addresses.unconfirmed[index],
+            isConfirmed: false,
+          ),
           itemCount: addresses.unconfirmed.length,
         ),
       ];
@@ -175,12 +173,10 @@ class EmailAddressesPage extends ConsumerWidget {
             ),
           ),
           SliverList.builder(
-            itemBuilder: (BuildContext context, int index) {
-              return EmailAddressCard(
-                emailAddress: addresses.confirmed[index],
-                isConfirmed: true,
-              );
-            },
+            itemBuilder: (context, index) => EmailAddressCard(
+              emailAddress: addresses.confirmed[index],
+              isConfirmed: true,
+            ),
             itemCount: addresses.confirmed.length,
           ),
         ]);
@@ -203,12 +199,10 @@ class EmailAddressesPage extends ConsumerWidget {
           ),
         ),
         SliverList.builder(
-          itemBuilder: (BuildContext context, int index) {
-            return EmailAddressCard(
-              emailAddress: addresses.confirmed[index],
-              isConfirmed: true,
-            );
-          },
+          itemBuilder: (context, index) => EmailAddressCard(
+            emailAddress: addresses.confirmed[index],
+            isConfirmed: true,
+          ),
           itemCount: addresses.confirmed.length,
         ),
       ],
