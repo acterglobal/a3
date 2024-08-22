@@ -12,7 +12,7 @@ Future<void> showParentSpaceList(
   BuildContext context,
   String roomId,
 ) async {
-  showModalBottomSheet(
+  await showModalBottomSheet(
     context: context,
     showDragHandle: true,
     useSafeArea: true,
