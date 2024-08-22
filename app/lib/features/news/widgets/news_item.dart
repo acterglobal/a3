@@ -184,6 +184,10 @@ class _NewsItemState extends ConsumerState<NewsItem> {
               child: ListTile(
             leading: const Icon(Icons.calendar_month),
             title: Text(L10n.of(context).eventNoLongerAvailable),
+            subtitle: Text(
+              L10n.of(context).eventDeletedOrFailedToLoad,
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
           ));
         },
       );
