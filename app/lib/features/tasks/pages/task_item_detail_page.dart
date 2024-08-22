@@ -35,35 +35,35 @@ class TaskItemDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final task =
+    final taskLoader =
         ref.watch(taskItemProvider((taskListId: taskListId, taskId: taskId)));
     return Scaffold(
-      appBar: _buildAppBar(context, ref, task),
-      body: _buildBody(context, ref, task),
+      appBar: _buildAppBar(context, ref, taskLoader),
+      body: _buildBody(context, ref, taskLoader),
     );
   }
 
   AppBar _buildAppBar(
     BuildContext context,
     WidgetRef ref,
-    AsyncValue<Task> task,
+    AsyncValue<Task> taskLoader,
   ) {
-    return task.when(
-      data: (data) => AppBar(
+    return taskLoader.when(
+      data: (task) => AppBar(
         title: SelectionArea(
           child: GestureDetector(
             onTap: () => showEditTaskItemNameBottomSheet(
               context: context,
               ref: ref,
-              task: data,
-              titleValue: data.title(),
+              task: task,
+              titleValue: task.title(),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  data.title(),
+                  task.title(),
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 Row(
@@ -94,9 +94,9 @@ class TaskItemDetailPage extends ConsumerWidget {
                     showEditTitleBottomSheet(
                       context: context,
                       bottomSheetTitle: L10n.of(context).editName,
-                      titleValue: data.title(),
+                      titleValue: task.title(),
                       onSave: (newName) =>
-                          saveTitle(context, ref, data, newName),
+                          saveTitle(context, ref, task, newName),
                     );
                   },
                   child: Text(
@@ -105,22 +105,25 @@ class TaskItemDetailPage extends ConsumerWidget {
                   ),
                 ),
                 PopupMenuItem(
-                  onTap: () => showEditDescriptionSheet(context, ref, data),
+                  onTap: () => showEditDescriptionSheet(context, ref, task),
                   child: Text(
                     L10n.of(context).editDescription,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
                 PopupMenuItem(
-                  onTap: () =>
-                      showRedactDialog(context: context, ref: ref, task: data),
+                  onTap: () => showRedactDialog(
+                    context: context,
+                    ref: ref,
+                    task: task,
+                  ),
                   child: Text(
                     L10n.of(context).delete,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
                 PopupMenuItem(
-                  onTap: () => showReportDialog(context: context, task: data),
+                  onTap: () => showReportDialog(context: context, task: task),
                   child: Text(
                     L10n.of(context).report,
                     style: Theme.of(context).textTheme.bodyMedium,
@@ -180,10 +183,10 @@ class TaskItemDetailPage extends ConsumerWidget {
   Widget _buildBody(
     BuildContext context,
     WidgetRef ref,
-    AsyncValue<Task> task,
+    AsyncValue<Task> taskLoader,
   ) {
-    return task.when(
-      data: (data) => taskData(context, data, ref),
+    return taskLoader.when(
+      data: (task) => taskData(context, task, ref),
       error: (e, s) {
         _log.severe('Failed to load task', e, s);
         return Text(L10n.of(context).loadingFailed(e));
@@ -386,11 +389,7 @@ class TaskItemDetailPage extends ConsumerWidget {
     );
   }
 
-  Widget assigneeName(
-    BuildContext context,
-    Task task,
-    WidgetRef ref,
-  ) {
+  Widget assigneeName(BuildContext context, Task task, WidgetRef ref) {
     final assignees = task.assigneesStr().map((s) => s.toDartString()).toList();
 
     return Wrap(
@@ -398,9 +397,7 @@ class TaskItemDetailPage extends ConsumerWidget {
       children: assignees.map((i) {
         final displayName = ref
             .watch(
-              memberDisplayNameProvider(
-                (roomId: task.roomIdStr(), userId: i),
-              ),
+              memberDisplayNameProvider((roomId: task.roomIdStr(), userId: i)),
             )
             .valueOrNull;
         return Padding(
@@ -436,10 +433,7 @@ class TaskItemDetailPage extends ConsumerWidget {
     }
   }
 
-  Future<void> onUnAssign(
-    BuildContext context,
-    Task task,
-  ) async {
+  Future<void> onUnAssign(BuildContext context, Task task) async {
     EasyLoading.show(status: L10n.of(context).unassigningSelf);
     try {
       await task.unassignSelf();

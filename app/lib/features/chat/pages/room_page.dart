@@ -39,13 +39,13 @@ class RoomPage extends ConsumerWidget {
   final String roomId;
 
   const RoomPage({
-    required this.roomId,
     super.key = roomPageKey,
+    required this.roomId,
   });
 
   Widget appBar(BuildContext context, WidgetRef ref) {
     final roomAvatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
-    final activeMembers = ref.watch(membersIdsProvider(roomId));
+    final membersLoader = ref.watch(membersIdsProvider(roomId));
     return AppBar(
       elevation: 0,
       automaticallyImplyLeading: !context.isLargeScreen,
@@ -69,14 +69,11 @@ class RoomPage extends ConsumerWidget {
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: 5),
-            activeMembers.when(
-              data: (members) {
-                int count = members.length;
-                return Text(
-                  L10n.of(context).membersCount(count),
-                  style: Theme.of(context).textTheme.bodySmall,
-                );
-              },
+            membersLoader.when(
+              data: (members) => Text(
+                L10n.of(context).membersCount(members.length),
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
               skipLoadingOnReload: false,
               error: (e, s) {
                 _log.severe('Failed to load active members', e, s);
@@ -146,8 +143,8 @@ class ChatRoom extends ConsumerStatefulWidget {
   final String roomId;
 
   const ChatRoom({
-    required this.roomId,
     super.key,
+    required this.roomId,
   });
 
   @override
@@ -182,10 +179,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
     });
   }
 
-  void showMessageOptions(
-    BuildContext context,
-    types.Message message,
-  ) async {
+  void showMessageOptions(BuildContext context, types.Message message) {
     if (message is types.CustomMessage) {
       if (message.metadata!.containsKey('eventType') &&
           message.metadata!['eventType'] == 'm.room.redaction') {
@@ -231,6 +225,8 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
     final userId = ref.watch(myUserIdStrProvider);
     final isDirectChat =
         ref.watch(isDirectChatProvider(roomId)).valueOrNull ?? false;
+    final typingUsers =
+        ref.watch(chatTypingEventProvider(roomId)).valueOrNull ?? [];
 
     return Expanded(
       child: Chat(
@@ -243,12 +239,13 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
           types.TextMessage m, {
           required int messageWidth,
           required bool showName,
-        }) =>
-            TextMessageBuilder(
-          roomId: widget.roomId,
-          message: m,
-          messageWidth: messageWidth,
-        ),
+        }) {
+          return TextMessageBuilder(
+            roomId: widget.roomId,
+            message: m,
+            messageWidth: messageWidth,
+          );
+        },
         l10n: ChatL10nEn(
           emptyChatPlaceholder: '',
           attachmentButtonAccessibilityLabel: '',
@@ -263,42 +260,47 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
         // disable image preview
         disableImageGallery: true,
         // custom avatar builder
-        avatarBuilder: (types.User user) =>
-            AvatarBuilder(userId: user.id, roomId: roomId),
+        avatarBuilder: (types.User user) => AvatarBuilder(
+          userId: user.id,
+          roomId: roomId,
+        ),
         isLastPage: endReached,
         bubbleBuilder: (
           Widget child, {
           required types.Message message,
           required bool nextMessageInGroup,
-        }) =>
-            GestureDetector(
-          onSecondaryTap: () => showMessageOptions(context, message),
-          child: BubbleBuilder(
-            roomId: widget.roomId,
-            message: message,
-            nextMessageInGroup: nextMessageInGroup,
-            enlargeEmoji: message.metadata!['enlargeEmoji'] ?? false,
-            child: child,
-          ),
-        ),
+        }) {
+          return GestureDetector(
+            onSecondaryTap: () => showMessageOptions(context, message),
+            child: BubbleBuilder(
+              roomId: widget.roomId,
+              message: message,
+              nextMessageInGroup: nextMessageInGroup,
+              enlargeEmoji: message.metadata!['enlargeEmoji'] ?? false,
+              child: child,
+            ),
+          );
+        },
         imageMessageBuilder: (
           types.ImageMessage message, {
           required int messageWidth,
-        }) =>
-            ImageMessageBuilder(
-          roomId: widget.roomId,
-          message: message,
-          messageWidth: messageWidth,
-        ),
+        }) {
+          return ImageMessageBuilder(
+            roomId: widget.roomId,
+            message: message,
+            messageWidth: messageWidth,
+          );
+        },
         videoMessageBuilder: (
           types.VideoMessage message, {
           required int messageWidth,
-        }) =>
-            VideoMessageBuilder(
-          roomId: widget.roomId,
-          message: message,
-          messageWidth: messageWidth,
-        ),
+        }) {
+          return VideoMessageBuilder(
+            roomId: widget.roomId,
+            message: message,
+            messageWidth: messageWidth,
+          );
+        },
         fileMessageBuilder: (
           types.FileMessage message, {
           required messageWidth,
@@ -312,29 +314,23 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
         customMessageBuilder: (
           types.CustomMessage message, {
           required int messageWidth,
-        }) =>
-            CustomMessageBuilder(
-          message: message,
-          messageWidth: messageWidth,
-        ),
-        systemMessageBuilder: (msg) => renderSystemMessage(context, msg),
+        }) {
+          return CustomMessageBuilder(
+            message: message,
+            messageWidth: messageWidth,
+          );
+        },
+        systemMessageBuilder: (msg) => renderSysMessage(context, msg),
         showUserAvatars: !isDirectChat,
-        onMessageLongPress: (
-          BuildContext context,
-          types.Message message,
-        ) async =>
-            showMessageOptions(context, message),
-
+        onMessageLongPress: showMessageOptions,
         onEndReached: ref
             .read(chatStateProvider(widget.roomId).notifier)
             .handleEndReached,
         onEndReachedThreshold: 0.75,
-        onBackgroundTap: () =>
-            ref.read(chatInputProvider.notifier).unsetActions(),
+        onBackgroundTap: ref.read(chatInputProvider.notifier).unsetActions,
         typingIndicatorOptions: TypingIndicatorOptions(
           typingMode: TypingIndicatorMode.name,
-          typingUsers:
-              ref.watch(chatTypingEventProvider(roomId)).valueOrNull ?? [],
+          typingUsers: typingUsers,
         ),
         //Custom Theme class, see lib/common/store/chatTheme.dart
         theme: Theme.of(context).chatTheme,
@@ -342,10 +338,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
     );
   }
 
-  Widget renderSystemMessage(
-    BuildContext context,
-    types.SystemMessage message,
-  ) {
+  Widget renderSysMessage(BuildContext context, types.SystemMessage message) {
     return switch (message.metadata?['type']) {
       '_invite' => InviteSystemMessageWidget(
           message: message,

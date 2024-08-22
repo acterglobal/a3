@@ -19,23 +19,25 @@ class SpaceInfo extends ConsumerWidget {
   final String spaceId;
   final double size;
 
-  const SpaceInfo({super.key, this.size = 16, required this.spaceId});
+  const SpaceInfo({
+    super.key,
+    this.size = 16,
+    required this.spaceId,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final space = ref.watch(spaceProvider(spaceId));
-    return space.when(
-      data: (space) {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            VisibilityChip(roomId: spaceId),
-            const SizedBox(width: 5),
-            acterSpaceInfoUI(context, ref, space),
-            const Spacer(),
-          ],
-        );
-      },
+    final spaceLoader = ref.watch(spaceProvider(spaceId));
+    return spaceLoader.when(
+      data: (space) => Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          VisibilityChip(roomId: spaceId),
+          const SizedBox(width: 5),
+          acterSpaceInfoUI(context, ref, space),
+          const Spacer(),
+        ],
+      ),
       error: (e, s) {
         _log.severe('Failed to load space', e, s);
         return Text(L10n.of(context).loadingFailed(e));
@@ -75,24 +77,21 @@ class SpaceInfo extends ConsumerWidget {
   }
 
   Widget acterSpaceInfoUI(BuildContext context, WidgetRef ref, Space space) {
-    final isActerSpace = ref.watch(isActerSpaceForSpace(space));
-    return isActerSpace
-            .whenData(
-              (isProper) => isProper
-                  ? const SizedBox.shrink()
-                  : Padding(
-                      padding: const EdgeInsets.only(right: 3),
-                      child: Tooltip(
-                        message: L10n.of(context).thisIsNotAProperActerSpace,
-                        child: Icon(
-                          Atlas.triangle_exclamation_thin,
-                          size: size,
-                          color: Theme.of(context).colorScheme.error,
-                        ),
-                      ),
-                    ),
-            )
-            .valueOrNull ??
-        const SizedBox.shrink();
+    final isActerLoader = ref.watch(isActerSpaceForSpace(space));
+    final widgetLoader = isActerLoader.whenData((isActer) {
+      if (isActer) return const SizedBox.shrink();
+      return Padding(
+        padding: const EdgeInsets.only(right: 3),
+        child: Tooltip(
+          message: L10n.of(context).thisIsNotAProperActerSpace,
+          child: Icon(
+            Atlas.triangle_exclamation_thin,
+            size: size,
+            color: Theme.of(context).colorScheme.error,
+          ),
+        ),
+      );
+    });
+    return widgetLoader.valueOrNull ?? const SizedBox.shrink();
   }
 }

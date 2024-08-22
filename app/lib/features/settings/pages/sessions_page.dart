@@ -17,7 +17,7 @@ class SessionsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final allSessions = ref.watch(unknownSessionsProvider);
+    final sessionsLoader = ref.watch(unknownSessionsProvider);
     return WithSidebar(
       sidebar: const SettingsPage(),
       child: Scaffold(
@@ -36,7 +36,7 @@ class SessionsPage extends ConsumerWidget {
             ),
           ],
         ),
-        body: allSessions.when(
+        body: sessionsLoader.when(
           data: (sessions) => buildSessions(context, sessions),
           error: (e, s) {
             _log.severe('Failed to load unknown sessions', e, s);
@@ -52,59 +52,12 @@ class SessionsPage extends ConsumerWidget {
     );
   }
 
-  Widget buildSessions(
-    BuildContext context,
-    List<DeviceRecord> sessions,
-  ) {
+  Widget buildSessions(BuildContext context, List<DeviceRecord> sessions) {
     final unverifiedSessions = sessions.where((s) => !s.isVerified()).toList();
 
-    if (unverifiedSessions.isNotEmpty) {
-      final slivers = [
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsetsDirectional.symmetric(
-              horizontal: 20,
-              vertical: 15,
-            ),
-            child: Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: Icon(
-                    Atlas.shield_exclamation_thin,
-                    color: Theme.of(context).colorScheme.error,
-                  ),
-                ),
-                Text(
-                  L10n.of(context).unverifiedSessions,
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-              ],
-            ),
-          ),
-        ),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsetsDirectional.symmetric(
-              horizontal: 20,
-              vertical: 15,
-            ),
-            child: Text(
-              L10n.of(context).unverifiedSessionsDescription,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ),
-        ),
-        SliverList.builder(
-          itemBuilder: (BuildContext context, int index) {
-            return SessionCard(deviceRecord: unverifiedSessions[index]);
-          },
-          itemCount: unverifiedSessions.length,
-        ),
-      ];
-      final verifiedSessions = sessions.where((s) => s.isVerified()).toList();
-      if (verifiedSessions.isNotEmpty) {
-        slivers.addAll([
+    if (unverifiedSessions.isEmpty) {
+      return CustomScrollView(
+        slivers: [
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsetsDirectional.symmetric(
@@ -112,24 +65,69 @@ class SessionsPage extends ConsumerWidget {
                 vertical: 15,
               ),
               child: Text(
-                '${L10n.of(context).verified} ${L10n.of(context).sessions}',
-                style: Theme.of(context).textTheme.headlineSmall,
+                L10n.of(context).verifiedSessionsDescription,
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
             ),
           ),
           SliverList.builder(
-            itemBuilder: (BuildContext context, int index) {
-              return SessionCard(deviceRecord: verifiedSessions[index]);
-            },
-            itemCount: verifiedSessions.length,
+            itemBuilder: (context, index) => SessionCard(
+              deviceRecord: sessions[index],
+            ),
+            itemCount: sessions.length,
           ),
-        ]);
-      }
-      return CustomScrollView(slivers: slivers);
+        ],
+      );
     }
 
-    return CustomScrollView(
-      slivers: [
+    final slivers = [
+      SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsetsDirectional.symmetric(
+            horizontal: 20,
+            vertical: 15,
+          ),
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: Icon(
+                  Atlas.shield_exclamation_thin,
+                  color: Theme.of(context).colorScheme.error,
+                ),
+              ),
+              Text(
+                L10n.of(context).unverifiedSessions,
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+            ],
+          ),
+        ),
+      ),
+      SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsetsDirectional.symmetric(
+            horizontal: 20,
+            vertical: 15,
+          ),
+          child: Text(
+            L10n.of(context).unverifiedSessionsDescription,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ),
+      ),
+      SliverList.builder(
+        itemBuilder: (context, index) => SessionCard(
+          deviceRecord: unverifiedSessions[index],
+        ),
+        itemCount: unverifiedSessions.length,
+      ),
+    ];
+
+    final verifiedSessions = sessions.where((s) => s.isVerified()).toList();
+
+    if (verifiedSessions.isNotEmpty) {
+      slivers.addAll([
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsetsDirectional.symmetric(
@@ -137,18 +135,19 @@ class SessionsPage extends ConsumerWidget {
               vertical: 15,
             ),
             child: Text(
-              L10n.of(context).verifiedSessionsDescription,
-              style: Theme.of(context).textTheme.bodyMedium,
+              '${L10n.of(context).verified} ${L10n.of(context).sessions}',
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
           ),
         ),
         SliverList.builder(
-          itemBuilder: (BuildContext context, int index) {
-            return SessionCard(deviceRecord: sessions[index]);
-          },
-          itemCount: sessions.length,
+          itemBuilder: (context, index) => SessionCard(
+            deviceRecord: verifiedSessions[index],
+          ),
+          itemCount: verifiedSessions.length,
         ),
-      ],
-    );
+      ]);
+    }
+    return CustomScrollView(slivers: slivers);
   }
 }

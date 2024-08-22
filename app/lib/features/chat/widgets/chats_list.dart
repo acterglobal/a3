@@ -18,7 +18,10 @@ final _log = Logger('a3::chat::chats_list');
 class ChatsList extends ConsumerWidget {
   final Function(String)? onSelected;
 
-  const ChatsList({this.onSelected, super.key});
+  const ChatsList({
+    super.key,
+    this.onSelected,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -48,10 +51,7 @@ class ChatsList extends ConsumerWidget {
             ),
           );
         }
-        return _renderList(
-          context,
-          chatsIds,
-        );
+        return _renderList(context, chatsIds);
       },
       loading: () => const SliverToBoxAdapter(
         child: Center(
@@ -95,9 +95,7 @@ class ChatsList extends ConsumerWidget {
           subtitle: L10n.of(context).getInTouchWithOtherChangeMakers,
           image: 'assets/images/empty_chat.svg',
           primaryButton: ActerPrimaryActionButton(
-            onPressed: () async => context.pushNamed(
-              Routes.createChat.name,
-            ),
+            onPressed: () => context.pushNamed(Routes.createChat.name),
             child: Text(L10n.of(context).sendDM),
           ),
         ),
@@ -214,8 +212,10 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
       animation: animation,
       key: Key('convo-card-$roomId-removed'),
       roomId: roomId,
-      onTap: () =>
-          widget.onSelected != null ? widget.onSelected!(roomId) : null,
+      onTap: () {
+        final onSelected = widget.onSelected;
+        if (onSelected != null) onSelected(roomId);
+      },
     );
   }
 
@@ -235,8 +235,10 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
       animation: animation,
       key: Key('convo-card-$roomId'),
       roomId: roomId,
-      onTap: () =>
-          widget.onSelected != null ? widget.onSelected!(roomId) : null,
+      onTap: () {
+        final onSelected = widget.onSelected;
+        if (onSelected != null) onSelected(roomId);
+      },
     );
   }
 

@@ -105,9 +105,8 @@ final notificationSettingsProvider = AsyncNotifierProvider<
 
 final appContentNotificationSetting =
     FutureProvider.family<bool, String>((ref, appKey) async {
-  final notificationsSettings =
-      await ref.watch(notificationSettingsProvider.future);
-  return await notificationsSettings.globalContentSetting(appKey);
+  final settings = await ref.watch(notificationSettingsProvider.future);
+  return await settings.globalContentSetting(appKey);
 });
 
 // Email addresses that registered by user

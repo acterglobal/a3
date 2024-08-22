@@ -127,19 +127,18 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       padding: const EdgeInsets.all(12),
       child: spaceDetails.when(
         data: (space) {
-          return space == null
-              ? const SizedBox.shrink()
-              : Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(L10n.of(context).parentSpace),
-                    SpaceChip(
-                      space: space,
-                      onTapOpenSpaceDetail: false,
-                    ),
-                  ],
-                );
+          if (space == null) return const SizedBox.shrink();
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(L10n.of(context).parentSpace),
+              SpaceChip(
+                space: space,
+                onTapOpenSpaceDetail: false,
+              ),
+            ],
+          );
         },
         error: (e, s) {
           _log.severe('Failed to load the details of selected space', e, s);

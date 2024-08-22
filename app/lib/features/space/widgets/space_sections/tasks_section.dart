@@ -22,8 +22,8 @@ class TasksSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final taskList = ref.watch(taskListProvider(spaceId));
-    return taskList.when(
+    final tasksLoader = ref.watch(taskListProvider(spaceId));
+    return tasksLoader.when(
       data: (tasks) => buildTasksSectionUI(context, tasks),
       error: (e, s) {
         _log.severe('Failed to load tasks in space', e, s);
@@ -38,37 +38,35 @@ class TasksSection extends ConsumerWidget {
   }
 
   Widget buildTasksSectionUI(BuildContext context, List<String> tasks) {
-    int taskLimit = (tasks.length > limit) ? limit : tasks.length;
-    bool isShowSeeAllButton = tasks.length > taskLimit;
+    final hasMore = tasks.length > limit;
+    final count = hasMore ? limit : tasks.length;
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionHeader(
           title: L10n.of(context).tasks,
-          isShowSeeAllButton: isShowSeeAllButton,
+          isShowSeeAllButton: hasMore,
           onTapSeeAll: () => context.pushNamed(
             Routes.spaceTasks.name,
             pathParameters: {'spaceId': spaceId},
           ),
         ),
-        taskListUI(tasks, taskLimit),
+        taskListUI(tasks, count),
       ],
     );
   }
 
-  Widget taskListUI(List<String> tasks, int taskLimit) {
+  Widget taskListUI(List<String> tasks, int count) {
     return ListView.builder(
       shrinkWrap: true,
-      itemCount: taskLimit,
+      itemCount: count,
       padding: EdgeInsets.zero,
       physics: const NeverScrollableScrollPhysics(),
-      itemBuilder: (context, index) {
-        return TaskListItemCard(
-          taskListId: tasks[index],
-          initiallyExpanded: false,
-        );
-      },
+      itemBuilder: (context, index) => TaskListItemCard(
+        taskListId: tasks[index],
+        initiallyExpanded: false,
+      ),
     );
   }
 }

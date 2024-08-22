@@ -40,8 +40,8 @@ class AboutSection extends ConsumerWidget {
   }
 
   Widget spaceDescription(BuildContext context, WidgetRef ref) {
-    final space = ref.watch(spaceProvider(spaceId));
-    return space.when(
+    final spaceLoader = ref.watch(spaceProvider(spaceId));
+    return spaceLoader.when(
       data: (space) {
         final topic = space.topic();
         return SelectionArea(

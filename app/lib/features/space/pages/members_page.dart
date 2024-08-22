@@ -19,7 +19,7 @@ class SpaceMembersPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final members = ref.watch(membersIdsProvider(spaceIdOrAlias));
+    final membersLoader = ref.watch(membersIdsProvider(spaceIdOrAlias));
     final membership =
         ref.watch(roomMembershipProvider(spaceIdOrAlias)).valueOrNull;
     final invited =
@@ -48,7 +48,7 @@ class SpaceMembersPage extends ConsumerWidget {
                 : const SizedBox.shrink(),
           ],
         ),
-        members.when(
+        membersLoader.when(
           data: (members) {
             final widthCount =
                 (MediaQuery.of(context).size.width ~/ 300).toInt();
@@ -66,12 +66,10 @@ class SpaceMembersPage extends ConsumerWidget {
                 crossAxisCount: max(1, min(widthCount, minCount)),
                 childAspectRatio: 5.0,
               ),
-              itemBuilder: (context, index) {
-                return MemberListEntry(
-                  memberId: members[index],
-                  roomId: spaceIdOrAlias,
-                );
-              },
+              itemBuilder: (context, index) => MemberListEntry(
+                memberId: members[index],
+                roomId: spaceIdOrAlias,
+              ),
             );
           },
           error: (e, s) {

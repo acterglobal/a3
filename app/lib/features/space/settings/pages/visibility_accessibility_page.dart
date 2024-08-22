@@ -86,29 +86,28 @@ class _VisibilityAccessibilityPageState
 
   Widget _buildVisibilityUI({bool hasPermission = true}) {
     final spaceId = widget.roomId;
-    final selectedVisibility = ref.watch(roomVisibilityProvider(spaceId));
-    final spaceList = ref.watch(joinRulesAllowedRoomsProvider(spaceId));
-    return selectedVisibility.when(
-      data: (visibility) {
-        return RoomVisibilityType(
-          selectedVisibilityEnum: visibility,
-          canChange: hasPermission,
-          onVisibilityChange: !hasPermission
-              ? (value) =>
-                  EasyLoading.showToast(L10n.of(context).visibilityNoPermission)
-              : (value) {
-                  if (value == RoomVisibility.SpaceVisible &&
-                      spaceList.valueOrNull?.isEmpty == true) {
-                    selectSpace(spaceId);
-                  } else {
-                    updateSpaceVisibility(
-                      value ?? RoomVisibility.Private,
-                      spaceIds: (spaceList.valueOrNull ?? []),
-                    );
-                  }
-                },
-        );
-      },
+    final visibilityLoader = ref.watch(roomVisibilityProvider(spaceId));
+    final allowedSpaces = ref.watch(joinRulesAllowedRoomsProvider(spaceId));
+    return visibilityLoader.when(
+      data: (visibility) => RoomVisibilityType(
+        selectedVisibilityEnum: visibility,
+        canChange: hasPermission,
+        onVisibilityChange: (value) {
+          if (!hasPermission) {
+            EasyLoading.showToast(L10n.of(context).visibilityNoPermission);
+            return;
+          }
+          if (value == RoomVisibility.SpaceVisible &&
+              allowedSpaces.valueOrNull?.isEmpty == true) {
+            selectSpace(spaceId);
+          } else {
+            updateSpaceVisibility(
+              value ?? RoomVisibility.Private,
+              spaceIds: (allowedSpaces.valueOrNull ?? []),
+            );
+          }
+        },
+      ),
       error: (e, s) {
         _log.severe('Failed to load room visibility', e, s);
         return const RoomVisibilityType(
@@ -124,7 +123,8 @@ class _VisibilityAccessibilityPageState
   }
 
   Widget _buildSpaceWithAccess({bool hasPermission = true}) {
-    final spaceIds = ref.watch(joinRulesAllowedRoomsProvider(widget.roomId));
+    final allowedSpacesLoader =
+        ref.watch(joinRulesAllowedRoomsProvider(widget.roomId));
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Column(
@@ -143,13 +143,13 @@ class _VisibilityAccessibilityPageState
                 ),
             ],
           ),
-          spaceIds.when(
-            data: (spacesList) => ListView.builder(
+          allowedSpacesLoader.when(
+            data: (allowedSpaces) => ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: spacesList.length,
+              itemCount: allowedSpaces.length,
               itemBuilder: (context, index) {
-                return _spaceItemUI(spacesList[index], hasPermission);
+                return _spaceItemUI(allowedSpaces[index], hasPermission);
               },
             ),
             error: (e, s) {
@@ -168,9 +168,7 @@ class _VisibilityAccessibilityPageState
 
   Widget _loadingSpaceItem() {
     return Skeletonizer(
-      child: _spaceItemCard(
-        'loading',
-      ),
+      child: _spaceItemCard('loading'),
     );
   }
 
@@ -194,9 +192,7 @@ class _VisibilityAccessibilityPageState
         leading: avatar ??
             ActerAvatar(
               options: const AvatarOptions(
-                AvatarInfo(
-                  uniqueId: 'unknown',
-                ),
+                AvatarInfo(uniqueId: 'unknown'),
                 size: 45,
                 badgesSize: 45 / 2,
               ),
@@ -214,18 +210,19 @@ class _VisibilityAccessibilityPageState
   }
 
   Widget _spaceItemUI(String spaceId, bool canEdit) {
-    return ref.watch(briefSpaceItemProvider(spaceId)).when(
-          data: (d) => _spaceFoundUI(d, canEdit),
-          error: (e, s) {
-            _log.severe('Failed to load brief of space', e, s);
-            return _spaceItemCard(
-              spaceId,
-              subtitle: Text(L10n.of(context).failedToLoadSpace(e)),
-              removeAction: canEdit ? () => removeSpace(spaceId) : null,
-            );
-          },
-          loading: _loadingSpaceItem,
+    final spaceLoader = ref.watch(briefSpaceItemProvider(spaceId));
+    return spaceLoader.when(
+      data: (space) => _spaceFoundUI(space, canEdit),
+      error: (e, s) {
+        _log.severe('Failed to load brief of space', e, s);
+        return _spaceItemCard(
+          spaceId,
+          subtitle: Text(L10n.of(context).failedToLoadSpace(e)),
+          removeAction: canEdit ? () => removeSpace(spaceId) : null,
         );
+      },
+      loading: _loadingSpaceItem,
+    );
   }
 
   Widget _spaceFoundUI(SpaceItem spaceItem, bool canEdit) {
@@ -242,7 +239,9 @@ class _VisibilityAccessibilityPageState
           badgesSize: 45 / 2,
         ),
       ),
-      removeAction: canEdit ? () => removeSpace(spaceItem.roomId) : null,
+      removeAction: () {
+        if (canEdit) removeSpace(spaceItem.roomId);
+      },
     );
   }
 
@@ -286,7 +285,10 @@ class _VisibilityAccessibilityPageState
     List<String>? spaceIds,
   }) async {
     try {
-      EasyLoading.show(status: 'Updating space settings', dismissOnTap: false);
+      EasyLoading.show(
+        status: 'Updating space settings',
+        dismissOnTap: false,
+      );
       final sdk = await ref.read(sdkProvider.future);
       final update = sdk.api.newJoinRuleBuilder();
       final room = await ref.read(maybeRoomProvider(widget.roomId).future);
@@ -303,7 +305,7 @@ class _VisibilityAccessibilityPageState
           break;
         case RoomVisibility.SpaceVisible:
           update.joinRule('restricted');
-          for (final roomId in (spaceIds ?? [])) {
+          for (var roomId in (spaceIds ?? [])) {
             update.addRoom(roomId);
           }
           break;

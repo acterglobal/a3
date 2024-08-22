@@ -24,58 +24,56 @@ Future<String?> selectEventDrawer({
     isDismissible: true,
     builder: (context) => Consumer(
       builder: (context, ref, child) {
-        final events = ref.watch(allEventListProvider(spaceId));
-        return events.when(
-          data: (eventsList) {
-            return Column(
-              key: key,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: title ?? const Text('Select event'),
-                      ),
-                      OutlinedButton.icon(
-                        icon: const Icon(Atlas.minus_circle_thin),
-                        onPressed: () {
-                          Navigator.pop(context, null);
-                        },
-                        label: const Text('Clear'),
-                      ),
-                    ],
-                  ),
+        final calEventsLoader = ref.watch(allEventListProvider(spaceId));
+        return calEventsLoader.when(
+          data: (calEvents) => Column(
+            key: key,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: title ?? const Text('Select event'),
+                    ),
+                    OutlinedButton.icon(
+                      icon: const Icon(Atlas.minus_circle_thin),
+                      onPressed: () {
+                        Navigator.pop(context, null);
+                      },
+                      label: const Text('Clear'),
+                    ),
+                  ],
                 ),
-                Flexible(
-                  child: eventsList.isEmpty
-                      ? Container(
-                          height: 200,
-                          alignment: Alignment.center,
-                          child: const Text('No events found'),
-                        )
-                      : ListView.builder(
-                          padding: const EdgeInsets.all(8),
-                          itemCount: eventsList.length,
-                          itemBuilder: (context, index) => EventItem(
-                            event: eventsList[index],
-                            isShowRsvp: false,
-                            onTapEventItem: (event) {
-                              Navigator.pop(context, event);
-                            },
-                          ),
+              ),
+              Flexible(
+                child: calEvents.isEmpty
+                    ? Container(
+                        height: 200,
+                        alignment: Alignment.center,
+                        child: const Text('No events found'),
+                      )
+                    : ListView.builder(
+                        padding: const EdgeInsets.all(8),
+                        itemCount: calEvents.length,
+                        itemBuilder: (context, index) => EventItem(
+                          event: calEvents[index],
+                          isShowRsvp: false,
+                          onTapEventItem: (event) {
+                            Navigator.pop(context, event);
+                          },
                         ),
-                ),
-              ],
-            );
-          },
-          error: (error, stack) {
-            _log.severe('Failed to load all cal events', error, stack);
+                      ),
+              ),
+            ],
+          ),
+          error: (e, s) {
+            _log.severe('Failed to load all cal events', e, s);
             return Center(
-              child: Text(L10n.of(context).failedToLoadEventsDueTo(error)),
+              child: Text(L10n.of(context).failedToLoadEventsDueTo(e)),
             );
           },
           loading: () => const SizedBox(

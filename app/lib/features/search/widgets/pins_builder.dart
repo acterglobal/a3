@@ -10,6 +10,7 @@ final _log = Logger('a3::search::pins_builder');
 
 class PinsBuilder extends ConsumerWidget {
   final bool popBeforeRoute;
+
   const PinsBuilder({
     super.key,
     required this.popBeforeRoute,
@@ -17,60 +18,52 @@ class PinsBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final foundPins = ref.watch(pinsFoundProvider);
-    return foundPins.when(
+    final pinsLoader = ref.watch(pinsFoundProvider);
+    return pinsLoader.when(
       loading: () => Text(L10n.of(context).loading),
       error: (e, s) {
         _log.severe('Failed to search pins', e, s);
         return Text(L10n.of(context).searchingFailed(e));
       },
-      data: (data) {
-        final Widget body;
-        if (data.isEmpty) {
-          body = Text(L10n.of(context).noMatchingPinsFound);
-        } else {
-          final List<Widget> children = data
-              .map(
-                (e) => InkWell(
-                  child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Row(
-                      children: [
-                        e.icon,
-                        const SizedBox(width: 5),
-                        Text(e.name),
-                      ],
-                    ),
-                  ),
-                  onTap: () async {
-                    if (popBeforeRoute) {
-                      Navigator.pop(context);
-                    }
-                    context.pushNamed(
-                      Routes.pin.name,
-                      pathParameters: {'pinId': e.navigationTargetId},
+      data: (pins) => Padding(
+        padding: const EdgeInsets.only(top: 10),
+        child: Column(
+          children: [
+            Text(L10n.of(context).pins),
+            const SizedBox(height: 15),
+            if (pins.isEmpty)
+              Text(L10n.of(context).noMatchingPinsFound)
+            else
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: pins.map((pin) {
+                    return InkWell(
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Row(
+                          children: [
+                            pin.icon,
+                            const SizedBox(width: 5),
+                            Text(pin.name),
+                          ],
+                        ),
+                      ),
+                      onTap: () {
+                        if (popBeforeRoute) Navigator.pop(context);
+                        context.pushNamed(
+                          Routes.pin.name,
+                          pathParameters: {'pinId': pin.navigationTargetId},
+                        );
+                      },
                     );
-                  },
+                  }).toList(),
                 ),
-              )
-              .toList();
-          body = SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(children: children),
-          );
-        }
-        return Padding(
-          padding: const EdgeInsets.only(top: 10),
-          child: Column(
-            children: [
-              Text(L10n.of(context).pins),
-              const SizedBox(height: 15),
-              body,
-              const SizedBox(height: 10),
-            ],
-          ),
-        );
-      },
+              ),
+            const SizedBox(height: 10),
+          ],
+        ),
+      ),
     );
   }
 }

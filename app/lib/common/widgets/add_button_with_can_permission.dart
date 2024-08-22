@@ -15,10 +15,8 @@ class AddButtonWithCanPermission extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (canString == null) return _buildIconButton(context);
-    final canAdd =
-        ref.watch(hasSpaceWithPermissionProvider(canString!)).valueOrNull ??
-            false;
-
+    final canDoLoader = ref.watch(hasSpaceWithPermissionProvider(canString!));
+    final canAdd = canDoLoader.valueOrNull ?? false;
     return canAdd ? _buildIconButton(context) : const SizedBox.shrink();
   }
 

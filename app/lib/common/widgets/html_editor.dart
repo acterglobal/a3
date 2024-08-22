@@ -1,9 +1,13 @@
 import 'dart:async';
+
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter/material.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
+import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::common::html_editor');
 
 AppFlowyEditorHTMLCodec defaultHtmlCodec = const AppFlowyEditorHTMLCodec(
   encodeParsers: [
@@ -140,9 +144,17 @@ class HtmlEditorState extends State<HtmlEditor> {
 
       _changeListener?.cancel();
       if (widget.onChanged != null) {
-        _changeListener = editorState.transactionStream.listen((event) {
-          _triggerExport(widget.onChanged!);
-        });
+        _changeListener = editorState.transactionStream.listen(
+          (data) {
+            _triggerExport(widget.onChanged!);
+          },
+          onError: (e, s) {
+            _log.severe('tx stream errored', e, s);
+          },
+          onDone: () {
+            _log.info('tx stream ended');
+          },
+        );
       }
     });
   }

@@ -27,20 +27,21 @@ class _CommentsListState extends ConsumerState<CommentsList> {
 
   @override
   Widget build(BuildContext context) {
-    return ref.watch(commentsListProvider(widget.manager)).when(
-          data: (manager) {
-            if (manager.isEmpty) {
-              return commentEmptyState(context);
-            } else {
-              return commentListUI(context, manager);
-            }
-          },
-          error: (e, s) {
-            _log.severe('Failed to load comments', e, s);
-            return onError(context, e);
-          },
-          loading: () => loading(context),
-        );
+    final commentsLoader = ref.watch(commentsListProvider(widget.manager));
+    return commentsLoader.when(
+      data: (comments) {
+        if (comments.isEmpty) {
+          return commentEmptyState(context);
+        } else {
+          return commentListUI(context, comments);
+        }
+      },
+      error: (e, s) {
+        _log.severe('Failed to load comments', e, s);
+        return onError(context, e);
+      },
+      loading: () => loading(context),
+    );
   }
 
   Widget createComment() {
@@ -58,12 +59,7 @@ class _CommentsListState extends ConsumerState<CommentsList> {
       children: [
         Column(
           children: comments
-              .map(
-                (c) => CommentWidget(
-                  comment: c,
-                  manager: widget.manager,
-                ),
-              )
+              .map((c) => CommentWidget(comment: c, manager: widget.manager))
               .toList(),
         ),
         if (editorOpened)

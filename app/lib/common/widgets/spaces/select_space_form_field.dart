@@ -46,10 +46,10 @@ class SelectSpaceFormField extends ConsumerWidget {
     final selectedSpace = currentSelectedSpace != null;
 
     final emptyButton = OutlinedButton(
-            key: openKey,
-            onPressed: () => selectSpace(context, ref),
-            child: Text(emptyText ?? L10n.of(context).pleaseSelectSpace),
-          );
+      key: openKey,
+      onPressed: () => selectSpace(context, ref),
+      child: Text(emptyText ?? L10n.of(context).pleaseSelectSpace),
+    );
 
     return FormField(
       builder: (state) => selectedSpace
@@ -94,18 +94,20 @@ class SelectSpaceFormField extends ConsumerWidget {
   }
 
   Widget spaceBuilder(BuildContext context, WidgetRef ref, Widget? child) {
-    final spaceDetails = ref.watch(selectedSpaceDetailsProvider);
-    final currentSelectedSpace = ref.watch(selectedSpaceIdProvider);
-    return spaceDetails.when(
-      data: (space) => space != null
-          ? SpaceChip(
-              space: space,
-              onTapOpenSpaceDetail: false,
-              useCompatView: useCompatView,
-              onTapSelectSpace: () =>
-                  useCompatView ? selectSpace(context, ref) : null,
-            )
-          : Text(currentSelectedSpace!),
+    final spaceLoader = ref.watch(selectedSpaceDetailsProvider);
+    final currentId = ref.watch(selectedSpaceIdProvider);
+    return spaceLoader.when(
+      data: (space) {
+        if (space == null) return Text(currentId!);
+        return SpaceChip(
+          space: space,
+          onTapOpenSpaceDetail: false,
+          useCompatView: useCompatView,
+          onTapSelectSpace: () {
+            if (useCompatView) selectSpace(context, ref);
+          },
+        );
+      },
       error: (e, s) {
         _log.severe('Failed to load the details of selected space', e, s);
         return Text(L10n.of(context).loadingFailed(e));
@@ -114,9 +116,7 @@ class SelectSpaceFormField extends ConsumerWidget {
         child: Chip(
           avatar: ActerAvatar(
             options: AvatarOptions(
-              AvatarInfo(
-                uniqueId: L10n.of(context).loading,
-              ),
+              AvatarInfo(uniqueId: L10n.of(context).loading),
               size: 24,
             ),
           ),

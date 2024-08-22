@@ -8,10 +8,6 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logging/logging.dart';
-import 'package:skeletonizer/skeletonizer.dart';
-
-final _log = Logger('a3::invite::individual_users');
 
 class InviteIndividualUsers extends ConsumerWidget {
   final String roomId;
@@ -151,47 +147,38 @@ class InviteIndividualUsers extends ConsumerWidget {
   }
 
   Widget _buildFoundUserList(BuildContext context, WidgetRef ref) {
-    final foundUsers = ref.watch(searchResultProvider);
-    if (foundUsers.hasValue && foundUsers.value!.isNotEmpty) {
-      return Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-              child: Text(
-                L10n.of(context).usersfoundDirectory,
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
-            ),
-            const SizedBox(height: 5),
-            Expanded(
-              child: ListView.builder(
-                itemCount: foundUsers.value!.length,
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  return foundUsers.when(
-                    data: (data) => UserBuilder(
-                      userId: data[index].userId().toString(),
+    final usersLoader = ref.watch(searchResultProvider);
+    if (usersLoader.hasValue) {
+      final value = usersLoader.value;
+      if (value != null) {
+        if (value.isNotEmpty) {
+          return Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Text(
+                    L10n.of(context).usersfoundDirectory,
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: value.length,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) => UserBuilder(
+                      userId: value[index].userId().toString(),
                       roomId: roomId,
                     ),
-                    error: (e, s) {
-                      _log.severe('Failed to search users', e, s);
-                      return Text(L10n.of(context).searchingFailed(e));
-                    },
-                    loading: () => Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: Skeletonizer(
-                        child: Text(L10n.of(context).loading),
-                      ),
-                    ),
-                  );
-                },
-              ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      );
+          );
+        }
+      }
     }
     return EmptyState(
       title: L10n.of(context).noUserFoundTitle,

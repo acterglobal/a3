@@ -24,12 +24,12 @@ class SpacesSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final spacesList = ref.watch(spaceRelationsOverviewProvider(spaceId));
-    return spacesList.when(
-      data: (spaceRelationsOverview) => buildSpacesSectionUI(
+    final overviewLoader = ref.watch(spaceRelationsOverviewProvider(spaceId));
+    return overviewLoader.when(
+      data: (overview) => buildSpacesSectionUI(
         context,
         ref,
-        spaceRelationsOverview.knownSubspaces,
+        overview.knownSubspaces,
       ),
       error: (e, s) {
         _log.severe('Failed to load the related spaces', e, s);
@@ -48,13 +48,11 @@ class SpacesSection extends ConsumerWidget {
     WidgetRef ref,
     List<String> spaces,
   ) {
+    final subspaces = ref.watch(remoteSubspaceRelationsProvider(spaceId));
     final config = calculateSectionConfig(
       localListLen: spaces.length,
       limit: limit,
-      remoteListLen:
-          (ref.watch(remoteSubspaceRelationsProvider(spaceId)).valueOrNull ??
-                  [])
-              .length,
+      remoteListLen: (subspaces.valueOrNull ?? []).length,
     );
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,

@@ -20,7 +20,7 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final info = ref.watch(superInviteInfoProvider(token));
+    final infoLoader = ref.watch(superInviteInfoProvider(token));
     return AlertDialog(
       title: Text(L10n.of(context).redeem),
       content: Container(
@@ -31,7 +31,7 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
           children: [
-            info.when(
+            infoLoader.when(
               data: (info) => renderInfo(context, ref, info),
               error: (e, s) {
                 _log.severe('Failed to load the super invite: $token', e, s);

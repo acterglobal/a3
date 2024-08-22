@@ -22,20 +22,22 @@ class _JoinBtn extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(roomMembershipProvider(item.roomIdStr())).when(
-          data: (data) =>
-              data == null ? noMember(context) : alreadyMember(context),
-          error: (e, s) {
-            _log.severe('Failed to load room membership', e, s);
-            return Text(L10n.of(context).loadingFailed(e));
-          },
-          loading: () => Skeletonizer(
-            child: OutlinedButton(
-              onPressed: () => onSelected(item),
-              child: Text(L10n.of(context).requestToJoin),
-            ),
-          ),
-        );
+    final roomId = item.roomIdStr();
+    final membershipLoader = ref.watch(roomMembershipProvider(roomId));
+    return membershipLoader.when(
+      data: (membership) =>
+          membership == null ? noMember(context) : alreadyMember(context),
+      error: (e, s) {
+        _log.severe('Failed to load room membership', e, s);
+        return Text(L10n.of(context).loadingFailed(e));
+      },
+      loading: () => Skeletonizer(
+        child: OutlinedButton(
+          onPressed: () => onSelected(item),
+          child: Text(L10n.of(context).requestToJoin),
+        ),
+      ),
+    );
   }
 
   Widget alreadyMember(BuildContext context) {
@@ -72,7 +74,7 @@ class PublicRoomItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profileInfo = ref.watch(searchItemProfileData(item));
+    final avatarLoader = ref.watch(searchItemProfileData(item));
     final topic = item.topic();
 
     return Card(
@@ -86,9 +88,9 @@ class PublicRoomItem extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(vertical: 5),
               child: ListTile(
                 onTap: () => onSelected(item),
-                leading: profileInfo.when(
-                  data: (profile) => ActerAvatar(
-                    options: AvatarOptions(profile),
+                leading: avatarLoader.when(
+                  data: (avatar) => ActerAvatar(
+                    options: AvatarOptions(avatar),
                   ),
                   error: (e, s) {
                     _log.severe('Failed to load avatar info', e, s);

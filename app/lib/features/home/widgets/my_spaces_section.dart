@@ -1,7 +1,8 @@
+import 'dart:math';
+
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
-
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/tutorial_dialogs/space_overview_tutorials/create_or_join_space_tutorials.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -9,14 +10,17 @@ import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class MySpacesSection extends ConsumerWidget {
   final int? limit;
 
-  const MySpacesSection({super.key, this.limit});
+  const MySpacesSection({
+    super.key,
+    this.limit,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -40,13 +44,12 @@ class MySpacesSection extends ConsumerWidget {
       return const _NoSpacesWidget();
     }
 
-    int spacesLimit =
-        (limit != null && spaces.length > limit!) ? limit! : spaces.length;
+    final count = limit == null ? spaces.length : min(spaces.length, limit!);
     return _RenderSpacesSection(
       spaces: spaces,
-      limit: spacesLimit,
-      showAll: spacesLimit != spaces.length,
-      showActions: spacesLimit == spaces.length,
+      limit: count,
+      showAll: count != spaces.length,
+      showActions: count == spaces.length,
       showAllCounter: spaces.length,
       title: InkWell(
         key: DashboardKeys.widgetMySpacesHeader,
