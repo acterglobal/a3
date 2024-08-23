@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../helpers/room_test_wrapper.dart';
 import '../../helpers/utils.dart';
 import '../../helpers/mocks.dart';
 import '../../helpers/test_wrapper_widget.dart';
@@ -408,67 +409,77 @@ void main() {
     testWidgets(
       'Switching to room stores previous message state of room',
       (tester) async {
-        Future<void> switchToRoom(String roomId) async {
-          await tester.pumpWidget(
-            ProviderScope(
-              overrides: overrides,
-              child: InActerContextTestWrapper(
-                child: CustomChatInput(roomId: roomId),
-              ),
-            ),
-          );
-          // not visible
-          expect(find.byKey(CustomChatInput.noAccessKey), findsNothing);
-          expect(find.byKey(CustomChatInput.loadingKey), findsNothing);
-          await tester.pump();
+        final wrapperKey = GlobalKey<RoomTestWrapperState>();
 
-          final element = tester.element(find.byType(CustomChatInput));
-          final container = ProviderScope.containerOf(element);
-
-          final convo = await container.read(chatProvider(roomId).future);
-          await convo?.msgDraft();
-        }
-
-        Future<void> enterTextVerifyDraft(String text, String roomId) async {
-          final element = tester.element(find.byType(CustomChatInput));
-          final container = ProviderScope.containerOf(element);
-          final convo = await container.read(chatProvider(roomId).future);
-
+        Future<void> enterText(String text) async {
           final textField = find.byType(TextField);
           await tester.enterText(textField, text);
           // Simulate the debounce timer
-          await tester.pump(const Duration(milliseconds: 300));
-          // Trigger the save draft operation
-          await convo?.saveMsgDraft(text, null, 'new', null);
+          await tester.pump(Durations.medium2);
+          await tester.pump(Durations.medium2);
+          await tester.pump(Durations.medium2);
+        }
 
+        // verify the controller text applies compose draft
+        Future<void> verifyDraft(String roomId) async {
+          final element = tester.element(find.byType(CustomChatInput));
+          final container = ProviderScope.containerOf(element);
+          final convo = await container.read(chatProvider(roomId).future);
+          // ensure draft was saved
+          final textField = find.byType(TextField);
           final draft = await convo?.msgDraft().then((val) => val.draft());
           final textFieldWidget = tester.widget<TextField>(textField);
-          // ensure draft is saved up
+          // ensure text controller text matches draft
           expect(textFieldWidget.controller?.text, equals(draft?.plainText()));
         }
 
-        await switchToRoom('roomId-1');
+        Future<void> switchRoom(String roomId) async {
+          wrapperKey.currentState!.switchRoom(roomId);
+          await tester.pump();
+          await tester.pumpAndSettle();
+
+          // Verify that loading and no access indicators are not visible
+          expect(find.byKey(CustomChatInput.noAccessKey), findsNothing);
+          expect(find.byKey(CustomChatInput.loadingKey), findsNothing);
+        }
+
+        // build the initial widget tree
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: overrides,
+            child: InActerContextTestWrapper(
+              child: RoomTestWrapper(key: wrapperKey, roomId: 'roomId-1'),
+            ),
+          ),
+        );
+        // not visible
+        expect(find.byKey(CustomChatInput.noAccessKey), findsNothing);
+        expect(find.byKey(CustomChatInput.loadingKey), findsNothing);
         await tester.pump();
-        await enterTextVerifyDraft('Hello Room 1', 'roomId-1');
+
+        await enterText('Hello Room 1');
+        await verifyDraft('roomId-1');
 
         await tester.pump();
 
         // switch to another room
-        await switchToRoom('roomId-2');
-        await tester.pump();
-        await enterTextVerifyDraft('Greetings Room 2', 'roomId-2');
+        await switchRoom('roomId-2');
+        await enterText('Greetings Room 2');
+        await verifyDraft('roomId-2');
 
         await tester.pump();
 
         // switch back to room
-        await switchToRoom('roomId-1');
-
-        expect(find.text('Hello Room 1'), findsOneWidget);
+        await switchRoom('roomId-1');
+        // pump to ensure controller gets draft update
+        await tester.pump(Durations.short4);
+        await verifyDraft('roomId-1');
 
         // switch to next room again
-        await switchToRoom('roomId-2');
-
-        expect(find.text('Greetings Room 2'), findsOneWidget);
+        await switchRoom('roomId-2');
+        // pump to ensure controller gets draft update
+        await tester.pump(Durations.short4);
+        await verifyDraft('roomId-2');
 
         // This test is timing out due to a pending timer.
         // See MultiTriggerAutocompleteState._onChangedField in:

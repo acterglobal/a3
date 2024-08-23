@@ -208,6 +208,16 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
   }
 
   @override
+  void didUpdateWidget(covariant _ChatInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.roomId != widget.roomId) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        loadDraft();
+      });
+    }
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _setController();
