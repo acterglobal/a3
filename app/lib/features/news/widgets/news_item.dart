@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/toolkit/errors/error_dialog.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/events/widgets/skeletons/event_item_skeleton_widget.dart';
@@ -188,6 +189,13 @@ class _NewsItemState extends ConsumerState<NewsItem> {
                 L10n.of(context).eventDeletedOrFailedToLoad,
                 style: Theme.of(context).textTheme.labelLarge,
               ),
+              onTap: () async {
+                await ActerErrorDialog.show(
+                  context: context,
+                  error: e,
+                  stack: s,
+                );
+              },
             ),
           );
         },
