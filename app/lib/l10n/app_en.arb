@@ -2126,5 +2126,7 @@
   "inSpaceLabelInline": "In",
   "comingSoon": "Not supported yet, coming soon!",
   "colonCharacter": " : ",
-  "errorLoadingSpaces": "Error loading spaces: {error}"
+  "errorLoadingSpaces": "Error loading spaces: {error}",
+  "eventNoLongerAvailable": "Event no longer available",
+  "eventDeletedOrFailedToLoad": "This may due to event deletion or failed to load"
 }
