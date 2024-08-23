@@ -29,13 +29,11 @@ class SpaceInfo extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final spaceLoader = ref.watch(spaceProvider(spaceId));
     return spaceLoader.when(
-      data: (space) => Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+      data: (space) => Wrap(
         children: [
           VisibilityChip(roomId: spaceId),
           const SizedBox(width: 5),
           acterSpaceInfoUI(context, ref, space),
-          const Spacer(),
         ],
       ),
       error: (e, s) {
@@ -50,26 +48,17 @@ class SpaceInfo extends ConsumerWidget {
     return Skeletonizer(
       child: Row(
         children: [
-          Tooltip(
-            message: '',
-            child: Icon(
-              Atlas.glasses_vision_thin,
-              size: size,
-            ),
+          Icon(
+            Atlas.glasses_vision_thin,
+            size: size,
           ),
-          Tooltip(
-            message: '',
-            child: Icon(
-              Atlas.lock_clipboard_thin,
-              size: size,
-            ),
+          Icon(
+            Atlas.lock_clipboard_thin,
+            size: size,
           ),
-          Tooltip(
-            message: '',
-            child: Icon(
-              Atlas.shield_exclamation_thin,
-              size: size,
-            ),
+          Icon(
+            Atlas.shield_exclamation_thin,
+            size: size,
           ),
         ],
       ),
@@ -77,9 +66,7 @@ class SpaceInfo extends ConsumerWidget {
   }
 
   Widget acterSpaceInfoUI(BuildContext context, WidgetRef ref, Space space) {
-    final isActerLoader = ref.watch(isActerSpaceForSpace(space));
-    final widgetLoader = isActerLoader.whenData((isActer) {
-      if (isActer) return const SizedBox.shrink();
+    if (ref.watch(isActerSpaceForSpace(space)).valueOrNull != true) {
       return Padding(
         padding: const EdgeInsets.only(right: 3),
         child: Tooltip(
@@ -91,7 +78,7 @@ class SpaceInfo extends ConsumerWidget {
           ),
         ),
       );
-    });
-    return widgetLoader.valueOrNull ?? const SizedBox.shrink();
+    }
+    return const SizedBox.shrink();
   }
 }
