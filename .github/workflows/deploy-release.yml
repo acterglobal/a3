@@ -392,9 +392,25 @@ jobs:
       - name: Tag for release
         run: |
           echo "Add release ${{ needs.tags.outputs.tag }}"
+          git co ci/release-${{ needs.tags.outputs.tag }}
           git commit -m "Releasing ${{ needs.tags.outputs.tag }}"
           git tag ${{ needs.tags.outputs.tag }}
-          git push origin main ${{ needs.tags.outputs.tag }} release-latest
+          git push origin ci/release-${{ needs.tags.outputs.tag }} ${{ needs.tags.outputs.tag }}
+
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: "ci/release-${{ needs.tags.outputs.tag }}"
+          title: "Releasing ${{ needs.tags.outputs.tag }}"
+          body: Release ${{ needs.tags.outputs.tag }} auto PR.
+          labels: minor
+          assignees: gnunicorn
+
+      - name: Enable Pull Request Automerge
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
 
       - name: Release
         id: create_release
