@@ -3,7 +3,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:zoom_hover_pinch_image/zoom_hover_pinch_image.dart';
+import 'package:pinch_zoom_release_unzoom/pinch_zoom_release_unzoom.dart';
 
 class FullScreenAvatarPage extends ConsumerWidget {
   final String roomId;
@@ -36,7 +36,6 @@ class FullScreenAvatarPage extends ConsumerWidget {
   }
 
   Widget _buildBody(BuildContext context, WidgetRef ref) {
-    final size = MediaQuery.of(context).size;
     final profileData = ref.watch(roomAvatarInfoProvider(roomId));
 
     if (profileData.avatar == null) {
@@ -44,9 +43,7 @@ class FullScreenAvatarPage extends ConsumerWidget {
     }
 
     return Center(
-      child: Zoom(
-        width: size.width,
-        height: size.height,
+      child: PinchZoomReleaseUnzoomWidget(
         child: Container(
           decoration: BoxDecoration(
             image: DecorationImage(
