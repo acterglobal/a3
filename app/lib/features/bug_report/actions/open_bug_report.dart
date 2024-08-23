@@ -10,14 +10,16 @@ final _log = Logger('a3::bug_report::open_bug_report');
 
 bool _bugReportOpen = false;
 
-Future<void> openBugReport(BuildContext context) async {
+Future<void> openBugReport(
+  BuildContext context, {
+  Map<String, String> queryParams = const {},
+}) async {
   if (_bugReportOpen) {
     return;
   }
   final cacheDir = await appCacheDir();
   // rage shake disallows dot in filename
   final timestamp = DateTime.now().timestamp;
-  final Map<String, String> queryParams = {};
   final imagePath = await screenshotController.captureAndSave(
     cacheDir,
     fileName: 'screenshot_$timestamp.png',

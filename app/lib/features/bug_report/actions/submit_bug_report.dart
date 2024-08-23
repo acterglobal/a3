@@ -16,25 +16,28 @@ Future<String> submitBugReport({
   bool withLog = false,
   bool withPrevLogFile = false,
   bool withUserId = false,
-  required String description,
+  required String title,
   String? screenshotPath,
+  Map<String, String> extraFields = const {},
 }) async {
   final sdk = await ActerSdk.instance;
 
   final request = http.MultipartRequest('POST', Uri.parse(Env.rageshakeUrl));
   request.fields.addAll({
-    'text': description,
+    'text': title,
     'user_agent': userAgent,
     'app': Env
         .rageshakeAppName, // should be same as one among github_project_mappings
     'version': Env.rageshakeAppVersion,
   });
+  request.fields.addAll(extraFields);
   if (withUserId) {
     final client = sdk.currentClient;
     if (client != null) {
-      request.fields.addAll({'UserId': client.userId().toString()});
+      request.fields['UserId'] = client.userId().toString();
     }
   }
+  request.fields.addAll(extraFields);
   if (withLog) {
     String logFile = sdk.api.rotateLogFile();
     if (logFile.isNotEmpty) {

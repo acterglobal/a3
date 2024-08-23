@@ -1780,6 +1780,8 @@
   "@includePrevLog": {},
   "includeScreenshot": "Include screenshot",
   "@includeScreenshot": {},
+  "includeErrorAndStackTrace": "Include Error & Stacktrace",
+  "@includeErrorAndStackTrace": {},
   "jumpTo": "jump to",
   "@jumpTo": {},
   "noMatchingPinsFound": "no matching pins found",
