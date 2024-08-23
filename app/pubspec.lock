@@ -1670,6 +1670,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.15.0"
+  pinch_zoom_release_unzoom:
+    dependency: "direct main"
+    description:
+      name: pinch_zoom_release_unzoom
+      sha256: "77ae7a6844923211cb7dca9f86e3b6333e0d75d0c44cb2d908d893725954d8cf"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.3"
   platform:
     dependency: transitive
     description:
@@ -2660,14 +2668,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.2"
-  zoom_hover_pinch_image:
-    dependency: "direct main"
-    description:
-      name: zoom_hover_pinch_image
-      sha256: "8cb66299c038be925c8cb29c0c11735f60602ee15c3b04d50258fa1a7be79547"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.3"
 sdks:
   dart: ">=3.4.4 <4.0.0"
   flutter: ">=3.22.0"

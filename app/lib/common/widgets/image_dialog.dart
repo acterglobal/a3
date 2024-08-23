@@ -3,7 +3,7 @@ import 'package:acter/features/files/widgets/share_file_button.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:zoom_hover_pinch_image/zoom_hover_pinch_image.dart';
+import 'package:pinch_zoom_release_unzoom/pinch_zoom_release_unzoom.dart';
 
 class ImageDialog extends ConsumerWidget {
   final String title;
@@ -37,8 +37,7 @@ class ImageDialog extends ConsumerWidget {
           ],
         ),
         body: Center(
-          child: Zoom(
-            clipBehavior: false,
+          child: PinchZoomReleaseUnzoomWidget(
             child: Image.file(
               imageFile,
               frameBuilder: (
