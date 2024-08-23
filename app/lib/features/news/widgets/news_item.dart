@@ -1,5 +1,7 @@
+import 'dart:core';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/errors/error_dialog.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/events/widgets/skeletons/event_item_skeleton_widget.dart';
@@ -11,6 +13,7 @@ import 'package:acter/features/news/widgets/news_side_bar.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:carousel_indicator/carousel_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -169,44 +172,101 @@ class _NewsItemState extends ConsumerState<NewsItem> {
   Widget newsActionButtons({required NewsSlide newsSlide}) {
     final newsReferencesList = newsSlide.references().toList();
     if (newsReferencesList.isEmpty) return const SizedBox();
-
     final referenceDetails = newsReferencesList.first.refDetails();
-    final uriId = referenceDetails.uri() ?? '';
-    final title = referenceDetails.title() ?? '';
+    return renderActionButton(referenceDetails);
+  }
 
-    if (title == NewsReferencesType.shareEvent.name) {
-      final calEventLoader = ref.watch(calendarEventProvider(uriId));
-      return calEventLoader.when(
-        data: (calEvent) => EventItem(event: calEvent),
-        loading: () => const EventItemSkeleton(),
-        error: (e, s) {
-          _log.severe('Failed to load cal event', e, s);
-          return Card(
-            child: ListTile(
-              leading: const Icon(Icons.calendar_month),
-              title: Text(L10n.of(context).eventNoLongerAvailable),
-              subtitle: Text(
-                L10n.of(context).eventDeletedOrFailedToLoad,
-                style: Theme.of(context).textTheme.labelLarge,
-              ),
-              onTap: () async {
-                await ActerErrorDialog.show(
-                  context: context,
-                  error: e,
-                  stack: s,
-                );
-              },
-            ),
-          );
-        },
+  Widget renderActionButton(RefDetails referenceDetails) {
+    final evtType = NewsReferencesType.fromStr(referenceDetails.typeStr());
+
+    return switch (evtType) {
+      NewsReferencesType.calendarEvent => renderCalendarEventAction(
+          targetEventId: referenceDetails.targetIdStr() ?? '',),
+      NewsReferencesType.link => renderLinkActionButtion(referenceDetails),
+      _ => renderNotSupportedAction()
+    };
+  }
+
+  Widget renderLinkActionButtion(RefDetails referenceDetails) {
+    final uri = referenceDetails.uri();
+    if (uri == null) {
+      // malformatted
+      return renderNotSupportedAction();
+    }
+    if (referenceDetails.title() == 'shareEvent' && uri.startsWith('\$')) {
+      // fallback support for older, badly formatted calendar events.
+      return renderCalendarEventAction(targetEventId: uri);
+    }
+
+    final title = referenceDetails.title();
+    if (title != null) {
+      return Card(
+        child: ListTile(
+          leading: const Icon(Atlas.link),
+          onTap: () => openLink(uri, context),
+          title: Text(
+            title,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.labelMedium,
+          ),
+          subtitle: Text(
+            uri,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
       );
     } else {
       return Card(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Text(L10n.of(context).unsupportedPleaseUpgrade),
+        child: ListTile(
+          leading: const Icon(Atlas.link),
+          onTap: () => openLink(uri, context),
+          title: Text(
+            uri,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.labelMedium,
+          ),
         ),
       );
     }
+  }
+
+  Widget renderCalendarEventAction({required String targetEventId}) {
+    final calEventLoader = ref.watch(calendarEventProvider(targetEventId));
+    return calEventLoader.when(
+      data: (calEvent) => EventItem(event: calEvent),
+      loading: () => const EventItemSkeleton(),
+      error: (e, s) {
+        _log.severe('Failed to load cal event', e, s);
+        return Card(
+          child: ListTile(
+            leading: const Icon(Icons.calendar_month),
+            title: Text(L10n.of(context).eventNoLongerAvailable),
+            subtitle: Text(
+              L10n.of(context).eventDeletedOrFailedToLoad,
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+            onTap: () async {
+              await ActerErrorDialog.show(
+                context: context,
+                error: e,
+                stack: s,
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  Widget renderNotSupportedAction() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Text(L10n.of(context).unsupportedPleaseUpgrade),
+      ),
+    );
   }
 }
