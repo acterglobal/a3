@@ -19,7 +19,7 @@ class MockClient extends Mock implements Client {
 
   @override
   Future<Convo> convoWithRetry(String roomId, [int attempt = 0]) async {
-    return MockConvo();
+    return MockConvo(roomId);
   }
 }
 
@@ -35,11 +35,13 @@ class MockOptionComposeDraft extends Mock implements OptionComposeDraft {
 
 /// Mocked version of Convo
 class MockConvo extends Mock implements Convo {
-  MockComposeDraft? _savedDraft;
+  static final Map<String, MockComposeDraft> _drafts = {};
+  final String roomId;
+  MockConvo(this.roomId);
 
   @override
   Future<OptionComposeDraft> msgDraft() async {
-    return MockOptionComposeDraft(_savedDraft);
+    return MockOptionComposeDraft(_drafts[roomId]);
   }
 
   @override
@@ -49,7 +51,7 @@ class MockConvo extends Mock implements Convo {
     String draftType,
     String? eventId,
   ) async {
-    _savedDraft = MockComposeDraft()
+    _drafts[roomId] = MockComposeDraft()
       ..setPlainText(plainText)
       ..setHtmlText(htmlText)
       ..setDraftType(draftType)
@@ -97,7 +99,7 @@ class MockComposeDraft extends Mock implements ComposeDraft {
 class MockAsyncConvoNotifier extends AsyncConvoNotifier {
   @override
   FutureOr<Convo> build(String roomId) async {
-    final client = ref.read(alwaysClientProvider);
+    final client = ref.watch(alwaysClientProvider);
     return await client.convoWithRetry(roomId, 0);
   }
 }

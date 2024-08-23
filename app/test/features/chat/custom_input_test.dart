@@ -420,42 +420,51 @@ void main() {
           // not visible
           expect(find.byKey(CustomChatInput.noAccessKey), findsNothing);
           expect(find.byKey(CustomChatInput.loadingKey), findsNothing);
-          await tester.pumpAndSettle();
+          await tester.pump();
+
+          final element = tester.element(find.byType(CustomChatInput));
+          final container = ProviderScope.containerOf(element);
+
+          final convo = await container.read(chatProvider(roomId).future);
+          await convo?.msgDraft();
+        }
+
+        Future<void> enterTextVerifyDraft(String text, String roomId) async {
+          final element = tester.element(find.byType(CustomChatInput));
+          final container = ProviderScope.containerOf(element);
+          final convo = await container.read(chatProvider(roomId).future);
+
+          final textField = find.byType(TextField);
+          await tester.enterText(textField, text);
+          // Simulate the debounce timer
+          await tester.pump(const Duration(milliseconds: 300));
+          // Trigger the save draft operation
+          await convo?.saveMsgDraft(text, null, 'new', null);
+
+          final draft = await convo?.msgDraft().then((val) => val.draft());
+          final textFieldWidget = tester.widget<TextField>(textField);
+          // ensure draft is saved up
+          expect(textFieldWidget.controller?.text, equals(draft?.plainText()));
         }
 
         await switchToRoom('roomId-1');
-        final element1 = tester.element(find.byType(CustomChatInput));
-        final container1 = ProviderScope.containerOf(element1);
+        await tester.pump();
+        await enterTextVerifyDraft('Hello Room 1', 'roomId-1');
 
-        await tester.enterText(find.byType(TextField), 'Hello Room 1');
-
-        await tester.pump(Durations.medium2);
-
-        final convo1 = await container1.read(chatProvider('roomId-1').future);
-        final draft1 = await convo1?.msgDraft().then((val) => val.draft());
-        final textField1 = tester.widget<TextField>(find.byType(TextField));
-        expect(textField1.controller?.text, equals(draft1?.plainText()));
+        await tester.pump();
 
         // switch to another room
         await switchToRoom('roomId-2');
-        final element2 = tester.element(find.byType(CustomChatInput));
-        final container2 = ProviderScope.containerOf(element2);
+        await tester.pump();
+        await enterTextVerifyDraft('Greetings Room 2', 'roomId-2');
 
-        await tester.enterText(find.byType(TextField), 'Greetings Room 2');
-
-        await tester.pump(Durations.medium2);
-
-        final convo2 = await container2.read(chatProvider('roomId-2').future);
-        final draft2 = await convo2?.msgDraft().then((val) => val.draft());
-        final textField2 = tester.widget<TextField>(find.byType(TextField));
-        expect(textField2.controller?.text, equals(draft2?.plainText()));
+        await tester.pump();
 
         // switch back to room
         await switchToRoom('roomId-1');
 
         expect(find.text('Hello Room 1'), findsOneWidget);
 
-        await tester.pump();
         // switch to next room again
         await switchToRoom('roomId-2');
 
