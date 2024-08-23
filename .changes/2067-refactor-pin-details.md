@@ -1,4 +1,0 @@
-- [Enhancement] : UI-UX improvement of pin details page
-- [Enhancement] : UI-UX improvement of Attachment List
-- [New] : You can now add one or more links to attachments 
-- [New] : While creating pin, you can give customised name to your selected attachments by setting relevant title data

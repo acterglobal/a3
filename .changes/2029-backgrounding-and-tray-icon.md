@@ -1,1 +1,0 @@
-- Keep the app alive in background and close to the tray icon only (on supported platforms)
