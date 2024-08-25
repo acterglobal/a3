@@ -125,7 +125,7 @@ enum EventFilters {
   past,
 }
 
-final eventFilerProvider =
+final eventFilterProvider =
     StateProvider.autoDispose<EventFilters>((ref) => EventFilters.all);
 
 //SEARCH EVENTS
@@ -138,7 +138,7 @@ final eventListSearchFilterProvider = FutureProvider.autoDispose
   List<ffi.CalendarEvent> filteredEventList = [];
 
   //Filter events based on the selection
-  EventFilters eventFilter = ref.watch(eventFilerProvider);
+  EventFilters eventFilter = ref.watch(eventFilterProvider);
   switch (eventFilter) {
     case EventFilters.bookmarked:
       {
