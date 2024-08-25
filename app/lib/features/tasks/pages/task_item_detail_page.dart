@@ -4,6 +4,7 @@ import 'package:acter/common/actions/redact_content.dart';
 import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
+import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
@@ -187,9 +188,18 @@ class TaskItemDetailPage extends ConsumerWidget {
   ) {
     return taskLoader.when(
       data: (task) => taskData(context, task, ref),
-      error: (e, s) {
-        _log.severe('Failed to load task', e, s);
-        return Text(L10n.of(context).loadingFailed(e));
+      error: (error, stack) {
+        _log.severe('Failed to load task', error, stack);
+        return ErrorPage(
+          background: const TaskItemDetailPageSkeleton(),
+          error: error,
+          stack: stack,
+          onRetryTap: () {
+            ref.invalidate(
+              taskItemProvider((taskListId: taskListId, taskId: taskId)),
+            );
+          },
+        );
       },
       loading: () => const TaskItemDetailPageSkeleton(),
     );

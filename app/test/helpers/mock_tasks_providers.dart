@@ -8,7 +8,9 @@ import 'package:riverpod/riverpod.dart';
 class MockAsyncAllTaskListsNotifier extends AsyncNotifier<List<TaskList>>
     with Mock
     implements AsyncAllTaskListsNotifier {
-  bool shouldFail = true;
+  bool shouldFail;
+
+  MockAsyncAllTaskListsNotifier({this.shouldFail = true});
 
   @override
   Future<List<TaskList>> build() async {
@@ -25,7 +27,9 @@ class MockAsyncAllTaskListsNotifier extends AsyncNotifier<List<TaskList>>
 class MockTaskListItemNotifier extends FamilyAsyncNotifier<TaskList, String>
     with Mock
     implements TaskListItemNotifier {
-  bool shouldFail = true;
+  bool shouldFail;
+
+  MockTaskListItemNotifier({this.shouldFail = true});
 
   @override
   Future<MockTaskList> build(String arg) async {
@@ -39,11 +43,50 @@ class MockTaskListItemNotifier extends FamilyAsyncNotifier<TaskList, String>
   }
 }
 
+class MockTaskItemNotifier extends FamilyAsyncNotifier<Task, Task>
+    with Mock
+    implements TaskItemNotifier {
+  @override
+  Future<Task> build(Task arg) async {
+    return arg;
+  }
+}
+
 class MockTaskList extends Fake implements TaskList {
+  bool shouldFail = true;
   @override
   String name() => 'Test';
   @override
   MsgContent? description() => null;
+
+  @override
+  Future<AttachmentsManager> attachments() =>
+      Completer<AttachmentsManager>().future;
+
+  @override
+  Future<CommentsManager> comments() => Completer<CommentsManager>().future;
+
+  @override
+  Future<Task> task(String taskId) async {
+    if (shouldFail) {
+      shouldFail = false;
+
+      throw 'Expected fail';
+    }
+
+    return MockTask();
+  }
+}
+
+class MockTask extends Fake implements Task {
+  @override
+  String title() => 'Test';
+  @override
+  MsgContent? description() => null;
+  @override
+  String? dueDate() => null;
+  @override
+  bool isAssignedToMe() => false;
 
   @override
   Future<AttachmentsManager> attachments() =>

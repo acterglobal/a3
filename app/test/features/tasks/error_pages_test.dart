@@ -1,8 +1,10 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
+import 'package:acter/features/tasks/pages/task_item_detail_page.dart';
 import 'package:acter/features/tasks/pages/task_list_details_page.dart';
 import 'package:acter/features/tasks/pages/tasks_list_page.dart';
+import 'package:acter/features/tasks/providers/task_items_providers.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -94,6 +96,23 @@ void main() {
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
         ],
         child: const TaskListDetailPage(taskListId: 'taskListId'),
+      );
+      await tester.ensureErrorPageWithRetryWorks();
+    });
+  });
+  group('Task Details Error Pages', () {
+    testWidgets('body error page', (tester) async {
+      final mockedNotifier = MockTaskListItemNotifier(shouldFail: false);
+      await tester.pumpProviderWidget(
+        overrides: [
+          notifierTaskProvider.overrideWith(() => MockTaskItemNotifier()),
+          taskListItemProvider.overrideWith(() => mockedNotifier),
+          hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
+        ],
+        child: const TaskItemDetailPage(
+          taskListId: 'taskListId',
+          taskId: 'taskid',
+        ),
       );
       await tester.ensureErrorPageWithRetryWorks();
     });
