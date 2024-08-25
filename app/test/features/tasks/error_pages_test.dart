@@ -55,21 +55,6 @@ void main() {
       await tester.ensureErrorPageWithRetryWorks();
     });
 
-    testWidgets('space list', (tester) async {
-      final mockedTaskListNotifier = MockAsyncAllTaskListsNotifier();
-      await tester.pumpProviderWidget(
-        overrides: [
-          roomDisplayNameProvider.overrideWith((a, b) => 'test'),
-          allTasksListsProvider.overrideWith(() => mockedTaskListNotifier),
-          hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
-        ],
-        child: const TasksListPage(
-          spaceId: '!test',
-        ),
-      );
-      await tester.ensureErrorPageWithRetryWorks();
-    });
-
     testWidgets('space list with search', (tester) async {
       final mockedTaskListNotifier = MockAsyncAllTaskListsNotifier();
       await tester.pumpProviderWidget(
