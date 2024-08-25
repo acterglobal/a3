@@ -33,14 +33,21 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
       );
       try {
         //Get media path if already downloaded
-        final mediaPath = await _convo!.mediaPath(messageInfo.messageId, false);
-        if (mediaPath.text() != null) {
-          final videoThumbnailFile = await getThumbnailData(mediaPath.text()!);
+        final mediaPath =
+            (await _convo!.mediaPath(messageInfo.messageId, false)).text();
+
+        if (mediaPath != null) {
           state = state.copyWith(
-            mediaFile: File(mediaPath.text()!),
-            videoThumbnailFile: videoThumbnailFile,
+            mediaFile: File(mediaPath),
+            videoThumbnailFile: null,
             mediaChatLoadingState: const MediaChatLoadingState.loaded(),
           );
+          final videoThumbnailFile = await getThumbnailData(mediaPath);
+          if (videoThumbnailFile != null) {
+            if (state.mediaFile?.path == mediaPath) {
+              state = state.copyWith(videoThumbnailFile: videoThumbnailFile);
+            }
+          }
         } else {
           // FIXME: this does not react if yet if we switched the network ...
           if (await ref
@@ -79,14 +86,19 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
           null,
           tempDir.path,
         );
-        String? mediaPath = result.text();
+        final mediaPath = result.text();
         if (mediaPath != null) {
-          final videoThumbnailFile = await getThumbnailData(mediaPath);
           state = state.copyWith(
             mediaFile: File(mediaPath),
-            videoThumbnailFile: videoThumbnailFile,
+            videoThumbnailFile: null,
             isDownloading: false,
           );
+          final videoThumbnailFile = await getThumbnailData(mediaPath);
+          if (videoThumbnailFile != null) {
+            if (state.mediaFile?.path == mediaPath) {
+              state = state.copyWith(videoThumbnailFile: videoThumbnailFile);
+            }
+          }
         }
       } catch (e, s) {
         _log.severe('Error downloading media:', e, s);
