@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
+import 'package:acter/features/tasks/pages/task_list_details_page.dart';
 import 'package:acter/features/tasks/pages/tasks_list_page.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -80,6 +81,19 @@ void main() {
         child: const TasksListPage(
           spaceId: '!test',
         ),
+      );
+      await tester.ensureErrorPageWithRetryWorks();
+    });
+  });
+  group('TaskList Details Error Pages', () {
+    testWidgets('body error page', (tester) async {
+      final mockedNotifier = MockTaskListItemNotifier();
+      await tester.pumpProviderWidget(
+        overrides: [
+          taskListItemProvider.overrideWith(() => mockedNotifier),
+          hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
+        ],
+        child: const TaskListDetailPage(taskListId: 'taskListId'),
       );
       await tester.ensureErrorPageWithRetryWorks();
     });

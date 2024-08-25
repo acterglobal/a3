@@ -21,3 +21,34 @@ class MockAsyncAllTaskListsNotifier extends AsyncNotifier<List<TaskList>>
     return [];
   }
 }
+
+class MockTaskListItemNotifier extends FamilyAsyncNotifier<TaskList, String>
+    with Mock
+    implements TaskListItemNotifier {
+  bool shouldFail = true;
+
+  @override
+  Future<MockTaskList> build(String arg) async {
+    if (shouldFail) {
+      // toggle failure so the retry works
+      shouldFail = !shouldFail;
+      throw 'Expected fail';
+    }
+
+    return MockTaskList();
+  }
+}
+
+class MockTaskList extends Fake implements TaskList {
+  @override
+  String name() => 'Test';
+  @override
+  MsgContent? description() => null;
+
+  @override
+  Future<AttachmentsManager> attachments() =>
+      Completer<AttachmentsManager>().future;
+
+  @override
+  Future<CommentsManager> comments() => Completer<CommentsManager>().future;
+}
