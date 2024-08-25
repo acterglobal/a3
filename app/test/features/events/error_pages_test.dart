@@ -1,11 +1,15 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
+import 'package:acter/features/bookmarks/providers/bookmarks_provider.dart';
+import 'package:acter/features/events/pages/event_details_page.dart';
 import 'package:acter/features/events/pages/event_list_page.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../helpers/error_helpers.dart';
+import '../../helpers/mock_event_providers.dart';
+import '../../helpers/mock_space_providers.dart';
 import '../../helpers/test_util.dart';
 
 void main() {
@@ -92,6 +96,26 @@ void main() {
         ],
         child: const EventListPage(
           spaceId: '!test',
+        ),
+      );
+      await tester.ensureErrorPageWithRetryWorks();
+    });
+  });
+  group('Event Details Error Pages', () {
+    testWidgets('body error page', (tester) async {
+      final mockedNofitier = MockAsyncCalendarEventNotifier();
+      await tester.pumpProviderWidget(
+        overrides: [
+          isBookmarkedProvider.overrideWith((a, b) => false),
+          roomAvatarInfoProvider
+              .overrideWith(() => MockRoomAvatarInfoNotifier()),
+          calendarEventProvider.overrideWith(() => mockedNofitier),
+          myRsvpStatusProvider
+              .overrideWith(() => MockAsyncRsvpStatusNotifier()),
+          roomMembershipProvider.overrideWith((a, b) => null),
+        ],
+        child: const EventDetailPage(
+          calendarId: '!asdf',
         ),
       );
       await tester.ensureErrorPageWithRetryWorks();

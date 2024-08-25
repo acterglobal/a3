@@ -4,17 +4,22 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:riverpod/riverpod.dart';
 
 class AsyncRsvpStatusNotifier
-    extends AutoDisposeFamilyAsyncNotifier<ffi.OptionRsvpStatus, String> {
+    extends AutoDisposeFamilyAsyncNotifier<ffi.RsvpStatusTag?, String> {
   late Stream<bool> _listener;
 
-  Future<ffi.OptionRsvpStatus> _getMyResponse() async {
+  Future<ffi.RsvpStatusTag?> _getMyResponse() async {
     final client = ref.read(alwaysClientProvider);
     final calEvent = await client.waitForCalendarEvent(arg, null);
-    return await calEvent.respondedByMe();
+    return switch ((await calEvent.respondedByMe()).statusStr()) {
+      'yes' => ffi.RsvpStatusTag.Yes,
+      'no' => ffi.RsvpStatusTag.No,
+      'maybe' => ffi.RsvpStatusTag.Maybe,
+      _ => null,
+    };
   }
 
   @override
-  Future<ffi.OptionRsvpStatus> build(String arg) async {
+  Future<ffi.RsvpStatusTag?> build(String arg) async {
     final client = ref.watch(alwaysClientProvider);
     _listener =
         client.subscribeStream('$arg::rsvp'); // keep it resident in memory

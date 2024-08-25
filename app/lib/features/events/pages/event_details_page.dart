@@ -4,6 +4,7 @@ import 'package:acter/common/actions/redact_content.dart';
 import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
@@ -72,9 +73,17 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             ],
           );
         },
-        error: (e, s) {
-          _log.severe('Failed to load cal event', e, s);
-          return Text(L10n.of(context).errorLoadingEventDueTo(e));
+        error: (error, stack) {
+          _log.severe('Failed to load cal event', error, stack);
+          return ErrorPage(
+            background: const EventDetailsSkeleton(),
+            error: error,
+            stack: stack,
+            textBuilder: L10n.of(context).errorLoadingEventDueTo,
+            onRetryTap: () {
+              ref.invalidate(calendarEventProvider(widget.calendarId));
+            },
+          );
         },
         loading: () => const EventDetailsSkeleton(),
       ),
@@ -366,27 +375,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   Widget _buildEventRsvpActions(CalendarEvent calendarEvent) {
-    final myRsvpStatus = ref.watch(myRsvpStatusProvider(widget.calendarId));
-    Set<RsvpStatusTag?> rsvp = <RsvpStatusTag?>{null};
-    myRsvpStatus.maybeWhen(
-      data: (data) {
-        final status = data.statusStr();
-        if (status != null) {
-          switch (status) {
-            case 'yes':
-              rsvp = <RsvpStatusTag?>{RsvpStatusTag.Yes};
-              break;
-            case 'maybe':
-              rsvp = <RsvpStatusTag?>{RsvpStatusTag.Maybe};
-              break;
-            case 'no':
-              rsvp = <RsvpStatusTag?>{RsvpStatusTag.No};
-              break;
-          }
-        }
-      },
-      orElse: () => null,
-    );
+    final rsvp = ref.watch(myRsvpStatusProvider(widget.calendarId)).valueOrNull;
 
     return Container(
       color: Theme.of(context).colorScheme.surface,
@@ -400,7 +389,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             iconData: Icons.check,
             actionName: L10n.of(context).going,
             rsvpStatusColor: Theme.of(context).colorScheme.secondary,
-            isSelected: rsvp.single == RsvpStatusTag.Yes,
+            isSelected: rsvp == RsvpStatusTag.Yes,
           ),
           _buildVerticalDivider(),
           _buildEventRsvpActionItem(
@@ -410,7 +399,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             iconData: Icons.close,
             actionName: L10n.of(context).notGoing,
             rsvpStatusColor: Theme.of(context).colorScheme.error,
-            isSelected: rsvp.single == RsvpStatusTag.No,
+            isSelected: rsvp == RsvpStatusTag.No,
           ),
           _buildVerticalDivider(),
           _buildEventRsvpActionItem(
@@ -420,7 +409,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             iconData: Icons.question_mark,
             actionName: L10n.of(context).maybe,
             rsvpStatusColor: Colors.white,
-            isSelected: rsvp.single == RsvpStatusTag.Maybe,
+            isSelected: rsvp == RsvpStatusTag.Maybe,
           ),
         ],
       ),

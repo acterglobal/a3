@@ -6,7 +6,7 @@ import 'package:acter/features/events/actions/get_event_type.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_date_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show CalendarEvent;
+    show CalendarEvent, RsvpStatusTag;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -110,8 +110,7 @@ class EventItem extends StatelessWidget {
         final eventId = event.eventId().toString();
         final rsvpLoader = ref.watch(myRsvpStatusProvider(eventId));
         return rsvpLoader.when(
-          data: (rsvp) {
-            final status = rsvp.statusStr(); // kebab-case
+          data: (status) {
             final widget = _getRsvpStatus(context, status); // kebab-case
             return widget ?? const SizedBox.shrink();
           },
@@ -132,24 +131,19 @@ class EventItem extends StatelessWidget {
     );
   }
 
-  Widget? _getRsvpStatus(BuildContext context, String? status) {
-    if (status != null) {
-      switch (status) {
-        case 'yes':
-          return Icon(
-            Icons.check_circle,
-            color: Theme.of(context).colorScheme.secondary,
-          );
-        case 'no':
-          return Icon(
-            Icons.cancel,
-            color: Theme.of(context).colorScheme.error,
-          );
-        case 'maybe':
-          return const Icon(Icons.question_mark_rounded);
-      }
-    }
-    return null;
+  Widget? _getRsvpStatus(BuildContext context, RsvpStatusTag? status) {
+    return switch (status) {
+      RsvpStatusTag.Yes => Icon(
+          Icons.check_circle,
+          color: Theme.of(context).colorScheme.secondary,
+        ),
+      RsvpStatusTag.No => Icon(
+          Icons.cancel,
+          color: Theme.of(context).colorScheme.error,
+        ),
+      RsvpStatusTag.Maybe => const Icon(Icons.question_mark_rounded),
+      null => null,
+    };
   }
 
   Widget _buildHappeningIndication(BuildContext context) {
