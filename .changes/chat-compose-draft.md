@@ -1,0 +1,1 @@
+- Now Chat supports storing unsent composed message in improved way .i.e. can persist between app restarts and reply/edit views.

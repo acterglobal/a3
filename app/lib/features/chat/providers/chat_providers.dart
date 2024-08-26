@@ -35,7 +35,7 @@ final autoDownloadMediaProvider =
 
 // keep track of text controller values across rooms.
 final chatInputProvider =
-    StateNotifierProvider<ChatInputNotifier, ChatInputState>(
+    StateNotifierProvider.autoDispose<ChatInputNotifier, ChatInputState>(
   (ref) => ChatInputNotifier(),
 );
 
@@ -43,6 +43,15 @@ final chatStateProvider =
     StateNotifierProvider.family<ChatRoomNotifier, ChatRoomState, String>(
   (ref, roomId) => ChatRoomNotifier(ref: ref, roomId: roomId),
 );
+
+final chatComposerDraftProvider = FutureProvider.autoDispose
+    .family<ComposeDraft?, String>((ref, roomId) async {
+  final chat = await ref.watch(chatProvider(roomId).future);
+  if (chat == null) {
+    return null;
+  }
+  return (await chat.msgDraft().then((val) => val.draft()));
+});
 
 final chatTopic =
     FutureProvider.autoDispose.family<String?, String>((ref, roomId) async {
@@ -128,7 +137,7 @@ final chatMessagesProvider =
   return [...messages, ...moreMessages];
 });
 
-final isAuthorOfSelectedMessage = StateProvider<bool>((ref) {
+final isAuthorOfSelectedMessage = StateProvider.autoDispose<bool>((ref) {
   final chatInputState = ref.watch(chatInputProvider);
   final myUserId = ref.watch(myUserIdStrProvider);
   return chatInputState.selectedMessage?.author.id == myUserId;
