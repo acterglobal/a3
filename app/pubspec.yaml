@@ -32,7 +32,7 @@ dependencies:
     sdk: flutter
 
   # UI
-  flutter_adaptive_scaffold: ^0.1.0
+  flutter_adaptive_scaffold: ^0.2.2
   atlas_icons: ^0.0.12
   skeletonizer: ^1.1.1
   flutter_chat_ui: ^1.6.9
@@ -94,7 +94,11 @@ dependencies:
   path: ^1.8.3
   url_launcher: ^6.1.10
   file_picker: ^8.0.3
-  emoji_picker_flutter: ^2.1.1
+  emoji_picker_flutter: #^3.0.0
+    # path: ../../emoji_picker_flutter
+    git:
+      url: https://github.com/acterglobal/emoji_picker_flutter
+      ref: main-no-web
   connectivity_plus: ^6.0.3
   mime: ^1.0.2
   freezed_annotation: ^2.4.1
@@ -131,7 +135,7 @@ dependencies:
   flutter_typeahead: ^5.2.0
   pinch_zoom_release_unzoom: ^1.0.3
   dotted_border: ^2.1.0
-  firebase_core: ^3.1.0
+  firebase_core: ^3.3.0
   scrolls_to_top: ^2.1.1
   scrollable_positioned_list: ^0.3.8
   diffutil_dart: ^4.0.1

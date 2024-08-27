@@ -61,7 +61,6 @@ class EmojiPickerWidget extends StatelessWidget {
                 categoryViewConfig: CategoryViewConfig(
                   backgroundColor: Theme.of(context).colorScheme.surface,
                   initCategory: Category.RECENT,
-                  showBackspaceButton: true,
                 ),
                 bottomActionBarConfig: BottomActionBarConfig(
                   showBackspaceButton: false,
@@ -70,7 +69,6 @@ class EmojiPickerWidget extends StatelessWidget {
                 ),
                 searchViewConfig: SearchViewConfig(
                   backgroundColor: Theme.of(context).colorScheme.surface,
-                  buttonColor: Theme.of(context).colorScheme.primary,
                   buttonIconColor: Theme.of(context).colorScheme.onPrimary,
                 ),
                 checkPlatformCompatibility:
