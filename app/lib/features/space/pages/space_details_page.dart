@@ -133,7 +133,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
 
           //Space Details Tab Menu UI
           tabBuilder: (context, index, active) =>
-              spaceTabMenuUI(tabs[index], active),
+              spaceTabMenuUI(context, tabs[index], active),
 
           //Space Details Page UI
           itemBuilder: (context, index) => spacePageUI(tabs[index]),
@@ -204,7 +204,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
     );
   }
 
-  Widget spaceTabMenuUI(TabEntry tabItem, bool active) {
+  Widget spaceTabMenuUI(BuildContext context, TabEntry tabItem, bool active) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       margin: const EdgeInsets.only(left: 12, top: 12, bottom: 12),
@@ -212,36 +212,33 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
         color: active ? Theme.of(context).colorScheme.primary : null,
         borderRadius: BorderRadius.circular(100),
       ),
-      child: Text(tabItem.label),
+      child: Text(itemLabel(context, tabItem)),
     );
+  }
+
+  String itemLabel(BuildContext context, TabEntry tabItem) {
+    return switch (tabItem) {
+      TabEntry.overview => L10n.of(context).overview,
+      TabEntry.pins => L10n.of(context).pins,
+      TabEntry.tasks => L10n.of(context).tasks,
+      TabEntry.events => L10n.of(context).events,
+      TabEntry.chats => L10n.of(context).chats,
+      TabEntry.spaces => L10n.of(context).spaces,
+      TabEntry.members => L10n.of(context).members,
+      TabEntry.actions => '...',
+    };
   }
 
   Widget spacePageUI(TabEntry tabItem) {
-    switch (tabItem.key) {
-      case TabEntry.overview:
-        return AboutSection(spaceId: widget.spaceId);
-      case TabEntry.pins:
-        return PinsSection(spaceId: widget.spaceId);
-      case TabEntry.tasks:
-        return TasksSection(spaceId: widget.spaceId);
-      case TabEntry.events:
-        return EventsSection(spaceId: widget.spaceId);
-      case TabEntry.chatsKey:
-        return ChatsSection(spaceId: widget.spaceId);
-      case TabEntry.spacesKey:
-        return SpacesSection(spaceId: widget.spaceId);
-      case TabEntry.membersKey:
-        return MembersSection(spaceId: widget.spaceId);
-      case TabEntry.actionsKey:
-        return SpaceActionsSection(spaceId: widget.spaceId);
-      default:
-        return const SizedBox.shrink();
-    }
-  }
-
-  Widget spaceTopicUI() {
-    return Card(
-      child: Container(),
-    );
+    return switch (tabItem) {
+      TabEntry.overview => AboutSection(spaceId: widget.spaceId),
+      TabEntry.pins => PinsSection(spaceId: widget.spaceId),
+      TabEntry.tasks => TasksSection(spaceId: widget.spaceId),
+      TabEntry.events => EventsSection(spaceId: widget.spaceId),
+      TabEntry.chats => ChatsSection(spaceId: widget.spaceId),
+      TabEntry.spaces => SpacesSection(spaceId: widget.spaceId),
+      TabEntry.members => MembersSection(spaceId: widget.spaceId),
+      TabEntry.actions => SpaceActionsSection(spaceId: widget.spaceId),
+    };
   }
 }
