@@ -1,4 +1,3 @@
-
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
@@ -40,6 +39,7 @@ extension ActerTasks on ConvenientTest {
         await tester.ensureVisible(taskLabsSwitch);
         await taskLabsSwitch.tap();
       }
+    }
   }
 
   Future<void> addTasks(
