@@ -353,6 +353,7 @@ class CrossSigningState extends ConsumerState<CrossSigning> {
         if (!context.mounted) return;
         // open sas.keys_exchanged dialog
         showModalBottomSheet(
+          // ignore: use_build_context_synchronously
           context: context,
           builder: (BuildContext context) => SasKeysExchangedView(
             sender: event.sender(),

@@ -207,7 +207,7 @@ class _CreateSuperInviteTokenPageConsumerState
   }
 
   Widget _actionBar(BuildContext context) {
-    return ButtonBar(
+    return Row(
       children: [
         OutlinedButton(
           onPressed: () async {

@@ -29,8 +29,8 @@ class NotFoundPage extends ConsumerWidget {
             Text(
               'How did you get here? There is nothing to see at `$currentLocation`...',
             ),
-            ButtonBar(
-              alignment: MainAxisAlignment.center,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 OutlinedButton.icon(
                   icon: const Icon(Atlas.home_thin),
