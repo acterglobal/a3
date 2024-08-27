@@ -309,6 +309,11 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
   }
 
   void handleBackspacePressed() {
+    if (textController.text.isEmpty) {
+      // nothing left to clear, close the emoji picker
+      ref.read(chatInputProvider.notifier).emojiPickerVisible(false);
+      return;
+    }
     final newValue = textController.text.characters.skipLast(1).string;
     textController.text = newValue;
   }
