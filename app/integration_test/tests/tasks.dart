@@ -1,4 +1,4 @@
-import 'package:acter/common/utils/utils.dart';
+
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
@@ -24,7 +24,6 @@ typedef TaskListCreateResult = ({
 
 extension ActerTasks on ConvenientTest {
   Future<void> ensureTasksAreEnabled(String? spaceId) async {
-    await ensureLabEnabled(LabsFeature.tasks);
     if (spaceId != null) {
       await gotoSpace(spaceId);
 
@@ -41,7 +40,6 @@ extension ActerTasks on ConvenientTest {
         await tester.ensureVisible(taskLabsSwitch);
         await taskLabsSwitch.tap();
       }
-    }
   }
 
   Future<void> addTasks(
