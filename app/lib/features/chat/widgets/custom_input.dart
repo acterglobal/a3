@@ -422,6 +422,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
             ),
             onEmojiSelected: handleEmojiSelected,
             onBackspacePressed: handleBackspacePressed,
+            onClosePicker: () =>
+                ref.read(chatInputProvider.notifier).emojiPickerVisible(false),
           ),
       ],
     );
