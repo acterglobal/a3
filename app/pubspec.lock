@@ -588,10 +588,10 @@ packages:
     dependency: "direct main"
     description:
       name: fc_native_video_thumbnail
-      sha256: ac7dc1b5b4a9ee6bcb001a9dff78f256606548674e0aaa8d2c9b7a3ad6431056
+      sha256: "4267570f98e8028002e75c40dc816b527de03e96f4e1ff50973aa92983540fcf"
       url: "https://pub.dev"
     source: hosted
-    version: "0.9.0"
+    version: "0.11.1"
   ffi:
     dependency: transitive
     description:
