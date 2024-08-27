@@ -194,7 +194,7 @@ class _ChatInput extends ConsumerStatefulWidget {
 }
 
 class __ChatInputState extends ConsumerState<_ChatInput> {
-  late ActerTriggerAutoCompleteTextController textController;
+  late final ActerTriggerAutoCompleteTextController textController;
   final FocusNode chatFocus = FocusNode();
   final ValueNotifier<bool> _isInputEmptyNotifier = ValueNotifier(true);
   Timer? _debounceTimer;
@@ -202,6 +202,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
   @override
   void initState() {
     super.initState();
+    _setController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       loadDraft();
     });
@@ -217,19 +218,14 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     }
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _setController();
-  }
-
   void _setController() {
+    // putting constant colors here as context isn't accessible in initState()
     final triggerStyles = {
       '@': TextStyle(
-        color: Theme.of(context).colorScheme.onSecondary,
+        color: Colors.white,
         height: 0.5,
         background: Paint()
-          ..color = Theme.of(context).colorScheme.secondary
+          ..color = const Color(0xFF74A64D)
           ..strokeWidth = 10
           ..strokeJoin = StrokeJoin.round
           ..style = PaintingStyle.stroke,
@@ -271,9 +267,9 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     _isInputEmptyNotifier.value = textController.text.trim().isEmpty;
     _debounceTimer?.cancel();
     // delay operation to avoid excessive re-writes
-    _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+    _debounceTimer = Timer(const Duration(milliseconds: 300), () async {
       // save composing draft
-      saveDraft(textController.text, widget.roomId, ref);
+      await saveDraft(textController.text, widget.roomId, ref);
       _log.info('compose draft saved for room: ${widget.roomId}');
     });
   }
@@ -615,13 +611,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         const Spacer(),
         GestureDetector(
           onTap: () async {
-            final convo = await ref.read(chatProvider(widget.roomId).future);
-            await convo?.saveMsgDraft(textController.text, null, 'new', null);
             inputNotifier.unsetSelectedMessage();
-            // frame delay to keep focus connected with keyboard.
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              chatFocus.requestFocus();
-            });
+            chatFocus.requestFocus();
           },
           child: const Icon(Atlas.xmark_circle),
         ),
@@ -651,14 +642,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         const Spacer(),
         GestureDetector(
           onTap: () async {
-            final convo = await ref.read(chatProvider(widget.roomId).future);
-            await convo?.saveMsgDraft('', null, 'new', null);
-            textController.clear();
             inputNotifier.unsetSelectedMessage();
-            // frame delay to keep focus connected with keyboard..
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              chatFocus.requestFocus();
-            });
+            textController.clear();
           },
           child: const Icon(Atlas.xmark_circle),
         ),
@@ -756,7 +741,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
   @override
   void initState() {
     super.initState();
-    ref.listenManual(chatInputProvider, (prev, next) async {
+    ref.listenManual(chatInputProvider, (prev, next) {
       if (next.selectedMessageState == SelectedMessageState.edit &&
           (prev?.selectedMessageState != next.selectedMessageState ||
               next.selectedMessage != prev?.selectedMessage)) {
@@ -765,16 +750,15 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         if (next.selectedMessage != null) {
           widget.controller.text = parseEditMsg(next.selectedMessage!);
           // frame delay to keep focus connected with keyboard.
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            widget.chatFocus.requestFocus();
-          });
         }
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          widget.chatFocus.requestFocus();
+        });
       } else if (next.selectedMessageState == SelectedMessageState.replyTo &&
           (next.selectedMessage != prev?.selectedMessage ||
               prev?.selectedMessageState != next.selectedMessageState)) {
         // controller doesn't update text so manually save draft state
-        await saveDraft(widget.controller.text, widget.roomId, ref);
-        // frame delay to keep focus connected with keyboard..
+        saveDraft(widget.controller.text, widget.roomId, ref);
         WidgetsBinding.instance.addPostFrameCallback((_) {
           widget.chatFocus.requestFocus();
         });

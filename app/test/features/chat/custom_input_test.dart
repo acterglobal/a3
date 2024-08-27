@@ -488,5 +488,55 @@ void main() {
         await tester.pump(Durations.medium2);
       },
     );
+
+    testWidgets(
+        'Message Edit: focusing on textfield ensures controller doesn\'t reset ',
+        (tester) async {
+      // Function to verify text in TextField
+      void verifyText(String expectedText) {
+        final textField = find.byType(TextField);
+        final textFieldWidget = tester.widget<TextField>(textField);
+        expect(textFieldWidget.controller?.text, equals(expectedText));
+      }
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: overrides,
+          child: const InActerContextTestWrapper(
+            child: CustomChatInput(
+              roomId: 'roomId',
+            ),
+          ),
+        ),
+      );
+      // not visible
+      expect(find.byKey(CustomChatInput.noAccessKey), findsNothing);
+      expect(find.byKey(CustomChatInput.loadingKey), findsNothing);
+
+      final element = tester.element(find.byType(CustomChatInput));
+      final container = ProviderScope.containerOf(element);
+
+      // now we select the one we want to edit to
+      final chatInputNotifier = container.read(chatInputProvider.notifier);
+      final mockMessage = buildMockTextMessage();
+      chatInputNotifier.setEditMessage(mockMessage);
+      await tester.pump();
+      // Verify that the text is updated to the edited message
+      verifyText(mockMessage.text);
+
+      // Simulate focusing the input (this should preserve the text)
+      final textField = find.byType(TextField);
+      await tester.tap(textField);
+      await tester.pump();
+
+      // Verify that the text is still preserved after focusing
+      verifyText(mockMessage.text);
+
+      // This test is timing out due to a pending timer.
+      // See MultiTriggerAutocompleteState._onChangedField in:
+      // acter_trigger_autocomplete.dart:279
+      // put 300ms delay as (debounceTimerDuration)
+      await tester.pump(Durations.medium2);
+    });
   });
 }
