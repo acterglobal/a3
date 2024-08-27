@@ -431,14 +431,12 @@ enum LabsFeature {
       isDevBuild || isNightly ? nightlyDefaults : releaseDefaults;
 
   static List<LabsFeature> get releaseDefaults => [
-        LabsFeature.comments,
         LabsFeature.mobilePushNotifications,
       ];
 
   static List<LabsFeature> get nightlyDefaults => [
         LabsFeature.encryptionBackup,
         LabsFeature.deviceCalendarSync,
-        LabsFeature.comments,
         LabsFeature.mobilePushNotifications,
       ];
 }
