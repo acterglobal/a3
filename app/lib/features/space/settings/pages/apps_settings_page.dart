@@ -110,7 +110,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                     trailing:
                         currentPw != null ? Text(pwText) : Text(defaultDesc),
                     onPressed: (context) async =>
-                        await updateFeatureLevelChange(
+                        await updateFeatureLevelChangeDialog(
                       context,
                       maxPowerLevel,
                       currentPw,
@@ -149,7 +149,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                     trailing:
                         currentPw != null ? Text(pwText) : Text(defaultDesc),
                     onPressed: (context) async =>
-                        await updateFeatureLevelChange(
+                        await updateFeatureLevelChangeDialog(
                       context,
                       maxPowerLevel,
                       currentPw,
@@ -188,7 +188,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                     trailing:
                         currentPw != null ? Text(pwText) : Text(defaultDesc),
                     onPressed: (context) async =>
-                        await updateFeatureLevelChange(
+                        await updateFeatureLevelChangeDialog(
                       context,
                       maxPowerLevel,
                       currentPw,
@@ -241,7 +241,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                         ? Text(pwTextTL)
                         : Text(defaultDesc),
                     onPressed: (context) async =>
-                        await updateFeatureLevelChange(
+                        await updateFeatureLevelChangeDialog(
                       context,
                       maxPowerLevel,
                       taskListCurrentPw,
@@ -261,7 +261,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                         ? Text(pwTextT)
                         : Text(defaultDesc),
                     onPressed: (context) async =>
-                        await updateFeatureLevelChange(
+                        await updateFeatureLevelChangeDialog(
                       context,
                       maxPowerLevel,
                       tasksCurrentPw,

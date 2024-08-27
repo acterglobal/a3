@@ -9,18 +9,19 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::space::settings::update_feature_level');
 
-Future<bool> updateFeatureLevelChange(
+Future<bool> updateFeatureLevelChangeDialog(
   BuildContext context,
   int maxPowerLevel,
   int? currentPw,
   Space space,
   RoomPowerLevels powerLevels,
-  String featureKey,
+  String levelKey,
   String featureName,
 ) async {
+  final lang = L10n.of(context);
   final newPowerLevel = await showDialog<int?>(
     context: context,
-    builder: (BuildContext context) => ChangePowerLevel(
+    builder: (BuildContext context) => _ChangePowerLevelDialog(
       featureName: featureName,
       currentPowerLevelName:
           maxPowerLevel == 100 ? powerLevelName(currentPw) : 'Custom',
@@ -32,49 +33,58 @@ Future<bool> updateFeatureLevelChange(
     EasyLoading.dismiss();
     return true;
   }
-  EasyLoading.show(status: L10n.of(context).changingSettingOf(featureName));
+
+  return await updateFeatureLevel(
+    lang,
+    space,
+    levelKey,
+    featureName,
+    newPowerLevel,
+  );
+}
+
+Future<bool> updateFeatureLevel(
+  L10n lang,
+  Space space,
+  String levelKey,
+  String featureName,
+  int? newPowerLevel,
+) async {
+  EasyLoading.show(status: lang.changingSettingOf(featureName));
   try {
     final res = await space.updateFeaturePowerLevels(
-      featureKey,
+      levelKey,
       newPowerLevel,
     );
-    if (!context.mounted) {
-      EasyLoading.dismiss();
-      return res;
-    }
-    EasyLoading.showToast(L10n.of(context).powerLevelSubmitted(featureName));
+    EasyLoading.showToast(lang.powerLevelSubmitted(featureName));
     return res;
   } catch (e, s) {
     _log.severe('Failed to change power level of $featureName', e, s);
-    if (!context.mounted) {
-      EasyLoading.dismiss();
-    } else {
-      EasyLoading.showError(
-        L10n.of(context).failedToChangePowerLevel(e),
-        duration: const Duration(seconds: 3),
-      );
-    }
+    EasyLoading.showError(
+      lang.failedToChangePowerLevel(e),
+      duration: const Duration(seconds: 3),
+    );
     return false;
   }
 }
 
-class ChangePowerLevel extends StatefulWidget {
+class _ChangePowerLevelDialog extends StatefulWidget {
   final String featureName;
   final int? currentPowerLevel;
   final String currentPowerLevelName;
 
-  const ChangePowerLevel({
-    super.key,
+  const _ChangePowerLevelDialog({
     required this.featureName,
     required this.currentPowerLevelName,
     this.currentPowerLevel,
   });
 
   @override
-  State<ChangePowerLevel> createState() => _ChangePowerLevelState();
+  State<_ChangePowerLevelDialog> createState() =>
+      __ChangePowerLevelDialogState();
 }
 
-class _ChangePowerLevelState extends State<ChangePowerLevel> {
+class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
   final TextEditingController dropDownMenuCtrl = TextEditingController();
   final GlobalKey<FormState> _formKey =
       GlobalKey<FormState>(debugLabel: 'change power level form');
@@ -110,45 +120,47 @@ class _ChangePowerLevelState extends State<ChangePowerLevel> {
   Widget build(BuildContext context) {
     final memberStatus = widget.currentPowerLevelName;
     final currentPowerLevel = widget.currentPowerLevel;
+    final lang = L10n.of(context);
     return AlertDialog(
-      title: const Text('Update Power level'),
+      title: Text(lang.updateFeaturePowerLevelDialogTitle(widget.featureName)),
       content: Form(
         key: _formKey,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Change the power level of'),
-            Text(widget.featureName),
-            // Row(
-            //   children: [
             currentPowerLevel != null
-                ? Text('from $memberStatus ($currentPowerLevel) to ')
-                : const Text('from default to'),
+                ? Text(
+                    lang.updateFeaturePowerLevelDialogFromTo(
+                      memberStatus,
+                      currentPowerLevel,
+                    ),
+                  )
+                : Text(lang.updateFeaturePowerLevelDialogFromDefaultTo),
             Padding(
               padding: const EdgeInsets.all(5),
               child: DropdownButtonFormField(
                 value: currentMemberStatus,
                 onChanged: _updateMembershipStatus,
-                items: const [
+                items: [
                   DropdownMenuItem(
                     value: 'Admin',
-                    child: Text('Admin'),
+                    child: Text(lang.powerLevelAdmin),
                   ),
                   DropdownMenuItem(
                     value: 'Mod',
-                    child: Text('Moderator'),
+                    child: Text(lang.powerLevelModerator),
                   ),
                   DropdownMenuItem(
                     value: 'Regular',
-                    child: Text('Regular'),
+                    child: Text(lang.powerLevelRegular),
                   ),
                   DropdownMenuItem(
                     value: 'None',
-                    child: Text('None'),
+                    child: Text(lang.powerLevelNone),
                   ),
                   DropdownMenuItem(
                     value: 'Custom',
-                    child: Text('Custom'),
+                    child: Text(lang.powerLevelCustom),
                   ),
                 ],
               ),
@@ -158,9 +170,8 @@ class _ChangePowerLevelState extends State<ChangePowerLevel> {
               child: Padding(
                 padding: const EdgeInsets.all(5),
                 child: TextFormField(
-                  decoration: const InputDecoration(
-                    hintText: 'any number',
-                    labelText: 'Custom power level',
+                  decoration: InputDecoration(
+                    labelText: lang.powerLevelCustom,
                   ),
                   onChanged: _newCustomLevel,
                   initialValue: currentPowerLevel.toString(),
@@ -172,7 +183,7 @@ class _ChangePowerLevelState extends State<ChangePowerLevel> {
                   validator: (String? value) {
                     return currentMemberStatus == 'Custom' &&
                             (value == null || int.tryParse(value) == null)
-                        ? 'You need to enter the custom value as a number.'
+                        ? lang.customValueMustBeNumber
                         : null;
                   },
                 ),
@@ -187,15 +198,15 @@ class _ChangePowerLevelState extends State<ChangePowerLevel> {
       actions: <Widget>[
         OutlinedButton(
           onPressed: onCancel,
-          child: const Text('Cancel'),
+          child: Text(lang.cancel),
         ),
         OutlinedButton(
           onPressed: onUnset,
-          child: const Text('Unset'),
+          child: Text(lang.unset),
         ),
         ActerPrimaryActionButton(
           onPressed: onSubmit,
-          child: const Text('Submit'),
+          child: Text(lang.submit),
         ),
       ],
     );

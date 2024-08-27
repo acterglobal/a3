@@ -1,5 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/space/actions/activate_feature.dart';
+import 'package:acter/features/space/actions/set_acter_feature.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter/features/tasks/sheets/create_update_task_list.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -21,7 +23,7 @@ class SpaceActionsSection extends ConsumerWidget {
     return Column(
       children: [
         SectionHeader(
-          title: 'Actions',
+          title: L10n.of(context).actions,
           isShowSeeAllButton: false,
           onTapSeeAll: () {},
         ),
@@ -34,96 +36,164 @@ class SpaceActionsSection extends ConsumerWidget {
   Widget actionButtons(BuildContext context, WidgetRef ref) {
     final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
     bool canAddPin = membership?.canString('CanPostPin') == true;
+    bool canChangeSetting =
+        membership?.canString('CanChangeAppSettings') == true;
     bool canAddEvent = membership?.canString('CanPostEvent') == true;
     bool canAddTask = membership?.canString('CanPostTaskList') == true;
     bool canLinkSpaces = membership?.canString('CanLinkSpaces') == true;
 
-    return Wrap(
-      crossAxisAlignment: WrapCrossAlignment.start,
-      children: [
-        spaceActionButton(
+    final children = [
+      if (canAddPin)
+        simpleActionButton(
           context: context,
           iconData: Atlas.pin,
           title: L10n.of(context).addPin,
-          isShow: canAddPin,
           onPressed: () => context.pushNamed(
-            Routes.actionAddPin.name,
+            Routes.createPin.name,
             queryParameters: {'spaceId': spaceId},
           ),
+        )
+      else if (canChangeSetting)
+        askToActivateButton(
+          context: context,
+          iconData: Atlas.pin,
+          title: L10n.of(context).addPin,
+          ref: ref,
+          feature: SpaceFeature.pins,
+          andThen: () async {
+            await context.pushNamed(
+              Routes.createPin.name,
+              queryParameters: {'spaceId': spaceId},
+            );
+          },
         ),
-        spaceActionButton(
+      if (canAddEvent)
+        simpleActionButton(
           context: context,
           iconData: Atlas.calendar_dots,
           title: L10n.of(context).addEvent,
-          isShow: canAddEvent,
           onPressed: () => context.pushNamed(
             Routes.createEvent.name,
             queryParameters: {'spaceId': spaceId},
           ),
+        )
+      else if (canChangeSetting)
+        askToActivateButton(
+          context: context,
+          iconData: Atlas.calendar_dots,
+          title: L10n.of(context).addEvent,
+          ref: ref,
+          feature: SpaceFeature.events,
+          andThen: () => context.pushNamed(
+            Routes.createEvent.name,
+            queryParameters: {'spaceId': spaceId},
+          ),
         ),
-        spaceActionButton(
+      if (canAddTask)
+        simpleActionButton(
           context: context,
           iconData: Atlas.list,
           title: L10n.of(context).addTask,
-          isShow: canAddTask,
           onPressed: () => showCreateUpdateTaskListBottomSheet(
             context,
             initialSelectedSpace: spaceId,
           ),
+        )
+      else if (canChangeSetting)
+        askToActivateButton(
+          context: context,
+          iconData: Atlas.list,
+          title: L10n.of(context).addTask,
+          ref: ref,
+          feature: SpaceFeature.tasks,
+          andThen: () => showCreateUpdateTaskListBottomSheet(
+            context,
+            initialSelectedSpace: spaceId,
+          ),
         ),
-        spaceActionButton(
+    ];
+
+    if (canLinkSpaces) {
+      children.addAll([
+        simpleActionButton(
           context: context,
           iconData: Atlas.chats,
           title: L10n.of(context).addChat,
-          isShow: canLinkSpaces,
           onPressed: () => context.pushNamed(
             Routes.createChat.name,
             queryParameters: {'spaceId': spaceId},
             extra: 1,
           ),
         ),
-        spaceActionButton(
+        simpleActionButton(
           context: context,
           iconData: Icons.people,
           title: L10n.of(context).addSpace,
-          isShow: canLinkSpaces,
           onPressed: () => context.pushNamed(
             Routes.createSpace.name,
             queryParameters: {'parentSpaceId': spaceId},
           ),
         ),
-        spaceActionButton(
+        simpleActionButton(
           context: context,
           iconData: Icons.link,
           title: L10n.of(context).linkChat,
-          isShow: canLinkSpaces,
           onPressed: () => context.pushNamed(
             Routes.linkChat.name,
             pathParameters: {'spaceId': spaceId},
           ),
         ),
-        spaceActionButton(
+        simpleActionButton(
           context: context,
           iconData: Icons.link,
           title: L10n.of(context).linkSpace,
-          isShow: canLinkSpaces,
           onPressed: () => context.pushNamed(
             Routes.linkSubspace.name,
             pathParameters: {'spaceId': spaceId},
           ),
         ),
-      ],
+      ]);
+    }
+
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.start,
+      children: children,
     );
   }
 
-  Widget spaceActionButton({
+  Widget askToActivateButton({
     required BuildContext context,
     required IconData iconData,
     required String title,
-    VoidCallback? onPressed,
-    bool isShow = true,
+    required VoidCallback andThen,
+    required WidgetRef ref,
+    required SpaceFeature feature,
   }) {
-    if (!isShow) return const SizedBox.shrink();
+    return TextButton.icon(
+      onPressed: () async {
+        if (await offerToActivateFeature(
+          context: context,
+          ref: ref,
+          spaceId: spaceId,
+          feature: feature,
+        )) {
+          andThen();
+        }
+      },
+      icon: Icon(iconData),
+      label: Text(
+        title,
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
+    );
+  }
+
+  Widget simpleActionButton({
+    required BuildContext context,
+    required IconData iconData,
+    required String title,
+    required VoidCallback onPressed,
+  }) {
     return TextButton.icon(
       onPressed: onPressed,
       icon: Icon(iconData),
