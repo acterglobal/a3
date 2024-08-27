@@ -279,14 +279,23 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
   }
 
   void handleEmojiSelected(Category? category, Emoji emoji) {
-    // Get cursor current position
-    var cursorPos = textController.selection.base.offset;
-
-    // Right text of cursor position
-    String suffixText = textController.text.substring(cursorPos);
+    String suffixText = '';
 
     // Get the left text of cursor
-    String prefixText = textController.text.substring(0, cursorPos);
+    String prefixText = '';
+    // Get cursor current position
+    var cursorPos = textController.selection.base.offset;
+    if (cursorPos >= 0) {
+      // can be -1 on empty and never accessed
+
+      // Right text of cursor position
+      suffixText = textController.text.substring(cursorPos);
+
+      // Get the left text of cursor
+      prefixText = textController.text.substring(0, cursorPos);
+    } else {
+      cursorPos = 0;
+    }
 
     int emojiLength = emoji.emoji.length;
 
