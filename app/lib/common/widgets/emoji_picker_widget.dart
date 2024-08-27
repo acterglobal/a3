@@ -31,9 +31,10 @@ class EmojiPickerWidget extends StatelessWidget {
           ? const EdgeInsets.only(top: 10, left: 15, right: 15)
           : null,
       decoration: withBoarder
-          ? const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+          ? BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(16)),
             )
           : null,
       height: height,
