@@ -148,6 +148,7 @@ dependencies:
   open_filex: ^4.5.0
   phosphor_flutter: ^2.1.0
   device_calendar: ^4.3.2
+  quickalert: ^1.1.0
 
 dev_dependencies:
   flutter_test:

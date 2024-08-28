@@ -39,7 +39,7 @@ class AttachmentSectionWidget extends ConsumerWidget {
         _log.severe('Failed to load attachment manager', e, s);
         return onError(context, e);
       },
-      loading: () => loading(context),
+      loading: loading,
     );
   }
 
@@ -52,7 +52,7 @@ class AttachmentSectionWidget extends ConsumerWidget {
     );
   }
 
-  Widget loading(BuildContext context) {
+  static Widget loading() {
     return const Skeletonizer(
       child: SizedBox(
         height: 100,
