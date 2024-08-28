@@ -7,6 +7,8 @@ import 'package:acter/common/utils/device.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/auth/pages/logged_out_screen.dart';
+import 'package:acter/features/bug_report/actions/open_bug_report.dart';
+import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
 import 'package:acter/features/calendar_sync/calendar_sync.dart';
 import 'package:acter/features/cross_signing/widgets/cross_signing.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -14,7 +16,6 @@ import 'package:acter/features/home/providers/navigation.dart';
 import 'package:acter/features/home/widgets/sidebar_widget.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
-import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
@@ -28,32 +29,7 @@ import 'package:shake_detector/shake_detector.dart';
 
 final _log = Logger('a3::home::home_shell');
 
-ScreenshotController screenshotController = ScreenshotController();
-bool bugReportOpen = false;
-
-Future<void> openBugReport(BuildContext context) async {
-  if (bugReportOpen) {
-    return;
-  }
-  final cacheDir = await appCacheDir();
-  // rage shake disallows dot in filename
-  int timestamp = DateTime.now().timestamp;
-  final imagePath = await screenshotController.captureAndSave(
-    cacheDir,
-    fileName: 'screenshot_$timestamp.png',
-  );
-  if (context.mounted) {
-    bugReportOpen = true;
-    await context.pushNamed(
-      Routes.bugReport.name,
-      queryParameters: imagePath != null ? {'screenshot': imagePath} : {},
-    );
-    bugReportOpen = false;
-  } else {
-    // ignore: avoid_print
-    print('not mounted :(');
-  }
-}
+final ScreenshotController screenshotController = ScreenshotController();
 
 class AppShell extends ConsumerStatefulWidget {
   final StatefulNavigationShell navigationShell;
@@ -79,6 +55,7 @@ class AppShellState extends ConsumerState<AppShell> {
     // no wait goes there
     Future.delayed(
       const Duration(seconds: 1),
+      // ignore: use_build_context_synchronously
       () => bottomNavigationTutorials(context: context),
     );
     initShake();
@@ -91,7 +68,7 @@ class AppShellState extends ConsumerState<AppShell> {
 
   Future<void> initShake() async {
     // shake is possible in only actual mobile devices
-    if (await isRealPhone()) {
+    if (isBugReportingEnabled && await isRealPhone()) {
       detector = ShakeDetector.autoStart(
         shakeThresholdGravity: 30.0,
         onShake: () {

@@ -49,6 +49,12 @@ final spaceProvider =
   throw 'Space not found';
 });
 
+final spaceIsBookmarkedProvider =
+    FutureProvider.family<bool, String>((ref, spaceId) async {
+  final space = await ref.watch(spaceProvider(spaceId).future);
+  return space.isBookmarked();
+});
+
 /// Attempts to map a spaceId to the space, but could come back empty (null) rather than throw.
 /// keeps up to date with underlying client even if the space wasn't found initially,
 final maybeSpaceProvider =

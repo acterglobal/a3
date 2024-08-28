@@ -12,9 +12,6 @@ import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::common::common_providers');
 
-// Loading Providers
-final loadingProvider = StateProvider<bool>((ref) => false);
-
 final genericUpdatesStream =
     StreamProvider.family<int, String>((ref, key) async* {
   final client = ref.watch(alwaysClientProvider);

@@ -1,7 +1,5 @@
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/comments/providers/comments.dart';
 import 'package:acter/features/comments/widgets/comments_list.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -21,10 +19,6 @@ class CommentsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final provider = ref.watch(featuresProvider);
-    if (!provider.isActive(LabsFeature.comments)) {
-      return const SizedBox.shrink();
-    }
     final managerLoader = ref.watch(commentsManagerProvider(manager));
     return managerLoader.when(
       data: (manager) => found(context, manager),
@@ -36,7 +30,7 @@ class CommentsSection extends ConsumerWidget {
     );
   }
 
-  Widget inBox(BuildContext context, Widget child) {
+  static Widget _inBox(BuildContext context, Widget child) {
     return Padding(
       padding: const EdgeInsets.all(12),
       child: Column(
@@ -64,14 +58,14 @@ class CommentsSection extends ConsumerWidget {
   }
 
   Widget found(BuildContext context, CommentsManager manager) {
-    return inBox(context, CommentsList(manager: manager));
+    return _inBox(context, CommentsList(manager: manager));
   }
 
   Widget onError(BuildContext context, Object error) {
-    return inBox(context, Text(L10n.of(context).loadingFailed(error)));
+    return _inBox(context, Text(L10n.of(context).loadingFailed(error)));
   }
 
-  Widget loading(BuildContext context) {
-    return inBox(context, Text(L10n.of(context).loading));
+  static Widget loading(BuildContext context) {
+    return _inBox(context, Text(L10n.of(context).loading));
   }
 }

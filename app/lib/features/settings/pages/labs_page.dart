@@ -102,14 +102,6 @@ class SettingsLabsPage extends ConsumerWidget {
               title: Text(L10n.of(context).apps),
               tiles: [
                 SettingsTile.switchTile(
-                  title: const Text('Comments'),
-                  description: const Text('Commenting on space objects'),
-                  initialValue:
-                      ref.watch(isActiveProvider(LabsFeature.comments)),
-                  onToggle: (newVal) =>
-                      updateFeatureState(ref, LabsFeature.comments, newVal),
-                ),
-                SettingsTile.switchTile(
                   title: Text(L10n.of(context).polls),
                   description: Text(L10n.of(context).pollsAndSurveys),
                   initialValue: ref.watch(isActiveProvider(LabsFeature.polls)),

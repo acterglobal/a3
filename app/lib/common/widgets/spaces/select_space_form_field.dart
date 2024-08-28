@@ -100,7 +100,7 @@ class SelectSpaceFormField extends ConsumerWidget {
       data: (space) {
         if (space == null) return Text(currentId!);
         return SpaceChip(
-          space: space,
+          spaceId: space.roomId,
           onTapOpenSpaceDetail: false,
           useCompatView: useCompatView,
           onTapSelectSpace: () {
