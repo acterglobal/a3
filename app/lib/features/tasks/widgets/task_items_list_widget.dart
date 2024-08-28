@@ -8,33 +8,46 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 
-class TaskItemsListWidget extends ConsumerWidget {
+final _log = Logger('a3::tasks::widgets::list');
+
+class TaskItemsListWidget extends ConsumerStatefulWidget {
   final TaskList taskList;
   final bool showCompletedTask;
 
-  TaskItemsListWidget({
+  const TaskItemsListWidget({
     super.key,
     required this.taskList,
     this.showCompletedTask = false,
   });
 
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      TaskItemsListWidgetState();
+}
+
+class TaskItemsListWidgetState extends ConsumerState<TaskItemsListWidget> {
   final ValueNotifier<bool> showInlineAddTask = ValueNotifier(false);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final tasks = ref.watch(taskItemsListProvider(taskList));
-    return tasks.when(
+  Widget build(BuildContext context) {
+    final overviewLoader = ref.watch(taskItemsListProvider(widget.taskList));
+    return overviewLoader.when(
       data: (overview) => taskData(context, overview),
-      error: (error, stack) => Text(L10n.of(context).errorLoadingTasks(error)),
+      error: (e, s) {
+        _log.severe('Failed to load tasklist', e, s);
+        return Text(L10n.of(context).errorLoadingTasks(e));
+      },
       loading: () => const TaskItemsSkeleton(),
     );
   }
 
   Widget taskData(BuildContext context, TasksOverview overview) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         openTasksEntries(context, overview),
@@ -51,23 +64,24 @@ class TaskItemsListWidget extends ConsumerWidget {
 
     return Column(
       children: [
-        for (final task in overview.openTasks)
+        for (final taskId in overview.openTasks)
           TaskItem(
             onTap: () => showInlineAddTask.value = false,
-            task: task,
+            taskListId: widget.taskList.eventIdStr(),
+            taskId: taskId,
           ),
       ],
     );
   }
 
   Widget inlineAddTask() {
-    final taskListEventId = taskList.eventIdStr();
+    final taskListEventId = widget.taskList.eventIdStr();
     return ValueListenableBuilder(
       valueListenable: showInlineAddTask,
       builder: (context, value, child) {
         return value
             ? _InlineTaskAdd(
-                taskList: taskList,
+                taskList: widget.taskList,
                 cancel: () => showInlineAddTask.value = false,
               )
             : Container(
@@ -87,7 +101,7 @@ class TaskItemsListWidget extends ConsumerWidget {
   }
 
   Widget doneTasksEntries(BuildContext context, TasksOverview overview) {
-    if (overview.doneTasks.isEmpty || !showCompletedTask) {
+    if (overview.doneTasks.isEmpty || !widget.showCompletedTask) {
       return const SizedBox.shrink();
     }
 
@@ -103,9 +117,10 @@ class TaskItemsListWidget extends ConsumerWidget {
             const Expanded(child: Divider(indent: 20, endIndent: 20)),
           ],
         ),
-        for (final task in overview.doneTasks)
+        for (final taskId in overview.doneTasks)
           TaskItem(
-            task: task,
+            taskListId: widget.taskList.eventIdStr(),
+            taskId: taskId,
             onTap: () => showInlineAddTask.value = false,
           ),
       ],
@@ -194,13 +209,13 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
     taskDraft.title(_textCtrl.text);
     try {
       await taskDraft.send();
-    } catch (e) {
-      if (context.mounted) {
-        EasyLoading.showError(
-          L10n.of(context).creatingTaskFailed(e),
-          duration: const Duration(seconds: 3),
-        );
-      }
+    } catch (e, s) {
+      _log.severe('Failed to change title of tasklist', e, s);
+      if (!context.mounted) return;
+      EasyLoading.showError(
+        L10n.of(context).updatingTaskFailed(e),
+        duration: const Duration(seconds: 3),
+      );
       return;
     }
     _textCtrl.text = '';

@@ -728,23 +728,6 @@ impl Client {
             .await?
     }
 
-    pub async fn join_space(
-        &self,
-        room_id_or_alias: String,
-        server_name: Option<String>,
-    ) -> Result<Space> {
-        let room = self
-            .join_room(
-                room_id_or_alias,
-                server_name.map(|s| vec![s]).unwrap_or_default(),
-            )
-            .await?;
-        Ok(Space {
-            client: self.clone(),
-            inner: room,
-        })
-    }
-
     pub async fn spaces(&self) -> Result<Vec<Space>> {
         Ok(self.spaces.read().await.clone().into_iter().collect())
     }

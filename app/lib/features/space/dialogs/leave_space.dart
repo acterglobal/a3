@@ -1,11 +1,12 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
@@ -13,15 +14,11 @@ final _log = Logger('a3::spaces::leave_space');
 
 const leaveSpaceYesBtn = Key('leave-space-yes-btn');
 
-void showLeaveSpaceDialog(
-  BuildContext context,
-  WidgetRef ref,
-  String spaceId,
-) {
+void showLeaveSpaceDialog(BuildContext context, WidgetRef ref, String spaceId) {
   showAdaptiveDialog(
     barrierDismissible: true,
     context: context,
-    useRootNavigator: true,
+    useRootNavigator: false,
     builder: (context) => DefaultDialog(
       title: Column(
         children: <Widget>[
@@ -33,12 +30,10 @@ void showLeaveSpaceDialog(
           ),
         ],
       ),
-      subtitle: Text(
-        L10n.of(context).areYouSureYouWantToLeaveSpace,
-      ),
+      subtitle: Text(L10n.of(context).areYouSureYouWantToLeaveSpace),
       actions: <Widget>[
         OutlinedButton(
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => Navigator.pop(context),
           child: Text(L10n.of(context).noIStay),
         ),
         ActerDangerActionButton(
@@ -47,19 +42,30 @@ void showLeaveSpaceDialog(
             final lang = L10n.of(context);
             try {
               EasyLoading.show(status: lang.leavingSpace);
+              final parentIds =
+                  await ref.read(parentIdsProvider(spaceId).future);
               final space = await ref.read(spaceProvider(spaceId).future);
               await space.leave();
-              // refresh spaces list
-              ref.invalidate(spacesProvider);
               if (!context.mounted) {
                 return;
               }
               EasyLoading.showToast(lang.leavingSpaceSuccessful);
-              Navigator.of(context).pop();
+              for (final parentId in parentIds) {
+                ref.invalidate(spaceRelationsProvider(parentId));
+                ref.invalidate(spaceRemoteRelationsProvider(parentId));
+              }
+              Navigator.pop(context);
               context.goNamed(Routes.dashboard.name);
-            } catch (error, stack) {
-              _log.severe('Error leaving space', error, stack);
-              EasyLoading.showError(lang.leavingSpaceFailed(error));
+            } catch (e, s) {
+              _log.severe('Failed to leave space', e, s);
+              if (!context.mounted) {
+                EasyLoading.dismiss();
+                return;
+              }
+              EasyLoading.showError(
+                lang.leavingSpaceFailed(e),
+                duration: const Duration(seconds: 3),
+              );
             }
           },
           child: Text(L10n.of(context).yesLeave),

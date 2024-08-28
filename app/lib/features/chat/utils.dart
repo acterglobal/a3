@@ -1,5 +1,8 @@
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -8,6 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/dom.dart' as html;
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:html/parser.dart';
 
 //Check for mentioned user link
 final mentionedUserLinkRegex = RegExp(
@@ -193,7 +197,7 @@ void askToJoinRoom(
         topLeft: Radius.circular(20),
       ),
     ),
-    builder: (ctx) => Container(
+    builder: (context) => Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -207,7 +211,7 @@ void askToJoinRoom(
           const SizedBox(height: 20),
           ActerPrimaryActionButton(
             onPressed: () async {
-              Navigator.of(context).pop();
+              Navigator.pop(context);
               final server = roomId.split(':').last;
               await joinRoom(
                 context,
@@ -243,4 +247,51 @@ String prepareMsg(MsgContent? content) {
     matrixLinks,
     (match) => '<a href="${match.group(0)}">${match.group(0)}</a>',
   );
+}
+
+String parseEditMsg(types.Message message) {
+  if (message is types.TextMessage) {
+    // Parse String Data to HTML document
+    final document = parse(message.text);
+
+    if (document.body != null) {
+      // Get message data
+      String msg = message.text.trim();
+
+      // Get list of 'A Tags' values
+      final aTagElementList = document.getElementsByTagName('a');
+
+      for (final aTagElement in aTagElementList) {
+        final userMentionMessageData =
+            parseUserMentionMessage(msg, aTagElement);
+        msg = userMentionMessageData.parsedMessage;
+      }
+
+      // Parse data
+      final messageDocument = parse(msg);
+      return messageDocument.body?.text ?? '';
+    }
+  }
+  return '';
+}
+
+// save composer draft object handler
+Future<void> saveDraft(String text, String roomId, WidgetRef ref) async {
+  // get the convo object to initiate draft
+  final chat = await ref.read(chatProvider(roomId).future);
+  final messageId = ref.read(chatInputProvider).selectedMessage?.id;
+
+  if (chat != null) {
+    if (messageId != null) {
+      final selectedMessageState =
+          ref.read(chatInputProvider).selectedMessageState;
+      if (selectedMessageState == SelectedMessageState.edit) {
+        await chat.saveMsgDraft(text, null, 'edit', messageId);
+      } else if (selectedMessageState == SelectedMessageState.replyTo) {
+        await chat.saveMsgDraft(text, null, 'reply', messageId);
+      }
+    } else {
+      await chat.saveMsgDraft(text, null, 'new', null);
+    }
+  }
 }

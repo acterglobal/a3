@@ -1,12 +1,10 @@
 import 'package:acter/common/models/attachment_media_state/attachment_media_state.dart';
-import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/widgets/download_button.dart';
 import 'package:acter/features/attachments/providers/attachment_providers.dart';
+import 'package:acter/features/files/actions/file_share.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Attachment;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:share_plus/share_plus.dart';
 
 class FileView extends ConsumerWidget {
   final Attachment attachment;
@@ -47,11 +45,7 @@ class FileView extends ConsumerWidget {
     return InkWell(
       onTap: () async {
         if (mediaState.mediaFile != null) {
-          if (isDesktop) {
-            downloadFile(context, mediaState.mediaFile!);
-          } else {
-            Share.shareXFiles([XFile(mediaState.mediaFile!.path)]);
-          }
+          openFileShareDialog(context: context, file: mediaState.mediaFile!);
         } else {
           ref
               .read(attachmentMediaStateProvider(attachment).notifier)
@@ -97,11 +91,10 @@ class FileView extends ConsumerWidget {
     return InkWell(
       onTap: openView!
           ? () async {
-              if (isDesktop) {
-                downloadFile(context, mediaState.mediaFile!);
-              } else {
-                Share.shareXFiles([XFile(mediaState.mediaFile!.path)]);
-              }
+              openFileShareDialog(
+                context: context,
+                file: mediaState.mediaFile!,
+              );
             }
           : null,
       child: ClipRRect(

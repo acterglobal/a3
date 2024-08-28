@@ -15,7 +15,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::invite_members::invite_code');
+final _log = Logger('a3::invite::invite_code');
 
 class InviteCodeUI extends ConsumerStatefulWidget {
   final String roomId;
@@ -250,12 +250,14 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
       );
       ref.invalidate(superInvitesProvider);
       EasyLoading.dismiss();
-    } catch (error) {
-      EasyLoading.dismiss();
-      _log.severe('Invite code activation failed', error);
-      if (!context.mounted) return;
+    } catch (e, s) {
+      _log.severe('Invite code activation failed', e, s);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
-        L10n.of(context).activateInviteCodeFailed(error),
+        L10n.of(context).activateInviteCodeFailed(e),
         duration: const Duration(seconds: 3),
       );
     }

@@ -29,7 +29,15 @@ class VerificationNotifier extends StateNotifier<VerificationState> {
 
   void _init() {
     _listener = client.verificationEventRx(); // keep it resident in memory
-    _poller = _listener?.listen(_handleEvent);
+    _poller = _listener?.listen(
+      _handleEvent,
+      onError: (e, s) {
+        _log.severe('stream errored', e, s);
+      },
+      onDone: () {
+        _log.info('stream ended');
+      },
+    );
     ref.onDispose(() => _poller?.cancel());
   }
 

@@ -23,7 +23,7 @@ class RoomHierarchyJoinButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final maybeRoom = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
-    if (maybeRoom != null) {
+    if (maybeRoom != null && maybeRoom.isJoined()) {
       // we know that room already \o/
       return OutlinedButton(
         onPressed: () => forward(roomId),

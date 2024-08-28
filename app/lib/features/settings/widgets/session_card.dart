@@ -52,9 +52,9 @@ class SessionCard extends ConsumerWidget {
           separator: ' - ',
         ),
         trailing: PopupMenuButton(
-          itemBuilder: (BuildContext ctx) => <PopupMenuEntry>[
+          itemBuilder: (BuildContext context) => <PopupMenuEntry>[
             PopupMenuItem(
-              onTap: () async => await onLogout(ctx, ref),
+              onTap: () async => await onLogout(context, ref),
               child: Row(
                 children: [
                   const Icon(Atlas.exit_thin),
@@ -62,7 +62,7 @@ class SessionCard extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: Text(
                       L10n.of(context).logOut,
-                      style: Theme.of(ctx).textTheme.labelSmall,
+                      style: Theme.of(context).textTheme.labelSmall,
                       softWrap: false,
                     ),
                   ),
@@ -70,7 +70,7 @@ class SessionCard extends ConsumerWidget {
               ),
             ),
             PopupMenuItem(
-              onTap: () async => await onVerify(ctx, ref),
+              onTap: () async => await onVerify(context, ref),
               child: Row(
                 children: [
                   const Icon(Atlas.shield_exclamation_thin),
@@ -78,7 +78,7 @@ class SessionCard extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: Text(
                       L10n.of(context).verifySession,
-                      style: Theme.of(ctx).textTheme.labelSmall,
+                      style: Theme.of(context).textTheme.labelSmall,
                       softWrap: false,
                     ),
                   ),
@@ -91,10 +91,10 @@ class SessionCard extends ConsumerWidget {
     );
   }
 
-  Future<void> onLogout(BuildContext ctx, WidgetRef ref) async {
+  Future<void> onLogout(BuildContext context, WidgetRef ref) async {
     TextEditingController passwordController = TextEditingController();
     final result = await showDialog<bool>(
-      context: ctx,
+      context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Theme.of(context).colorScheme.surface,
@@ -115,8 +115,8 @@ class SessionCard extends ConsumerWidget {
             OutlinedButton(
               child: Text(L10n.of(context).cancel),
               onPressed: () {
-                if (ctx.mounted) {
-                  Navigator.of(context).pop(false);
+                if (context.mounted) {
+                  Navigator.pop(context, false);
                 }
               },
             ),
@@ -126,8 +126,8 @@ class SessionCard extends ConsumerWidget {
                 if (passwordController.text.isEmpty) {
                   return;
                 }
-                if (ctx.mounted) {
-                  Navigator.of(context).pop(true);
+                if (context.mounted) {
+                  Navigator.pop(context, true);
                 }
               },
             ),
@@ -145,7 +145,7 @@ class SessionCard extends ConsumerWidget {
       client.userId().toString(),
       passwordController.text,
     );
-    ref.invalidate(allSessionsProvider);
+    ref.invalidate(allSessionsProvider); // DeviceUpdates doesn't cover logout
   }
 
   Future<void> onVerify(BuildContext context, WidgetRef ref) async {

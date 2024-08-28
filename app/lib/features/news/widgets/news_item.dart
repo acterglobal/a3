@@ -1,20 +1,27 @@
+import 'dart:core';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/toolkit/errors/error_dialog.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/events/widgets/skeletons/event_item_skeleton_widget.dart';
 import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/news/widgets/news_item_slide/video_slide.dart';
-import 'package:acter/features/news/widgets/news_side_bar.dart';
 import 'package:acter/features/news/widgets/news_item_slide/image_slide.dart';
 import 'package:acter/features/news/widgets/news_item_slide/text_slide.dart';
+import 'package:acter/features/news/widgets/news_side_bar.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:carousel_indicator/carousel_indicator.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::news::news_item');
 
 class NewsItem extends ConsumerStatefulWidget {
   final Client client;
@@ -40,7 +47,7 @@ class _NewsItemState extends ConsumerState<NewsItem> {
   @override
   Widget build(BuildContext context) {
     final roomId = widget.news.roomId().toString();
-    final space = ref.watch(briefSpaceItemProvider(roomId));
+    final spaceLoader = ref.watch(briefSpaceItemProvider(roomId));
     final slides = widget.news.slides().toList();
 
     return Stack(
@@ -51,39 +58,36 @@ class _NewsItemState extends ConsumerState<NewsItem> {
           onPageChanged: (page) {
             currentSlideIndex.value = page;
           },
-          itemBuilder: (context, idx) {
-            final slideType = slides[idx].typeStr();
-            final bgColor = getBackgroundColor(slides[idx]);
-            final fgColor = getForegroundColor(slides[idx]);
+          itemBuilder: (context, index) {
+            final slide = slides[index];
+            final slideType = slide.typeStr();
+            final bgColor = getBackgroundColor(slide);
+            final fgColor = getForegroundColor(slide);
             switch (slideType) {
               case 'image':
                 return ImageSlide(
-                  slide: slides[idx],
+                  slide: slide,
                   bgColor: bgColor,
                   fgColor: fgColor,
                 );
-
               case 'video':
                 return VideoSlide(
-                  slide: slides[idx],
+                  slide: slide,
                   bgColor: bgColor,
                   fgColor: fgColor,
                 );
-
               case 'text':
                 return TextSlide(
-                  slide: slides[idx],
+                  slide: slide,
                   bgColor: bgColor,
                   fgColor: fgColor,
                   pageController: widget.pageController,
                 );
-
               default:
                 return Expanded(
                   child: Center(
-                    child: Text(
-                      L10n.of(context).slidesNotYetSupported(slideType),
-                    ),
+                    child:
+                        Text(L10n.of(context).slidesNotYetSupported(slideType)),
                   ),
                 );
             }
@@ -102,9 +106,12 @@ class _NewsItemState extends ConsumerState<NewsItem> {
               onTap: () => goToSpace(context, roomId),
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: space.when(
+                child: spaceLoader.when(
                   data: (space) => Text(space.avatarInfo.displayName ?? roomId),
-                  error: (e, st) => Text(L10n.of(context).errorLoadingSpace(e)),
+                  error: (e, s) {
+                    _log.severe('Failed to load brief of space', e, s);
+                    return Text(L10n.of(context).errorLoadingSpace(e));
+                  },
                   loading: () => Skeletonizer(
                     child: Text(roomId),
                   ),
@@ -162,34 +169,104 @@ class _NewsItemState extends ConsumerState<NewsItem> {
     );
   }
 
-  Widget newsActionButtons({
-    required NewsSlide newsSlide,
-  }) {
+  Widget newsActionButtons({required NewsSlide newsSlide}) {
     final newsReferencesList = newsSlide.references().toList();
     if (newsReferencesList.isEmpty) return const SizedBox();
-
     final referenceDetails = newsReferencesList.first.refDetails();
-    final uriId = referenceDetails.uri() ?? '';
-    final title = referenceDetails.title() ?? '';
+    return renderActionButton(referenceDetails);
+  }
 
-    if (title == NewsReferencesType.shareEvent.name) {
-      return ref.watch(calendarEventProvider(uriId)).when(
-            data: (calendarEvent) {
-              return EventItem(
-                event: calendarEvent,
-              );
-            },
-            loading: () => const EventItemSkeleton(),
-            error: (e, s) =>
-                Center(child: Text(L10n.of(context).failedToLoadEvent(e))),
-          );
+  Widget renderActionButton(RefDetails referenceDetails) {
+    final evtType = NewsReferencesType.fromStr(referenceDetails.typeStr());
+
+    return switch (evtType) {
+      NewsReferencesType.calendarEvent => renderCalendarEventAction(
+          targetEventId: referenceDetails.targetIdStr() ?? '',),
+      NewsReferencesType.link => renderLinkActionButtion(referenceDetails),
+      _ => renderNotSupportedAction()
+    };
+  }
+
+  Widget renderLinkActionButtion(RefDetails referenceDetails) {
+    final uri = referenceDetails.uri();
+    if (uri == null) {
+      // malformatted
+      return renderNotSupportedAction();
+    }
+    if (referenceDetails.title() == 'shareEvent' && uri.startsWith('\$')) {
+      // fallback support for older, badly formatted calendar events.
+      return renderCalendarEventAction(targetEventId: uri);
+    }
+
+    final title = referenceDetails.title();
+    if (title != null) {
+      return Card(
+        child: ListTile(
+          leading: const Icon(Atlas.link),
+          onTap: () => openLink(uri, context),
+          title: Text(
+            title,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.labelMedium,
+          ),
+          subtitle: Text(
+            uri,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      );
     } else {
       return Card(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Text(L10n.of(context).unsupportedPleaseUpgrade),
+        child: ListTile(
+          leading: const Icon(Atlas.link),
+          onTap: () => openLink(uri, context),
+          title: Text(
+            uri,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.labelMedium,
+          ),
         ),
       );
     }
+  }
+
+  Widget renderCalendarEventAction({required String targetEventId}) {
+    final calEventLoader = ref.watch(calendarEventProvider(targetEventId));
+    return calEventLoader.when(
+      data: (calEvent) => EventItem(event: calEvent),
+      loading: () => const EventItemSkeleton(),
+      error: (e, s) {
+        _log.severe('Failed to load cal event', e, s);
+        return Card(
+          child: ListTile(
+            leading: const Icon(Icons.calendar_month),
+            title: Text(L10n.of(context).eventNoLongerAvailable),
+            subtitle: Text(
+              L10n.of(context).eventDeletedOrFailedToLoad,
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+            onTap: () async {
+              await ActerErrorDialog.show(
+                context: context,
+                error: e,
+                stack: s,
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  Widget renderNotSupportedAction() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Text(L10n.of(context).unsupportedPleaseUpgrade),
+      ),
+    );
   }
 }

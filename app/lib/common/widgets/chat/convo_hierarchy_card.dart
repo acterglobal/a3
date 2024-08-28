@@ -132,7 +132,8 @@ class ConvoHierarchyCard extends ConsumerWidget {
                 forward: (roomId) {
                   goToChat(context, roomId);
                   // make sure the UI refreshes when the user comes back here
-                  ref.invalidate(spaceRelationsOverviewProvider(parentId));
+                  ref.invalidate(spaceRelationsProvider(parentId));
+                  ref.invalidate(spaceRemoteRelationsProvider(parentId));
                 },
               ),
               RoomHierarchyOptionsMenu(

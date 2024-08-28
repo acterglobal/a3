@@ -7,7 +7,6 @@ import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/notifiers/room_notifiers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -183,23 +182,9 @@ final roomAvatarProvider =
 
 /// Provide the AvatarInfo for each room. Update internally accordingly
 final roomAvatarInfoProvider =
-    Provider.family<AvatarInfo, String>((ref, roomId) {
-  final fallback = AvatarInfo(uniqueId: roomId);
-
-  final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
-  if (room == null) {
-    return fallback;
-  }
-
-  final displayName = ref.watch(roomDisplayNameProvider(roomId)).valueOrNull;
-  final avatarData = ref.watch(roomAvatarProvider(roomId)).valueOrNull;
-
-  return AvatarInfo(
-    uniqueId: roomId,
-    displayName: displayName,
-    avatar: avatarData,
-  );
-});
+    NotifierProvider.family<RoomAvatarInfoNotifier, AvatarInfo, String>(
+  () => RoomAvatarInfoNotifier(),
+);
 
 /// get the [AvatarInfo] list of all the parents
 final parentAvatarInfosProvider =
@@ -216,22 +201,6 @@ final joinRulesAllowedRoomsProvider = FutureProvider.autoDispose
     return [];
   }
   return room.restrictedRoomIdsStr().map((e) => e.toDartString()).toList();
-});
-
-/// Get the List of related of the spaces for the space. Errors if the space or any
-/// related space isn't found. Stays up  to date with underlying client data if
-/// a space was found.
-final relatedSpacesProvider =
-    FutureProvider.family<List<Space>, String>((ref, spaceId) async {
-  return (await ref.watch(spaceRelationsOverviewProvider(spaceId).future))
-      .knownSubspaces;
-});
-
-/// The list of suggested RoomIDs
-final suggestedRelationsIdsProvider =
-    FutureProvider.family<List<String>, String>((ref, spaceId) async {
-  return (await ref.watch(spaceRelationsOverviewProvider(spaceId).future))
-      .suggestedIds;
 });
 
 /// Get the user's membership for a specific space based off the roomId
@@ -347,6 +316,20 @@ final membersIdsProvider =
   }
   final members = await room.activeMembersIds();
   return asDartStringList(members);
+});
+
+//FIXME : This need to be handle from rust side
+final isDirectChatProvider =
+    FutureProvider.family<bool, String>((ref, roomIdOrAlias) async {
+  final convo = await ref.watch(chatProvider(roomIdOrAlias).future);
+  final members = await ref.watch(membersIdsProvider(roomIdOrAlias).future);
+  return convo?.isDm() == true && members.length == 2;
+});
+
+final isConvoBookmarked =
+    FutureProvider.family<bool, String>((ref, roomIdOrAlias) async {
+  final convo = await ref.watch(chatProvider(roomIdOrAlias).future);
+  return convo?.isBookmarked() == true;
 });
 
 /// Caching the MemoryImage of each entry

@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/room_providers.dart';
-
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/activities/providers/invitations_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -170,11 +169,14 @@ class InvitationCard extends ConsumerWidget {
     final lang = L10n.of(context);
     try {
       await invitation.accept();
-    } catch (error) {
-      _log.severe('Failure accepting invite', error);
-      if (!context.mounted) return;
+    } catch (e, s) {
+      _log.severe('Failure accepting invite', e, s);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
-        lang.failedToAcceptInvite(error),
+        lang.failedToAcceptInvite(e),
         duration: const Duration(seconds: 3),
       );
       return;
@@ -183,19 +185,25 @@ class InvitationCard extends ConsumerWidget {
     try {
       // timeout to wait for 10seconds to ensure the room is ready
       await client.waitForRoom(roomId, 10);
-    } catch (error) {
-      _log.warning("Joining $roomId didn't return within 10 seconds");
+    } catch (e, s) {
+      _log.warning('Joining $roomId didn’t return within 10 seconds', e, s);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showToast(lang.joinedDelayed);
       // do not forward in this case
       return;
     }
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return;
+    }
     EasyLoading.showToast(lang.joined);
-    if (context.mounted) {
-      if (isSpace) {
-        goToSpace(context, invitation.room().roomIdStr());
-      } else {
-        goToChat(context, invitation.room().roomIdStr());
-      }
+    if (isSpace) {
+      goToSpace(context, roomId);
+    } else {
+      goToChat(context, roomId);
     }
   }
 
@@ -210,15 +218,20 @@ class InvitationCard extends ConsumerWidget {
       if (res) {
         EasyLoading.showToast(L10n.of(context).rejected);
       } else {
+        _log.severe('Failed to reject invitation');
         EasyLoading.showError(
           L10n.of(context).failedToReject,
           duration: const Duration(seconds: 3),
         );
       }
-    } catch (error) {
-      _log.severe('Failure reject invite', error);
+    } catch (e, s) {
+      _log.severe('Failure reject invite', e, s);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
-        L10n.of(context).failedToRejectInvite(error),
+        L10n.of(context).failedToRejectInvite(e),
         duration: const Duration(seconds: 3),
       );
     }

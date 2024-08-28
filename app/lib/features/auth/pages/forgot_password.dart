@@ -3,6 +3,7 @@ import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/validation_utils.dart';
+import 'package:acter/config/env.g.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::auth::passwordReset');
+final _log = Logger('a3::auth::forgot_password');
 
 class ForgotPassword extends ConsumerStatefulWidget {
   static Key passwordKey = const Key('pw-reset-password-field');
@@ -31,7 +32,18 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
 
   @override
   Widget build(BuildContext context) {
-    final sdk = ref.watch(sdkProvider).requireValue;
+    final sdk = ref.watch(sdkProvider).valueOrNull;
+    if (sdk == null) {
+      return SingleChildScrollView(
+        child: Center(
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 500),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Text(L10n.of(context).loading),
+          ),
+        ),
+      );
+    }
     if (tokenResponse != null) {
       return _NewPassword(tokenResponse: tokenResponse!, sdk: sdk);
     }
@@ -118,7 +130,7 @@ class _AskForEmail extends StatelessWidget {
     var screenHeight = MediaQuery.of(context).size.height;
     var imageSize = screenHeight / 4;
     return SvgPicture.asset(
-      'assets/icon/forgot_password.svg',
+      'assets/images/forgot_password.svg',
       height: imageSize,
       width: imageSize,
     );
@@ -156,14 +168,21 @@ class _AskForEmail extends StatelessWidget {
     EasyLoading.show(status: lang.sendingEmail);
     try {
       final resp = await sdk.api.requestPasswordChangeTokenViaEmail(
-        defaultServerUrl,
+        Env.defaultHomeserverUrl,
         emailController.text.trim(),
       );
       EasyLoading.dismiss();
       onSubmit(resp);
-    } catch (error, stack) {
-      _log.severe('Requesting password reset failed', error, stack);
-      EasyLoading.showError(lang.sendingEmailFailed(error));
+    } catch (e, s) {
+      _log.severe('Requesting password reset failed', e, s);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        lang.sendingEmailFailed(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 
@@ -279,16 +298,23 @@ class _NewPassword extends StatelessWidget {
     EasyLoading.show(status: lang.resettingPassword);
     try {
       await sdk.api.resetPassword(
-        defaultServerUrl,
+        Env.defaultHomeserverUrl,
         tokenResponse.sid(),
         tokenResponse.clientSecret(),
         passwordController.text,
       );
       EasyLoading.showToast(lang.resettingPasswordSuccessful);
       if (context.mounted) context.goNamed(Routes.authLogin.name);
-    } catch (error, stack) {
-      _log.severe('Requesting reset failed', error, stack);
-      EasyLoading.showError(lang.resettingPasswordFailed(error));
+    } catch (e, s) {
+      _log.severe('Requesting reset failed', e, s);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        lang.resettingPasswordFailed(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 

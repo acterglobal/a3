@@ -68,7 +68,7 @@ class IntroPage extends StatelessWidget {
     // limit the to always show the button even if the keyboard is opened
     final imageSize = MediaQuery.of(context).size.height / 5;
     return Image.asset(
-      'assets/icon/intro.png',
+      'assets/images/intro.png',
       height: imageSize,
       width: imageSize,
     );

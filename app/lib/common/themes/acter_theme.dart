@@ -35,6 +35,7 @@ class ActerTheme {
     scaffoldBackgroundColor: backgroundColor,
     highlightColor: Colors.transparent,
     hoverColor: Colors.transparent,
+    unselectedWidgetColor: greyColor,
     progressIndicatorTheme: progressIndicatorTheme,
     tabBarTheme: const TabBarTheme(
       indicatorColor: Colors.white,

@@ -32,14 +32,17 @@ pub(crate) enum MsgContentDraft {
     Image {
         source: String,
         info: Option<ImageInfo>,
+        filename: Option<String>,
     },
     Audio {
         source: String,
         info: Option<AudioInfo>,
+        filename: Option<String>,
     },
     Video {
         source: String,
         info: Option<VideoInfo>,
+        filename: Option<String>,
     },
     File {
         source: String,
@@ -181,6 +184,39 @@ impl MsgContentDraft {
 
     fn filename(mut self, value: String) -> Self {
         match self {
+            MsgContentDraft::Image {
+                source,
+                info,
+                filename: _,
+            } => {
+                return MsgContentDraft::Image {
+                    source,
+                    filename: Some(value),
+                    info,
+                };
+            }
+            MsgContentDraft::Video {
+                source,
+                info,
+                filename: _,
+            } => {
+                return MsgContentDraft::Video {
+                    source,
+                    filename: Some(value),
+                    info,
+                };
+            }
+            MsgContentDraft::Audio {
+                source,
+                info,
+                filename: _,
+            } => {
+                return MsgContentDraft::Audio {
+                    source,
+                    filename: Some(value),
+                    info,
+                };
+            }
             MsgContentDraft::File {
                 source,
                 info,
@@ -318,7 +354,11 @@ impl MsgDraft {
                 LocationMessageEventContent::new(body, geo_uri),
             )),
 
-            MsgContentDraft::Image { source, info } => {
+            MsgContentDraft::Image {
+                source,
+                info,
+                filename,
+            } => {
                 let info = info.expect("image info needed");
                 let mimetype = info.mimetype.clone().expect("mimetype needed");
                 let content_type = mimetype.parse::<mime::Mime>()?;
@@ -350,9 +390,14 @@ impl MsgDraft {
                     ImageMessageEventContent::plain(body, response.content_uri)
                 };
                 image_content.info = Some(Box::new(info));
+                image_content.filename = filename;
                 RoomMessageEventContentWithoutRelation::new(MessageType::Image(image_content))
             }
-            MsgContentDraft::Audio { source, info } => {
+            MsgContentDraft::Audio {
+                source,
+                info,
+                filename,
+            } => {
                 let info = info.expect("audio info needed");
                 let mimetype = info.mimetype.clone().expect("mimetype needed");
                 let content_type = mimetype.parse::<mime::Mime>()?;
@@ -384,9 +429,14 @@ impl MsgDraft {
                     AudioMessageEventContent::plain(body, response.content_uri)
                 };
                 audio_content.info = Some(Box::new(info));
+                audio_content.filename = filename;
                 RoomMessageEventContentWithoutRelation::new(MessageType::Audio(audio_content))
             }
-            MsgContentDraft::Video { source, info } => {
+            MsgContentDraft::Video {
+                source,
+                info,
+                filename,
+            } => {
                 let info = info.expect("video info needed");
                 let mimetype = info.mimetype.clone().expect("mimetype needed");
                 let content_type = mimetype.parse::<mime::Mime>()?;
@@ -418,6 +468,7 @@ impl MsgDraft {
                     VideoMessageEventContent::plain(body, response.content_uri)
                 };
                 video_content.info = Some(Box::new(info));
+                video_content.filename = filename;
                 RoomMessageEventContentWithoutRelation::new(MessageType::Video(video_content))
             }
             MsgContentDraft::File {

@@ -1,12 +1,16 @@
 import 'dart:math';
+
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/member/widgets/member_list_entry.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::space::members_page');
 
 class SpaceMembersPage extends ConsumerWidget {
   final String spaceIdOrAlias;
@@ -15,8 +19,7 @@ class SpaceMembersPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final space = ref.watch(spaceProvider(spaceIdOrAlias)).requireValue;
-    final members = ref.watch(membersIdsProvider(spaceIdOrAlias));
+    final membersLoader = ref.watch(membersIdsProvider(spaceIdOrAlias));
     final membership =
         ref.watch(roomMembershipProvider(spaceIdOrAlias)).valueOrNull;
     final invited =
@@ -45,7 +48,7 @@ class SpaceMembersPage extends ConsumerWidget {
                 : const SizedBox.shrink(),
           ],
         ),
-        members.when(
+        membersLoader.when(
           data: (members) {
             final widthCount =
                 (MediaQuery.of(context).size.width ~/ 300).toInt();
@@ -53,9 +56,7 @@ class SpaceMembersPage extends ConsumerWidget {
             if (members.isEmpty) {
               return SliverToBoxAdapter(
                 child: Center(
-                  child: Text(
-                    L10n.of(context).noMembersFound,
-                  ),
+                  child: Text(L10n.of(context).noMembersFound),
                 ),
               );
             }
@@ -65,19 +66,20 @@ class SpaceMembersPage extends ConsumerWidget {
                 crossAxisCount: max(1, min(widthCount, minCount)),
                 childAspectRatio: 5.0,
               ),
-              itemBuilder: (context, index) {
-                return MemberListEntry(
-                  memberId: members[index],
-                  roomId: space.getRoomIdStr(),
-                );
-              },
+              itemBuilder: (context, index) => MemberListEntry(
+                memberId: members[index],
+                roomId: spaceIdOrAlias,
+              ),
             );
           },
-          error: (error, stack) => SliverToBoxAdapter(
-            child: Center(
-              child: Text(L10n.of(context).loadingFailed(error)),
-            ),
-          ),
+          error: (e, s) {
+            _log.severe('Failed to load space members', e, s);
+            return SliverToBoxAdapter(
+              child: Center(
+                child: Text(L10n.of(context).loadingFailed(e)),
+              ),
+            );
+          },
           loading: () => SliverToBoxAdapter(
             child: Center(
               child: Text(L10n.of(context).loading),

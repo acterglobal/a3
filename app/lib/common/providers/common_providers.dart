@@ -10,10 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
-final _log = Logger('a3::common::providers');
-
-// Loading Providers
-final loadingProvider = StateProvider<bool>((ref) => false);
+final _log = Logger('a3::common::common_providers');
 
 final genericUpdatesStream =
     StreamProvider.family<int, String>((ref, key) async* {
@@ -27,15 +24,30 @@ final genericUpdatesStream =
   }
 });
 
-final myUserIdStrProvider = StateProvider(
+final myUserIdStrProvider = Provider(
   (ref) => ref.watch(
     alwaysClientProvider.select((client) => client.userId().toString()),
   ),
 );
 
-final accountProvider = StateProvider(
+final accountProvider = Provider(
   (ref) => ref.watch(
     alwaysClientProvider.select((client) => client.account()),
+  ),
+);
+
+final hasFirstSyncedProvider = Provider(
+  (ref) => ref.watch(syncStateProvider.select((v) => !v.initialSync)),
+);
+
+final isGuestProvider =
+    Provider((ref) => ref.watch(alwaysClientProvider).isGuest());
+
+final deviceIdProvider = Provider(
+  (ref) => ref.watch(
+    alwaysClientProvider.select(
+      (v) => v.deviceId().toString(),
+    ),
   ),
 );
 
@@ -90,9 +102,8 @@ final notificationSettingsProvider = AsyncNotifierProvider<
 
 final appContentNotificationSetting =
     FutureProvider.family<bool, String>((ref, appKey) async {
-  final notificationsSettings =
-      await ref.watch(notificationSettingsProvider.future);
-  return await notificationsSettings.globalContentSetting(appKey);
+  final settings = await ref.watch(notificationSettingsProvider.future);
+  return await settings.globalContentSetting(appKey);
 });
 
 // Email addresses that registered by user
@@ -122,8 +133,8 @@ final canRedactProvider = FutureProvider.autoDispose.family<bool, dynamic>(
   ((ref, arg) async {
     try {
       return await arg.canRedact();
-    } catch (error) {
-      _log.severe('Fetching canRedact failed for $arg', error);
+    } catch (e, s) {
+      _log.severe('Fetching canRedact failed for $arg', e, s);
       return false;
     }
   }),

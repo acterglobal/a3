@@ -4,15 +4,15 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:skeletonizer/skeletonizer.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 const redeemConfirmKey = Key('super-invite-redeem-confirm-btn');
 const redeemInfoKey = Key('super-invites-redeem-info');
 
-final _log = Logger('a3::super_invites::redeem_dialog');
+final _log = Logger('a3::super_invites::redeem');
 
 class _ShowRedeemTokenDialog extends ConsumerWidget {
   final String token;
@@ -20,7 +20,7 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final info = ref.watch(superInviteInfoProvider(token));
+    final infoLoader = ref.watch(superInviteInfoProvider(token));
     return AlertDialog(
       title: Text(L10n.of(context).redeem),
       content: Container(
@@ -31,15 +31,11 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
           children: [
-            info.when(
+            infoLoader.when(
               data: (info) => renderInfo(context, ref, info),
-              error: (error, stackTrace) {
-                _log.severe(
-                  'Loading super invite failed: $token',
-                  error,
-                  stackTrace,
-                );
-                final errorStr = error.toString();
+              error: (e, s) {
+                _log.severe('Failed to load the super invite: $token', e, s);
+                final errorStr = e.toString();
                 if (errorStr.contains('error: [404]')) {
                   // Server doesn't yet support previewing
                   return Text(
@@ -48,20 +44,16 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
                 }
                 if (errorStr.contains('error: [403]')) {
                   // 403 means we can't use that anymore
-                  return Text(
-                    L10n.of(context).superInvitesDeleted(token),
-                  );
+                  return Text(L10n.of(context).superInvitesDeleted(token));
                 }
-                return Text(L10n.of(context).loadingFailed(error));
+                return Text(L10n.of(context).loadingFailed(e));
               },
               loading: () => Skeletonizer(
                 child: Card(
                   child: ListTile(
                     leading: ActerAvatar(
                       options: const AvatarOptions.DM(
-                        AvatarInfo(
-                          uniqueId: 'nothing',
-                        ),
+                        AvatarInfo(uniqueId: 'nothing'),
                         size: 18,
                       ),
                     ),
@@ -76,8 +68,7 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
       actionsAlignment: MainAxisAlignment.spaceEvenly,
       actions: <Widget>[
         OutlinedButton(
-          onPressed: () =>
-              Navigator.of(context, rootNavigator: true).pop(false),
+          onPressed: () => Navigator.pop(context, false),
           child: Text(L10n.of(context).cancel),
         ),
         ActerPrimaryActionButton(
@@ -102,9 +93,7 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
               displayName != null ? '$displayName ($userId)' : userId,
             ),
           ),
-          subtitle: Text(
-            L10n.of(context).superInvitedTo(info.roomsCount()),
-          ),
+          subtitle: Text(L10n.of(context).superInvitedTo(info.roomsCount())),
           leading: ActerAvatar(
             options: AvatarOptions.DM(
               AvatarInfo(
@@ -133,13 +122,14 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
         L10n.of(context).addedToSpacesAndChats(rooms.length),
       );
       Navigator.of(context, rootNavigator: true).pop(true);
-    } catch (err) {
+    } catch (e, s) {
+      _log.severe('Failed to redeem', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).redeemingFailed(err),
+        L10n.of(context).redeemingFailed(e),
         duration: const Duration(seconds: 3),
       );
     }
@@ -153,7 +143,7 @@ Future<bool> showReedemTokenDialog(
 ) async {
   return await showDialog(
     context: context,
-    builder: (BuildContext ctx) =>
+    builder: (BuildContext context) =>
         _ShowRedeemTokenDialog(token: superInviteToken),
   );
 }

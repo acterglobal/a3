@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/sdk_provider.dart';
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
@@ -8,20 +7,15 @@ import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
-final _log = Logger('a3::onboarding::auth');
+final _log = Logger('a3::auth::notifier');
 
 class AuthStateNotifier extends StateNotifier<bool> {
   final Ref ref;
 
   AuthStateNotifier(this.ref) : super(false);
 
-  Future<void> nuke(BuildContext context) async {
+  Future<void> nuke() async {
     await ActerSdk.nuke();
-    ref.invalidate(spacesProvider);
-
-    if (context.mounted) {
-      context.goNamed(Routes.main.name);
-    }
   }
 
   Future<String?> login(String username, String password) async {
@@ -33,8 +27,8 @@ class AuthStateNotifier extends StateNotifier<bool> {
       state = false;
       return null;
     } catch (e, s) {
-      state = false;
       _log.severe('Login failed', e, s);
+      state = false;
       return e.toString();
     }
   }
@@ -80,7 +74,6 @@ class AuthStateNotifier extends StateNotifier<bool> {
     if (stillHasClient) {
       _log.info('Still has clients, dropping back to other');
       ref.read(clientProvider.notifier).state = sdk.currentClient;
-      ref.invalidate(spacesProvider);
       if (context.mounted) {
         context.goNamed(Routes.main.name);
       }

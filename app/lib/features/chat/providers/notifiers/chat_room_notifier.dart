@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -8,8 +10,8 @@ import 'package:acter/features/chat/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:riverpod/riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::chat::room_notifier');
 
@@ -22,13 +24,13 @@ class PostProcessItem {
 
 class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   final Ref ref;
-  final Convo convo;
+  final String roomId;
   late TimelineStream timeline;
   late Stream<RoomMessageDiff> _listener;
   late StreamSubscription<RoomMessageDiff> _poller;
 
   ChatRoomNotifier({
-    required this.convo,
+    required this.roomId,
     required this.ref,
   }) : super(const ChatRoomState()) {
     _init();
@@ -36,18 +38,26 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   Future<void> _init() async {
     try {
-      timeline = ref.read(timelineStreamProvider(convo));
+      timeline = await ref.read(timelineStreamProvider(roomId).future);
       _listener = timeline.messagesStream(); // keep it resident in memory
-      _poller = _listener.listen(handleDiff);
+      _poller = _listener.listen(
+        handleDiff,
+        onError: (e, s) {
+          _log.severe('msg stream errored', e, s);
+        },
+        onDone: () {
+          _log.info('msg stream ended');
+        },
+      );
       ref.onDispose(() => _poller.cancel());
       do {
         await loadMore(failOnError: true);
         await Future.delayed(const Duration(milliseconds: 200), () => null);
       } while (state.hasMore && state.messages.where(msgFilter).length < 10);
-    } catch (error) {
-      _log.severe('Error loading more messages', error);
+    } catch (e, s) {
+      _log.severe('Error loading more messages', e, s);
       state = state.copyWith(
-        loading: ChatRoomLoadingState.error(error.toString()),
+        loading: ChatRoomLoadingState.error(e.toString()),
       );
     }
   }
@@ -64,10 +74,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           hasMore: hasMore,
           loading: const ChatRoomLoadingState.loaded(),
         );
-      } catch (error) {
-        _log.severe('Error loading more messages', error);
+      } catch (e, s) {
+        _log.severe('Error loading more messages', e, s);
         state = state.copyWith(
-          loading: ChatRoomLoadingState.error(error.toString()),
+          loading: ChatRoomLoadingState.error(e.toString()),
         );
         if (failOnError) {
           rethrow;
@@ -225,7 +235,17 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   // fetch original content media for reply msg, i.e. text/image/file etc.
   Future<void> fetchOriginalContent(String originalId, String replyId) async {
-    final roomMsg = await timeline.getMessage(originalId);
+    RoomMessage roomMsg;
+    try {
+      roomMsg = await timeline.getMessage(originalId);
+    } catch (e, s) {
+      _log.severe(
+        'Failing to load reference $replyId (from $originalId)',
+        e,
+        s,
+      );
+      return;
+    }
 
     // reply is allowed for only EventItem not VirtualItem
     // user should be able to get original event as RoomMessage
@@ -306,6 +326,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.image':
             MsgContent? msgContent = orgEventItem.msgContent();
             if (msgContent != null) {
+              final convo = await ref.read(chatProvider(roomId).future);
+              if (convo == null) {
+                throw RoomNotFound();
+              }
               convo.mediaBinary(originalId, null).then((data) {
                 repliedToContent['base64'] = base64Encode(data.asTypedList());
               });
@@ -324,6 +348,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.audio':
             MsgContent? msgContent = orgEventItem.msgContent();
             if (msgContent != null) {
+              final convo = await ref.read(chatProvider(roomId).future);
+              if (convo == null) {
+                throw RoomNotFound();
+              }
               convo.mediaBinary(originalId, null).then((data) {
                 repliedToContent['content'] = base64Encode(data.asTypedList());
               });
@@ -342,6 +370,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.video':
             MsgContent? msgContent = orgEventItem.msgContent();
             if (msgContent != null) {
+              final convo = await ref.read(chatProvider(roomId).future);
+              if (convo == null) {
+                throw RoomNotFound();
+              }
               convo.mediaBinary(originalId, null).then((data) {
                 repliedToContent['content'] = base64Encode(data.asTypedList());
               });
@@ -872,6 +904,11 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       case 'm.audio':
       case 'm.video':
         final messages = state.messages;
+
+        final convo = await ref.read(chatProvider(roomId).future);
+        if (convo == null) {
+          throw RoomNotFound();
+        }
         final data = await convo.mediaBinary(eventId, null);
         int index = messages.indexWhere((x) => x.id == eventId);
         if (index != -1) {

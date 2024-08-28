@@ -1,16 +1,16 @@
 import 'dart:async';
 
+import 'package:acter/common/actions/redact_content.dart';
+import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
+import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
-import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/render_html.dart';
-import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
-import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/providers/task_items_providers.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
 import 'package:acter/features/tasks/widgets/skeleton/task_item_detail_page_skeleton.dart';
@@ -20,13 +20,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::tasks::task_item_details_page');
+final _log = Logger('a3::tasks::task_item_details');
 
 class TaskItemDetailPage extends ConsumerWidget {
-  static const taskListTitleKey = Key('task-list-title');
   final String taskListId;
   final String taskId;
 
@@ -38,35 +36,35 @@ class TaskItemDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final task =
+    final taskLoader =
         ref.watch(taskItemProvider((taskListId: taskListId, taskId: taskId)));
     return Scaffold(
-      appBar: _buildAppBar(context, ref, task),
-      body: _buildBody(context, ref, task),
+      appBar: _buildAppBar(context, ref, taskLoader),
+      body: _buildBody(context, ref, taskLoader),
     );
   }
 
   AppBar _buildAppBar(
     BuildContext context,
     WidgetRef ref,
-    AsyncValue<Task> task,
+    AsyncValue<Task> taskLoader,
   ) {
-    return task.when(
-      data: (data) => AppBar(
+    return taskLoader.when(
+      data: (task) => AppBar(
         title: SelectionArea(
           child: GestureDetector(
             onTap: () => showEditTaskItemNameBottomSheet(
               context: context,
               ref: ref,
-              task: data,
-              titleValue: data.title(),
+              task: task,
+              titleValue: task.title(),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  data.title(),
+                  task.title(),
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 Row(
@@ -97,9 +95,9 @@ class TaskItemDetailPage extends ConsumerWidget {
                     showEditTitleBottomSheet(
                       context: context,
                       bottomSheetTitle: L10n.of(context).editName,
-                      titleValue: data.title(),
+                      titleValue: task.title(),
                       onSave: (newName) =>
-                          saveTitle(context, ref, data, newName),
+                          saveTitle(context, ref, task, newName),
                     );
                   },
                   child: Text(
@@ -108,22 +106,25 @@ class TaskItemDetailPage extends ConsumerWidget {
                   ),
                 ),
                 PopupMenuItem(
-                  onTap: () => showEditDescriptionSheet(context, ref, data),
+                  onTap: () => showEditDescriptionSheet(context, ref, task),
                   child: Text(
                     L10n.of(context).editDescription,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
                 PopupMenuItem(
-                  onTap: () =>
-                      showRedactDialog(context: context, ref: ref, task: data),
+                  onTap: () => showRedactDialog(
+                    context: context,
+                    ref: ref,
+                    task: task,
+                  ),
                   child: Text(
                     L10n.of(context).delete,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
                 PopupMenuItem(
-                  onTap: () => showReportDialog(context: context, task: data),
+                  onTap: () => showReportDialog(context: context, task: task),
                   child: Text(
                     L10n.of(context).report,
                     style: Theme.of(context).textTheme.bodyMedium,
@@ -134,8 +135,15 @@ class TaskItemDetailPage extends ConsumerWidget {
           ),
         ],
       ),
-      error: (e, s) => AppBar(title: Text(L10n.of(context).failedToLoad(e))),
-      loading: () => AppBar(title: Text(L10n.of(context).loading)),
+      error: (e, s) {
+        _log.severe('Failed to load task', e, s);
+        return AppBar(
+          title: Text(L10n.of(context).loadingFailed(e)),
+        );
+      },
+      loading: () => AppBar(
+        title: Text(L10n.of(context).loading),
+      ),
     );
   }
 
@@ -145,20 +153,15 @@ class TaskItemDetailPage extends ConsumerWidget {
     required WidgetRef ref,
     required Task task,
   }) {
-    showAdaptiveDialog(
-      context: context,
-      builder: (context) => RedactContentWidget(
-        title: L10n.of(context).deleteTaskItem,
-        onSuccess: () {
-          ref.invalidate(taskItemsListProvider);
-          ref.invalidate(taskListItemProvider);
-          Navigator.of(context, rootNavigator: true).pop();
-        },
-        eventId: task.eventIdStr(),
-        senderId: task.authorStr(),
-        roomId: task.roomIdStr(),
-        isSpace: true,
-      ),
+    openRedactContentDialog(
+      context,
+      title: L10n.of(context).deleteTaskItem,
+      onSuccess: () {
+        Navigator.pop(context);
+      },
+      eventId: task.eventIdStr(),
+      roomId: task.roomIdStr(),
+      isSpace: true,
     );
   }
 
@@ -167,27 +170,37 @@ class TaskItemDetailPage extends ConsumerWidget {
     required BuildContext context,
     required Task task,
   }) {
-    showAdaptiveDialog(
-      context: context,
-      builder: (ctx) => ReportContentWidget(
-        title: L10n.of(context).reportTaskItem,
-        description: L10n.of(context).reportThisContent,
-        eventId: task.eventIdStr(),
-        senderId: task.authorStr(),
-        roomId: task.roomIdStr(),
-        isSpace: true,
-      ),
+    openReportContentDialog(
+      context,
+      title: L10n.of(context).reportTaskItem,
+      description: L10n.of(context).reportThisContent,
+      eventId: task.eventIdStr(),
+      senderId: task.authorStr(),
+      roomId: task.roomIdStr(),
+      isSpace: true,
     );
   }
 
   Widget _buildBody(
     BuildContext context,
     WidgetRef ref,
-    AsyncValue<Task> task,
+    AsyncValue<Task> taskLoader,
   ) {
-    return task.when(
-      data: (data) => taskData(context, data, ref),
-      error: (e, s) => Text(L10n.of(context).failedToLoad(e)),
+    return taskLoader.when(
+      data: (task) => taskData(context, task, ref),
+      error: (error, stack) {
+        _log.severe('Failed to load task', error, stack);
+        return ErrorPage(
+          background: const TaskItemDetailPageSkeleton(),
+          error: error,
+          stack: stack,
+          onRetryTap: () {
+            ref.invalidate(
+              taskItemProvider((taskListId: taskListId, taskId: taskId)),
+            );
+          },
+        );
+      },
       loading: () => const TaskItemDetailPageSkeleton(),
     );
   }
@@ -277,11 +290,13 @@ class TaskItemDetailPage extends ConsumerWidget {
       updater.descriptionHtml(plainDescription, htmlBodyDescription);
       await updater.send();
       EasyLoading.dismiss();
-      if (context.mounted) context.pop();
-    } catch (e, st) {
-      _log.severe('Failed to update event description', e, st);
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (context.mounted) Navigator.pop(context);
+    } catch (e, s) {
+      _log.severe('Failed to change description of task', e, s);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         L10n.of(context).errorUpdatingDescription(e),
         duration: const Duration(seconds: 3),
@@ -339,7 +354,8 @@ class TaskItemDetailPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showToast(L10n.of(context).dueSuccess);
-    } catch (e) {
+    } catch (e, s) {
+      _log.severe('Failed to change due date of task', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
@@ -383,11 +399,7 @@ class TaskItemDetailPage extends ConsumerWidget {
     );
   }
 
-  Widget assigneeName(
-    BuildContext context,
-    Task task,
-    WidgetRef ref,
-  ) {
+  Widget assigneeName(BuildContext context, Task task, WidgetRef ref) {
     final assignees = task.assigneesStr().map((s) => s.toDartString()).toList();
 
     return Wrap(
@@ -395,9 +407,7 @@ class TaskItemDetailPage extends ConsumerWidget {
       children: assignees.map((i) {
         final displayName = ref
             .watch(
-              memberDisplayNameProvider(
-                (roomId: task.roomIdStr(), userId: i),
-              ),
+              memberDisplayNameProvider((roomId: task.roomIdStr(), userId: i)),
             )
             .valueOrNull;
         return Padding(
@@ -420,8 +430,8 @@ class TaskItemDetailPage extends ConsumerWidget {
       await task.assignSelf();
       if (!context.mounted) return;
       EasyLoading.showToast(L10n.of(context).assignedYourself);
-    } catch (e, st) {
-      _log.severe('Failed to assign self', e, st);
+    } catch (e, s) {
+      _log.severe('Failed to self-assign task', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
@@ -433,17 +443,14 @@ class TaskItemDetailPage extends ConsumerWidget {
     }
   }
 
-  Future<void> onUnAssign(
-    BuildContext context,
-    Task task,
-  ) async {
+  Future<void> onUnAssign(BuildContext context, Task task) async {
     EasyLoading.show(status: L10n.of(context).unassigningSelf);
     try {
       await task.unassignSelf();
       if (!context.mounted) return;
       EasyLoading.showToast(L10n.of(context).assignmentWithdrawn);
-    } catch (e, st) {
-      _log.severe('Failed to unassign self', e, st);
+    } catch (e, s) {
+      _log.severe('Failed to self-unassign task', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
@@ -480,13 +487,15 @@ class TaskItemDetailPage extends ConsumerWidget {
     updater.title(newName);
     try {
       await updater.send();
-      ref.invalidate(taskListProvider);
       EasyLoading.dismiss();
       if (!context.mounted) return;
-      context.pop();
-    } catch (e) {
-      EasyLoading.dismiss();
-      if (!context.mounted) return;
+      Navigator.pop(context);
+    } catch (e, s) {
+      _log.severe('Failed to change title of task', e, s);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         L10n.of(context).updatingTaskFailed(e),
         duration: const Duration(seconds: 3),

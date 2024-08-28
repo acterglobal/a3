@@ -3,9 +3,12 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::chat::room_avatar');
 
 class RoomAvatar extends ConsumerWidget {
   final String roomId;
@@ -84,8 +87,8 @@ class RoomAvatar extends ConsumerWidget {
 
   Widget dmAvatar(WidgetRef ref, BuildContext context) {
     final client = ref.watch(alwaysClientProvider);
-    final convoMembers = ref.watch(membersIdsProvider(roomId));
-    return convoMembers.when(
+    final membersLoader = ref.watch(membersIdsProvider(roomId));
+    return membersLoader.when(
       data: (members) {
         int count = members.length;
 
@@ -107,8 +110,10 @@ class RoomAvatar extends ConsumerWidget {
         }
       },
       skipLoadingOnReload: false,
-      error: (error, stackTrace) =>
-          errorAvatar(L10n.of(context).loadingMembersCountFailed(error)),
+      error: (e, s) {
+        _log.severe('Failed to load room members', e, s);
+        return errorAvatar(L10n.of(context).loadingMembersCountFailed(e));
+      },
       loading: () => loadingAvatar(),
     );
   }
@@ -123,20 +128,20 @@ class RoomAvatar extends ConsumerWidget {
   }
 
   Widget groupAvatarDM(List<String> members, WidgetRef ref) {
-    final profile = ref
-        .watch(memberAvatarInfoProvider((userId: members[0], roomId: roomId)));
-    final secondaryProfile = ref
-        .watch(memberAvatarInfoProvider((userId: members[1], roomId: roomId)));
+    final profile = ref.watch(
+      memberAvatarInfoProvider((userId: members[0], roomId: roomId)),
+    );
+    final secondaryProfile = ref.watch(
+      memberAvatarInfoProvider((userId: members[1], roomId: roomId)),
+    );
 
     return ActerAvatar(
       options: AvatarOptions.GroupDM(
         profile,
         groupAvatars: [
           secondaryProfile,
-          for (int i = 2; i < members.length; i++)
-            AvatarInfo(
-              uniqueId: members[i],
-            ),
+          for (var i = 2; i < members.length; i++)
+            AvatarInfo(uniqueId: members[i]),
         ],
         size: avatarSize / 2,
       ),

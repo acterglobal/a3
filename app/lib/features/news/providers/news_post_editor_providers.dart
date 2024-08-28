@@ -46,7 +46,7 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
       spaceId: state.newsPostSpaceId!,
     );
     final newsSpaceReference = NewsReferencesModel(
-      type: NewsReferencesType.shareEvent,
+      type: NewsReferencesType.calendarEvent,
       id: eventId,
     );
     NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;

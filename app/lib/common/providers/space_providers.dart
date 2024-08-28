@@ -1,4 +1,3 @@
-import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/notifiers/relations_notifier.dart';
 import 'package:acter/common/providers/notifiers/space_notifiers.dart';
 import 'package:acter/common/providers/room_providers.dart';
@@ -48,6 +47,12 @@ final spaceProvider =
     return maybeSpace;
   }
   throw 'Space not found';
+});
+
+final spaceIsBookmarkedProvider =
+    FutureProvider.family<bool, String>((ref, spaceId) async {
+  final space = await ref.watch(spaceProvider(spaceId).future);
+  return space.isBookmarked();
 });
 
 /// Attempts to map a spaceId to the space, but could come back empty (null) rather than throw.
@@ -108,12 +113,10 @@ class SpaceItem {
 }
 
 class SpaceRelationsOverview {
-  bool hasMoreSubspaces;
-  bool hasMoreChats;
+  bool hasMore;
   SpaceRelations rel;
-  Member? membership;
-  List<Space> knownSubspaces;
-  List<Convo> knownChats;
+  List<String> knownSubspaces;
+  List<String> knownChats;
   List<String> suggestedIds;
   Space? mainParent;
   List<Space> parents;
@@ -121,15 +124,13 @@ class SpaceRelationsOverview {
 
   SpaceRelationsOverview({
     required this.rel,
-    required this.membership,
     required this.knownSubspaces,
     required this.knownChats,
     required this.suggestedIds,
     required this.mainParent,
     required this.parents,
     required this.otherRelations,
-    required this.hasMoreSubspaces,
-    required this.hasMoreChats,
+    required this.hasMore,
   });
 }
 
@@ -196,7 +197,7 @@ final searchedSpacesProvider =
   return foundSpaces;
 });
 
-/// Get the SpaceItem of the given sapceId filled in brief form
+/// Get the SpaceItem of the given spaceId filled in brief form
 /// (only spaceProfileData, no activeMembers). Stays up to date with underlying
 /// client info
 final briefSpaceItemProvider =
@@ -233,38 +234,31 @@ final spaceRelationsOverviewProvider =
   if (relatedSpaces == null) {
     throw SpaceNotFound;
   }
-  final membership = await ref.watch(roomMembershipProvider(spaceId).future);
-  bool hasMoreSubspaces = false;
-  bool hasMoreChats = false;
-  final List<Space> knownSubspaces = [];
-  final List<Convo> knownChats = [];
+  bool hasMore = false;
+  final List<String> knownSubspaces = [];
+  final List<String> knownChats = [];
   final List<String> suggested = [];
   List<Space> otherRelated = [];
-  for (final related in relatedSpaces.children()) {
+  final children = relatedSpaces.children();
+  for (final related in children) {
     String targetType = related.targetType();
     final roomId = related.roomId().toString();
     if (related.suggested()) {
       suggested.add(roomId);
     }
+    final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
+    if (room == null || !room.isJoined()) {
+      // we don't know this room or are not in it
+      hasMore = true;
+      continue;
+    }
+
     if (targetType == 'ChatRoom') {
-      try {
-        final chat = await ref.watch(chatProvider(roomId).future);
-        knownChats.add(chat);
-      } catch (e) {
-        hasMoreChats = true;
-      }
+      // we know this as a chat room
+      knownChats.add(roomId);
     } else {
-      try {
-        final space = await ref.watch(spaceProvider(roomId).future);
-        final isChildSpaceOf = await space.isChildSpaceOf(spaceId);
-        if (isChildSpaceOf) {
-          knownSubspaces.add(space);
-        } else {
-          otherRelated.add(space);
-        }
-      } catch (e) {
-        hasMoreSubspaces = true;
-      }
+      // this must be some space.
+      knownSubspaces.add(roomId);
     }
   }
   List<Space> parents = [];
@@ -302,14 +296,12 @@ final spaceRelationsOverviewProvider =
   }
   return SpaceRelationsOverview(
     rel: relatedSpaces,
-    membership: membership,
     parents: parents,
     knownChats: knownChats,
     knownSubspaces: knownSubspaces,
     otherRelations: otherRelated,
     mainParent: mainParent,
-    hasMoreSubspaces: hasMoreSubspaces,
-    hasMoreChats: hasMoreChats,
+    hasMore: hasMore,
     suggestedIds: suggested,
   );
 });
@@ -324,7 +316,7 @@ final hasSubSpacesProvider =
   () => HasSubSpacesNotifier(),
 );
 
-final _spaceRemoteRelationsProvider =
+final spaceRemoteRelationsProvider =
     FutureProvider.family<List<SpaceHierarchyRoomInfo>, String>(
         (ref, spaceId) async {
   final relatedSpaces = await ref.watch(spaceRelationsProvider(spaceId).future);
@@ -340,10 +332,9 @@ final remoteChatRelationsProvider =
   try {
     final relatedSpaces =
         await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
-    final toIgnore =
-        relatedSpaces.knownChats.map((e) => e.getRoomIdStr()).toList();
+    final toIgnore = relatedSpaces.knownChats.toList();
     final roomHierarchy =
-        await ref.watch(_spaceRemoteRelationsProvider(spaceId).future);
+        await ref.watch(spaceRemoteRelationsProvider(spaceId).future);
     // filter out the known rooms
     return roomHierarchy
         .where((r) => !r.isSpace() && !toIgnore.contains(r.roomIdStr()))
@@ -359,8 +350,7 @@ final remoteSubspaceRelationsProvider =
   try {
     final relatedSpaces =
         await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
-    final toIgnore =
-        relatedSpaces.knownSubspaces.map((e) => e.getRoomIdStr()).toList();
+    final toIgnore = List.of(relatedSpaces.knownSubspaces);
     toIgnore.addAll(relatedSpaces.parents.map((e) => e.getRoomIdStr()));
     if (relatedSpaces.mainParent != null) {
       toIgnore.add(relatedSpaces.mainParent!.getRoomIdStr());
@@ -368,7 +358,7 @@ final remoteSubspaceRelationsProvider =
     toIgnore.add(spaceId); // the hierarchy also gives us ourselfes ...
 
     final roomHierarchy =
-        await ref.watch(_spaceRemoteRelationsProvider(spaceId).future);
+        await ref.watch(spaceRemoteRelationsProvider(spaceId).future);
     // filter out the known rooms
     return roomHierarchy
         .where((r) => r.isSpace() && !toIgnore.contains(r.roomIdStr()))

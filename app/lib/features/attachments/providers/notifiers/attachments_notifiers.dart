@@ -7,7 +7,7 @@ import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod/riverpod.dart';
 
-final _log = Logger('a3::common::attachments');
+final _log = Logger('a3::attachments::notifiers');
 
 class AttachmentsManagerNotifier extends AutoDisposeFamilyAsyncNotifier<
     AttachmentsManager, Future<AttachmentsManager>> {
@@ -22,13 +22,12 @@ class AttachmentsManagerNotifier extends AutoDisposeFamilyAsyncNotifier<
       (e) async {
         _log.info('attempting to reload');
         final newManager = await manager.reload();
-        _log.info(
-          'manager updated. attachments: ${newManager.attachmentsCount()}',
-        );
+        final count = newManager.attachmentsCount();
+        _log.info('manager updated. attachments: $count');
         state = AsyncValue.data(newManager);
       },
-      onError: (e, stack) {
-        _log.severe('stream errored.', e, stack);
+      onError: (e, s) {
+        _log.severe('stream errored', e, s);
       },
       onDone: () {
         _log.info('stream ended');

@@ -2,7 +2,6 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:go_router/go_router.dart';
 
 void showEditTitleBottomSheet({
   required BuildContext context,
@@ -14,7 +13,7 @@ void showEditTitleBottomSheet({
     showDragHandle: true,
     useSafeArea: true,
     context: context,
-    constraints: const BoxConstraints(maxHeight: 300),
+    isScrollControlled: true,
     builder: (context) {
       return EditTitleSheet(
         bottomSheetTitle: bottomSheetTitle,
@@ -53,9 +52,9 @@ class _EditTitleSheetState extends ConsumerState<EditTitleSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      constraints: const BoxConstraints(maxWidth: 500),
+      padding: MediaQuery.of(context).viewInsets,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             widget.bottomSheetTitle ?? L10n.of(context).editTitle,
@@ -79,7 +78,7 @@ class _EditTitleSheetState extends ConsumerState<EditTitleSheet> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               OutlinedButton(
-                onPressed: () => context.pop(),
+                onPressed: () => Navigator.pop(context),
                 child: Text(L10n.of(context).cancel),
               ),
               const SizedBox(width: 20),
@@ -88,7 +87,7 @@ class _EditTitleSheetState extends ConsumerState<EditTitleSheet> {
                   // no changes to submit
                   if (_titleController.text.trim() ==
                       widget.titleValue.trim()) {
-                    context.pop();
+                    Navigator.pop(context);
                     return;
                   }
 

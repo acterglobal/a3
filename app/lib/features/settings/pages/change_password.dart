@@ -1,15 +1,16 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::room::change_password');
+final _log = Logger('a3::settings::change_password');
 
 class ChangePasswordPage extends ConsumerStatefulWidget {
   const ChangePasswordPage({super.key});
@@ -41,8 +42,7 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
 
   AppBar _buildAppbar() {
     return AppBar(
-      backgroundColor: const AppBarTheme().backgroundColor,
-      elevation: 0.0,
+      automaticallyImplyLeading: !context.isLargeScreen,
       title: Text(L10n.of(context).changePassword),
       centerTitle: true,
     );
@@ -199,12 +199,14 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
       confirmPassword.clear();
       if (!context.mounted) return;
       EasyLoading.showSuccess(L10n.of(context).passwordChangedSuccessfully);
-    } catch (err) {
-      EasyLoading.dismiss();
-      _log.severe('Change password failed', err);
-      if (!context.mounted) return;
+    } catch (e, s) {
+      _log.severe('Failed to change password', e, s);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
-        L10n.of(context).changePasswordFailed(err),
+        L10n.of(context).changePasswordFailed(e),
         duration: const Duration(seconds: 3),
       );
     }

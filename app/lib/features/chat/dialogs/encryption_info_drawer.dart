@@ -35,7 +35,7 @@ class EncryptionInfoSheet extends StatelessWidget {
               ),
               if (context.canPop())
                 TextButton(
-                  onPressed: () => context.pop(),
+                  onPressed: () => Navigator.pop(context),
                   child: Text(
                     L10n.of(context).close,
                   ),
@@ -49,7 +49,7 @@ class EncryptionInfoSheet extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           OutlinedButton(
-            onPressed: () => context.pop(),
+            onPressed: () => Navigator.pop(context),
             child: Text(L10n.of(context).close),
           ),
         ],

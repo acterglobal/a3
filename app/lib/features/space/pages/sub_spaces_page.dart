@@ -6,12 +6,15 @@ import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
-import 'package:acter/features/space/widgets/related_spaces/helpers.dart';
+import 'package:acter/features/space/widgets/related/spaces_helpers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::space::sub_spaces');
 
 class SubSpacesPage extends ConsumerWidget {
   static const moreOptionKey = Key('related-spaces-more-actions');
@@ -22,9 +25,7 @@ class SubSpacesPage extends ConsumerWidget {
 
   const SubSpacesPage({super.key, required this.spaceIdOrAlias});
 
-  Widget _renderTools(
-    BuildContext context,
-  ) {
+  Widget _renderTools(BuildContext context) {
     return PopupMenuButton(
       icon: const Icon(Atlas.plus_circle, key: moreOptionKey),
       iconSize: 28,
@@ -77,12 +78,16 @@ class SubSpacesPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final spaces = ref.watch(spaceRelationsOverviewProvider(spaceIdOrAlias));
+    final spacesLoader =
+        ref.watch(spaceRelationsOverviewProvider(spaceIdOrAlias));
     final widthCount = (MediaQuery.of(context).size.width ~/ 300).toInt();
     const int minCount = 3;
     final crossAxisCount = max(1, min(widthCount, minCount));
     final spaceName =
         ref.watch(roomDisplayNameProvider(spaceIdOrAlias)).valueOrNull;
+    final membership = ref.watch(roomMembershipProvider(spaceIdOrAlias));
+    bool canLinkSpace =
+        membership.valueOrNull?.canString('CanLinkSpaces') == true;
     // get platform of context.
     return Scaffold(
       appBar: AppBar(
@@ -98,43 +103,53 @@ class SubSpacesPage extends ConsumerWidget {
           ],
         ),
         actions: [
-          spaces.when(
+          IconButton(
+            icon: const Icon(Atlas.arrows_rotating_right_thin),
+            iconSize: 28,
+            color: Theme.of(context).colorScheme.surface,
+            onPressed: () async {
+              ref.invalidate(spaceRelationsProvider);
+            },
+          ),
+          spacesLoader.when(
             data: (spaces) {
-              if (spaces.membership?.canString('CanLinkSpaces') ?? false) {
+              if (canLinkSpace) {
                 return _renderTools(context);
               } else {
                 return const SizedBox.shrink();
               }
             },
-            error: (error, stack) => Center(
-              child: Text(L10n.of(context).loadingFailed(error)),
-            ),
-            loading: () => Center(
-              child: Text(L10n.of(context).loading),
-            ),
+            error: (e, s) {
+              _log.severe('Failed to load the related spaces', e, s);
+              return Center(
+                child: Text(L10n.of(context).loadingFailed(e)),
+              );
+            },
+            loading: () => const SizedBox.shrink(),
           ),
         ],
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            spaces.when(
+            spacesLoader.when(
               data: (spaces) {
-                return renderSubSpaces(
-                      context,
-                      ref,
-                      spaceIdOrAlias,
-                      spaces,
-                      crossAxisCount: crossAxisCount,
-                    ) ??
-                    renderFallback(
-                      context,
-                      spaces.membership?.canString('CanLinkSpaces') ?? false,
-                    );
+                final subspaces = renderSubSpaces(
+                  context,
+                  ref,
+                  spaceIdOrAlias,
+                  spaces,
+                  crossAxisCount: crossAxisCount,
+                );
+                if (subspaces != null) return subspaces;
+                return renderFallback(context, canLinkSpace);
               },
-              error: (error, stack) => Center(
-                child: Text(L10n.of(context).loadingFailed(error)),
-              ),
+              error: (e, s) {
+                _log.severe('Failed to load the related spaces', e, s);
+                return Center(
+                  child: Text(L10n.of(context).loadingFailed(e)),
+                );
+              },
               loading: () => Center(
                 child: Text(L10n.of(context).loading),
               ),

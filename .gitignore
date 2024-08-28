@@ -1,5 +1,4 @@
 target
-.env
 .env.sh
 .vscode
 .idea
@@ -8,8 +7,10 @@ target
 app/firebase.json
 Changes.md
 nightly-changes.md
-app/packages/rust_sdk/**/libacter.a
+packages/rust_sdk/**/libacter.a
 native/acter/src/api_generated.rs
 native/acter/bindings.h
 native/acter/bindings.dart
 .github/assets/git-crypt-key
+app/lib/config/env.g.dart
+app/.env.*

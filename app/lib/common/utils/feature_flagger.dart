@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
-import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::common::feature_flag');
 
@@ -79,20 +78,5 @@ class Features<T extends Enum> {
     }
     _log.info('new active $newFlags, $defaultOn');
     return Features(flags: newFlags, defaultOn: defaultOn);
-  }
-}
-
-class FeaturesNotifier<T extends Enum> extends StateNotifier<Features<T>> {
-  FeaturesNotifier(super.initState);
-
-  // Let's the UI update the state of a flag
-  void setActive(T f, bool active) {
-    state = state.updateFlag(f, active);
-    _log.info('updated ${state.toJson()}');
-  }
-
-  // Allow higher level to reset the features flagged
-  void resetFeatures(List<FeatureFlag<T>> features) {
-    state = Features(flags: features, defaultOn: state.defaultOn);
   }
 }

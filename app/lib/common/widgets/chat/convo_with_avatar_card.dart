@@ -1,21 +1,21 @@
 import 'package:acter/common/providers/chat_providers.dart';
-import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class ConvoWithAvatarInfoCard extends ConsumerWidget {
   final String roomId;
   final AvatarInfo avatarInfo;
+  final Widget? title;
   final Widget? subtitle;
   final Widget? trailing;
   final Widget? avatar;
   final bool showSelectedIndication;
+  final Animation<double>? animation;
 
   /// Called when the user long-presses on this list tile.
   ///
@@ -42,6 +42,8 @@ class ConvoWithAvatarInfoCard extends ConsumerWidget {
     super.key,
     required this.roomId,
     required this.avatarInfo,
+    this.title,
+    this.animation,
     this.avatar,
     this.onTap,
     this.onLongPress,
@@ -55,6 +57,16 @@ class ConvoWithAvatarInfoCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    if (animation != null) {
+      return SizeTransition(
+        sizeFactor: animation!,
+        child: buildInner(context, ref),
+      );
+    }
+    return buildInner(context, ref);
+  }
+
+  Widget buildInner(BuildContext context, WidgetRef ref) {
     return LayoutBuilder(
       builder: (context, constraints) {
         return Column(
@@ -63,6 +75,7 @@ class ConvoWithAvatarInfoCard extends ConsumerWidget {
             Material(
               color: Colors.transparent,
               child: ListTile(
+                dense: true,
                 onTap: onTap,
                 selected: showSelectedIndication &&
                     roomId == ref.watch(selectedChatIdProvider),
@@ -70,7 +83,15 @@ class ConvoWithAvatarInfoCard extends ConsumerWidget {
                 onFocusChange: onFocusChange,
                 onLongPress: onLongPress,
                 leading: avatarWithIndicator(context, ref),
-                title: buildDisplayName(context, ref),
+                title: title ??
+                    Text(
+                      avatarInfo.displayName ?? roomId,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium!
+                          .copyWith(fontWeight: FontWeight.w700),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                 subtitle: buildSubtitle(context, constraints),
                 trailing: constraints.maxWidth < 300 ? null : trailing,
               ),
@@ -103,33 +124,6 @@ class ConvoWithAvatarInfoCard extends ConsumerWidget {
       L10n.of(context).suggested,
       style: Theme.of(context).textTheme.labelSmall,
     );
-  }
-
-  Widget buildDisplayName(BuildContext context, WidgetRef ref) {
-    return ref.watch(roomDisplayNameProvider(roomId)).when(
-          data: (dpl) => Text(
-            dpl ?? roomId,
-            style: Theme.of(context)
-                .textTheme
-                .bodyMedium!
-                .copyWith(fontWeight: FontWeight.w700),
-            overflow: TextOverflow.ellipsis,
-          ),
-          error: (error, stackTrace) => Text(
-            roomId,
-            style: Theme.of(context)
-                .textTheme
-                .bodyMedium!
-                .copyWith(fontWeight: FontWeight.w700),
-            overflow: TextOverflow.ellipsis,
-          ),
-          loading: () => Skeletonizer(
-            child: Text(
-              roomId,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        );
   }
 
   Widget avatarWithIndicator(BuildContext context, WidgetRef ref) {

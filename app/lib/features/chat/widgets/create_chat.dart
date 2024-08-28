@@ -1,23 +1,23 @@
 import 'dart:io';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/features/chat/actions/create_chat.dart';
-import 'package:acter/common/widgets/user_builder.dart';
-import 'package:acter/features/invite_members/providers/invite_providers.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
+import 'package:acter/common/widgets/user_builder.dart';
+import 'package:acter/features/chat/actions/create_chat.dart';
 import 'package:acter/features/chat/providers/create_chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/invite_members/providers/invite_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
@@ -73,7 +73,7 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return isLargeScreen(context)
+    return context.isLargeScreen
         ? Container(
             width: size.width * 0.5,
             decoration: BoxDecoration(
@@ -134,12 +134,8 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
             await ref.read(alwaysClientProvider).convoWithRetry(roomIdStr, 120);
         EasyLoading.showToast(roomCreated);
         return convo;
-      } catch (error, stack) {
-        _log.severe(
-          'Room $roomIdStr created but fetching failed',
-          error,
-          stack,
-        );
+      } catch (e, s) {
+        _log.severe('Room $roomIdStr created but fetching failed', e, s);
       }
     }
     return null;
@@ -350,7 +346,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
 
   Widget renderFoundUsers(BuildContext context) {
     final searchCtrl = ref.watch(searchController);
-    final foundUsers = ref.watch(searchResultProvider);
+    final usersLoader = ref.watch(searchResultProvider);
     return Visibility(
       visible: searchCtrl.text.isNotEmpty,
       child: Column(
@@ -360,25 +356,31 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
             L10n.of(context).foundUsers,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
-          foundUsers.when(
-            data: (data) => data.isEmpty
-                ? Center(
-                    heightFactor: 10,
-                    child: Text(
-                      L10n.of(context).noUsersFoundWithSpecifiedSearchTerm,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  )
-                : ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: data.length,
-                    itemBuilder: (context, index) => _UserWidget(
-                      profile: data[index],
-                      onUp: _onUp,
-                    ),
+          usersLoader.when(
+            data: (users) {
+              if (users.isEmpty) {
+                return Center(
+                  heightFactor: 10,
+                  child: Text(
+                    L10n.of(context).noUsersFoundWithSpecifiedSearchTerm,
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
-            error: (e, st) => Text(L10n.of(context).errorLoadingUsers(e)),
+                );
+              }
+              return ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: users.length,
+                itemBuilder: (context, index) => _UserWidget(
+                  profile: users[index],
+                  onUp: _onUp,
+                ),
+              );
+            },
+            error: (e, s) {
+              _log.severe('Failed to search users', e, s);
+              return Text(L10n.of(context).errorLoadingUsers(e));
+            },
             loading: () => const Center(
               heightFactor: 5,
               child: CircularProgressIndicator(),
@@ -415,7 +417,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
         final convo = await widget.onCreateConvo(null, null, userIds);
         EasyLoading.dismiss();
         if (!mounted) return;
-        Navigator.of(context).pop();
+        Navigator.pop(context);
         if (convo == null) return;
         context.pushNamed(
           Routes.chatroom.name,
@@ -429,7 +431,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
       String? id = checkUserDMExists(othersUserId, client);
       if (id != null) {
         EasyLoading.dismiss();
-        Navigator.of(context).pop();
+        Navigator.pop(context);
         context.pushNamed(
           Routes.chatroom.name,
           pathParameters: {'roomId': id},
@@ -440,14 +442,14 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
       final convo = await widget.onCreateConvo(null, null, [othersUserId]);
       EasyLoading.dismiss();
       if (!mounted) return;
-      Navigator.of(context).pop();
+      Navigator.pop(context);
       if (convo == null) return;
       context.pushNamed(
         Routes.chatroom.name,
         pathParameters: {'roomId': convo.getRoomIdStr()},
       );
-    } catch (e, st) {
-      _log.severe("Couldn't create chat", e, st);
+    } catch (e, s) {
+      _log.severe('Couldn’t create chat', e, s);
       if (!mounted) {
         EasyLoading.dismiss();
         return;
@@ -606,7 +608,7 @@ class _CreateRoomFormWidgetConsumerState
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
               OutlinedButton(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () => Navigator.pop(context),
                 child: Text(L10n.of(context).cancel),
               ),
               const SizedBox(width: 10),
@@ -665,8 +667,8 @@ class _CreateRoomFormWidgetConsumerState
           pathParameters: {'roomId': convo.getRoomIdStr()},
         );
       }
-    } catch (e, st) {
-      _log.severe("Couldn't create chat", e, st);
+    } catch (e, s) {
+      _log.severe('Couldn’t create chat', e, s);
       if (!mounted) {
         EasyLoading.dismiss();
         return;
@@ -688,7 +690,7 @@ class _UserWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final avatarProv = ref.watch(userAvatarProvider(profile));
+    final avatarLoader = ref.watch(userAvatarProvider(profile));
     final displayName = profile.getDisplayName();
     final userId = profile.userId().toString();
     return ListTile(
@@ -703,20 +705,21 @@ class _UserWidget extends ConsumerWidget {
               userId,
               style: Theme.of(context).textTheme.labelMedium,
             ),
-      leading: avatarProv.when(
-        data: (data) {
-          return ActerAvatar(
-            options: AvatarOptions.DM(
-              AvatarInfo(
-                uniqueId: userId,
-                displayName: displayName,
-                avatar: data,
-              ),
-              size: 18,
+      leading: avatarLoader.when(
+        data: (avatar) => ActerAvatar(
+          options: AvatarOptions.DM(
+            AvatarInfo(
+              uniqueId: userId,
+              displayName: displayName,
+              avatar: avatar,
             ),
-          );
+            size: 18,
+          ),
+        ),
+        error: (e, s) {
+          _log.severe('Failed to load binary data of avatar', e, s);
+          return Text(L10n.of(context).errorLoadingAvatar(e));
         },
-        error: (e, st) => Text(L10n.of(context).errorLoadingAvatar(e)),
         loading: () => Skeletonizer(
           child: ActerAvatar(
             options: AvatarOptions.DM(

@@ -1,6 +1,5 @@
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/chat_selector_drawer.dart';
 import 'package:acter/common/widgets/checkbox_form_field.dart';
@@ -15,6 +14,9 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::super_invites::create');
 
 class CreateSuperInviteTokenPage extends ConsumerStatefulWidget {
   static Key tokenFieldKey = const Key('super-invites-create-token-token');
@@ -167,22 +169,7 @@ class _CreateSuperInviteTokenPageConsumerState
                 Text(
                   L10n.of(context).spacesAndChatsToAddThemTo,
                 ),
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemBuilder: (context, idx) {
-                    final roomId = _roomIds[idx];
-                    return RoomToInviteTo(
-                      roomId: roomId,
-                      onRemove: () {
-                        tokenUpdater.removeRoom(roomId);
-                        setState(
-                          () => _roomIds = List.from(_roomIds)..remove(roomId),
-                        );
-                      },
-                    );
-                  },
-                  itemCount: _roomIds.length,
-                ),
+                _roomsList(context),
                 const SizedBox(
                   height: 10,
                 ),
@@ -190,32 +177,59 @@ class _CreateSuperInviteTokenPageConsumerState
                 const SizedBox(
                   height: 10,
                 ),
-                ButtonBar(
-                  children: [
-                    OutlinedButton(
-                      onPressed: () => context.canPop()
-                          ? context.pop()
-                          : context.goNamed(Routes.main.name),
-                      child: Text(
-                        L10n.of(context).cancel,
-                      ),
-                    ),
-                    ActerPrimaryActionButton(
-                      key: CreateSuperInviteTokenPage.submitBtn,
-                      onPressed: _submit,
-                      child: Text(
-                        isEdit
-                            ? L10n.of(context).save
-                            : L10n.of(context).createCode,
-                      ),
-                    ),
-                  ],
-                ),
+                _actionBar(context),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _roomsList(BuildContext context) {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemBuilder: (context, idx) {
+        final roomId = _roomIds[idx];
+        return RoomToInviteTo(
+          roomId: roomId,
+          onRemove: () {
+            tokenUpdater.removeRoom(roomId);
+            setState(
+              () => _roomIds = List.from(_roomIds)..remove(roomId),
+            );
+          },
+        );
+      },
+      itemCount: _roomIds.length,
+    );
+  }
+
+  Widget _actionBar(BuildContext context) {
+    return Row(
+      children: [
+        OutlinedButton(
+          onPressed: () async {
+            if (!await Navigator.maybePop(context)) {
+              if (context.mounted) {
+                // fallback to go to home
+                context.go(Routes.main.name);
+              }
+            }
+          },
+          child: Text(
+            L10n.of(context).cancel,
+          ),
+        ),
+        ActerPrimaryActionButton(
+          key: CreateSuperInviteTokenPage.submitBtn,
+          onPressed: _submit,
+          child: Text(
+            isEdit ? L10n.of(context).save : L10n.of(context).createCode,
+          ),
+        ),
+      ],
     );
   }
 
@@ -244,23 +258,32 @@ class _CreateSuperInviteTokenPageConsumerState
       ref.invalidate(superInvitesTokensProvider);
       EasyLoading.dismiss();
       if (!mounted) return;
-      Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
-    } catch (err) {
+      Navigator.pop(context); // pop the create sheet
+    } catch (e, s) {
+      if (isEdit) {
+        _log.severe('Failed to change the invitation code', e, s);
+      } else {
+        _log.severe('Failed to create the invitation code', e, s);
+      }
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
       final status = isEdit
-          ? L10n.of(context).saveInviteCodeFailed(err)
-          : L10n.of(context).createInviteCodeFailed(err);
-      EasyLoading.showError(status, duration: const Duration(seconds: 3));
+          ? L10n.of(context).saveInviteCodeFailed(e)
+          : L10n.of(context).createInviteCodeFailed(e);
+      EasyLoading.showError(
+        status,
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 
   Future<void> _deleteIt(BuildContext context) async {
     final bool? confirm = await showAdaptiveDialog(
       context: context,
-      builder: (BuildContext ctx) {
+      useRootNavigator: false,
+      builder: (BuildContext context) {
         return AlertDialog(
           title: Text(L10n.of(context).deleteCode),
           content: Text(
@@ -269,7 +292,7 @@ class _CreateSuperInviteTokenPageConsumerState
           actionsAlignment: MainAxisAlignment.spaceEvenly,
           actions: <Widget>[
             OutlinedButton(
-              onPressed: () => ctx.pop(),
+              onPressed: () => Navigator.pop(context),
               child: Text(
                 L10n.of(context).no,
               ),
@@ -277,7 +300,7 @@ class _CreateSuperInviteTokenPageConsumerState
             ActerDangerActionButton(
               key: CreateSuperInviteTokenPage.deleteConfirm,
               onPressed: () async {
-                ctx.pop(true);
+                Navigator.pop(context, true);
               },
               child: Text(
                 L10n.of(context).delete,
@@ -300,14 +323,15 @@ class _CreateSuperInviteTokenPageConsumerState
       ref.invalidate(superInvitesTokensProvider);
       EasyLoading.dismiss();
       if (!context.mounted) return;
-      Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
-    } catch (err) {
+      Navigator.pop(context); // pop the create sheet
+    } catch (e, s) {
+      _log.severe('Failed to delete the invitation code', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).deleteInviteCodeFailed(err),
+        L10n.of(context).deleteInviteCodeFailed(e),
         duration: const Duration(seconds: 3),
       );
     }

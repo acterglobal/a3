@@ -7,7 +7,6 @@ import 'package:acter/common/toolkit/buttons/user_chip.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -24,14 +23,14 @@ String _cleanMessage(String input) {
 }
 
 class TextMessageBuilder extends ConsumerStatefulWidget {
-  final Convo convo;
+  final String roomId;
   final types.TextMessage message;
   final int messageWidth;
   final bool isReply;
 
   const TextMessageBuilder({
     super.key,
-    required this.convo,
+    required this.roomId,
     required this.message,
     this.isReply = false,
     required this.messageWidth,
@@ -94,7 +93,7 @@ class _TextMessageBuilderConsumerState
         isNotice: isNotice,
         isReply: widget.isReply,
         wasEdited: wasEdited,
-        roomId: widget.convo.getRoomIdStr(),
+        roomId: widget.roomId,
       ),
       width: widget.messageWidth.toDouble(),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -102,7 +101,7 @@ class _TextMessageBuilderConsumerState
   }
 
   void onPreviewDataFetched(types.PreviewData previewData) {
-    final chatRoomState = ref.read(chatStateProvider(widget.convo).notifier);
+    final chatRoomState = ref.read(chatStateProvider(widget.roomId).notifier);
     chatRoomState.handlePreviewDataFetched(widget.message, previewData);
   }
 }

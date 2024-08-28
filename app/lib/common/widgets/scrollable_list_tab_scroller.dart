@@ -21,6 +21,7 @@ typedef BodyContainerBuilder = Widget Function(
 );
 
 class ScrollableListTabScroller extends StatefulWidget {
+  final Key headerKey;
   final int itemCount;
   final IndexedWidgetBuilder itemBuilder;
   final IndexedActiveStatusWidgetBuilder tabBuilder;
@@ -31,12 +32,15 @@ class ScrollableListTabScroller extends StatefulWidget {
   final void Function(int tabIndex)? tabChanged;
   final double earlyChangePositionOffset;
   final Duration animationDuration;
+  final RefreshCallback? onRefresh;
 
   const ScrollableListTabScroller({
     super.key,
+    required this.headerKey,
     required this.itemCount,
     required this.itemBuilder,
     required this.tabBuilder,
+    this.onRefresh,
     this.headerContainerBuilder,
     @Deprecated('This code is unused and will be removed in the next release.')
     Widget Function(BuildContext context, Widget child)? headerWidgetBuilder,
@@ -272,7 +276,7 @@ class ScrollableListTabScrollerState extends State<ScrollableListTabScroller> {
         buildCustomHeaderContainerOrDefault(
           context: context,
           child: DefaultHeaderWidget(
-            key: Key(widget.itemCount.toString()),
+            key: widget.headerKey,
             itemCount: widget.itemCount,
             onTapTab: (i) => _triggerScrollInPositionedListIfNeeded(i),
             //TODO: implement callback to handle tab click ,
@@ -283,43 +287,50 @@ class ScrollableListTabScrollerState extends State<ScrollableListTabScroller> {
         ),
         buildCustomBodyContainerOrDefault(
           context: context,
-          child: Builder(
-            builder: (context) {
-              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                final size = context.size;
-                if (size != null) {
-                  _currentPositionedListSize = size;
-                }
-              });
-              return ScrollsToTop(
-                onScrollsToTop: _onScrollsToTop,
-                child: ScrollablePositionedList.builder(
-                  itemBuilder: (a, b) {
-                    return widget.itemBuilder(a, b);
-                  },
-                  itemCount: widget.itemCount,
-                  itemScrollController: itemScrollController,
-                  itemPositionsListener: itemPositionsListener,
-                  shrinkWrap: widget.shrinkWrap,
-                  initialScrollIndex: widget.initialScrollIndex,
-                  initialAlignment: widget.initialAlignment,
-                  scrollDirection: widget.scrollDirection,
-                  reverse: widget.reverse,
-                  physics: widget.physics,
-                  semanticChildCount: widget.semanticChildCount,
-                  padding: widget.padding,
-                  addSemanticIndexes: widget.addSemanticIndexes,
-                  addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
-                  addRepaintBoundaries: widget.addRepaintBoundaries,
-                  minCacheExtent: widget.minCacheExtent,
-                  scrollOffsetController: widget.scrollOffsetController,
-                  scrollOffsetListener: widget.scrollOffsetListener,
-                ),
-              );
-            },
-          ),
+          child: Builder(builder: (context) {
+            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+              final size = context.size;
+              if (size != null) {
+                _currentPositionedListSize = size;
+              }
+            });
+            return ScrollsToTop(
+              onScrollsToTop: _onScrollsToTop,
+              child: widget.onRefresh != null
+                  ? RefreshIndicator(
+                      onRefresh: widget.onRefresh!,
+                      child: buildScrollabelPositionedList(),
+                    )
+                  : buildScrollabelPositionedList(),
+            );
+          },),
         ),
       ],
+    );
+  }
+
+  ScrollablePositionedList buildScrollabelPositionedList() {
+    return ScrollablePositionedList.builder(
+      itemBuilder: (a, b) {
+        return widget.itemBuilder(a, b);
+      },
+      itemCount: widget.itemCount,
+      itemScrollController: itemScrollController,
+      itemPositionsListener: itemPositionsListener,
+      shrinkWrap: widget.shrinkWrap,
+      initialScrollIndex: widget.initialScrollIndex,
+      initialAlignment: widget.initialAlignment,
+      scrollDirection: widget.scrollDirection,
+      reverse: widget.reverse,
+      physics: widget.physics,
+      semanticChildCount: widget.semanticChildCount,
+      padding: widget.padding,
+      addSemanticIndexes: widget.addSemanticIndexes,
+      addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+      addRepaintBoundaries: widget.addRepaintBoundaries,
+      minCacheExtent: widget.minCacheExtent,
+      scrollOffsetController: widget.scrollOffsetController,
+      scrollOffsetListener: widget.scrollOffsetListener,
     );
   }
 

@@ -1,6 +1,9 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::common::spaces::has_permission');
 
 class HasSpacePermission extends ConsumerWidget {
   final String spaceId;
@@ -19,11 +22,17 @@ class HasSpacePermission extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final otherwise = fallback ?? const SizedBox.shrink();
-    return ref.watch(roomMembershipProvider(spaceId)).when(
-          data: (membership) =>
-              membership?.canString(permission) == true ? child : otherwise,
-          error: (e, s) => otherwise,
-          loading: () => otherwise,
-        );
+    final membershipLoader = ref.watch(roomMembershipProvider(spaceId));
+    return membershipLoader.when(
+      data: (membership) {
+        if (membership?.canString(permission) == true) return child;
+        return otherwise;
+      },
+      error: (e, s) {
+        _log.severe('Failed to load membership', e, s);
+        return otherwise;
+      },
+      loading: () => otherwise,
+    );
   }
 }

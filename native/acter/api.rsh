@@ -57,6 +57,9 @@ fn new_thumb_size(width: u64, height: u64) -> Result<ThumbnailSize>;
 /// create a colorize builder
 fn new_colorize_builder(color: Option<u32>, background: Option<u32>) -> Result<ColorizeBuilder>;
 
+/// create a display builder
+fn new_display_builder() -> DisplayBuilder;
+
 /// create a task ref builder
 /// target_id: event id of target
 /// task_list: event id of task list
@@ -234,6 +237,11 @@ object OptionRsvpStatus {
     fn status_str() -> Option<string>;
 }
 
+object OptionComposeDraft {
+    /// get compose draft object
+    fn draft() -> Option<ComposeDraft>;
+}
+
 object UserProfile {
     /// get user id
     fn user_id() -> UserId;
@@ -328,6 +336,21 @@ object EventId {
 
 object MxcUri {
     fn to_string() -> string;
+}
+
+object ComposeDraft {
+    /// plain body text, always available
+    fn plain_text() -> string;
+
+    /// formatted text
+    fn html_text() -> Option<string>;
+
+    /// event id, only valid for edit and reply states
+    fn event_id() -> Option<string>;
+
+    /// compose message state type.
+    /// One of `new`, `edit`, `reply`.
+    fn draft_type() -> string;
 }
 
 object RoomId {
@@ -482,6 +505,10 @@ object PinDraft {
     fn url(text: string);
     fn unset_url();
 
+    /// set the display for this pin
+    fn display(display: Display);
+    fn unset_display();
+
     /// fire this pin over - the event_id is the confirmation from the server.
     fn send() -> Future<Result<EventId>>;
 }
@@ -501,7 +528,7 @@ object ActerPin {
     /// get the link content
     fn url() -> Option<string>;
     /// get the link color settings
-    fn color() -> Option<u32>;
+    fn display() -> Option<Display>;
     /// The room this Pin belongs to
     //fn team() -> Room;
 
@@ -549,6 +576,11 @@ object PinUpdateBuilder {
     fn url(text: string);
     fn unset_url();
     fn unset_url_update();
+
+    /// set the display for this pin
+    fn display(display: Display);
+    fn unset_display();
+    fn unset_display_update();
 
     /// fire this update over - the event_id is the confirmation from the server.
     fn send() -> Future<Result<EventId>>;
@@ -1096,6 +1128,8 @@ object Room {
     /// Set the value of `user_has_seen_suggested` for this room
     fn set_user_has_seen_suggested(newValue: bool) -> Future<Result<bool>>;
 
+    /// leave this room
+    fn leave() -> Future<Result<bool>>;
 }
 
 
@@ -1353,6 +1387,15 @@ object Convo {
     fn redact_content(event_id: string, reason: Option<string>) -> Future<Result<EventId>>;
 
     fn is_joined() -> bool;
+
+    /// compose message state of the room
+    fn msg_draft() -> Future<Result<OptionComposeDraft>>;
+
+    /// save composed message state of the room
+    fn save_msg_draft(text: string, html: Option<string>, draft_type: string, event_id: Option<string>) -> Future<Result<bool>>;
+
+    /// clear composed message state of the room
+    fn clear_msg_draft() -> Future<Result<bool>>;
 }
 
 
@@ -1431,6 +1474,8 @@ object AttachmentDraft {
 }
 
 object Attachment {
+    /// display name, either filename or given by the user, if found
+    fn name() -> Option<string>;
     /// Who send this attachment
     fn sender() -> string;
     /// When was this attachment acknowledged by the server
@@ -1443,9 +1488,12 @@ object Attachment {
     fn type_str() -> string;
     /// if this is a media, hand over the description
     fn msg_content() -> MsgContent;
+
+    /// if this is a link, this contains the URI/Link/URL
+    fn link() -> Option<string>;
+
     /// if this is a media, hand over the data
     /// if thumb size is given, media thumbnail is returned
-
     /// download media (image/audio/video/file/location) to specified path
     /// if thumb size is given, media thumbnail is returned
     /// if thumb size is not given, media file is returned
@@ -1477,8 +1525,11 @@ object AttachmentsManager {
     /// How many attachments does this item have
     fn attachments_count() -> u32;
 
-    /// create news slide for image msg
+    /// create attachment for given msg draft
     fn content_draft(base_draft: MsgDraft) -> Future<Result<AttachmentDraft>>;
+
+    /// create attachment for given link draft
+    fn link_draft(url: string, name: Option<string>) -> Future<Result<AttachmentDraft>>;
 
     // inform about the changes to this manager
     fn reload() -> Future<Result<AttachmentsManager>>;
@@ -1547,8 +1598,8 @@ object Task {
     /// When this was started
     fn utc_start_rfc3339() -> Option<string>;
 
-    /// Has this been colored in?
-    fn color() -> Option<u32>;
+    /// What display options are given?
+    fn display() -> Option<Display>;
 
     /// is this task already done?
     fn is_done() -> bool;
@@ -1608,10 +1659,10 @@ object TaskUpdateBuilder {
     fn sort_order(sort_order: u32);
     fn unset_sort_order_update();
 
-    /// set the color for this task list
-    fn color(color: u32);
-    fn unset_color();
-    fn unset_color_update();
+    /// set the display of the update
+    fn display(display: Display);
+    fn unset_display();
+    fn unset_display_update();
 
     /// set the due day for this task
     fn due_date(year: i32, month: u32, day: u32);
@@ -1672,9 +1723,9 @@ object TaskDraft {
     /// set the sort order for this task
     fn sort_order(sort_order: u32);
 
-    /// set the color for this task
-    fn color(color: u32);
-    fn unset_color();
+    /// set the disply options for this task
+    fn display(display: Display);
+    fn unset_display();
 
     /// set the due day for this task
     fn due_date(year: i32, month: u32, day: u32);
@@ -1723,8 +1774,8 @@ object TaskList {
     /// order in the list
     fn sort_order() -> u32;
 
-    /// Has this been colored in?
-    fn color() -> Option<u32>;
+    /// What display options are given?
+    fn display() -> Option<Display>;
 
     /// Does this have any special time zone
     fn time_zone() -> Option<string>;
@@ -1784,9 +1835,9 @@ object TaskListDraft {
     /// set the sort order for this task list
     fn sort_order(sort_order: u32);
 
-    /// set the color for this task list
-    fn color(color: u32);
-    fn unset_color();
+    /// set the display for this task list
+    fn display(display: Display);
+    fn unset_display();
 
     /// set the keywords for this task list
     fn keywords(keywords: Vec<string>);
@@ -1815,10 +1866,10 @@ object TaskListUpdateBuilder {
     /// set the sort order for this task list
     fn sort_order(sort_order: u32);
 
-    /// set the color for this task list
-    fn color(color: u32);
-    fn unset_color();
-    fn unset_color_update();
+    /// set the display for this task list
+    fn display(display: Display);
+    fn unset_display();
+    fn unset_display_update();
 
     /// set the keywords for this task list
     fn keywords(keywords: Vec<string>);
@@ -1984,8 +2035,7 @@ object Category {
     fn id() -> string;
     fn title() -> string;
     fn entries() -> string;
-    fn icon_type_str() -> Option<string>;
-    fn icon_str() -> Option<string>;
+    fn display() -> Option<Display>;
     fn update_builder() -> CategoryBuilder;
 }
 
@@ -1993,8 +2043,8 @@ object CategoryBuilder {
     fn title(title: string);
     fn clear_entries();
     fn add_entry(entry: string);
-    fn unset_icon();
-    fn icon(type: string, key: string);
+    fn display(display: Display);
+    fn unset_display();
     fn build() -> Result<Category>;
 }
 
@@ -2009,6 +2059,32 @@ object CategoriesBuilder {
     fn add(cat: Category);
     fn clear();
 }
+
+
+//  ########  ####  ######  ########  ##          ###    ##    ## 
+//  ##     ##  ##  ##    ## ##     ## ##         ## ##    ##  ##  
+//  ##     ##  ##  ##       ##     ## ##        ##   ##    ####   
+//  ##     ##  ##   ######  ########  ##       ##     ##    ##    
+//  ##     ##  ##        ## ##        ##       #########    ##    
+//  ##     ##  ##  ##    ## ##        ##       ##     ##    ##    
+//  ########  ####  ######  ##        ######## ##     ##    ##    
+
+
+object Display {
+    fn icon_type_str() -> Option<string>;
+    fn icon_str() -> Option<string>;
+    fn color() -> Option<u32>;
+    fn update_builder() -> DisplayBuilder;
+}
+
+object DisplayBuilder {
+    fn icon(type: string, value: string);
+    fn unset_icon();
+    fn color(color: u32);
+    fn unset_color();
+    fn build() -> Result<Display>;
+}
+
 
 //   ######  ########     ###     ######  ######## 
 //  ##    ## ##     ##   ## ##   ##    ## ##       
@@ -2658,11 +2734,8 @@ object Client {
     /// fires immediately with the current state of spaces
     fn spaces_stream() -> Stream<SpaceDiff>;
 
-    /// attempt to join a space
-    fn join_space(room_id_or_alias: string, server_name: Option<string>) -> Future<Result<Space>>;
-
     /// attempt to join a room
-    fn join_convo(room_id_or_alias: string, server_name: Option<string>) -> Future<Result<Convo>>;
+    fn join_room(room_id_or_alias: string, server_name: Option<string>) -> Future<Result<Room>>;
 
     /// Get the space that user belongs to
     fn space(room_id_or_alias: string) -> Future<Result<Space>>;
@@ -2704,11 +2777,8 @@ object Client {
     /// install sas verification event handler
     fn install_sas_event_handler(flow_id: string) -> Future<Result<bool>>;
 
-    /// Return the event handler of device new
-    fn device_new_event_rx() -> Option<Stream<DeviceNewEvent>>;
-
-    /// Return the event handler of device changed
-    fn device_changed_event_rx() -> Option<Stream<DeviceChangedEvent>>;
+    /// Return the event handler that new device was found or existing device was changed
+    fn device_event_rx() -> Option<Stream<DeviceEvent>>;
 
     /// Return the typing event receiver
     fn subscribe_to_typing_event_stream(room_id: string) -> Stream<TypingEvent>;
@@ -2838,7 +2908,6 @@ object Client {
 }
 
 object NotificationSettings {
-
     /// get informed about changes to the notification settings
     fn changes_stream() -> Stream<bool>;
 
@@ -2848,7 +2917,6 @@ object NotificationSettings {
     /// set default RoomNotificationMode for this combination
     fn set_default_notification_mode(is_encrypted: bool, is_one_on_one: bool, mode: string) -> Future<Result<bool>>;
     
-
     /// app settings
     fn global_content_setting(app_key: string) -> Future<Result<bool>>;
     fn set_global_content_setting(app_key: string, enabled: bool) -> Future<Result<bool>>;
@@ -3011,8 +3079,8 @@ object VerificationEvent {
     /// alternative of terminate_verification
     fn cancel_verification_request() -> Future<Result<bool>>;
 
-    /// Bob accepts the verification request from Alice with specified methods
-    fn accept_verification_request_with_methods(methods: Vec<string>) -> Future<Result<bool>>;
+    /// Bob accepts the verification request from Alice with specified method
+    fn accept_verification_request_with_method(method: string) -> Future<Result<bool>>;
 
     /// Alice starts the SAS verification
     fn start_sas_verification() -> Future<Result<bool>>;
@@ -3077,32 +3145,12 @@ object SessionManager {
 
 
 /// Deliver devices new event from rust to flutter
-object DeviceNewEvent {
-    /// get device id
-    fn device_id() -> DeviceId;
+object DeviceEvent {
+    /// get devices that was found newly
+    fn new_devices() -> Vec<string>;
 
-    /// Request verification to any devices of user
-    /// returns flow id of verification
-    fn request_verification_to_user() -> Future<Result<string>>;
-
-    /// Request verification to specific device
-    /// returns flow id of verification
-    fn request_verification_to_device(dev_id: string) -> Future<Result<string>>;
-
-    /// Request verification to any devices of user with methods
-    /// returns flow id of verification
-    fn request_verification_to_user_with_methods(methods: Vec<string>) -> Future<Result<string>>;
-
-    /// Request verification to specific device with methods
-    /// returns flow id of verification
-    fn request_verification_to_device_with_methods(dev_id: string, methods: Vec<string>) -> Future<Result<string>>;
-}
-
-/// Deliver devices changed event from rust to flutter
-object DeviceChangedEvent {
-    /// get device id
-    fn device_id() -> DeviceId;
-
+    /// get devices that already existed and was just changed
+    fn changed_devices() -> Vec<string>;
 }
 
 /// Provide various device infos

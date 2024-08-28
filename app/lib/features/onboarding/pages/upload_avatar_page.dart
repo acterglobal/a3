@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -8,6 +9,9 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::onboarding::upload_avatar');
 
 class UploadAvatarPage extends ConsumerWidget {
   static const selectUserAvatar = Key('reg-select-user-avtar');
@@ -143,13 +147,16 @@ class UploadAvatarPage extends ConsumerWidget {
       }
       await account.uploadAvatar(selectedUserAvatar.value!.path!);
       ref.invalidate(accountProvider);
+      EasyLoading.dismiss(); // close loading
       if (context.mounted) context.goNamed(Routes.main.name);
-      // close loading
-      EasyLoading.dismiss();
-    } catch (error) {
-      if (!context.mounted) return;
+    } catch (e, s) {
+      _log.severe('Failed to upload avatar', e, s);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
-        L10n.of(context).avatarUploadFailed(error),
+        L10n.of(context).avatarUploadFailed(e),
         duration: const Duration(seconds: 3),
       );
     }

@@ -1,7 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/space/settings/widgets/space_settings_menu.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -64,11 +64,11 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final spaceSettingsWatcher = ref.watch(spaceAppSettingsProvider(spaceId));
+    final settingsLoader = ref.watch(spaceAppSettingsProvider(spaceId));
 
     return WithSidebar(
       sidebar: SpaceSettingsMenu(spaceId: spaceId),
-      child: spaceSettingsWatcher.when(
+      child: settingsLoader.when(
         data: (appSettingsAndMembership) {
           final appSettings = appSettingsAndMembership.settings;
           final powerLevels = appSettingsAndMembership.powerLevels;
@@ -271,7 +271,10 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
           }
 
           return Scaffold(
-            appBar: AppBar(title: const Text('Apps Settings')),
+            appBar: AppBar(
+              title: const Text('Apps Settings'),
+              automaticallyImplyLeading: !context.isLargeScreen,
+            ),
             body: SettingsList(
               sections: [
                 SettingsSection(
@@ -339,9 +342,12 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: Text('loading')),
-        error: (e, s) => Center(
-          child: Text('Error loading app settings: $e'),
-        ),
+        error: (e, s) {
+          _log.severe('Failed to load space settings', e, s);
+          return Center(
+            child: Text(L10n.of(context).loadingFailed(e)),
+          );
+        },
       ),
     );
   }
@@ -378,8 +384,8 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showToast(L10n.of(context).powerLevelSubmitted('Updates'));
-    } catch (e, st) {
-      _log.severe('Failed to change power level of Updates', e, st);
+    } catch (e, s) {
+      _log.severe('Failed to change power level of Updates', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
@@ -410,8 +416,8 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showToast(L10n.of(context).changedSettingOf('Updates'));
-    } catch (e, st) {
-      _log.severe('Failed to change setting of Updates', e, st);
+    } catch (e, s) {
+      _log.severe('Failed to change setting of Updates', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
@@ -455,8 +461,8 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showToast(L10n.of(context).powerLevelSubmitted('Pins'));
-    } catch (e, st) {
-      _log.severe('Failed to change power level of Pins', e, st);
+    } catch (e, s) {
+      _log.severe('Failed to change power level of Pins', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
@@ -487,8 +493,8 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showToast(L10n.of(context).changedSettingOf('Pins'));
-    } catch (e, st) {
-      _log.severe('Failed to change setting of Pins', e, st);
+    } catch (e, s) {
+      _log.severe('Failed to change setting of Pins', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
@@ -532,8 +538,8 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showToast(L10n.of(context).powerLevelSubmitted('Events'));
-    } catch (e, st) {
-      _log.severe('Failed to change power level of Events', e, st);
+    } catch (e, s) {
+      _log.severe('Failed to change power level of Events', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
@@ -564,8 +570,8 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showToast(L10n.of(context).changedSettingOf('Events'));
-    } catch (e, st) {
-      _log.severe('Failed to change setting of Events', e, st);
+    } catch (e, s) {
+      _log.severe('Failed to change setting of Events', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
@@ -611,8 +617,8 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showToast(L10n.of(context).powerLevelSubmitted('Tasklists'));
-    } catch (e, st) {
-      _log.severe('Failed to change power level of Tasklists', e, st);
+    } catch (e, s) {
+      _log.severe('Failed to change power level of Tasklists', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
@@ -656,8 +662,8 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showToast(L10n.of(context).powerLevelSubmitted('Tasks'));
-    } catch (e, st) {
-      _log.severe('Failed to change power level of Tasks', e, st);
+    } catch (e, s) {
+      _log.severe('Failed to change power level of Tasks', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
@@ -688,8 +694,8 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showToast(L10n.of(context).changedSettingOf('Tasks'));
-    } catch (e, st) {
-      _log.severe('Failed to change setting of Tasks', e, st);
+    } catch (e, s) {
+      _log.severe('Failed to change setting of Tasks', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;

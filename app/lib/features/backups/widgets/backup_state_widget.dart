@@ -9,7 +9,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::backups::widgets::backup_state');
 
 class BackupStateWidget extends ConsumerWidget {
   final bool allowDisabling;
@@ -108,15 +111,19 @@ class BackupStateWidget extends ConsumerWidget {
     try {
       final manager = ref.read(backupManagerProvider);
       secret = await manager.enable();
-      EasyLoading.dismiss();
-    } catch (error) {
+    } catch (e, s) {
+      _log.severe('Failed to enable backup', e, s);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
-        // ignore: use_build_context_synchronously
-        L10n.of(context).encryptionBackupEnablingFailed(error),
+        L10n.of(context).encryptionBackupEnablingFailed(e),
         duration: const Duration(seconds: 5),
       );
       return;
     }
+    EasyLoading.dismiss();
     if (context.mounted) {
       showRecoveryKeyDialog(context, ref, secret);
     }

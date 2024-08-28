@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -12,9 +13,9 @@ import 'package:acter/features/spaces/model/keys.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 // user selected visibility provider
 final _selectedVisibilityProvider =
@@ -221,6 +222,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       mandatory: false,
       title: L10n.of(context).parentSpace,
       selectTitle: L10n.of(context).selectParentSpace,
+      emptyText: L10n.of(context).optionalParentSpace,
     );
   }
 
@@ -298,7 +300,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         OutlinedButton(
-          onPressed: () => context.pop(),
+          onPressed: () => Navigator.pop(context),
           child: Text(L10n.of(context).cancel),
         ),
         const SizedBox(width: 20),

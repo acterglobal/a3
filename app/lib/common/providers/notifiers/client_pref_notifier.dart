@@ -7,6 +7,7 @@
 ///
 library;
 
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:riverpod/riverpod.dart';
@@ -219,8 +220,7 @@ StateNotifierProvider<MapPrefNotifier<T>, T> createMapPrefProvider<T>({
   required String Function(T) mapTo,
 }) {
   return StateNotifierProvider<MapPrefNotifier<T>, T>((ref) {
-    final clientId =
-        ref.watch(alwaysClientProvider.select((v) => v.deviceId().toString()));
+    final clientId = ref.watch(deviceIdProvider);
     return MapPrefNotifier<T>('$clientId-$prefKey', mapFrom, mapTo);
   });
 }

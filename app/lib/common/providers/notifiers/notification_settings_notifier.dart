@@ -5,7 +5,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
-final _log = Logger('a3::common::notification_settings');
+final _log = Logger('a3::common::notification_settings_notifier');
 
 class AsyncNotificationSettingsNotifier
     extends AsyncNotifier<NotificationSettings> {
@@ -18,13 +18,13 @@ class AsyncNotificationSettingsNotifier
     final settings = await client.notificationSettings();
     _listener = settings.changesStream();
     _poller = _listener.listen(
-      (e) {
+      (data) {
         // reset the state of this to trigger the notification
         // cascade
         state = AsyncValue.data(settings);
       },
-      onError: (e, stack) {
-        _log.severe('stream errored', e, stack);
+      onError: (e, s) {
+        _log.severe('stream errored', e, s);
       },
       onDone: () {
         _log.info('stream ended');

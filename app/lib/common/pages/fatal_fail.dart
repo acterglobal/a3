@@ -76,8 +76,8 @@ class _FatalFailPageState extends ConsumerState<FatalFailPage> {
               ],
             ),
             if (showStack) Text(stack),
-            ButtonBar(
-              alignment: MainAxisAlignment.center,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ActerDangerActionButton.icon(
                   icon: const Icon(

@@ -64,7 +64,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     // we have two devices logged in
 
     // sync both up to ensure they've seen the other device
-    let mut alice_device_new_rx = alice.device_new_event_rx().unwrap();
+    let mut alice_device_rx = alice.device_event_rx().unwrap();
     let syncer = alice.start_sync();
     let mut first_synced = syncer.first_synced_rx();
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
@@ -86,13 +86,13 @@ async fn interactive_verification_started_from_request() -> Result<()> {
 
     // Alice gets notified that new device (Bob) was logged in
     loop {
-        if let Ok(Some(event)) = alice_device_new_rx.try_next() {
+        if let Ok(Some(_event)) = alice_device_rx.try_next() {
             if let Ok(_devices) = alice.device_records(false).await {
                 // Alice sends a verification request with her desired methods to Bob
-                event
-                    .request_verification_to_device_with_methods(
+                alice
+                    .request_verification_with_method(
                         bob_device_id.to_string(),
-                        &mut vec!["m.sas.v1".to_string()],
+                        "m.sas.v1".to_string(),
                     )
                     .await?;
                 break;
@@ -108,7 +108,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
 
     // Bob accepts the request, sending a Ready request
     event
-        .accept_verification_request_with_methods(&mut vec!["m.sas.v1".to_string()])
+        .accept_verification_request_with_method("m.sas.v1".to_string())
         .await?;
     // And also immediately sends a start request
     let started = event.start_sas_verification().await?;

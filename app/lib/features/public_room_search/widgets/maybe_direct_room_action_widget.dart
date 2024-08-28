@@ -1,6 +1,4 @@
-import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -165,16 +163,12 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     void Function()? onTap,
     Widget? trailing,
   }) {
-    final space = ref.watch(spaceProvider(roomId)).valueOrNull;
-    if (space != null) {
-      return SpaceCard(
-        space: space,
-        showParents: true,
-        onTap: onTap,
-        trailing: trailing,
-      );
-    }
-    return loadingCard();
+    return SpaceCard(
+      roomId: roomId,
+      showParents: true,
+      onTap: onTap,
+      trailing: trailing,
+    );
   }
 
   Widget renderConvoCard(
@@ -184,16 +178,12 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     void Function()? onTap,
     Widget? trailing,
   }) {
-    final chat = ref.watch(chatProvider(roomId)).valueOrNull;
-    if (chat != null) {
-      return ConvoCard(
-        room: chat,
-        showParents: true,
-        onTap: onTap,
-        trailing: trailing,
-      );
-    }
-    return loadingCard();
+    return ConvoCard(
+      roomId: roomId,
+      showParents: true,
+      onTap: onTap,
+      trailing: trailing,
+    );
   }
 
   @override

@@ -2,8 +2,11 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/backups/providers/backup_manager_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::backups::recovery_key');
 
 class _RecoveryKeyDialog extends ConsumerStatefulWidget {
   const _RecoveryKeyDialog();
@@ -62,7 +65,7 @@ class __RecoveryKeyDialogState extends ConsumerState<_RecoveryKeyDialog> {
         actionsAlignment: MainAxisAlignment.spaceEvenly,
         actions: <Widget>[
           OutlinedButton(
-            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+            onPressed: () => Navigator.pop(context),
             child: Text(L10n.of(context).cancel),
           ),
           ActerPrimaryActionButton(
@@ -94,24 +97,28 @@ class __RecoveryKeyDialogState extends ConsumerState<_RecoveryKeyDialog> {
           L10n.of(context).encryptionBackupRecoverRecoveringSuccess,
         );
         if (context.mounted) {
-          Navigator.of(context, rootNavigator: true).pop();
+          Navigator.pop(context);
         }
       } else {
+        _log.severe('Recovery failed');
         if (!context.mounted) {
           EasyLoading.dismiss();
           return;
         }
         EasyLoading.showError(
           L10n.of(context).encryptionBackupRecoverRecoveringImportFailed,
+          duration: const Duration(seconds: 3),
         );
       }
-    } catch (error) {
+    } catch (e, s) {
+      _log.severe('Recovery failed', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).encryptionBackupRecoverRecoveringFailed(error),
+        L10n.of(context).encryptionBackupRecoverRecoveringFailed(e),
+        duration: const Duration(seconds: 3),
       );
     }
   }
@@ -120,6 +127,6 @@ class __RecoveryKeyDialogState extends ConsumerState<_RecoveryKeyDialog> {
 void showProviderRecoveryKeyDialog(BuildContext context, WidgetRef ref) {
   showDialog(
     context: context,
-    builder: (BuildContext ctx) => const _RecoveryKeyDialog(),
+    builder: (BuildContext context) => const _RecoveryKeyDialog(),
   );
 }

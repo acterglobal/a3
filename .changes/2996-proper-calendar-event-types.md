@@ -1,0 +1,1 @@
+- [Fix] we were not correctly referencing News Calendar Events, we now have support to render external links, too.

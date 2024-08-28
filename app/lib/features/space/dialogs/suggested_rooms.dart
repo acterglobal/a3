@@ -8,8 +8,8 @@ import 'package:acter/features/space/actions/has_seen_suggested.dart';
 import 'package:acter/features/space/providers/suggested_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::spaces::suggested_rooms');
@@ -97,7 +97,7 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
         OutlinedButton(
           onPressed: () {
             markHasSeenSuggested(ref, widget.spaceId);
-            Navigator.of(context).pop();
+            Navigator.pop(context);
           },
           child: Text(L10n.of(context).skip),
         ),
@@ -161,8 +161,8 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
           _log.warning('Joining $roomId failed');
           hadFailures = true;
         }
-      } catch (error, stack) {
-        _log.severe('Joining $roomId failed', error, stack);
+      } catch (e, s) {
+        _log.severe('Joining $roomId failed', e, s);
         hadFailures = true;
       }
     }
@@ -171,7 +171,7 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
       markHasSeenSuggested(ref, widget.spaceId);
     }
     if (context.mounted) {
-      Navigator.of(context).pop();
+      Navigator.pop(context);
     }
   }
 
@@ -242,7 +242,7 @@ void showSuggestRoomsDialog(
   showAdaptiveDialog(
     barrierDismissible: true,
     context: context,
-    useRootNavigator: true,
+    useRootNavigator: false,
     builder: (context) => _SuggestedRooms(
       spaceId: spaceId,
     ),

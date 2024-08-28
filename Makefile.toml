@@ -2,7 +2,7 @@
 CARGO_MAKE_EXTEND_WORKSPACE_MAKEFILE = true
 CARGO_MAKE_WORKSPACE_INCLUDE_MEMBERS = ["native/acter"]
 ANDROID_PLATFORM_VERSION = "23"
-TARGET_PLUGIN = "app/packages/rust_sdk"
+TARGET_PLUGIN = "packages/rust_sdk"
 LIB_OUT_DIR = "debug"
 TARGET_OS = "unknown"
 DEV = true
@@ -16,7 +16,7 @@ LIB_OUT_DIR = "release"
 [tasks.setup-android]
 # set up the system for android
 script = [
-    "cargo install cargo-ndk@3.2.0",
+    "cargo install cargo-ndk",
 ]
 
 [tasks.setup-ios]
@@ -109,17 +109,6 @@ dependencies = [
     "post-android",
 ]
 
-[tasks.android-arm]
-# build android ARM64 for actual device
-dependencies = [
-    "pre-android",
-    "android-aarch64",
-    "android-aarch64-release",
-    "post-android-aarch64",
-    "post-android",
-]
-
-
 [tasks.mock-data]
 command = "cargo"
 args = ["run", "-p", "acter-cli", "mock", "--homeserver-url",  "http://localhost:8118", "--homeserver-name", "localhost"]
@@ -144,6 +133,8 @@ args = ["clippy", "--all", "--tests", "--allow-dirty", "--allow-staged", "--fix"
 script_runner = "@shell"
 script = [
     "cd ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}",
+    "dart fix --apply",
+    "cd ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/packages/acter_notifify",
     "dart fix --apply",
     "cd ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/app",
     "dart fix --apply",
@@ -420,6 +411,18 @@ script = [
     cp "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/${CARGO_MAKE_CRATE_CURRENT_WORKSPACE_MEMBER}/bindings.h" "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/ios/Classes/libacter.h"
     cp "$LIPO_LIB" "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/ios/$LIBNAME"
     """,
+]
+
+[tasks.android-arm]
+# Build android targets.
+dependencies = [
+    "pre-android",
+    "android-aarch64",
+    "android-aarch64-release",
+    "post-android-aarch64",
+    "android-armv7",
+    "android-armv7-release",
+    "post-android-armv7",
 ]
 
 [tasks.android]

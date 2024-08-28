@@ -1,13 +1,16 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
-import 'package:acter/features/space/widgets/related_spaces/helpers.dart';
+import 'package:acter/features/space/widgets/related/spaces_helpers.dart';
+import 'package:acter/features/space/widgets/related/util.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::space::sections::spaces');
 
 class SpacesSection extends ConsumerWidget {
   final String spaceId;
@@ -21,16 +24,19 @@ class SpacesSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final spacesList = ref.watch(spaceRelationsOverviewProvider(spaceId));
-    return spacesList.when(
-      data: (spaceRelationsOverview) => buildSpacesSectionUI(
+    final overviewLoader = ref.watch(spaceRelationsOverviewProvider(spaceId));
+    return overviewLoader.when(
+      data: (overview) => buildSpacesSectionUI(
         context,
         ref,
-        spaceRelationsOverview.knownSubspaces,
-        spaceRelationsOverview.hasMoreSubspaces,
+        overview.knownSubspaces,
       ),
-      error: (error, stack) =>
-          Center(child: Text(L10n.of(context).loadingFailed(error))),
+      error: (e, s) {
+        _log.severe('Failed to load the related spaces', e, s);
+        return Center(
+          child: Text(L10n.of(context).loadingSpacesFailed(e)),
+        );
+      },
       loading: () => Center(
         child: Text(L10n.of(context).loading),
       ),
@@ -40,48 +46,50 @@ class SpacesSection extends ConsumerWidget {
   Widget buildSpacesSectionUI(
     BuildContext context,
     WidgetRef ref,
-    List<Space> spaces,
-    bool hasMore,
+    List<String> spaces,
   ) {
-    int spacesLimit = (spaces.length > limit) ? limit : spaces.length;
-    int renderMoreCount = limit > spaces.length ? limit - spaces.length : 0;
-    bool isShowSeeAllButton = (spaces.length > spacesLimit) || hasMore;
+    final subspaces = ref.watch(remoteSubspaceRelationsProvider(spaceId));
+    final config = calculateSectionConfig(
+      localListLen: spaces.length,
+      limit: limit,
+      remoteListLen: (subspaces.valueOrNull ?? []).length,
+    );
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionHeader(
           title: L10n.of(context).spaces,
-          isShowSeeAllButton: isShowSeeAllButton,
+          isShowSeeAllButton: config.isShowSeeAllButton,
           onTapSeeAll: () => context.pushNamed(
             Routes.spaceRelatedSpaces.name,
             pathParameters: {'spaceId': spaceId},
           ),
         ),
-        spacesListUI(spaces, spacesLimit),
-        if (renderMoreCount > 0 && hasMore)
+        spacesListUI(spaces, config.listingLimit),
+        if (config.renderRemote)
           renderMoreSubspaces(
             context,
             ref,
             spaceId,
-            maxLength: renderMoreCount,
+            maxLength: config.remoteCount,
             padding: EdgeInsets.zero,
           ),
       ],
     );
   }
 
-  Widget spacesListUI(List<Space> spaces, int spacesLimit) {
+  Widget spacesListUI(List<String> spaces, int spacesLimit) {
     return ListView.builder(
       shrinkWrap: true,
       itemCount: spacesLimit,
       padding: EdgeInsets.zero,
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
-        final space = spaces[index];
+        final roomId = spaces[index];
         return SpaceCard(
-          key: Key('subspace-list-item-${space.getRoomIdStr()}'),
-          space: space,
+          key: Key('subspace-list-item-$roomId'),
+          roomId: roomId,
           showParents: false,
         );
       },

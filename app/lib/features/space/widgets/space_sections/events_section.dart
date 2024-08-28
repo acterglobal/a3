@@ -4,9 +4,12 @@ import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::space::sections::cal_events');
 
 class EventsSection extends ConsumerWidget {
   final String spaceId;
@@ -20,11 +23,17 @@ class EventsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final eventsList = ref.watch(spaceEventsProvider(spaceId));
-    return eventsList.when(
-      data: (events) => buildEventsSectionUI(context, events),
-      error: (error, stack) =>
-          Center(child: Text(L10n.of(context).loadingFailed(error))),
+    final calEventsLoader = ref.watch(
+      eventListSearchFilterProvider((spaceId: spaceId, searchText: '')),
+    );
+    return calEventsLoader.when(
+      data: (calEvents) => buildEventsSectionUI(context, calEvents),
+      error: (e, s) {
+        _log.severe('Failed to search cal events in space', e, s);
+        return Center(
+          child: Text(L10n.of(context).searchingFailed(e)),
+        );
+      },
       loading: () => Center(
         child: Text(L10n.of(context).loading),
       ),
@@ -35,29 +44,29 @@ class EventsSection extends ConsumerWidget {
     BuildContext context,
     List<CalendarEvent> events,
   ) {
-    int eventsLimit = (events.length > limit) ? limit : events.length;
-    bool isShowSeeAllButton = events.length > eventsLimit;
+    final hasMore = events.length > limit;
+    final count = hasMore ? limit : events.length;
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionHeader(
           title: L10n.of(context).events,
-          isShowSeeAllButton: isShowSeeAllButton,
+          isShowSeeAllButton: hasMore,
           onTapSeeAll: () => context.pushNamed(
             Routes.spaceEvents.name,
             pathParameters: {'spaceId': spaceId},
           ),
         ),
-        eventsListUI(events, eventsLimit),
+        eventsListUI(events, count),
       ],
     );
   }
 
-  Widget eventsListUI(List<CalendarEvent> events, int eventsLimit) {
+  Widget eventsListUI(List<CalendarEvent> events, int count) {
     return ListView.builder(
       shrinkWrap: true,
-      itemCount: eventsLimit,
+      itemCount: count,
       padding: EdgeInsets.zero,
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {

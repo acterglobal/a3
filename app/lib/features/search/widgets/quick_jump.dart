@@ -14,10 +14,12 @@ import 'package:go_router/go_router.dart';
 
 class QuickJump extends ConsumerStatefulWidget {
   final bool expand;
+  final bool popBeforeRoute;
 
   const QuickJump({
     super.key,
     this.expand = false,
+    this.popBeforeRoute = false,
   });
 
   @override
@@ -146,7 +148,9 @@ class _QuickJumpState extends ConsumerState<QuickJump> {
   }
 
   void routeTo(Routes route) {
-    if (context.canPop()) context.pop();
+    if (widget.popBeforeRoute) {
+      Navigator.pop(context);
+    }
     context.pushNamed(route.name);
   }
 
@@ -159,8 +163,8 @@ class _QuickJumpState extends ConsumerState<QuickJump> {
 
     List<Widget> body = [
       MaybeDirectRoomActionWidget(searchVal: searchValue),
-      const SpacesBuilder(),
-      const PinsBuilder(),
+      SpacesBuilder(popBeforeRoute: widget.popBeforeRoute),
+      PinsBuilder(popBeforeRoute: widget.popBeforeRoute),
     ];
     if (!hasSearchTerm) {
       body.add(
@@ -174,7 +178,11 @@ class _QuickJumpState extends ConsumerState<QuickJump> {
           const Divider(indent: 24, endIndent: 24),
         );
       }
-      body.add(const QuickActionsBuilder());
+      body.add(
+        QuickActionsBuilder(
+          popBeforeRoute: widget.popBeforeRoute,
+        ),
+      );
     }
 
     return Scaffold(

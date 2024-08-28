@@ -1,10 +1,10 @@
+import 'package:acter/common/actions/report_content.dart';
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/common_providers.dart';
-
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
-import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,9 +18,8 @@ final _log = Logger('a3::chat::message_actions');
 
 class MessageActions extends ConsumerWidget {
   final String roomId;
-  final Convo convo;
 
-  const MessageActions({super.key, required this.convo, required this.roomId});
+  const MessageActions({super.key, required this.roomId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -138,15 +137,13 @@ class MessageActions extends ConsumerWidget {
   }
 
   void onReportMessage(BuildContext context, Message message, String roomId) {
-    showAdaptiveDialog(
-      context: context,
-      builder: (context) => ReportContentWidget(
-        title: L10n.of(context).reportThisMessage,
-        description: L10n.of(context).reportMessageContent,
-        senderId: message.author.id,
-        roomId: roomId,
-        eventId: message.id,
-      ),
+    openReportContentDialog(
+      context,
+      title: L10n.of(context).reportThisMessage,
+      description: L10n.of(context).reportMessageContent,
+      senderId: message.author.id,
+      roomId: roomId,
+      eventId: message.id,
     );
   }
 
@@ -163,12 +160,16 @@ class MessageActions extends ConsumerWidget {
         title: Text(L10n.of(context).areYouSureYouWantToDeleteThisMessage),
         actions: <Widget>[
           OutlinedButton(
-            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+            onPressed: () => Navigator.pop(context),
             child: Text(L10n.of(context).no),
           ),
           ActerPrimaryActionButton(
             onPressed: () async {
               try {
+                final convo = await ref.read(chatProvider(roomId).future);
+                if (convo == null) {
+                  throw RoomNotFound();
+                }
                 await convo.redactMessage(
                   messageId,
                   ref.read(myUserIdStrProvider),
@@ -177,14 +178,16 @@ class MessageActions extends ConsumerWidget {
                 );
                 chatInputNotifier.unsetSelectedMessage();
                 if (context.mounted) {
-                  Navigator.of(context, rootNavigator: true).pop();
+                  Navigator.pop(context);
                 }
-              } catch (error, stackTrace) {
-                _log.severe('Redacting message failed', error, stackTrace);
-                if (context.mounted) {
-                  Navigator.of(context, rootNavigator: true).pop();
-                }
-                EasyLoading.showError(error.toString());
+              } catch (e, s) {
+                _log.severe('Redacting message failed', e, s);
+                if (!context.mounted) return;
+                EasyLoading.showError(
+                  L10n.of(context).redactionFailed(e),
+                  duration: const Duration(seconds: 3),
+                );
+                Navigator.pop(context);
               }
             },
             child: Text(L10n.of(context).yes),

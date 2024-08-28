@@ -2,11 +2,13 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/task_list_item_card.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::space::sections::tasks');
 
 class TasksSection extends ConsumerWidget {
   final String spaceId;
@@ -20,49 +22,51 @@ class TasksSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final taskList = ref.watch(taskListProvider(spaceId));
-    return taskList.when(
+    final tasksLoader = ref.watch(taskListProvider(spaceId));
+    return tasksLoader.when(
       data: (tasks) => buildTasksSectionUI(context, tasks),
-      error: (error, stack) =>
-          Center(child: Text(L10n.of(context).loadingFailed(error))),
+      error: (e, s) {
+        _log.severe('Failed to load tasks in space', e, s);
+        return Center(
+          child: Text(L10n.of(context).loadingTasksFailed(e)),
+        );
+      },
       loading: () => Center(
         child: Text(L10n.of(context).loading),
       ),
     );
   }
 
-  Widget buildTasksSectionUI(BuildContext context, List<TaskList> tasks) {
-    int taskLimit = (tasks.length > limit) ? limit : tasks.length;
-    bool isShowSeeAllButton = tasks.length > taskLimit;
+  Widget buildTasksSectionUI(BuildContext context, List<String> tasks) {
+    final hasMore = tasks.length > limit;
+    final count = hasMore ? limit : tasks.length;
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionHeader(
           title: L10n.of(context).tasks,
-          isShowSeeAllButton: isShowSeeAllButton,
+          isShowSeeAllButton: hasMore,
           onTapSeeAll: () => context.pushNamed(
             Routes.spaceTasks.name,
             pathParameters: {'spaceId': spaceId},
           ),
         ),
-        taskListUI(tasks, taskLimit),
+        taskListUI(tasks, count),
       ],
     );
   }
 
-  Widget taskListUI(List<TaskList> tasks, int taskLimit) {
+  Widget taskListUI(List<String> tasks, int count) {
     return ListView.builder(
       shrinkWrap: true,
-      itemCount: taskLimit,
+      itemCount: count,
       padding: EdgeInsets.zero,
       physics: const NeverScrollableScrollPhysics(),
-      itemBuilder: (context, index) {
-        return TaskListItemCard(
-          taskList: tasks[index],
-          initiallyExpanded: false,
-        );
-      },
+      itemBuilder: (context, index) => TaskListItemCard(
+        taskListId: tasks[index],
+        initiallyExpanded: false,
+      ),
     );
   }
 }

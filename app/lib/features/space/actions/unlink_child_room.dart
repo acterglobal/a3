@@ -23,5 +23,6 @@ Future<void> unlinkChildRoom(
     await room.removeParentRoom(parentId, reason);
   }
   // spaceRelations come from the server and must be manually invalidated
-  ref.invalidate(spaceRelationsOverviewProvider(parentId));
+  ref.invalidate(spaceRelationsProvider(parentId));
+  ref.invalidate(spaceRemoteRelationsProvider(parentId));
 }

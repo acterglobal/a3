@@ -1,12 +1,12 @@
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/widgets/edit_plain_description_sheet.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter/features/space/actions/set_space_topic.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::space::sections::about');
 
 class AboutSection extends ConsumerWidget {
   final String spaceId;
@@ -40,8 +40,8 @@ class AboutSection extends ConsumerWidget {
   }
 
   Widget spaceDescription(BuildContext context, WidgetRef ref) {
-    final space = ref.watch(spaceProvider(spaceId));
-    return space.when(
+    final spaceLoader = ref.watch(spaceProvider(spaceId));
+    return spaceLoader.when(
       data: (space) {
         final topic = space.topic();
         return SelectionArea(
@@ -51,8 +51,8 @@ class AboutSection extends ConsumerWidget {
                   context.mounted) {
                 showEditDescriptionBottomSheet(
                   context: context,
-                  space: space,
-                  descriptionValue: topic ?? '',
+                  ref: ref,
+                  spaceId: spaceId,
                 );
               }
             },
@@ -63,9 +63,10 @@ class AboutSection extends ConsumerWidget {
           ),
         );
       },
-      error: (error, stack) => Text(
-        L10n.of(context).loadingFailed(error),
-      ),
+      error: (e, s) {
+        _log.severe('Failed to load space', e, s);
+        return Text(L10n.of(context).failedToLoadSpace(e));
+      },
       loading: () => Skeletonizer(
         child: Text(L10n.of(context).loading),
       ),
@@ -77,29 +78,5 @@ class AboutSection extends ConsumerWidget {
     final space = await ref.read(spaceProvider(spaceId).future);
     final membership = await space.getMyMembership();
     return membership.canString('CanSetTopic');
-  }
-
-  void showEditDescriptionBottomSheet({
-    required BuildContext context,
-    required Space space,
-    required String descriptionValue,
-  }) {
-    showEditPlainDescriptionBottomSheet(
-      context: context,
-      descriptionValue: descriptionValue,
-      onSave: (newDescription) async {
-        try {
-          EasyLoading.show(status: L10n.of(context).updateDescription);
-          await space.setTopic(newDescription);
-          EasyLoading.dismiss();
-          if (!context.mounted) return;
-          context.pop();
-        } catch (e) {
-          EasyLoading.dismiss();
-          if (!context.mounted) return;
-          EasyLoading.showError(L10n.of(context).updateDescriptionFailed(e));
-        }
-      },
-    );
   }
 }

@@ -10,7 +10,6 @@ import 'package:acter/features/chat/widgets/message_actions.dart';
 import 'package:acter/features/chat/widgets/message_metadata_builder.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +22,7 @@ import 'package:swipe_to/swipe_to.dart';
 final _log = Logger('a3::chat::bubble_builder');
 
 class BubbleBuilder extends ConsumerWidget {
-  final Convo convo;
+  final String roomId;
   final Widget child;
   final types.Message message;
   final bool nextMessageInGroup;
@@ -31,7 +30,7 @@ class BubbleBuilder extends ConsumerWidget {
 
   const BubbleBuilder({
     super.key,
-    required this.convo,
+    required this.roomId,
     required this.child,
     required this.message,
     required this.nextMessageInGroup,
@@ -71,7 +70,7 @@ class BubbleBuilder extends ConsumerWidget {
                         : null,
                 iconOnLeftSwipe: Atlas.pencil_edit_thin,
                 child: _ChatBubble(
-                  convo: convo,
+                  roomId: roomId,
                   message: message,
                   nextMessageInGroup: nextMessageInGroup,
                   enlargeEmoji: enlargeEmoji,
@@ -84,14 +83,14 @@ class BubbleBuilder extends ConsumerWidget {
 }
 
 class _ChatBubble extends ConsumerWidget {
-  final Convo convo;
+  final String roomId;
   final types.Message message;
   final bool nextMessageInGroup;
   final Widget child;
   final bool enlargeEmoji;
 
   const _ChatBubble({
-    required this.convo,
+    required this.roomId,
     required this.message,
     required this.nextMessageInGroup,
     required this.child,
@@ -102,7 +101,6 @@ class _ChatBubble extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final myId = ref.watch(myUserIdStrProvider);
     final isAuthor = (myId == message.author.id);
-    final roomId = convo.getRoomIdStr();
     final actionsVisible = ref.watch(
       chatInputProvider.select(
         (state) => // only when showing actions and this is the selected message
@@ -124,7 +122,6 @@ class _ChatBubble extends ConsumerWidget {
         ),
         enlargeEmoji ? child : renderBubble(context, isAuthor),
         MessageActions(
-          convo: convo,
           roomId: roomId,
         ),
       ];
@@ -143,7 +140,7 @@ class _ChatBubble extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             MessageMetadataBuilder(
-              convo: convo,
+              roomId: roomId,
               message: message,
             ),
           ],
@@ -170,10 +167,9 @@ class _ChatBubble extends ConsumerWidget {
         children: <Widget>[
           Container(
             decoration: BoxDecoration(
-              color: Theme.of(context)
-                  .colorScheme
-                  .secondaryContainer
-                  .withOpacity(0.3),
+              color: isAuthor
+                  ? Theme.of(context).colorScheme.surface.withOpacity(0.3)
+                  : Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
               borderRadius: BorderRadius.circular(22),
             ),
             child: Column(
@@ -185,14 +181,14 @@ class _ChatBubble extends ConsumerWidget {
                     top: 15,
                   ),
                   child: Consumer(
-                    builder: (ctx, ref, child) => replyProfileBuilder(
+                    builder: (context, ref, child) => replyProfileBuilder(
                       context,
                       ref,
                     ),
                   ),
                 ),
                 _OriginalMessageBuilder(
-                  convo: convo,
+                  roomId: roomId,
                   message: message,
                 ),
               ],
@@ -234,7 +230,6 @@ class _ChatBubble extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) {
-    final roomId = convo.getRoomIdStr();
     final authorId = message.repliedMessage!.author.id;
     final replyProfile =
         ref.watch(memberAvatarInfoProvider((userId: authorId, roomId: roomId)));
@@ -264,7 +259,7 @@ class _ChatBubble extends ConsumerWidget {
     String emoji,
   ) async {
     try {
-      final stream = ref.read(timelineStreamProvider(convo));
+      final stream = await ref.read(timelineStreamProvider(roomId).future);
       await stream.toggleReaction(eventId, emoji);
     } catch (e, s) {
       _log.severe('Reaction toggle failed', e, s);
@@ -274,10 +269,10 @@ class _ChatBubble extends ConsumerWidget {
 
 class _OriginalMessageBuilder extends ConsumerWidget {
   final types.Message message;
-  final Convo convo;
+  final String roomId;
 
   const _OriginalMessageBuilder({
-    required this.convo,
+    required this.roomId,
     required this.message,
   });
 
@@ -288,7 +283,7 @@ class _OriginalMessageBuilder extends ConsumerWidget {
     if (repliedMessage is types.TextMessage) {
       final w = repliedMessage.metadata!['messageLength'] * 38.5;
       return TextMessageBuilder(
-        convo: convo,
+        roomId: roomId,
         message: message.repliedMessage as types.TextMessage,
         messageWidth: w.toInt(),
         isReply: true,
@@ -301,7 +296,7 @@ class _OriginalMessageBuilder extends ConsumerWidget {
             constraints: const BoxConstraints(maxHeight: 50),
             margin: const EdgeInsets.all(12),
             child: ImageMessageBuilder(
-              roomId: convo.getRoomIdStr(),
+              roomId: roomId,
               message: repliedMessage,
               messageWidth: repliedMessage.size.toInt(),
               isReplyContent: true,

@@ -4,8 +4,11 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::comments::create_comment');
 
 class CreateCommentWidget extends ConsumerStatefulWidget {
   final CommentsManager manager;
@@ -103,7 +106,8 @@ class _CreateCommentWidgetState extends ConsumerState<CreateCommentWidget> {
         return;
       }
       EasyLoading.showToast(L10n.of(context).commentSubmitted);
-    } catch (e) {
+    } catch (e, s) {
+      _log.severe('Failed to submit comment', e, s);
       if (!mounted) {
         EasyLoading.dismiss();
         return;

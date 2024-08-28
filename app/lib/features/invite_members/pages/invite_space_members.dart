@@ -5,17 +5,20 @@ import 'package:acter/features/invite_members/widgets/space_member_invite_card.d
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-final _log = Logger('a3::invite::invite_space_members');
+final _log = Logger('a3::invite::space_members');
 
 class InviteSpaceMembers extends ConsumerStatefulWidget {
   final String roomId;
 
-  const InviteSpaceMembers({super.key, required this.roomId});
+  const InviteSpaceMembers({
+    super.key,
+    required this.roomId,
+  });
 
   @override
   ConsumerState<InviteSpaceMembers> createState() =>
@@ -42,23 +45,25 @@ class _InviteSpaceMembersConsumerState
   }
 
   Widget _buildBody() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      constraints: const BoxConstraints(maxWidth: 500),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            L10n.of(context).inviteSpaceMembersSubtitle,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 10),
-          _buildParentSpaces(),
-          const SizedBox(height: 20),
-          _buildOtherSpace(),
-          _buildDoneButton(),
-          const SizedBox(height: 10),
-        ],
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        constraints: const BoxConstraints(maxWidth: 500),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              L10n.of(context).inviteSpaceMembersSubtitle,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            _buildParentSpaces(),
+            const SizedBox(height: 20),
+            _buildOtherSpace(),
+            _buildDoneButton(),
+            const SizedBox(height: 10),
+          ],
+        ),
       ),
     );
   }
@@ -100,24 +105,27 @@ class _InviteSpaceMembersConsumerState
   }
 
   Widget _buildOtherSpace() {
-    final otherSpaces =
+    final spacesLoader =
         ref.watch(otherSpacesForInviteMembersProvider(widget.roomId));
-    return otherSpaces.when(
+    return spacesLoader.when(
       data: _buildOtherSpaceData,
-      error: (error, stack) => ListTile(
-        title: Text(error.toString()),
-      ),
+      error: (e, s) {
+        _log.severe('Failed to load other spaces', e, s);
+        return ListTile(
+          title: Text(L10n.of(context).loadingFailed(e)),
+        );
+      },
       loading: () => _buildSkeletonizerLoading(),
     );
   }
 
-  Widget _buildOtherSpaceData(List<Space> data) {
+  Widget _buildOtherSpaceData(List<Space> spaces) {
     return Expanded(
       child: ListView.builder(
-        itemCount: data.length,
+        itemCount: spaces.length,
         shrinkWrap: true,
         itemBuilder: (context, index) {
-          final roomId = data[index].getRoomIdStr();
+          final roomId = spaces[index].getRoomIdStr();
           return SpaceMemberInviteCard(
             roomId: roomId,
             isSelected: selectedSpaces.contains(roomId),
@@ -162,18 +170,21 @@ class _InviteSpaceMembersConsumerState
       return;
     }
 
-    EasyLoading.show(
-      status: L10n.of(context).invitingSpaceMembersLoading,
-      dismissOnTap: false,
-    );
+    final lang = L10n.of(context);
+
+    EasyLoading.show(status: lang.invitingSpaceMembersLoading);
 
     try {
       final room = ref.read(maybeRoomProvider(widget.roomId)).valueOrNull;
       if (room == null) {
         _log.severe('Room failed to be found');
-        if (!mounted) return;
-        EasyLoading.showToast(
-          L10n.of(context).invitingSpaceMembersError('Missing room'),
+        if (!mounted) {
+          EasyLoading.dismiss();
+          return;
+        }
+        EasyLoading.showError(
+          lang.invitingSpaceMembersError('Missing room'),
+          duration: const Duration(seconds: 3),
         );
         return;
       }
@@ -184,26 +195,41 @@ class _InviteSpaceMembersConsumerState
               .toList();
       final joined =
           ref.read(membersIdsProvider(widget.roomId)).valueOrNull ?? [];
+      var total = 0;
       var inviteCount = 0;
       for (final roomId in selectedSpaces) {
         final members =
-            (await ref.watch(membersIdsProvider(roomId).future)).toList();
+            (await ref.read(membersIdsProvider(roomId).future)).toList();
+        total += members.length;
+
         for (final member in members) {
           final isInvited = invited.contains(member);
           final isJoined = joined.contains(member);
           if (!isInvited && !isJoined) {
+            EasyLoading.showProgress(
+              inviteCount / total,
+              status: lang.invitingSpaceMembersProgress(inviteCount, total),
+            );
             await room.inviteUser(member);
             inviteCount++;
+          } else {
+            total -= 1; // we substract from the total.
           }
         }
       }
       setState(() => selectedSpaces.clear());
       if (!mounted) return;
-      EasyLoading.showToast(L10n.of(context).membersInvited(inviteCount));
-    } catch (e, st) {
-      _log.severe('Invite Space Members Error', e, st);
-      if (!mounted) return;
-      EasyLoading.showToast(L10n.of(context).invitingSpaceMembersError(e));
+      EasyLoading.showToast(lang.membersInvited(inviteCount));
+    } catch (e, s) {
+      _log.severe('Invite Space Members Error', e, s);
+      if (!mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        lang.invitingSpaceMembersError(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 }

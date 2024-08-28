@@ -1,8 +1,9 @@
+import 'package:acter/common/actions/redact_content.dart';
+import 'package:acter/common/actions/report_content.dart';
+import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
-import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/render_html.dart';
-import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
@@ -12,10 +13,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::tasks::task_list_details_page');
+final _log = Logger('a3::tasks::tasklist_details');
 
 class TaskListDetailPage extends ConsumerStatefulWidget {
   static const pageKey = Key('task-list-details-page');
@@ -43,21 +43,20 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   }
 
   AppBar _buildAppbar() {
-    final taskList = ref.watch(taskListItemProvider(widget.taskListId));
-
-    return taskList.when(
-      data: (d) => AppBar(
+    final tasklistLoader = ref.watch(taskListItemProvider(widget.taskListId));
+    return tasklistLoader.when(
+      data: (tasklist) => AppBar(
         title: SelectionArea(
           child: GestureDetector(
             onTap: () => showEditTaskListNameBottomSheet(
               context: context,
               ref: ref,
-              taskList: d,
-              titleValue: d.name(),
+              taskList: tasklist,
+              titleValue: tasklist.name(),
             ),
             child: Text(
               key: TaskListDetailPage.taskListTitleKey,
-              d.name(),
+              tasklist.name(),
               style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
@@ -68,21 +67,21 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
             itemBuilder: (context) {
               return [
                 PopupMenuItem(
-                  onTap: () => showEditDescriptionSheet(d),
+                  onTap: () => showEditDescriptionSheet(tasklist),
                   child: Text(
                     L10n.of(context).editDescription,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
                 PopupMenuItem(
-                  onTap: () => showRedactDialog(taskList: d),
+                  onTap: () => showRedactDialog(taskList: tasklist),
                   child: Text(
                     L10n.of(context).delete,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
                 PopupMenuItem(
-                  onTap: () => showReportDialog(d),
+                  onTap: () => showReportDialog(tasklist),
                   child: Text(
                     L10n.of(context).report,
                     style: Theme.of(context).textTheme.bodyMedium,
@@ -93,7 +92,12 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
           ),
         ],
       ),
-      error: (e, s) => AppBar(title: Text(L10n.of(context).failedToLoad(e))),
+      error: (e, s) {
+        _log.severe('Failed to load tasklist', e, s);
+        return AppBar(
+          title: Text(L10n.of(context).loadingFailed(e)),
+        );
+      },
       loading: () => AppBar(
         title: Text(L10n.of(context).loading),
       ),
@@ -102,39 +106,44 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
 
   // Redact Task List Dialog
   void showRedactDialog({required TaskList taskList}) {
-    showAdaptiveDialog(
-      context: context,
-      builder: (context) => RedactContentWidget(
-        title: L10n.of(context).deleteTaskList,
-        onSuccess: () => Navigator.of(context, rootNavigator: true).pop(),
-        eventId: taskList.eventIdStr(),
-        senderId: taskList.role() ?? '',
-        roomId: taskList.spaceIdStr(),
-        isSpace: true,
-      ),
+    openRedactContentDialog(
+      context,
+      title: L10n.of(context).deleteTaskList,
+      onSuccess: () => Navigator.pop(context),
+      eventId: taskList.eventIdStr(),
+      roomId: taskList.spaceIdStr(),
+      isSpace: true,
     );
   }
 
   // Report Task List Dialog
   void showReportDialog(TaskList taskList) {
-    showAdaptiveDialog(
-      context: context,
-      builder: (ctx) => ReportContentWidget(
-        title: L10n.of(context).reportTaskList,
-        description: L10n.of(context).reportThisContent,
-        eventId: taskList.eventIdStr(),
-        senderId: taskList.role() ?? '',
-        roomId: taskList.spaceIdStr(),
-        isSpace: true,
-      ),
+    openReportContentDialog(
+      context,
+      title: L10n.of(context).reportTaskList,
+      description: L10n.of(context).reportThisContent,
+      eventId: taskList.eventIdStr(),
+      senderId: taskList.role() ?? '',
+      roomId: taskList.spaceIdStr(),
+      isSpace: true,
     );
   }
 
   Widget _buildBody() {
-    final taskList = ref.watch(taskListItemProvider(widget.taskListId));
-    return taskList.when(
-      data: (data) => _buildTaskListData(data),
-      error: (e, s) => Text(L10n.of(context).failedToLoad(e)),
+    final tasklistLoader = ref.watch(taskListItemProvider(widget.taskListId));
+    return tasklistLoader.when(
+      data: (tasklist) => _buildTaskListData(tasklist),
+      error: (error, stack) {
+        _log.severe('Failed to load tasklist', error, stack);
+        return ErrorPage(
+          background: Text(L10n.of(context).loading),
+          error: error,
+          stack: stack,
+          onRetryTap: () {
+            ref.invalidate(taskListItemProvider(widget.taskListId));
+          },
+        );
+      },
       loading: () => Text(L10n.of(context).loading),
     );
   }
@@ -207,11 +216,13 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
       updater.descriptionHtml(plainDescription, htmlBodyDescription);
       await updater.send();
       EasyLoading.dismiss();
-      if (mounted) context.pop();
-    } catch (e, st) {
-      _log.severe('Failed to update event description', e, st);
-      EasyLoading.dismiss();
-      if (!mounted) return;
+      if (mounted) Navigator.pop(context);
+    } catch (e, s) {
+      _log.severe('Failed to update description of tasklist', e, s);
+      if (!mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
         L10n.of(context).errorUpdatingDescription(e),
         duration: const Duration(seconds: 3),
@@ -290,13 +301,15 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
         updater.name(newName);
         try {
           await updater.send();
-          ref.invalidate(taskListProvider);
           EasyLoading.dismiss();
           if (!context.mounted) return;
-          context.pop();
-        } catch (e) {
-          EasyLoading.dismiss();
-          if (!context.mounted) return;
+          Navigator.pop(context);
+        } catch (e, s) {
+          _log.severe('Failed to rename tasklist', e, s);
+          if (!context.mounted) {
+            EasyLoading.dismiss();
+            return;
+          }
           EasyLoading.showError(
             L10n.of(context).updatingTaskFailed(e),
             duration: const Duration(seconds: 3),

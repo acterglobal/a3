@@ -2,7 +2,6 @@ import 'package:acter/common/models/types.dart';
 import 'package:acter/common/widgets/video_dialog.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -13,11 +12,11 @@ class VideoMessageBuilder extends ConsumerWidget {
   final types.VideoMessage message;
   final int messageWidth;
   final bool isReplyContent;
-  final Convo convo;
+  final String roomId;
 
   const VideoMessageBuilder({
     super.key,
-    required this.convo,
+    required this.roomId,
     required this.message,
     required this.messageWidth,
     this.isReplyContent = false,
@@ -25,7 +24,6 @@ class VideoMessageBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final roomId = convo.getRoomIdStr();
     final ChatMessageInfo messageInfo = (messageId: message.id, roomId: roomId);
     final mediaState = ref.watch(mediaChatStateProvider(messageInfo));
     if (mediaState.mediaChatLoadingState.isLoading ||
@@ -59,7 +57,7 @@ class VideoMessageBuilder extends ConsumerWidget {
             context: context,
             barrierDismissible: false,
             useRootNavigator: false,
-            builder: (ctx) => VideoDialog(
+            builder: (context) => VideoDialog(
               title: message.name,
               videoFile: mediaState.mediaFile!,
             ),
@@ -122,7 +120,7 @@ class VideoMessageBuilder extends ConsumerWidget {
           context: context,
           barrierDismissible: false,
           useRootNavigator: false,
-          builder: (ctx) => VideoDialog(
+          builder: (context) => VideoDialog(
             title: message.name,
             videoFile: mediaState.mediaFile!,
           ),
@@ -140,7 +138,8 @@ class VideoMessageBuilder extends ConsumerWidget {
           child: Stack(
             alignment: Alignment.center,
             children: [
-              videoThumbFileView(context, mediaState),
+              if (mediaState.videoThumbnailFile != null)
+                videoThumbFileView(context, mediaState),
               Container(
                 decoration: BoxDecoration(
                   color: Colors.black26,

@@ -1,15 +1,18 @@
+import 'dart:async';
+
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
 
+final _log = Logger('a3::pins::utils');
 
 Future<void> savePinTitle(
-    BuildContext context,
-    ActerPin pin,
-    String newTitle,
-    ) async {
+  BuildContext context,
+  ActerPin pin,
+  String newTitle,
+) async {
   try {
     EasyLoading.show(status: L10n.of(context).updateName);
     final updateBuilder = pin.updateBuilder();
@@ -17,19 +20,25 @@ Future<void> savePinTitle(
     await updateBuilder.send();
     EasyLoading.dismiss();
     if (!context.mounted) return;
-    context.pop();
-  } catch (e) {
-    EasyLoading.dismiss();
-    if (!context.mounted) return;
-    EasyLoading.showError(L10n.of(context).updateNameFailed(e));
+    Navigator.pop(context);
+  } catch (e, s) {
+    _log.severe('Failed to rename pin', e, s);
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return;
+    }
+    EasyLoading.showError(
+      L10n.of(context).updateNameFailed(e),
+      duration: const Duration(seconds: 3),
+    );
   }
 }
 
 Future<void> savePinLink(
-    BuildContext context,
-    ActerPin pin,
-    String newLink,
-    ) async {
+  BuildContext context,
+  ActerPin pin,
+  String newLink,
+) async {
   try {
     EasyLoading.show(status: L10n.of(context).updatingLinking);
     final updateBuilder = pin.updateBuilder();
@@ -37,11 +46,16 @@ Future<void> savePinLink(
     await updateBuilder.send();
     EasyLoading.dismiss();
     if (!context.mounted) return;
-    context.pop();
-  } catch (e) {
-    EasyLoading.dismiss();
-    if (!context.mounted) return;
-    EasyLoading.showError(L10n.of(context).updateNameFailed(e));
+  } catch (e, s) {
+    _log.severe('Failed to change url of pin', e, s);
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return;
+    }
+    EasyLoading.showError(
+      L10n.of(context).updateNameFailed(e),
+      duration: const Duration(seconds: 3),
+    );
   }
 }
 
@@ -59,10 +73,16 @@ Future<void> saveDescription(
     await updateBuilder.send();
     EasyLoading.dismiss();
     if (!context.mounted) return;
-    context.pop();
-  } catch (e) {
-    EasyLoading.dismiss();
-    if (!context.mounted) return;
-    EasyLoading.showError(L10n.of(context).updateNameFailed(e));
+    Navigator.pop(context);
+  } catch (e, s) {
+    _log.severe('Failed to change description of pin', e, s);
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return;
+    }
+    EasyLoading.showError(
+      L10n.of(context).updateDescriptionFailed(e),
+      duration: const Duration(seconds: 3),
+    );
   }
 }

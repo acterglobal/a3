@@ -1,11 +1,14 @@
+import 'package:acter/common/actions/close_room.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/space/actions/set_space_title.dart';
+import 'package:acter/features/space/actions/set_space_topic.dart';
 import 'package:acter/features/space/dialogs/leave_space.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SpaceToolbar extends ConsumerWidget {
   static const optionsMenu = Key('space-options-menu');
@@ -23,11 +26,8 @@ class SpaceToolbar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
-    final isBookmarked = ref.watch(
-      spaceProvider(spaceId).select(
-        (asyncValue) => (asyncValue.valueOrNull?.isBookmarked()) == true,
-      ),
-    );
+    final isBookmarked =
+        ref.watch(spaceIsBookmarkedProvider(spaceId)).valueOrNull ?? false;
     final invited =
         ref.watch(spaceInvitedMembersProvider(spaceId)).valueOrNull ?? [];
     final showInviteBtn = membership?.canString('CanInvite') == true;
@@ -35,12 +35,28 @@ class SpaceToolbar extends ConsumerWidget {
     if (membership?.canString('CanSetName') == true) {
       submenu.add(
         PopupMenuItem(
-          onTap: () => context.pushNamed(
-            Routes.editSpace.name,
-            pathParameters: {'spaceId': spaceId},
-            queryParameters: {'spaceId': spaceId},
-          ),
-          child: Text(L10n.of(context).editDetails),
+          onTap: () {
+            showEditSpaceNameBottomSheet(
+              context: context,
+              ref: ref,
+              spaceId: spaceId,
+            );
+          },
+          child: Text(L10n.of(context).editTitle),
+        ),
+      );
+    }
+    if (membership?.canString('CanSetTopic') == true) {
+      submenu.add(
+        PopupMenuItem(
+          onTap: () {
+            showEditDescriptionBottomSheet(
+              context: context,
+              ref: ref,
+              spaceId: spaceId,
+            );
+          },
+          child: Text(L10n.of(context).editDescription),
         ),
       );
     }
@@ -65,6 +81,17 @@ class SpaceToolbar extends ConsumerWidget {
           ),
         ),
       ),
+      if (membership?.canString('CanKick') == true &&
+          membership?.canString('CanUpdateJoinRule') == true)
+        PopupMenuItem(
+          onTap: () => openCloseRoomDialog(context: context, roomId: spaceId),
+          child: Text(
+            L10n.of(context).closeSpace,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.error,
+            ),
+          ),
+        ),
     ]);
 
     return AppBar(

@@ -3,7 +3,6 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
-
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/room/brief_room_list_entry.dart';
 import 'package:acter/common/widgets/search.dart';
@@ -13,8 +12,11 @@ import 'package:acter/features/space/actions/unlink_child_room.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::space::link_room_sheet');
 
 // ChildRoomType configures the sub child type of the `Spaces`
 enum ChildRoomType {
@@ -73,11 +75,11 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     childRoomsIds.clear();
     if (widget.childRoomType == ChildRoomType.chat) {
       for (int i = 0; i < space.knownChats.length; i++) {
-        childRoomsIds.add(space.knownChats[i].getRoomIdStr());
+        childRoomsIds.add(space.knownChats[i]);
       }
     } else {
       for (int i = 0; i < space.knownSubspaces.length; i++) {
-        childRoomsIds.add(space.knownSubspaces[i].getRoomIdStr());
+        childRoomsIds.add(space.knownSubspaces[i]);
       }
       //Add recommended child spaces ids
       recommendedChildSpaceIds.clear();
@@ -125,21 +127,23 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       padding: const EdgeInsets.all(12),
       child: spaceDetails.when(
         data: (space) {
-          return space == null
-              ? const SizedBox.shrink()
-              : Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(L10n.of(context).parentSpace),
-                    SpaceChip(
-                      space: space,
-                      onTapOpenSpaceDetail: false,
-                    ),
-                  ],
-                );
+          if (space == null) return const SizedBox.shrink();
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(L10n.of(context).parentSpace),
+              SpaceChip(
+                spaceId: space.roomId,
+                onTapOpenSpaceDetail: false,
+              ),
+            ],
+          );
         },
-        error: (e, s) => errorUI(L10n.of(context).error(e)),
+        error: (e, s) {
+          _log.severe('Failed to load the details of selected space', e, s);
+          return errorUI(L10n.of(context).loadingFailed(e));
+        },
         loading: () => Container(),
       ),
     );
@@ -179,7 +183,10 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       data: (chats) => chats.isEmpty
           ? Text(L10n.of(context).noChatsFoundMatchingYourSearchTerm)
           : chatListUI(chats),
-      error: (e, s) => errorUI(L10n.of(context).searchingFailed(e)),
+      error: (e, s) {
+        _log.severe('Failed to search chats', e, s);
+        return errorUI(L10n.of(context).searchingFailed(e));
+      },
       loading: () => loadingUI(),
     );
   }
@@ -199,7 +206,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
           roomId: roomId,
           canCheck: 'CanLinkSpaces',
           onSelect: null,
-          keyPrefix: 'room-list-link-',
+          keyPrefix: 'chat-list-link',
           avatarDisplayMode: DisplayMode.GroupChat,
           trailingBuilder: (canLink) =>
               roomTrailing(roomId, isLinked(roomId), canLink),
@@ -234,7 +241,10 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
         return spaceListUI(spaces);
       },
       loading: () => loadingUI(),
-      error: (e, s) => errorUI(L10n.of(context).searchingFailed(e)),
+      error: (e, s) {
+        _log.severe('Failed to search spaces', e, s);
+        return errorUI(L10n.of(context).searchingFailed(e));
+      },
     );
   }
 
@@ -261,6 +271,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
           avatarDisplayMode: DisplayMode.Space,
           roomId: roomId,
           canCheck: 'CanLinkSpaces',
+          keyPrefix: 'space-list-link',
           subtitle: subtitle,
           trailingBuilder: (canLink) => roomTrailing(
             roomId,
@@ -413,7 +424,8 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       childRoomsIds.add(roomId);
     }
     // spaceRelations come from the server and must be manually invalidated
-    ref.invalidate(spaceRelationsOverviewProvider(selectedParentSpaceId));
+    ref.invalidate(spaceRelationsProvider(selectedParentSpaceId));
+    ref.invalidate(spaceRemoteRelationsProvider(selectedParentSpaceId));
   }
 
 //Unlink child room

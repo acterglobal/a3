@@ -1,1 +1,0 @@
-- Admins can now suggest other spaces & chats from a space. These are then shown to a user when they enter the spaces for the first time with a convenient function to quickly join them or subset of them

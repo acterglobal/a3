@@ -1,9 +1,9 @@
-// ignore_for_file: unnecessary_null_comparison
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
+
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -13,9 +13,9 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
-import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -34,6 +34,10 @@ final idHttpRegexp = RegExp(
 
 final idMatrixRegexp = RegExp(
   r'matrix:roomid/(?<id>[^?]+)(\?via=(?<server_name>[^&]+))?(&via=(?<server_name2>[^&]+))?(&via=(?<server_name3>[^&]+))?',
+);
+
+final urlValidatorRegexp = RegExp(
+  r'^[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b[-a-zA-Z0-9()@:%_+.~#?&/=]*$',
 );
 
 /// Get provider right from the context no matter where we are
@@ -70,8 +74,9 @@ extension RefDebounceExtension on Ref {
 
 const largeScreenBreakPoint = 770;
 
-bool isLargeScreen(BuildContext context) {
-  return MediaQuery.of(context).size.width >= largeScreenBreakPoint;
+extension ActerContextUtils on BuildContext {
+  bool get isLargeScreen =>
+      MediaQuery.of(this).size.width >= largeScreenBreakPoint;
 }
 
 DateTime kFirstDay = DateTime.utc(2010, 10, 16);
@@ -160,6 +165,34 @@ Future<bool> openLink(String target, BuildContext context) async {
   }
 }
 
+String getHumanReadableFileSize(int bytes) {
+  if (bytes <= 0) return '0 B';
+  const suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+  var i = (log(bytes) / log(1024)).floor();
+  return '${(bytes / pow(1024, i)).toStringAsFixed(1)} ${suffixes[i]}';
+}
+
+String documentTypeFromFileExtension(String fileExtension) {
+  switch (fileExtension) {
+    case 'png':
+    case 'jpg':
+    case 'jpeg':
+      return 'Image';
+    case 'mov':
+    case 'mp4':
+      return 'Video';
+    case 'mp3':
+    case 'wav':
+      return 'Audio';
+    case 'pdf':
+      return 'PDF';
+    case 'txt':
+      return 'Text File';
+    default:
+      return '';
+  }
+}
+
 Future<void> shareTextToWhatsApp(
   BuildContext context, {
   required String text,
@@ -171,13 +204,19 @@ Future<void> shareTextToWhatsApp(
   } else {
     _log.warning('WhatsApp not available');
     if (!context.mounted) return;
-    EasyLoading.showError(L10n.of(context).appUnavailable);
+    EasyLoading.showError(
+      L10n.of(context).appUnavailable,
+      duration: const Duration(seconds: 3),
+    );
   }
 }
 
 Future<void> mailTo({required String toAddress, String? subject}) async {
-  final Uri emailLaunchUri =
-      Uri(scheme: 'mailto', path: toAddress, query: subject);
+  final emailLaunchUri = Uri(
+    scheme: 'mailto',
+    path: toAddress,
+    query: subject,
+  );
   await launchUrl(emailLaunchUri);
 }
 
@@ -226,14 +265,16 @@ Future<void> uploadAvatar(
     if (file.path != null) await room.uploadAvatar(file.path!);
     // close loading
     EasyLoading.dismiss();
-  } catch (e, st) {
-    _log.severe('Failed to upload avatar', e, st);
-    if (context.mounted) {
-      EasyLoading.showError(
-        L10n.of(context).failedToUploadAvatar(e),
-        duration: const Duration(seconds: 3),
-      );
+  } catch (e, s) {
+    _log.severe('Failed to upload avatar', e, s);
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return;
     }
+    EasyLoading.showError(
+      L10n.of(context).failedToUploadAvatar(e),
+      duration: const Duration(seconds: 3),
+    );
   }
 }
 
@@ -368,24 +409,35 @@ enum LabsFeature {
   cobudget,
   polls,
   discussions,
-  comments,
 
   // specific features
   chatUnread,
   obfuscatedApp,
 
-  // not a lab anymore but needs to stay for backwards compat
+  // system features
+  deviceCalendarSync,
+  encryptionBackup,
+
+  // candidates for always on
+  comments,
+  mobilePushNotifications,
+
+  // -- not a lab anymore but needs to stay for backwards compat
   tasks,
   events,
   pins,
+  showNotifications; // old name for desktop notifications
 
-  // searchOptions
-  encryptionBackup,
-  showNotifications, // FIXME: old name for desktop notifications
-  mobilePushNotifications;
+  static List<LabsFeature> get defaults =>
+      isDevBuild || isNightly ? nightlyDefaults : releaseDefaults;
 
-  static List<LabsFeature> get defaults => [
-        LabsFeature.comments,
+  static List<LabsFeature> get releaseDefaults => [
+        LabsFeature.mobilePushNotifications,
+      ];
+
+  static List<LabsFeature> get nightlyDefaults => [
+        LabsFeature.encryptionBackup,
+        LabsFeature.deviceCalendarSync,
         LabsFeature.mobilePushNotifications,
       ];
 }

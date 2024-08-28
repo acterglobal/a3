@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
@@ -68,13 +69,12 @@ class BlockedUsersPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final users = ref.watch(ignoredUsersProvider);
+    final usersLoader = ref.watch(ignoredUsersProvider);
     return WithSidebar(
       sidebar: const SettingsPage(),
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: const AppBarTheme().backgroundColor,
-          elevation: 0.0,
+          automaticallyImplyLeading: !context.isLargeScreen,
           title: Text(L10n.of(context).blockedUsers),
           centerTitle: true,
           actions: [
@@ -86,41 +86,45 @@ class BlockedUsersPage extends ConsumerWidget {
             ),
           ],
         ),
-        body: users.when(
-          data: (users) => users.isNotEmpty
-              ? CustomScrollView(
-                  slivers: [
-                    SliverList.builder(
-                      itemBuilder: (BuildContext context, int index) {
-                        final userId = users[index].toString();
-                        return Card(
-                          margin: const EdgeInsets.all(5),
-                          child: ListTile(
-                            title: Padding(
-                              padding: const EdgeInsets.all(10),
-                              child: Text(userId),
-                            ),
-                            trailing: OutlinedButton(
-                              child: Text(L10n.of(context).unblock),
-                              onPressed: () async => await onDelete(
-                                context,
-                                ref,
-                                userId,
-                              ),
-                            ),
+        body: usersLoader.when(
+          data: (users) {
+            if (users.isEmpty) {
+              return Center(
+                child: Text(L10n.of(context).hereYouCanSeeAllUsersYouBlocked),
+              );
+            }
+            return CustomScrollView(
+              slivers: [
+                SliverList.builder(
+                  itemBuilder: (BuildContext context, int index) {
+                    final userId = users[index].toString();
+                    return Card(
+                      margin: const EdgeInsets.all(5),
+                      child: ListTile(
+                        title: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Text(userId),
+                        ),
+                        trailing: OutlinedButton(
+                          child: Text(L10n.of(context).unblock),
+                          onPressed: () async => await onDelete(
+                            context,
+                            ref,
+                            userId,
                           ),
-                        );
-                      },
-                      itemCount: users.length,
-                    ),
-                  ],
-                )
-              : Center(
-                  child: Text(L10n.of(context).hereYouCanSeeAllUsersYouBlocked),
+                        ),
+                      ),
+                    );
+                  },
+                  itemCount: users.length,
                 ),
-          error: (error, stack) {
+              ],
+            );
+          },
+          error: (e, s) {
+            _log.severe('Failed to load the ignored users', e, s);
             return Center(
-              child: Text(L10n.of(context).failedToLoad(error)),
+              child: Text(L10n.of(context).loadingFailed(e)),
             );
           },
           loading: () => const Center(
@@ -150,8 +154,8 @@ class BlockedUsersPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showToast(L10n.of(context).userAddedToBlockList(userToAdd));
-    } catch (e, st) {
-      _log.severe('Failed to block user', e, st);
+    } catch (e, s) {
+      _log.severe('Failed to block user', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
@@ -177,8 +181,8 @@ class BlockedUsersPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showToast(L10n.of(context).userRemovedFromList);
-    } catch (e, st) {
-      _log.severe('Failed to unblock user', e, st);
+    } catch (e, s) {
+      _log.severe('Failed to unblock user', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;

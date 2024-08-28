@@ -2,6 +2,7 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class LoadingConvoCard extends ConsumerWidget {
   final String roomId;
@@ -65,15 +66,21 @@ class LoadingConvoCard extends ConsumerWidget {
                 onFocusChange: onFocusChange,
                 onLongPress: onLongPress,
                 leading: avatar,
-                title: Text(
-                  '',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium!
-                      .copyWith(fontWeight: FontWeight.w700),
-                  overflow: TextOverflow.ellipsis,
+                title: Skeletonizer(
+                  child: Text(
+                    roomId,
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium!
+                        .copyWith(fontWeight: FontWeight.w700),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-                subtitle: constraints.maxWidth < 300 ? null : subtitle,
+                subtitle: constraints.maxWidth < 300
+                    ? null
+                    : subtitle != null
+                        ? Skeletonizer(child: subtitle!)
+                        : null,
                 trailing: constraints.maxWidth < 300 ? null : trailing,
               ),
             ),

@@ -5,7 +5,6 @@ import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:go_router/go_router.dart';
 
 void showEditHtmlDescriptionBottomSheet({
   required BuildContext context,
@@ -19,7 +18,6 @@ void showEditHtmlDescriptionBottomSheet({
     useSafeArea: true,
     context: context,
     isDismissible: true,
-    constraints: const BoxConstraints(maxHeight: 450),
     isScrollControlled: true,
     builder: (context) {
       return EditHtmlDescriptionSheet(
@@ -70,9 +68,10 @@ class _EditHtmlDescriptionSheetState
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+    return Padding(
+      padding: MediaQuery.of(context).viewInsets,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Text(widget.bottomSheetTitle ?? L10n.of(context).editDescription),
           const SizedBox(height: 20),
@@ -93,7 +92,7 @@ class _EditHtmlDescriptionSheetState
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               OutlinedButton(
-                onPressed: () => context.pop(),
+                onPressed: () => Navigator.pop(context),
                 child: Text(L10n.of(context).cancel),
               ),
               const SizedBox(width: 20),
@@ -104,7 +103,7 @@ class _EditHtmlDescriptionSheetState
                   final plainDescription = textEditorState.intoMarkdown();
                   if (htmlBodyDescription == widget.descriptionHtmlValue ||
                       plainDescription == widget.descriptionMarkdownValue) {
-                    context.pop();
+                    Navigator.pop(context);
                     return;
                   }
                   widget.onSave(htmlBodyDescription, plainDescription);
@@ -113,7 +112,7 @@ class _EditHtmlDescriptionSheetState
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 100),
         ],
       ),
     );

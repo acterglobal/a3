@@ -1,20 +1,21 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Convo, EventSendState;
+    show EventSendState;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quds_popup_menu/quds_popup_menu.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class MessageMetadataBuilder extends ConsumerWidget {
-  final Convo convo;
+  final String roomId;
   final types.Message message;
+
   const MessageMetadataBuilder({
     super.key,
-    required this.convo,
+    required this.roomId,
     required this.message,
   });
 
@@ -24,7 +25,7 @@ class MessageMetadataBuilder extends ConsumerWidget {
     EventSendState? sendState = message.metadata?['eventState'];
     if (receipts != null && receipts.isNotEmpty == true) {
       return _UserReceiptsWidget(
-        roomId: convo.getRoomIdStr(),
+        roomId: roomId,
         seenList: (receipts as Map<String, int>).keys.toList(),
       );
     } else {
@@ -60,22 +61,24 @@ class MessageMetadataBuilder extends ConsumerWidget {
 class _UserReceiptsWidget extends ConsumerWidget {
   final String roomId;
   final List<String> seenList;
-  const _UserReceiptsWidget({required this.roomId, required this.seenList});
+  static int limit = 5;
+
+  const _UserReceiptsWidget({
+    required this.roomId,
+    required this.seenList,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final limit = seenList.length > 5 ? 5 : seenList.length;
-    final subList =
-        limit == seenList.length ? seenList : seenList.sublist(0, limit);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: QudsPopupButton(
         items: showDetails(),
         child: Wrap(
           spacing: -16,
-          children: limit != seenList.length
+          children: seenList.length > limit
               ? [
-                  for (var userId in subList)
+                  for (var userId in seenList.sublist(0, limit))
                     Consumer(
                       builder: (context, ref, child) {
                         final memberProfile = ref.watch(
@@ -97,14 +100,13 @@ class _UserReceiptsWidget extends ConsumerWidget {
                   CircleAvatar(
                     radius: 8,
                     child: Text(
-                      '+${seenList.length - subList.length}',
+                      '+${seenList.length - limit}',
                       textScaler: const TextScaler.linear(0.4),
                     ),
                   ),
                 ]
-              : List.generate(
-                  seenList.length,
-                  (idx) => Consumer(
+              : List.generate(seenList.length, (idx) {
+                  return Consumer(
                     builder: (context, ref, child) {
                       final memberProfile = ref.watch(
                         memberAvatarInfoProvider(
@@ -121,8 +123,8 @@ class _UserReceiptsWidget extends ConsumerWidget {
                         ),
                       );
                     },
-                  ),
-                ),
+                  );
+                }),
         ),
       ),
     );

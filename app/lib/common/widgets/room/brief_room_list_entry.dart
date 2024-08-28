@@ -13,13 +13,14 @@ class BriefRoomEntry extends ConsumerWidget {
   final DisplayMode avatarDisplayMode;
   final Widget Function(bool)? trailingBuilder;
   final Widget? subtitle;
+
   const BriefRoomEntry({
     super.key,
     required this.roomId,
     required this.canCheck,
     this.onSelect,
     required this.avatarDisplayMode,
-    this.keyPrefix = 'brief-room',
+    required this.keyPrefix,
     this.selectedValue,
     this.trailingBuilder,
     this.subtitle,

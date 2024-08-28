@@ -1,7 +1,11 @@
 import 'dart:async';
+
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
+
+final _log = Logger('a3::pins::pins_notifier');
 
 //Get single pin details
 class AsyncPinNotifier
@@ -18,9 +22,17 @@ class AsyncPinNotifier
   Future<ActerPin> build(String arg) async {
     final client = ref.watch(alwaysClientProvider);
     _listener = client.subscribeStream(arg); // keep it resident in memory
-    _poller = _listener.listen((e) async {
-      state = await AsyncValue.guard(_getPin);
-    }); // stay up to date
+    _poller = _listener.listen(
+      (data) async {
+        state = await AsyncValue.guard(_getPin);
+      },
+      onError: (e, s) {
+        _log.severe('stream errored', e, s);
+      },
+      onDone: () {
+        _log.info('stream ended');
+      },
+    ); // stay up to date
     ref.onDispose(() => _poller.cancel());
     return await _getPin();
   }
@@ -44,9 +56,17 @@ class AsyncPinListNotifier
       _listener = client.subscribeStream('$arg::pins');
     }
 
-    _poller = _listener.listen((e) async {
-      state = await AsyncValue.guard(() => _getPinList(client));
-    });
+    _poller = _listener.listen(
+      (data) async {
+        state = await AsyncValue.guard(() => _getPinList(client));
+      },
+      onError: (e, s) {
+        _log.severe('stream errored', e, s);
+      },
+      onDone: () {
+        _log.info('stream ended');
+      },
+    );
     ref.onDispose(() => _poller.cancel());
     return await _getPinList(client);
   }

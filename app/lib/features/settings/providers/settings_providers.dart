@@ -1,24 +1,40 @@
+import 'dart:convert';
+
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/feature_flagger.dart';
 import 'package:acter/common/utils/main.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/providers/notifiers/labs_features.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:riverpod/riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final allowSentryReportingProvider =
     FutureProvider((ref) => getCanReportToSentry());
+
+const labsKey = 'a3.labs';
+
+final asyncFeaturesProvider =
+    FutureProvider<Features<LabsFeature>>((ref) async {
+  final prefInstance = await sharedPrefs();
+  final currentData = prefInstance.getString(labsKey) ?? '[]';
+  final features = featureFlagsFromJson<LabsFeature>(
+    json.decode(currentData),
+    (name) => LabsFeature.values.byName(name),
+  );
+  return Features<LabsFeature>(
+    flags: features,
+    defaultOn: LabsFeature.defaults,
+  );
+});
 
 final featuresProvider =
     StateNotifierProvider<SharedPrefFeaturesNotifier, Features<LabsFeature>>(
         (ref) {
   return SharedPrefFeaturesNotifier(
-    'a3.labs',
-    Features<LabsFeature>(
-      flags: const [],
-      defaultOn: LabsFeature.defaults,
-    ),
+    labsKey,
+    ref,
   );
 });
 
@@ -62,8 +78,14 @@ final isActiveProvider = StateProvider.family<bool, LabsFeature>(
   (ref, feature) => ref.watch(featuresProvider).isActive(feature),
 );
 
+final asyncIsActiveProvider =
+    FutureProvider.family<bool, LabsFeature>((ref, feature) async {
+  return (await ref.watch(asyncFeaturesProvider.future)).isActive(feature);
+});
+
 // helper
-bool updateFeatureState(ref, f, value) {
-  ref.read(featuresProvider.notifier).setActive(f, value);
-  return value;
+Future<bool> updateFeatureState(
+    WidgetRef ref, LabsFeature f, bool value,) async {
+  await ref.read(featuresProvider.notifier).setActive(f, value);
+  return ref.read(featuresProvider).isActive(f);
 }

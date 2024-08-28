@@ -7,6 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::settings::email_address_card');
 
 class EmailAddressCard extends ConsumerWidget {
   final String emailAddress;
@@ -32,9 +35,9 @@ class EmailAddressCard extends ConsumerWidget {
         title: Text(emailAddress),
         trailing: isConfirmed
             ? PopupMenuButton(
-                itemBuilder: (BuildContext ctx) => <PopupMenuEntry>[
+                itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                   PopupMenuItem(
-                    onTap: () => onUnregister(ctx, ref),
+                    onTap: () => onUnregister(context, ref),
                     child: Row(
                       children: [
                         const Icon(Atlas.trash_can_thin),
@@ -42,7 +45,7 @@ class EmailAddressCard extends ConsumerWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           child: Text(
                             L10n.of(context).remove,
-                            style: Theme.of(ctx).textTheme.labelSmall,
+                            style: Theme.of(context).textTheme.labelSmall,
                             softWrap: false,
                           ),
                         ),
@@ -60,7 +63,7 @@ class EmailAddressCard extends ConsumerWidget {
                       icon: const Icon(Atlas.envelope_check_thin),
                     ),
                     PopupMenuButton(
-                      itemBuilder: (BuildContext ctx) => <PopupMenuEntry>[
+                      itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                         PopupMenuItem(
                           onTap: () => alreadyConfirmedAddress(context, ref),
                           child: Row(
@@ -90,7 +93,7 @@ class EmailAddressCard extends ConsumerWidget {
                           ),
                         ),
                         PopupMenuItem(
-                          onTap: () => onUnregister(ctx, ref),
+                          onTap: () => onUnregister(context, ref),
                           child: Row(
                             children: [
                               const Icon(Atlas.trash_can_thin),
@@ -100,7 +103,7 @@ class EmailAddressCard extends ConsumerWidget {
                                 ),
                                 child: Text(
                                   L10n.of(context).remove,
-                                  style: Theme.of(ctx).textTheme.labelSmall,
+                                  style: Theme.of(context).textTheme.labelSmall,
                                   softWrap: false,
                                 ),
                               ),
@@ -123,7 +126,7 @@ class EmailAddressCard extends ConsumerWidget {
         title: Text(L10n.of(context).areYouSureYouWantToUnregisterEmailAddress),
         actions: <Widget>[
           OutlinedButton(
-            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+            onPressed: () => Navigator.pop(context),
             child: Text(L10n.of(context).no),
           ),
           ActerPrimaryActionButton(
@@ -133,7 +136,7 @@ class EmailAddressCard extends ConsumerWidget {
               ref.invalidate(emailAddressesProvider);
 
               if (!context.mounted) return;
-              Navigator.of(context, rootNavigator: true).pop();
+              Navigator.pop(context);
             },
             child: Text(L10n.of(context).yes),
           ),
@@ -162,7 +165,8 @@ class EmailAddressCard extends ConsumerWidget {
         return;
       }
       EasyLoading.showToast(L10n.of(context).looksGoodAddressConfirmed);
-    } catch (e) {
+    } catch (e, s) {
+      _log.severe('Failed to confirm token', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
@@ -200,12 +204,14 @@ class EmailAddressCard extends ConsumerWidget {
         ref.invalidate(emailAddressesProvider);
         EasyLoading.showToast(L10n.of(context).looksGoodAddressConfirmed);
       } else {
+        _log.severe('Invalid token or password');
         EasyLoading.showError(
           L10n.of(context).invalidTokenOrPassword,
           duration: const Duration(seconds: 3),
         );
       }
-    } catch (e) {
+    } catch (e, s) {
+      _log.severe('Failed to confirm token', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;

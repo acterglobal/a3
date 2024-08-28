@@ -8,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 
 class ShareInviteCode extends ConsumerWidget {
@@ -194,7 +193,7 @@ class ShareInviteCode extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
       child: ActerPrimaryActionButton(
-        onPressed: () => context.pop(),
+        onPressed: () => Navigator.pop(context),
         child: Text(L10n.of(context).done),
       ),
     );

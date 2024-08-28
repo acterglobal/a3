@@ -1,4 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/widgets/scrollable_list_tab_scroller.dart';
 import 'package:acter/features/space/dialogs/suggested_rooms.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
@@ -15,11 +17,15 @@ import 'package:acter/features/space/widgets/space_sections/tasks_section.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/features/space/widgets/space_toolbar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+
+final _log = Logger('a3::space::space_details');
 
 class SpaceDetailsPage extends ConsumerStatefulWidget {
+  static const headerKey = Key('space-menus-header');
   final String spaceId;
 
   const SpaceDetailsPage({
@@ -113,30 +119,50 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   }
 
   Widget spaceBodyUI() {
-    final spaceMenus = ref.watch(tabsProvider(widget.spaceId));
-    return spaceMenus.when(
+    final tabsLoader = ref.watch(tabsProvider(widget.spaceId));
+    return tabsLoader.when(
       skipLoadingOnReload: true,
-      data: (tabsList) {
+      data: (tabs) {
         return ScrollableListTabScroller(
-          itemCount: tabsList.length,
+          headerKey: SpaceDetailsPage.headerKey,
+          itemCount: tabs.length,
           itemPositionsListener: itemPositionsListener,
 
           //Space Details Header UI
-          headerContainerBuilder:
-              (BuildContext context, Widget menuBarWidget) =>
-                  spaceHeaderUI(menuBarWidget),
+          headerContainerBuilder: (context, menuBarWidget) =>
+              spaceHeaderUI(menuBarWidget),
 
           //Space Details Tab Menu UI
-          tabBuilder: (BuildContext context, int index, bool active) =>
-              spaceTabMenuUI(tabsList[index], active),
+          tabBuilder: (context, index, active) =>
+              spaceTabMenuUI(tabs[index], active),
 
           //Space Details Page UI
-          itemBuilder: (BuildContext context, int index) =>
-              spacePageUI(tabsList[index]),
+          itemBuilder: (context, index) => spacePageUI(tabs[index]),
+
+          // we allow this to be refreshed by over-pulling
+          onRefresh: () async {
+            await Future.wait([
+              ref.refresh(spaceProvider(widget.spaceId).future),
+              ref.refresh(maybeRoomProvider(widget.spaceId).future),
+            ]);
+          },
         );
       },
-      error: (error, stack) => Text(L10n.of(context).loadingFailed(error)),
+      error: (e, s) => loadingError(e, s),
       loading: () => const SpaceDetailsSkeletons(),
+    );
+  }
+
+  Widget loadingError(Object error, StackTrace stack) {
+    _log.severe('Failed to load tabs in space', error, stack);
+    return ErrorPage(
+      background: const SpaceDetailsSkeletons(),
+      error: error,
+      stack: stack,
+      textBuilder: L10n.of(context).loadingFailed,
+      onRetryTap: () {
+        ref.invalidate(spaceProvider(widget.spaceId));
+      },
     );
   }
 
@@ -180,16 +206,13 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   Widget spaceAvatar() {
     final avatarData =
         ref.watch(roomAvatarProvider(widget.spaceId)).valueOrNull;
-    if (avatarData != null) {
-      return Image.memory(
-        avatarData.bytes,
-        height: 300,
-        width: MediaQuery.of(context).size.width,
-        fit: BoxFit.cover,
-      );
-    } else {
-      return Container(height: 200, color: Colors.red);
-    }
+    if (avatarData == null) return Container(height: 200, color: Colors.red);
+    return Image.memory(
+      avatarData.bytes,
+      height: 300,
+      width: MediaQuery.of(context).size.width,
+      fit: BoxFit.cover,
+    );
   }
 
   Widget spaceTabMenuUI(TabEntry tabItem, bool active) {

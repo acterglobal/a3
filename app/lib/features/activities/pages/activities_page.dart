@@ -1,4 +1,5 @@
 import 'package:acter/common/models/types.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
@@ -13,9 +14,9 @@ import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/settings/widgets/session_card.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class ActivitiesPage extends ConsumerWidget {
   static const Key oneUnverifiedSessionsCard =
@@ -23,16 +24,16 @@ class ActivitiesPage extends ConsumerWidget {
   static const Key unverifiedSessionsCard =
       Key('activities-unverified-sessions');
   static const Key unconfirmedEmails = Key('activities-has-unconfirmed-emails');
+
   const ActivitiesPage({super.key});
 
   Widget? renderSyncingState(BuildContext context, WidgetRef ref) {
     final syncState = ref.watch(syncStateProvider);
-    final hasFirstSynced = !syncState.initialSync;
     final errorMsg = syncState.errorMsg;
     final retryDuration = syncState.countDown != null
         ? Duration(seconds: syncState.countDown!)
         : null;
-    if (!hasFirstSynced) {
+    if (!ref.watch(hasFirstSyncedProvider)) {
       return SliverToBoxAdapter(
         child: Card(
           child: ListTile(
@@ -89,7 +90,7 @@ class ActivitiesPage extends ConsumerWidget {
       ),
       SliverList(
         delegate: SliverChildBuilderDelegate(
-          (BuildContext ctx, int index) {
+          (BuildContext context, int index) {
             return InvitationCard(
               invitation: invitations[index],
             );

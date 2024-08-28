@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/settings/widgets/email_address_card.dart';
@@ -8,6 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::settings::email_addresses');
 
 class AddEmailAddr extends StatefulWidget {
   const AddEmailAddr({super.key});
@@ -74,13 +78,12 @@ class EmailAddressesPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final emailAddresses = ref.watch(emailAddressesProvider);
+    final addressesLoader = ref.watch(emailAddressesProvider);
     return WithSidebar(
       sidebar: const SettingsPage(),
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: const AppBarTheme().backgroundColor,
-          elevation: 0.0,
+          automaticallyImplyLeading: !context.isLargeScreen,
           title: Text(L10n.of(context).emailAddresses),
           centerTitle: true,
           actions: [
@@ -92,17 +95,16 @@ class EmailAddressesPage extends ConsumerWidget {
             ),
             IconButton(
               onPressed: () => addEmailAddress(context, ref),
-              icon: const Icon(
-                Atlas.plus_circle_thin,
-              ),
+              icon: const Icon(Atlas.plus_circle_thin),
             ),
           ],
         ),
-        body: emailAddresses.when(
+        body: addressesLoader.when(
           data: (addresses) => buildAddresses(context, addresses),
-          error: (error, stack) {
+          error: (e, s) {
+            _log.severe('Failed to load email addresses', e, s);
             return Center(
-              child: Text(L10n.of(context).errorLoadingEmailAddresses(error)),
+              child: Text(L10n.of(context).errorLoadingEmailAddresses(e)),
             );
           },
           loading: () => const Center(
@@ -149,12 +151,10 @@ class EmailAddressesPage extends ConsumerWidget {
           ),
         ),
         SliverList.builder(
-          itemBuilder: (BuildContext context, int index) {
-            return EmailAddressCard(
-              emailAddress: addresses.unconfirmed[index],
-              isConfirmed: false,
-            );
-          },
+          itemBuilder: (context, index) => EmailAddressCard(
+            emailAddress: addresses.unconfirmed[index],
+            isConfirmed: false,
+          ),
           itemCount: addresses.unconfirmed.length,
         ),
       ];
@@ -173,12 +173,10 @@ class EmailAddressesPage extends ConsumerWidget {
             ),
           ),
           SliverList.builder(
-            itemBuilder: (BuildContext context, int index) {
-              return EmailAddressCard(
-                emailAddress: addresses.confirmed[index],
-                isConfirmed: true,
-              );
-            },
+            itemBuilder: (context, index) => EmailAddressCard(
+              emailAddress: addresses.confirmed[index],
+              isConfirmed: true,
+            ),
             itemCount: addresses.confirmed.length,
           ),
         ]);
@@ -201,12 +199,10 @@ class EmailAddressesPage extends ConsumerWidget {
           ),
         ),
         SliverList.builder(
-          itemBuilder: (BuildContext context, int index) {
-            return EmailAddressCard(
-              emailAddress: addresses.confirmed[index],
-              isConfirmed: true,
-            );
-          },
+          itemBuilder: (context, index) => EmailAddressCard(
+            emailAddress: addresses.confirmed[index],
+            isConfirmed: true,
+          ),
           itemCount: addresses.confirmed.length,
         ),
       ],
@@ -229,7 +225,8 @@ class EmailAddressesPage extends ConsumerWidget {
           return;
         }
         EasyLoading.showToast(L10n.of(context).pleaseCheckYourInbox);
-      } catch (e) {
+      } catch (e, s) {
+        _log.severe('Failed to submit email address', e, s);
         if (!context.mounted) {
           EasyLoading.dismiss();
           return;

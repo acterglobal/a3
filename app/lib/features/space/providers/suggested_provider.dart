@@ -1,8 +1,8 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:riverpod/riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::space::providers::suggested');
 
@@ -22,8 +22,8 @@ final shouldShowSuggestedProvider =
         await ref.watch(suggestedRoomsProvider(spaceId).future);
     // only if we really have some remote rooms that the user is suggested and not yet in
     return suggestedRooms.chats.isNotEmpty || suggestedRooms.spaces.isNotEmpty;
-  } catch (error, stack) {
-    _log.severe('Fetching suggestions showing failed', error, stack);
+  } catch (e, s) {
+    _log.severe('Fetching suggestions showing failed', e, s);
     return false;
   }
 });
