@@ -1,3 +1,4 @@
+import 'package:acter/features/bug_report/actions/open_bug_report.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/config/app_shell.dart';
