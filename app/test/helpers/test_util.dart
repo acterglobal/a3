@@ -27,17 +27,14 @@ extension PumpUntilFound on WidgetTester {
     Matcher matcher, {
     Duration duration = const Duration(milliseconds: 100),
     int tries = 10,
+    dumpOnError = true,
   }) async {
     for (var i = 1; i <= tries; i++) {
       await pump(duration);
-
-      try {
-        expect(finder, matches);
-        break;
-      } on TestFailure {
-        if (i == tries) {
+      if (!matcher.matches(finder, {}) && (i == tries)) {
+        if (dumpOnError) {
           debugDumpApp();
-          rethrow;
+          expect(finder, matches);
         }
       }
     }

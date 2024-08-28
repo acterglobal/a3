@@ -12,7 +12,7 @@ class ActerErrorDialog extends StatelessWidget {
   static const retryBtn = Key('error-dialog-retry-btn');
 
   final Object error;
-  final StackTrace stack;
+  final StackTrace? stack;
   final VoidCallback? onRetryTap;
 
   final String? title;
@@ -26,7 +26,7 @@ class ActerErrorDialog extends StatelessWidget {
   const ActerErrorDialog({
     super.key,
     required this.error,
-    required this.stack,
+    this.stack,
     this.onRetryTap,
     this.title,
     this.text,
@@ -39,7 +39,7 @@ class ActerErrorDialog extends StatelessWidget {
     /// BuildContext
     required BuildContext context,
     required Object error,
-    required StackTrace stack,
+    StackTrace? stack,
 
     /// Title of the dialog
     String? title,
@@ -120,12 +120,12 @@ class ActerErrorDialog extends StatelessWidget {
 class _ActerErrorAlert extends QuickAlertContainer {
   final bool includeBugReportButton;
   final Object error;
-  final StackTrace stack;
+  final StackTrace? stack;
 
   const _ActerErrorAlert({
     required super.options,
     required this.error,
-    required this.stack,
+    this.stack,
     this.includeBugReportButton = true,
   });
 
@@ -148,13 +148,18 @@ class _ActerErrorAlert extends QuickAlertContainer {
           top: 10,
           child: TextButton(
             child: Text(L10n.of(context).reportBug),
-            onPressed: () => openBugReport(
-              context,
-              queryParams: {
+            onPressed: () async {
+              final queryParams = {
                 'error': error.toString(),
-                'stack': stack.toString(),
-              },
-            ),
+              };
+              if (stack != null) {
+                queryParams['stack'] = stack.toString();
+              }
+              return openBugReport(
+                context,
+                queryParams: queryParams,
+              );
+            },
           ),
         ),
       ],
