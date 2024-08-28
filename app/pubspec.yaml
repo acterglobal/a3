@@ -18,8 +18,8 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 0.0.1+1
 
 environment:
-  sdk: ">=3.3.0"
-  flutter: ^3.22.0
+  sdk: ">=3.5.0"
+  flutter: ^3.24.0
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -32,7 +32,7 @@ dependencies:
     sdk: flutter
 
   # UI
-  flutter_adaptive_scaffold: ^0.1.0
+  flutter_adaptive_scaffold: ^0.2.2
   atlas_icons: ^0.0.12
   skeletonizer: ^1.1.1
   flutter_chat_ui: ^1.6.9
@@ -48,8 +48,8 @@ dependencies:
   cross_file_image: ^1.0.0
   flutter_keyboard_visibility: ^6.0.0
   expandable_text: ^2.3.0
-  cached_network_image: ^3.2.1
-  fc_native_video_thumbnail: ^0.9.0
+  cached_network_image: ^3.4.1
+  fc_native_video_thumbnail: ^0.11.1
   flutter_matrix_html:
     # path: "../../flutter_matrix_html"
     git:
@@ -73,7 +73,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: ^0.19.0
-  freezed: ^2.3.3
+  freezed: ^2.5.7
   acter_flutter_sdk:
     path: ../packages/rust_sdk
   mockito: ^5.4.4
@@ -93,8 +93,8 @@ dependencies:
   dart_date: ^1.3.2
   path: ^1.8.3
   url_launcher: ^6.1.10
-  file_picker: ^8.0.3
-  emoji_picker_flutter: ^2.1.1
+  file_picker: ^8.1.2
+  emoji_picker_flutter: ^3.0.0
   connectivity_plus: ^6.0.3
   mime: ^1.0.2
   freezed_annotation: ^2.4.1
@@ -124,14 +124,14 @@ dependencies:
   media_kit_libs_windows_video: any
   media_kit_libs_linux: any
   video_player: ^2.8.1
-  share_plus: ^9.0.0
+  share_plus: ^10.0.0
   carousel_indicator: ^1.0.6
   stack_trace: ^1.11.1
   tutorial_coach_mark: ^1.2.11
   flutter_typeahead: ^5.2.0
   pinch_zoom_release_unzoom: ^1.0.3
   dotted_border: ^2.1.0
-  firebase_core: ^3.1.0
+  firebase_core: ^3.4.0
   scrolls_to_top: ^2.1.1
   scrollable_positioned_list: ^0.3.8
   diffutil_dart: ^4.0.1
@@ -157,7 +157,7 @@ dev_dependencies:
     sdk: flutter
   icons_launcher: ^2.0.7
   flutter_lints: ^4.0.0
-  build_runner: ^2.4.6
+  build_runner: ^2.4.12
   convenient_test: ^1.3.7
   convenient_test_dev: ^1.3.7
   convenient_test_manager_dart:
@@ -186,6 +186,18 @@ dependency_overrides:
       url: https://github.com/gnunicorn/flutter_secure_storage/
       ref: ben-fix-linux-secret-store-problem
       path: flutter_secure_storage_linux
+
+  firebase_core:
+    git:
+      url: https://github.com/firebase/flutterfire/
+      path:  packages/firebase_core/firebase_core
+      ref: feat/update-web100
+
+  firebase_core_web:
+    git:
+      url: https://github.com/firebase/flutterfire/
+      path:  packages/firebase_core/firebase_core_web
+      ref: feat/update-web100
 sentry:
   upload_debug_symbols: true
   upload_source_maps: false

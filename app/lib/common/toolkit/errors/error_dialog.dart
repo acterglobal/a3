@@ -109,6 +109,8 @@ class ActerErrorDialog extends StatelessWidget {
     }
 
     return _ActerErrorAlert(
+      error: error,
+      stack: stack,
       options: options,
       includeBugReportButton: includeBugReportButton,
     );
@@ -117,8 +119,13 @@ class ActerErrorDialog extends StatelessWidget {
 
 class _ActerErrorAlert extends QuickAlertContainer {
   final bool includeBugReportButton;
+  final Object error;
+  final StackTrace stack;
+
   const _ActerErrorAlert({
     required super.options,
+    required this.error,
+    required this.stack,
     this.includeBugReportButton = true,
   });
 
@@ -141,7 +148,13 @@ class _ActerErrorAlert extends QuickAlertContainer {
           top: 10,
           child: TextButton(
             child: Text(L10n.of(context).reportBug),
-            onPressed: () => openBugReport(context),
+            onPressed: () => openBugReport(
+              context,
+              queryParams: {
+                'error': error.toString(),
+                'stack': stack.toString(),
+              },
+            ),
           ),
         ),
       ],

@@ -1,1 +1,0 @@
-- [New Labs] You can now ask Acter to sync the events you haven't declined yet to your system calendar (on certain devices) including a reminder. As of now, this is behind a labs-feature flag you need to activate manually while we are rolling this out.

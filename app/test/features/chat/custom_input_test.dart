@@ -1,13 +1,16 @@
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/custom_input.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../helpers/mock_chat_message.dart';
-import '../../helpers/mock_sdk.dart';
+import '../../helpers/room_test_wrapper.dart';
+import '../../helpers/utils.dart';
+import '../../helpers/mocks.dart';
 import '../../helpers/test_wrapper_widget.dart';
 
 void main() {
@@ -22,6 +25,8 @@ void main() {
               overrides: [
                 // Same as before
                 canSendProvider.overrideWith((ref, roomId) => false),
+                sdkProvider.overrideWith((ref) => MockActerSdk()),
+                alwaysClientProvider.overrideWith((ref) => MockClient()),
               ],
               child: const InActerContextTestWrapper(
                 child: CustomChatInput(
@@ -43,6 +48,7 @@ void main() {
                 // Same as before
                 canSendProvider
                     .overrideWith((ref, roomId) => null), // null means loading
+                sdkProvider.overrideWith((ref) => MockActerSdk()),
               ],
               child: const InActerContextTestWrapper(
                 child: CustomChatInput(
@@ -64,6 +70,10 @@ void main() {
                 // Same as before
                 canSendProvider.overrideWith((ref, roomId) => true),
                 isRoomEncryptedProvider.overrideWith((ref, roomId) => true),
+                sdkProvider.overrideWith((ref) => MockActerSdk()),
+                alwaysClientProvider.overrideWith((ref) => MockClient()),
+                chatComposerDraftProvider
+                    .overrideWith((ref, roomId) => MockComposeDraft()),
               ],
               child: const InActerContextTestWrapper(
                 child: CustomChatInput(
@@ -83,6 +93,11 @@ void main() {
     final overrides = [
       canSendProvider.overrideWith((ref, roomId) => true),
       isRoomEncryptedProvider.overrideWith((ref, roomId) => true),
+      sdkProvider.overrideWith((ref) => MockActerSdk()),
+      alwaysClientProvider.overrideWith((ref) => MockClient()),
+      chatProvider.overrideWith(() => MockAsyncConvoNotifier()),
+      chatComposerDraftProvider
+          .overrideWith((ref, roomId) => MockComposeDraft()),
     ];
     testWidgets(
       'Showing and hiding send button simple',
@@ -114,7 +129,11 @@ void main() {
         final TextField textField = tester.widget(find.byType(TextField));
         textField.controller!.clear();
 
-        await tester.pump();
+        // This test is timing out due to a pending timer.
+        // See MultiTriggerAutocompleteState._onChangedField in:
+        // acter_trigger_autocomplete.dart:279
+        // put 300ms delay as (debounceTimerDuration)
+        await tester.pump(Durations.medium2);
         // not visible
         expect(find.byKey(CustomChatInput.sendBtnKey), findsNothing);
       },
@@ -139,7 +158,7 @@ void main() {
 
         // text with leading whitespaces
         await tester.enterText(find.byType(TextField), '   leading whitespace');
-        await tester.pump();
+        await tester.pump(Durations.medium2);
 
         // The send button should be visible
         expect(find.byKey(CustomChatInput.sendBtnKey), findsOneWidget);
@@ -154,7 +173,12 @@ void main() {
 
         // Enter only whitespace
         await tester.enterText(find.byType(TextField), '     ');
-        await tester.pump();
+
+        // This test is timing out due to a pending timer.
+        // See MultiTriggerAutocompleteState._onChangedField in:
+        // acter_trigger_autocomplete.dart:279
+        // put 300ms delay as (debounceTimerDuration)
+        await tester.pump(Durations.medium2);
 
         // The send button should not be visible
         expect(find.byKey(CustomChatInput.sendBtnKey), findsNothing);
@@ -163,9 +187,18 @@ void main() {
   });
 
   group('Custom Chat Input - Controller states', () {
+    Map<String, MockComposeDraft> roomDrafts = {
+      'roomId-1': buildMockDraft(''),
+      'roomId-2': buildMockDraft(''),
+    };
     final overrides = [
       canSendProvider.overrideWith((ref, roomId) => true),
       isRoomEncryptedProvider.overrideWith((ref, roomId) => true),
+      sdkProvider.overrideWith((ref) => MockActerSdk()),
+      alwaysClientProvider.overrideWith((ref) => MockClient()),
+      chatProvider.overrideWith(() => MockAsyncConvoNotifier()),
+      chatComposerDraftProvider
+          .overrideWith((ref, roomId) => Future.value(roomDrafts[roomId])),
     ];
     testWidgets(
       'Adding text in the middle',
@@ -195,7 +228,7 @@ void main() {
           'teing code',
         );
 
-        await tester.pump();
+        await tester.pump(Durations.medium2);
         expect(controller.text, 'teing code');
 
         // lest move the cursor to fix our typos.
@@ -206,7 +239,12 @@ void main() {
         await tester.enterTextWithoutReplace(find.byType(TextField), 's');
         await tester.pump();
         await tester.enterTextWithoutReplace(find.byType(TextField), 't');
-        await tester.pump();
+
+        // This test is timing out due to a pending timer.
+        // See MultiTriggerAutocompleteState._onChangedField in:
+        // acter_trigger_autocomplete.dart:279
+        // put 300ms delay as (debounceTimerDuration)
+        await tester.pump(Durations.medium2);
         expect(controller.text, 'testing code');
       },
     );
@@ -216,10 +254,7 @@ void main() {
       (tester) async {
         await tester.pumpWidget(
           ProviderScope(
-            overrides: [
-              sdkProvider.overrideWith((ref) => MockActerSdk()),
-              ...overrides,
-            ],
+            overrides: overrides,
             child: const InActerContextTestWrapper(
               child: CustomChatInput(
                 roomId: 'roomId',
@@ -242,7 +277,7 @@ void main() {
           'teing code',
         );
 
-        await tester.pump();
+        await tester.pump(Durations.medium2);
         expect(controller.text, 'teing code');
 
         // lest move the cursor to fix our typos.
@@ -251,6 +286,7 @@ void main() {
 
         await tester.pump();
         await tester.enterTextWithoutReplace(find.byType(TextField), 's');
+        await tester.pump();
 
         // now we select the one we want to reply to
         final chatInputNotifier = container.read(chatInputProvider.notifier);
@@ -274,10 +310,7 @@ void main() {
       (tester) async {
         await tester.pumpWidget(
           ProviderScope(
-            overrides: [
-              sdkProvider.overrideWith((ref) => MockActerSdk()),
-              ...overrides,
-            ],
+            overrides: overrides,
             child: const InActerContextTestWrapper(
               child: CustomChatInput(
                 roomId: 'roomId',
@@ -321,10 +354,7 @@ void main() {
       (tester) async {
         await tester.pumpWidget(
           ProviderScope(
-            overrides: [
-              sdkProvider.overrideWith((ref) => MockActerSdk()),
-              ...overrides,
-            ],
+            overrides: overrides,
             child: const InActerContextTestWrapper(
               child: CustomChatInput(
                 roomId: 'roomId',
@@ -376,110 +406,137 @@ void main() {
       },
     );
 
-    /// FIXME: implement composer state provider to check message states
-    /// skipping for now
     testWidgets(
       'Switching to room stores previous message state of room',
       (tester) async {
+        final wrapperKey = GlobalKey<RoomTestWrapperState>();
+
+        Future<void> enterText(String text) async {
+          final textField = find.byType(TextField);
+          await tester.enterText(textField, text);
+          // Simulate the debounce timer
+          await tester.pump(Durations.medium2);
+          await tester.pump(Durations.medium2);
+          await tester.pump(Durations.medium2);
+        }
+
+        // verify the controller text applies compose draft
+        Future<void> verifyDraft(String roomId) async {
+          final element = tester.element(find.byType(CustomChatInput));
+          final container = ProviderScope.containerOf(element);
+          final convo = await container.read(chatProvider(roomId).future);
+          // ensure draft was saved
+          final textField = find.byType(TextField);
+          final draft = await convo?.msgDraft().then((val) => val.draft());
+          final textFieldWidget = tester.widget<TextField>(textField);
+          // ensure text controller text matches draft
+          expect(textFieldWidget.controller?.text, equals(draft?.plainText()));
+        }
+
+        Future<void> switchRoom(String roomId) async {
+          wrapperKey.currentState!.switchRoom(roomId);
+          await tester.pump();
+          await tester.pumpAndSettle();
+
+          // Verify that loading and no access indicators are not visible
+          expect(find.byKey(CustomChatInput.noAccessKey), findsNothing);
+          expect(find.byKey(CustomChatInput.loadingKey), findsNothing);
+        }
+
+        // build the initial widget tree
         await tester.pumpWidget(
           ProviderScope(
-            overrides: [
-              sdkProvider.overrideWith((ref) => MockActerSdk()),
-              ...overrides,
-            ],
-            child: const InActerContextTestWrapper(
-              child: CustomChatInput(
-                roomId: 'roomId-1',
-              ),
+            overrides: overrides,
+            child: InActerContextTestWrapper(
+              child: RoomTestWrapper(key: wrapperKey, roomId: 'roomId-1'),
             ),
           ),
         );
-
         // not visible
         expect(find.byKey(CustomChatInput.noAccessKey), findsNothing);
         expect(find.byKey(CustomChatInput.loadingKey), findsNothing);
+        await tester.pump();
 
-        final TextField textField = tester.widget(find.byType(TextField));
-        final controller = textField.controller!;
+        await enterText('Hello Room 1');
+        await verifyDraft('roomId-1');
 
-        // initial state should be empty
-        assert(controller.text.trim().isEmpty, true);
+        await tester.pump();
 
-        await tester.enterTextWithoutReplace(
-          find.byType(TextField),
-          'Hello Room 1',
-        );
+        // switch to another room
+        await switchRoom('roomId-2');
+        await enterText('Greetings Room 2');
+        await verifyDraft('roomId-2');
 
-        // open new room with fresh input
-        await tester.pumpWidget(
-          ProviderScope(
-            overrides: [
-              sdkProvider.overrideWith((ref) => MockActerSdk()),
-              ...overrides,
-            ],
-            child: const InActerContextTestWrapper(
-              child: CustomChatInput(
-                roomId: 'roomId-2',
-              ),
-            ),
-          ),
-        );
+        await tester.pump();
 
-        // not visible
-        expect(find.byKey(CustomChatInput.noAccessKey), findsNothing);
-        expect(find.byKey(CustomChatInput.loadingKey), findsNothing);
-
-        // switched to new room, initial state should be empty
-        assert(controller.text.trim().isEmpty, true);
-
-        await tester.enterTextWithoutReplace(
-          find.byType(TextField),
-          'Greetings Room 2',
-        );
-
-        // switch to previous room again
-        await tester.pumpWidget(
-          ProviderScope(
-            overrides: [
-              sdkProvider.overrideWith((ref) => MockActerSdk()),
-              ...overrides,
-            ],
-            child: const InActerContextTestWrapper(
-              child: CustomChatInput(
-                roomId: 'roomId-1',
-              ),
-            ),
-          ),
-        );
-
-        // not visible
-        expect(find.byKey(CustomChatInput.noAccessKey), findsNothing);
-        expect(find.byKey(CustomChatInput.loadingKey), findsNothing);
-
-        expect(find.text('Hello, Room 1'), findsOneWidget);
+        // switch back to room
+        await switchRoom('roomId-1');
+        // pump to ensure controller gets draft update
+        await tester.pump(Durations.short4);
+        await verifyDraft('roomId-1');
 
         // switch to next room again
-        await tester.pumpWidget(
-          ProviderScope(
-            overrides: [
-              sdkProvider.overrideWith((ref) => MockActerSdk()),
-              ...overrides,
-            ],
-            child: const InActerContextTestWrapper(
-              child: CustomChatInput(
-                roomId: 'roomId-2',
-              ),
+        await switchRoom('roomId-2');
+        // pump to ensure controller gets draft update
+        await tester.pump(Durations.short4);
+        await verifyDraft('roomId-2');
+
+        // This test is timing out due to a pending timer.
+        // See MultiTriggerAutocompleteState._onChangedField in:
+        // acter_trigger_autocomplete.dart:279
+        // put 300ms delay as (debounceTimerDuration)
+        await tester.pump(Durations.medium2);
+      },
+    );
+
+    testWidgets(
+        'Message Edit: focusing on textfield ensures controller doesn\'t reset ',
+        (tester) async {
+      // Function to verify text in TextField
+      void verifyText(String expectedText) {
+        final textField = find.byType(TextField);
+        final textFieldWidget = tester.widget<TextField>(textField);
+        expect(textFieldWidget.controller?.text, equals(expectedText));
+      }
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: overrides,
+          child: const InActerContextTestWrapper(
+            child: CustomChatInput(
+              roomId: 'roomId',
             ),
           ),
-        );
+        ),
+      );
+      // not visible
+      expect(find.byKey(CustomChatInput.noAccessKey), findsNothing);
+      expect(find.byKey(CustomChatInput.loadingKey), findsNothing);
 
-        // not visible
-        expect(find.byKey(CustomChatInput.noAccessKey), findsNothing);
-        expect(find.byKey(CustomChatInput.loadingKey), findsNothing);
+      final element = tester.element(find.byType(CustomChatInput));
+      final container = ProviderScope.containerOf(element);
 
-        expect(find.text('Greetings, Room 2'), findsOneWidget);
-      },
-      skip: true,
-    );
+      // now we select the one we want to edit to
+      final chatInputNotifier = container.read(chatInputProvider.notifier);
+      final mockMessage = buildMockTextMessage();
+      chatInputNotifier.setEditMessage(mockMessage);
+      await tester.pump();
+      // Verify that the text is updated to the edited message
+      verifyText(mockMessage.text);
+
+      // Simulate focusing the input (this should preserve the text)
+      final textField = find.byType(TextField);
+      await tester.tap(textField);
+      await tester.pump();
+
+      // Verify that the text is still preserved after focusing
+      verifyText(mockMessage.text);
+
+      // This test is timing out due to a pending timer.
+      // See MultiTriggerAutocompleteState._onChangedField in:
+      // acter_trigger_autocomplete.dart:279
+      // put 300ms delay as (debounceTimerDuration)
+      await tester.pump(Durations.medium2);
+    });
   });
 }

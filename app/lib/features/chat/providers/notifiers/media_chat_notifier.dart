@@ -120,7 +120,6 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
         destFile: destPath,
         width: 300,
         height: 300,
-        keepAspectRatio: true,
         format: 'jpeg',
         quality: 90,
       );

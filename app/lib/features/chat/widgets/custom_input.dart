@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:acter/common/models/types.dart';
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
@@ -32,7 +34,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 final _log = Logger('a3::chat::custom_input');
 
-final _allowEdit = StateProvider.family<bool, String>(
+final _allowEdit = StateProvider.family.autoDispose<bool, String>(
   (ref, roomId) => ref.watch(
     chatInputProvider
         .select((state) => state.sendingState == SendingState.preparing),
@@ -192,29 +194,38 @@ class _ChatInput extends ConsumerStatefulWidget {
 }
 
 class __ChatInputState extends ConsumerState<_ChatInput> {
-  late ActerTriggerAutoCompleteTextController textController;
+  late final ActerTriggerAutoCompleteTextController textController;
   final FocusNode chatFocus = FocusNode();
   final ValueNotifier<bool> _isInputEmptyNotifier = ValueNotifier(true);
+  Timer? _debounceTimer;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void initState() {
+    super.initState();
     _setController();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadDraft();
+    });
   }
 
   @override
-  void dispose() {
-    _isInputEmptyNotifier.dispose();
-    super.dispose();
+  void didUpdateWidget(covariant _ChatInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.roomId != widget.roomId) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        loadDraft();
+      });
+    }
   }
 
   void _setController() {
-    final Map<String, TextStyle> triggerStyles = {
+    // putting constant colors here as context isn't accessible in initState()
+    final triggerStyles = {
       '@': TextStyle(
-        color: Theme.of(context).colorScheme.onSecondary,
+        color: Colors.white,
         height: 0.5,
         background: Paint()
-          ..color = Theme.of(context).colorScheme.secondary
+          ..color = const Color(0xFF74A64D)
           ..strokeWidth = 10
           ..strokeJoin = StrokeJoin.round
           ..style = PaintingStyle.stroke,
@@ -223,12 +234,44 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     textController =
         ActerTriggerAutoCompleteTextController(triggerStyles: triggerStyles);
     textController.addListener(_updateInputState);
-    setState(() {});
+  }
+
+  // composer draft load state handler
+  Future<void> loadDraft() async {
+    final draft =
+        await ref.read(chatComposerDraftProvider(widget.roomId).future);
+
+    if (draft != null) {
+      final inputNotifier = ref.read(chatInputProvider.notifier);
+      inputNotifier.unsetSelectedMessage();
+      if (draft.eventId() != null) {
+        final eventId = draft.eventId()!;
+        final draftType = draft.draftType();
+
+        final m = ref
+            .read(chatMessagesProvider(widget.roomId))
+            .firstWhere((x) => x.id == eventId);
+        if (draftType == 'edit') {
+          inputNotifier.setEditMessage(m);
+        } else if (draftType == 'reply') {
+          inputNotifier.setReplyToMessage(m);
+        }
+      }
+      textController.text = draft.plainText();
+      _log.info('compose draft loaded for room: ${widget.roomId}');
+    }
   }
 
   // listener for handling send state
   void _updateInputState() {
     _isInputEmptyNotifier.value = textController.text.trim().isEmpty;
+    _debounceTimer?.cancel();
+    // delay operation to avoid excessive re-writes
+    _debounceTimer = Timer(const Duration(milliseconds: 300), () async {
+      // save composing draft
+      await saveDraft(textController.text, widget.roomId, ref);
+      _log.info('compose draft saved for room: ${widget.roomId}');
+    });
   }
 
   void handleEmojiSelected(Category? category, Emoji emoji) {
@@ -567,12 +610,9 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         ),
         const Spacer(),
         GestureDetector(
-          onTap: () {
+          onTap: () async {
             inputNotifier.unsetSelectedMessage();
-            // frame delay to keep focus connected with keyboard.
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              chatFocus.requestFocus();
-            });
+            chatFocus.requestFocus();
           },
           child: const Icon(Atlas.xmark_circle),
         ),
@@ -601,13 +641,9 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         ),
         const Spacer(),
         GestureDetector(
-          onTap: () {
-            textController.clear();
+          onTap: () async {
             inputNotifier.unsetSelectedMessage();
-            // frame delay to keep focus connected with keyboard..
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              chatFocus.requestFocus();
-            });
+            textController.clear();
           },
           child: const Icon(Atlas.xmark_circle),
         ),
@@ -661,6 +697,9 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       ref.read(chatInputProvider.notifier).messageSent();
 
       textController.clear();
+      // also clear composed state
+      final convo = await ref.read(chatProvider(widget.roomId).future);
+      await convo?.saveMsgDraft(textController.text, null, 'new', null);
     } catch (e, s) {
       _log.severe('Sending chat message failed', e, s);
       EasyLoading.showError(
@@ -669,6 +708,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       );
       ref.read(chatInputProvider.notifier).sendingFailed();
     }
+
     if (!chatFocus.hasFocus) {
       chatFocus.requestFocus();
     }
@@ -710,14 +750,15 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         if (next.selectedMessage != null) {
           widget.controller.text = parseEditMsg(next.selectedMessage!);
           // frame delay to keep focus connected with keyboard.
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            widget.chatFocus.requestFocus();
-          });
         }
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          widget.chatFocus.requestFocus();
+        });
       } else if (next.selectedMessageState == SelectedMessageState.replyTo &&
           (next.selectedMessage != prev?.selectedMessage ||
               prev?.selectedMessageState != next.selectedMessageState)) {
-        // frame delay to keep focus connected with keyboard..
+        // controller doesn't update text so manually save draft state
+        saveDraft(widget.controller.text, widget.roomId, ref);
         WidgetsBinding.instance.addPostFrameCallback((_) {
           widget.chatFocus.requestFocus();
         });
@@ -818,7 +859,8 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         controller: widget.controller,
         focusNode: chatFocus,
         enabled: ref.watch(_allowEdit(widget.roomId)),
-        onChanged: (val) {
+        onChanged: (String val) {
+          // send typing notice
           if (widget.onTyping != null) {
             widget.onTyping!(val.isNotEmpty);
           }

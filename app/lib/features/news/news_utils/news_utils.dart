@@ -31,7 +31,6 @@ class NewsUtils {
         destFile: destPath,
         width: 128,
         height: 128,
-        keepAspectRatio: true,
         format: 'jpeg',
         quality: 90,
       );

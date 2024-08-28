@@ -31,7 +31,7 @@ extension ErrorPageExtensions on WidgetTester {
     );
 
     await tap(find.byKey(ActerErrorDialog.retryBtn));
-    await pumpProviderScope(times: 2);
+    await pumpProviderScope(times: 5);
     try {
       // dialog is gone on retry working
       expect(

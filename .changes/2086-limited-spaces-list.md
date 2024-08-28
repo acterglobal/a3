@@ -1,1 +1,0 @@
-- [New] : Now you can see list of space with access on click of Limited Visibility button

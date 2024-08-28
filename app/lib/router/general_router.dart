@@ -96,6 +96,8 @@ final generalRoutes = [
     pageBuilder: (context, state) => DialogPage(
       builder: (BuildContext context) => BugReportPage(
         imagePath: state.uri.queryParameters['screenshot'],
+        error: state.uri.queryParameters['error'],
+        stack: state.uri.queryParameters['stack'],
       ),
     ),
   ),

@@ -1,5 +1,8 @@
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -270,4 +273,25 @@ String parseEditMsg(types.Message message) {
     }
   }
   return '';
+}
+
+// save composer draft object handler
+Future<void> saveDraft(String text, String roomId, WidgetRef ref) async {
+  // get the convo object to initiate draft
+  final chat = await ref.read(chatProvider(roomId).future);
+  final messageId = ref.read(chatInputProvider).selectedMessage?.id;
+
+  if (chat != null) {
+    if (messageId != null) {
+      final selectedMessageState =
+          ref.read(chatInputProvider).selectedMessageState;
+      if (selectedMessageState == SelectedMessageState.edit) {
+        await chat.saveMsgDraft(text, null, 'edit', messageId);
+      } else if (selectedMessageState == SelectedMessageState.replyTo) {
+        await chat.saveMsgDraft(text, null, 'reply', messageId);
+      }
+    } else {
+      await chat.saveMsgDraft(text, null, 'new', null);
+    }
+  }
 }

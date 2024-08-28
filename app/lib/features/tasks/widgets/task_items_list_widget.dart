@@ -14,21 +14,27 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::tasks::widgets::list');
 
-class TaskItemsListWidget extends ConsumerWidget {
+class TaskItemsListWidget extends ConsumerStatefulWidget {
   final TaskList taskList;
   final bool showCompletedTask;
 
-  TaskItemsListWidget({
+  const TaskItemsListWidget({
     super.key,
     required this.taskList,
     this.showCompletedTask = false,
   });
 
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      TaskItemsListWidgetState();
+}
+
+class TaskItemsListWidgetState extends ConsumerState<TaskItemsListWidget> {
   final ValueNotifier<bool> showInlineAddTask = ValueNotifier(false);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final overviewLoader = ref.watch(taskItemsListProvider(taskList));
+  Widget build(BuildContext context) {
+    final overviewLoader = ref.watch(taskItemsListProvider(widget.taskList));
     return overviewLoader.when(
       data: (overview) => taskData(context, overview),
       error: (e, s) {
@@ -41,6 +47,7 @@ class TaskItemsListWidget extends ConsumerWidget {
 
   Widget taskData(BuildContext context, TasksOverview overview) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         openTasksEntries(context, overview),
@@ -60,7 +67,7 @@ class TaskItemsListWidget extends ConsumerWidget {
         for (final taskId in overview.openTasks)
           TaskItem(
             onTap: () => showInlineAddTask.value = false,
-            taskListId: taskList.eventIdStr(),
+            taskListId: widget.taskList.eventIdStr(),
             taskId: taskId,
           ),
       ],
@@ -68,13 +75,13 @@ class TaskItemsListWidget extends ConsumerWidget {
   }
 
   Widget inlineAddTask() {
-    final taskListEventId = taskList.eventIdStr();
+    final taskListEventId = widget.taskList.eventIdStr();
     return ValueListenableBuilder(
       valueListenable: showInlineAddTask,
       builder: (context, value, child) {
         return value
             ? _InlineTaskAdd(
-                taskList: taskList,
+                taskList: widget.taskList,
                 cancel: () => showInlineAddTask.value = false,
               )
             : Container(
@@ -94,7 +101,7 @@ class TaskItemsListWidget extends ConsumerWidget {
   }
 
   Widget doneTasksEntries(BuildContext context, TasksOverview overview) {
-    if (overview.doneTasks.isEmpty || !showCompletedTask) {
+    if (overview.doneTasks.isEmpty || !widget.showCompletedTask) {
       return const SizedBox.shrink();
     }
 
@@ -112,7 +119,7 @@ class TaskItemsListWidget extends ConsumerWidget {
         ),
         for (final taskId in overview.doneTasks)
           TaskItem(
-            taskListId: taskList.eventIdStr(),
+            taskListId: widget.taskList.eventIdStr(),
             taskId: taskId,
             onTap: () => showInlineAddTask.value = false,
           ),
