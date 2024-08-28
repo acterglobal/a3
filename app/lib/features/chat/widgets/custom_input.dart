@@ -285,6 +285,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     String prefixText = '';
     // Get cursor current position
     var cursorPos = textController.selection.base.offset;
+    int emojiLength = emoji.emoji.length;
+
     if (cursorPos >= 0) {
       // can be -1 on empty and never accessed
 
@@ -293,14 +295,14 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
 
       // Get the left text of cursor
       prefixText = textController.text.substring(0, cursorPos);
+      textController.text = prefixText + emoji.emoji + suffixText;
     } else {
-      cursorPos = 0;
+      // no focus yet, add the emoji at the end of the content
+      cursorPos = textController.text.length;
+      textController.text += emoji.emoji;
     }
 
-    int emojiLength = emoji.emoji.length;
-
     // Add emoji at current current cursor position
-    textController.text = prefixText + emoji.emoji + suffixText;
 
     // Cursor move to end of added emoji character
     textController.selection = TextSelection(
