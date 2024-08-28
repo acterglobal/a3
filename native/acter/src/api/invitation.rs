@@ -11,6 +11,7 @@ use ruma_common::{OwnedRoomId, OwnedUserId, RoomId};
 use ruma_events::room::member::{MembershipState, StrippedRoomMemberEvent, SyncRoomMemberEvent};
 use std::time::{SystemTime, UNIX_EPOCH};
 use tokio::time::{sleep, Duration};
+use tokio_retry::{strategy::FixedInterval, Retry};
 use tracing::{error, info};
 
 use super::{
@@ -77,40 +78,20 @@ impl Invitation {
     }
 
     pub async fn accept(&self) -> Result<bool> {
-        let room_id = self.room.room_id().to_owned();
-        let room = self
-            .core
-            .client()
-            .get_room(&room_id)
-            .context("Room not found")?;
+        let room = self.room.clone();
         if !matches!(room.state(), RoomState::Invited) {
-            bail!("Unable to get a room we are not invited");
+            bail!("Unable to join a room we are not invited to");
         }
         // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
-                let mut delay = 2;
-                while let Err(err) = room.join().await {
-                    // retry autojoin due to synapse sending invites, before the
-                    // invited user can join for more information see
-                    // https://github.com/matrix-org/synapse/issues/4345
-                    error!(
-                        "Failed to accept room {} ({:?}), retrying in {}s",
-                        room.room_id(),
-                        err,
-                        delay,
-                    );
-
-                    sleep(Duration::from_secs(delay)).await;
-                    delay *= 2;
-
-                    if delay > 3600 {
-                        error!("Unable to accept room {} ({:?})", room.room_id(), err);
-                        break;
-                    }
-                }
-                info!("Successfully accepted room {}", room.room_id());
-                Ok(delay <= 3600)
+                let strategy = FixedInterval::from_millis(2000).take(5);
+                Retry::spawn(strategy, move || {
+                    let room = room.clone();
+                    async move { room.join().await }
+                })
+                .await?;
+                Ok(true)
             })
             .await?
     }

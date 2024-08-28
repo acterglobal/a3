@@ -1,7 +1,5 @@
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/comments/providers/comments.dart';
 import 'package:acter/features/comments/widgets/comments_list.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -21,10 +19,6 @@ class CommentsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final provider = ref.watch(featuresProvider);
-    if (!provider.isActive(LabsFeature.comments)) {
-      return const SizedBox.shrink();
-    }
     final managerLoader = ref.watch(commentsManagerProvider(manager));
     return managerLoader.when(
       data: (manager) => found(context, manager),

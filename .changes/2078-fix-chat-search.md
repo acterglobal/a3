@@ -1,1 +1,0 @@
-- Fix a bug that the chat list search results wouldn't properly update upon keystrokes

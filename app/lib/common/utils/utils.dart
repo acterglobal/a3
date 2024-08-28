@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -408,26 +409,34 @@ enum LabsFeature {
   cobudget,
   polls,
   discussions,
-  comments,
 
   // specific features
   chatUnread,
 
   // system features
   deviceCalendarSync,
+  encryptionBackup,
 
-  // not a lab anymore but needs to stay for backwards compat
+  // candidates for always on
+  comments,
+  mobilePushNotifications,
+
+  // -- not a lab anymore but needs to stay for backwards compat
   tasks,
   events,
   pins,
+  showNotifications; // old name for desktop notifications
 
-  // searchOptions
-  encryptionBackup,
-  showNotifications, // FIXME: old name for desktop notifications
-  mobilePushNotifications;
+  static List<LabsFeature> get defaults =>
+      isDevBuild || isNightly ? nightlyDefaults : releaseDefaults;
 
-  static List<LabsFeature> get defaults => [
-        LabsFeature.comments,
+  static List<LabsFeature> get releaseDefaults => [
+        LabsFeature.mobilePushNotifications,
+      ];
+
+  static List<LabsFeature> get nightlyDefaults => [
+        LabsFeature.encryptionBackup,
+        LabsFeature.deviceCalendarSync,
         LabsFeature.mobilePushNotifications,
       ];
 }
