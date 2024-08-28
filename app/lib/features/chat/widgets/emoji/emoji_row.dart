@@ -109,6 +109,7 @@ class EmojiRow extends StatelessWidget {
             onEmojiTap(message.id, emoji.emoji);
             Navigator.pop(context);
           },
+          onClosePicker: () => Navigator.pop(context),
         ),
       );
 }
