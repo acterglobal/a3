@@ -328,11 +328,24 @@ jobs:
       - name: Create PKGBUILD file
         run: |
           cp app/linux/packaging/aur/PKGBUILD PKGBUILD
-          sed -i "s/%{{TAG}}%/${{ needs.tags.outputs.version }}/g" PKGBUILD
-          VERSION=$(echo ${{ needs.tags.outputs.version }} | sed "s/-/./g")
+
+          VERSION=${{ needs.tags.outputs.version }}
+          DOWNLOAD_PATH='v$VERSION/acter-linux-x64-$VERSION.tar.bz2'
+          MD5SUM=md5sum acter-linux-x64-${{ needs.tags.outputs.version }}.tar.bz2  | awk '{print $1}'
+
+          echo "Version: $VERSION"
+          echo "Download Path: $DOWNLOAD_PATH"
+          echo "MD5Sum: $MD5SUM"
+
+          sed -i "s/%{{PKGNAME}}%/acter-bin/g" PKGBUILD
+          sed -i "s/%{{PKGNAME_CONFLICTS}}%/acter-nightly-bin/g" PKGBUILD
+
           sed -i "s/%{{VERSION}}%/$VERSION/g" PKGBUILD
-          sed -i "s/%{{PKGREL}}%/2/g" PKGBUILD
-          sed -i "s/%{{LINUX_MD5}}%/`md5sum acter-linux-x64-${{ needs.tags.outputs.version }}.tar.bz2  | awk '{print $1}'`/g" PKGBUILD
+          sed -i "s/%{{DOWNLOAD_PATH}}%/$DOWNLOAD_PATH/g" PKGBUILD
+          sed -i "s/%{{LINUX_MD5}}%/$MD5SUM/g" PKGBUILD
+
+          echo " --- Final PKGBUILD File "
+          cat PKGBUILD
       - uses: KSXGitHub/github-actions-deploy-aur@v2.7.2
         name: Publish to AUR
         with:
@@ -357,11 +370,25 @@ jobs:
           name: Linux x64
       - name: Patch PKGBUILD file
         run: |
-          cp app/linux/packaging/aur/PKGBUILD-nightly PKGBUILD
-          sed -i "s/%{{TAG}}%/${{ needs.tags.outputs.tag }}/g" PKGBUILD
-          sed -i "s/%{{VERSION}}%/${{ needs.tags.outputs.version }}/g" PKGBUILD
-          sed -i "s/%{{PKGREL}}%/1/g" PKGBUILD
-          sed -i "s/%{{LINUX_MD5}}%/`md5sum acter-linux-x64-${{ needs.tags.outputs.version }}.tar.bz2  | awk '{print $1}'`/g" PKGBUILD
+          cp app/linux/packaging/aur/PKGBUILD PKGBUILD
+
+          VERSION=${{ needs.tags.outputs.version }}
+          DOWNLOAD_PATH='v$VERSION/acter-linux-x64-$VERSION.tar.bz2'
+          MD5SUM=md5sum acter-linux-x64-$VERSION.tar.bz2  | awk '{print $1}'
+
+          echo "Version: $VERSION"
+          echo "Download Path: $DOWNLOAD_PATH"
+          echo "MD5Sum: $MD5SUM"
+
+          sed -i "s/%{{PKGNAME}}%/acter-nightly-bin/g" PKGBUILD
+          sed -i "s/%{{PKGNAME_CONFLICTS}}%/acter-bin/g" PKGBUILD
+
+          sed -i "s/%{{VERSION}}%/$VERSION/g" PKGBUILD
+          sed -i "s/%{{DOWNLOAD_PATH}}%/$DOWNLOAD_PATH/g" PKGBUILD
+          sed -i "s/%{{LINUX_MD5}}%/$MD5SUM/g" PKGBUILD
+
+          echo " --- Final PKGBUILD File "
+          cat PKGBUILD
       - uses: KSXGitHub/github-actions-deploy-aur@v2.7.2
         name: Publish to AUR
         with:

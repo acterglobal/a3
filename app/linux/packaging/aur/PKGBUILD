@@ -1,7 +1,7 @@
 # Maintainer: Benjamin Kampmann <ben@acter.global>
-pkgname=acter-bin
+pkgname=%{{PKGNAME}}%
 pkgver=%{{VERSION}}%
-pkgrel=%{{PKGREL}}%
+pkgrel=1
 epoch=
 pkgdesc="Casual Community Organizing"
 arch=(x86_64)
@@ -13,7 +13,7 @@ makedepends=()
 checkdepends=()
 optdepends=()
 provides=()
-conflicts=('acter-nightly-bin')
+conflicts=('%{{PKGNAME_CONFLICTS}}%')
 replaces=()
 backup=()
 options=()
