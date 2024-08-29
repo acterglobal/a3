@@ -524,11 +524,6 @@ jobs:
           # emulator-build: 7425822  # workaround to emulator bug: https://github.com/ReactiveCircus/android-emulator-runner/issues/160
           script: |
             sleep 15
-            adb root
-            adb logcat -c
-            touch emulator.log
-            chmod 777 emulator.log
-            adb logcat >> emulator.log &
             ./.github/scripts/flutter-integration-tests.sh --run-only "${{matrix.tests}}"
 
       - name: Upload artifacts
@@ -537,7 +532,6 @@ jobs:
         with:
           name: android-convtest-report-${{matrix.api_level}}-${{matrix.tests}}
           path: |
-            emulator.log
             /tmp/ConvenientTest/
 
       # file an error if this failed on `main` post-merge
