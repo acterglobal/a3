@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   run_checker:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: Check legibility
     outputs:
       should_run_all: ${{steps.PR.outputs.pr_found == 'true' && contains(steps.PR.outputs.pr_labels, 'ci-test-ui-all')}}
@@ -48,7 +48,7 @@ jobs:
           prLabels: ${{ steps.PR.outputs.pr_labels }}
           contains: ${{ contains(steps.PR.outputs.pr_labels, 'ci-test-ui') }}
   # flutter-desktop:
-  #   runs-on: ubuntu-latest
+  #   runs-on: ubuntu-22.04
   #   name: Flutter Desktop
   #   continue-on-error: true
   #   needs:
@@ -301,7 +301,7 @@ jobs:
 
   android-build:
     # added to build the android only once and then cache it for the actual tests runs
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: Android build
     # if: ${{ github.ref == 'refs/heads/main' || needs.run_checker.outputs.should_run_android != 'false' || needs.run_checker.outputs.should_run_emulator != 'false' || needs.run_checker.outputs.should_run_all != 'false' }}
     needs:
@@ -347,7 +347,7 @@ jobs:
 
 
   android:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: Android
     needs:
      - android-build
@@ -379,14 +379,14 @@ jobs:
         with:
           path: |
             ~/.cargo
-          key: ubuntu-latest-cargo-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
+          key: ubuntu-22.04-cargo-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
 
       - name: Cache Rust
         uses: actions/cache@v4
         with:
           path: |
             target
-          key: ubuntu-latest-android-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
+          key: ubuntu-22.04-android-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
 
       - uses: actions/setup-java@v4
         with:
@@ -425,6 +425,7 @@ jobs:
           uploadLogs: true
           httpPort: 8118
           disableRateLimiting: true
+          public_baseurl: "http://10.0.2.2:8080/"
           customModules: synapse_super_invites
           customConfig: |
             email:
@@ -496,17 +497,17 @@ jobs:
           ls -ltash .env*
 
 
-      # - name: create AVD and generate snapshot for caching
-      #   if: steps.avd-cache.outputs.cache-hit != 'true'
-      #   uses: reactivecircus/android-emulator-runner@v2
-      #   with:
-      #     api-level: 28
-      #     arch: x86_64
-      #     profile: Nexus 6
-      #     force-avd-creation: false
-      #     emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-      #     disable-animations: false
-      #     script: echo "Generated AVD snapshot for caching."
+      - name: create AVD and generate snapshot for caching
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{matrix.api_level}}
+          arch: x86_64
+          profile: google_apis
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          # disable-animations: false
+          script: echo "Generated AVD snapshot for caching."
 
       - name: Run integration tests on android
         uses: reactivecircus/android-emulator-runner@v2
@@ -514,14 +515,15 @@ jobs:
         with:
           api-level: ${{matrix.api_level}}
           arch: x86_64
-          profile: Nexus 6
+          profile: google_apis
           force-avd-creation: false
           # emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: true
+          # disable-animations: true
 
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          emulator-build: 7425822  # workaround to emulator bug: https://github.com/ReactiveCircus/android-emulator-runner/issues/160
+          # emulator-build: 7425822  # workaround to emulator bug: https://github.com/ReactiveCircus/android-emulator-runner/issues/160
           script: |
+            sleep 15
             adb root
             adb logcat -c
             touch emulator.log
