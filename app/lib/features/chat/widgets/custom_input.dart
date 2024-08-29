@@ -371,14 +371,6 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  ValueListenableBuilder<bool>(
-                    valueListenable: _isInputEmptyNotifier,
-                    builder: (context, isEmpty, child) {
-                      return isEmpty
-                          ? renderAttachmentPinButton()
-                          : const SizedBox();
-                    },
-                  ),
                   Flexible(
                     child: _TextInputWidget(
                       roomId: widget.roomId,
@@ -394,7 +386,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
                     builder: (context, isEmpty, child) {
                       return !isEmpty
                           ? renderSendButton(context, roomId)
-                          : const SizedBox();
+                          : renderAttachmentPinButton();
                     },
                   ),
                 ],
@@ -421,7 +413,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
 
   Widget renderAttachmentPinButton() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 14),
       child: InkWell(
         onTap: () => selectAttachment(
           context: context,
@@ -898,7 +890,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
           fillColor: Theme.of(context).unselectedWidgetColor.withOpacity(0.5),
           contentPadding: const EdgeInsets.all(15),
           isCollapsed: true,
-          suffixIcon: InkWell(
+          prefixIcon: InkWell(
             onTap: () => onSuffixTap(
               ref.read(chatInputProvider).emojiPickerVisible,
               context,
@@ -910,6 +902,24 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
               ? L10n.of(context).newEncryptedMessage
               : L10n.of(context).newMessage,
           hintMaxLines: 1,
+          focusedBorder: OutlineInputBorder(
+            borderSide: const BorderSide(
+              width: 0.5,
+              color: Colors.white38,
+            ),
+            borderRadius: BorderRadius.circular(30),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: const BorderSide(
+              width: 0.5,
+              color: Colors.white30,
+            ),
+            borderRadius: BorderRadius.circular(30),
+          ),
+          border: OutlineInputBorder(
+            borderSide: BorderSide.none,
+            borderRadius: BorderRadius.circular(30),
+          ),
         ),
       ),
     );

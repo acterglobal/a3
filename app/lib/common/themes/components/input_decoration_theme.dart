@@ -6,7 +6,7 @@ var inputDecorationTheme = InputDecorationTheme(
   filled: true,
   focusedBorder: OutlineInputBorder(
     borderSide: const BorderSide(
-      color: Colors.white54,
+      color: Colors.white70,
     ),
     borderRadius: BorderRadius.circular(12),
   ),
