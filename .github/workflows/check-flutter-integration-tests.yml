@@ -330,11 +330,14 @@ jobs:
       - name: Rust Android Setup
         run: cargo make setup-android
 
-      - uses: nttld/setup-ndk@v1
-        id: setup-ndk
-        with:
-          ndk-version: r25
-          link-to-sdk: true
+      - name: Install NDK $NDK_VERSION
+        run: |
+          ANDROID_ROOT=/usr/local/lib/android
+          ANDROID_SDK_ROOT=${ANDROID_ROOT}/sdk
+          SDKMANAGER=${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager
+          echo "y" | $SDKMANAGER "ndk;$NDK_VERSION"
+          echo "Installed $NDK_VERSION"
+          ls /usr/local/lib/android/sdk/ndk/$NDK_VERSION
 
       - name: Build Native
         run: |
@@ -398,11 +401,14 @@ jobs:
       - name: Rust Android Setup
         run: cargo make setup-android
 
-      - uses: nttld/setup-ndk@v1
-        id: setup-ndk
-        with:
-          ndk-version: r25
-          link-to-sdk: true
+      - name: Install NDK $NDK_VERSION
+        run: |
+          ANDROID_ROOT=/usr/local/lib/android
+          ANDROID_SDK_ROOT=${ANDROID_ROOT}/sdk
+          SDKMANAGER=${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager
+          echo "y" | $SDKMANAGER "ndk;$NDK_VERSION"
+          echo "Installed $NDK_VERSION"
+          ls /usr/local/lib/android/sdk/ndk/$NDK_VERSION
 
       - uses: subosito/flutter-action@v2
         name: Set up flutter
