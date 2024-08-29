@@ -460,6 +460,23 @@ jobs:
         working-directory: ./app
         run: dart run enven
 
+      - name: Write environment
+        working-directory: ./app
+        shell: bash
+        run: |
+          cat <<EOF > .env.production
+          RAGESHAKE_URL=http://10.0.2.2:9110/api/listing
+          RAGESHAKE_APP_NAME=acter-ci
+          DEFAULT_HOMESERVER_URL=http://10.0.2.2:8118
+          DEFAULT_HOMESERVER_NAME=10.0.2.2
+          EOF
+
+          dart run enven
+
+          echo "Show .env files"
+          ls -ltash .env*
+
+
       # - name: create AVD and generate snapshot for caching
       #   if: steps.avd-cache.outputs.cache-hit != 'true'
       #   uses: reactivecircus/android-emulator-runner@v2
