@@ -195,52 +195,6 @@ class MultiTriggerAutocompleteState extends State<MultiTriggerAutocomplete> {
         _currentTrigger != null;
   }
 
-  // void acceptAutocompleteOption(
-  //   String option, {
-  //   bool keepTrigger = true,
-  // }) {
-  //   if (option.isEmpty) return;
-
-  //   final query = _currentQuery;
-  //   final trigger = _currentTrigger;
-  //   if (query == null || trigger == null) return;
-
-  //   final querySelection = query.selection;
-  //   final text = _textEditingController.text;
-
-  //   var start = querySelection.baseOffset;
-  //   if (!keepTrigger) start -= 1;
-
-  //   final end = querySelection.extentOffset;
-
-  //   final alreadyContainsSpace = text.substring(end).startsWith(' ');
-  //   // Having extra space helps dismissing the auto-completion view.
-  //   if (!alreadyContainsSpace) option += ' ';
-
-  //   var selectionOffset = start + option.length;
-  //   // In case the extra space is already there, we need to move the cursor
-  //   // after the space.
-  //   if (alreadyContainsSpace) selectionOffset += 1;
-
-  //   final newText = text.replaceRange(start, end, option);
-  //   final newSelection = TextSelection.collapsed(offset: selectionOffset);
-
-  //   _textEditingController.value = TextEditingValue(
-  //     text: newText,
-  //     selection: newSelection,
-  //   );
-
-  //   final tag = TaggedText(
-  //     trigger: trigger.trigger,
-  //     displayText: option,
-  //     start: start - 1,
-  //     end: option.length,
-  //   );
-  //   _textEditingController.addTag(tag);
-
-  //   return closeOptions();
-  // }
-
   void acceptAutocompleteOption(
     String option, {
     bool keepTrigger = true,

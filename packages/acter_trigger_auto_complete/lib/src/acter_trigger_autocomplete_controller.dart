@@ -1,70 +1,6 @@
-// import 'package:flutter/material.dart';
-
-// /// Extended [TextEditingController] which takes up trigger styles as optional.
-// /// Styles the trigger inputs based on map for mentions, hashtags or emojis etc.
-// /// If provided empty, will use default [TextStyle].
-// class ActerTriggerAutoCompleteTextController extends TextEditingController {
-//   ActerTriggerAutoCompleteTextController({super.text, this.triggerStyles});
-
-//   final Map<String, TextStyle>? triggerStyles;
-//   @override
-//   TextSpan buildTextSpan({
-//     required BuildContext context,
-//     TextStyle? style,
-//     required bool withComposing,
-//   }) {
-//     final List<TextSpan> children = [];
-//     final String text = this.text;
-
-//     if (triggerStyles == null || triggerStyles!.isEmpty) {
-//       return TextSpan(text: text, style: style ?? const TextStyle());
-//     }
-
-//     int lastIndex = 0;
-//     for (final entry in triggerStyles!.entries) {
-//       final trigger = entry.key;
-//       final triggerStyle = entry.value;
-//       // This regex matches a string that starts with trigger followed by one or more non-whitespace characters.
-//       // It can be optionally followed by additional groups of one or more non-whitespace characters separated by spaces.
-//       // The match stops at a trailing last word whitespace character.
-//       /// Example: @John, @John Doe etc.
-//       final regex = RegExp('\\$trigger\\S+(?: \\S+)*(?=\\s)');
-//       final matches = regex.allMatches(text);
-
-//       for (final match in matches) {
-//         if (match.start > lastIndex) {
-//           children.add(
-//             TextSpan(
-//               text: text.substring(lastIndex, match.start),
-//               style: style ?? const TextStyle(),
-//             ),
-//           );
-//         }
-//         children.add(
-//           TextSpan(
-//             text: match.group(0),
-//             style: (style ?? const TextStyle()).merge(triggerStyle),
-//           ),
-//         );
-//         lastIndex = match.end;
-//       }
-//     }
-
-//     if (lastIndex < text.length) {
-//       children.add(
-//         TextSpan(
-//           text: text.substring(lastIndex),
-//           style: style ?? const TextStyle(),
-//         ),
-//       );
-//     }
-
-//     return TextSpan(children: children);
-//   }
-// }
-
 import 'package:flutter/material.dart';
 
+// Tags Representation .i.e. user mentions, room mentions etc
 class TaggedText {
   final String trigger;
   final String displayText;
@@ -79,12 +15,16 @@ class TaggedText {
   });
 }
 
-/// Extended [TextEditingController] which handles generic triggers.
+/// /// Extended [TextEditingController] which takes up trigger styles as optional.
+/// Styles the trigger inputs based on map for mentions, hashtags or emojis etc.
+/// If provided empty, will use default [TextStyle].
+
 class ActerTriggerAutoCompleteTextController extends TextEditingController {
   ActerTriggerAutoCompleteTextController({
     super.text,
     this.triggerStyles,
   }) {
+    // add listener for tag changes
     addListener(_tagListener);
   }
 
@@ -102,30 +42,105 @@ class ActerTriggerAutoCompleteTextController extends TextEditingController {
     notifyListeners();
   }
 
+  // helper function used to parse tags from text
+  void addTagsFromText(String text) {
+    _tags.clear();
+    if (triggerStyles == null || triggerStyles!.isEmpty) return;
+
+    for (final trigger in triggerStyles!.keys) {
+      int startIndex = 0;
+      while (true) {
+        startIndex = text.indexOf(trigger, startIndex);
+        if (startIndex == -1) break;
+
+        int endIndex = startIndex + 1;
+        bool inTag = true;
+        int spaceCount = 0;
+        const maxSpaces = 1;
+
+        while (endIndex < text.length && inTag) {
+          if (text[endIndex] == ' ') {
+            spaceCount++;
+            if (spaceCount > maxSpaces) {
+              inTag = false;
+            }
+          } else if (text[endIndex] == '@') {
+            // Stop if we encounter another trigger
+            inTag = false;
+          }
+          if (inTag) endIndex++;
+        }
+
+        if (endIndex > startIndex + 1) {
+          _tags.add(
+            TaggedText(
+              trigger: trigger,
+              displayText: text.substring(startIndex, endIndex).trim(),
+              start: startIndex,
+              end: endIndex,
+            ),
+          );
+        }
+
+        startIndex = endIndex;
+      }
+    }
+
+    notifyListeners();
+  }
+
   void removeTag(TaggedText tag) {
     _tags.removeWhere((t) => t.start == tag.start && t.end == tag.end);
     notifyListeners();
   }
 
+  void _updateTagPositions() {
+    final text = this.text;
+    _tags.removeWhere((tag) => tag.start >= text.length);
+
+    for (var i = 0; i < _tags.length; i++) {
+      var tag = _tags[i];
+      if (tag.end > text.length) {
+        tag = TaggedText(
+          trigger: tag.trigger,
+          displayText: text.substring(tag.start, text.length),
+          start: tag.start,
+          end: text.length,
+        );
+        _tags[i] = tag;
+      }
+    }
+  }
+
   void _tagListener() {
+    _updateTagPositions();
+
     final text = this.text;
     final selection = this.selection;
 
-    // Check if we're at the end of a tag
+    // Check if we're at the end of a tag or just after it
     final potentialTagEnd = selection.baseOffset;
     final tagToRemove = _tags.firstWhere(
-      (tag) => tag.end == potentialTagEnd,
+      (tag) => tag.end == potentialTagEnd || tag.end == potentialTagEnd + 1,
       orElse: () =>
           TaggedText(trigger: '', displayText: '', start: -1, end: -1),
     );
 
     if (tagToRemove.start != -1) {
-      // We're at the end of a tag, check if the user is trying to delete it
-      if (selection.baseOffset != selection.extentOffset ||
-          (selection.baseOffset > 0 && text[selection.baseOffset - 1] == ' ')) {
+      // Check if the user is actually trying to delete the tag
+      if (selection.baseOffset == selection.extentOffset &&
+          selection.baseOffset > 0 &&
+          text.length < value.composing.start) {
+        // Check if text was actually deleted
+
+        // Remove the entire tag
         removeTag(tagToRemove);
-        // You might want to also remove the tag from the text here
-        this.text = text.replaceRange(tagToRemove.start, tagToRemove.end, '');
+
+        // Remove the tag from the text
+        value = TextEditingValue(
+          text: text.replaceRange(tagToRemove.start, tagToRemove.end, ''),
+          selection: TextSelection.collapsed(offset: tagToRemove.start),
+        );
       }
     }
   }
