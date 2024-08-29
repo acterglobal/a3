@@ -330,12 +330,13 @@ jobs:
       - uses: nttld/setup-ndk@v1
         id: setup-ndk
         with:
-          ndk-version: r25
+          ndk-version: r27
           link-to-sdk: true
 
       - name: Build Native
         env:
           ANDROID_NDK_HOME: ${{steps.setup-ndk.outputs.ndk-path}}
+          ANDROID_NDK_ROOT: ${{steps.setup-ndk.outputs.ndk-path}}
         run: cargo make android-dev
 
 
@@ -440,6 +441,7 @@ jobs:
       - name: Build Native
         env:
           ANDROID_NDK_HOME: ${{steps.setup-ndk.outputs.ndk-path}}
+          ANDROID_NDK_ROOT: ${{steps.setup-ndk.outputs.ndk-path}}
         run: cargo make android-dev
 
       - name: Flutter setup
