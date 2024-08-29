@@ -103,22 +103,16 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       actions: selectedNewsPost == null
           ? []
           : [
-              OutlinedButton(
+              OutlinedButton.icon(
                 onPressed: () => selectActionItemDialog(context),
                 style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.add),
-                    const SizedBox(width: 4),
-                    Text(L10n.of(context).action),
-                    const SizedBox(width: 4),
-                  ],
-                ),
+                icon: const Icon(Icons.add),
+                label: Text(L10n.of(context).action),
               ),
               IconButton(
                 key: NewsUpdateKeys.slideBackgroundColor,
