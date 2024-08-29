@@ -319,6 +319,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+          cache: gradle
 
       - name: Install cargo-make
         uses: davidB/rust-cargo-make@v1
@@ -330,8 +331,11 @@ jobs:
         id: setup-ndk
         with:
           ndk-version: r25
+          link-to-sdk: true
 
       - name: Build Native
+        env:
+          ANDROID_NDK_HOME: ${{steps.setup-ndk.outputs.ndk-path}}
         run: cargo make android-dev
 
 
@@ -381,6 +385,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+          cache: gradle
 
       - name: Install cargo-make
         if: steps.cache-cargo.outputs.cache-hit != 'true'
@@ -393,6 +398,7 @@ jobs:
         id: setup-ndk
         with:
           ndk-version: r25
+          link-to-sdk: true
 
       - uses: subosito/flutter-action@v2
         name: Set up flutter
@@ -432,6 +438,8 @@ jobs:
           ./MailHog_linux_amd64 &
 
       - name: Build Native
+        env:
+          ANDROID_NDK_HOME: ${{steps.setup-ndk.outputs.ndk-path}}
         run: cargo make android-dev
 
       - name: Flutter setup
@@ -469,6 +477,7 @@ jobs:
           RAGESHAKE_APP_NAME=acter-ci
           DEFAULT_HOMESERVER_URL=http://10.0.2.2:8118
           DEFAULT_HOMESERVER_NAME=10.0.2.2
+          isCI=true
           EOF
 
           dart run enven
