@@ -11,6 +11,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class SpaceActionsSection extends ConsumerWidget {
+  static const createChatAction = Key('space-action-create-chat');
+  static const createSpaceAction = Key('space-action-create-space');
   final String spaceId;
 
   const SpaceActionsSection({
@@ -120,6 +122,7 @@ class SpaceActionsSection extends ConsumerWidget {
     if (canLinkSpaces) {
       children.addAll([
         simpleActionButton(
+          key: createChatAction,
           context: context,
           iconData: Atlas.chats,
           title: L10n.of(context).addChat,
@@ -130,6 +133,7 @@ class SpaceActionsSection extends ConsumerWidget {
           ),
         ),
         simpleActionButton(
+          key: createSpaceAction,
           context: context,
           iconData: Icons.people,
           title: L10n.of(context).addSpace,
@@ -170,8 +174,10 @@ class SpaceActionsSection extends ConsumerWidget {
     required IconData iconData,
     required String title,
     required VoidCallback onPressed,
+    Key? key,
   }) {
     return TextButton.icon(
+      key: key,
       onPressed: onPressed,
       icon: Icon(iconData),
       label: Text(

@@ -3,12 +3,10 @@ use ruma_events::EmptyStateKey;
 use ruma_macros::EventContent;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Deserialize, Serialize, Builder)]
-#[derive(Default)]
+#[derive(Clone, Debug, Deserialize, Serialize, Builder, Default)]
 pub struct SimpleSettingWithTurnOn {
     active: bool,
 }
-
 
 impl SimpleSettingWithTurnOn {
     pub fn active(&self) -> bool {

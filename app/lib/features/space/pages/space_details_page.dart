@@ -217,6 +217,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
 
   Widget spaceTabMenuUI(BuildContext context, TabEntry tabItem, bool active) {
     return Container(
+      key: Key(tabItem.name),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       margin: const EdgeInsets.only(left: 12, top: 12, bottom: 12),
       decoration: BoxDecoration(
