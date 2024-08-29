@@ -412,6 +412,7 @@ enum LabsFeature {
 
   // specific features
   chatUnread,
+  obfuscatedApp,
 
   // system features
   deviceCalendarSync,

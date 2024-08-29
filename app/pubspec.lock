@@ -116,6 +116,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.0.12"
+  auto_size_text:
+    dependency: transitive
+    description:
+      name: auto_size_text
+      sha256: "3f5261cd3fb5f2a9ab4e2fc3fba84fd9fcaac8821f20a1d4e71f557521b22599"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0"
   basic_utils:
     dependency: transitive
     description:
@@ -481,18 +489,18 @@ packages:
     dependency: transitive
     description:
       name: dio
-      sha256: e17f6b3097b8c51b72c74c9f071a605c47bcc8893839bd66732457a5ebe73714
+      sha256: "0dfb6b6a1979dac1c1245e17cef824d7b452ea29bd33d3467269f9bef3715fb0"
       url: "https://pub.dev"
     source: hosted
-    version: "5.5.0+1"
+    version: "5.6.0"
   dio_web_adapter:
     dependency: transitive
     description:
       name: dio_web_adapter
-      sha256: "36c5b2d79eb17cdae41e974b7a8284fec631651d2a6f39a8a2ff22327e90aeac"
+      sha256: "33259a9276d6cea88774a0000cfae0d861003497755969c92faa223108620dc8"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.1"
+    version: "2.0.0"
   dotted_border:
     dependency: "direct main"
     description:
@@ -729,6 +737,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.5"
+  flutter_grid_button:
+    dependency: transitive
+    description:
+      name: flutter_grid_button
+      sha256: "51e8a3838439ccdc33363a8fec2cb7575d63a3a2cf37f189d110a05ae2740752"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
   flutter_highlight:
     dependency: transitive
     description:
@@ -936,6 +952,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.2"
+  flutter_simple_calculator:
+    dependency: "direct main"
+    description:
+      name: flutter_simple_calculator
+      sha256: f88568cc8db0c8c865095b5ae4cbaa9faa67a230b4a353f07367a275902a7022
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.0"
   flutter_slidable:
     dependency: "direct main"
     description:
@@ -1043,10 +1067,10 @@ packages:
     dependency: "direct main"
     description:
       name: go_router
-      sha256: "39dd52168d6c59984454183148dc3a5776960c61083adfc708cc79a7b3ce1ba8"
+      sha256: cdae1b9c8bd7efadcef6112e81c903662ef2ce105cbd220a04bbb7c3425b5554
       url: "https://pub.dev"
     source: hosted
-    version: "14.2.1"
+    version: "14.2.0"
   google_identity_services_web:
     dependency: transitive
     description:
@@ -1380,6 +1404,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.11.1"
+  math_expressions:
+    dependency: transitive
+    description:
+      name: math_expressions
+      sha256: db0b72d867491c4e53a1c773e2708d5d6e94bbe06be07080fc9f896766b9cd3d
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.5.0"
   matrix_link_text:
     dependency: transitive
     description:
@@ -2006,14 +2038,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  secure_application:
+    dependency: "direct main"
+    description:
+      name: secure_application
+      sha256: b8e34b4bc2467a3a3c0a649e46ae6a442df7ca27aeaddebb8a53c40656da0385
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.1"
   sensors_plus:
     dependency: transitive
     description:
       name: sensors_plus
-      sha256: "142212b10316640e9b14fe508e2a292707d5f264aed3b1d6dabe61b8cb15e839"
+      sha256: "90f2d38471ca75625f6569d1044d783e0add43548692fbe6e53b008a38a8313a"
       url: "https://pub.dev"
     source: hosted
-    version: "6.0.0"
+    version: "6.0.1"
   sensors_plus_platform_interface:
     dependency: transitive
     description:
@@ -2161,10 +2201,10 @@ packages:
     dependency: "direct main"
     description:
       name: skeletonizer
-      sha256: "9dcaec747d200a299bc457ffe51f135b9856b7f9097e851e277c4c95f563893b"
+      sha256: d94ae24d9fcedc5fd2984ccbe5af5e9d76e2bf6a35ee775fe8c737c90297908e
       url: "https://pub.dev"
     source: hosted
-    version: "1.4.1+1"
+    version: "1.3.0"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -2663,10 +2703,10 @@ packages:
     dependency: transitive
     description:
       name: windows_notification
-      sha256: "963482b068a9fc792832cf229f66953d4426ad4a46a99e03a26cd17313c3b2bf"
+      sha256: be3e650874615f315402c9b9f3656e29af156709c4b5cc272cb4ca0ab7ba94a8
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.0"
+    version: "1.3.0"
   xdg_directories:
     dependency: transitive
     description:
