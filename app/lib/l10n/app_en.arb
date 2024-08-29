@@ -2149,5 +2149,6 @@
   "eventNoLongerAvailable": "Event no longer available",
   "@eventNoLongerAvailable": {},
   "eventDeletedOrFailedToLoad": "This may due to event deletion or failed to load",
-  "@eventDeletedOrFailedToLoad": {}
+  "@eventDeletedOrFailedToLoad": {},
+  "action": "Action"
 }
