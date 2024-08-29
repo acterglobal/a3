@@ -337,11 +337,11 @@ jobs:
           SDKMANAGER=${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager
           echo "y" | $SDKMANAGER "ndk;$NDK_VERSION"
           echo "Installed $NDK_VERSION"
-          ls /usr/local/lib/android/ndk/$NDK_VERSION
+          ls /usr/local/lib/android/sdk/ndk/$NDK_VERSION
 
       - name: Build Native
         env:
-          ANDROID_NDK_HOME: /usr/local/lib/android/ndk/$NDK_VERSION
+          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/$NDK_VERSION
         run: |
           ls $ANDROID_NDK_HOME
           cargo make android-dev
