@@ -18,7 +18,6 @@ class TaggedText {
 /// /// Extended [TextEditingController] which takes up trigger styles as optional.
 /// Styles the trigger inputs based on map for mentions, hashtags or emojis etc.
 /// If provided empty, will use default [TextStyle].
-
 class ActerTriggerAutoCompleteTextController extends TextEditingController {
   ActerTriggerAutoCompleteTextController({
     super.text,
@@ -39,53 +38,6 @@ class ActerTriggerAutoCompleteTextController extends TextEditingController {
 
   void addTag(TaggedText tag) {
     _tags.add(tag);
-    notifyListeners();
-  }
-
-  // helper function used to parse tags from text
-  void addTagsFromText(String text) {
-    _tags.clear();
-    if (triggerStyles == null || triggerStyles!.isEmpty) return;
-
-    for (final trigger in triggerStyles!.keys) {
-      int startIndex = 0;
-      while (true) {
-        startIndex = text.indexOf(trigger, startIndex);
-        if (startIndex == -1) break;
-
-        int endIndex = startIndex + 1;
-        bool inTag = true;
-        int spaceCount = 0;
-        const maxSpaces = 1;
-
-        while (endIndex < text.length && inTag) {
-          if (text[endIndex] == ' ') {
-            spaceCount++;
-            if (spaceCount > maxSpaces) {
-              inTag = false;
-            }
-          } else if (text[endIndex] == '@') {
-            // Stop if we encounter another trigger
-            inTag = false;
-          }
-          if (inTag) endIndex++;
-        }
-
-        if (endIndex > startIndex + 1) {
-          _tags.add(
-            TaggedText(
-              trigger: trigger,
-              displayText: text.substring(startIndex, endIndex).trim(),
-              start: startIndex,
-              end: endIndex,
-            ),
-          );
-        }
-
-        startIndex = endIndex;
-      }
-    }
-
     notifyListeners();
   }
 

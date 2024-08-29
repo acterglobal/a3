@@ -258,8 +258,6 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         }
       }
       textController.text = draft.plainText();
-      // parse text and style tags if there are any
-      textController.addTagsFromText(textController.text);
       _log.info('compose draft loaded for room: ${widget.roomId}');
     }
   }
