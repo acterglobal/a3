@@ -129,10 +129,17 @@ class SpaceWithAvatarInfoCard extends StatelessWidget {
         titleTextStyle: titleTextStyle,
         subtitleTextStyle: subtitleTextStyle,
         leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
-        title: Row(
+        title: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(child: Text(title, overflow: TextOverflow.ellipsis)),
-            if (showVisibilityMark) VisibilityChip(roomId: roomId),
+            Text(title, overflow: TextOverflow.ellipsis),
+            if (showVisibilityMark)
+              VisibilityChip(
+                roomId: roomId,
+                useCompactView: true,
+              ),
           ],
         ),
         subtitle: buildSubtitle(context),
