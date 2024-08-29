@@ -66,3 +66,11 @@ dependencies {
     implementation "com.google.firebase:firebase-auth:22.1.2"
     implementation "com.google.firebase:firebase-messaging:23.2.1"
 }
+
+// Fixing the `resource android:attr/lStar not found` error coming
+// from device_calendar for apk builds.
+configurations.all {
+    resolutionStrategy {
+        force 'androidx.core:core-ktx:1.13.1'
+    }
+}
