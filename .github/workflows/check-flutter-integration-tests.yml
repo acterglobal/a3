@@ -6,9 +6,6 @@ on:
 
 name: Flutter Integration Tests
 
-env:
-  NDK_VERSION: 25.2.9519653
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -330,21 +327,9 @@ jobs:
       - name: Rust Android Setup
         run: cargo make setup-android
 
-      - name: Install NDK $NDK_VERSION
-        run: |
-          ANDROID_ROOT=/usr/local/lib/android
-          ANDROID_SDK_ROOT=${ANDROID_ROOT}/sdk
-          SDKMANAGER=${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager
-          echo "y" | $SDKMANAGER "ndk;$NDK_VERSION"
-          echo "Installed $NDK_VERSION"
-          ls /usr/local/lib/android/sdk/ndk/$NDK_VERSION
-
       - name: Build Native
         run: |
-          export  ANDROID_NDK_HOME=/usr/local/lib/android/sdk/ndk/$NDK_VERSION
-          ls $ANDROID_NDK_HOME
           cargo make android-dev
-
 
   android:
     runs-on: ubuntu-latest
@@ -401,12 +386,6 @@ jobs:
       - name: Rust Android Setup
         run: cargo make setup-android
 
-      - uses: nttld/setup-ndk@v1
-        id: setup-ndk
-        with:
-          ndk-version: r25
-          link-to-sdk: true
-
       - uses: subosito/flutter-action@v2
         name: Set up flutter
         with:
@@ -445,9 +424,6 @@ jobs:
           ./MailHog_linux_amd64 &
 
       - name: Build Native
-        env:
-          ANDROID_NDK_HOME: ${{steps.setup-ndk.outputs.ndk-path}}
-          ANDROID_NDK_ROOT: ${{steps.setup-ndk.outputs.ndk-path}}
         run: cargo make android-dev
 
       - name: Flutter setup
