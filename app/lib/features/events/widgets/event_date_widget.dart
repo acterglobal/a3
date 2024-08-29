@@ -6,12 +6,14 @@ import 'package:flutter/material.dart';
 
 class EventDateWidget extends StatelessWidget {
   final CalendarEvent calendarEvent;
-  final double size;
+  final double height;
+  final double width;
 
   const EventDateWidget({
     super.key,
     required this.calendarEvent,
-    this.size = 70,
+    this.height = 60,
+    this.width = 80,
   });
 
   @override
@@ -22,19 +24,28 @@ class EventDateWidget extends StatelessWidget {
   Widget _buildEventDate(BuildContext context) {
     final day = getDayFromDate(calendarEvent.utcStart());
     final month = getMonthFromDate(calendarEvent.utcStart());
+    final startTime = getTimeFromDate(context, calendarEvent.utcStart());
 
     return Card(
       color: getColorBasedOnEventType(context),
       child: Container(
-        height: size,
-        width: size,
+        height: height,
+        width: width,
         alignment: Alignment.center,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(month),
-            Text(day, style: Theme.of(context).textTheme.titleLarge),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(month, style: Theme.of(context).textTheme.titleSmall),
+                const SizedBox(width: 4),
+                Text(day, style: Theme.of(context).textTheme.titleSmall),
+              ],
+            ),
+            Text(startTime, style: Theme.of(context).textTheme.labelMedium),
           ],
         ),
       ),

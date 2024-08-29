@@ -120,12 +120,22 @@ String getDayFromDate(UtcDateTime utcDateTime) {
   return day;
 }
 
-String jiffyTime(int timeInterval) {
+String getTimeFromDate(BuildContext context, UtcDateTime utcDateTime) {
+  final localDateTime = toDartDatetime(utcDateTime).toLocal();
+  return DateFormat(getLocalisedTimeFormat(context)).format(localDateTime);
+}
+
+String getLocalisedTimeFormat(BuildContext context) {
+  bool is24HoursFormat = MediaQuery.of(context).alwaysUse24HourFormat;
+  return is24HoursFormat ? 'HH:mm' : 'hh:mm a';
+}
+
+String jiffyTime(BuildContext context, int timeInterval) {
   final jiffyTime = Jiffy.parseFromMillisecondsSinceEpoch(timeInterval);
   final now = Jiffy.now().startOf(Unit.day);
   if (now.isSame(jiffyTime, unit: Unit.day)) {
-    // (00:00 AM/PM)
-    return jiffyTime.jm;
+    bool is24HoursFormat = MediaQuery.of(context).alwaysUse24HourFormat;
+    return is24HoursFormat ? jiffyTime.Hm : jiffyTime.jm;
   } else {
     final yesterday = now.subtract(days: 1);
     final week = now.subtract(weeks: 1);

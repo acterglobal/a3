@@ -277,7 +277,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         // Date and Month
         EventDateWidget(
           calendarEvent: calendarEvent,
-          size: 80,
+          height: 70,
+          width: 90,
         ),
         // Title, Space, User counts, comments counts and like counts
         Expanded(
@@ -498,12 +499,13 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         Jiffy.parseFromDateTime(toDartDatetime(ev.utcStart()).toLocal())
             .endOf(Unit.hour)
             .fromNow();
+    String timeFormat = getLocalisedTimeFormat(context);
     final startDate =
         Jiffy.parseFromDateTime(toDartDatetime(ev.utcStart()).toLocal())
-            .format(pattern: 'EEE, MMM dd, yyyy AT hh:mm');
+            .format(pattern: 'EEE, MMM dd, yyyy AT $timeFormat');
     final endDate =
         Jiffy.parseFromDateTime(toDartDatetime(ev.utcEnd()).toLocal())
-            .format(pattern: 'EEE, MMM dd, yyyy AT hh:mm');
+            .format(pattern: 'EEE, MMM dd, yyyy AT $timeFormat');
 
     String eventTimingTitle = switch (getEventType(ev)) {
       EventFilters.ongoing => '${L10n.of(context).eventStarted} $agoTime',
@@ -518,10 +520,14 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       child: Column(
         children: [
           ListTile(
-            leading: const Icon(Atlas.calendar_dots),
+            leading: const Icon(Atlas.clock_time),
             title: Text(eventTimingTitle),
             onTap: canChangeDate ? () => showChangeDateSheet(ev) : null,
-            subtitle: Text('$startDate - $endDate'),
+          ),
+          ListTile(
+            leading: const Icon(Atlas.calendar_dots),
+            title: Text('$startDate - $endDate'),
+            onTap: canChangeDate ? () => showChangeDateSheet(ev) : null,
           ),
           ListTile(
             leading: const Icon(Atlas.accounts_group_people),

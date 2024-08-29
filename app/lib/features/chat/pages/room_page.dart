@@ -227,6 +227,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
         ref.watch(isDirectChatProvider(roomId)).valueOrNull ?? false;
     final typingUsers =
         ref.watch(chatTypingEventProvider(roomId)).valueOrNull ?? [];
+    bool is24HoursFormat = MediaQuery.of(context).alwaysUse24HourFormat;
 
     return Expanded(
       child: Chat(
@@ -253,7 +254,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
           inputPlaceholder: L10n.of(context).message,
           sendButtonAccessibilityLabel: '',
         ),
-        timeFormat: DateFormat.jm(),
+        timeFormat: is24HoursFormat ? DateFormat.Hm() : DateFormat.jm(),
         messages: messages,
         onSendPressed: (types.PartialText partialText) {},
         user: types.User(id: userId),
