@@ -83,6 +83,10 @@ class SpaceCard extends ConsumerWidget {
   ///
   final bool showSuggestedMark;
 
+  /// Whether or not to render the visibility icon
+  ///
+  final bool showVisibilityMark;
+
   const SpaceCard({
     super.key,
     required this.roomId,
@@ -100,6 +104,7 @@ class SpaceCard extends ConsumerWidget {
     this.withBorder = true,
     this.showParents = true,
     this.showSuggestedMark = false,
+    this.showVisibilityMark = false,
     this.trailing,
   });
 
@@ -120,6 +125,7 @@ class SpaceCard extends ConsumerWidget {
     this.withBorder = false,
     this.showParents = false,
     this.showSuggestedMark = false,
+    this.showVisibilityMark = false,
     this.trailing,
   });
 
@@ -141,6 +147,7 @@ class SpaceCard extends ConsumerWidget {
       shape: shape,
       showParents: showParents,
       showSuggestedMark: showSuggestedMark,
+      showVisibilityMark: showVisibilityMark,
       trailing: trailing,
     );
   }

@@ -1,3 +1,4 @@
+import 'package:acter/common/widgets/visibility/visibility_chip.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -74,6 +75,10 @@ class SpaceWithAvatarInfoCard extends StatelessWidget {
   ///
   final bool showSuggestedMark;
 
+  /// Whether or not to render the visibility icon
+  ///
+  final bool showVisibilityMark;
+
   const SpaceWithAvatarInfoCard({
     super.key,
     required this.roomId,
@@ -91,6 +96,7 @@ class SpaceWithAvatarInfoCard extends StatelessWidget {
     this.showParents = true,
     this.margin,
     this.showSuggestedMark = false,
+    this.showVisibilityMark = false,
     required this.avatarSize,
     required this.contentPadding,
   });
@@ -123,7 +129,12 @@ class SpaceWithAvatarInfoCard extends StatelessWidget {
         titleTextStyle: titleTextStyle,
         subtitleTextStyle: subtitleTextStyle,
         leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
-        title: Text(title, overflow: TextOverflow.ellipsis),
+        title: Row(
+          children: [
+            Expanded(child: Text(title, overflow: TextOverflow.ellipsis)),
+            if (showVisibilityMark) VisibilityChip(roomId: roomId),
+          ],
+        ),
         subtitle: buildSubtitle(context),
         leading: avatar,
         trailing: trailing,
