@@ -300,7 +300,7 @@ jobs:
     # added to build the android only once and then cache it for the actual tests runs
     runs-on: ubuntu-latest
     name: Android build
-    if: ${{ github.ref == 'refs/heads/main' || needs.run_checker.outputs.should_run_android != 'false' || needs.run_checker.outputs.should_run_emulator != 'false' || needs.run_checker.outputs.should_run_all != 'false' }}
+    # if: ${{ github.ref == 'refs/heads/main' || needs.run_checker.outputs.should_run_android != 'false' || needs.run_checker.outputs.should_run_emulator != 'false' || needs.run_checker.outputs.should_run_all != 'false' }}
     needs:
      - run_checker
 
