@@ -4,15 +4,11 @@ use ruma_macros::EventContent;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, Serialize, Builder)]
+#[derive(Default)]
 pub struct SimpleSettingWithTurnOn {
     active: bool,
 }
 
-impl Default for SimpleSettingWithTurnOn {
-    fn default() -> Self {
-        SimpleSettingWithTurnOn { active: false }
-    }
-}
 
 impl SimpleSettingWithTurnOn {
     pub fn active(&self) -> bool {

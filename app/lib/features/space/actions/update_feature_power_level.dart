@@ -95,7 +95,7 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
   @override
   void initState() {
     super.initState();
-    setState(() => currentMemberStatus = widget.currentPowerLevelName);
+    currentMemberStatus = widget.currentPowerLevelName;
   }
 
   void _updateMembershipStatus(String? value) {

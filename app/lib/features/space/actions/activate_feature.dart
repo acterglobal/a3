@@ -23,7 +23,7 @@ Future<bool> offerToActivateFeature({
   try {
     final space = await ref.read(spaceProvider(spaceId).future);
     final appSettingsAndMembership =
-        await ref.watch(spaceAppSettingsProvider(spaceId).future);
+        await ref.read(spaceAppSettingsProvider(spaceId).future);
     EasyLoading.dismiss();
     if (!context.mounted) {
       return false;

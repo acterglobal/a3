@@ -43,73 +43,77 @@ class SpaceActionsSection extends ConsumerWidget {
     bool canLinkSpaces = membership?.canString('CanLinkSpaces') == true;
 
     final children = [
-      if (canAddPin)
+      if (canAddPin || canChangeSetting)
         simpleActionButton(
           context: context,
           iconData: Atlas.pin,
           title: L10n.of(context).addPin,
-          onPressed: () => context.pushNamed(
-            Routes.createPin.name,
-            queryParameters: {'spaceId': spaceId},
-          ),
-        )
-      else if (canChangeSetting)
-        askToActivateButton(
-          context: context,
-          iconData: Atlas.pin,
-          title: L10n.of(context).addPin,
-          ref: ref,
-          feature: SpaceFeature.pins,
-          andThen: () async {
-            await context.pushNamed(
-              Routes.createPin.name,
-              queryParameters: {'spaceId': spaceId},
-            );
+          onPressed: () async {
+            if (!canAddPin && canChangeSetting) {
+              if (!await offerToActivateFeature(
+                context: context,
+                ref: ref,
+                spaceId: spaceId,
+                feature: SpaceFeature.pins,
+              )) {
+                return;
+              }
+            }
+            if (context.mounted) {
+              context.pushNamed(
+                Routes.createPin.name,
+                queryParameters: {'spaceId': spaceId},
+              );
+            }
           },
         ),
-      if (canAddEvent)
+      if (canAddEvent || canChangeSetting)
         simpleActionButton(
           context: context,
           iconData: Atlas.calendar_dots,
           title: L10n.of(context).addEvent,
-          onPressed: () => context.pushNamed(
-            Routes.createEvent.name,
-            queryParameters: {'spaceId': spaceId},
-          ),
-        )
-      else if (canChangeSetting)
-        askToActivateButton(
-          context: context,
-          iconData: Atlas.calendar_dots,
-          title: L10n.of(context).addEvent,
-          ref: ref,
-          feature: SpaceFeature.events,
-          andThen: () => context.pushNamed(
-            Routes.createEvent.name,
-            queryParameters: {'spaceId': spaceId},
-          ),
+          onPressed: () async {
+            if (!canAddEvent && canChangeSetting) {
+              if (!await offerToActivateFeature(
+                context: context,
+                ref: ref,
+                spaceId: spaceId,
+                feature: SpaceFeature.events,
+              )) {
+                return;
+              }
+            }
+            if (context.mounted) {
+              context.pushNamed(
+                Routes.createEvent.name,
+                queryParameters: {'spaceId': spaceId},
+              );
+            }
+          },
         ),
-      if (canAddTask)
+      if (canAddTask || canChangeSetting)
         simpleActionButton(
           context: context,
           iconData: Atlas.list,
           title: L10n.of(context).addTask,
-          onPressed: () => showCreateUpdateTaskListBottomSheet(
-            context,
-            initialSelectedSpace: spaceId,
-          ),
-        )
-      else if (canChangeSetting)
-        askToActivateButton(
-          context: context,
-          iconData: Atlas.list,
-          title: L10n.of(context).addTask,
-          ref: ref,
-          feature: SpaceFeature.tasks,
-          andThen: () => showCreateUpdateTaskListBottomSheet(
-            context,
-            initialSelectedSpace: spaceId,
-          ),
+          onPressed: () async {
+            if (!canAddEvent && canChangeSetting) {
+              if (!await offerToActivateFeature(
+                context: context,
+                ref: ref,
+                spaceId: spaceId,
+                feature: SpaceFeature.tasks,
+              )) {
+                return;
+              }
+            }
+            if (context.mounted) {
+              showCreateUpdateTaskListBottomSheet(
+                context,
+                initialSelectedSpace: spaceId,
+              );
+            }
+          },
         ),
     ];
 
@@ -158,33 +162,6 @@ class SpaceActionsSection extends ConsumerWidget {
     return Wrap(
       crossAxisAlignment: WrapCrossAlignment.start,
       children: children,
-    );
-  }
-
-  Widget askToActivateButton({
-    required BuildContext context,
-    required IconData iconData,
-    required String title,
-    required VoidCallback andThen,
-    required WidgetRef ref,
-    required SpaceFeature feature,
-  }) {
-    return TextButton.icon(
-      onPressed: () async {
-        if (await offerToActivateFeature(
-          context: context,
-          ref: ref,
-          spaceId: spaceId,
-          feature: feature,
-        )) {
-          andThen();
-        }
-      },
-      icon: Icon(iconData),
-      label: Text(
-        title,
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
     );
   }
 
