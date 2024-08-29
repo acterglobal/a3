@@ -6,15 +6,8 @@ import 'package:flutter/material.dart';
 
 class EventDateWidget extends StatelessWidget {
   final CalendarEvent calendarEvent;
-  final double height;
-  final double width;
 
-  const EventDateWidget({
-    super.key,
-    required this.calendarEvent,
-    this.height = 60,
-    this.width = 80,
-  });
+  const EventDateWidget({super.key, required this.calendarEvent});
 
   @override
   Widget build(BuildContext context) {
@@ -29,8 +22,7 @@ class EventDateWidget extends StatelessWidget {
     return Card(
       color: getColorBasedOnEventType(context),
       child: Container(
-        height: height,
-        width: width,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         alignment: Alignment.center,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

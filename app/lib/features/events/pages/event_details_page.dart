@@ -275,11 +275,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Date and Month
-        EventDateWidget(
-          calendarEvent: calendarEvent,
-          height: 70,
-          width: 90,
-        ),
+        EventDateWidget(calendarEvent: calendarEvent),
         // Title, Space, User counts, comments counts and like counts
         Expanded(
           child: Column(
