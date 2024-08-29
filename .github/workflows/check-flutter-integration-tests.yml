@@ -327,16 +327,16 @@ jobs:
       - name: Rust Android Setup
         run: cargo make setup-android
 
-      - uses: nttld/setup-ndk@v1
-        id: setup-ndk
-        with:
-          ndk-version: r27
-          link-to-sdk: true
+      - name: Install NDK 25
+        env:
+          NDK_VERSION: 25.2.9519653
+        run: |
+          ANDROID_ROOT=/usr/local/lib/android
+          ANDROID_SDK_ROOT=${ANDROID_ROOT}/sdk
+          SDKMANAGER=${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager
+          echo "y" | $SDKMANAGER "ndk;$NDK_VERSION"
 
       - name: Build Native
-        env:
-          ANDROID_NDK_HOME: ${{steps.setup-ndk.outputs.ndk-path}}
-          ANDROID_NDK_ROOT: ${{steps.setup-ndk.outputs.ndk-path}}
         run: cargo make android-dev
 
 
