@@ -1,0 +1,1 @@
+- [New] : Time format is now based on the your localised system setting (12 Hour/24 Hour)
