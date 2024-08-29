@@ -340,9 +340,8 @@ jobs:
           ls /usr/local/lib/android/sdk/ndk/$NDK_VERSION
 
       - name: Build Native
-        env:
-          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/$NDK_VERSION
         run: |
+          export  ANDROID_NDK_HOME=/usr/local/lib/android/sdk/ndk/$NDK_VERSION
           ls $ANDROID_NDK_HOME
           cargo make android-dev
 
