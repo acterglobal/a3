@@ -188,7 +188,7 @@ Future<void> _refreshCalendar(
 
 Future<Event> _updateEventDetails(
   CalendarEvent acterEvent,
-  String? rsvp,
+  RsvpStatusTag? rsvp,
   Event localEvent,
 ) async {
   localEvent.title = acterEvent.title();
@@ -203,8 +203,8 @@ Future<Event> _updateEventDetails(
     UTC,
   );
   localEvent.status = switch (rsvp) {
-    'yes' => EventStatus.Confirmed,
-    'maybe' => EventStatus.Tentative,
+    RsvpStatusTag.Yes => EventStatus.Confirmed,
+    RsvpStatusTag.Maybe => EventStatus.Tentative,
     _ => EventStatus.None
   };
   return localEvent;

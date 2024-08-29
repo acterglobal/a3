@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
@@ -34,7 +35,7 @@ class _EventListPageState extends ConsumerState<EventListPage> {
 
   String get searchValue => ref.watch(searchValueProvider);
 
-  EventFilters get eventFilterValue => ref.watch(eventFilerProvider);
+  EventFilters get eventFilterValue => ref.watch(eventFilterProvider);
 
   @override
   Widget build(BuildContext context) {
@@ -85,10 +86,19 @@ class _EventListPageState extends ConsumerState<EventListPage> {
         Expanded(
           child: calEventsLoader.when(
             data: (calEvents) => _buildEventList(calEvents),
-            error: (e, s) {
-              _log.severe('Failed to search events in space', e, s);
-              return Center(
-                child: Text(L10n.of(context).searchingFailed(e)),
+            error: (error, stack) {
+              _log.severe('Failed to search events in space', error, stack);
+              return ErrorPage(
+                background: const EventListSkeleton(),
+                error: error,
+                stack: stack,
+                onRetryTap: () {
+                  ref.invalidate(
+                    eventListSearchFilterProvider(
+                      (spaceId: widget.spaceId, searchText: searchValue),
+                    ),
+                  );
+                },
               );
             },
             loading: () => const EventListSkeleton(),
@@ -109,7 +119,7 @@ class _EventListPageState extends ConsumerState<EventListPage> {
               selected: eventFilterValue == EventFilters.all,
               label: Text(L10n.of(context).all),
               onSelected: (value) => ref
-                  .read(eventFilerProvider.notifier)
+                  .read(eventFilterProvider.notifier)
                   .state = EventFilters.all,
             ),
             const SizedBox(width: 10),
@@ -117,7 +127,7 @@ class _EventListPageState extends ConsumerState<EventListPage> {
               selected: eventFilterValue == EventFilters.bookmarked,
               label: Text(L10n.of(context).bookmarked),
               onSelected: (value) => ref
-                  .read(eventFilerProvider.notifier)
+                  .read(eventFilterProvider.notifier)
                   .state = EventFilters.bookmarked,
             ),
             const SizedBox(width: 10),
@@ -125,7 +135,7 @@ class _EventListPageState extends ConsumerState<EventListPage> {
               selected: eventFilterValue == EventFilters.ongoing,
               label: Text(L10n.of(context).happeningNow),
               onSelected: (value) => ref
-                  .read(eventFilerProvider.notifier)
+                  .read(eventFilterProvider.notifier)
                   .state = EventFilters.ongoing,
             ),
             const SizedBox(width: 10),
@@ -133,7 +143,7 @@ class _EventListPageState extends ConsumerState<EventListPage> {
               selected: eventFilterValue == EventFilters.upcoming,
               label: Text(L10n.of(context).upcoming),
               onSelected: (value) => ref
-                  .read(eventFilerProvider.notifier)
+                  .read(eventFilterProvider.notifier)
                   .state = EventFilters.upcoming,
             ),
             const SizedBox(width: 10),
@@ -141,7 +151,7 @@ class _EventListPageState extends ConsumerState<EventListPage> {
               selected: eventFilterValue == EventFilters.past,
               label: Text(L10n.of(context).past),
               onSelected: (value) => ref
-                  .read(eventFilerProvider.notifier)
+                  .read(eventFilterProvider.notifier)
                   .state = EventFilters.past,
             ),
           ],

@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
@@ -75,49 +76,83 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
           ),
         );
       },
-      loading: () => Skeletonizer(
-        child: Text(L10n.of(context).loadingPin),
-      ),
-      error: (e, s) {
-        _log.severe('Error loading pin', e, s);
-        return Text(
-          L10n.of(context).errorLoadingPin(e),
+      loading: _contentLoader,
+      error: (error, stack) {
+        _log.severe('Error loading pin', error, stack);
+        return ErrorPage(
+          background: _contentLoader(),
+          error: error,
+          stack: stack,
+          onRetryTap: () {
+            ref.invalidate(pinProvider(widget.pinId));
+          },
         );
       },
+    );
+  }
+
+  Widget _contentLoader() {
+    // not the nicest loading animation, but
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          const SizedBox(height: 20),
+          _loadingPinHeaderUI(),
+          const SizedBox(height: 20),
+          AttachmentSectionWidget.loading(),
+          const SizedBox(height: 20),
+          CommentsSection.loading(context),
+        ],
+      ),
+    );
+  }
+
+  Widget _loadingPinHeaderUI() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Skeletonizer(child: Bone.circle(size: 100)),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Skeletonizer(
+                      child: Text(
+                        'no text at all',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                    ),
+                    SpaceChip.loading(),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
   // pin actions menu builder
   Widget _buildActionMenu() {
-    final pinData = ref.watch(pinProvider(widget.pinId));
-    return pinData.when(
-      data: (pin) {
-        //Get my membership details
-        final membership =
-            ref.watch(roomMembershipProvider(pin.roomIdStr())).valueOrNull;
-        final canRedactData = ref.watch(canRedactProvider(pin));
-        bool canPost = membership?.canString('CanPostPin') == true;
-        bool canRedact = canRedactData.valueOrNull == true;
-        return PopupMenuButton<String>(
-          key: PinDetailsPage.actionMenuKey,
-          icon: const Icon(Atlas.dots_vertical_thin),
-          itemBuilder: (context) =>
-              _buildAppBarActionMenuItems(pin, canPost, canRedact),
-        );
-      },
-      loading: () => Skeletonizer(child: Text(L10n.of(context).loadingPin)),
-      error: (e, s) {
-        _log.severe('Error loading pin', e, s);
-        return const SizedBox.shrink();
-      },
-    );
-  }
-
-  List<PopupMenuEntry<String>> _buildAppBarActionMenuItems(
-    ActerPin pin,
-    bool canPost,
-    bool canRedact,
-  ) {
+    final pin = ref.watch(pinProvider(widget.pinId)).valueOrNull;
+    if (pin == null) {
+      return const SizedBox.shrink();
+    }
+    final roomId = pin.roomIdStr();
+    //Get my membership details
+    final membership =
+        ref.watch(roomMembershipProvider(pin.roomIdStr())).valueOrNull;
+    final canRedactData = ref.watch(canRedactProvider(pin));
+    bool canPost = membership?.canString('CanPostPin') == true;
+    bool canRedact = canRedactData.valueOrNull == true;
     List<PopupMenuEntry<String>> actions = [];
 
     //Check for can post pin permission
@@ -160,7 +195,6 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
 
     //DELETE PIN MENU ITEM
     if (canRedact) {
-      final roomId = pin.roomIdStr();
       actions.add(
         PopupMenuItem<String>(
           onTap: () => showRedactDialog(
@@ -176,7 +210,11 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
       );
     }
 
-    return actions;
+    return PopupMenuButton<String>(
+      key: PinDetailsPage.actionMenuKey,
+      icon: const Icon(Atlas.dots_vertical_thin),
+      itemBuilder: (context) => actions,
+    );
   }
 
   Widget _buildPinHeaderUI(ActerPin pin) {

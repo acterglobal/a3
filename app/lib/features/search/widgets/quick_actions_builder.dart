@@ -2,7 +2,8 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/config/app_shell.dart';
+import 'package:acter/features/bug_report/actions/open_bug_report.dart';
+import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/spaces/model/keys.dart';
@@ -71,7 +72,7 @@ class QuickActionsBuilder extends ConsumerWidget {
           if (canPostPin)
             OutlinedButton.icon(
               key: QuickJumpKeys.createPinAction,
-              onPressed: () => routeTo(context, Routes.actionAddPin),
+              onPressed: () => routeTo(context, Routes.createPin),
               icon: const Icon(
                 Atlas.plus_circle_thin,
                 size: 18,
@@ -132,27 +133,28 @@ class QuickActionsBuilder extends ConsumerWidget {
             onPressed: () => routeTo(context, Routes.createSpace),
             label: Text(L10n.of(context).createSpace),
           ),
-          OutlinedButton.icon(
-            key: QuickJumpKeys.bugReport,
-            style: OutlinedButton.styleFrom(
-              foregroundColor: Theme.of(context).colorScheme.textHighlight,
-              side: BorderSide(
-                width: 1,
-                color: Theme.of(context).colorScheme.textHighlight,
+          if (isBugReportingEnabled)
+            OutlinedButton.icon(
+              key: QuickJumpKeys.bugReport,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Theme.of(context).colorScheme.textHighlight,
+                side: BorderSide(
+                  width: 1,
+                  color: Theme.of(context).colorScheme.textHighlight,
+                ),
               ),
+              icon: const Icon(Atlas.bug_clipboard_thin, size: 18),
+              label: Text(
+                L10n.of(context).reportBug,
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
+              onPressed: () async {
+                if (popBeforeRoute) {
+                  Navigator.pop(context);
+                }
+                await openBugReport(context);
+              },
             ),
-            icon: const Icon(Atlas.bug_clipboard_thin, size: 18),
-            label: Text(
-              L10n.of(context).reportBug,
-              style: Theme.of(context).textTheme.labelMedium,
-            ),
-            onPressed: () async {
-              if (popBeforeRoute) {
-                Navigator.pop(context);
-              }
-              await openBugReport(context);
-            },
-          ),
         ],
       ),
     );

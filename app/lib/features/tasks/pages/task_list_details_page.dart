@@ -1,5 +1,6 @@
 import 'package:acter/common/actions/redact_content.dart';
 import 'package:acter/common/actions/report_content.dart';
+import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
@@ -132,9 +133,16 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
     final tasklistLoader = ref.watch(taskListItemProvider(widget.taskListId));
     return tasklistLoader.when(
       data: (tasklist) => _buildTaskListData(tasklist),
-      error: (e, s) {
-        _log.severe('Failed to load tasklist', e, s);
-        return Text(L10n.of(context).loadingFailed(e));
+      error: (error, stack) {
+        _log.severe('Failed to load tasklist', error, stack);
+        return ErrorPage(
+          background: Text(L10n.of(context).loading),
+          error: error,
+          stack: stack,
+          onRetryTap: () {
+            ref.invalidate(taskListItemProvider(widget.taskListId));
+          },
+        );
       },
       loading: () => Text(L10n.of(context).loading),
     );

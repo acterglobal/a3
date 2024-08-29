@@ -31,11 +31,13 @@ class MockChatRoomNotifier extends StateNotifier<ChatRoomState>
   final String roomId;
 
   MockChatRoomNotifier(this.roomId)
-      : super(const ChatRoomState(
-          hasMore: false,
-          messages: [],
-          loading: ChatRoomLoadingState.loaded(),
-        ),);
+      : super(
+          const ChatRoomState(
+            hasMore: false,
+            messages: [],
+            loading: ChatRoomLoadingState.loaded(),
+          ),
+        );
 
   @override
   Future<void> fetchMediaBinary(String? msgType, String eventId) {
@@ -135,9 +137,13 @@ class MockRoomAvatarInfoNotifier extends FamilyNotifier<AvatarInfo, String>
 class MockAsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, String>
     with Mock
     implements AsyncConvoNotifier {
+  final Convo? retVal;
+
+  MockAsyncConvoNotifier({this.retVal});
+
   @override
   FutureOr<Convo?> build(String arg) {
-    return null;
+    return retVal;
   }
 }
 

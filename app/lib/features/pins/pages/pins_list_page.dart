@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
@@ -88,10 +89,24 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
         Expanded(
           child: pinsLoader.when(
             data: (pins) => _buildPinsList(pins),
-            error: (e, s) {
-              _log.severe('Failed to load pins', e, s);
-              return Center(
-                child: Text(L10n.of(context).loadingFailed(e)),
+            error: (error, stack) {
+              _log.severe('Failed to load pins', error, stack);
+              return ErrorPage(
+                background: const PinListSkeleton(),
+                error: error,
+                stack: stack,
+                textBuilder: L10n.of(context).loadingFailed,
+                onRetryTap: () {
+                  if (searchValue.isNotEmpty) {
+                    ref.invalidate(
+                      pinListSearchProvider(
+                        (spaceId: widget.spaceId, searchText: searchValue),
+                      ),
+                    );
+                  } else {
+                    ref.invalidate(pinListProvider(widget.spaceId));
+                  }
+                },
               );
             },
             loading: () => const PinListSkeleton(),

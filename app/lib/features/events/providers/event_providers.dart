@@ -15,7 +15,7 @@ final calendarEventProvider = AsyncNotifierProvider.autoDispose
 
 //MY RSVP STATUS PROVIDER
 final myRsvpStatusProvider = AsyncNotifierProvider.autoDispose
-    .family<AsyncRsvpStatusNotifier, ffi.OptionRsvpStatus, String>(
+    .family<AsyncRsvpStatusNotifier, ffi.RsvpStatusTag?, String>(
   () => AsyncRsvpStatusNotifier(),
 );
 
@@ -57,7 +57,7 @@ final myOngoingEventListProvider = FutureProvider.autoDispose
   for (final event in allOngoingEventList) {
     final myRsvpStatus = await ref
         .watch(myRsvpStatusProvider(event.eventId().toString()).future);
-    if (myRsvpStatus.statusStr() == 'yes') {
+    if (myRsvpStatus == ffi.RsvpStatusTag.Yes) {
       myOngoingEventList.add(event);
     }
   }
@@ -83,7 +83,7 @@ final myUpcomingEventListProvider = FutureProvider.autoDispose
   for (final event in allUpcomingEventList) {
     final myRsvpStatus = await ref
         .watch(myRsvpStatusProvider(event.eventId().toString()).future);
-    if (myRsvpStatus.statusStr() == 'yes') {
+    if (myRsvpStatus == ffi.RsvpStatusTag.Yes) {
       myUpcomingEventList.add(event);
     }
   }
@@ -109,7 +109,7 @@ final myPastEventListProvider = FutureProvider.autoDispose
   for (final event in allPastEventList) {
     final myRsvpStatus = await ref
         .watch(myRsvpStatusProvider(event.eventId().toString()).future);
-    if (myRsvpStatus.statusStr() == 'yes') {
+    if (myRsvpStatus == ffi.RsvpStatusTag.Yes) {
       myPastEventList.add(event);
     }
   }
@@ -125,7 +125,7 @@ enum EventFilters {
   past,
 }
 
-final eventFilerProvider =
+final eventFilterProvider =
     StateProvider.autoDispose<EventFilters>((ref) => EventFilters.all);
 
 //SEARCH EVENTS
@@ -138,7 +138,7 @@ final eventListSearchFilterProvider = FutureProvider.autoDispose
   List<ffi.CalendarEvent> filteredEventList = [];
 
   //Filter events based on the selection
-  EventFilters eventFilter = ref.watch(eventFilerProvider);
+  EventFilters eventFilter = ref.watch(eventFilterProvider);
   switch (eventFilter) {
     case EventFilters.bookmarked:
       {

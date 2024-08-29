@@ -313,8 +313,6 @@ jobs:
 ##     ## ##    ##  ##    ## ##     ##    ##     ## ##     ## ##    ##  
 ##     ## ##     ##  ######  ##     ##    ##     ##  #######  ##     ## 
 
-
-
   publish_aur:
     environment: release
     needs:
@@ -345,6 +343,34 @@ jobs:
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
           commit_message: Updated to ${{ needs.tags.outputs.version }}
 
+  publish_aur_nightly:
+    environment: release
+    needs:
+      - tags
+      - build
+    name: Publish AUR nightly
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: Linux x64
+      - name: Patch PKGBUILD file
+        run: |
+          cp app/linux/packaging/aur/PKGBUILD-nightly PKGBUILD
+          sed -i "s/%{{TAG}}%/${{ needs.tags.outputs.tag }}/g" PKGBUILD
+          sed -i "s/%{{VERSION}}%/${{ needs.tags.outputs.version }}/g" PKGBUILD
+          sed -i "s/%{{PKGREL}}%/1/g" PKGBUILD
+          sed -i "s/%{{LINUX_MD5}}%/`md5sum acter-linux-x64-${{ needs.tags.outputs.version }}.tar.bz2  | awk '{print $1}'`/g" PKGBUILD
+      - uses: KSXGitHub/github-actions-deploy-aur@v2.7.2
+        name: Publish to AUR
+        with:
+          pkgname: acter-nightly-bin
+          pkgbuild: ./PKGBUILD
+          commit_username: Sari
+          commit_email: sari@acter.global
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: Updated to ${{ needs.tags.outputs.tag }}
 
 
  ######   #### ######## ##     ## ##     ## ########     ########  ##     ## ########  ##       ####  ######  ##     ## 
@@ -392,7 +418,7 @@ jobs:
       - name: Tag for release
         run: |
           echo "Add release ${{ needs.tags.outputs.tag }}"
-          git co ci/release-${{ needs.tags.outputs.tag }}
+          git checkout -b ci/release-${{ needs.tags.outputs.tag }}
           git commit -m "Releasing ${{ needs.tags.outputs.tag }}"
           git tag ${{ needs.tags.outputs.tag }}
           git push origin ci/release-${{ needs.tags.outputs.tag }} ${{ needs.tags.outputs.tag }}
@@ -402,6 +428,7 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           branch: "ci/release-${{ needs.tags.outputs.tag }}"
+          base: main
           title: "Releasing ${{ needs.tags.outputs.tag }}"
           body: Release ${{ needs.tags.outputs.tag }} auto PR.
           labels: minor

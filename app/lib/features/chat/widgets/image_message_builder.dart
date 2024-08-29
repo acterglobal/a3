@@ -1,4 +1,5 @@
 import 'package:acter/common/models/types.dart';
+import 'package:acter/common/toolkit/errors/inline_error_button.dart';
 import 'package:acter/common/widgets/image_dialog.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class ImageMessageBuilder extends ConsumerWidget {
   final types.ImageMessage message;
@@ -32,7 +34,7 @@ class ImageMessageBuilder extends ConsumerWidget {
     } else if (mediaState.mediaFile == null) {
       return imagePlaceholder(context, roomId, mediaState, ref);
     } else {
-      return imageUI(context, mediaState);
+      return imageUI(context, ref, mediaState);
     }
   }
 
@@ -110,7 +112,11 @@ class ImageMessageBuilder extends ConsumerWidget {
     );
   }
 
-  Widget imageUI(BuildContext context, MediaChatState mediaState) {
+  Widget imageUI(
+    BuildContext context,
+    WidgetRef ref,
+    MediaChatState mediaState,
+  ) {
     final size = MediaQuery.of(context).size;
     return InkWell(
       onTap: () {
@@ -133,13 +139,17 @@ class ImageMessageBuilder extends ConsumerWidget {
             maxWidth: isReplyContent ? size.height * 0.2 : 300,
             maxHeight: isReplyContent ? size.width * 0.2 : 300,
           ),
-          child: imageFileView(context, mediaState),
+          child: imageFileView(context, ref, mediaState),
         ),
       ),
     );
   }
 
-  Widget imageFileView(BuildContext context, MediaChatState mediaState) {
+  Widget imageFileView(
+    BuildContext context,
+    WidgetRef ref,
+    MediaChatState mediaState,
+  ) {
     return Image.file(
       mediaState.mediaFile!,
       frameBuilder: (
@@ -160,11 +170,20 @@ class ImageMessageBuilder extends ConsumerWidget {
       },
       errorBuilder: (
         BuildContext context,
-        Object url,
-        StackTrace? error,
-      ) {
-        return Text(L10n.of(context).couldNotLoadImage(error.toString()));
-      },
+        Object error,
+        StackTrace? stack,
+      ) =>
+          ActerInlineErrorButton.icon(
+        icon: Icon(PhosphorIcons.imageBroken()),
+        error: error,
+        stack: stack,
+        textBuilder: L10n.of(context).couldNotLoadImage,
+        onRetryTap: () {
+          final ChatMessageInfo messageInfo =
+              (messageId: message.id, roomId: roomId);
+          ref.invalidate(mediaChatStateProvider(messageInfo));
+        },
+      ),
       fit: BoxFit.cover,
     );
   }

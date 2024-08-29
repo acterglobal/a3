@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
@@ -108,10 +109,15 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
         Expanded(
           child: tasklistsLoader.when(
             data: (tasklists) => _buildTasklists(tasklists),
-            error: (e, s) {
-              _log.severe('Failed to search tasklists in space', e, s);
-              return Center(
-                child: Text(L10n.of(context).searchingFailed(e)),
+            error: (error, stack) {
+              _log.severe('Failed to search tasklists in space', error, stack);
+              return ErrorPage(
+                background: const TasksListSkeleton(),
+                error: error,
+                stack: stack,
+                onRetryTap: () {
+                  ref.invalidate(allTasksListsProvider);
+                },
               );
             },
             loading: () => const TasksListSkeleton(),

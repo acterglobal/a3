@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class NewsSlideOptions extends ConsumerStatefulWidget {
   const NewsSlideOptions({super.key});
@@ -117,7 +118,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
         IconButton(
           key: NewsUpdateKeys.addNewsSlide,
           onPressed: () => showPostAttachmentOptions(context),
-          icon: const Icon(Icons.add),
+          icon: Icon(PhosphorIcons.stackPlus()),
         ),
       ],
     );

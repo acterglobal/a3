@@ -52,16 +52,25 @@ class _InviteSpaceMembersConsumerState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              L10n.of(context).inviteSpaceMembersSubtitle,
-              textAlign: TextAlign.center,
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      L10n.of(context).inviteSpaceMembersSubtitle,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 10),
+                    _buildParentSpaces(),
+                    const SizedBox(height: 20),
+                    _buildOtherSpace(),
+                    const SizedBox(height: 10),
+                  ],
+                ),
+              ),
             ),
-            const SizedBox(height: 10),
-            _buildParentSpaces(),
-            const SizedBox(height: 20),
-            _buildOtherSpace(),
             _buildDoneButton(),
-            const SizedBox(height: 10),
           ],
         ),
       ),
@@ -77,6 +86,7 @@ class _InviteSpaceMembersConsumerState
     }
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
@@ -120,26 +130,25 @@ class _InviteSpaceMembersConsumerState
   }
 
   Widget _buildOtherSpaceData(List<Space> spaces) {
-    return Expanded(
-      child: ListView.builder(
-        itemCount: spaces.length,
-        shrinkWrap: true,
-        itemBuilder: (context, index) {
-          final roomId = spaces[index].getRoomIdStr();
-          return SpaceMemberInviteCard(
-            roomId: roomId,
-            isSelected: selectedSpaces.contains(roomId),
-            onChanged: (value) {
-              if (selectedSpaces.contains(roomId)) {
-                selectedSpaces.remove(roomId);
-              } else {
-                selectedSpaces.add(roomId);
-              }
-              setState(() {});
-            },
-          );
-        },
-      ),
+    return ListView.builder(
+      itemCount: spaces.length,
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      itemBuilder: (context, index) {
+        final roomId = spaces[index].getRoomIdStr();
+        return SpaceMemberInviteCard(
+          roomId: roomId,
+          isSelected: selectedSpaces.contains(roomId),
+          onChanged: (value) {
+            if (selectedSpaces.contains(roomId)) {
+              selectedSpaces.remove(roomId);
+            } else {
+              selectedSpaces.add(roomId);
+            }
+            setState(() {});
+          },
+        );
+      },
     );
   }
 
