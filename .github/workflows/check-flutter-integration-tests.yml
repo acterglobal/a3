@@ -337,6 +337,8 @@ jobs:
           echo "y" | $SDKMANAGER "ndk;$NDK_VERSION"
 
       - name: Build Native
+        env:
+          ANDROID_NDK_HOME: /usr/local/lib/android/ndk/25.2.9519653
         run: cargo make android-dev
 
 
