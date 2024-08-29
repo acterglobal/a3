@@ -508,14 +508,25 @@ jobs:
           force-avd-creation: false
           # emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: .github/scripts/flutter-integration-tests.sh --run-only "${{matrix.tests}}"
+
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          emulator-build: 7425822  # workaround to emulator bug: https://github.com/ReactiveCircus/android-emulator-runner/issues/160
+          script: |
+            adb root
+            adb logcat -c
+            touch emulator.log
+            chmod 777 emulator.log
+            adb logcat >> emulator.log &
+            ./.github/scripts/flutter-integration-tests.sh --run-only "${{matrix.tests}}"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v1
         if: failure()
         with:
           name: android-convtest-report-${{matrix.api_level}}-${{matrix.tests}}
-          path: /tmp/ConvenientTest/
+          path: |
+            emulator.log
+            /tmp/ConvenientTest/
 
       # file an error if this failed on `main` post-merge
       - name: Report issue
