@@ -145,7 +145,7 @@ jobs:
             exit 0
           fi
 
-          if echo $TARGET | tr "," "\n" | grep -Fxq $TARGET; then
+          if [ echo $TARGET | tr "," "\n" | grep -Fxq $TARGET ]; then
             echo "target among selected";
             echo "skipped=false"  >> $GITHUB_OUTPUT;
             exit 0
@@ -448,7 +448,7 @@ jobs:
             ${{ matrix.specific_upload_artifacts }}
 
       - name: Report issue
-        if: ${{ inputs.release && failure() && !steps.skipper.outputs.skipped }}
+        if: ${{ inputs.release && failure() && steps.skipper.outputs.skipped != 'true' }}
         uses: JasonEtco/create-an-issue@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
