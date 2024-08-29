@@ -402,6 +402,7 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           branch: "ci/release-${{ needs.tags.outputs.tag }}"
+          base: main
           title: "Releasing ${{ needs.tags.outputs.tag }}"
           body: Release ${{ needs.tags.outputs.tag }} auto PR.
           labels: minor
