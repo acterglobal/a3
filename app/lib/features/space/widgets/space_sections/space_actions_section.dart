@@ -47,7 +47,7 @@ class SpaceActionsSection extends ConsumerWidget {
           title: L10n.of(context).addPin,
           isShow: canAddPin,
           onPressed: () => context.pushNamed(
-            Routes.actionAddPin.name,
+            Routes.createPin.name,
             queryParameters: {'spaceId': spaceId},
           ),
         ),
