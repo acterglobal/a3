@@ -330,8 +330,8 @@ jobs:
           cp app/linux/packaging/aur/PKGBUILD PKGBUILD
 
           VERSION=${{ needs.tags.outputs.version }}
-          DOWNLOAD_PATH='v$VERSION/acter-linux-x64-$VERSION.tar.bz2'
-          MD5SUM=md5sum acter-linux-x64-${{ needs.tags.outputs.version }}.tar.bz2  | awk '{print $1}'
+          DOWNLOAD_PATH='v$VERSION\/acter-linux-x64-$VERSION.tar.bz2'
+          MD5SUM=`md5sum acter-linux-x64-$VERSION.tar.bz2  | awk '{print $1}'``
 
           echo "Version: $VERSION"
           echo "Download Path: $DOWNLOAD_PATH"
@@ -374,7 +374,7 @@ jobs:
 
           VERSION=${{ needs.tags.outputs.version }}
           DOWNLOAD_PATH='v$VERSION/acter-linux-x64-$VERSION.tar.bz2'
-          MD5SUM=md5sum acter-linux-x64-$VERSION.tar.bz2  | awk '{print $1}'
+          MD5SUM=`md5sum acter-linux-x64-$VERSION.tar.bz2  | awk '{print $1}'``
 
           echo "Version: $VERSION"
           echo "Download Path: $DOWNLOAD_PATH"
