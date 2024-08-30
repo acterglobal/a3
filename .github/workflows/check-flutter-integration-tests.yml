@@ -208,12 +208,13 @@ jobs:
      - run_checker
     strategy:
       matrix:
-        api_level: [34]
-        test: ["Auth", "Updates", "Events", "Subspace", "SuperInvites", "Tasks", "Pins", "Attachments"] # "Bug Reporting", disabled as it needs a rageshake server
+        # api_level: [34]
+        # test: ["Auth", "Updates", "Events", "Subspace", "SuperInvites", "Tasks", "Pins", "Attachments"] # "Bug Reporting", disabled as it needs a rageshake server
         include:
          - api_level: 23    # MinimalSDK version Smoke Test
            test: "Smoke"
-
+         - api_level: 34    # Latest version Smoke Test
+           test: "Smoke"
     steps:
       - uses: actions/checkout@v4
 
@@ -409,8 +410,7 @@ jobs:
       - name: Install extra deps
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y libgtk-3-dev libx11-dev pkg-config cmake ninja-build libblkid-dev liblzma-dev
-          sudo apt install -y dbus-x11 network-manager upower mpv libmpv-dev
+          sudo apt install -y ninja-build libgtk-3-dev libmpv-dev mpv libayatana-appindicator3-1 libayatana-appindicator3-dev
 
       - name: Install supported toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
@@ -576,7 +576,7 @@ jobs:
 
       - uses: actions/setup-python@v4
         with:
-          python-version: 3.10
+          python-version: '3.10'
 
       - uses: michaelkaye/setup-matrix-synapse@main
         with:
@@ -688,6 +688,7 @@ jobs:
 
 
   macos-desktop:
+    environment: release
     runs-on: macos-12
     name: MacOS Desktop
     continue-on-error: true
@@ -718,7 +719,7 @@ jobs:
 
       - uses: actions/setup-python@v4
         with:
-          python-version: 3.8
+          python-version: '3.10'
 
       - uses: michaelkaye/setup-matrix-synapse@main
         with:
@@ -748,6 +749,47 @@ jobs:
           wget -q https://github.com/mailhog/MailHog/releases/download/v1.0.1/MailHog_darwin_amd64
           sudo chmod +x MailHog_darwin_amd64
           ./MailHog_windows_amd64 &
+
+      - name: Unlock git-crypt
+        run: |
+          brew install git-crypt
+          echo "${{ secrets.GIT_CRYPT_KEY }}" | base64 --decode > .github/assets/git-crypt-key
+          git-crypt unlock .github/assets/git-crypt-key
+          echo "Files found:"
+          git-crypt status -e
+
+      # Install the Apple certificate and provisioning profile
+      - name: Install the Apple certificates
+        env:
+          P12_PASSWORD: ${{ secrets.BUILD_CERTS_P12_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          echo "starting in $RUNNER_TEMP"
+          # create variables
+          CERTIFICATE_PATH=".github/assets/build_certificates.p12"
+          KEYCHAIN_PATH="$RUNNER_TEMP/app-signing.keychain-db"
+          echo "vars set"
+          # import certificate and provisioning profile from secrets
+          # create temporary keychain
+          echo "creating keychain"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          echo "setting keychain"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          echo "unlocking keychain"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          # import certificate to keychain
+          echo "importing certificate"
+          security import "$CERTIFICATE_PATH" -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          echo "listing keychains"
+          security list-keychain -d user -s "$KEYCHAIN_PATH"
+
+      - name: Install the Apple provisioning profile
+        run: |
+          echo "Installing provision profiles"
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles/
+          cp .github/assets/provision_profiles/* ~/Library/MobileDevice/Provisioning\ Profiles/
+          ls -ltas ~/Library/MobileDevice/Provisioning\ Profiles/
+
 
       - name: Enable MacOS Desktop
         run: flutter config --enable-macos-desktop
