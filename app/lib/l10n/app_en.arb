@@ -527,6 +527,8 @@
   "@going": {},
   "haveProfile": "Already have a profile?",
   "@haveProfile": {},
+  "helpCenterTitle": "Help Center",
+  "helpCenterDesc": "Get helpful tips about Acter",
   "hereYouCanChangeTheSpaceDetails": "Here you can change the space details",
   "@hereYouCanChangeTheSpaceDetails": {},
   "hereYouCanSeeAllUsersYouBlocked": "Here you can see all users you’ve blocked.",
