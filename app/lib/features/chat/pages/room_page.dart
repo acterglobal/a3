@@ -24,11 +24,13 @@ import 'package:acter/features/settings/providers/app_settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -46,6 +48,8 @@ class RoomPage extends ConsumerWidget {
   Widget appBar(BuildContext context, WidgetRef ref) {
     final roomAvatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
     final membersLoader = ref.watch(membersIdsProvider(roomId));
+    final isEncrypted =
+        ref.watch(isRoomEncryptedProvider(roomId)).valueOrNull ?? false;
     return AppBar(
       elevation: 0,
       automaticallyImplyLeading: !context.isLargeScreen,
@@ -87,6 +91,15 @@ class RoomPage extends ConsumerWidget {
         ),
       ),
       actions: [
+        if (!isEncrypted)
+          IconButton(
+            onPressed: () =>
+                EasyLoading.showInfo(L10n.of(context).chatNotEncrypted),
+            icon: Icon(
+              PhosphorIcons.shieldWarning(),
+              color: Theme.of(context).colorScheme.error,
+            ),
+          ),
         GestureDetector(
           onTap: () => context.pushNamed(
             Routes.chatProfile.name,

@@ -1,3 +1,4 @@
+import 'package:acter/common/widgets/visibility/visibility_chip.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -74,6 +75,10 @@ class SpaceWithAvatarInfoCard extends StatelessWidget {
   ///
   final bool showSuggestedMark;
 
+  /// Whether or not to render the visibility icon
+  ///
+  final bool showVisibilityMark;
+
   const SpaceWithAvatarInfoCard({
     super.key,
     required this.roomId,
@@ -91,6 +96,7 @@ class SpaceWithAvatarInfoCard extends StatelessWidget {
     this.showParents = true,
     this.margin,
     this.showSuggestedMark = false,
+    this.showVisibilityMark = false,
     required this.avatarSize,
     required this.contentPadding,
   });
@@ -132,26 +138,35 @@ class SpaceWithAvatarInfoCard extends StatelessWidget {
   }
 
   Widget? buildSubtitle(BuildContext context) {
-    if (!showSuggestedMark) {
-      return subtitle;
-    }
+    List<Widget> subtitles = [];
 
-    if (subtitle != null) {
-      return Row(
-        children: [
-          Text(
-            L10n.of(context).suggested,
-            style: Theme.of(context).textTheme.labelSmall,
-          ),
-          const SizedBox(width: 2),
-          Expanded(child: subtitle!),
-        ],
+    //SHOW SPACE VISIBILITY INDICATION
+    if (showVisibilityMark) {
+      final visibilityWidget = VisibilityChip(
+        roomId: roomId,
+        useCompactView: true,
       );
+      subtitles.add(visibilityWidget);
     }
 
-    return Text(
-      L10n.of(context).suggested,
-      style: Theme.of(context).textTheme.labelSmall,
-    );
+    //SHOW SUGGEST LABEL
+    if (showSuggestedMark) {
+      //ADD SEPARATION
+      if (subtitles.isNotEmpty) subtitles.add(const Text(' - '));
+
+      final suggestedWidget = Text(
+        L10n.of(context).suggested,
+        style: Theme.of(context).textTheme.labelSmall,
+      );
+      subtitles.add(suggestedWidget);
+
+      //ADD CUSTOM SUBTITLE IF AVAILABLE
+      if (subtitle != null) {
+        subtitles.add(const Text(' - '));
+        subtitles.add(subtitle!);
+      }
+    }
+
+    return Row(children: subtitles);
   }
 }

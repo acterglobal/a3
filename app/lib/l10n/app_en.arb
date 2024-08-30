@@ -2173,5 +2173,6 @@
   "@eventNoLongerAvailable": {},
   "eventDeletedOrFailedToLoad": "This may due to event deletion or failed to load",
   "@eventDeletedOrFailedToLoad": {},
+  "chatNotEncrypted": "This chat is not end-to-end-encrypted",
   "action": "Action"
 }
