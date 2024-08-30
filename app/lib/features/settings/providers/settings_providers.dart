@@ -6,6 +6,7 @@ import 'package:acter/common/utils/main.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/providers/notifiers/labs_features.dart';
+import 'package:acter/features/settings/providers/notifiers/locale_notifier.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,7 +39,8 @@ final featuresProvider =
   );
 });
 
-final languageProvider = StateProvider<String>((ref) => 'en');
+final localeProvider =
+    StateNotifierProvider<LocaleNotifier, String>((ref) => LocaleNotifier());
 
 final ignoredUsersProvider = FutureProvider<List<UserId>>((ref) async {
   final account = ref.watch(accountProvider);
@@ -85,7 +87,10 @@ final asyncIsActiveProvider =
 
 // helper
 Future<bool> updateFeatureState(
-    WidgetRef ref, LabsFeature f, bool value,) async {
+  WidgetRef ref,
+  LabsFeature f,
+  bool value,
+) async {
   await ref.read(featuresProvider.notifier).setActive(f, value);
   return ref.read(featuresProvider).isActive(f);
 }
