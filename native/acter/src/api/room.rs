@@ -44,7 +44,8 @@ use ruma_events::{
     space::{child::HierarchySpaceChildEvent, parent::SpaceParentEventContent},
     MessageLikeEventType, StateEvent, StateEventType, StaticEventContent,
 };
-use std::{io::Write, ops::Deref, path::PathBuf};
+use std::{fs::exists, io::Write, ops::Deref, path::PathBuf};
+use tokio::fs;
 use tokio_stream::{wrappers::BroadcastStream, StreamExt};
 use tracing::{info, warn};
 
@@ -1478,7 +1479,7 @@ impl Room {
                     warn!("Content info or thumbnail source not found");
                     return Ok(OptionString::new(None));
                 };
-                let data = client.media().get_media_content(&request, false).await?;
+                let data = client.media().get_media_content(&request, true).await?;
                 // infer file extension via parsing of file binary
                 if filename.is_none() {
                     if let Some(kind) = infer::get(&data) {
@@ -1563,12 +1564,18 @@ impl Room {
                 } else {
                     [room.room_id().as_str().as_bytes(), event_id.as_bytes()].concat()
                 };
-                let path = client.store().get_custom_value(&key).await?;
-                let text = match path {
-                    Some(path) => Some(std::str::from_utf8(&path)?.to_string()),
-                    None => None,
+                let Some(path_vec) = client.store().get_custom_value(&key).await? else {
+                    return Ok(OptionString::new(None));
                 };
-                Ok(OptionString::new(text))
+                let path_str = std::str::from_utf8(&path_vec)?.to_string();
+                if matches!(exists(&path_str), Ok(true)) {
+                    return Ok(OptionString::new(Some(path_str)));
+                }
+
+                // file wasn't existing, clear cache.
+
+                client.store().remove_custom_value(&key).await?;
+                Ok(OptionString::new(None))
             })
             .await?
     }
