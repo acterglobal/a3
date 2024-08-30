@@ -199,61 +199,13 @@ jobs:
 
 
 
-  android-build:
-    # added to build the android only once and then cache it for the actual tests runs
-    runs-on: ubuntu-22.04
-    name: Android build
-    # if: ${{ github.ref == 'refs/heads/main' || needs.run_checker.outputs.should_run_android != 'false' || needs.run_checker.outputs.should_run_emulator != 'false' || needs.run_checker.outputs.should_run_all != 'false' }}
-    needs:
-     - run_checker
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install supported toolchain
-        uses: actions-rust-lang/setup-rust-toolchain@v1
-
-      - uses: Swatinem/rust-cache@v2
-
-      - uses: subosito/flutter-action@v2
-        name: Set up flutter
-        with:
-          flutter-version: '3.24'
-          channel: 'stable'
-      - uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-          cache: gradle
-
-      - name: Install cargo-make
-        uses: davidB/rust-cargo-make@v1
-
-      - name: Rust Android Setup
-        run: cargo make setup-android
-
-      - name: Install NDK $NDK_VERSION
-        run: |
-          ANDROID_ROOT=/usr/local/lib/android
-          ANDROID_SDK_ROOT=${ANDROID_ROOT}/sdk
-          SDKMANAGER=${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager
-          echo "y" | $SDKMANAGER "ndk;$NDK_VERSION"
-          echo "Installed $NDK_VERSION"
-          ls /usr/local/lib/android/sdk/ndk/$NDK_VERSION
-
-      - name: Build Native
-        run: |
-          export ANDROID_NDK_HOME=/usr/local/lib/android/sdk/ndk/$NDK_VERSION
-          ls $ANDROID_NDK_HOME
-          cargo make android-dev
-
-
   android:
     runs-on: ubuntu-22.04
     name: Android
-    needs:
-     - android-build
     continue-on-error: true
+    # if: ${{ github.ref == 'refs/heads/main' || needs.run_checker.outputs.should_run_android != 'false' || needs.run_checker.outputs.should_run_emulator != 'false' || needs.run_checker.outputs.should_run_all != 'false' }}
+    needs:
+     - run_checker
     strategy:
       matrix:
         api_level: [34]
@@ -276,6 +228,7 @@ jobs:
           android: false
 
       - uses: Swatinem/rust-cache@v2
+        id: cache-cargo
 
       - uses: actions/setup-java@v4
         with:
