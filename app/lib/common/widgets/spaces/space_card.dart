@@ -98,7 +98,8 @@ class SpaceCard extends ConsumerWidget {
     this.subtitleTextStyle,
     this.leadingAndTrailingTextStyle,
     this.avatarSize = 48,
-    this.contentPadding = const EdgeInsets.all(15),
+    this.contentPadding =
+        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
     this.margin,
     this.shape,
     this.withBorder = true,

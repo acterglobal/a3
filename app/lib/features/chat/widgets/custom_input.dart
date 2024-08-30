@@ -903,17 +903,11 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
               : L10n.of(context).newMessage,
           hintMaxLines: 1,
           focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(
-              width: 0.5,
-              color: Colors.white38,
-            ),
+            borderSide: const BorderSide(width: 0.5),
             borderRadius: BorderRadius.circular(30),
           ),
           enabledBorder: OutlineInputBorder(
-            borderSide: const BorderSide(
-              width: 0.5,
-              color: Colors.white30,
-            ),
+            borderSide: const BorderSide(width: 0.5),
             borderRadius: BorderRadius.circular(30),
           ),
           border: OutlineInputBorder(

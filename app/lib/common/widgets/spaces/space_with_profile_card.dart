@@ -129,19 +129,7 @@ class SpaceWithAvatarInfoCard extends StatelessWidget {
         titleTextStyle: titleTextStyle,
         subtitleTextStyle: subtitleTextStyle,
         leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
-        title: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, overflow: TextOverflow.ellipsis),
-            if (showVisibilityMark)
-              VisibilityChip(
-                roomId: roomId,
-                useCompactView: true,
-              ),
-          ],
-        ),
+        title: Text(title, overflow: TextOverflow.ellipsis),
         subtitle: buildSubtitle(context),
         leading: avatar,
         trailing: trailing,
@@ -150,26 +138,35 @@ class SpaceWithAvatarInfoCard extends StatelessWidget {
   }
 
   Widget? buildSubtitle(BuildContext context) {
-    if (!showSuggestedMark) {
-      return subtitle;
-    }
+    List<Widget> subtitles = [];
 
-    if (subtitle != null) {
-      return Row(
-        children: [
-          Text(
-            L10n.of(context).suggested,
-            style: Theme.of(context).textTheme.labelSmall,
-          ),
-          const SizedBox(width: 2),
-          Expanded(child: subtitle!),
-        ],
+    //SHOW SPACE VISIBILITY INDICATION
+    if (showVisibilityMark) {
+      final visibilityWidget = VisibilityChip(
+        roomId: roomId,
+        useCompactView: true,
       );
+      subtitles.add(visibilityWidget);
     }
 
-    return Text(
-      L10n.of(context).suggested,
-      style: Theme.of(context).textTheme.labelSmall,
-    );
+    //SHOW SUGGEST LABEL
+    if (showSuggestedMark) {
+      //ADD SEPARATION
+      if (subtitles.isNotEmpty) subtitles.add(const Text(' - '));
+
+      final suggestedWidget = Text(
+        L10n.of(context).suggested,
+        style: Theme.of(context).textTheme.labelSmall,
+      );
+      subtitles.add(suggestedWidget);
+
+      //ADD CUSTOM SUBTITLE IF AVAILABLE
+      if (subtitle != null) {
+        subtitles.add(const Text(' - '));
+        subtitles.add(subtitle!);
+      }
+    }
+
+    return Row(children: subtitles);
   }
 }
