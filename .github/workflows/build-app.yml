@@ -167,6 +167,11 @@ jobs:
       - name: Install supported toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
 
+      - uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: ${{matrix.cargo_make_args}}
+
+
       - uses: jlumbroso/free-disk-space@main
         name: Free Disk Space (Ubuntu)
         if: matrix.os == 'ubuntu-latest' && matrix.target != 'linux'
