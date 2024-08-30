@@ -23639,52 +23639,28 @@ class Api {
           _RoomPowerLevelsTaskListsKeyReturn Function(
             int,
           )>();
-  late final _simpleSettingWithTurnOffBuilderActivePtr = _lookup<
+  late final _simpleSettingWithTurnOnBuilderActivePtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
             ffi.IntPtr,
             ffi.Uint8,
-          )>>("__SimpleSettingWithTurnOffBuilder_active");
+          )>>("__SimpleSettingWithTurnOnBuilder_active");
 
-  late final _simpleSettingWithTurnOffBuilderActive =
-      _simpleSettingWithTurnOffBuilderActivePtr.asFunction<
+  late final _simpleSettingWithTurnOnBuilderActive =
+      _simpleSettingWithTurnOnBuilderActivePtr.asFunction<
           void Function(
             int,
             int,
           )>();
-  late final _simpleSettingWithTurnOffBuilderBuildPtr = _lookup<
+  late final _simpleSettingWithTurnOnBuilderBuildPtr = _lookup<
       ffi.NativeFunction<
-          _SimpleSettingWithTurnOffBuilderBuildReturn Function(
+          _SimpleSettingWithTurnOnBuilderBuildReturn Function(
             ffi.IntPtr,
-          )>>("__SimpleSettingWithTurnOffBuilder_build");
+          )>>("__SimpleSettingWithTurnOnBuilder_build");
 
-  late final _simpleSettingWithTurnOffBuilderBuild =
-      _simpleSettingWithTurnOffBuilderBuildPtr.asFunction<
-          _SimpleSettingWithTurnOffBuilderBuildReturn Function(
-            int,
-          )>();
-  late final _tasksSettingsBuilderActivePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.IntPtr,
-            ffi.Uint8,
-          )>>("__TasksSettingsBuilder_active");
-
-  late final _tasksSettingsBuilderActive =
-      _tasksSettingsBuilderActivePtr.asFunction<
-          void Function(
-            int,
-            int,
-          )>();
-  late final _tasksSettingsBuilderBuildPtr = _lookup<
-      ffi.NativeFunction<
-          _TasksSettingsBuilderBuildReturn Function(
-            ffi.IntPtr,
-          )>>("__TasksSettingsBuilder_build");
-
-  late final _tasksSettingsBuilderBuild =
-      _tasksSettingsBuilderBuildPtr.asFunction<
-          _TasksSettingsBuilderBuildReturn Function(
+  late final _simpleSettingWithTurnOnBuilderBuild =
+      _simpleSettingWithTurnOnBuilderBuildPtr.asFunction<
+          _SimpleSettingWithTurnOnBuilderBuildReturn Function(
             int,
           )>();
   late final _newsSettingsActivePtr = _lookup<
@@ -48498,11 +48474,11 @@ class RoomPowerLevels {
   }
 }
 
-class SimpleSettingWithTurnOff {
+class SimpleSettingWithTurnOn {
   final Api _api;
   final _Box _box;
 
-  SimpleSettingWithTurnOff._(this._api, this._box);
+  SimpleSettingWithTurnOn._(this._api, this._box);
 
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
@@ -48510,11 +48486,11 @@ class SimpleSettingWithTurnOff {
   }
 }
 
-class SimpleSettingWithTurnOffBuilder {
+class SimpleSettingWithTurnOnBuilder {
   final Api _api;
   final _Box _box;
 
-  SimpleSettingWithTurnOffBuilder._(this._api, this._box);
+  SimpleSettingWithTurnOnBuilder._(this._api, this._box);
 
   void active(
     bool active,
@@ -48524,17 +48500,17 @@ class SimpleSettingWithTurnOffBuilder {
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1 ? 1 : 0;
-    _api._simpleSettingWithTurnOffBuilderActive(
+    _api._simpleSettingWithTurnOnBuilderActive(
       tmp0,
       tmp2,
     );
     return;
   }
 
-  SimpleSettingWithTurnOff build() {
+  SimpleSettingWithTurnOn build() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._simpleSettingWithTurnOffBuilderBuild(
+    final tmp1 = _api._simpleSettingWithTurnOnBuilderBuild(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -48555,66 +48531,9 @@ class SimpleSettingWithTurnOffBuilder {
       throw tmp3_0;
     }
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_SimpleSettingWithTurnOff");
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_SimpleSettingWithTurnOn");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp2 = SimpleSettingWithTurnOff._(_api, tmp7_1);
-    return tmp2;
-  }
-
-  /// Manually drops the object and unregisters the FinalizableHandle.
-  void drop() {
-    _box.drop();
-  }
-}
-
-class TasksSettingsBuilder {
-  final Api _api;
-  final _Box _box;
-
-  TasksSettingsBuilder._(this._api, this._box);
-
-  void active(
-    bool active,
-  ) {
-    final tmp1 = active;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    tmp0 = _box.borrow();
-    tmp2 = tmp1 ? 1 : 0;
-    _api._tasksSettingsBuilderActive(
-      tmp0,
-      tmp2,
-    );
-    return;
-  }
-
-  TasksSettings build() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._tasksSettingsBuilderBuild(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    final tmp7 = tmp1.arg4;
-    if (tmp3 == 0) {
-      debugAllocation("handle error", tmp4, tmp5);
-      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      final tmp3_0 =
-          utf8.decode(tmp4_0.asTypedList(tmp5), allowMalformed: true);
-      if (tmp5 > 0) {
-        final ffi.Pointer<ffi.Void> tmp4_0;
-        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-        _api.__deallocate(tmp4_0, tmp6, 1);
-      }
-      throw tmp3_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_TasksSettings");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp2 = TasksSettings._(_api, tmp7_1);
+    final tmp2 = SimpleSettingWithTurnOn._(_api, tmp7_1);
     return tmp2;
   }
 
@@ -48641,7 +48560,7 @@ class NewsSettings {
     return tmp2;
   }
 
-  SimpleSettingWithTurnOffBuilder updater() {
+  SimpleSettingWithTurnOnBuilder updater() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._newsSettingsUpdater(
@@ -48650,9 +48569,9 @@ class NewsSettings {
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
     final tmp3_1 =
-        _Box(_api, tmp3_0, "drop_box_SimpleSettingWithTurnOffBuilder");
+        _Box(_api, tmp3_0, "drop_box_SimpleSettingWithTurnOnBuilder");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = SimpleSettingWithTurnOffBuilder._(_api, tmp3_1);
+    final tmp2 = SimpleSettingWithTurnOnBuilder._(_api, tmp3_1);
     return tmp2;
   }
 
@@ -48679,7 +48598,7 @@ class TasksSettings {
     return tmp2;
   }
 
-  TasksSettingsBuilder updater() {
+  SimpleSettingWithTurnOnBuilder updater() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._tasksSettingsUpdater(
@@ -48687,9 +48606,10 @@ class TasksSettings {
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TasksSettingsBuilder");
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "drop_box_SimpleSettingWithTurnOnBuilder");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = TasksSettingsBuilder._(_api, tmp3_1);
+    final tmp2 = SimpleSettingWithTurnOnBuilder._(_api, tmp3_1);
     return tmp2;
   }
 
@@ -48716,7 +48636,7 @@ class EventsSettings {
     return tmp2;
   }
 
-  SimpleSettingWithTurnOffBuilder updater() {
+  SimpleSettingWithTurnOnBuilder updater() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._eventsSettingsUpdater(
@@ -48725,9 +48645,9 @@ class EventsSettings {
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
     final tmp3_1 =
-        _Box(_api, tmp3_0, "drop_box_SimpleSettingWithTurnOffBuilder");
+        _Box(_api, tmp3_0, "drop_box_SimpleSettingWithTurnOnBuilder");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = SimpleSettingWithTurnOffBuilder._(_api, tmp3_1);
+    final tmp2 = SimpleSettingWithTurnOnBuilder._(_api, tmp3_1);
     return tmp2;
   }
 
@@ -48754,7 +48674,7 @@ class PinsSettings {
     return tmp2;
   }
 
-  SimpleSettingWithTurnOffBuilder updater() {
+  SimpleSettingWithTurnOnBuilder updater() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._pinsSettingsUpdater(
@@ -48763,9 +48683,9 @@ class PinsSettings {
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
     final tmp3_1 =
-        _Box(_api, tmp3_0, "drop_box_SimpleSettingWithTurnOffBuilder");
+        _Box(_api, tmp3_0, "drop_box_SimpleSettingWithTurnOnBuilder");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = SimpleSettingWithTurnOffBuilder._(_api, tmp3_1);
+    final tmp2 = SimpleSettingWithTurnOnBuilder._(_api, tmp3_1);
     return tmp2;
   }
 
@@ -48864,7 +48784,7 @@ class ActerAppSettingsBuilder {
   ActerAppSettingsBuilder._(this._api, this._box);
 
   void news(
-    SimpleSettingWithTurnOff? news,
+    SimpleSettingWithTurnOn? news,
   ) {
     final tmp1 = news;
     var tmp0 = 0;
@@ -48887,7 +48807,7 @@ class ActerAppSettingsBuilder {
   }
 
   void pins(
-    SimpleSettingWithTurnOff? pins,
+    SimpleSettingWithTurnOn? pins,
   ) {
     final tmp1 = pins;
     var tmp0 = 0;
@@ -48910,7 +48830,7 @@ class ActerAppSettingsBuilder {
   }
 
   void events(
-    SimpleSettingWithTurnOff? events,
+    SimpleSettingWithTurnOn? events,
   ) {
     final tmp1 = events;
     var tmp0 = 0;
@@ -48933,7 +48853,7 @@ class ActerAppSettingsBuilder {
   }
 
   void tasks(
-    TasksSettings? tasks,
+    SimpleSettingWithTurnOn? tasks,
   ) {
     final tmp1 = tasks;
     var tmp0 = 0;
@@ -60173,20 +60093,7 @@ class _RoomPowerLevelsTaskListsKeyReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _SimpleSettingWithTurnOffBuilderBuildReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-  @ffi.IntPtr()
-  external int arg4;
-}
-
-class _TasksSettingsBuilderBuildReturn extends ffi.Struct {
+class _SimpleSettingWithTurnOnBuilderBuildReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()

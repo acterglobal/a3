@@ -313,8 +313,6 @@ jobs:
 ##     ## ##    ##  ##    ## ##     ##    ##     ## ##     ## ##    ##  
 ##     ## ##     ##  ######  ##     ##    ##     ##  #######  ##     ## 
 
-
-
   publish_aur:
     environment: release
     needs:
@@ -330,11 +328,24 @@ jobs:
       - name: Create PKGBUILD file
         run: |
           cp app/linux/packaging/aur/PKGBUILD PKGBUILD
-          sed -i "s/%{{TAG}}%/${{ needs.tags.outputs.version }}/g" PKGBUILD
-          VERSION=$(echo ${{ needs.tags.outputs.version }} | sed "s/-/./g")
+
+          VERSION=${{ needs.tags.outputs.version }}
+          DOWNLOAD_PATH='v$VERSION/acter-linux-x64-$VERSION.tar.bz2'
+          MD5SUM=md5sum acter-linux-x64-${{ needs.tags.outputs.version }}.tar.bz2  | awk '{print $1}'
+
+          echo "Version: $VERSION"
+          echo "Download Path: $DOWNLOAD_PATH"
+          echo "MD5Sum: $MD5SUM"
+
+          sed -i "s/%{{PKGNAME}}%/acter-bin/g" PKGBUILD
+          sed -i "s/%{{PKGNAME_CONFLICTS}}%/acter-nightly-bin/g" PKGBUILD
+
           sed -i "s/%{{VERSION}}%/$VERSION/g" PKGBUILD
-          sed -i "s/%{{PKGREL}}%/2/g" PKGBUILD
-          sed -i "s/%{{LINUX_MD5}}%/`md5sum acter-linux-x64-${{ needs.tags.outputs.version }}.tar.bz2  | awk '{print $1}'`/g" PKGBUILD
+          sed -i "s/%{{DOWNLOAD_PATH}}%/$DOWNLOAD_PATH/g" PKGBUILD
+          sed -i "s/%{{LINUX_MD5}}%/$MD5SUM/g" PKGBUILD
+
+          echo " --- Final PKGBUILD File "
+          cat PKGBUILD
       - uses: KSXGitHub/github-actions-deploy-aur@v2.7.2
         name: Publish to AUR
         with:
@@ -345,6 +356,48 @@ jobs:
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
           commit_message: Updated to ${{ needs.tags.outputs.version }}
 
+  publish_aur_nightly:
+    environment: release
+    needs:
+      - tags
+      - build
+    name: Publish AUR nightly
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: Linux x64
+      - name: Patch PKGBUILD file
+        run: |
+          cp app/linux/packaging/aur/PKGBUILD PKGBUILD
+
+          VERSION=${{ needs.tags.outputs.version }}
+          DOWNLOAD_PATH='v$VERSION/acter-linux-x64-$VERSION.tar.bz2'
+          MD5SUM=md5sum acter-linux-x64-$VERSION.tar.bz2  | awk '{print $1}'
+
+          echo "Version: $VERSION"
+          echo "Download Path: $DOWNLOAD_PATH"
+          echo "MD5Sum: $MD5SUM"
+
+          sed -i "s/%{{PKGNAME}}%/acter-nightly-bin/g" PKGBUILD
+          sed -i "s/%{{PKGNAME_CONFLICTS}}%/acter-bin/g" PKGBUILD
+
+          sed -i "s/%{{VERSION}}%/$VERSION/g" PKGBUILD
+          sed -i "s/%{{DOWNLOAD_PATH}}%/$DOWNLOAD_PATH/g" PKGBUILD
+          sed -i "s/%{{LINUX_MD5}}%/$MD5SUM/g" PKGBUILD
+
+          echo " --- Final PKGBUILD File "
+          cat PKGBUILD
+      - uses: KSXGitHub/github-actions-deploy-aur@v2.7.2
+        name: Publish to AUR
+        with:
+          pkgname: acter-nightly-bin
+          pkgbuild: ./PKGBUILD
+          commit_username: Sari
+          commit_email: sari@acter.global
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: Updated to ${{ needs.tags.outputs.tag }}
 
 
  ######   #### ######## ##     ## ##     ## ########     ########  ##     ## ########  ##       ####  ######  ##     ## 
@@ -392,7 +445,7 @@ jobs:
       - name: Tag for release
         run: |
           echo "Add release ${{ needs.tags.outputs.tag }}"
-          git co ci/release-${{ needs.tags.outputs.tag }}
+          git checkout -b ci/release-${{ needs.tags.outputs.tag }}
           git commit -m "Releasing ${{ needs.tags.outputs.tag }}"
           git tag ${{ needs.tags.outputs.tag }}
           git push origin ci/release-${{ needs.tags.outputs.tag }} ${{ needs.tags.outputs.tag }}
@@ -402,6 +455,7 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           branch: "ci/release-${{ needs.tags.outputs.tag }}"
+          base: main
           title: "Releasing ${{ needs.tags.outputs.tag }}"
           body: Release ${{ needs.tags.outputs.tag }} auto PR.
           labels: minor

@@ -39,6 +39,7 @@ List<Widget>? _renderKnownSubspaces(
           roomId: roomId,
           showParents: false,
           showSuggestedMark: isSuggested,
+          showVisibilityMark: true,
           trailing: RoomHierarchyOptionsMenu(
             childId: roomId,
             parentId: spaceIdOrAlias,

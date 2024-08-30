@@ -371,30 +371,14 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(right: 10),
-                    child: InkWell(
-                      onTap: () => selectAttachment(
-                        context: context,
-                        onSelected: handleFileUpload,
-                      ),
-                      child: const Icon(
-                        Atlas.paperclip_attachment_thin,
-                        size: 20,
-                      ),
-                    ),
-                  ),
                   Flexible(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: _TextInputWidget(
-                        roomId: widget.roomId,
-                        controller: textController,
-                        chatFocus: chatFocus,
-                        onSendButtonPressed: () => onSendButtonPressed(ref),
-                        isEncrypted: isEncrypted,
-                        onTyping: widget.onTyping,
-                      ),
+                    child: _TextInputWidget(
+                      roomId: widget.roomId,
+                      controller: textController,
+                      chatFocus: chatFocus,
+                      onSendButtonPressed: () => onSendButtonPressed(ref),
+                      isEncrypted: isEncrypted,
+                      onTyping: widget.onTyping,
                     ),
                   ),
                   ValueListenableBuilder<bool>(
@@ -402,7 +386,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
                     builder: (context, isEmpty, child) {
                       return !isEmpty
                           ? renderSendButton(context, roomId)
-                          : const SizedBox();
+                          : renderAttachmentPinButton();
                     },
                   ),
                 ],
@@ -424,6 +408,22 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
                 ref.read(chatInputProvider.notifier).emojiPickerVisible(false),
           ),
       ],
+    );
+  }
+
+  Widget renderAttachmentPinButton() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      child: InkWell(
+        onTap: () => selectAttachment(
+          context: context,
+          onSelected: handleFileUpload,
+        ),
+        child: const Icon(
+          Atlas.paperclip_attachment_thin,
+          size: 20,
+        ),
+      ),
     );
   }
 
@@ -864,6 +864,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
     TextEditingController ctrl,
   ) {
     return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.2,
       ),
@@ -884,18 +885,12 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
           }
         },
         onSubmitted: (_) => widget.onSendButtonPressed(),
-        style: Theme.of(context).textTheme.bodySmall,
+        style: Theme.of(context).textTheme.bodyMedium,
         decoration: InputDecoration(
+          fillColor: Theme.of(context).unselectedWidgetColor.withOpacity(0.5),
           contentPadding: const EdgeInsets.all(15),
           isCollapsed: true,
-          prefixIcon: widget.isEncrypted
-              ? Icon(
-                  Icons.shield,
-                  size: 18,
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
-                )
-              : null,
-          suffixIcon: InkWell(
+          prefixIcon: InkWell(
             onTap: () => onSuffixTap(
               ref.read(chatInputProvider).emojiPickerVisible,
               context,
@@ -903,36 +898,22 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
             ),
             child: const Icon(Icons.emoji_emotions),
           ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30),
-            borderSide: BorderSide(
-              width: 0.5,
-              style: BorderStyle.solid,
-              color: Theme.of(context).colorScheme.surface,
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30),
-            borderSide: const BorderSide(
-              width: 0.5,
-              style: BorderStyle.solid,
-            ),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30),
-            borderSide: BorderSide(
-              width: 0.5,
-              style: BorderStyle.solid,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
-          ),
           hintText: widget.isEncrypted
               ? L10n.of(context).newEncryptedMessage
               : L10n.of(context).newMessage,
-          hintStyle: Theme.of(context).textTheme.labelLarge!.copyWith(
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
           hintMaxLines: 1,
+          focusedBorder: OutlineInputBorder(
+            borderSide: const BorderSide(width: 0.5),
+            borderRadius: BorderRadius.circular(30),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: const BorderSide(width: 0.5),
+            borderRadius: BorderRadius.circular(30),
+          ),
+          border: OutlineInputBorder(
+            borderSide: BorderSide.none,
+            borderRadius: BorderRadius.circular(30),
+          ),
         ),
       ),
     );

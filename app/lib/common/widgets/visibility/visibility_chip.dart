@@ -12,10 +12,12 @@ final _log = Logger('a3::common::visibility::chip');
 
 class VisibilityChip extends ConsumerWidget {
   final String roomId;
+  final bool useCompactView;
 
   const VisibilityChip({
     super.key,
     required this.roomId,
+    this.useCompactView = false,
   });
 
   @override
@@ -65,19 +67,18 @@ class VisibilityChip extends ConsumerWidget {
       default:
         break;
     }
-    return Chip(
-      visualDensity: VisualDensity.compact,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(5)),
-      ),
-      avatar: Icon(
-        icon,
-        color: Theme.of(context).colorScheme.onSurface,
-      ),
-      label: Text(
-        label,
-        style: Theme.of(context).textTheme.labelSmall,
-      ),
-    );
+    return useCompactView
+        ? Text(label, style: Theme.of(context).textTheme.labelSmall)
+        : Chip(
+            visualDensity: VisualDensity.compact,
+            avatar: Icon(
+              icon,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+            label: Text(
+              label,
+              style: Theme.of(context).textTheme.labelSmall,
+            ),
+          );
   }
 }

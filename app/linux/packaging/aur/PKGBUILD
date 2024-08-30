@@ -1,19 +1,19 @@
 # Maintainer: Benjamin Kampmann <ben@acter.global>
-pkgname=acter-bin
+pkgname=%{{PKGNAME}}%
 pkgver=%{{VERSION}}%
-pkgrel=%{{PKGREL}}%
+pkgrel=1
 epoch=
 pkgdesc="Casual Community Organizing"
 arch=(x86_64)
 url="https://acter.global"
 license=('custom:Acter Public Source License 1.0')
 groups=()
-depends=('mpv' 'libsecret' 'jsoncpp' 'xdg-user-dirs' 'libayatana-appindicator3-1')
+depends=('mpv' 'libsecret' 'jsoncpp' 'xdg-user-dirs' 'libayatana-appindicator')
 makedepends=()
 checkdepends=()
 optdepends=()
 provides=()
-conflicts=('acter-nightly-bin')
+conflicts=('%{{PKGNAME_CONFLICTS}}%')
 replaces=()
 backup=()
 options=()

@@ -26,7 +26,7 @@ extension ActerTasks on ConvenientTest {
     if (spaceId != null) {
       await gotoSpace(spaceId);
 
-      final tasksKey = find.byKey(TabEntry.tasks);
+      final tasksKey = find.byKey(Key(TabEntry.tasks.name));
       if (tasksKey.evaluate().isEmpty) {
         // we don't have it activated on this space yet, do it
         await navigateTo([
@@ -108,7 +108,7 @@ extension ActerTasks on ConvenientTest {
       userDisplayName: userDisplayName,
     );
     await ensureTasksAreEnabled(spaceId);
-    await gotoSpace(spaceId, appTab: TabEntry.tasks);
+    await gotoSpace(spaceId, appTab: Key(TabEntry.tasks.name));
     await navigateTo([
       TasksListPage.createNewTaskListKey,
     ]);
@@ -162,7 +162,7 @@ void tasksTests() {
     final spaceId = await t.freshAccountWithSpace();
     await t.ensureTasksAreEnabled(spaceId);
     await t.gotoSpace(spaceId);
-    await t.navigateTo([TabEntry.tasks]); // this worked now
+    await t.navigateTo([Key(TabEntry.tasks.name)]); // this worked now
   });
 
   acterTestWidget('New TaskList & tasks via Space', (t) async {
@@ -170,7 +170,7 @@ void tasksTests() {
       spaceDisplayName: 'Task list via Space Test',
     );
     await t.ensureTasksAreEnabled(spaceId);
-    await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
+    await t.gotoSpace(spaceId, appTab: Key(TabEntry.tasks.name));
     await t.navigateTo([
       TasksListPage.createNewTaskListKey,
     ]);
@@ -184,7 +184,7 @@ void tasksTests() {
       ],
     );
 
-    await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
+    await t.gotoSpace(spaceId, appTab: Key(TabEntry.tasks.name));
     await t.ensureHasWidget<SpaceHeader>();
     // we see our entry now
     await find.text('Errands').should(findsOneWidget);
@@ -220,7 +220,7 @@ void tasksTests() {
     );
 
     //
-    await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
+    await t.gotoSpace(spaceId, appTab: Key(TabEntry.tasks.name));
     // we see our entry now
     await find.text('Protest Preparations').should(findsOneWidget);
     await find.text('Buy markers').should(findsOneWidget);
@@ -254,7 +254,7 @@ void tasksTests() {
     );
 
     //
-    await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
+    await t.gotoSpace(spaceId, appTab: Key(TabEntry.tasks.name));
     // we see our entry now
     await find.text('Club Party').should(findsOneWidget);
     await find.text('Get drinks').should(findsOneWidget);
@@ -328,7 +328,7 @@ void tasksTests() {
     );
 
     //
-    await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
+    await t.gotoSpace(spaceId, appTab: Key(TabEntry.tasks.name));
     // we see our entry now
     await find.text('Club Party').should(findsOneWidget);
     await find.text('Get drinks').should(findsOneWidget);
@@ -347,7 +347,7 @@ void tasksTests() {
 
     // the second one, created via the space itself.
 
-    await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
+    await t.gotoSpace(spaceId, appTab: Key(TabEntry.tasks.name));
     await t.navigateTo([
       TasksListPage.createNewTaskListKey,
     ]);
@@ -361,7 +361,7 @@ void tasksTests() {
       ],
     );
 
-    await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
+    await t.gotoSpace(spaceId, appTab: Key(TabEntry.tasks.name));
     await t.ensureHasWidget<SpaceHeader>();
     // we see our entry now
 
@@ -415,7 +415,7 @@ void tasksTests() {
     await find.text('Pick up banner').should(findsOneWidget);
 
     //
-    await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
+    await t.gotoSpace(spaceId, appTab: Key(TabEntry.tasks.name));
 
     // we see our entry now
     await t.tester.dragUntilVisible(
