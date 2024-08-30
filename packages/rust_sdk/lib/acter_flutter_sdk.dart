@@ -133,9 +133,7 @@ class ActerSdk {
   static final List<ffi.Client> _clients = [];
   static const platform = MethodChannel('acter_flutter_sdk');
 
-  static bool _isSetup = false;
-
-  static late final String _sessionKey;
+  static String _sessionKey = 'sessions';
   static late FlutterSecureStorage storage;
   static late String userAgent;
   static late String defaultServerUrl;
@@ -152,11 +150,6 @@ class ActerSdk {
     required String defaultHomeServerName,
     required String defaultHttpProxy,
   }) {
-    if (_isSetup) {
-      _log.warning('ActerSdk.setup called again. Ignoring');
-      return;
-    }
-    _isSetup = true;
     ActerSdk._sessionKey = sessionKey;
     ActerSdk.defaultServerUrl = defaultHomeServerUrl;
     ActerSdk.defaultServerName = defaultHomeServerName;
