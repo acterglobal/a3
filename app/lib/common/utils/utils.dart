@@ -105,37 +105,31 @@ String formatDate(CalendarEvent e) {
 String formatTime(CalendarEvent e) {
   final start = toDartDatetime(e.utcStart()).toLocal();
   final end = toDartDatetime(e.utcEnd()).toLocal();
-  return '${Jiffy.parseFromDateTime(start).jm} - ${Jiffy.parseFromDateTime(end).jm}';
+  return '${DateFormat.jm().format(start)} - ${DateFormat.jm().format(end)}';
 }
 
 String getMonthFromDate(UtcDateTime utcDateTime) {
   final localDateTime = toDartDatetime(utcDateTime).toLocal();
-  final month = DateFormat('MMM').format(localDateTime);
+  final month = DateFormat.MMM().format(localDateTime);
   return month;
 }
 
 String getDayFromDate(UtcDateTime utcDateTime) {
   final localDateTime = toDartDatetime(utcDateTime).toLocal();
-  final day = DateFormat('dd').format(localDateTime);
+  final day = DateFormat.d().format(localDateTime);
   return day;
 }
 
 String getTimeFromDate(BuildContext context, UtcDateTime utcDateTime) {
   final localDateTime = toDartDatetime(utcDateTime).toLocal();
-  return DateFormat(getLocalisedTimeFormat(context)).format(localDateTime);
-}
-
-String getLocalisedTimeFormat(BuildContext context) {
-  bool is24HoursFormat = MediaQuery.of(context).alwaysUse24HourFormat;
-  return is24HoursFormat ? 'HH:mm' : 'hh:mm a';
+  return DateFormat.jm().format(localDateTime);
 }
 
 String jiffyTime(BuildContext context, int timeInterval) {
   final jiffyTime = Jiffy.parseFromMillisecondsSinceEpoch(timeInterval);
   final now = Jiffy.now().startOf(Unit.day);
   if (now.isSame(jiffyTime, unit: Unit.day)) {
-    bool is24HoursFormat = MediaQuery.of(context).alwaysUse24HourFormat;
-    return is24HoursFormat ? jiffyTime.Hm : jiffyTime.jm;
+    return jiffyTime.jm;
   } else {
     final yesterday = now.subtract(days: 1);
     final week = now.subtract(weeks: 1);

@@ -20,12 +20,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:video_player_media_kit/video_player_media_kit.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:acter/config/env.g.dart';
 
 void main(List<String> args) async {
   configSetup();
+
+  //THIS IS TO MANAGE DATE AND TIME FORMATING BASED ON THE LOCAL
+  await initializeDateFormatting();
+
   if (args.isNotEmpty) {
     await cliMain(args);
   } else {

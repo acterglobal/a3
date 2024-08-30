@@ -495,13 +495,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         Jiffy.parseFromDateTime(toDartDatetime(ev.utcStart()).toLocal())
             .endOf(Unit.hour)
             .fromNow();
-    String timeFormat = getLocalisedTimeFormat(context);
-    final startDate =
-        Jiffy.parseFromDateTime(toDartDatetime(ev.utcStart()).toLocal())
-            .format(pattern: 'EEE, MMM dd, yyyy AT $timeFormat');
-    final endDate =
-        Jiffy.parseFromDateTime(toDartDatetime(ev.utcEnd()).toLocal())
-            .format(pattern: 'EEE, MMM dd, yyyy AT $timeFormat');
+
+    String eventDateTime = '${formatDate(ev)} (${formatTime(ev)})';
 
     String eventTimingTitle = switch (getEventType(ev)) {
       EventFilters.ongoing => '${L10n.of(context).eventStarted} $agoTime',
@@ -522,7 +517,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           ),
           ListTile(
             leading: const Icon(Atlas.calendar_dots),
-            title: Text('$startDate - $endDate'),
+            title: Text(eventDateTime),
             onTap: canChangeDate ? () => showChangeDateSheet(ev) : null,
           ),
           ListTile(
