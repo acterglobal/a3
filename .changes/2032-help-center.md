@@ -1,0 +1,1 @@
+- Link Help Center from Settings page
