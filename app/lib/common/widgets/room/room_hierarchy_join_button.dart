@@ -30,15 +30,12 @@ class RoomHierarchyJoinButton extends ConsumerWidget {
         child: Text(L10n.of(context).joined),
       );
     }
-    switch (joinRule) {
-      case 'private':
-      case 'invite':
-        return Tooltip(
+    return switch (joinRule) {
+      'private' || 'invite' => Tooltip(
           message: L10n.of(context).youNeedBeInvitedToJoinThisRoom,
           child: Chip(label: Text(L10n.of(context).private)),
-        );
-      case 'restricted':
-        return Tooltip(
+        ),
+      'restricted' => Tooltip(
           message: L10n.of(context).youAreAbleToJoinThisRoom,
           child: OutlinedButton(
             onPressed: () async {
@@ -53,9 +50,8 @@ class RoomHierarchyJoinButton extends ConsumerWidget {
             },
             child: Text(L10n.of(context).join),
           ),
-        );
-      case 'public':
-        return Tooltip(
+        ),
+      'public' => Tooltip(
           message: L10n.of(context).youAreAbleToJoinThisRoom,
           child: OutlinedButton(
             onPressed: () async {
@@ -70,12 +66,11 @@ class RoomHierarchyJoinButton extends ConsumerWidget {
             },
             child: Text(L10n.of(context).join),
           ),
-        );
-      default:
-        return Tooltip(
+        ),
+      _ => Tooltip(
           message: L10n.of(context).unclearJoinRule(joinRule),
           child: Chip(label: Text(L10n.of(context).unknown)),
-        );
-    }
+        ),
+    };
   }
 }

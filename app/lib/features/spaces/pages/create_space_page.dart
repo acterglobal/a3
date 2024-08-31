@@ -263,36 +263,32 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
 
   Widget selectedVisibility() {
     final selectedVisibility = ref.watch(_selectedVisibilityProvider);
-    switch (selectedVisibility) {
-      case RoomVisibility.Public:
-        return RoomVisibilityItem(
+    return switch (selectedVisibility) {
+      RoomVisibility.Public => RoomVisibilityItem(
           iconData: Icons.language,
           title: L10n.of(context).public,
           subtitle: L10n.of(context).publicVisibilitySubtitle,
           isShowRadio: false,
-        );
-      case RoomVisibility.Private:
-        return RoomVisibilityItem(
+        ),
+      RoomVisibility.Private => RoomVisibilityItem(
           iconData: Icons.lock,
           title: L10n.of(context).private,
           subtitle: L10n.of(context).privateVisibilitySubtitle,
           isShowRadio: false,
-        );
-      case RoomVisibility.SpaceVisible:
-        return RoomVisibilityItem(
+        ),
+      RoomVisibility.SpaceVisible => RoomVisibilityItem(
           iconData: Atlas.users,
           title: L10n.of(context).limited,
           subtitle: L10n.of(context).limitedVisibilitySubtitle,
           isShowRadio: false,
-        );
-      default:
-        return RoomVisibilityItem(
+        ),
+      _ => RoomVisibilityItem(
           iconData: Icons.lock,
           title: L10n.of(context).private,
           subtitle: L10n.of(context).privateVisibilitySubtitle,
           isShowRadio: false,
-        );
-    }
+        ),
+    };
   }
 
   Widget _buildSpaceActionButtons() {

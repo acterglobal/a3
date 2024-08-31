@@ -271,7 +271,8 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
   }
 
   String buildSearchTitle(BuildContext context) {
-    return switch (ref.watch(searchFilterProvider).filterBy) {
+    final searchFilters = ref.watch(searchFilterProvider);
+    return switch (searchFilters.filterBy) {
       FilterBy.spaces => L10n.of(context).searchSpaces,
       FilterBy.chats => L10n.of(context).searchChats,
       FilterBy.both => L10n.of(context).searchPublicDirectory,

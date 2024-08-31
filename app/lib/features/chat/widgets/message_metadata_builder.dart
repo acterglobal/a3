@@ -22,39 +22,37 @@ class MessageMetadataBuilder extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final receipts = message.metadata?['receipts'];
-    EventSendState? sendState = message.metadata?['eventState'];
     if (receipts != null && receipts.isNotEmpty == true) {
       return _UserReceiptsWidget(
         roomId: roomId,
         seenList: (receipts as Map<String, int>).keys.toList(),
       );
-    } else {
-      if (sendState != null) {
-        switch (sendState.state()) {
-          case 'NotSentYet':
-            return const SizedBox(
-              height: 8,
-              width: 8,
-              child: CircularProgressIndicator(),
-            );
-          case 'SendingFailed':
-            return Row(
-              children: <Widget>[
-                Text(L10n.of(context).chatSendingFailed),
-                const SizedBox(width: 5),
-                Icon(
-                  Atlas.warning_thin,
-                  color: Theme.of(context).colorScheme.error,
-                  size: 8,
-                ),
-              ],
-            );
-          case 'Sent':
-            return const Icon(Atlas.check_circle_thin, size: 8);
-        }
-      }
-      return const SizedBox.shrink();
     }
+    final sendState = message.metadata?['eventState'];
+    if (sendState == null) return const SizedBox.shrink();
+    return switch (sendState.state()) {
+      'NotSentYet' => const SizedBox(
+          height: 8,
+          width: 8,
+          child: CircularProgressIndicator(),
+        ),
+      'SendingFailed' => Row(
+          children: <Widget>[
+            Text(L10n.of(context).chatSendingFailed),
+            const SizedBox(width: 5),
+            Icon(
+              Atlas.warning_thin,
+              color: Theme.of(context).colorScheme.error,
+              size: 8,
+            ),
+          ],
+        ),
+      'Sent' => const Icon(
+          Atlas.check_circle_thin,
+          size: 8,
+        ),
+      _ => const SizedBox.shrink(),
+    };
   }
 }
 

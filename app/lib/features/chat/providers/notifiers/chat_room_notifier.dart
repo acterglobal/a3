@@ -425,24 +425,22 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   types.Message parseMessage(RoomMessage message) {
     RoomVirtualItem? virtualItem = message.virtualItem();
     if (virtualItem != null) {
-      switch (virtualItem.eventType()) {
-        case 'ReadMarker':
-          return const types.SystemMessage(
+      return switch (virtualItem.eventType()) {
+        'ReadMarker' => const types.SystemMessage(
             metadata: {'type': '_read_marker'},
             id: 'read-marker',
             text: 'read-until-here',
-          );
+          ),
         // should not return null, before we can keep track of index in diff receiver
-        default:
-          return types.UnsupportedMessage(
+        _ => types.UnsupportedMessage(
             author: const types.User(id: 'virtual'),
             id: UniqueKey().toString(),
             metadata: {
               'itemType': 'virtual',
               'eventType': virtualItem.eventType(),
             },
-          );
-      }
+          ),
+      };
     }
 
     // If not virtual item, it should be event item

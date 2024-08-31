@@ -8,21 +8,15 @@ class LanguageModel {
   });
 
   factory LanguageModel.fromCode(String? locale) {
-    switch (locale) {
-      case 'ar':
-        return const LanguageModel.arabic();
-      case 'de':
-        return const LanguageModel.german();
-      case 'es':
-        return const LanguageModel.spanish();
-      case 'pl':
-        return const LanguageModel.polish();
-      case 'fr':
-        return const LanguageModel.french();
-      case 'en':
-      default:
-        return const LanguageModel.english();
-    }
+    return switch (locale) {
+      'ar' => const LanguageModel.arabic(),
+      'de' => const LanguageModel.german(),
+      'es' => const LanguageModel.spanish(),
+      'pl' => const LanguageModel.polish(),
+      'fr' => const LanguageModel.french(),
+      'en' => const LanguageModel.english(),
+      _ => const LanguageModel.english(),
+    };
   }
 
   // We show each language in their native tongue

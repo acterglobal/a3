@@ -20,21 +20,14 @@ class BackupStateWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    switch (ref.watch(backupStateProvider)) {
-      case RecoveryState.enabled:
-        if (allowDisabling) {
-          return renderCanResetAction(context, ref);
-        } else {
-          // nothing to see here. all good.
-          return const SizedBox.shrink();
-        }
-      case RecoveryState.incomplete:
-        return renderRecoverAction(context, ref);
-      case RecoveryState.disabled:
-        return renderStartAction(context, ref);
-      default:
-        return renderUnknown(context, ref);
-    }
+    return switch (ref.watch(backupStateProvider)) {
+      RecoveryState.enabled => allowDisabling
+          ? renderCanResetAction(context, ref)
+          : const SizedBox.shrink(), // nothing to see here. all good.
+      RecoveryState.incomplete => renderRecoverAction(context, ref),
+      RecoveryState.disabled => renderStartAction(context, ref),
+      _ => renderUnknown(context, ref),
+    };
   }
 
   Widget renderUnknown(BuildContext context, WidgetRef ref) {

@@ -228,26 +228,17 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   }
 
   Widget spacePageUI(TabEntry tabItem) {
-    switch (tabItem.key) {
-      case TabEntry.overview:
-        return AboutSection(spaceId: widget.spaceId);
-      case TabEntry.pins:
-        return PinsSection(spaceId: widget.spaceId);
-      case TabEntry.tasks:
-        return TasksSection(spaceId: widget.spaceId);
-      case TabEntry.events:
-        return EventsSection(spaceId: widget.spaceId);
-      case TabEntry.chatsKey:
-        return ChatsSection(spaceId: widget.spaceId);
-      case TabEntry.spacesKey:
-        return SpacesSection(spaceId: widget.spaceId);
-      case TabEntry.membersKey:
-        return MembersSection(spaceId: widget.spaceId);
-      case TabEntry.actionsKey:
-        return SpaceActionsSection(spaceId: widget.spaceId);
-      default:
-        return const SizedBox.shrink();
-    }
+    return switch (tabItem.key) {
+      TabEntry.overview => AboutSection(spaceId: widget.spaceId),
+      TabEntry.pins => PinsSection(spaceId: widget.spaceId),
+      TabEntry.tasks => TasksSection(spaceId: widget.spaceId),
+      TabEntry.events => EventsSection(spaceId: widget.spaceId),
+      TabEntry.chatsKey => ChatsSection(spaceId: widget.spaceId),
+      TabEntry.spacesKey => SpacesSection(spaceId: widget.spaceId),
+      TabEntry.membersKey => MembersSection(spaceId: widget.spaceId),
+      TabEntry.actionsKey => SpaceActionsSection(spaceId: widget.spaceId),
+      _ => const SizedBox.shrink(),
+    };
   }
 
   Widget spaceTopicUI() {

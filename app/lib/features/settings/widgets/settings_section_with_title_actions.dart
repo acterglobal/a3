@@ -92,9 +92,7 @@ class SettingsSectionWithTitleActions extends AbstractSettingsSection {
 
       case DevicePlatform.web:
       case DevicePlatform.device:
-        throw Exception(
-          L10n.of(context).devicePlatformException,
-        );
+        throw Exception(L10n.of(context).devicePlatformException);
     }
   }
 }

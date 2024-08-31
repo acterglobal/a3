@@ -200,23 +200,17 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
     );
   }
 
-  Widget getIconAsPerSlideType(
-    NewsSlideType slidePostType,
-    XFile? mediaFile,
-  ) {
-    switch (slidePostType) {
-      case NewsSlideType.text:
-        return const Icon(Atlas.size_text);
-      case NewsSlideType.image:
-        return ClipRRect(
+  Widget getIconAsPerSlideType(NewsSlideType slidePostType, XFile? mediaFile) {
+    return switch (slidePostType) {
+      NewsSlideType.text => const Icon(Atlas.size_text),
+      NewsSlideType.image => ClipRRect(
           borderRadius: BorderRadius.circular(5.0),
           child: Image(
             image: XFileImage(mediaFile!),
             fit: BoxFit.cover,
           ),
-        );
-      case NewsSlideType.video:
-        return Stack(
+        ),
+      NewsSlideType.video => Stack(
           fit: StackFit.expand,
           children: [
             FutureBuilder(
@@ -239,9 +233,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
               child: const Icon(Icons.play_arrow_outlined, size: 32),
             ),
           ],
-        );
-      default:
-        return Container();
-    }
+        ),
+    };
   }
 }
