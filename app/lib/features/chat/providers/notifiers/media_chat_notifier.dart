@@ -118,7 +118,7 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
   static Future<File?> getThumbnailData(String mediaPath) async {
     try {
       final tempDir = await getTemporaryDirectory();
-      final videoName = mediaPath.split('/').last.split('.').first;
+      final videoName = p.basenameWithoutExtension(mediaPath);
       final destPath = p.join(tempDir.path, '$videoName.jpg');
       final destFile = File(destPath);
 

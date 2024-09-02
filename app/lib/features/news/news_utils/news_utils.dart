@@ -17,7 +17,7 @@ class NewsUtils {
   static Future<File?> getThumbnailData(XFile videoFile) async {
     try {
       final tempDir = await getTemporaryDirectory();
-      final videoName = videoFile.name.split('.').first;
+      final videoName = p.basenameWithoutExtension(videoFile.path);
       final destPath = p.join(tempDir.path, '$videoName.jpg');
       final destFile = File(destPath);
 
