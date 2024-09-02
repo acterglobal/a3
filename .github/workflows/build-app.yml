@@ -138,22 +138,21 @@ jobs:
           TARGETS: ${{inputs.targets || 'all'}}
         shell: bash
         run: |
-
-          if [ "$TARGETS" = "all" ]; then
-            echo "Should build all";
-            echo "skipped=false"  >> $GITHUB_OUTPUT;
-            exit 0
-          fi
-
-          if echo $TARGET | tr "," "\n" | grep -Fxq $TARGET; then
-            echo "target among selected";
-            echo "skipped=false"  >> $GITHUB_OUTPUT;
-            exit 0
-          fi
-
-          echo "skipped=true" >> $GITHUB_OUTPUT ;
-          echo "Skipping build app for ${{ matrix.name }}"
-          exit 1
+            if [ "$TARGETS" = "all" ]; then
+              echo "Should build all";
+              echo "skipped=false"  >> $GITHUB_OUTPUT;
+              exit 0
+            fi
+            
+            if echo $TARGETS | tr "," "\n" | grep -Fxq $TARGET; then
+              echo "target among selected";
+              echo "skipped=false"  >> $GITHUB_OUTPUT;
+              exit 0
+            fi
+            
+            echo "skipped=true" >> $GITHUB_OUTPUT ;
+            echo "Skipping build app for $TARGET"
+            exit 1
     
       - uses: actions/checkout@v4
 
@@ -448,7 +447,7 @@ jobs:
             ${{ matrix.specific_upload_artifacts }}
 
       - name: Report issue
-        if: ${{ inputs.release && failure() && !steps.skipper.outputs.skipped }}
+        if: ${{ inputs.release && failure() && steps.skipper.outputs.skipped != 'true' }}
         uses: JasonEtco/create-an-issue@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

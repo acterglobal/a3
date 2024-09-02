@@ -431,7 +431,7 @@ class _TrailingWidget extends ConsumerWidget {
     }
 
     return Text(
-      jiffyTime(eventItem.originServerTs()),
+      jiffyTime(context, eventItem.originServerTs()),
       style: Theme.of(context).textTheme.labelMedium,
     );
   }

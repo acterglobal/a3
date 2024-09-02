@@ -8,7 +8,6 @@ import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';
 import 'package:acter/common/tutorial_dialogs/space_overview_tutorials/create_or_join_space_tutorials.dart';
 import 'package:acter/common/tutorial_dialogs/space_overview_tutorials/space_overview_tutorials.dart';
-import 'package:acter/common/utils/language.dart';
 import 'package:acter/common/utils/logging.dart';
 import 'package:acter/common/utils/main.dart';
 import 'package:acter/config/setup.dart';
@@ -20,12 +19,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:video_player_media_kit/video_player_media_kit.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:acter/config/env.g.dart';
 
 void main(List<String> args) async {
   configSetup();
+
+  //THIS IS TO MANAGE DATE AND TIME FORMATING BASED ON THE LOCAL
+  await initializeDateFormatting();
+
   if (args.isNotEmpty) {
     await cliMain(args);
   } else {
@@ -98,7 +102,7 @@ class _ActerState extends ConsumerState<Acter> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    initLanguage(ref);
+    ref.read(localeProvider.notifier).initLanguage();
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -115,7 +119,7 @@ class _ActerState extends ConsumerState<Acter> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    final language = ref.watch(languageProvider);
+    final language = ref.watch(localeProvider);
 
     // all toast msgs will appear at bottom
     final builder = EasyLoading.init();

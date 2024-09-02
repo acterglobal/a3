@@ -22,9 +22,11 @@ class CommentWidget extends ConsumerWidget {
     final userId = comment.sender().toString();
     final msgContent = comment.msgContent();
     final formatted = msgContent.formattedBody();
-    var commentTime =
-        DateTime.fromMillisecondsSinceEpoch(comment.originServerTs());
-    final time = commentTime.timeago();
+    final commentTime = DateTime.fromMillisecondsSinceEpoch(
+      comment.originServerTs(),
+      isUtc: true,
+    );
+    final time = commentTime.toLocal().timeago();
     final avatarInfo = ref.watch(
       memberAvatarInfoProvider((roomId: roomID, userId: userId)),
     );

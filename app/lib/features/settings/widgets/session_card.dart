@@ -27,7 +27,7 @@ class SessionCard extends ConsumerWidget {
         lastSeenTs,
         isUtc: true,
       );
-      fields.add(dateTime.toString());
+      fields.add(dateTime.toLocal().toString());
     }
     final lastSeenIp = deviceRecord.lastSeenIp();
     if (lastSeenIp != null) {
