@@ -7,7 +7,8 @@ pub static APP_USER_SETTINGS: &str = "global.acter.user_app_settings";
 pub use space::{
     ActerAppSettings, ActerAppSettingsContent, ActerAppSettingsContentBuilder,
     ActerAppSettingsContentBuilderError, EventsSettings, NewsSettings, PinsSettings,
-    SimpleSettingWithTurnOff, SimpleSettingWithTurnOffBuilder, TasksSettings, TasksSettingsBuilder,
+    SimpleOnOffSetting, SimpleOnOffSettingBuilder, SimpleSettingWithTurnOff,
+    SimpleSettingWithTurnOffBuilder, TasksSettings,
 };
 pub use user::{
     ActerUserAppSettingsContent, ActerUserAppSettingsContentBuilder, AppChatSettings, AutoDownload,

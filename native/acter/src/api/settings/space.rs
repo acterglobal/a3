@@ -1,6 +1,7 @@
 pub use acter_core::events::settings::{
-    ActerAppSettingsContent, EventsSettings, NewsSettings, PinsSettings, SimpleSettingWithTurnOff,
-    SimpleSettingWithTurnOffBuilder, TasksSettings, TasksSettingsBuilder,
+    ActerAppSettingsContent, EventsSettings, NewsSettings, PinsSettings, SimpleOnOffSetting,
+    SimpleOnOffSettingBuilder, SimpleSettingWithTurnOff, SimpleSettingWithTurnOffBuilder,
+    TasksSettings,
 };
 use acter_core::events::{
     calendar::CalendarEventEventContent,

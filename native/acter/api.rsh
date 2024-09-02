@@ -1972,8 +1972,18 @@ object RoomPowerLevels {
     fn task_lists_key() -> string;
 }
 
-object SimpleSettingWithTurnOff {
+object SimpleOnOffSetting {
+    fn active() -> bool;
+}
 
+object SimpleOnOffSettingBuilder {
+    fn active(active: bool);
+    fn build() -> Result<SimpleOnOffSetting>;
+}
+
+
+object SimpleSettingWithTurnOff {
+    fn active() -> bool;
 }
 
 object SimpleSettingWithTurnOffBuilder {
@@ -1982,10 +1992,6 @@ object SimpleSettingWithTurnOffBuilder {
 }
 
 
-object TasksSettingsBuilder {
-    fn active(active: bool);
-    fn build() -> Result<TasksSettings>;
-}
 object NewsSettings {
     fn active() -> bool;
     fn updater() -> SimpleSettingWithTurnOffBuilder;
@@ -1993,7 +1999,7 @@ object NewsSettings {
 
 object TasksSettings {
     fn active() -> bool;
-    fn updater() -> TasksSettingsBuilder;
+    fn updater() -> SimpleOnOffSettingBuilder;
 }
 
 object EventsSettings {
@@ -2018,7 +2024,7 @@ object ActerAppSettingsBuilder {
     fn news(news: Option<SimpleSettingWithTurnOff>);
     fn pins(pins: Option<SimpleSettingWithTurnOff>);
     fn events(events: Option<SimpleSettingWithTurnOff>);
-    fn tasks(tasks: Option<TasksSettings>);
+    fn tasks(tasks: Option<SimpleOnOffSetting>);
 }
 
 
