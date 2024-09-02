@@ -3,26 +3,48 @@ use ruma_events::EmptyStateKey;
 use ruma_macros::EventContent;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Deserialize, Serialize, Builder, Default)]
-pub struct SimpleSettingWithTurnOn {
+#[derive(Clone, Debug, Deserialize, Serialize, Builder)]
+pub struct SimpleSettingWithTurnOff {
     active: bool,
 }
 
-impl SimpleSettingWithTurnOn {
+impl Default for SimpleSettingWithTurnOff {
+    fn default() -> Self {
+        SimpleSettingWithTurnOff { active: true }
+    }
+}
+
+impl SimpleSettingWithTurnOff {
     pub fn active(&self) -> bool {
         self.active
     }
-    pub fn updater(&self) -> SimpleSettingWithTurnOnBuilder {
-        SimpleSettingWithTurnOnBuilder::default()
+    pub fn updater(&self) -> SimpleSettingWithTurnOffBuilder {
+        SimpleSettingWithTurnOffBuilder::default()
             .active(self.active)
             .to_owned()
     }
 }
 
-pub type NewsSettings = SimpleSettingWithTurnOn;
-pub type PinsSettings = SimpleSettingWithTurnOn;
-pub type EventsSettings = SimpleSettingWithTurnOn;
-pub type TasksSettings = SimpleSettingWithTurnOn;
+// TasksSettings
+#[derive(Clone, Debug, Deserialize, Serialize, Builder, Default)]
+pub struct TasksSettings {
+    // Tasks are off by default
+    active: bool,
+}
+impl TasksSettings {
+    pub fn active(&self) -> bool {
+        self.active
+    }
+    pub fn updater(&self) -> TasksSettingsBuilder {
+        TasksSettingsBuilder::default()
+            .active(self.active)
+            .to_owned()
+    }
+}
+
+pub type NewsSettings = SimpleSettingWithTurnOff;
+pub type PinsSettings = SimpleSettingWithTurnOff;
+pub type EventsSettings = SimpleSettingWithTurnOff;
 
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder, Default)]
 #[ruma_event(type = "global.acter.app_settings", kind = State, state_key_type = EmptyStateKey)]

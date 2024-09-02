@@ -3,8 +3,8 @@ mod user;
 
 pub use space::{
     ActerAppSettings, ActerAppSettingsBuilder, ActerAppSettingsContent, EventsSettings,
-    NewsSettings, PinsSettings, RoomPowerLevels, SimpleSettingWithTurnOn,
-    SimpleSettingWithTurnOnBuilder, TasksSettings,
+    NewsSettings, PinsSettings, RoomPowerLevels, SimpleSettingWithTurnOff,
+    SimpleSettingWithTurnOffBuilder, TasksSettings, TasksSettingsBuilder,
 };
 
 pub use user::{ActerUserAppSettings, ActerUserAppSettingsBuilder};
