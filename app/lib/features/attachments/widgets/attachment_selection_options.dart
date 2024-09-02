@@ -12,6 +12,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as p;
 
 // Attachments Selection Media Type Widget (Mobile)
 class AttachmentSelectionOptions extends StatelessWidget {
@@ -297,7 +298,7 @@ class _FileWidget extends StatelessWidget {
   }
 
   Widget _filePreview(BuildContext context, File file) {
-    final fileName = file.path.split('/').last;
+    final fileName = p.basename(file.path);
     if (type == AttachmentType.camera || type == AttachmentType.image) {
       return AttachmentContainer(
         name: fileName,
