@@ -12,11 +12,12 @@ bool _bugReportOpen = false;
 
 Future<void> openBugReport(
   BuildContext context, {
-  Map<String, String> queryParams = const {},
+  Map<String, String>? queryParams,
 }) async {
   if (_bugReportOpen) {
     return;
   }
+  queryParams = queryParams ?? {};
   final cacheDir = await appCacheDir();
   // rage shake disallows dot in filename
   final timestamp = DateTime.now().timestamp;
