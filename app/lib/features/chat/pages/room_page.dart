@@ -194,8 +194,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
 
   void showMessageOptions(BuildContext context, types.Message message) {
     if (message is types.CustomMessage) {
-      if (message.metadata!.containsKey('eventType') &&
-          message.metadata!['eventType'] == 'm.room.redaction') {
+      if (message.metadata!['eventType'] == 'm.room.redaction') {
         return;
       }
     }

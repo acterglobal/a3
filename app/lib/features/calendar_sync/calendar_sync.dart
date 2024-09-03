@@ -6,9 +6,9 @@ import 'package:acter/features/calendar_sync/providers/events_to_sync_provider.d
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -133,9 +133,9 @@ Future<void> _refreshCalendar(
     final calEvent = eventAndRsvp.event;
     final rsvp = eventAndRsvp.rsvp;
     final calEventId = calEvent.eventId().toString();
+    final localId = currentLinks[calEventId];
     Event? localEvent;
-    if (currentLinks.containsKey(calEventId)) {
-      final localId = currentLinks[calEventId];
+    if (localId != null) {
       localEvent = foundEvents.cast<Event?>().firstWhere(
             (e) => e?.eventId == localId,
             orElse: () => null,

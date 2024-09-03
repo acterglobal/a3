@@ -121,14 +121,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   // get the repliedTo field from metadata
   String? getRepliedTo(types.Message message) {
-    final metadata = message.metadata;
-    if (metadata == null) {
-      return null;
-    }
-    if (!metadata.containsKey('repliedTo')) {
-      return null;
-    }
-    return metadata['repliedTo'];
+    return message.metadata?['repliedTo'];
   }
 
   // parses `RoomMessage` event to `types.Message` and updates messages list
