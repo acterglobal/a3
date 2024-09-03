@@ -1,6 +1,7 @@
 pub use acter_core::events::settings::{
-    ActerAppSettingsContent, EventsSettings, NewsSettings, PinsSettings, SimpleSettingWithTurnOn,
-    SimpleSettingWithTurnOnBuilder, TasksSettings,
+    ActerAppSettingsContent, EventsSettings, NewsSettings, PinsSettings, SimpleOnOffSetting,
+    SimpleOnOffSettingBuilder, SimpleSettingWithTurnOff, SimpleSettingWithTurnOffBuilder,
+    TasksSettings,
 };
 use acter_core::events::{
     calendar::CalendarEventEventContent,
@@ -30,13 +31,13 @@ impl From<ActerAppSettingsContentBuilder> for ActerAppSettingsBuilder {
     }
 }
 impl ActerAppSettingsBuilder {
-    pub fn news(&mut self, value: Option<Box<SimpleSettingWithTurnOn>>) {
+    pub fn news(&mut self, value: Option<Box<SimpleSettingWithTurnOff>>) {
         self.inner.news(value.map(|i| *i));
     }
-    pub fn pins(&mut self, value: Option<Box<SimpleSettingWithTurnOn>>) {
+    pub fn pins(&mut self, value: Option<Box<SimpleSettingWithTurnOff>>) {
         self.inner.pins(value.map(|i| *i));
     }
-    pub fn events(&mut self, value: Option<Box<SimpleSettingWithTurnOn>>) {
+    pub fn events(&mut self, value: Option<Box<SimpleSettingWithTurnOff>>) {
         self.inner.events(value.map(|i| *i));
     }
     pub fn tasks(&mut self, value: Option<Box<TasksSettings>>) {
