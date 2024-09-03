@@ -6,6 +6,7 @@ import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_trigger_auto_complete/acter_trigger_autocomplete.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/dom.dart' as html;
@@ -275,23 +276,103 @@ String parseEditMsg(types.Message message) {
   return '';
 }
 
+Future<void> parseUserMentionText(
+  String htmlText,
+  String roomId,
+  ActerTriggerAutoCompleteTextController controller,
+  WidgetRef ref,
+) async {
+  final roomMentions = await ref.read(membersIdsProvider(roomId).future);
+  final inputNotifier = ref.read(chatInputProvider.notifier);
+  // Regular expression to match mention links
+  final mentionRegex = RegExp(r'\[@([^\]]+)\]\(https://matrix\.to/#/([^)]+)\)');
+  List<TaggedText> tags = [];
+  String parsedText = htmlText;
+  // Find all matches
+  final matches = mentionRegex.allMatches(htmlText);
+
+  int offset = 0;
+  for (final match in matches) {
+    final linkedName = match.group(1);
+    final userId = match.group(2);
+
+    String? displayName;
+    bool isValidMention = false;
+
+    if (linkedName != null && userId != null) {
+      displayName = linkedName;
+      isValidMention = roomMentions.any(
+        (uId) => uId == userId,
+      );
+    }
+    if (isValidMention && displayName != null) {
+      final simpleMention = '@$displayName';
+      final startIndex = match.start - offset;
+      final endIndex = startIndex + simpleMention.length;
+      // restore mention state of input
+      inputNotifier.addMention(displayName, userId!);
+      // restore tags
+      tags.add(
+        TaggedText(
+          trigger: '@',
+          displayText: simpleMention,
+          start: startIndex,
+          end: endIndex,
+        ),
+      );
+
+      // Replace the mention in parsed text
+      parsedText = parsedText.replaceRange(
+        startIndex,
+        match.end - offset,
+        simpleMention,
+      );
+      offset += (match.end - match.start) - simpleMention.length;
+    }
+  }
+
+  // Set the parsed text to the text controller
+  controller.text = parsedText;
+
+  // Apply the tags to the text controller
+  for (var tag in tags) {
+    controller.addTag(tag);
+  }
+}
+
 // save composer draft object handler
-Future<void> saveDraft(String text, String roomId, WidgetRef ref) async {
+Future<void> saveDraft(
+  String text,
+  String roomId,
+  WidgetRef ref,
+) async {
   // get the convo object to initiate draft
   final chat = await ref.read(chatProvider(roomId).future);
   final messageId = ref.read(chatInputProvider).selectedMessage?.id;
+  final mentions = ref.read(chatInputProvider).mentions;
+  final userMentions = [];
+  String? htmlText = text;
+  if (mentions.isNotEmpty) {
+    mentions.forEach((key, value) {
+      userMentions.add(value);
+      htmlText = htmlText?.replaceAll(
+        '@$key',
+        '[@$key](https://matrix.to/#/$value)',
+      );
+    });
+  }
 
   if (chat != null) {
     if (messageId != null) {
       final selectedMessageState =
           ref.read(chatInputProvider).selectedMessageState;
       if (selectedMessageState == SelectedMessageState.edit) {
-        await chat.saveMsgDraft(text, null, 'edit', messageId);
+        await chat.saveMsgDraft(text, htmlText, 'edit', messageId);
       } else if (selectedMessageState == SelectedMessageState.replyTo) {
-        await chat.saveMsgDraft(text, null, 'reply', messageId);
+        await chat.saveMsgDraft(text, htmlText, 'reply', messageId);
       }
     } else {
-      await chat.saveMsgDraft(text, null, 'new', null);
+      await chat.saveMsgDraft(text, htmlText, 'new', null);
     }
   }
 }
