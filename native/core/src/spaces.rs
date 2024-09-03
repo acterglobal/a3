@@ -74,6 +74,7 @@ pub struct CreateSpaceSettings {
     parent: Option<OwnedRoomId>,
 
     #[builder(setter(strip_option), default = "ActerAppSettingsContent::off()")]
+    #[serde(default = "ActerAppSettingsContent::off")]
     app_settings: ActerAppSettingsContent,
 }
 
