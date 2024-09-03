@@ -67,17 +67,15 @@ class IconPicker extends StatelessWidget {
     );
   }
 
-  Widget _buildColorBoxItem(ColorModel colorModel) {
+  Widget _buildColorBoxItem(Color color) {
     return Container(
       height: 40,
       width: 40,
       padding: const EdgeInsets.all(16),
       margin: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: colorModel.color,
-        border: colorModel.isSelected
-            ? Border.all(color: Colors.white, width: 2)
-            : null,
+        color: color,
+        border: Border.all(color: Colors.white, width: 2),
         borderRadius: const BorderRadius.all(Radius.circular(100)),
       ),
     );
@@ -92,8 +90,8 @@ class IconPicker extends StatelessWidget {
         Expanded(
           child: SingleChildScrollView(
             child: Wrap(
-              children: iconsList
-                  .map((colorModel) => _buildIconBoxItem(colorModel))
+              children: ActerIcons.values
+                  .map((acterIcon) => _buildIconBoxItem(acterIcon))
                   .toList(),
             ),
           ),
@@ -102,18 +100,16 @@ class IconPicker extends StatelessWidget {
     );
   }
 
-  Widget _buildIconBoxItem(IconModel iconModel) {
+  Widget _buildIconBoxItem(ActerIcons acterIcon) {
     return Container(
       padding: const EdgeInsets.all(16),
       margin: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Colors.white24,
-        border: iconModel.isSelected
-            ? Border.all(color: Colors.white, width: 2)
-            : null,
+        border: Border.all(color: Colors.white, width: 2),
         borderRadius: const BorderRadius.all(Radius.circular(100)),
       ),
-      child: Icon(iconModel.iconData),
+      child: Icon(acterIcon.data),
     );
   }
 }

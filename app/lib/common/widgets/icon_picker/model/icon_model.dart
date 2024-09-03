@@ -1,77 +1,69 @@
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-class IconModel {
-  final IconData iconData;
-  final bool isSelected;
+enum ActerIcons {
+  //LIST OF ACTER ICONS
+  pin(PhosphorIconsRegular.pushPin),
+  list(PhosphorIconsRegular.list),
+  airplane(PhosphorIconsRegular.airplane),
+  addressBook(PhosphorIconsRegular.addressBook),
+  airplay(PhosphorIconsRegular.airplay),
+  alarm(PhosphorIconsRegular.alarm),
+  amazonLogo(PhosphorIconsRegular.amazonLogo),
+  ambulance(PhosphorIconsRegular.ambulance),
+  anchor(PhosphorIconsRegular.anchor),
+  appleLogo(PhosphorIconsRegular.appleLogo),
+  aperture(PhosphorIconsRegular.aperture),
+  archive(PhosphorIconsRegular.archive),
+  appStoreLogo(PhosphorIconsRegular.appStoreLogo),
+  baby(PhosphorIconsRegular.baby),
+  bag(PhosphorIconsRegular.bag),
+  backpack(PhosphorIconsRegular.backpack),
+  bank(PhosphorIconsRegular.bank),
+  balloon(PhosphorIconsRegular.balloon),
+  barcode(PhosphorIconsRegular.barcode),
+  basketball(PhosphorIconsRegular.basketball),
+  bathtub(PhosphorIconsRegular.bathtub),
+  batteryCharging(PhosphorIconsRegular.batteryCharging),
+  beanie(PhosphorIconsRegular.beanie),
+  bed(PhosphorIconsRegular.bed),
+  bell(PhosphorIconsRegular.bell),
+  bicycle(PhosphorIconsRegular.bicycle),
+  brain(PhosphorIconsRegular.brain),
+  boat(PhosphorIconsRegular.boat),
+  book(PhosphorIconsRegular.book),
+  bird(PhosphorIconsRegular.bird),
+  browser(PhosphorIconsRegular.browser),
+  bookmark(PhosphorIconsRegular.bookmark),
+  bomb(PhosphorIconsRegular.bomb),
+  broadcast(PhosphorIconsRegular.broadcast),
+  boot(PhosphorIconsRegular.boot),
+  cableCar(PhosphorIconsRegular.cableCar),
+  cactus(PhosphorIconsRegular.cactus),
+  cake(PhosphorIconsRegular.cake),
+  calculator(PhosphorIconsRegular.calculator),
+  calendar(PhosphorIconsRegular.calendar),
+  callBell(PhosphorIconsRegular.callBell),
+  camera(PhosphorIconsRegular.camera),
+  car(PhosphorIconsRegular.car),
+  cat(PhosphorIconsRegular.cat),
+  chat(PhosphorIconsRegular.chat),
+  check(PhosphorIconsRegular.check),
+  yarn(PhosphorIconsRegular.yarn);
+  //..
 
-  const IconModel({
-    required this.iconData,
-    this.isSelected = false,
-  });
+  //ICON ACCESS METHODS
+  static IconData? iconDataFor(String name) =>
+      ActerIcons.values.asNameMap()[name]?.data;
+
+  static IconData iconDataForTask(String name) =>
+      iconDataFor(name) ?? ActerIcons.list.data;
+
+  static IconData iconDataForPin(String name) =>
+      iconDataFor(name) ?? ActerIcons.pin.data;
+
+  //ENUM DECLARATION
+  final IconData data;
+
+  const ActerIcons(this.data);
 }
-
-List<IconModel> iconsList = [
-  const IconModel(iconData: Atlas.paperclip_attachment),
-  const IconModel(iconData: Atlas.safe_bold),
-  const IconModel(iconData: Atlas.airplane, isSelected: true),
-  const IconModel(iconData: Atlas.washing_machine),
-  const IconModel(iconData: Atlas.walkie_talkie_bold),
-  const IconModel(iconData: Atlas.receipt_list_thin),
-  const IconModel(iconData: Atlas.face_mask),
-  const IconModel(iconData: Atlas.zip_file),
-  const IconModel(iconData: Atlas.receipt_dollar),
-  const IconModel(iconData: Atlas.account_arrows),
-  const IconModel(iconData: Atlas.dash_cloud),
-  const IconModel(iconData: Atlas.wall),
-  const IconModel(iconData: Atlas.question_bold),
-  const IconModel(iconData: Atlas.account),
-  const IconModel(iconData: Atlas.question_clipboard_thin),
-  const IconModel(iconData: Atlas.ice_cream_stick_thin),
-  const IconModel(iconData: Atlas.paperclip_attachment),
-  const IconModel(iconData: Atlas.safety_glove_thin),
-  const IconModel(iconData: Atlas.magnifier_search_account_thin),
-  const IconModel(iconData: Atlas.yoga_pose_bold),
-  const IconModel(iconData: Atlas.paperclip_attachment),
-  const IconModel(iconData: Atlas.safe_bold),
-  const IconModel(iconData: Atlas.eraser_bold),
-  const IconModel(iconData: Atlas.washing_machine),
-  const IconModel(iconData: Atlas.walkie_talkie_bold),
-  const IconModel(iconData: Atlas.paperclip_attachment),
-  const IconModel(iconData: Atlas.receipt_list_thin),
-  const IconModel(iconData: Atlas.face_mask),
-  const IconModel(iconData: Atlas.zip_file),
-  const IconModel(iconData: Atlas.receipt_dollar),
-  const IconModel(iconData: Atlas.account_arrows),
-  const IconModel(iconData: Atlas.dash_cloud),
-  const IconModel(iconData: Atlas.wall),
-  const IconModel(iconData: Atlas.question_bold),
-  const IconModel(iconData: Atlas.account),
-  const IconModel(iconData: Atlas.question_clipboard_thin),
-  const IconModel(iconData: Atlas.ice_cream_stick_thin),
-  const IconModel(iconData: Atlas.paperclip_attachment),
-  const IconModel(iconData: Atlas.safety_glove_thin),
-  const IconModel(iconData: Atlas.magnifier_search_account_thin),
-  const IconModel(iconData: Atlas.yoga_pose_bold),
-  const IconModel(iconData: Atlas.paperclip_attachment),
-  const IconModel(iconData: Atlas.safe_bold),
-  const IconModel(iconData: Atlas.eraser_bold),
-  const IconModel(iconData: Atlas.washing_machine),
-  const IconModel(iconData: Atlas.walkie_talkie_bold),
-  const IconModel(iconData: Atlas.paperclip_attachment),
-  const IconModel(iconData: Atlas.receipt_list_thin),
-  const IconModel(iconData: Atlas.face_mask),
-  const IconModel(iconData: Atlas.zip_file),
-  const IconModel(iconData: Atlas.receipt_dollar),
-  const IconModel(iconData: Atlas.account_arrows),
-  const IconModel(iconData: Atlas.dash_cloud),
-  const IconModel(iconData: Atlas.wall),
-  const IconModel(iconData: Atlas.question_bold),
-  const IconModel(iconData: Atlas.account),
-  const IconModel(iconData: Atlas.question_clipboard_thin),
-  const IconModel(iconData: Atlas.ice_cream_stick_thin),
-  const IconModel(iconData: Atlas.paperclip_attachment),
-  const IconModel(iconData: Atlas.safety_glove_thin),
-  const IconModel(iconData: Atlas.magnifier_search_account_thin),
-  const IconModel(iconData: Atlas.yoga_pose_bold),
-];
