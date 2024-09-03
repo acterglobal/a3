@@ -18,6 +18,7 @@ import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgDraft;
 import 'package:acter_trigger_auto_complete/acter_trigger_autocomplete.dart';
+import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
@@ -257,7 +258,17 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           inputNotifier.setReplyToMessage(m);
         }
       }
-      textController.text = draft.plainText();
+      if (draft.htmlText() != null) {
+        await parseUserMentionText(
+          draft.htmlText()!,
+          widget.roomId,
+          textController,
+          ref,
+        );
+      } else {
+        textController.text = draft.plainText();
+      }
+
       _log.info('compose draft loaded for room: ${widget.roomId}');
     }
   }
@@ -756,6 +767,7 @@ class _TextInputWidget extends ConsumerStatefulWidget {
 }
 
 class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
+  EditorState textEditorState = EditorState.blank(withInitialText: true);
   @override
   void initState() {
     super.initState();
