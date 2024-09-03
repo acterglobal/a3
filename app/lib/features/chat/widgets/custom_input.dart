@@ -877,6 +877,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         ),
         controller: widget.controller,
         focusNode: chatFocus,
+        textCapitalization: TextCapitalization.sentences,
         enabled: ref.watch(_allowEdit(widget.roomId)),
         onChanged: (String val) {
           // send typing notice
