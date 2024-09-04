@@ -1,6 +1,5 @@
 import 'package:acter/common/toolkit/buttons/room_chip.dart';
 import 'package:acter/common/toolkit/buttons/user_chip.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:flutter/material.dart';
 
