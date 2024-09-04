@@ -11,8 +11,8 @@ class LocationMessageWidget extends StatelessWidget {
       padding: const EdgeInsets.all(18),
       child: Column(
         children: [
-          Text(message.metadata?['body']),
-          Text(message.metadata?['geoUri']),
+          Text(message.metadata?['body'] ?? ''),
+          Text(message.metadata?['geoUri'] ?? ''),
         ],
       ),
     );

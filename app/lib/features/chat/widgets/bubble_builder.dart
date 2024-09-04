@@ -274,11 +274,12 @@ class _OriginalMessageBuilder extends ConsumerWidget {
     final repliedMessage = message.repliedMessage;
     if (repliedMessage == null) return const SizedBox();
     if (repliedMessage is types.TextMessage) {
-      final w = repliedMessage.metadata!['messageLength'] * 38.5;
+      // when original msg is text msg, messageLength should be initialized
+      int len = repliedMessage.metadata!['messageLength'];
       return TextMessageBuilder(
         roomId: roomId,
         message: message.repliedMessage as types.TextMessage,
-        messageWidth: w.toInt(),
+        messageWidth: (len * 38.5).toInt(),
         isReply: true,
       );
     }
