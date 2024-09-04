@@ -586,13 +586,12 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 'base64': '',
                 'eventState': eventState,
                 'receipts': receipts,
+                'was_edited': wasEdited,
+                'isEditable': isEditable,
               };
-              metadata['was_edited'] = wasEdited;
-              metadata['isEditable'] = isEditable;
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
-
               if (reactions.isNotEmpty) {
                 metadata['reactions'] = reactions;
               }
@@ -618,18 +617,17 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               Map<String, dynamic> metadata = {
                 'eventState': eventState,
                 'receipts': receipts,
+                'was_edited': wasEdited,
+                'isEditable': isEditable,
+                // check whether string only contains emoji(s).
+                'enlargeEmoji': isOnlyEmojis(body),
               };
-              metadata['was_edited'] = wasEdited;
-              metadata['isEditable'] = isEditable;
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
-
               if (reactions.isNotEmpty) {
                 metadata['reactions'] = reactions;
               }
-              // check whether string only contains emoji(s).
-              metadata['enlargeEmoji'] = isOnlyEmojis(body);
               return types.TextMessage(
                 author: author,
                 remoteId: eventItem.uniqueId(),
@@ -646,13 +644,12 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               Map<String, dynamic> metadata = {
                 'eventState': eventState,
                 'receipts': receipts,
+                'was_edited': wasEdited,
+                'isEditable': isEditable,
               };
-              metadata['was_edited'] = wasEdited;
-              metadata['isEditable'] = isEditable;
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
-
               if (reactions.isNotEmpty) {
                 metadata['reactions'] = reactions;
               }
@@ -675,13 +672,12 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               Map<String, dynamic> metadata = {
                 'eventState': eventState,
                 'receipts': receipts,
+                'was_edited': wasEdited,
+                'isEditable': isEditable,
               };
-              metadata['was_edited'] = wasEdited;
-              metadata['isEditable'] = isEditable;
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
-
               if (reactions.isNotEmpty) {
                 metadata['reactions'] = reactions;
               }
@@ -710,13 +706,12 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 'geoUri': msgContent.geoUri(),
                 'eventState': eventState,
                 'receipts': receipts,
+                'was_edited': wasEdited,
+                'isEditable': isEditable,
               };
-              metadata['was_edited'] = wasEdited;
-              metadata['isEditable'] = isEditable;
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
-
               if (reactions.isNotEmpty) {
                 metadata['reactions'] = reactions;
               }
@@ -757,18 +752,17 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             Map<String, dynamic> metadata = {
               'eventState': eventState,
               'receipts': receipts,
+              'was_edited': wasEdited,
+              'isEditable': isEditable,
+              // check whether string only contains emoji(s).
+              'enlargeEmoji': isOnlyEmojis(body),
             };
-            metadata['was_edited'] = wasEdited;
-            metadata['isEditable'] = isEditable;
             if (inReplyTo != null) {
               metadata['repliedTo'] = inReplyTo;
             }
-
             if (reactions.isNotEmpty) {
               metadata['reactions'] = reactions;
             }
-            // check whether string only contains emoji(s).
-            metadata['enlargeEmoji'] = isOnlyEmojis(body);
             return types.TextMessage(
               author: author,
               remoteId: eventItem.uniqueId(),
@@ -784,13 +778,12 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 'base64': '',
                 'eventState': eventState,
                 'receipts': receipts,
+                'was_edited': wasEdited,
+                'isEditable': isEditable,
               };
-              metadata['was_edited'] = wasEdited;
-              metadata['isEditable'] = isEditable;
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
-
               if (reactions.isNotEmpty) {
                 metadata['reactions'] = reactions;
               }
@@ -839,13 +832,12 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             'base64': '',
             'eventState': eventState,
             'receipts': receipts,
+            'was_edited': wasEdited,
+            'isEditable': isEditable,
           };
-          metadata['was_edited'] = wasEdited;
-          metadata['isEditable'] = isEditable;
           if (inReplyTo != null) {
             metadata['repliedTo'] = inReplyTo;
           }
-
           if (reactions.isNotEmpty) {
             metadata['reactions'] = reactions;
           }
