@@ -17,7 +17,9 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$ActerIconPickerState {
   Color get selectedColor => throw _privateConstructorUsedError;
+
   IconData get selectedIcon => throw _privateConstructorUsedError;
+
   String? get newsPostSpaceId => throw _privateConstructorUsedError;
 
   /// Create a copy of ActerIconPickerState
@@ -32,6 +34,7 @@ abstract class $ActerIconPickerStateCopyWith<$Res> {
   factory $ActerIconPickerStateCopyWith(ActerIconPickerState value,
           $Res Function(ActerIconPickerState) then) =
       _$ActerIconPickerStateCopyWithImpl<$Res, ActerIconPickerState>;
+
   @useResult
   $Res call(
       {Color selectedColor, IconData selectedIcon, String? newsPostSpaceId});
@@ -45,6 +48,7 @@ class _$ActerIconPickerStateCopyWithImpl<$Res,
 
   // ignore: unused_field
   final $Val _value;
+
   // ignore: unused_field
   final $Res Function($Val) _then;
 
@@ -80,6 +84,7 @@ abstract class _$$ActerIconPickerStateImplCopyWith<$Res>
   factory _$$ActerIconPickerStateImplCopyWith(_$ActerIconPickerStateImpl value,
           $Res Function(_$ActerIconPickerStateImpl) then) =
       __$$ActerIconPickerStateImplCopyWithImpl<$Res>;
+
   @override
   @useResult
   $Res call(
@@ -123,10 +128,11 @@ class __$$ActerIconPickerStateImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$ActerIconPickerStateImpl implements _ActerIconPickerState {
-  const _$ActerIconPickerStateImpl(
-      {this.selectedColor = Colors.grey,
-      this.selectedIcon = PhosphorIconsRegular.list,
-      this.newsPostSpaceId});
+  const _$ActerIconPickerStateImpl({
+    this.selectedColor = Colors.blueGrey,
+    this.selectedIcon = PhosphorIconsRegular.list,
+    this.newsPostSpaceId,
+  });
 
   @override
   @JsonKey()
@@ -178,8 +184,10 @@ abstract class _ActerIconPickerState implements ActerIconPickerState {
 
   @override
   Color get selectedColor;
+
   @override
   IconData get selectedIcon;
+
   @override
   String? get newsPostSpaceId;
 

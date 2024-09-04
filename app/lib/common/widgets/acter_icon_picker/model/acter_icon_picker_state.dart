@@ -7,7 +7,7 @@ part 'acter_icon_picker_state.freezed.dart';
 @freezed
 class ActerIconPickerState with _$ActerIconPickerState {
   const factory ActerIconPickerState({
-    @Default(Colors.grey) Color selectedColor,
+    @Default(Colors.blueGrey) Color selectedColor,
     @Default(PhosphorIconsRegular.list) IconData selectedIcon,
     String? newsPostSpaceId,
   }) = _ActerIconPickerState;

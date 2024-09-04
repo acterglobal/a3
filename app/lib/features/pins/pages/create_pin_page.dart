@@ -6,6 +6,9 @@ import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
+import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
+import 'package:acter/common/widgets/acter_icon_picker/providers/acter_icon_picker_providers.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/render_html.dart';
@@ -93,6 +96,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
+                      const ActerIconWidget(defaultIcon: ActerIcons.pin),
                       const SizedBox(height: 14),
                       _buildTitleField(),
                       const SizedBox(height: 14),
@@ -304,6 +308,11 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
       final pinDraft = space.pinDraft();
       final pinState = ref.read(createPinStateProvider);
 
+      // Pin IconData
+      final selectedColor =
+          ref.read(acterIconPickerStateProvider).selectedColor;
+      final selectedIcon = ref.read(acterIconPickerStateProvider).selectedIcon;
+
       // Pin Title
       if (pinState.pinTitle != null && pinState.pinTitle!.isNotEmpty) {
         pinDraft.title(pinState.pinTitle!);
@@ -322,7 +331,9 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
           );
         }
       }
+
       final pinId = await pinDraft.send();
+      ref.invalidate(acterIconPickerStateProvider);
 
       // Add Attachments
       await addAttachment(pinId, pinState);
