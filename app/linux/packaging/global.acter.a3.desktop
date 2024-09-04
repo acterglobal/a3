@@ -6,7 +6,7 @@ Name=Acter
 Comment=Casual Community Organizing
 Categories=Utility;Amusement;
 
-Icon=global.acter.a3
+Icon=acter
 Exec=acter
 Terminal=false
 StartupWMClass=acter
