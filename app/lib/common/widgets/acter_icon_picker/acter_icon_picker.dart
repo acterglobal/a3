@@ -1,8 +1,10 @@
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/common/widgets/acter_icon_picker/providers/acter_icon_picker_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 void showActerIconPicker({required BuildContext context}) {
   showModalBottomSheet(
@@ -32,6 +34,10 @@ class ActerIconPicker extends StatelessWidget {
           _buildColorSelector(),
           const SizedBox(height: 24),
           Expanded(child: _buildIconSelector()),
+          ActerPrimaryActionButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(L10n.of(context).select),
+          ),
         ],
       ),
     );
@@ -128,7 +134,9 @@ class ActerIconPicker extends StatelessWidget {
               .read(acterIconPickerStateProvider.notifier)
               .selectIcon(acterIcon),
           child: Container(
-            padding: const EdgeInsets.all(16),
+            height: 45,
+            width: 45,
+            alignment: Alignment.center,
             margin: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: Colors.white24,
