@@ -3,8 +3,8 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 enum ActerIcons {
   //LIST OF ACTER ICONS
-  pin(PhosphorIconsRegular.pushPin),
   list(PhosphorIconsRegular.list),
+  pin(PhosphorIconsRegular.pushPin),
   airplane(PhosphorIconsRegular.airplane),
   addressBook(PhosphorIconsRegular.addressBook),
   airplay(PhosphorIconsRegular.airplay),
