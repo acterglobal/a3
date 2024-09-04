@@ -316,7 +316,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
       final sdk = await ref.watch(sdkProvider.future);
       final displayBuilder = sdk.api.newDisplayBuilder();
       displayBuilder.color(selectedColor.value);
-      displayBuilder.icon('logo', selectedIcon.name);
+      displayBuilder.icon('acter-icon', selectedIcon.name);
       pinDraft.display(displayBuilder.build());
 
       // Pin Title
