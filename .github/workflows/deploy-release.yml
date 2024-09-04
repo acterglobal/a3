@@ -330,7 +330,7 @@ jobs:
           cp app/linux/packaging/aur/PKGBUILD PKGBUILD
 
           VERSION=${{ needs.tags.outputs.version }}
-          DOWNLOAD_PATH='v$VERSION\/acter-linux-x64-$VERSION.tar.bz2'
+          DOWNLOAD_PATH='v${{ needs.tags.outputs.version }}\/acter-linux-x64-${{ needs.tags.outputs.version }}.tar.bz2'
           MD5SUM=`md5sum acter-linux-x64-$VERSION.tar.bz2  | awk '{print $1}'``
 
           echo "Version: $VERSION"
@@ -373,7 +373,7 @@ jobs:
           cp app/linux/packaging/aur/PKGBUILD PKGBUILD
 
           VERSION=${{ needs.tags.outputs.version }}
-          DOWNLOAD_PATH='v$VERSION/acter-linux-x64-$VERSION.tar.bz2'
+          DOWNLOAD_PATH='v${{ needs.tags.outputs.version }}\/acter-linux-x64-${{ needs.tags.outputs.version }}.tar.bz2'
           MD5SUM=`md5sum acter-linux-x64-$VERSION.tar.bz2  | awk '{print $1}'``
 
           echo "Version: $VERSION"
@@ -436,11 +436,6 @@ jobs:
         continue-on-error: true
         run: |
           git rm .changes/*.md
-
-      - name: "Update flatpack version"
-        run : |
-          bash app/flatpak/add_release_info.sh ${{ needs.tags.outputs.version }}
-          git add app/flatpak/global.acter.a3.metainfo_versions.xml
 
       - name: Tag for release
         run: |

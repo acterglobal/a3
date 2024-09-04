@@ -370,8 +370,9 @@ jobs:
       - name: Copy further assets
         if: matrix.target == 'linux'
         run: |
-          cp app/flatpak/global.acter.a3.desktop ${{ matrix.artifact_path }}
-          cp app/assets/icon/logo.png ${{ matrix.artifact_path }}
+          cp app/linux/packaging/global.acter.a3.desktop ${{ matrix.artifact_path }}
+          cp app/assets/icon/logo.png ${{ matrix.artifact_path }}/acter.png
+          cp app/assets/icon/acter-logo.svg ${{ matrix.artifact_path }}/acter.svg
           cp LICENSE* ${{ matrix.artifact_path }}
 
       - name: Rename file
