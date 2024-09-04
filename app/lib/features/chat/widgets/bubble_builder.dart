@@ -42,9 +42,10 @@ class BubbleBuilder extends ConsumerWidget {
     final myId = ref.watch(myUserIdStrProvider);
     final isAuthor = (myId == message.author.id);
     final inputNotifier = ref.read(chatInputProvider.notifier);
-    bool isMemberEvent = message.metadata?['eventType'] == 'm.room.member';
-    bool redactedOrEncrypted = (message is types.CustomMessage) &&
-        (message.metadata?['eventType'] == 'm.room.redaction');
+    String? eventType = message.metadata?['eventType'];
+    bool isMemberEvent = eventType == 'm.room.member';
+    bool redactedOrEncrypted =
+        (message is types.CustomMessage) && (eventType == 'm.room.redaction');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -153,10 +154,7 @@ class _ChatBubble extends ConsumerWidget {
     );
   }
 
-  Bubble renderBubble(
-    BuildContext context,
-    bool isAuthor,
-  ) {
+  Bubble renderBubble(BuildContext context, bool isAuthor) {
     bool hasRepliedMessage = message.repliedMessage != null;
     Widget bubbleChild = child;
     if (hasRepliedMessage) {
@@ -224,10 +222,7 @@ class _ChatBubble extends ConsumerWidget {
     );
   }
 
-  Widget replyProfileBuilder(
-    BuildContext context,
-    WidgetRef ref,
-  ) {
+  Widget replyProfileBuilder(BuildContext context, WidgetRef ref) {
     final authorId = message.repliedMessage!.author.id;
     final replyProfile =
         ref.watch(memberAvatarInfoProvider((userId: authorId, roomId: roomId)));
