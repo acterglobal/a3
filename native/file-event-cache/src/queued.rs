@@ -1,4 +1,4 @@
-use crate::MediaStore;
+use crate::EventCacheStore;
 use async_trait::async_trait;
 use matrix_sdk_base::media::MediaRequest;
 use matrix_sdk_base::ruma::MxcUri;
@@ -7,20 +7,20 @@ use tokio::sync::Semaphore;
 use tracing::instrument;
 
 #[derive(Debug)]
-pub struct QueuedMediaStore<T>
+pub struct QueuedEventCacheStore<T>
 where
-    T: MediaStore,
+    T: EventCacheStore,
 {
     inner: T,
     queue: Arc<Semaphore>,
 }
 
-impl<T> QueuedMediaStore<T>
+impl<T> QueuedEventCacheStore<T>
 where
-    T: MediaStore,
+    T: EventCacheStore,
 {
     pub fn new(store: T, queue_size: usize) -> Self {
-        QueuedMediaStore {
+        QueuedEventCacheStore {
             inner: store,
             queue: Arc::new(Semaphore::new(queue_size)),
         }
@@ -28,9 +28,9 @@ where
 }
 
 #[async_trait]
-impl<T> MediaStore for QueuedMediaStore<T>
+impl<T> EventCacheStore for QueuedEventCacheStore<T>
 where
-    T: MediaStore,
+    T: EventCacheStore,
 {
     type Error = T::Error;
 
