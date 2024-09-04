@@ -140,7 +140,7 @@ class ActerIconPicker extends StatelessWidget {
             margin: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: Colors.white24,
-              border: selectedIcon == acterIcon.data
+              border: selectedIcon == acterIcon
                   ? Border.all(color: Colors.white, width: 1)
                   : null,
               borderRadius: const BorderRadius.all(Radius.circular(100)),
