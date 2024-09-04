@@ -44,8 +44,8 @@ class BubbleBuilder extends ConsumerWidget {
     final inputNotifier = ref.read(chatInputProvider.notifier);
     String? eventType = message.metadata?['eventType'];
     bool isMemberEvent = eventType == 'm.room.member';
-    bool redactedOrEncrypted =
-        (message is types.CustomMessage) && (eventType == 'm.room.redaction');
+    bool redactedOrEncrypted = (message is types.CustomMessage) &&
+        (eventType == 'm.room.redaction' || eventType == 'm.room.encrypted');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
