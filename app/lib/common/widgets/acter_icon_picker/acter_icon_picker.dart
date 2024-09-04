@@ -6,7 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
-void showActerIconPicker({required BuildContext context}) {
+void showActerIconPicker({
+  required BuildContext context,
+  required final Color selectedColor,
+  required final ActerIcons selectedIcon,
+  final Function(Color, ActerIcons)? onIconSelection,
+}) {
   showModalBottomSheet(
     showDragHandle: true,
     useSafeArea: true,
@@ -14,13 +19,44 @@ void showActerIconPicker({required BuildContext context}) {
     isDismissible: true,
     isScrollControlled: true,
     builder: (context) {
-      return const ActerIconPicker();
+      return ActerIconPicker(
+        selectedColor: selectedColor,
+        selectedIcon: selectedIcon,
+        onIconSelection: onIconSelection,
+      );
     },
   );
 }
 
-class ActerIconPicker extends StatelessWidget {
-  const ActerIconPicker({super.key});
+class ActerIconPicker extends ConsumerStatefulWidget {
+  final Color selectedColor;
+  final ActerIcons selectedIcon;
+  final Function(Color, ActerIcons)? onIconSelection;
+
+  const ActerIconPicker({
+    super.key,
+    required this.selectedColor,
+    required this.selectedIcon,
+    this.onIconSelection,
+  });
+
+  @override
+  ConsumerState<ActerIconPicker> createState() => _ActerIconPickerState();
+}
+
+class _ActerIconPickerState extends ConsumerState<ActerIconPicker> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+      ref
+          .read(acterIconPickerStateProvider.notifier)
+          .selectColor(widget.selectedColor);
+      ref
+          .read(acterIconPickerStateProvider.notifier)
+          .selectIcon(widget.selectedIcon);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +71,16 @@ class ActerIconPicker extends StatelessWidget {
           const SizedBox(height: 24),
           Expanded(child: _buildIconSelector()),
           ActerPrimaryActionButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              if (widget.onIconSelection != null) {
+                final selectedColor =
+                    ref.watch(acterIconPickerStateProvider).selectedColor;
+                final selectedIcon =
+                    ref.watch(acterIconPickerStateProvider).selectedIcon;
+                widget.onIconSelection!(selectedColor, selectedIcon);
+              }
+              Navigator.pop(context);
+            },
             child: Text(L10n.of(context).select),
           ),
         ],
@@ -80,28 +125,31 @@ class ActerIconPicker extends StatelessWidget {
   }
 
   Widget _buildColorBoxItem(Color color) {
-    return Consumer(builder: (context, ref, child) {
-      final selectedColor =
-          ref.watch(acterIconPickerStateProvider).selectedColor;
-      return InkWell(
-        borderRadius: BorderRadius.circular(100),
-        onTap: () =>
-            ref.read(acterIconPickerStateProvider.notifier).selectColor(color),
-        child: Container(
-          height: 40,
-          width: 40,
-          padding: const EdgeInsets.all(16),
-          margin: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: color,
-            border: selectedColor == color
-                ? Border.all(color: Colors.white, width: 1)
-                : null,
-            borderRadius: const BorderRadius.all(Radius.circular(100)),
+    return Consumer(
+      builder: (context, ref, child) {
+        final selectedColor =
+            ref.watch(acterIconPickerStateProvider).selectedColor;
+        return InkWell(
+          borderRadius: BorderRadius.circular(100),
+          onTap: () => ref
+              .read(acterIconPickerStateProvider.notifier)
+              .selectColor(color),
+          child: Container(
+            height: 40,
+            width: 40,
+            padding: const EdgeInsets.all(16),
+            margin: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: color,
+              border: selectedColor == color
+                  ? Border.all(color: Colors.white, width: 1)
+                  : null,
+              borderRadius: const BorderRadius.all(Radius.circular(100)),
+            ),
           ),
-        ),
-      );
-    });
+        );
+      },
+    );
   }
 
   Widget _buildIconSelector() {

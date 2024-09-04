@@ -51,7 +51,7 @@ class PinListItemWidget extends ConsumerWidget {
             pin.display()?.color(),
             Theme.of(context).unselectedWidgetColor,
           ),
-          iconData: ActerIcons.iconDataForPin(pin.display()?.iconStr()),
+          iconData: ActerIcons.iconForPin(pin.display()?.iconStr()).data,
         ),
         title: Text(pin.title(), overflow: TextOverflow.ellipsis),
         subtitle: showSpace

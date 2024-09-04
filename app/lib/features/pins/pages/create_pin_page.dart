@@ -9,7 +9,6 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
-import 'package:acter/common/widgets/acter_icon_picker/providers/acter_icon_picker_providers.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/render_html.dart';
@@ -53,6 +52,8 @@ class CreatePinPage extends ConsumerStatefulWidget {
 class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
+  ActerIcons pinIcon = ActerIcons.pin;
+  Color pinIconColor = Colors.blueGrey;
 
   @override
   void initState() {
@@ -97,7 +98,14 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
-                      const ActerIconWidget(defaultIcon: ActerIcons.pin),
+                      ActerIconWidget(
+                        defaultColor: pinIconColor,
+                        defaultIcon: pinIcon,
+                        onIconSelection: (pinIconColor, pinIcon) {
+                          this.pinIcon = pinIcon;
+                          this.pinIconColor = pinIconColor;
+                        },
+                      ),
                       const SizedBox(height: 14),
                       _buildTitleField(),
                       const SizedBox(height: 14),
@@ -310,13 +318,10 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
       final pinState = ref.read(createPinStateProvider);
 
       // Pin IconData
-      final selectedColor =
-          ref.read(acterIconPickerStateProvider).selectedColor;
-      final selectedIcon = ref.read(acterIconPickerStateProvider).selectedIcon;
       final sdk = await ref.watch(sdkProvider.future);
       final displayBuilder = sdk.api.newDisplayBuilder();
-      displayBuilder.color(selectedColor.value);
-      displayBuilder.icon('acter-icon', selectedIcon.name);
+      displayBuilder.color(pinIconColor.value);
+      displayBuilder.icon('acter-icon', pinIcon.name);
       pinDraft.display(displayBuilder.build());
 
       // Pin Title
@@ -339,7 +344,6 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
       }
 
       final pinId = await pinDraft.send();
-      ref.invalidate(acterIconPickerStateProvider);
 
       // Add Attachments
       await addAttachment(pinId, pinState);
