@@ -53,13 +53,13 @@ enum ActerIcons {
   //..
 
   //ICON ACCESS METHODS
-  static IconData? iconDataFor(String name) =>
+  static IconData? iconDataFor(String? name) =>
       ActerIcons.values.asNameMap()[name]?.data;
 
-  static IconData iconDataForTask(String name) =>
+  static IconData iconDataForTask(String? name) =>
       iconDataFor(name) ?? ActerIcons.list.data;
 
-  static IconData iconDataForPin(String name) =>
+  static IconData iconDataForPin(String? name) =>
       iconDataFor(name) ?? ActerIcons.pin.data;
 
   //ENUM DECLARATION

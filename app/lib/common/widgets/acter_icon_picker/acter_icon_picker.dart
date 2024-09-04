@@ -57,7 +57,7 @@ class ActerIconPicker extends StatelessWidget {
               color: selectedColor,
               borderRadius: const BorderRadius.all(Radius.circular(100)),
             ),
-            child: Icon(selectedIcon, size: 70),
+            child: Icon(selectedIcon.data, size: 70),
           ),
         );
       },

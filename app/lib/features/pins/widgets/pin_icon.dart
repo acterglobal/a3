@@ -1,11 +1,13 @@
-import 'package:atlas_icons/atlas_icons.dart';
+import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:flutter/material.dart';
 
 class PinIcon extends StatelessWidget {
+  final IconData? iconData;
   final Color? iconColor;
 
   const PinIcon({
     super.key,
+    this.iconData,
     this.iconColor,
   });
 
@@ -22,7 +24,7 @@ class PinIcon extends StatelessWidget {
         color: iconColor ?? Theme.of(context).unselectedWidgetColor,
         borderRadius: const BorderRadius.all(Radius.circular(100)),
       ),
-      child: const Icon(Atlas.pin),
+      child: Icon(iconData ?? ActerIcons.pin.data),
     );
   }
 }

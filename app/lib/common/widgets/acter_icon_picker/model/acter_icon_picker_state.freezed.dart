@@ -17,9 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$ActerIconPickerState {
   Color get selectedColor => throw _privateConstructorUsedError;
-
-  IconData get selectedIcon => throw _privateConstructorUsedError;
-
+  ActerIcons get selectedIcon => throw _privateConstructorUsedError;
   String? get newsPostSpaceId => throw _privateConstructorUsedError;
 
   /// Create a copy of ActerIconPickerState
@@ -34,10 +32,9 @@ abstract class $ActerIconPickerStateCopyWith<$Res> {
   factory $ActerIconPickerStateCopyWith(ActerIconPickerState value,
           $Res Function(ActerIconPickerState) then) =
       _$ActerIconPickerStateCopyWithImpl<$Res, ActerIconPickerState>;
-
   @useResult
   $Res call(
-      {Color selectedColor, IconData selectedIcon, String? newsPostSpaceId});
+      {Color selectedColor, ActerIcons selectedIcon, String? newsPostSpaceId});
 }
 
 /// @nodoc
@@ -48,7 +45,6 @@ class _$ActerIconPickerStateCopyWithImpl<$Res,
 
   // ignore: unused_field
   final $Val _value;
-
   // ignore: unused_field
   final $Res Function($Val) _then;
 
@@ -69,7 +65,7 @@ class _$ActerIconPickerStateCopyWithImpl<$Res,
       selectedIcon: null == selectedIcon
           ? _value.selectedIcon
           : selectedIcon // ignore: cast_nullable_to_non_nullable
-              as IconData,
+              as ActerIcons,
       newsPostSpaceId: freezed == newsPostSpaceId
           ? _value.newsPostSpaceId
           : newsPostSpaceId // ignore: cast_nullable_to_non_nullable
@@ -84,11 +80,10 @@ abstract class _$$ActerIconPickerStateImplCopyWith<$Res>
   factory _$$ActerIconPickerStateImplCopyWith(_$ActerIconPickerStateImpl value,
           $Res Function(_$ActerIconPickerStateImpl) then) =
       __$$ActerIconPickerStateImplCopyWithImpl<$Res>;
-
   @override
   @useResult
   $Res call(
-      {Color selectedColor, IconData selectedIcon, String? newsPostSpaceId});
+      {Color selectedColor, ActerIcons selectedIcon, String? newsPostSpaceId});
 }
 
 /// @nodoc
@@ -116,7 +111,7 @@ class __$$ActerIconPickerStateImplCopyWithImpl<$Res>
       selectedIcon: null == selectedIcon
           ? _value.selectedIcon
           : selectedIcon // ignore: cast_nullable_to_non_nullable
-              as IconData,
+              as ActerIcons,
       newsPostSpaceId: freezed == newsPostSpaceId
           ? _value.newsPostSpaceId
           : newsPostSpaceId // ignore: cast_nullable_to_non_nullable
@@ -128,18 +123,17 @@ class __$$ActerIconPickerStateImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$ActerIconPickerStateImpl implements _ActerIconPickerState {
-  const _$ActerIconPickerStateImpl({
-    this.selectedColor = Colors.blueGrey,
-    this.selectedIcon = PhosphorIconsRegular.list,
-    this.newsPostSpaceId,
-  });
+  const _$ActerIconPickerStateImpl(
+      {this.selectedColor = Colors.blueGrey,
+      this.selectedIcon = ActerIcons.list,
+      this.newsPostSpaceId});
 
   @override
   @JsonKey()
   final Color selectedColor;
   @override
   @JsonKey()
-  final IconData selectedIcon;
+  final ActerIcons selectedIcon;
   @override
   final String? newsPostSpaceId;
 
@@ -179,15 +173,13 @@ class _$ActerIconPickerStateImpl implements _ActerIconPickerState {
 abstract class _ActerIconPickerState implements ActerIconPickerState {
   const factory _ActerIconPickerState(
       {final Color selectedColor,
-      final IconData selectedIcon,
+      final ActerIcons selectedIcon,
       final String? newsPostSpaceId}) = _$ActerIconPickerStateImpl;
 
   @override
   Color get selectedColor;
-
   @override
-  IconData get selectedIcon;
-
+  ActerIcons get selectedIcon;
   @override
   String? get newsPostSpaceId;
 

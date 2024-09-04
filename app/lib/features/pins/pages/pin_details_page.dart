@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
+import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
@@ -14,6 +15,7 @@ import 'package:acter/features/pins/actions/report_pin_action.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/fake_link_attachment_item.dart';
 import 'package:acter/features/pins/widgets/pin_icon.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -226,7 +228,13 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
         children: [
           Row(
             children: [
-              const PinIcon(),
+              PinIcon(
+                iconColor: convertColor(
+                  pin.display()?.color(),
+                  Theme.of(context).unselectedWidgetColor,
+                ),
+                iconData: ActerIcons.iconDataForPin(pin.display()?.iconTypeStr()),
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(

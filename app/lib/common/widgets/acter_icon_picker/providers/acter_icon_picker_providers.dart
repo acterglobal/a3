@@ -19,6 +19,6 @@ class ActerIconPickerStateNotifier extends StateNotifier<ActerIconPickerState> {
   }
 
   void selectIcon(ActerIcons acterIcons) {
-    state = state.copyWith(selectedIcon: acterIcons.data);
+    state = state.copyWith(selectedIcon: acterIcons);
   }
 }

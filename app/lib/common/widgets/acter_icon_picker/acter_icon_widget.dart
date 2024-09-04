@@ -43,7 +43,7 @@ class _ActerIconWidgetState extends ConsumerState<ActerIconWidget> {
   Widget _buildIconUI(
     WidgetRef ref,
     Color selectedColor,
-    IconData selectedIcon,
+    ActerIcons selectedIcon,
   ) {
     return Center(
       child: Container(
@@ -52,7 +52,7 @@ class _ActerIconWidgetState extends ConsumerState<ActerIconWidget> {
           color: selectedColor,
           borderRadius: const BorderRadius.all(Radius.circular(100)),
         ),
-        child: Icon(selectedIcon, size: 70),
+        child: Icon(selectedIcon.data, size: 70),
       ),
     );
   }

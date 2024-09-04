@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:acter/common/models/types.dart';
+import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
@@ -312,6 +313,11 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
       final selectedColor =
           ref.read(acterIconPickerStateProvider).selectedColor;
       final selectedIcon = ref.read(acterIconPickerStateProvider).selectedIcon;
+      final sdk = await ref.watch(sdkProvider.future);
+      final displayBuilder = sdk.api.newDisplayBuilder();
+      displayBuilder.color(selectedColor.value);
+      displayBuilder.icon('logo', selectedIcon.name);
+      pinDraft.display(displayBuilder.build());
 
       // Pin Title
       if (pinState.pinTitle != null && pinState.pinTitle!.isNotEmpty) {
