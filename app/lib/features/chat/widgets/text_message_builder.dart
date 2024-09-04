@@ -1,20 +1,20 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/toolkit/buttons/room_chip.dart';
 import 'package:acter/common/toolkit/buttons/user_chip.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_matrix_html/text_parser.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 // removes all matrix custom links
 String _cleanMessage(String input) {
@@ -45,21 +45,11 @@ class _TextMessageBuilderConsumerState
     extends ConsumerState<TextMessageBuilder> {
   @override
   Widget build(BuildContext context) {
-    String msgType = '';
-    final metadata = widget.message.metadata;
-    if (metadata?.containsKey('msgType') == true) {
-      msgType = metadata!['msgType'];
-    }
+    String? msgType = widget.message.metadata?['msgType'];
     final bool isNotice =
         (msgType == 'm.notice' || msgType == 'm.server_notice');
-    bool enlargeEmoji = false;
-    if (metadata?.containsKey('enlargeEmoji') == true) {
-      enlargeEmoji = metadata!['enlargeEmoji'];
-    }
-    bool wasEdited = false;
-    if (metadata?.containsKey('was_edited') == true) {
-      wasEdited = metadata!['was_edited'];
-    }
+    bool enlargeEmoji = widget.message.metadata?['enlargeEmoji'] == true;
+    bool wasEdited = widget.message.metadata?['was_edited'] == true;
     final isAuthor = widget.message.author.id == ref.watch(myUserIdStrProvider);
 
     //will return empty if link is other than mention

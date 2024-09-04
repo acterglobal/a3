@@ -194,10 +194,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
 
   void showMessageOptions(BuildContext context, types.Message message) {
     if (message is types.CustomMessage) {
-      if (message.metadata!.containsKey('eventType') &&
-          message.metadata!['eventType'] == 'm.room.redaction') {
-        return;
-      }
+      if (message.metadata?['eventType'] == 'm.room.redaction') return;
     }
     final inputNotifier = ref.read(chatInputProvider.notifier);
     inputNotifier.setActionsMessage(message);
@@ -289,7 +286,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
               roomId: widget.roomId,
               message: message,
               nextMessageInGroup: nextMessageInGroup,
-              enlargeEmoji: message.metadata!['enlargeEmoji'] ?? false,
+              enlargeEmoji: message.metadata?['enlargeEmoji'] == true,
               child: child,
             ),
           );
