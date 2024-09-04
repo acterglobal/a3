@@ -1,4 +1,4 @@
-use minijinja::value::{Value, Object, Enumerator};
+use minijinja::value::{Enumerator, Object, Value};
 use std::sync::Arc;
 
 use super::Error;

@@ -87,7 +87,7 @@ dependencies = [
  "anyhow",
  "clap 4.5.16",
  "dialoguer",
- "env_logger 0.10.2",
+ "env_logger 0.11.5",
  "futures",
  "matrix-sdk",
  "matrix-sdk-base",

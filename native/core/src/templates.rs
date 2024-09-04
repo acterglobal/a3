@@ -288,10 +288,7 @@ impl Engine {
     pub fn add_ref(&mut self, name: String, obj_type: String, id: String) -> Result<(), Error> {
         if self
             .context
-            .insert(
-                name.clone(),
-                Value::from_object(ObjRef::new(id, obj_type)),
-            )
+            .insert(name.clone(), Value::from_object(ObjRef::new(id, obj_type)))
             .is_some()
         {
             Err(Error::ContextClash(name))
