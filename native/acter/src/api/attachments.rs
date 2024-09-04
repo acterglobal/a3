@@ -11,8 +11,8 @@ use matrix_sdk::{
     room::Room,
     RoomState,
 };
-use ruma_common::{EventId, OwnedEventId, OwnedTransactionId};
-use ruma_events::{room::message::RoomMessageEvent, MessageLikeEventType};
+use matrix_sdk_base::ruma::events::{room::message::RoomMessageEvent, MessageLikeEventType};
+use matrix_sdk_base::ruma::{EventId, OwnedEventId, OwnedTransactionId};
 use std::{fs::exists, io::Write, ops::Deref, path::PathBuf, str::FromStr};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::Stream;
@@ -489,7 +489,7 @@ impl AttachmentsManager {
 
         RUNTIME
             .spawn(async move {
-                let evt = room.event(&event_id).await?;
+                let evt = room.event(&event_id, None).await?;
                 let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
                 let permitted = if event_content.sender() == my_id {
                     room.can_user_redact_own(&my_id).await?

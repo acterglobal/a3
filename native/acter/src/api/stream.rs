@@ -1,11 +1,9 @@
 use anyhow::{bail, Context, Result};
 use futures::stream::{Stream, StreamExt};
 use matrix_sdk::{room::Receipts, RoomState};
-use matrix_sdk_ui::timeline::Timeline;
-use ruma::assign;
-use ruma_client_api::receipt::create_receipt;
-use ruma_common::{EventId, OwnedEventId, OwnedTransactionId};
-use ruma_events::{
+use matrix_sdk_base::ruma::api::client::receipt::create_receipt;
+use matrix_sdk_base::ruma::assign;
+use matrix_sdk_base::ruma::events::{
     receipt::ReceiptThread,
     relation::Annotation,
     room::{
@@ -14,6 +12,8 @@ use ruma_events::{
     },
     MessageLikeEventType,
 };
+use matrix_sdk_base::ruma::{EventId, OwnedEventId, OwnedTransactionId};
+use matrix_sdk_ui::timeline::Timeline;
 use std::{ops::Deref, sync::Arc};
 use tracing::info;
 
@@ -135,7 +135,7 @@ impl TimelineStream {
                 }
 
                 let event_content = room
-                    .event(&event_id)
+                    .event(&event_id, None)
                     .await?
                     .event
                     .deserialize_as::<RoomMessageEvent>()?;
@@ -227,9 +227,9 @@ impl TimelineStream {
     pub async fn mark_as_read(&self, user_triggered: bool) -> Result<bool> {
         let timeline = self.timeline.clone();
         let receipt = if user_triggered {
-            ruma_client_api::receipt::create_receipt::v3::ReceiptType::Read
+            matrix_sdk_base::ruma::api::client::receipt::create_receipt::v3::ReceiptType::Read
         } else {
-            ruma_client_api::receipt::create_receipt::v3::ReceiptType::FullyRead
+            matrix_sdk_base::ruma::api::client::receipt::create_receipt::v3::ReceiptType::FullyRead
         };
 
         Ok(RUNTIME
@@ -284,14 +284,13 @@ impl TimelineStream {
             .await?
     }
 
-    pub async fn toggle_reaction(&self, event_id: String, key: String) -> Result<bool> {
+    pub async fn toggle_reaction(&self, unique_id: String, key: String) -> Result<bool> {
         if !self.is_joined() {
             bail!("Unable to send reaction in a room we are not in");
         }
         let room = self.room.clone();
         let my_id = self.room.user_id()?;
         let timeline = self.timeline.clone();
-        let event_id = EventId::parse(event_id)?;
 
         RUNTIME
             .spawn(async move {
@@ -301,8 +300,7 @@ impl TimelineStream {
                 if !permitted {
                     bail!("No permissions to send reaction in this room");
                 }
-                let annotation = Annotation::new(event_id, key);
-                timeline.toggle_reaction(&annotation).await?;
+                timeline.toggle_reaction(&unique_id, &key).await?;
                 Ok(true)
             })
             .await?

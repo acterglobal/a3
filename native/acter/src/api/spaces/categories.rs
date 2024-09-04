@@ -3,7 +3,7 @@ use crate::{Categories, CategoriesBuilder, RUNTIME};
 use acter_core::events::CategoriesStateEventContent;
 use anyhow::{bail, Result};
 use matrix_sdk::deserialized_responses::{RawSyncOrStrippedState, SyncOrStrippedState};
-use ruma_events::{EventContent, FullStateEventContent, SyncStateEvent};
+use matrix_sdk_base::ruma::events::{EventContent, FullStateEventContent, SyncStateEvent};
 use tracing::warn;
 
 impl Space {

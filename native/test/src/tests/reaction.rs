@@ -1,7 +1,8 @@
-use acter::{api::RoomMessage, ruma_common::OwnedEventId, RoomMessageDiff};
+use acter::api::{RoomMessage, RoomMessageDiff};
 use anyhow::{bail, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt, Stream};
+use matrix_sdk_base::ruma::OwnedEventId;
 use tokio::time::sleep;
 use tracing::{info, warn};
 

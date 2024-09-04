@@ -6,9 +6,9 @@ use futures::{
 };
 use indexmap::IndexMap;
 use matrix_sdk::RoomState;
+use matrix_sdk_base::ruma::RoomId;
 pub use minijinja::value::Value;
 use minijinja::Environment;
-use ruma_common::RoomId;
 use serde::Deserialize;
 use std::{collections::BTreeMap, sync::Arc};
 use tokio_retry::{

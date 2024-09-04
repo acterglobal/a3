@@ -2,8 +2,8 @@ use acter_core::models::{self, ActerModel, AnyActerModel};
 use anyhow::{bail, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::room::Room;
-use ruma_common::{OwnedEventId, OwnedTransactionId, OwnedUserId, UserId};
-use ruma_events::{reaction::ReactionEvent, MessageLikeEventType};
+use matrix_sdk_base::ruma::events::{reaction::ReactionEvent, MessageLikeEventType};
+use matrix_sdk_base::ruma::{OwnedEventId, OwnedTransactionId, OwnedUserId, UserId};
 use std::ops::Deref;
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
@@ -158,7 +158,7 @@ impl ReactionManager {
 
         RUNTIME
             .spawn(async move {
-                let evt = room.event(&event_id).await?;
+                let evt = room.event(&event_id, None).await?;
                 let event_content = evt.event.deserialize_as::<ReactionEvent>()?;
                 let permitted = if event_content.sender() == my_id {
                     room.can_user_redact_own(&my_id).await?

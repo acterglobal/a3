@@ -1,4 +1,4 @@
-use ruma_common::{EventId, OwnedEventId, OwnedRoomId, RoomId};
+use matrix_sdk_base::ruma::{EventId, OwnedEventId, OwnedRoomId, RoomId};
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 use strum::Display;

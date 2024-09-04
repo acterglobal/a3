@@ -1,9 +1,9 @@
-use acter::{
-    api::RoomMessage, ruma_common::OwnedEventId, ruma_events::room::redaction::RoomRedactionEvent,
-};
+use acter::RoomMessage;
 use anyhow::{Context, Result};
 use core::time::Duration;
-use futures::{pin_mut, stream::StreamExt, FutureExt};
+use futures::{pin_mut, FutureExt, StreamExt};
+use matrix_sdk_base::ruma::events::room::redaction::RoomRedactionEvent;
+use matrix_sdk_base::ruma::OwnedEventId;
 use tokio::time::sleep;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
@@ -103,7 +103,7 @@ async fn message_redaction() -> Result<()> {
     // so we don't use retry-loop about redact_id
 
     // but it is possible to get redaction event by event id on convo
-    let ev = convo.event(&redact_id).await?;
+    let ev = convo.event(&redact_id, None).await?;
     let event_content = ev.event.deserialize_as::<RoomRedactionEvent>()?;
     let original = event_content
         .as_original()

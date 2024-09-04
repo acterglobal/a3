@@ -24,17 +24,11 @@ use matrix_sdk::{
     room::{Room as SdkRoom, RoomMember},
     DisplayName, RoomMemberships, RoomState,
 };
-use ruma::{assign, Int};
-use ruma_client_api::{
+use matrix_sdk_base::ruma::api::client::{
     room::report_content,
     space::{get_hierarchy, SpaceHierarchyRoomsChunk},
 };
-use ruma_common::{
-    room::RoomType, serde::Raw, space::SpaceRoomJoinRule, EventId, IdParseError, OwnedEventId,
-    OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedTransactionId, OwnedUserId, RoomId,
-    ServerName, UserId,
-};
-use ruma_events::{
+use matrix_sdk_base::ruma::events::{
     room::{
         avatar::ImageInfo as AvatarImageInfo,
         join_rules::{AllowRule, JoinRule, Restricted, RoomJoinRulesEventContent, RoomMembership},
@@ -43,6 +37,12 @@ use ruma_events::{
     },
     space::{child::HierarchySpaceChildEvent, parent::SpaceParentEventContent},
     MessageLikeEventType, StateEvent, StateEventType, StaticEventContent,
+};
+use matrix_sdk_base::ruma::{assign, Int};
+use matrix_sdk_base::ruma::{
+    room::RoomType, serde::Raw, space::SpaceRoomJoinRule, EventId, IdParseError, OwnedEventId,
+    OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedTransactionId, OwnedUserId, RoomId,
+    ServerName, UserId,
 };
 use std::{fs::exists, io::Write, ops::Deref, path::PathBuf};
 use tokio::fs;
@@ -1121,7 +1121,7 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let evt = room.event(&event_id).await?;
+                let evt = room.event(&event_id, None).await?;
                 let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
                 let original = event_content
                     .as_original()
@@ -1320,7 +1320,7 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let evt = room.event(&evt_id).await?;
+                let evt = room.event(&evt_id, None).await?;
                 let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
                 let original = event_content
                     .as_original()
@@ -1526,7 +1526,7 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let evt = room.event(&evt_id).await?;
+                let evt = room.event(&evt_id, None).await?;
                 let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
                 let original = event_content
                     .as_original()

@@ -6,9 +6,11 @@ use matrix_sdk::{
     room::{Room, RoomMember},
     RoomMemberships, RoomState,
 };
-use ruma_client_api::user_directory::search_users;
-use ruma_common::{OwnedRoomId, OwnedUserId, RoomId};
-use ruma_events::room::member::{MembershipState, StrippedRoomMemberEvent, SyncRoomMemberEvent};
+use matrix_sdk_base::ruma::api::client::user_directory::search_users;
+use matrix_sdk_base::ruma::events::room::member::{
+    MembershipState, StrippedRoomMemberEvent, SyncRoomMemberEvent,
+};
+use matrix_sdk_base::ruma::{OwnedRoomId, OwnedUserId, RoomId};
 use std::time::{SystemTime, UNIX_EPOCH};
 use tokio::time::{sleep, Duration};
 use tokio_retry::{strategy::FixedInterval, Retry};

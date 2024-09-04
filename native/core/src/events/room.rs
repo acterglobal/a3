@@ -1,4 +1,4 @@
-use ruma_macros::EventContent;
+use matrix_sdk_base::ruma::events::macros::EventContent;
 use serde::{Deserialize, Serialize};
 
 pub static USER_SETTINGS_KEY: &str = "global.acter.user_settings";

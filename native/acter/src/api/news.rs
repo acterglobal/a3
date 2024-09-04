@@ -9,8 +9,8 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
-use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};
-use ruma_events::{room::message::MessageType, MessageLikeEventType};
+use matrix_sdk_base::ruma::events::{room::message::MessageType, MessageLikeEventType};
+use matrix_sdk_base::ruma::{OwnedEventId, OwnedRoomId, OwnedUserId};
 use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,

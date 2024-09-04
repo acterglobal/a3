@@ -2,12 +2,12 @@ use chrono::{DateTime, Utc};
 use derive_builder::Builder;
 use indexmap::IndexMap;
 use matrix_sdk::room::Room;
+use matrix_sdk_base::ruma::events::{receipt::Receipt, room::message::MessageType};
+use matrix_sdk_base::ruma::{OwnedEventId, OwnedTransactionId, OwnedUserId};
 use matrix_sdk_ui::timeline::{
     EventSendState as SdkEventSendState, EventTimelineItem, MembershipChange, TimelineItem,
     TimelineItemContent, TimelineItemKind, VirtualTimelineItem,
 };
-use ruma_common::{OwnedEventId, OwnedTransactionId, OwnedUserId};
-use ruma_events::{receipt::Receipt, room::message::MessageType};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tracing::info;

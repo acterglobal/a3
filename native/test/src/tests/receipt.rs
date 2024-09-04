@@ -1,7 +1,8 @@
-use acter::{api::RoomMessage, ruma_common::OwnedEventId};
+use acter::api::RoomMessage;
 use anyhow::{Context, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
+use matrix_sdk_base::ruma::OwnedEventId;
 use tokio::time::sleep;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
