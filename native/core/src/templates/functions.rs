@@ -7,7 +7,7 @@ use crate::events::UtcDateTime;
 
 /// create a date using the current date time
 pub fn now() -> Value {
-    Value::from_struct_object(UtcDateTimeValue::new(UtcDateTime::from(SystemTime::now())))
+    Value::from_object(UtcDateTimeValue::new(UtcDateTime::from(SystemTime::now())))
 }
 
 /// create a date in the future add `days`, `weeks`, `hours`, `mins`, `secs` (or any combinations of them) to create
@@ -73,6 +73,6 @@ pub fn future(kwargs: Value) -> Result<Value, Error> {
             .ok_or_else(|| Error::new(ErrorKind::InvalidOperation, "seconds couldn't be added"))?;
     }
 
-    let val = Value::from_struct_object(UtcDateTimeValue::new(date + duration));
+    let val = Value::from_object(UtcDateTimeValue::new(date + duration));
     Ok(val)
 }

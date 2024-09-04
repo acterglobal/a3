@@ -290,7 +290,7 @@ impl Engine {
             .context
             .insert(
                 name.clone(),
-                Value::from_struct_object(ObjRef::new(id, obj_type)),
+                Value::from_object(ObjRef::new(id, obj_type)),
             )
             .is_some()
         {
@@ -306,7 +306,7 @@ impl Engine {
         self.users.insert(name.clone(), cl.clone());
         if self
             .context
-            .insert(name.clone(), Value::from_struct_object(user_value))
+            .insert(name.clone(), Value::from_object(user_value))
             .is_some()
         {
             Err(Error::ContextClash(name))
@@ -406,7 +406,7 @@ impl Engine {
                         .map_err(|e| Error::Remap(format!("Creating space '{key}' failed"), e.to_string()))?;
                     context.insert(
                         key.to_string(),
-                        Value::from_struct_object(ObjRef::new(new_room_id.to_string() , "space".to_owned())),
+                        Value::from_object(ObjRef::new(new_room_id.to_string() , "space".to_owned())),
                     );
                     if is_default {
                         default_space = Some(key.to_string());
@@ -462,7 +462,7 @@ impl Engine {
                         trace!(?id, "task list created");
                         context.insert(
                             key.to_string(),
-                            Value::from_struct_object(ObjRef::new(id.to_string(), "task-list".to_owned())),
+                            Value::from_object(ObjRef::new(id.to_string(), "task-list".to_owned())),
                         );
                         yield
                     }
@@ -476,7 +476,7 @@ impl Engine {
                         trace!(?id, "task created");
                         context.insert(
                             key.to_string(),
-                            Value::from_struct_object(ObjRef::new(id.to_string(), "task".to_owned())),
+                            Value::from_object(ObjRef::new(id.to_string(), "task".to_owned())),
                         );
                         yield
                     }
@@ -490,7 +490,7 @@ impl Engine {
                         trace!(?id, "calendar event created");
                         context.insert(
                             key.to_string(),
-                            Value::from_struct_object(ObjRef::new(id.to_string(), "calendar-event".to_owned())),
+                            Value::from_object(ObjRef::new(id.to_string(), "calendar-event".to_owned())),
                         );
                         yield
                     }
@@ -504,7 +504,7 @@ impl Engine {
                         trace!(?id, "pin created");
                         context.insert(
                             key.to_string(),
-                            Value::from_struct_object(ObjRef::new(id.to_string(), "pin".to_owned())),
+                            Value::from_object(ObjRef::new(id.to_string(), "pin".to_owned())),
                         );
                         yield
                     }
@@ -518,7 +518,7 @@ impl Engine {
                         trace!(?id, "news created");
                         context.insert(
                             key.to_string(),
-                            Value::from_struct_object(ObjRef::new(id.to_string(), "news-entry".to_owned())),
+                            Value::from_object(ObjRef::new(id.to_string(), "news-entry".to_owned())),
                         );
                         yield
                     }
