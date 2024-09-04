@@ -14,6 +14,7 @@ import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat/widgets/custom_message_builder.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
 import 'package:acter/features/chat/widgets/mention_profile_builder.dart';
+import 'package:acter/features/chat/widgets/pill_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgDraft;
@@ -27,6 +28,7 @@ import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
+import 'package:flutter_matrix_html/text_parser.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 import 'package:logging/logging.dart';
@@ -471,7 +473,10 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         child: Container(
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(6),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(6.0),
+              topRight: Radius.circular(6.0),
+            ),
           ),
           child: Padding(
             padding: const EdgeInsets.only(
@@ -508,25 +513,17 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         child: Container(
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(6),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(6.0),
+              topRight: Radius.circular(6.0),
+            ),
           ),
           child: Padding(
-            padding: const EdgeInsets.only(
-              top: 12.0,
-              left: 16.0,
-              right: 16.0,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 12.0,
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Consumer(builder: editMessageBuilder),
-                _EditMessageContentWidget(
-                  roomId: widget.roomId,
-                  msg: editMessage,
-                ),
-              ],
-            ),
+            child: Consumer(builder: editMessageBuilder),
           ),
         ),
       ),
@@ -639,7 +636,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         ),
         const Spacer(),
         GestureDetector(
-          onTap: () async {
+          onTap: () {
             inputNotifier.unsetSelectedMessage();
             chatFocus.requestFocus();
           },
@@ -670,7 +667,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         ),
         const Spacer(),
         GestureDetector(
-          onTap: () async {
+          onTap: () {
             inputNotifier.unsetSelectedMessage();
             textController.clear();
           },
@@ -963,6 +960,16 @@ class _ReplyContentWidget extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         child: Html(
           data: textMsg.text,
+          pillBuilder: ({
+            required String identifier,
+            required String url,
+            OnPillTap? onTap,
+          }) =>
+              ActerPillBuilder(
+            identifier: identifier,
+            uri: url,
+            roomId: roomId,
+          ),
           defaultTextStyle: Theme.of(context)
               .textTheme
               .bodySmall!
@@ -995,47 +1002,5 @@ class _ReplyContentWidget extends StatelessWidget {
         ),
       );
     }
-  }
-}
-
-class _EditMessageContentWidget extends StatelessWidget {
-  final String roomId;
-  final Message msg;
-
-  const _EditMessageContentWidget({
-    required this.roomId,
-    required this.msg,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (msg is ImageMessage) {
-      final imageMsg = msg as ImageMessage;
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ImageMessageBuilder(
-          roomId: roomId,
-          message: imageMsg,
-          messageWidth: imageMsg.size.toInt(),
-          isReplyContent: true,
-        ),
-      );
-    } else if (msg is TextMessage) {
-      final textMsg = msg as TextMessage;
-      return Container(
-        constraints:
-            BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.2),
-        padding: const EdgeInsets.all(12),
-        child: Html(
-          data: textMsg.text,
-          defaultTextStyle: Theme.of(context)
-              .textTheme
-              .bodySmall!
-              .copyWith(overflow: TextOverflow.ellipsis),
-          maxLines: 3,
-        ),
-      );
-    }
-    return const SizedBox.shrink();
   }
 }
