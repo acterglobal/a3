@@ -52,8 +52,8 @@ class CreatePinPage extends ConsumerStatefulWidget {
 class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
-  ActerIcon pinIcon = ActerIcon.pin;
-  Color pinIconColor = Colors.blueGrey;
+  ActerIcon? pinIcon;
+  Color? pinIconColor;
 
   @override
   void initState() {
@@ -100,8 +100,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
                     children: <Widget>[
                       Center(
                         child: ActerIconWidget(
-                          color: pinIconColor,
-                          icon: pinIcon,
+                          icon: ActerIcon.pin,
                           onIconSelection: (pinIconColor, pinIcon) {
                             this.pinIcon = pinIcon;
                             this.pinIconColor = pinIconColor;
@@ -320,11 +319,17 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
       final pinState = ref.read(createPinStateProvider);
 
       // Pin IconData
-      final sdk = await ref.watch(sdkProvider.future);
-      final displayBuilder = sdk.api.newDisplayBuilder();
-      displayBuilder.color(pinIconColor.value);
-      displayBuilder.icon('acter-icon', pinIcon.name);
-      pinDraft.display(displayBuilder.build());
+      if (pinIconColor != null || pinIcon != null) {
+        final sdk = await ref.watch(sdkProvider.future);
+        final displayBuilder = sdk.api.newDisplayBuilder();
+        if (pinIconColor != null) {
+          displayBuilder.color(pinIconColor!.value);
+        }
+        if (pinIcon != null) {
+          displayBuilder.icon('acter-icon', pinIcon!.name);
+        }
+        pinDraft.display(displayBuilder.build());
+      }
 
       // Pin Title
       if (pinState.pinTitle != null && pinState.pinTitle!.isNotEmpty) {

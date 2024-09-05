@@ -51,8 +51,8 @@ class _CreateUpdateTaskListConsumerState
   final TextEditingController _titleController = TextEditingController();
   final ValueNotifier<bool> isShowDescription = ValueNotifier(false);
   EditorState textEditorState = EditorState.blank();
-  ActerIcon taskListIcon = ActerIcon.list;
-  Color taskListIconColor = Colors.blueGrey;
+  ActerIcon? taskListIcon;
+  Color? taskListIconColor;
 
   @override
   void initState() {
@@ -92,8 +92,6 @@ class _CreateUpdateTaskListConsumerState
               const SizedBox(height: 40),
               Center(
                 child: ActerIconWidget(
-                  color: taskListIconColor,
-                  icon: taskListIcon,
                   onIconSelection: (taskListIconColor, taskListIcon) {
                     this.taskListIconColor = taskListIconColor;
                     this.taskListIcon = taskListIcon;
@@ -211,11 +209,18 @@ class _CreateUpdateTaskListConsumerState
       final taskListDraft = space.taskListDraft();
 
       // TaskList IconData
-      final sdk = await ref.watch(sdkProvider.future);
-      final displayBuilder = sdk.api.newDisplayBuilder();
-      displayBuilder.color(taskListIconColor.value);
-      displayBuilder.icon('acter-icon', taskListIcon.name);
-      taskListDraft.display(displayBuilder.build());
+
+      if (taskListIconColor != null || taskListIcon != null) {
+        final sdk = await ref.watch(sdkProvider.future);
+        final displayBuilder = sdk.api.newDisplayBuilder();
+        if (taskListIconColor != null) {
+          displayBuilder.color(taskListIconColor!.value);
+        }
+        if (taskListIcon != null) {
+          displayBuilder.icon('acter-icon', taskListIcon!.name);
+        }
+        taskListDraft.display(displayBuilder.build());
+      }
 
       taskListDraft.name(_titleController.text);
       // Description text
