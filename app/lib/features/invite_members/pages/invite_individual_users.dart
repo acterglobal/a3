@@ -171,6 +171,7 @@ class InviteIndividualUsers extends ConsumerWidget {
                     itemBuilder: (context, index) => UserBuilder(
                       userId: value[index].userId().toString(),
                       roomId: roomId,
+                      userProfile: value[index],
                     ),
                   ),
                 ),

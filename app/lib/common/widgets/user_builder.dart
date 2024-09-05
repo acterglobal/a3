@@ -29,6 +29,18 @@ final userAvatarProvider =
   return null;
 });
 
+final userAvatarInfoProvider =
+    Provider.family<AvatarInfo, UserProfile>((ref, user) {
+  final displayName = user.getDisplayName();
+  final avatarData = ref.watch(userAvatarProvider(user)).valueOrNull;
+
+  return AvatarInfo(
+    uniqueId: user.userId().toString(),
+    displayName: displayName,
+    avatar: avatarData,
+  );
+});
+
 bool isInvited(String userId, List<Member> invited) {
   for (final i in invited) {
     if (i.userId().toString() == userId) {
@@ -50,21 +62,20 @@ bool isJoined(String userId, List<String> joined) {
 class UserBuilder extends ConsumerWidget {
   final String userId;
   final String roomId;
+  final UserProfile? userProfile;
 
   const UserBuilder({
     super.key,
     required this.userId,
     required this.roomId,
+    this.userProfile,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
-    final avatarInfo =
-        ref.watch(memberAvatarInfoProvider((roomId: roomId, userId: userId)));
-    final displayName = ref
-        .watch(memberDisplayNameProvider((roomId: roomId, userId: userId)))
-        .valueOrNull;
+    final avatarInfo = _avatarInfo(ref);
+    final displayName = _displayName(ref);
     return Card(
       child: ListTile(
         title: Text(displayName ?? userId),
@@ -86,6 +97,16 @@ class UserBuilder extends ConsumerWidget {
       ),
     );
   }
+
+  AvatarInfo _avatarInfo(WidgetRef ref) => (userProfile != null)
+      ? ref.watch(userAvatarInfoProvider(userProfile!))
+      : ref.watch(memberAvatarInfoProvider((roomId: roomId, userId: userId)));
+
+  String? _displayName(WidgetRef ref) =>
+      userProfile?.getDisplayName() ??
+      ref
+          .watch(memberDisplayNameProvider((roomId: roomId, userId: userId)))
+          .valueOrNull;
 }
 
 class UserStateButton extends ConsumerWidget {
