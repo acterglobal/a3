@@ -107,7 +107,7 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Select color'),
+        Text(L10n.of(context).selectColor),
         const SizedBox(height: 12),
         Wrap(
           children: iconPickerColors
@@ -147,7 +147,7 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Select icon'),
+        Text(L10n.of(context).selectIcon),
         const SizedBox(height: 12),
         Expanded(
           child: SingleChildScrollView(

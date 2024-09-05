@@ -2175,5 +2175,7 @@
   "@eventDeletedOrFailedToLoad": {},
   "chatNotEncrypted": "This chat is not end-to-end-encrypted",
   "updatingIcon": "Updating Icon",
+  "selectColor": "Select color",
+  "selectIcon": "Select icon",
   "action": "Action"
 }
