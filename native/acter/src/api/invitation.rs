@@ -333,25 +333,24 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 // get member list of target room
-                let members = room.members(RoomMemberships::ACTIVE).await?;
-                let room_members = members
+                let mut found_members = room
+                    .members(RoomMemberships::all())
+                    .await?
                     .iter()
                     .map(|x| x.user_id().to_owned())
                     .collect::<Vec<OwnedUserId>>();
                 // iterate my rooms to get user list
                 let mut profiles: Vec<UserProfile> = vec![];
-                if let Some(convo) = me.convo_typed(&room_id).await {
-                    let members = convo.members(RoomMemberships::ACTIVE).await?;
+                for room in me.rooms().iter().filter(|r| r.are_members_synced()) {
+                    let members = room.members(RoomMemberships::ACTIVE).await?;
                     for member in members {
                         let user_id = member.user_id().to_owned();
                         // exclude user that belongs to target room
-                        if room_members.contains(&user_id) {
+                        if found_members.contains(&user_id) {
                             continue;
                         }
-                        // exclude user that already selected
-                        if profiles.iter().any(|x| x.user_id() == user_id) {
-                            continue;
-                        }
+                        // add it to the list of found, to ignore it going forward
+                        found_members.push(user_id.clone());
                         let user_profile = UserProfile::from_member(member);
                         profiles.push(user_profile);
                     }

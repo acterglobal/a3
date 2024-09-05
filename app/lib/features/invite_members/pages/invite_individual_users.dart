@@ -4,6 +4,7 @@ import 'package:acter/common/widgets/user_builder.dart';
 import 'package:acter/features/invite_members/providers/invite_providers.dart';
 import 'package:acter/features/invite_members/widgets/direct_invite.dart';
 import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -34,6 +35,7 @@ class InviteIndividualUsers extends ConsumerWidget {
       child: Container(
         constraints: const BoxConstraints(maxWidth: 500),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 10),
             Text(
@@ -44,11 +46,9 @@ class InviteIndividualUsers extends ConsumerWidget {
             _buildSearchTextField(context, ref),
             const SizedBox(height: 10),
             _buildUserDirectInvite(ref),
-            if (ref.watch(searchValueProvider) == null ||
-                ref.watch(searchValueProvider)?.isEmpty == true)
-              _buildSuggestedUserList(context, ref)
-            else
-              _buildFoundUserList(context, ref),
+            Expanded(
+              child: _renderResults(context, ref),
+            ),
           ],
         ),
       ),
@@ -91,100 +91,72 @@ class InviteIndividualUsers extends ConsumerWidget {
     return const SizedBox.shrink();
   }
 
-  Widget _buildSuggestedUserList(BuildContext context, WidgetRef ref) {
+  Widget _renderResults(BuildContext context, WidgetRef ref) {
     final suggestedUsers =
-        ref.watch(filteredSuggestedUsersProvider(roomId)).valueOrNull;
-    if (suggestedUsers == null || suggestedUsers.isEmpty) {
-      return const SizedBox.shrink();
+        ref.watch(filteredSuggestedUsersProvider(roomId)).valueOrNull ?? [];
+
+    final foundUsers = ref.watch(searchResultProvider).valueOrNull ?? [];
+
+    if (suggestedUsers.isEmpty && foundUsers.isEmpty) {
+      // nothing found
+      return Center(
+        child: EmptyState(
+          title: L10n.of(context).noUserFoundTitle,
+          subtitle: L10n.of(context).noUserFoundSubtitle,
+          image: 'assets/images/empty_activity.svg',
+        ),
+      );
     }
 
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            child: Text(
-              L10n.of(context).suggestedUsers,
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: suggestedUsers.length,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                final user = suggestedUsers[index];
-                return _buildSuggestedUserItem(ref, user);
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+    return ListView.builder(
+      itemBuilder: (context, position) {
+        late UserProfile user;
+        if (position >= suggestedUsers.length) {
+          user = foundUsers[position - suggestedUsers.length];
+        } else {
+          user = suggestedUsers[position];
+        }
 
-  Widget _buildSuggestedUserItem(WidgetRef ref, FoundUser user) {
-    final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
-    return Card(
-      child: ListTile(
-        title: Text(user.avatarInfo.displayName ?? user.userId),
-        subtitle:
-            user.avatarInfo.displayName != null ? Text(user.userId) : null,
-        leading: ActerAvatar(
-          options: AvatarOptions.DM(
-            user.avatarInfo,
-          ),
-        ),
-        trailing: room != null
-            ? UserStateButton(
-                userId: user.userId,
-                room: room,
-              )
-            : null,
-      ),
-    );
-  }
-
-  Widget _buildFoundUserList(BuildContext context, WidgetRef ref) {
-    final usersLoader = ref.watch(searchResultProvider);
-    if (usersLoader.hasValue) {
-      final value = usersLoader.value;
-      if (value != null) {
-        if (value.isNotEmpty) {
-          return Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Text(
-                    L10n.of(context).usersfoundDirectory,
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
+        final userWidget = UserBuilder(
+          userId: user.userId().toString(),
+          roomId: roomId,
+          userProfile: user,
+        );
+        if (position == 0 && suggestedUsers.isNotEmpty) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+                child: Text(
+                  L10n.of(context).suggestedUsers,
+                  style: Theme.of(context).textTheme.titleSmall,
                 ),
-                const SizedBox(height: 5),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: value.length,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) => UserBuilder(
-                      userId: value[index].userId().toString(),
-                      roomId: roomId,
-                      userProfile: value[index],
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+              userWidget,
+            ],
           );
         }
-      }
-    }
-    return EmptyState(
-      title: L10n.of(context).noUserFoundTitle,
-      subtitle: L10n.of(context).noUserFoundSubtitle,
-      image: 'assets/images/empty_activity.svg',
+        if (position == (suggestedUsers.length - 1) && foundUsers.isNotEmpty) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+                child: Text(
+                  L10n.of(context).usersfoundDirectory,
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+              ),
+              userWidget,
+            ],
+          );
+        }
+        return userWidget;
+      },
+      itemCount: suggestedUsers.length + foundUsers.length,
     );
   }
 }

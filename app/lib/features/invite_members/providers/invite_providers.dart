@@ -35,7 +35,6 @@ final searchValueProvider = StateProvider<String?>((ref) => null);
 
 final searchResultProvider = FutureProvider<List<UserProfile>>((ref) async {
   final newSearchValue = ref.watch(searchValueProvider);
-  _log.info('starting search for $newSearchValue');
   if (newSearchValue == null || newSearchValue.isEmpty) {
     return [];
   }
@@ -49,62 +48,39 @@ final searchResultProvider = FutureProvider<List<UserProfile>>((ref) async {
   return (await client.searchUsers(newSearchValue)).toList();
 });
 
-class FoundUser {
-  final String userId;
-  final AvatarInfo avatarInfo;
-
-  const FoundUser({required this.userId, required this.avatarInfo});
-}
-
-final suggestedUsersProvider = FutureProvider.family<List<FoundUser>, String>(
+final suggestedUsersProvider = FutureProvider.family<List<UserProfile>, String>(
   (ref, roomId) async {
     final client = ref.watch(alwaysClientProvider);
-    final suggested = (await client.suggestedUsersToInvite(roomId)).toList();
-    final List<FoundUser> ret = [];
-    for (final user in suggested) {
-      String? displayName = user.getDisplayName();
-      MemoryImage? avatar;
-      if (user.hasAvatar()) {
-        try {
-          avatar = await user.getAvatar(null).then(
-                (val) => MemoryImage(
-                  Uint8List.fromList(val.data()!.asTypedList()),
-                ),
-              );
-        } catch (e, s) {
-          _log.severe('failure fetching avatar', e, s);
-        }
-      }
-      final avatarInfo = AvatarInfo(
-        uniqueId: user.userId().toString(),
-        displayName: displayName,
-        avatar: avatar,
-      );
-      ret.add(
-        FoundUser(userId: user.userId().toString(), avatarInfo: avatarInfo),
-      );
-    }
-    return ret;
+    return (await client.suggestedUsersToInvite(roomId)).toList();
   },
 );
 
 final filteredSuggestedUsersProvider =
-    FutureProvider.family<List<FoundUser>, String>(
-  (ref, roomId) async {
-    final fullList = await ref.watch(suggestedUsersProvider(roomId).future);
-    final searchTerm = ref.watch(searchValueProvider);
-    if (searchTerm == null || searchTerm.isEmpty) {
-      return fullList;
-    }
+    FutureProvider.family<List<UserProfile>, String>((ref, roomId) async {
+  final newSearchValue = ref.watch(searchValueProvider);
+  final suggestedUsers =
+      ref.watch(suggestedUsersProvider(roomId)).valueOrNull ?? [];
+  if (newSearchValue == null || newSearchValue.isEmpty) {
+    // no search value: shows all
+    return suggestedUsers;
+  }
 
-    final lowered = searchTerm.toLowerCase();
+  final loweredSearchValue = newSearchValue.toLowerCase();
 
-    return fullList.where((element) {
-      if (element.userId.toLowerCase().contains(lowered)) {
+  return suggestedUsers.where(
+    (profile) {
+      if (profile
+          .userId()
+          .toString()
+          .toLowerCase()
+          .contains(loweredSearchValue)) {
         return true;
       }
-      return element.avatarInfo.displayName?.toLowerCase().contains(lowered) ==
+      return profile
+              .getDisplayName()
+              ?.toLowerCase()
+              .contains(loweredSearchValue) ==
           true;
-    }).toList();
-  },
-);
+    },
+  ).toList();
+});
