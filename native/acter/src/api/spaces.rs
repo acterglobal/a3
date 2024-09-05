@@ -30,18 +30,18 @@ use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
     room::{Messages, MessagesOptions, Room as SdkRoom},
 };
-use matrix_sdk_ui::timeline::RoomExt;
-use ruma::assign;
-use ruma_client_api::state::send_state_event;
-use ruma_common::{
-    serde::Raw, OwnedRoomAliasId, OwnedRoomId, RoomAliasId, RoomId, RoomOrAliasId, ServerName,
-};
-use ruma_events::{
+use matrix_sdk_base::ruma::api::client::state::send_state_event;
+use matrix_sdk_base::ruma::assign;
+use matrix_sdk_base::ruma::events::{
     reaction::SyncReactionEvent,
     room::redaction::{RoomRedactionEvent, SyncRoomRedactionEvent},
     space::child::SpaceChildEventContent,
     AnyStateEventContent, MessageLikeEvent, MessageLikeEventType, StateEventType,
 };
+use matrix_sdk_base::ruma::{
+    serde::Raw, OwnedRoomAliasId, OwnedRoomId, RoomAliasId, RoomId, RoomOrAliasId, ServerName,
+};
+use matrix_sdk_ui::timeline::RoomExt;
 use serde::{Deserialize, Serialize};
 use std::{ops::Deref, sync::Arc};
 use tokio::sync::broadcast::Receiver;

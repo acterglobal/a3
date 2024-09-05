@@ -1,4 +1,4 @@
-use ruma::push::{Action, NewConditionalPushRule, NewPushRule, PushCondition};
+use matrix_sdk_base::ruma::push::{Action, NewConditionalPushRule, NewPushRule, PushCondition};
 
 pub fn default_rules() -> Vec<NewPushRule> {
     vec![

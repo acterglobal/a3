@@ -19362,16 +19362,6 @@ class Api {
       _EventSendStateEventIdReturn Function(
         int,
       )>();
-  late final _roomEventItemUniqueIdPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomEventItemUniqueIdReturn Function(
-            ffi.IntPtr,
-          )>>("__RoomEventItem_unique_id");
-
-  late final _roomEventItemUniqueId = _roomEventItemUniqueIdPtr.asFunction<
-      _RoomEventItemUniqueIdReturn Function(
-        int,
-      )>();
   late final _roomEventItemSenderPtr = _lookup<
       ffi.NativeFunction<
           _RoomEventItemSenderReturn Function(
@@ -19411,6 +19401,16 @@ class Api {
 
   late final _roomEventItemEventType = _roomEventItemEventTypePtr.asFunction<
       _RoomEventItemEventTypeReturn Function(
+        int,
+      )>();
+  late final _roomEventItemEventIdPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomEventItemEventIdReturn Function(
+            ffi.IntPtr,
+          )>>("__RoomEventItem_event_id");
+
+  late final _roomEventItemEventId = _roomEventItemEventIdPtr.asFunction<
+      _RoomEventItemEventIdReturn Function(
         int,
       )>();
   late final _roomEventItemMsgTypePtr = _lookup<
@@ -19546,6 +19546,16 @@ class Api {
 
   late final _roomMessageItemType = _roomMessageItemTypePtr.asFunction<
       _RoomMessageItemTypeReturn Function(
+        int,
+      )>();
+  late final _roomMessageUniqueIdPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomMessageUniqueIdReturn Function(
+            ffi.IntPtr,
+          )>>("__RoomMessage_unique_id");
+
+  late final _roomMessageUniqueId = _roomMessageUniqueIdPtr.asFunction<
+      _RoomMessageUniqueIdReturn Function(
         int,
       )>();
   late final _roomMessageEventItemPtr = _lookup<
@@ -40333,36 +40343,6 @@ class RoomEventItem {
 
   RoomEventItem._(this._api, this._box);
 
-  /// Unique ID of this event
-  String uniqueId() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._roomEventItemUniqueId(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    if (tmp4 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
-    List<int> tmp3_buf = [];
-    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp4; i++) {
-      int char = tmp3_precast.elementAt(i).value;
-      tmp3_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
-    return tmp2;
-  }
-
   /// The User, who sent that event
   String sender() {
     var tmp0 = 0;
@@ -40451,6 +40431,40 @@ class RoomEventItem {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
       _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// ID of this event
+  String? eventId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomEventItemEventId(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
     }
     return tmp2;
   }
@@ -40762,6 +40776,36 @@ class RoomMessage {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._roomMessageItemType(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Unique ID of this event
+  String uniqueId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomMessageUniqueId(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -59302,15 +59346,6 @@ class _EventSendStateEventIdReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _RoomEventItemUniqueIdReturn extends ffi.Struct {
-  @ffi.IntPtr()
-  external int arg0;
-  @ffi.UintPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-}
-
 class _RoomEventItemSenderReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
@@ -59334,6 +59369,17 @@ class _RoomEventItemEventTypeReturn extends ffi.Struct {
   external int arg1;
   @ffi.UintPtr()
   external int arg2;
+}
+
+class _RoomEventItemEventIdReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
 }
 
 class _RoomEventItemMsgTypeReturn extends ffi.Struct {
@@ -59400,6 +59446,15 @@ class _RoomVirtualItemDescReturn extends ffi.Struct {
 }
 
 class _RoomMessageItemTypeReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _RoomMessageUniqueIdReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
   @ffi.UintPtr()

@@ -1,30 +1,10 @@
 use super::Display;
 use derive_builder::Builder;
-use ruma_events::{EventContent, PossiblyRedactedStateEventContent, StateEventType};
-use ruma_macros::EventContent;
+use matrix_sdk_base::ruma::events::macros::EventContent;
 use serde::{Deserialize, Serialize};
 
-/// The possibly redacted form of [`CategoriesEventContent`].
-///
-/// This type is used when it’s not obvious whether the content is redacted or not.
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[allow(clippy::exhaustive_structs)]
-pub struct PossiblyRedactedCategoriesStateEventContent();
-
-impl EventContent for PossiblyRedactedCategoriesStateEventContent {
-    type EventType = StateEventType;
-
-    fn event_type(&self) -> Self::EventType {
-        "global.acter.category".into()
-    }
-}
-
-impl PossiblyRedactedStateEventContent for PossiblyRedactedCategoriesStateEventContent {
-    type StateKey = String;
-}
-
 #[derive(Debug, Serialize, Deserialize, Clone, EventContent)]
-#[ruma_event(type = "global.acter.category", kind = State, state_key_type = String, custom_possibly_redacted)]
+#[ruma_event(type = "global.acter.category", kind = State, state_key_type = String)]
 pub struct CategoriesStateEventContent {
     pub categories: Vec<Category>,
 }

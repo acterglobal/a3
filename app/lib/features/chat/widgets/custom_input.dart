@@ -560,7 +560,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
               .height(image.height);
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
             await stream.replyMessage(
-              inputState.selectedMessage!.id,
+              inputState.selectedMessage!.remoteId!,
               imageDraft,
             );
           } else {
@@ -572,7 +572,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
               client.audioDraft(file.path, mimeType).size(file.lengthSync());
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
             await stream.replyMessage(
-              inputState.selectedMessage!.id,
+              inputState.selectedMessage!.remoteId!,
               audioDraft,
             );
           } else {
@@ -585,7 +585,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
 
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
             await stream.replyMessage(
-              inputState.selectedMessage!.id,
+              inputState.selectedMessage!.remoteId!,
               videoDraft,
             );
           } else {
@@ -597,7 +597,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
 
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
             await stream.replyMessage(
-              inputState.selectedMessage!.id,
+              inputState.selectedMessage!.remoteId!,
               fileDraft,
             );
           } else {
@@ -716,9 +716,9 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       );
 
       if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
-        await stream.replyMessage(inputState.selectedMessage!.id, draft);
+        await stream.replyMessage(inputState.selectedMessage!.remoteId!, draft);
       } else if (inputState.selectedMessageState == SelectedMessageState.edit) {
-        await stream.editMessage(inputState.selectedMessage!.id, draft);
+        await stream.editMessage(inputState.selectedMessage!.remoteId!, draft);
       } else {
         await stream.sendMessage(draft);
       }

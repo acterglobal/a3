@@ -1,5 +1,5 @@
 use super::color::Color;
-use ruma_events::room::ImageInfo;
+use matrix_sdk_base::ruma::events::room::ImageInfo;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 use strum::{Display, EnumString};

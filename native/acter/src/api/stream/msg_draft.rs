@@ -1,9 +1,7 @@
 use anyhow::Result;
 use core::time::Duration;
 use matrix_sdk::room::Room;
-use ruma::{assign, UInt};
-use ruma_common::UserId;
-use ruma_events::{
+use matrix_sdk_base::ruma::events::{
     room::{
         message::{
             AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
@@ -14,6 +12,8 @@ use ruma_events::{
     },
     Mentions,
 };
+use matrix_sdk_base::ruma::UserId;
+use matrix_sdk_base::ruma::{assign, UInt};
 use std::path::PathBuf;
 use tracing::{info, warn};
 

@@ -1,12 +1,10 @@
-use acter::{
-    new_join_rule_builder, new_space_settings_builder,
-    ruma_events::{
-        room::join_rules::{AllowRule, JoinRule, Restricted},
-        StateEventType,
-    },
-};
+use acter::{new_join_rule_builder, new_space_settings_builder};
 use acter_core::statics::KEYS;
 use anyhow::{bail, Result};
+use matrix_sdk_base::ruma::events::{
+    room::join_rules::{AllowRule, JoinRule, Restricted},
+    StateEventType,
+};
 use tokio::sync::broadcast::error::TryRecvError;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},

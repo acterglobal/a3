@@ -25,7 +25,8 @@ class FileMessageBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ChatMessageInfo messageInfo = (messageId: message.id, roomId: roomId);
+    final ChatMessageInfo messageInfo =
+        (messageId: message.remoteId ?? message.id, roomId: roomId);
     final mediaState = ref.watch(mediaChatStateProvider(messageInfo));
     return InkWell(
       onTap: () async {

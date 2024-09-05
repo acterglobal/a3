@@ -3,14 +3,9 @@ use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use futures::stream::{Stream, StreamExt};
 use matrix_sdk::{executor::JoinHandle, ComposerDraft, ComposerDraftType, RoomMemberships};
-use matrix_sdk_ui::{timeline::RoomExt, Timeline};
-use ruma::assign;
-use ruma_client_api::room::{create_room, Visibility};
-use ruma_common::{
-    serde::Raw, MxcUri, OwnedEventId, OwnedRoomAliasId, OwnedRoomId, OwnedUserId, RoomAliasId,
-    RoomId, RoomOrAliasId, ServerName, UserId,
-};
-use ruma_events::{
+use matrix_sdk_base::ruma::api::client::room::{create_room, Visibility};
+use matrix_sdk_base::ruma::assign;
+use matrix_sdk_base::ruma::events::{
     receipt::{ReceiptThread, ReceiptType},
     room::{
         avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
@@ -19,6 +14,11 @@ use ruma_events::{
     space::parent::SpaceParentEventContent,
     InitialStateEvent,
 };
+use matrix_sdk_base::ruma::{
+    serde::Raw, MxcUri, OwnedEventId, OwnedRoomAliasId, OwnedRoomId, OwnedUserId, RoomAliasId,
+    RoomId, RoomOrAliasId, ServerName, UserId,
+};
+use matrix_sdk_ui::{timeline::RoomExt, Timeline};
 use std::{
     ops::Deref,
     path::PathBuf,
@@ -161,14 +161,14 @@ impl Convo {
                 let Some(msg) = last_msg_tl.latest_event().await else {
                     continue;
                 };
-                let full_event = RoomMessage::from((msg, user_id.clone()));
-                set_latest_msg(
-                    &latest_msg_client,
-                    latest_msg_room.room_id(),
-                    &last_msg_lock_tl,
-                    full_event,
-                )
-                .await;
+                let room_id = latest_msg_room.room_id();
+
+                let full_event = RoomMessage::new_event_item(
+                    user_id.clone(),
+                    &msg,
+                    format!("{room_id}:latest_msg"),
+                );
+                set_latest_msg(&latest_msg_client, room_id, &last_msg_lock_tl, full_event).await;
             }
             warn!(room_id=?latest_msg_room.room_id(), "Timeline stopped")
         });

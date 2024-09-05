@@ -1,4 +1,4 @@
-use acter::{api::RoomMessage, ruma_common::OwnedEventId, RoomMessageDiff};
+use acter::api::{RoomMessage, RoomMessageDiff};
 use anyhow::{bail, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt, Stream};
@@ -13,7 +13,7 @@ async fn wait_for_message(
     stream: impl Stream<Item = RoomMessageDiff>,
     match_test: &MessageMatchesTest,
     error: &'static str,
-) -> Result<OwnedEventId> {
+) -> Result<(String, String)> {
     // text msg may reach via reset action or set action
     let mut i = 30;
     pin_mut!(stream);
@@ -28,11 +28,14 @@ async fn wait_for_message(
                         .expect("diff pushback action must have valid value");
                     info!("diff pushback - {:?}", value);
                     if match_test(&value) {
-                        return Ok(value
-                            .event_item()
-                            .expect("has item")
-                            .evt_id()
-                            .expect("has id"));
+                        return Ok((
+                            value
+                                .event_item()
+                                .expect("has item")
+                                .event_id()
+                                .expect("has id"),
+                            value.unique_id(),
+                        ));
                     }
                 }
                 "Reset" => {
@@ -42,11 +45,14 @@ async fn wait_for_message(
                     for value in values.iter() {
                         info!("diff reset msg: {:?}", value);
                         if match_test(value) {
-                            return Ok(value
-                                .event_item()
-                                .expect("has item")
-                                .evt_id()
-                                .expect("has id"));
+                            return Ok((
+                                value
+                                    .event_item()
+                                    .expect("has item")
+                                    .event_id()
+                                    .expect("has id"),
+                                value.unique_id(),
+                            ));
                         }
                     }
                 }
@@ -97,7 +103,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     let draft = sisko.text_plain_draft("Hi, everyone".to_string());
     sisko_timeline.send_message(Box::new(draft)).await?;
 
-    let kyra_received = wait_for_message(
+    let (kyra_received, kyra_unique_id) = wait_for_message(
         kyra_stream,
         &|m| match_text_msg(m, "Hi, everyone").is_some(),
         "even after 30 seconds, kyra didn’t see sisko’s message",
@@ -111,11 +117,11 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
 
     let check_id = kyra_received.clone();
 
-    let worf_received = wait_for_message(
+    let (_worf_received, worf_unique_id) = wait_for_message(
         worf_stream,
         &move |m| {
             m.event_item()
-                .and_then(|e| e.evt_id())
+                .and_then(|e| e.event_id())
                 .map(|s| s == check_id)
                 .unwrap_or_default()
         },
@@ -123,12 +129,15 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     )
     .await?;
 
+    info!("toggling kyra");
     kyra_timeline
-        .toggle_reaction(kyra_received.to_string(), "👏".to_string())
+        .toggle_reaction(kyra_unique_id.to_string(), "👏".to_string())
         .await?;
+    info!("toggling worf");
     worf_timeline
-        .toggle_reaction(worf_received.to_string(), "😎".to_string())
+        .toggle_reaction(worf_unique_id.to_string(), "😎".to_string())
         .await?;
+    info!("after toggle");
 
     // msg reaction may reach via set action
     let mut i = 10;
@@ -166,14 +175,14 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     Ok(())
 }
 
-fn match_text_msg(msg: &RoomMessage, body: &str) -> Option<OwnedEventId> {
+fn match_text_msg(msg: &RoomMessage, body: &str) -> Option<String> {
     info!("match room msg - {:?}", msg.clone());
     if msg.item_type() == "event" {
         let event_item = msg.event_item().expect("room msg should have event item");
         if let Some(msg_content) = event_item.msg_content() {
             if msg_content.body() == body {
                 // exclude the pending msg
-                if let Some(event_id) = event_item.evt_id() {
+                if let Some(event_id) = event_item.event_id() {
                     return Some(event_id);
                 }
             }

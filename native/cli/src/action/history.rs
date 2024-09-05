@@ -2,7 +2,7 @@ use anyhow::Result;
 use clap::Parser;
 use futures::stream::StreamExt;
 use matrix_sdk::room::{Messages, MessagesOptions};
-use ruma_common::OwnedRoomId;
+use matrix_sdk_base::ruma::OwnedRoomId;
 use tracing::{info, trace};
 
 use crate::config::{LoginConfig, ENV_ROOM};

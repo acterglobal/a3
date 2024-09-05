@@ -10,26 +10,5 @@ keywords = ["matrix-sdk", "cache", "store"]
 readme = "Readme.md"
 license = "MIT OR Apache-2.0"
 
-[features]
-queued = ["dep:tokio"]
-default = ["queued"]
 
 [dependencies]
-async-trait = "0.1.60"
-base64ct = { workspace = true, features = ["alloc"] }
-matrix-sdk-base = { workspace = true }
-matrix-sdk-store-encryption = { workspace = true }
-rmp-serde = "1.1.2"
-ruma-common = { workspace = true }
-ruma-events = { workspace = true }
-serde_json = "1"
-tracing = "0.1.40"
-tokio = { version = "1.38.0", features = ["sync"], default-features = false, optional = true }
-
-[dev-dependencies]
-anyhow = "1.0.79"
-matrix-sdk-sqlite = { workspace = true }
-matrix-sdk-test = { workspace = true }
-tempfile = "3.9.0"
-tokio = "1.35.1"
-uuid = { version = "1.6.1", features = ["v4"] }
