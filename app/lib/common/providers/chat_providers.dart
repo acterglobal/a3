@@ -15,7 +15,7 @@ final latestMessageProvider =
   () => AsyncLatestMsgNotifier(),
 );
 
-/// Provider for fetching rooms list. This'll always bring up unsorted list.
+/// Provider for fetching rooms list. This’ll always bring up unsorted list.
 final _convosProvider =
     StateNotifierProvider<ChatRoomsListNotifier, List<Convo>>((ref) {
   final client = ref.watch(alwaysClientProvider);

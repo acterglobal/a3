@@ -163,9 +163,9 @@ class _NotificationSettingsTile extends ConsumerWidget {
       }
       EasyLoading.showToast(L10n.of(context).notificationStatusSubmitted);
       await Future.delayed(const Duration(seconds: 1), () {
-        // FIXME: we want to refresh the view but don't know
+        // FIXME: we want to refresh the view but don’t know
         //        when the event was confirmed form sync :(
-        // let's hope that a second delay is reasonable enough
+        // let’s hope that a second delay is reasonable enough
         ref.invalidate(maybeRoomProvider(roomId));
       });
     } catch (e, s) {

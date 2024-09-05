@@ -2,8 +2,8 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/space/actions/set_child_room_suggested.dart';
 import 'package:acter/features/space/actions/unlink_child_room.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class RoomHierarchyOptionsMenu extends ConsumerWidget {
   final String childId;
@@ -24,8 +24,8 @@ class RoomHierarchyOptionsMenu extends ConsumerWidget {
             ?.canString('CanLinkSpaces') ==
         true;
     if (!canEdit) {
-      return const SizedBox
-          .shrink(); // user doesn't have the permission. disappear
+      // user doesn’t have the permission. disappear
+      return const SizedBox.shrink();
     }
     return PopupMenuButton(
       icon: const Icon(Icons.more_vert),
@@ -47,9 +47,11 @@ class RoomHierarchyOptionsMenu extends ConsumerWidget {
           children: [
             Icon(isSuggested ? Icons.star : Icons.star_border_rounded),
             const SizedBox(width: 4),
-            Text(isSuggested
-                ? L10n.of(context).removeSuggested
-                : L10n.of(context).addSuggested,),
+            Text(
+              isSuggested
+                  ? L10n.of(context).removeSuggested
+                  : L10n.of(context).addSuggested,
+            ),
           ],
         ),
       ),

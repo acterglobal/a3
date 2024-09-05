@@ -20,7 +20,7 @@ final bookmarkedSpacesProvider = Provider(
   (ref) => ref.watch(spacesProvider).where((s) => s.isBookmarked()).toList(),
 );
 
-/// List of spaces other than current space and it's parent space
+/// List of spaces other than current space and it’s parent space
 final otherSpacesForInviteMembersProvider = FutureProvider.autoDispose
     .family<List<Space>, String>((ref, spaceId) async {
   //GET LIST OF ALL SPACES
@@ -39,7 +39,7 @@ final otherSpacesForInviteMembersProvider = FutureProvider.autoDispose
 });
 
 /// Map a spaceId to the space, keeps up to date with underlying client
-/// throws is the space isn't found.
+/// throws is the space isn’t found.
 final spaceProvider =
     FutureProvider.family<Space, String>((ref, spaceId) async {
   final maybeSpace = await ref.watch(maybeSpaceProvider(spaceId).future);
@@ -56,14 +56,14 @@ final spaceIsBookmarkedProvider =
 });
 
 /// Attempts to map a spaceId to the space, but could come back empty (null) rather than throw.
-/// keeps up to date with underlying client even if the space wasn't found initially,
+/// keeps up to date with underlying client even if the space wasn’t found initially,
 final maybeSpaceProvider =
     AsyncNotifierProvider.family<AsyncMaybeSpaceNotifier, Space?, String>(
   () => AsyncMaybeSpaceNotifier(),
 );
 
-/// Get the SpaceItem of a spaceId or null if the space wasn't found. Keeps up to
-/// date with the underlying client even if the space wasn't found initially.
+/// Get the SpaceItem of a spaceId or null if the space wasn’t found. Keeps up to
+/// date with the underlying client even if the space wasn’t found initially.
 final maybeSpaceInfoProvider =
     FutureProvider.autoDispose.family<SpaceItem?, String>((ref, spaceId) async {
   final space = await ref.watch(maybeSpaceProvider(spaceId).future);
@@ -213,7 +213,7 @@ final briefSpaceItemProvider =
 });
 
 /// Get the members invited of a given roomId the user knows about. Errors
-/// if the space isn't found. Stays up to date with underlying client data
+/// if the space isn’t found. Stays up to date with underlying client data
 /// if a space was found.
 final spaceInvitedMembersProvider = FutureProvider.autoDispose
     .family<List<Member>, String>((ref, roomIdOrAlias) async {
@@ -226,7 +226,7 @@ final spaceInvitedMembersProvider = FutureProvider.autoDispose
 });
 
 /// Get the SpaceRelationsOverview of related SpaceItem for the space. Errors if
-/// the space or any related space isn't found. Stays up  to date with underlying
+/// the space or any related space isn’t found. Stays up  to date with underlying
 /// client data if a space was found.
 final spaceRelationsOverviewProvider =
     FutureProvider.family<SpaceRelationsOverview, String>((ref, spaceId) async {
@@ -248,7 +248,7 @@ final spaceRelationsOverviewProvider =
     }
     final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
     if (room == null || !room.isJoined()) {
-      // we don't know this room or are not in it
+      // we don’t know this room or are not in it
       hasMore = true;
       continue;
     }

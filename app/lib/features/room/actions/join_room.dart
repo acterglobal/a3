@@ -25,7 +25,7 @@ Future<String?> joinRoom(
     final roomId = newRoom.roomIdStr();
     EasyLoading.dismiss();
     // ensure we re-evaluate the room data on our end. This is necessary
-    // if we knew of the room prior (e.g. we had left it), but hadn't joined
+    // if we knew of the room prior (e.g. we had left it), but hadn’t joined
     // this should properly re-evaluate all possible readers
     ref.invalidate(maybeRoomProvider(roomId));
     ref.invalidate(chatProvider(roomId));

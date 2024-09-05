@@ -16,6 +16,7 @@ final _log = Logger('a3::super_invites::redeem');
 
 class _ShowRedeemTokenDialog extends ConsumerWidget {
   final String token;
+
   const _ShowRedeemTokenDialog({required this.token});
 
   @override
@@ -37,13 +38,13 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
                 _log.severe('Failed to load the super invite: $token', e, s);
                 final errorStr = e.toString();
                 if (errorStr.contains('error: [404]')) {
-                  // Server doesn't yet support previewing
+                  // Server doesn’t yet support previewing
                   return Text(
                     L10n.of(context).superInvitesPreviewMissing(token),
                   );
                 }
                 if (errorStr.contains('error: [403]')) {
-                  // 403 means we can't use that anymore
+                  // 403 means we can’t use that anymore
                   return Text(L10n.of(context).superInvitesDeleted(token));
                 }
                 return Text(L10n.of(context).loadingFailed(e));

@@ -219,7 +219,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
   }
 
   void _setController() {
-    // putting constant colors here as context isn't accessible in initState()
+    // putting constant colors here as context isn’t accessible in initState()
     final triggerStyles = {
       '@': TextStyle(
         color: Colors.white,
@@ -775,7 +775,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
       } else if (next.selectedMessageState == SelectedMessageState.replyTo &&
           (next.selectedMessage != prev?.selectedMessage ||
               prev?.selectedMessageState != next.selectedMessageState)) {
-        // controller doesn't update text so manually save draft state
+        // controller doesn’t update text so manually save draft state
         saveDraft(widget.controller.text, widget.roomId, ref);
         WidgetsBinding.instance.addPostFrameCallback((_) {
           widget.chatFocus.requestFocus();

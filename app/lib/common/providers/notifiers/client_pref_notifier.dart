@@ -61,7 +61,7 @@ class PrefNotifier<T> extends StateNotifier<T> {
   set state(T value) {
     assert(
       false,
-      "Don't use the setter for state. Instead use `await update(value)`.",
+      'Don’t use the setter for state. Instead use `await update(value)`.',
     );
     Future(() async {
       await update(value);
@@ -158,7 +158,7 @@ class MapPrefNotifier<T> extends StateNotifier<T> {
   set state(T value) {
     assert(
       false,
-      "Don't use the setter for state. Instead use `await update(value)`.",
+      'Don’t use the setter for state. Instead use `await update(value)`.',
     );
     Future(() async {
       await update(value);

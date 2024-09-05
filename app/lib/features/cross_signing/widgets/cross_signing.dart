@@ -209,7 +209,7 @@ class CrossSigningState extends ConsumerState<CrossSigning> {
   void onVerificationRequest(VerificationEvent event) {
     _log.info('emitter verification.request');
 
-    // starting of verifiee's flow
+    // starting of verifiee’s flow
     setState(() {
       isVerifier = false;
       flowId = event.flowId();

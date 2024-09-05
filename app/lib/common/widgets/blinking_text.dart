@@ -46,7 +46,7 @@ class BlinkText extends StatefulWidget {
 
   /// If non-null, the style to use for this text.
   ///
-  /// If the style's "inherit" property is true, the style will be merged with
+  /// If the style’s "inherit" property is true, the style will be merged with
   /// the closest enclosing [DefaultTextStyle]. Otherwise, the style will
   /// replace the closest enclosing [DefaultTextStyle].
   final TextStyle? style;
@@ -75,7 +75,7 @@ class BlinkText extends StatefulWidget {
   /// Used to select a font when the same Unicode character can
   /// be rendered differently, depending on the locale.
   ///
-  /// It's rarely necessary to set this property. By default its value
+  /// It’s rarely necessary to set this property. By default its value
   /// is inherited from the enclosing app with `Localizations.localeOf(context)`.
   ///
   /// See [RenderParagraph.locale] for more information.

@@ -182,7 +182,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                 .sendSingleReceipt('Read', 'Main', message);
           }
 
-          // FIXME: this is the proper API, but it doesn't seem to
+          // FIXME: this is the proper API, but it doesn’t seem to
           // properly be handled by the server yet
           // final marked = await ref
           //

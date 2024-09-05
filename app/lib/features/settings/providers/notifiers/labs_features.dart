@@ -46,7 +46,7 @@ class SharedPrefFeaturesNotifier extends StateNotifier<Features<LabsFeature>> {
     return future;
   }
 
-  // Let's the UI update the state of a flag
+  // Let’s the UI update the state of a flag
   Future<void> setActive(LabsFeature f, bool active) {
     return newState(state.updateFlag(f, active));
   }
