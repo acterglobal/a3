@@ -6,6 +6,7 @@ concurrency:
 
 permissions:
   contents: write
+  pull-requests: write
 
 on:
   workflow_dispatch:
@@ -331,7 +332,7 @@ jobs:
 
           VERSION=${{ needs.tags.outputs.version }}
           DOWNLOAD_PATH='v${{ needs.tags.outputs.version }}\/acter-linux-x64-${{ needs.tags.outputs.version }}.tar.bz2'
-          MD5SUM=`md5sum acter-linux-x64-$VERSION.tar.bz2  | awk '{print $1}'``
+          MD5SUM=`md5sum acter-linux-x64-$VERSION.tar.bz2  | awk '{print $1}'`
 
           echo "Version: $VERSION"
           echo "Download Path: $DOWNLOAD_PATH"
@@ -374,7 +375,7 @@ jobs:
 
           VERSION=${{ needs.tags.outputs.version }}
           DOWNLOAD_PATH='v${{ needs.tags.outputs.version }}\/acter-linux-x64-${{ needs.tags.outputs.version }}.tar.bz2'
-          MD5SUM=`md5sum acter-linux-x64-$VERSION.tar.bz2  | awk '{print $1}'``
+          MD5SUM=`md5sum acter-linux-x64-$VERSION.tar.bz2  | awk '{print $1}'`
 
           echo "Version: $VERSION"
           echo "Download Path: $DOWNLOAD_PATH"
