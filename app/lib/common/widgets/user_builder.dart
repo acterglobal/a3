@@ -31,7 +31,7 @@ final userAvatarProvider =
 
 final userAvatarInfoProvider =
     Provider.family<AvatarInfo, UserProfile>((ref, user) {
-  final displayName = user.getDisplayName();
+  final displayName = user.displayName();
   final avatarData = ref.watch(userAvatarProvider(user)).valueOrNull;
 
   return AvatarInfo(
@@ -59,16 +59,44 @@ bool isJoined(String userId, List<String> joined) {
   return false;
 }
 
+class _RoomName extends ConsumerWidget {
+  final String roomId;
+  const _RoomName({required this.roomId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDirectChat =
+        ref.watch(isDirectChatProvider(roomId)).valueOrNull ?? false;
+    if (isDirectChat) {
+      return Text(
+        L10n.of(context).dmChat,
+        style: const TextStyle(
+          fontStyle: FontStyle.italic,
+        ),
+      );
+    }
+    return Text(
+      ref.watch(roomDisplayNameProvider(roomId)).valueOrNull ?? roomId,
+      style: const TextStyle(
+        decoration: TextDecoration.underline,
+        fontStyle: FontStyle.italic,
+      ),
+    );
+  }
+}
+
 class UserBuilder extends ConsumerWidget {
   final String userId;
   final String roomId;
   final UserProfile? userProfile;
+  final bool includeSharedRooms;
 
   const UserBuilder({
     super.key,
     required this.userId,
     required this.roomId,
     this.userProfile,
+    this.includeSharedRooms = false,
   });
 
   @override
@@ -76,7 +104,7 @@ class UserBuilder extends ConsumerWidget {
     final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
     final avatarInfo = _avatarInfo(ref);
     final displayName = _displayName(ref);
-    return Card(
+    final tile = Card(
       child: ListTile(
         title: Text(displayName ?? userId),
         subtitle: (displayName == null) ? null : Text(userId),
@@ -96,6 +124,94 @@ class UserBuilder extends ConsumerWidget {
               ),
       ),
     );
+    if (includeSharedRooms) {
+      return _buildSharedRooms(context, tile);
+    }
+    return tile;
+  }
+
+  Widget _buildSharedRooms(BuildContext context, Widget tile) {
+    final sharedRooms =
+        userProfile?.sharedRooms().map((s) => s.toDartString()).toList() ?? [];
+    if (sharedRooms.isEmpty) {
+      return tile;
+    }
+
+    const style = TextStyle(fontStyle: FontStyle.italic);
+
+    Widget sharedRoomsRow = switch (sharedRooms.length) {
+      1 => Wrap(
+          children: [
+            const Text(
+              'you are both in ',
+              style: style,
+            ), //L10n.of(context).youAreBothIn),
+            _RoomName(roomId: sharedRooms[0]),
+          ],
+        ),
+      2 => Wrap(
+          children: [
+            Text(
+              'you are both in ',
+              style: style,
+            ), //L10n.of(context).youAreBothIn),
+            _RoomName(roomId: sharedRooms[0]),
+            Text(
+              ' and ',
+              style: style,
+            ),
+            _RoomName(roomId: sharedRooms[1]),
+          ],
+        ),
+      3 => Wrap(
+          children: [
+            Text(
+              'you are both in ',
+              style: style,
+            ), //L10n.of(context).youAreBothIn),
+            _RoomName(roomId: sharedRooms[0]),
+            Text(
+              ', ',
+              style: style,
+            ),
+            _RoomName(roomId: sharedRooms[1]),
+            Text(
+              ' and ',
+              style: style,
+            ),
+            _RoomName(roomId: sharedRooms[2]),
+          ],
+        ),
+      _ => Wrap(
+          children: [
+            Text(
+              'you are both in ',
+              style: style,
+            ), //L10n.of(context).youAreBothIn),
+            _RoomName(roomId: sharedRooms[0]),
+            Text(
+              ', ',
+              style: style,
+            ),
+            _RoomName(roomId: sharedRooms[1]),
+            Text(
+              ', and ${sharedRooms.length - 2} more',
+              style: style,
+            ),
+          ],
+        ),
+    };
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        tile,
+        Padding(
+          padding: const EdgeInsets.only(left: 25, bottom: 10),
+          child: sharedRoomsRow,
+        ),
+      ],
+    );
   }
 
   AvatarInfo _avatarInfo(WidgetRef ref) => (userProfile != null)
@@ -103,7 +219,7 @@ class UserBuilder extends ConsumerWidget {
       : ref.watch(memberAvatarInfoProvider((roomId: roomId, userId: userId)));
 
   String? _displayName(WidgetRef ref) =>
-      userProfile?.getDisplayName() ??
+      userProfile?.displayName() ??
       ref
           .watch(memberDisplayNameProvider((roomId: roomId, userId: userId)))
           .valueOrNull;

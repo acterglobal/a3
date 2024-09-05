@@ -160,6 +160,7 @@ class _CreateChatWidget extends ConsumerStatefulWidget {
 
 class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
   ScrollController scrollController = ScrollController();
+  final searchTextController = TextEditingController();
 
   // scrolls to upward in list upon user tapping.
   void _onUp() {
@@ -168,6 +169,12 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
       duration: const Duration(milliseconds: 500),
       curve: Curves.easeInOutQuart,
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    searchTextController.text = ref.read(searchValueProvider) ?? '';
   }
 
   @override
@@ -240,7 +247,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
               child: Consumer(
                 builder: (context, ref, child) {
                   final avatarProv = ref.watch(userAvatarProvider(profile));
-                  final displayName = profile.getDisplayName();
+                  final displayName = profile.displayName();
                   final userId = profile.userId().toString();
                   return Row(
                     mainAxisSize: MainAxisSize.min,
@@ -313,7 +320,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                   options: AvatarOptions.DM(
                     AvatarInfo(
                       uniqueId: selectedUsers[0].userId().toString(),
-                      displayName: selectedUsers[0].getDisplayName(),
+                      displayName: selectedUsers[0].displayName(),
                       avatar: ref
                           .watch(userAvatarProvider(selectedUsers[0]))
                           .valueOrNull,
@@ -330,9 +337,8 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
   }
 
   Widget renderSearchField(BuildContext context) {
-    final searchCtrl = ref.watch(searchController);
     return TextField(
-      controller: searchCtrl,
+      controller: searchTextController,
       style: Theme.of(context).textTheme.labelMedium,
       decoration: InputDecoration(
         hintText: L10n.of(context).searchUsernameToStartDM,
@@ -345,49 +351,48 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
   }
 
   Widget renderFoundUsers(BuildContext context) {
-    final searchCtrl = ref.watch(searchController);
     final usersLoader = ref.watch(searchResultProvider);
-    return Visibility(
-      visible: searchCtrl.text.isNotEmpty,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            L10n.of(context).foundUsers,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          usersLoader.when(
-            data: (users) {
-              if (users.isEmpty) {
-                return Center(
-                  heightFactor: 10,
-                  child: Text(
-                    L10n.of(context).noUsersFoundWithSpecifiedSearchTerm,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                );
-              }
-              return ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: users.length,
-                itemBuilder: (context, index) => _UserWidget(
-                  profile: users[index],
-                  onUp: _onUp,
+    if (searchTextController.text.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          L10n.of(context).foundUsers,
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        usersLoader.when(
+          data: (users) {
+            if (users.isEmpty) {
+              return Center(
+                heightFactor: 10,
+                child: Text(
+                  L10n.of(context).noUsersFoundWithSpecifiedSearchTerm,
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
               );
-            },
-            error: (e, s) {
-              _log.severe('Failed to search users', e, s);
-              return Text(L10n.of(context).errorLoadingUsers(e));
-            },
-            loading: () => const Center(
-              heightFactor: 5,
-              child: CircularProgressIndicator(),
-            ),
+            }
+            return ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: users.length,
+              itemBuilder: (context, index) => _UserWidget(
+                profile: users[index],
+                onUp: _onUp,
+              ),
+            );
+          },
+          error: (e, s) {
+            _log.severe('Failed to search users', e, s);
+            return Text(L10n.of(context).errorLoadingUsers(e));
+          },
+          loading: () => const Center(
+            heightFactor: 5,
+            child: CircularProgressIndicator(),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -691,7 +696,7 @@ class _UserWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final avatarLoader = ref.watch(userAvatarProvider(profile));
-    final displayName = profile.getDisplayName();
+    final displayName = profile.displayName();
     final userId = profile.userId().toString();
     return ListTile(
       onTap: () => onUserAdd(ref),

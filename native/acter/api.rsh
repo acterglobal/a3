@@ -255,7 +255,10 @@ object UserProfile {
     fn get_avatar(thumb_size: Option<ThumbnailSize>) -> Future<Result<OptionBuffer>>;
 
     /// get the display name
-    fn get_display_name() -> Option<string>;
+    fn display_name() -> Option<string>;
+
+    /// which rooms you are sharing with that profile
+    fn shared_rooms() -> Vec<string>;
 }
 
 
@@ -2756,7 +2759,7 @@ object Client {
     fn invitations_rx() -> Stream<Vec<Invitation>>;
 
     /// the users out of room
-    fn suggested_users_to_invite(room_name: string) -> Future<Result<Vec<UserProfile>>>;
+    fn suggested_users(room_name: Option<string>) -> Future<Result<Vec<UserProfile>>>;
 
     /// search the user directory
     fn search_users(search_term: string) -> Future<Result<Vec<UserProfile>>>;

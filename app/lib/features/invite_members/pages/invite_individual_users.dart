@@ -1,14 +1,59 @@
-import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/common/widgets/user_builder.dart';
 import 'package:acter/features/invite_members/providers/invite_providers.dart';
 import 'package:acter/features/invite_members/widgets/direct_invite.dart';
-import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+class _SearchField extends ConsumerStatefulWidget {
+  const _SearchField({super.key});
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => __SearchFieldState();
+}
+
+class __SearchFieldState extends ConsumerState<_SearchField> {
+  final searchTextCtrl = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    searchTextCtrl.text = ref.read(searchValueProvider) ?? '';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: TextField(
+        controller: searchTextCtrl,
+        decoration: InputDecoration(
+          prefixIcon: const Icon(Atlas.magnifying_glass_thin),
+          hintText: L10n.of(context).searchUser,
+          suffix: ref.watch(searchValueProvider)?.isNotEmpty == true
+              ? InkWell(
+                  onTap: () {
+                    ref.read(searchValueProvider.notifier).state = null;
+                    searchTextCtrl.clear();
+                  },
+                  child: const Icon(
+                    Atlas.xmark_circle_thin,
+                  ),
+                )
+              : null,
+        ),
+        onChanged: (String value) {
+          ref.read(searchValueProvider.notifier).update((state) => value);
+        },
+      ),
+    );
+  }
+}
 
 class InviteIndividualUsers extends ConsumerWidget {
   final String roomId;
@@ -43,7 +88,7 @@ class InviteIndividualUsers extends ConsumerWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10),
-            _buildSearchTextField(context, ref),
+            const _SearchField(),
             const SizedBox(height: 10),
             _buildUserDirectInvite(ref),
             Expanded(
@@ -51,23 +96,6 @@ class InviteIndividualUsers extends ConsumerWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildSearchTextField(BuildContext context, WidgetRef ref) {
-    final searchTextCtrl = ref.watch(searchController);
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: TextField(
-        controller: searchTextCtrl,
-        decoration: InputDecoration(
-          prefixIcon: const Icon(Atlas.magnifying_glass_thin),
-          hintText: L10n.of(context).searchUser,
-        ),
-        onChanged: (String value) {
-          ref.read(searchValueProvider.notifier).update((state) => value);
-        },
       ),
     );
   }
@@ -93,7 +121,7 @@ class InviteIndividualUsers extends ConsumerWidget {
 
   Widget _renderResults(BuildContext context, WidgetRef ref) {
     final suggestedUsers =
-        ref.watch(filteredSuggestedUsersProvider(roomId)).valueOrNull ?? [];
+        ref.watch(filteredSuggestedUsersProvider(null)).valueOrNull ?? [];
 
     final foundUsers = ref.watch(searchResultProvider).valueOrNull ?? [];
 
@@ -111,16 +139,19 @@ class InviteIndividualUsers extends ConsumerWidget {
     return ListView.builder(
       itemBuilder: (context, position) {
         late UserProfile user;
+        bool showRooms = false;
         if (position >= suggestedUsers.length) {
           user = foundUsers[position - suggestedUsers.length];
         } else {
           user = suggestedUsers[position];
+          showRooms = true;
         }
 
         final userWidget = UserBuilder(
           userId: user.userId().toString(),
           roomId: roomId,
           userProfile: user,
+          includeSharedRooms: showRooms,
         );
         if (position == 0 && suggestedUsers.isNotEmpty) {
           return Column(
@@ -138,7 +169,7 @@ class InviteIndividualUsers extends ConsumerWidget {
             ],
           );
         }
-        if (position == (suggestedUsers.length - 1) && foundUsers.isNotEmpty) {
+        if (position == suggestedUsers.length && foundUsers.isNotEmpty) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

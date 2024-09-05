@@ -12159,7 +12159,7 @@ class Api {
     return tmp7;
   }
 
-  FfiListUserProfile? __clientSuggestedUsersToInviteFuturePoll(
+  FfiListUserProfile? __clientSuggestedUsersFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -12173,7 +12173,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _clientSuggestedUsersToInviteFuturePoll(
+    final tmp6 = _clientSuggestedUsersFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -17074,17 +17074,26 @@ class Api {
         int,
         int,
       )>();
-  late final _userProfileGetDisplayNamePtr = _lookup<
+  late final _userProfileDisplayNamePtr = _lookup<
       ffi.NativeFunction<
-          _UserProfileGetDisplayNameReturn Function(
+          _UserProfileDisplayNameReturn Function(
             ffi.IntPtr,
-          )>>("__UserProfile_get_display_name");
+          )>>("__UserProfile_display_name");
 
-  late final _userProfileGetDisplayName =
-      _userProfileGetDisplayNamePtr.asFunction<
-          _UserProfileGetDisplayNameReturn Function(
-            int,
-          )>();
+  late final _userProfileDisplayName = _userProfileDisplayNamePtr.asFunction<
+      _UserProfileDisplayNameReturn Function(
+        int,
+      )>();
+  late final _userProfileSharedRoomsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__UserProfile_shared_rooms");
+
+  late final _userProfileSharedRooms = _userProfileSharedRoomsPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _receiptEventRoomIdPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -26474,23 +26483,24 @@ class Api {
       int Function(
         int,
       )>();
-  late final _clientSuggestedUsersToInvitePtr = _lookup<
+  late final _clientSuggestedUsersPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
             ffi.IntPtr,
+            ffi.Uint8,
             ffi.IntPtr,
             ffi.UintPtr,
             ffi.UintPtr,
-          )>>("__Client_suggested_users_to_invite");
+          )>>("__Client_suggested_users");
 
-  late final _clientSuggestedUsersToInvite =
-      _clientSuggestedUsersToInvitePtr.asFunction<
-          int Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+  late final _clientSuggestedUsers = _clientSuggestedUsersPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+      )>();
   late final _clientSearchUsersPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -31379,17 +31389,17 @@ class Api {
             int,
             int,
           )>();
-  late final _clientSuggestedUsersToInviteFuturePollPtr = _lookup<
+  late final _clientSuggestedUsersFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientSuggestedUsersToInviteFuturePollReturn Function(
+          _ClientSuggestedUsersFuturePollReturn Function(
             ffi.IntPtr,
             ffi.IntPtr,
             ffi.Int64,
-          )>>("__Client_suggested_users_to_invite_future_poll");
+          )>>("__Client_suggested_users_future_poll");
 
-  late final _clientSuggestedUsersToInviteFuturePoll =
-      _clientSuggestedUsersToInviteFuturePollPtr.asFunction<
-          _ClientSuggestedUsersToInviteFuturePollReturn Function(
+  late final _clientSuggestedUsersFuturePoll =
+      _clientSuggestedUsersFuturePollPtr.asFunction<
+          _ClientSuggestedUsersFuturePollReturn Function(
             int,
             int,
             int,
@@ -35398,10 +35408,10 @@ class UserProfile {
   }
 
   /// get the display name
-  String? getDisplayName() {
+  String? displayName() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._userProfileGetDisplayName(
+    final tmp1 = _api._userProfileDisplayName(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -35428,6 +35438,22 @@ class UserProfile {
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
       _api.__deallocate(tmp4_0, tmp6 * 1, 1);
     }
+    return tmp2;
+  }
+
+  /// which rooms you are sharing with that profile
+  FfiListFfiString sharedRooms() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._userProfileSharedRooms(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListFfiString._(_api, tmp3_1);
+    final tmp2 = tmp4;
     return tmp2;
   }
 
@@ -54414,37 +54440,43 @@ class Client {
   }
 
   /// the users out of room
-  Future<FfiListUserProfile> suggestedUsersToInvite(
-    String roomName,
+  Future<FfiListUserProfile> suggestedUsers(
+    String? roomName,
   ) {
     final tmp1 = roomName;
     var tmp0 = 0;
     var tmp2 = 0;
-    var tmp3 = 0;
     var tmp4 = 0;
+    var tmp5 = 0;
+    var tmp6 = 0;
     tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      final tmp3_0 = utf8.encode(tmp3);
+      tmp5 = tmp3_0.length;
 
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5 = _api._clientSuggestedUsersToInvite(
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = _api.__allocate(tmp5 * 1, 1);
+      final Uint8List tmp4_1 = tmp4_0.asTypedList(tmp5);
+      tmp4_1.setAll(0, tmp3_0);
+      tmp4 = tmp4_0.address;
+      tmp6 = tmp5;
+    }
+    final tmp7 = _api._clientSuggestedUsers(
       tmp0,
       tmp2,
-      tmp3,
       tmp4,
+      tmp5,
+      tmp6,
     );
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 =
-        _Box(_api, tmp7_0, "__Client_suggested_users_to_invite_future_drop");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 =
-        _nativeFuture(tmp7_1, _api.__clientSuggestedUsersToInviteFuturePoll);
-    return tmp6;
+    final tmp9 = tmp7;
+    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+    final tmp9_1 = _Box(_api, tmp9_0, "__Client_suggested_users_future_drop");
+    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
+    final tmp8 = _nativeFuture(tmp9_1, _api.__clientSuggestedUsersFuturePoll);
+    return tmp8;
   }
 
   /// search the user directory
@@ -58670,7 +58702,7 @@ class _OptionComposeDraftDraftReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _UserProfileGetDisplayNameReturn extends ffi.Struct {
+class _UserProfileDisplayNameReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
@@ -64280,7 +64312,7 @@ class _ClientPinnedLinksFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ClientSuggestedUsersToInviteFuturePollReturn extends ffi.Struct {
+class _ClientSuggestedUsersFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

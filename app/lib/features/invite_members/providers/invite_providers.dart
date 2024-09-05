@@ -1,8 +1,5 @@
-import 'dart:typed_data';
-
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,15 +19,6 @@ final noAtUserNameRegExp = RegExp(
   caseSensitive: false,
 );
 
-final searchController = Provider.autoDispose<TextEditingController>((ref) {
-  final controller = TextEditingController();
-  ref.onDispose(() {
-    controller.dispose();
-    ref.read(searchValueProvider.notifier).state = null;
-  });
-  return controller;
-});
-
 final searchValueProvider = StateProvider<String?>((ref) => null);
 
 final searchResultProvider = FutureProvider<List<UserProfile>>((ref) async {
@@ -48,15 +36,16 @@ final searchResultProvider = FutureProvider<List<UserProfile>>((ref) async {
   return (await client.searchUsers(newSearchValue)).toList();
 });
 
-final suggestedUsersProvider = FutureProvider.family<List<UserProfile>, String>(
+final suggestedUsersProvider =
+    FutureProvider.family<List<UserProfile>, String?>(
   (ref, roomId) async {
     final client = ref.watch(alwaysClientProvider);
-    return (await client.suggestedUsersToInvite(roomId)).toList();
+    return (await client.suggestedUsers(roomId)).toList();
   },
 );
 
 final filteredSuggestedUsersProvider =
-    FutureProvider.family<List<UserProfile>, String>((ref, roomId) async {
+    FutureProvider.family<List<UserProfile>, String?>((ref, roomId) async {
   final newSearchValue = ref.watch(searchValueProvider);
   final suggestedUsers =
       ref.watch(suggestedUsersProvider(roomId)).valueOrNull ?? [];
@@ -77,7 +66,7 @@ final filteredSuggestedUsersProvider =
         return true;
       }
       return profile
-              .getDisplayName()
+              .displayName()
               ?.toLowerCase()
               .contains(loweredSearchValue) ==
           true;
