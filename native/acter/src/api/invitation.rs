@@ -372,7 +372,7 @@ impl Client {
                     .map(|(m, rooms)| UserProfile::with_shared_rooms(m, rooms))
                     .collect::<Vec<_>>();
 
-                found_profiles.sort_by_cached_key(|a| a.shared_rooms().len());
+                found_profiles.sort_by_cached_key(|a| -(a.shared_rooms().len() as i64)); // reverse sort
 
                 Ok(found_profiles)
             })
