@@ -1,8 +1,8 @@
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/common/widgets/space_name_widget.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
-import 'package:acter/features/pins/widgets/pin_icon.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -46,12 +46,13 @@ class PinListItemWidget extends ConsumerWidget {
           Routes.pin.name,
           pathParameters: {'pinId': pinId},
         ),
-        leading: PinIcon(
-          iconColor: convertColor(
+        leading: ActerIconWidget(
+          iconSize: 25,
+          defaultColor: convertColor(
             pin.display()?.color(),
             Theme.of(context).unselectedWidgetColor,
           ),
-          iconData: ActerIcons.iconForPin(pin.display()?.iconStr()).data,
+          defaultIcon: ActerIcons.iconForPin(pin.display()?.iconStr()),
         ),
         title: Text(pin.title(), overflow: TextOverflow.ellipsis),
         subtitle: showSpace

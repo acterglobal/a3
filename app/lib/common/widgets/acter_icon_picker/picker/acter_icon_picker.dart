@@ -1,9 +1,7 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
-import 'package:acter/common/widgets/acter_icon_picker/providers/acter_icon_picker_providers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 void showActerIconPicker({
@@ -28,7 +26,7 @@ void showActerIconPicker({
   );
 }
 
-class ActerIconPicker extends ConsumerStatefulWidget {
+class ActerIconPicker extends StatefulWidget {
   final Color selectedColor;
   final ActerIcons selectedIcon;
   final Function(Color, ActerIcons)? onIconSelection;
@@ -41,21 +39,18 @@ class ActerIconPicker extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<ActerIconPicker> createState() => _ActerIconPickerState();
+  State<ActerIconPicker> createState() => _ActerIconPickerState();
 }
 
-class _ActerIconPickerState extends ConsumerState<ActerIconPicker> {
+class _ActerIconPickerState extends State<ActerIconPicker> {
+  final ValueNotifier<Color> selectedColor = ValueNotifier(Colors.blueGrey);
+  final ValueNotifier<ActerIcons> selectedIcon = ValueNotifier(ActerIcons.list);
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-      ref
-          .read(acterIconPickerStateProvider.notifier)
-          .selectColor(widget.selectedColor);
-      ref
-          .read(acterIconPickerStateProvider.notifier)
-          .selectIcon(widget.selectedIcon);
-    });
+    selectedColor.value = widget.selectedColor;
+    selectedIcon.value = widget.selectedIcon;
   }
 
   @override
@@ -73,11 +68,8 @@ class _ActerIconPickerState extends ConsumerState<ActerIconPicker> {
           ActerPrimaryActionButton(
             onPressed: () {
               if (widget.onIconSelection != null) {
-                final selectedColor =
-                    ref.watch(acterIconPickerStateProvider).selectedColor;
-                final selectedIcon =
-                    ref.watch(acterIconPickerStateProvider).selectedIcon;
-                widget.onIconSelection!(selectedColor, selectedIcon);
+                widget.onIconSelection!(
+                    selectedColor.value, selectedIcon.value);
               }
               Navigator.pop(context);
             },
@@ -89,21 +81,23 @@ class _ActerIconPickerState extends ConsumerState<ActerIconPicker> {
   }
 
   Widget _buildIconPreviewUI() {
-    return Consumer(
-      builder: (context, ref, child) {
-        final selectedColor =
-            ref.watch(acterIconPickerStateProvider).selectedColor;
-        final selectedIcon =
-            ref.watch(acterIconPickerStateProvider).selectedIcon;
-        return Center(
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: selectedColor,
-              borderRadius: const BorderRadius.all(Radius.circular(100)),
-            ),
-            child: Icon(selectedIcon.data, size: 70),
-          ),
+    return ValueListenableBuilder<Color>(
+      valueListenable: selectedColor,
+      builder: (context, color, child) {
+        return ValueListenableBuilder<ActerIcons>(
+          valueListenable: selectedIcon,
+          builder: (context, acterIcon, child) {
+            return Center(
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: const BorderRadius.all(Radius.circular(100)),
+                ),
+                child: Icon(acterIcon.data, size: 70),
+              ),
+            );
+          },
         );
       },
     );
@@ -117,31 +111,28 @@ class _ActerIconPickerState extends ConsumerState<ActerIconPicker> {
         const SizedBox(height: 12),
         Wrap(
           children: iconPickerColors
-              .map((colorModel) => _buildColorBoxItem(colorModel))
+              .map((color) => _buildColorBoxItem(color))
               .toList(),
         ),
       ],
     );
   }
 
-  Widget _buildColorBoxItem(Color color) {
-    return Consumer(
-      builder: (context, ref, child) {
-        final selectedColor =
-            ref.watch(acterIconPickerStateProvider).selectedColor;
+  Widget _buildColorBoxItem(Color colorItem) {
+    return ValueListenableBuilder<Color>(
+      valueListenable: selectedColor,
+      builder: (context, color, child) {
         return InkWell(
           borderRadius: BorderRadius.circular(100),
-          onTap: () => ref
-              .read(acterIconPickerStateProvider.notifier)
-              .selectColor(color),
+          onTap: () => selectedColor.value = colorItem,
           child: Container(
             height: 40,
             width: 40,
             padding: const EdgeInsets.all(16),
             margin: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: color,
-              border: selectedColor == color
+              color: colorItem,
+              border: colorItem == color
                   ? Border.all(color: Colors.white, width: 1)
                   : null,
               borderRadius: const BorderRadius.all(Radius.circular(100)),
@@ -171,16 +162,13 @@ class _ActerIconPickerState extends ConsumerState<ActerIconPicker> {
     );
   }
 
-  Widget _buildIconBoxItem(ActerIcons acterIcon) {
-    return Consumer(
-      builder: (context, ref, child) {
-        final selectedIcon =
-            ref.watch(acterIconPickerStateProvider).selectedIcon;
+  Widget _buildIconBoxItem(ActerIcons acterIconItem) {
+    return ValueListenableBuilder<ActerIcons>(
+      valueListenable: selectedIcon,
+      builder: (context, acterIcon, child) {
         return InkWell(
           borderRadius: BorderRadius.circular(100),
-          onTap: () => ref
-              .read(acterIconPickerStateProvider.notifier)
-              .selectIcon(acterIcon),
+          onTap: () => selectedIcon.value = acterIconItem,
           child: Container(
             height: 45,
             width: 45,
@@ -188,12 +176,12 @@ class _ActerIconPickerState extends ConsumerState<ActerIconPicker> {
             margin: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: Colors.white24,
-              border: selectedIcon == acterIcon
+              border: acterIconItem == acterIcon
                   ? Border.all(color: Colors.white, width: 1)
                   : null,
               borderRadius: const BorderRadius.all(Radius.circular(100)),
             ),
-            child: Icon(acterIcon.data),
+            child: Icon(acterIconItem.data),
           ),
         );
       },

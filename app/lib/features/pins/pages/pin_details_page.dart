@@ -220,6 +220,10 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
   }
 
   Widget _buildPinHeaderUI(ActerPin pin) {
+    //Get my membership details
+    final membership =
+        ref.watch(roomMembershipProvider(pin.roomIdStr())).valueOrNull;
+    bool canPost = membership?.canString('CanPostPin') == true;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -237,9 +241,11 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
                 defaultIcon: ActerIcons.iconForPin(
                   pin.display()?.iconStr(),
                 ),
-                onIconSelection: (color, acterIcon) {
-                  savePinIcon(context, ref, pin, color, acterIcon);
-                },
+                onIconSelection: canPost
+                    ? (color, acterIcon) {
+                        savePinIcon(context, ref, pin, color, acterIcon);
+                      }
+                    : null,
               ),
               const SizedBox(width: 12),
               Expanded(

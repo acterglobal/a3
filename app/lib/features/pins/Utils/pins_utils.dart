@@ -99,7 +99,7 @@ Future<void> savePinIcon(
   ActerIcons acterIcon,
 ) async {
   try {
-    EasyLoading.show(status: L10n.of(context).update);
+    EasyLoading.show(status: L10n.of(context).updatingIcon);
     // Pin IconData
     final sdk = await ref.watch(sdkProvider.future);
     final displayBuilder = sdk.api.newDisplayBuilder();

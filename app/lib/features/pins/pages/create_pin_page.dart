@@ -98,13 +98,15 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
-                      ActerIconWidget(
-                        defaultColor: pinIconColor,
-                        defaultIcon: pinIcon,
-                        onIconSelection: (pinIconColor, pinIcon) {
-                          this.pinIcon = pinIcon;
-                          this.pinIconColor = pinIconColor;
-                        },
+                      Center(
+                        child: ActerIconWidget(
+                          defaultColor: pinIconColor,
+                          defaultIcon: pinIcon,
+                          onIconSelection: (pinIconColor, pinIcon) {
+                            this.pinIcon = pinIcon;
+                            this.pinIconColor = pinIconColor;
+                          },
+                        ),
                       ),
                       const SizedBox(height: 14),
                       _buildTitleField(),
