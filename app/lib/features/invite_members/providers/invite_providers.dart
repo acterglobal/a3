@@ -36,7 +36,7 @@ final searchValueProvider = StateProvider<String?>((ref) => null);
 final searchResultProvider = FutureProvider<List<UserProfile>>((ref) async {
   final newSearchValue = ref.watch(searchValueProvider);
   _log.info('starting search for $newSearchValue');
-  if (newSearchValue == null || newSearchValue.length < 3) {
+  if (newSearchValue == null || newSearchValue.isEmpty) {
     return [];
   }
   try {
