@@ -340,10 +340,12 @@ impl Client {
                             .map(|x| x.user_id().to_owned())
                             .collect::<Vec<OwnedUserId>>()
                     } else {
-                        vec![]
+                        // but we always ignore ourselves
+                        vec![me.user_id()?]
                     }
                 } else {
-                    vec![]
+                    // but we always ignore ourselves
+                    vec![me.user_id()?]
                 };
                 // iterate my rooms to get user list
                 let mut profiles: BTreeMap<OwnedUserId, (RoomMember, Vec<String>)> =
