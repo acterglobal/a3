@@ -383,6 +383,7 @@ Future<void> onMessageLinkTap(Uri uri, BuildContext context) async {
 
   ///If link is type of matrix room link
   if (roomId != null) {
+    goToChat(context, roomId);
   }
 
   ///If link is other than matrix room link
