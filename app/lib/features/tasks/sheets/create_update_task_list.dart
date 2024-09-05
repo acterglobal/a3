@@ -1,5 +1,8 @@
+import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
+import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
+import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
@@ -48,6 +51,8 @@ class _CreateUpdateTaskListConsumerState
   final TextEditingController _titleController = TextEditingController();
   final ValueNotifier<bool> isShowDescription = ValueNotifier(false);
   EditorState textEditorState = EditorState.blank();
+  ActerIcons taskListIcon = ActerIcons.list;
+  Color taskListIconColor = Colors.blueGrey;
 
   @override
   void initState() {
@@ -79,11 +84,21 @@ class _CreateUpdateTaskListConsumerState
                 endIndent: 150,
                 thickness: 2,
               ),
-              const SizedBox(height: 20),
               Text(
                 L10n.of(context).createNewTaskList,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 40),
+              Center(
+                child: ActerIconWidget(
+                  defaultColor: taskListIconColor,
+                  defaultIcon: taskListIcon,
+                  onIconSelection: (taskListIconColor, taskListIcon) {
+                    this.taskListIconColor = taskListIconColor;
+                    this.taskListIcon = taskListIcon;
+                  },
+                ),
               ),
               const SizedBox(height: 20),
               _widgetTaskListName(),
@@ -194,6 +209,14 @@ class _CreateUpdateTaskListConsumerState
       final spaceId = ref.read(selectedSpaceIdProvider);
       final space = await ref.read(spaceProvider(spaceId!).future);
       final taskListDraft = space.taskListDraft();
+
+      // TaskList IconData
+      final sdk = await ref.watch(sdkProvider.future);
+      final displayBuilder = sdk.api.newDisplayBuilder();
+      displayBuilder.color(taskListIconColor.value);
+      displayBuilder.icon('acter-icon', taskListIcon.name);
+      taskListDraft.display(displayBuilder.build());
+
       taskListDraft.name(_titleController.text);
       // Description text
       final plainDescription = textEditorState.intoMarkdown();

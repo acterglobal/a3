@@ -1,13 +1,18 @@
 import 'package:acter/common/actions/redact_content.dart';
 import 'package:acter/common/actions/report_content.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
+import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
+import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
+import 'package:acter/features/tasks/actions/update_tasklist.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/task_items_list_widget.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -45,53 +50,86 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   AppBar _buildAppbar() {
     final tasklistLoader = ref.watch(taskListItemProvider(widget.taskListId));
     return tasklistLoader.when(
-      data: (tasklist) => AppBar(
-        title: SelectionArea(
-          child: GestureDetector(
-            onTap: () => showEditTaskListNameBottomSheet(
-              context: context,
-              ref: ref,
-              taskList: tasklist,
-              titleValue: tasklist.name(),
-            ),
-            child: Text(
-              key: TaskListDetailPage.taskListTitleKey,
-              tasklist.name(),
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
+      data: (tasklist) {
+        final membership = ref
+            .watch(roomMembershipProvider(tasklist.spaceIdStr()))
+            .valueOrNull;
+        bool canPost = membership?.canString('CanPostTaskList') == true;
+        return AppBar(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              ActerIconWidget(
+                iconSize: 20,
+                defaultColor: convertColor(
+                  tasklist.display()?.color(),
+                  Theme.of(context).unselectedWidgetColor,
+                ),
+                defaultIcon: ActerIcons.iconForTask(
+                  tasklist.display()?.iconStr(),
+                ),
+                onIconSelection: canPost
+                    ? (color, acterIcon) {
+                        updateTaskListIcon(
+                          context,
+                          ref,
+                          tasklist,
+                          color,
+                          acterIcon,
+                        );
+                      }
+                    : null,
+              ),
+              const SizedBox(width: 10),
+              SelectionArea(
+                child: GestureDetector(
+                  onTap: () => showEditTaskListNameBottomSheet(
+                    context: context,
+                    ref: ref,
+                    taskList: tasklist,
+                    titleValue: tasklist.name(),
+                  ),
+                  child: Text(
+                    key: TaskListDetailPage.taskListTitleKey,
+                    tasklist.name(),
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ),
-        actions: [
-          PopupMenuButton(
-            icon: const Icon(Icons.more_vert),
-            itemBuilder: (context) {
-              return [
-                PopupMenuItem(
-                  onTap: () => showEditDescriptionSheet(tasklist),
-                  child: Text(
-                    L10n.of(context).editDescription,
-                    style: Theme.of(context).textTheme.bodyMedium,
+          actions: [
+            PopupMenuButton(
+              icon: const Icon(Icons.more_vert),
+              itemBuilder: (context) {
+                return [
+                  PopupMenuItem(
+                    onTap: () => showEditDescriptionSheet(tasklist),
+                    child: Text(
+                      L10n.of(context).editDescription,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
                   ),
-                ),
-                PopupMenuItem(
-                  onTap: () => showRedactDialog(taskList: tasklist),
-                  child: Text(
-                    L10n.of(context).delete,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                  PopupMenuItem(
+                    onTap: () => showRedactDialog(taskList: tasklist),
+                    child: Text(
+                      L10n.of(context).delete,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
                   ),
-                ),
-                PopupMenuItem(
-                  onTap: () => showReportDialog(tasklist),
-                  child: Text(
-                    L10n.of(context).report,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                  PopupMenuItem(
+                    onTap: () => showReportDialog(tasklist),
+                    child: Text(
+                      L10n.of(context).report,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
                   ),
-                ),
-              ];
-            },
-          ),
-        ],
-      ),
+                ];
+              },
+            ),
+          ],
+        );
+      },
       error: (e, s) {
         _log.severe('Failed to load tasklist', e, s);
         return AppBar(
@@ -295,27 +333,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
       context: context,
       bottomSheetTitle: L10n.of(context).editName,
       titleValue: titleValue,
-      onSave: (newName) async {
-        EasyLoading.show(status: L10n.of(context).updatingTask);
-        final updater = taskList.updateBuilder();
-        updater.name(newName);
-        try {
-          await updater.send();
-          EasyLoading.dismiss();
-          if (!context.mounted) return;
-          Navigator.pop(context);
-        } catch (e, s) {
-          _log.severe('Failed to rename tasklist', e, s);
-          if (!context.mounted) {
-            EasyLoading.dismiss();
-            return;
-          }
-          EasyLoading.showError(
-            L10n.of(context).updatingTaskFailed(e),
-            duration: const Duration(seconds: 3),
-          );
-        }
-      },
+      onSave: (newName) => updateTaskListTitle(context, taskList, newName),
     );
   }
 }
