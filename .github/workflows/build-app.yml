@@ -400,7 +400,7 @@ jobs:
     ##     ## ##        ##       ##     ## ##     ## ##     ## 
      #######  ##        ########  #######  ##     ## ########  
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         name: "Upload artifacts"
         if: matrix.specific_upload_artifacts
         with:
@@ -412,14 +412,14 @@ jobs:
         if: ${{!matrix.specific_upload_artifacts}}
         run: mv ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ inputs.version }}.* .
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         name: "Upload artifacts"
         if: ${{!matrix.specific_upload_artifacts}}
         with:
           name: ${{ matrix.name }}
           path: ${{ matrix.artifact_prefix }}-${{ inputs.version }}.*
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         name: "Upload debug artifacts"
         if: ${{ matrix.with_debug_symbols }}
         with:

@@ -115,7 +115,7 @@ jobs:
       - build
     steps:
 
-      - uses: actions/download-artifact@v4.1.7
+      - uses: actions/download-artifact@v4
         with:
           name: Windows msix
       - name: Create Archive
@@ -177,10 +177,10 @@ jobs:
       - tags
       - build
     steps:
-      - uses: actions/download-artifact@v4.1.7
+      - uses: actions/download-artifact@v4
         with:
           name: Android
-      # - uses: actions/download-artifact@v4.1.7
+      # - uses: actions/download-artifact@v4
       #   with:
       #     name: Android-debug-symbols
       - name: Release Build to playstore
@@ -212,10 +212,10 @@ jobs:
       - changelog
       - build
     steps:
-      - uses: actions/download-artifact@v4.1.7
+      - uses: actions/download-artifact@v4
         with:
           name: iOS
-      - uses: actions/download-artifact@v4.1.7
+      - uses: actions/download-artifact@v4
         with:
           name: Changelog
 
@@ -267,11 +267,11 @@ jobs:
       - changelog
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4.1.7
+      - uses: actions/download-artifact@v4
         with:
           name: MacOS
 
-      - uses: actions/download-artifact@v4.1.7
+      - uses: actions/download-artifact@v4
         with:
           name: Changelog
 
@@ -322,7 +322,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v4.1.7
+      - uses: actions/download-artifact@v4
         with:
           name: Linux x64
       - name: Create PKGBUILD file
@@ -365,7 +365,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v4.1.7
+      - uses: actions/download-artifact@v4
         with:
           name: Linux x64
       - name: Patch PKGBUILD file
@@ -422,7 +422,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/download-artifact@v4.1.7
+      - uses: actions/download-artifact@v4
         with:
           name: Changelog
 
