@@ -7,8 +7,8 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 void showActerIconPicker({
   required BuildContext context,
   required final Color selectedColor,
-  required final ActerIcons selectedIcon,
-  final Function(Color, ActerIcons)? onIconSelection,
+  required final ActerIcon selectedIcon,
+  final Function(Color, ActerIcon)? onIconSelection,
 }) {
   showModalBottomSheet(
     showDragHandle: true,
@@ -28,8 +28,8 @@ void showActerIconPicker({
 
 class ActerIconPicker extends StatefulWidget {
   final Color selectedColor;
-  final ActerIcons selectedIcon;
-  final Function(Color, ActerIcons)? onIconSelection;
+  final ActerIcon selectedIcon;
+  final Function(Color, ActerIcon)? onIconSelection;
 
   const ActerIconPicker({
     super.key,
@@ -44,7 +44,7 @@ class ActerIconPicker extends StatefulWidget {
 
 class _ActerIconPickerState extends State<ActerIconPicker> {
   final ValueNotifier<Color> selectedColor = ValueNotifier(Colors.blueGrey);
-  final ValueNotifier<ActerIcons> selectedIcon = ValueNotifier(ActerIcons.list);
+  final ValueNotifier<ActerIcon> selectedIcon = ValueNotifier(ActerIcon.list);
 
   @override
   void initState() {
@@ -84,7 +84,7 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
     return ValueListenableBuilder<Color>(
       valueListenable: selectedColor,
       builder: (context, color, child) {
-        return ValueListenableBuilder<ActerIcons>(
+        return ValueListenableBuilder<ActerIcon>(
           valueListenable: selectedIcon,
           builder: (context, acterIcon, child) {
             return Center(
@@ -152,7 +152,7 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
         Expanded(
           child: SingleChildScrollView(
             child: Wrap(
-              children: ActerIcons.values
+              children: ActerIcon.values
                   .map((acterIcon) => _buildIconBoxItem(acterIcon))
                   .toList(),
             ),
@@ -162,8 +162,8 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
     );
   }
 
-  Widget _buildIconBoxItem(ActerIcons acterIconItem) {
-    return ValueListenableBuilder<ActerIcons>(
+  Widget _buildIconBoxItem(ActerIcon acterIconItem) {
+    return ValueListenableBuilder<ActerIcon>(
       valueListenable: selectedIcon,
       builder: (context, acterIcon, child) {
         return InkWell(

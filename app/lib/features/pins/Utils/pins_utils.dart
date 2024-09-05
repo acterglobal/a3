@@ -96,7 +96,7 @@ Future<void> savePinIcon(
   WidgetRef ref,
   ActerPin pin,
   Color color,
-  ActerIcons acterIcon,
+  ActerIcon acterIcon,
 ) async {
   try {
     EasyLoading.show(status: L10n.of(context).updatingIcon);

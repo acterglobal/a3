@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-enum ActerIcons {
+enum ActerIcon {
   //LIST OF ACTER ICONS
   list(PhosphorIconsRegular.list),
   pin(PhosphorIconsRegular.pushPin),
@@ -146,17 +146,17 @@ enum ActerIcons {
   //..
 
   //ICON ACCESS METHODS
-  static ActerIcons? iconFor(String? name) =>
-      ActerIcons.values.asNameMap()[name];
+  static ActerIcon? iconFor(String? name) =>
+      ActerIcon.values.asNameMap()[name];
 
-  static ActerIcons iconForTask(String? name) =>
-      iconFor(name) ?? ActerIcons.list;
+  static ActerIcon iconForTask(String? name) =>
+      iconFor(name) ?? ActerIcon.list;
 
-  static ActerIcons iconForPin(String? name) =>
-      iconFor(name) ?? ActerIcons.pin;
+  static ActerIcon iconForPin(String? name) =>
+      iconFor(name) ?? ActerIcon.pin;
 
   //ENUM DECLARATION
   final IconData data;
 
-  const ActerIcons(this.data);
+  const ActerIcon(this.data);
 }

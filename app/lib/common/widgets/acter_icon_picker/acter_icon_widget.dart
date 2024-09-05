@@ -4,15 +4,15 @@ import 'package:flutter/material.dart';
 
 class ActerIconWidget extends StatefulWidget {
   final double? iconSize;
-  final Color? defaultColor;
-  final ActerIcons? defaultIcon;
-  final Function(Color, ActerIcons)? onIconSelection;
+  final Color? color;
+  final ActerIcon? icon;
+  final Function(Color, ActerIcon)? onIconSelection;
 
   const ActerIconWidget({
     super.key,
     this.iconSize,
-    this.defaultColor,
-    this.defaultIcon,
+    this.color,
+    this.icon,
     this.onIconSelection,
   });
 
@@ -22,15 +22,15 @@ class ActerIconWidget extends StatefulWidget {
 
 class _ActerIconWidgetState extends State<ActerIconWidget> {
   final ValueNotifier<Color> color = ValueNotifier(Colors.blueGrey);
-  final ValueNotifier<ActerIcons> icon = ValueNotifier(ActerIcons.list);
+  final ValueNotifier<ActerIcon> icon = ValueNotifier(ActerIcon.list);
 
   @override
   Widget build(BuildContext context) {
-    if (widget.defaultColor != null) {
-      color.value = widget.defaultColor!;
+    if (widget.color != null) {
+      color.value = widget.color!;
     }
-    if (widget.defaultIcon != null) {
-      icon.value = widget.defaultIcon!;
+    if (widget.icon != null) {
+      icon.value = widget.icon!;
     }
     return InkWell(
       borderRadius: BorderRadius.circular(100),
@@ -56,7 +56,7 @@ class _ActerIconWidgetState extends State<ActerIconWidget> {
     return ValueListenableBuilder<Color>(
       valueListenable: color,
       builder: (context, colorData, child) {
-        return ValueListenableBuilder<ActerIcons>(
+        return ValueListenableBuilder<ActerIcon>(
           valueListenable: icon,
           builder: (context, acterIcon, child) {
             return Container(

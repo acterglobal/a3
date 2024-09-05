@@ -38,11 +38,11 @@ class TaskListItemCard extends ConsumerWidget {
           initiallyExpanded: initiallyExpanded,
           leading: ActerIconWidget(
             iconSize: 25,
-            defaultColor: convertColor(
+            color: convertColor(
               taskList.display()?.color(),
               Theme.of(context).unselectedWidgetColor,
             ),
-            defaultIcon: ActerIcons.iconForTask(taskList.display()?.iconStr()),
+            icon: ActerIcon.iconForTask(taskList.display()?.iconStr()),
           ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),

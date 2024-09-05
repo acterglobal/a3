@@ -234,11 +234,11 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
             children: [
               ActerIconWidget(
                 iconSize: 30,
-                defaultColor: convertColor(
+                color: convertColor(
                   pin.display()?.color(),
                   Theme.of(context).unselectedWidgetColor,
                 ),
-                defaultIcon: ActerIcons.iconForPin(
+                icon: ActerIcon.iconForPin(
                   pin.display()?.iconStr(),
                 ),
                 onIconSelection: canPost

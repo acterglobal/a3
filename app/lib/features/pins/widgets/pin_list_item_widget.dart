@@ -48,11 +48,11 @@ class PinListItemWidget extends ConsumerWidget {
         ),
         leading: ActerIconWidget(
           iconSize: 25,
-          defaultColor: convertColor(
+          color: convertColor(
             pin.display()?.color(),
             Theme.of(context).unselectedWidgetColor,
           ),
-          defaultIcon: ActerIcons.iconForPin(pin.display()?.iconStr()),
+          icon: ActerIcon.iconForPin(pin.display()?.iconStr()),
         ),
         title: Text(pin.title(), overflow: TextOverflow.ellipsis),
         subtitle: showSpace

@@ -61,11 +61,11 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
             children: [
               ActerIconWidget(
                 iconSize: 20,
-                defaultColor: convertColor(
+                color: convertColor(
                   tasklist.display()?.color(),
                   Theme.of(context).unselectedWidgetColor,
                 ),
-                defaultIcon: ActerIcons.iconForTask(
+                icon: ActerIcon.iconForTask(
                   tasklist.display()?.iconStr(),
                 ),
                 onIconSelection: canPost

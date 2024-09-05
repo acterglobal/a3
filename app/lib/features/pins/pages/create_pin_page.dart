@@ -52,7 +52,7 @@ class CreatePinPage extends ConsumerStatefulWidget {
 class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
-  ActerIcons pinIcon = ActerIcons.pin;
+  ActerIcon pinIcon = ActerIcon.pin;
   Color pinIconColor = Colors.blueGrey;
 
   @override
@@ -100,8 +100,8 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
                     children: <Widget>[
                       Center(
                         child: ActerIconWidget(
-                          defaultColor: pinIconColor,
-                          defaultIcon: pinIcon,
+                          color: pinIconColor,
+                          icon: pinIcon,
                           onIconSelection: (pinIconColor, pinIcon) {
                             this.pinIcon = pinIcon;
                             this.pinIconColor = pinIconColor;

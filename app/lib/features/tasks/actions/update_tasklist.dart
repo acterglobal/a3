@@ -15,7 +15,7 @@ Future<void> updateTaskListIcon(
     WidgetRef ref,
     TaskList taskList,
     Color color,
-    ActerIcons acterIcon,
+    ActerIcon acterIcon,
 ) async {
   EasyLoading.show(status: L10n.of(context).updatingIcon);
 

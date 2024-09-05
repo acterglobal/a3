@@ -51,7 +51,7 @@ class _CreateUpdateTaskListConsumerState
   final TextEditingController _titleController = TextEditingController();
   final ValueNotifier<bool> isShowDescription = ValueNotifier(false);
   EditorState textEditorState = EditorState.blank();
-  ActerIcons taskListIcon = ActerIcons.list;
+  ActerIcon taskListIcon = ActerIcon.list;
   Color taskListIconColor = Colors.blueGrey;
 
   @override
@@ -92,8 +92,8 @@ class _CreateUpdateTaskListConsumerState
               const SizedBox(height: 40),
               Center(
                 child: ActerIconWidget(
-                  defaultColor: taskListIconColor,
-                  defaultIcon: taskListIcon,
+                  color: taskListIconColor,
+                  icon: taskListIcon,
                   onIconSelection: (taskListIconColor, taskListIcon) {
                     this.taskListIconColor = taskListIconColor;
                     this.taskListIcon = taskListIcon;
