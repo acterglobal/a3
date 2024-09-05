@@ -42,7 +42,7 @@ Because the data is store specific, the files stored will also be specific to th
 
 ## Compatibility
 
-The test suite is run against using `matrix-sdk-sqlite` `SqliteStore`. Though there is no reason to believe it shouldn't work with any store implementing the `StateStore`-interface, this is the only one it has been tested with successfully.
+The test suite is run against using `matrix-sdk-sqlite` `SqliteStore`. Though there is no reason to believe it shouldn’t work with any store implementing the `StateStore`-interface, this is the only one it has been tested with successfully.
 
 This is part of [Acter](https://acter.global), which we are providing regular releases of for iOS, Android and Linux, MacOS & Windows, supporting at least the latest stable release. This crate is included in that and thus constantly tested for these environments.
 

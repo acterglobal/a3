@@ -23639,6 +23639,52 @@ class Api {
           _RoomPowerLevelsTaskListsKeyReturn Function(
             int,
           )>();
+  late final _simpleOnOffSettingActivePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.IntPtr,
+          )>>("__SimpleOnOffSetting_active");
+
+  late final _simpleOnOffSettingActive =
+      _simpleOnOffSettingActivePtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _simpleOnOffSettingBuilderActivePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.Uint8,
+          )>>("__SimpleOnOffSettingBuilder_active");
+
+  late final _simpleOnOffSettingBuilderActive =
+      _simpleOnOffSettingBuilderActivePtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
+  late final _simpleOnOffSettingBuilderBuildPtr = _lookup<
+      ffi.NativeFunction<
+          _SimpleOnOffSettingBuilderBuildReturn Function(
+            ffi.IntPtr,
+          )>>("__SimpleOnOffSettingBuilder_build");
+
+  late final _simpleOnOffSettingBuilderBuild =
+      _simpleOnOffSettingBuilderBuildPtr.asFunction<
+          _SimpleOnOffSettingBuilderBuildReturn Function(
+            int,
+          )>();
+  late final _simpleSettingWithTurnOffActivePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.IntPtr,
+          )>>("__SimpleSettingWithTurnOff_active");
+
+  late final _simpleSettingWithTurnOffActive =
+      _simpleSettingWithTurnOffActivePtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _simpleSettingWithTurnOffBuilderActivePtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -23661,30 +23707,6 @@ class Api {
   late final _simpleSettingWithTurnOffBuilderBuild =
       _simpleSettingWithTurnOffBuilderBuildPtr.asFunction<
           _SimpleSettingWithTurnOffBuilderBuildReturn Function(
-            int,
-          )>();
-  late final _tasksSettingsBuilderActivePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.IntPtr,
-            ffi.Uint8,
-          )>>("__TasksSettingsBuilder_active");
-
-  late final _tasksSettingsBuilderActive =
-      _tasksSettingsBuilderActivePtr.asFunction<
-          void Function(
-            int,
-            int,
-          )>();
-  late final _tasksSettingsBuilderBuildPtr = _lookup<
-      ffi.NativeFunction<
-          _TasksSettingsBuilderBuildReturn Function(
-            ffi.IntPtr,
-          )>>("__TasksSettingsBuilder_build");
-
-  late final _tasksSettingsBuilderBuild =
-      _tasksSettingsBuilderBuildPtr.asFunction<
-          _TasksSettingsBuilderBuildReturn Function(
             int,
           )>();
   late final _newsSettingsActivePtr = _lookup<
@@ -39514,7 +39536,7 @@ class RsvpManager {
     return tmp2;
   }
 
-  /// get Yes/Maybe/No or None for the user's own status
+  /// get Yes/Maybe/No or None for the user’s own status
   Future<OptionRsvpStatus> respondedByMe() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -44041,7 +44063,7 @@ class Convo {
 
   /// redact an event from this room
   /// reason - The reason for the event being reported (optional).
-  /// it's the callers job to ensure the person has the privileges to
+  /// it’s the callers job to ensure the person has the privileges to
   /// redact that content.
   Future<EventId> redactContent(
     String eventId,
@@ -44371,7 +44393,7 @@ class Comment {
     return tmp2;
   }
 
-  /// what is the comment's content
+  /// what is the comment’s content
   MsgContent msgContent() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -48498,11 +48520,102 @@ class RoomPowerLevels {
   }
 }
 
+class SimpleOnOffSetting {
+  final Api _api;
+  final _Box _box;
+
+  SimpleOnOffSetting._(this._api, this._box);
+
+  bool active() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._simpleOnOffSettingActive(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class SimpleOnOffSettingBuilder {
+  final Api _api;
+  final _Box _box;
+
+  SimpleOnOffSettingBuilder._(this._api, this._box);
+
+  void active(
+    bool active,
+  ) {
+    final tmp1 = active;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    _api._simpleOnOffSettingBuilderActive(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  SimpleOnOffSetting build() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._simpleOnOffSettingBuilderBuild(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 =
+          utf8.decode(tmp4_0.asTypedList(tmp5), allowMalformed: true);
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_SimpleOnOffSetting");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = SimpleOnOffSetting._(_api, tmp7_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 class SimpleSettingWithTurnOff {
   final Api _api;
   final _Box _box;
 
   SimpleSettingWithTurnOff._(this._api, this._box);
+
+  bool active() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._simpleSettingWithTurnOffActive(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
@@ -48567,63 +48680,6 @@ class SimpleSettingWithTurnOffBuilder {
   }
 }
 
-class TasksSettingsBuilder {
-  final Api _api;
-  final _Box _box;
-
-  TasksSettingsBuilder._(this._api, this._box);
-
-  void active(
-    bool active,
-  ) {
-    final tmp1 = active;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    tmp0 = _box.borrow();
-    tmp2 = tmp1 ? 1 : 0;
-    _api._tasksSettingsBuilderActive(
-      tmp0,
-      tmp2,
-    );
-    return;
-  }
-
-  TasksSettings build() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._tasksSettingsBuilderBuild(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    final tmp7 = tmp1.arg4;
-    if (tmp3 == 0) {
-      debugAllocation("handle error", tmp4, tmp5);
-      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      final tmp3_0 =
-          utf8.decode(tmp4_0.asTypedList(tmp5), allowMalformed: true);
-      if (tmp5 > 0) {
-        final ffi.Pointer<ffi.Void> tmp4_0;
-        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-        _api.__deallocate(tmp4_0, tmp6, 1);
-      }
-      throw tmp3_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_TasksSettings");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp2 = TasksSettings._(_api, tmp7_1);
-    return tmp2;
-  }
-
-  /// Manually drops the object and unregisters the FinalizableHandle.
-  void drop() {
-    _box.drop();
-  }
-}
-
 class NewsSettings {
   final Api _api;
   final _Box _box;
@@ -48679,7 +48735,7 @@ class TasksSettings {
     return tmp2;
   }
 
-  TasksSettingsBuilder updater() {
+  SimpleOnOffSettingBuilder updater() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._tasksSettingsUpdater(
@@ -48687,9 +48743,9 @@ class TasksSettings {
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TasksSettingsBuilder");
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_SimpleOnOffSettingBuilder");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = TasksSettingsBuilder._(_api, tmp3_1);
+    final tmp2 = SimpleOnOffSettingBuilder._(_api, tmp3_1);
     return tmp2;
   }
 
@@ -48933,7 +48989,7 @@ class ActerAppSettingsBuilder {
   }
 
   void tasks(
-    TasksSettings? tasks,
+    SimpleOnOffSetting? tasks,
   ) {
     final tmp1 = tasks;
     var tmp0 = 0;
@@ -50584,7 +50640,7 @@ class Space {
 
   /// redact an event from this room
   /// reason - The reason for the event being reported (optional).
-  /// it's the callers job to ensure the person has the privileges to
+  /// it’s the callers job to ensure the person has the privileges to
   /// redact that content.
   Future<EventId> redactContent(
     String eventId,
@@ -53545,7 +53601,7 @@ class CreateSpaceSettingsBuilder {
     return;
   }
 
-  /// set the space's visibility to either Public or Private
+  /// set the space’s visibility to either Public or Private
   void setVisibility(
     String value,
   ) {
@@ -57382,7 +57438,7 @@ class VerificationEvent {
     return tmp2;
   }
 
-  /// Alice says to Bob that SAS verification doesn't match and vice versa
+  /// Alice says to Bob that SAS verification doesn’t match and vice versa
   Future<bool> mismatchSasVerification() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -60173,7 +60229,7 @@ class _RoomPowerLevelsTaskListsKeyReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _SimpleSettingWithTurnOffBuilderBuildReturn extends ffi.Struct {
+class _SimpleOnOffSettingBuilderBuildReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
@@ -60186,7 +60242,7 @@ class _SimpleSettingWithTurnOffBuilderBuildReturn extends ffi.Struct {
   external int arg4;
 }
 
-class _TasksSettingsBuilderBuildReturn extends ffi.Struct {
+class _SimpleSettingWithTurnOffBuilderBuildReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()

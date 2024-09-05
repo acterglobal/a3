@@ -59,12 +59,12 @@ class FileMessageBuilder extends ConsumerWidget {
   Widget getFileIcon(BuildContext context) {
     final extension = message.name.split('.').last;
     final iconData = switch (extension) {
-      'png' || 'jpg' || 'jpeg' => Atlas.file_image,
-      'pdf' => Icons.picture_as_pdf,
-      'doc' => Atlas.file,
-      'mp4' => Atlas.file_video,
-      'mp3' => Atlas.music_file,
-      'rtf' || 'txt' => Atlas.lines_file,
+      '.png' || '.jpg' || '.jpeg' => Atlas.file_image,
+      '.pdf' => Icons.picture_as_pdf,
+      '.doc' => Atlas.file,
+      '.mp4' => Atlas.file_video,
+      '.mp3' => Atlas.music_file,
+      '.rtf' || '.txt' => Atlas.lines_file,
       _ => Atlas.lines_file,
     };
     return Icon(iconData, size: 28);

@@ -15,6 +15,9 @@ impl Default for SimpleSettingWithTurnOff {
 }
 
 impl SimpleSettingWithTurnOff {
+    pub fn off() -> Option<Self> {
+        Some(SimpleSettingWithTurnOff { active: false })
+    }
     pub fn active(&self) -> bool {
         self.active
     }
@@ -25,27 +28,39 @@ impl SimpleSettingWithTurnOff {
     }
 }
 
-// TasksSettings
 #[derive(Clone, Debug, Deserialize, Serialize, Builder, Default)]
-pub struct TasksSettings {
-    // Tasks are off by default until the lab flag is removed
+pub struct SimpleOnOffSetting {
+    // default: off
     active: bool,
 }
-impl TasksSettings {
+impl SimpleOnOffSetting {
+    pub fn off() -> Option<Self> {
+        // no need, we are off by default
+        None
+    }
+
     pub fn active(&self) -> bool {
         self.active
     }
-    pub fn updater(&self) -> TasksSettingsBuilder {
-        TasksSettingsBuilder::default()
+    pub fn updater(&self) -> SimpleOnOffSettingBuilder {
+        SimpleOnOffSettingBuilder::default()
             .active(self.active)
             .to_owned()
     }
 }
 
+pub type TasksSettings = SimpleOnOffSetting;
 pub type NewsSettings = SimpleSettingWithTurnOff;
 pub type PinsSettings = SimpleSettingWithTurnOff;
 pub type EventsSettings = SimpleSettingWithTurnOff;
 
+/// Backwards compatibility note:
+///
+/// In an earlier version, we agreed that if pins, news and events hadn't changed,
+/// we'd assume they are activated. Even switching the default today means, we'd
+/// change that behavior for all where at least _some_ had been changed. Thus, we
+/// are keeping that behavior but _recommend_ using `off` to explicitly set
+/// the right behavior up for all future cases.
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder, Default)]
 #[ruma_event(type = "global.acter.app_settings", kind = State, state_key_type = EmptyStateKey)]
 pub struct ActerAppSettingsContent {
@@ -67,6 +82,15 @@ impl ActerAppSettingsContent {
     }
     pub fn tasks(&self) -> TasksSettings {
         self.tasks.clone().unwrap_or_default()
+    }
+
+    pub fn off() -> ActerAppSettingsContent {
+        ActerAppSettingsContent {
+            news: NewsSettings::off(),
+            pins: PinsSettings::off(),
+            events: EventsSettings::off(),
+            tasks: TasksSettings::off(),
+        }
     }
 
     pub fn updater(&self) -> ActerAppSettingsContentBuilder {

@@ -441,10 +441,10 @@ packages:
     dependency: "direct main"
     description:
       name: device_calendar
-      sha256: "991b55bb9e0a0850ec9367af8227fe25185210da4f5fa7bd15db4cc813b1e2e5"
+      sha256: "23e3746e7e99dcbf2695f21a7270e97c374e99dcc2ee909d061688b1df88854b"
       url: "https://pub.dev"
     source: hosted
-    version: "4.3.2"
+    version: "4.3.3-20240801"
   device_info_plus:
     dependency: "direct main"
     description:

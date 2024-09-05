@@ -44,7 +44,8 @@ use ruma_events::{
     space::{child::HierarchySpaceChildEvent, parent::SpaceParentEventContent},
     MessageLikeEventType, StateEvent, StateEventType, StaticEventContent,
 };
-use std::{io::Write, ops::Deref, path::PathBuf};
+use std::{fs::exists, io::Write, ops::Deref, path::PathBuf};
+use tokio::fs;
 use tokio_stream::{wrappers::BroadcastStream, StreamExt};
 use tracing::{info, warn};
 
@@ -269,7 +270,7 @@ impl Member {
                 if self.acter_app_settings.is_some() {
                     PermissionTest::StateEvent(ActerAppSettingsContent::TYPE.into())
                 } else {
-                    // not an acter space, you can't set setting here
+                    // not an acter space, you can’t set setting here
                     return false;
                 }
             }
@@ -654,7 +655,7 @@ impl Room {
 
     pub async fn add_parent_room(&self, room_id: String, canonical: bool) -> Result<String> {
         if !self.is_joined() {
-            bail!("Unable to update a room you aren't part of");
+            bail!("Unable to update a room you aren’t part of");
         }
         let room_id = RoomId::parse(room_id)?;
         if !self
@@ -695,7 +696,7 @@ impl Room {
         reason: Option<String>,
     ) -> Result<bool> {
         if !self.is_joined() {
-            bail!("Unable to update a room you aren't part of");
+            bail!("Unable to update a room you aren’t part of");
         }
         let room_id = RoomId::parse(room_id)?;
         if !self
@@ -790,7 +791,7 @@ impl Room {
                 }
 
                 let guess = mime_guess::from_path(path.clone());
-                let content_type = guess.first().context("don't know mime type")?;
+                let content_type = guess.first().context("don’t know mime type")?;
                 let buf = std::fs::read(path)?;
                 let response = client.media().upload(&content_type, buf).await?;
 
@@ -1124,7 +1125,7 @@ impl Room {
                 let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
                 let original = event_content
                     .as_original()
-                    .context("Couldn't get original msg")?;
+                    .context("Couldn’t get original msg")?;
                 let (source, format) = match thumb_size {
                     Some(thumb_size) => {
                         let source = match &original.content.msgtype {
@@ -1478,7 +1479,7 @@ impl Room {
                     warn!("Content info or thumbnail source not found");
                     return Ok(OptionString::new(None));
                 };
-                let data = client.media().get_media_content(&request, false).await?;
+                let data = client.media().get_media_content(&request, true).await?;
                 // infer file extension via parsing of file binary
                 if filename.is_none() {
                     if let Some(kind) = infer::get(&data) {
@@ -1529,7 +1530,7 @@ impl Room {
                 let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
                 let original = event_content
                     .as_original()
-                    .context("Couldn't get original msg")?;
+                    .context("Couldn’t get original msg")?;
                 if is_thumb {
                     let available = matches!(
                         &original.content.msgtype,
@@ -1563,12 +1564,18 @@ impl Room {
                 } else {
                     [room.room_id().as_str().as_bytes(), event_id.as_bytes()].concat()
                 };
-                let path = client.store().get_custom_value(&key).await?;
-                let text = match path {
-                    Some(path) => Some(std::str::from_utf8(&path)?.to_string()),
-                    None => None,
+                let Some(path_vec) = client.store().get_custom_value(&key).await? else {
+                    return Ok(OptionString::new(None));
                 };
-                Ok(OptionString::new(text))
+                let path_str = std::str::from_utf8(&path_vec)?.to_string();
+                if matches!(exists(&path_str), Ok(true)) {
+                    return Ok(OptionString::new(Some(path_str)));
+                }
+
+                // file wasn’t existing, clear cache.
+
+                client.store().remove_custom_value(&key).await?;
+                Ok(OptionString::new(None))
             })
             .await?
     }
@@ -1720,7 +1727,7 @@ impl Room {
     }
 
     /// sent a redaction message for this content
-    /// it's the callers job to ensure the person has the privileges to
+    /// it’s the callers job to ensure the person has the privileges to
     /// redact that content.
     pub async fn redact_content(
         &self,

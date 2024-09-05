@@ -144,7 +144,7 @@ impl ActerModel for Rsvp {
         let manager = {
             let model = store.get(&belongs_to).await?;
             if !model.capabilities().contains(&Capability::Commentable) {
-                error!(?model, rsvp = ?self, "doesn't support entries. can't apply");
+                error!(?model, rsvp = ?self, "doesn’t support entries. can’t apply");
                 None
             } else {
                 let mut manager =
@@ -168,7 +168,7 @@ impl ActerModel for Rsvp {
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
-        // the higher ups don't need to be bothered by this
+        // the higher ups don’t need to be bothered by this
         None
     }
 }

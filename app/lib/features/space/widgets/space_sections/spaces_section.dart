@@ -91,6 +91,7 @@ class SpacesSection extends ConsumerWidget {
           key: Key('subspace-list-item-$roomId'),
           roomId: roomId,
           showParents: false,
+          showVisibilityMark: true,
         );
       },
     );

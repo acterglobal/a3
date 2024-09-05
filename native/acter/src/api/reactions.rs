@@ -152,7 +152,7 @@ impl ReactionManager {
         let my_id = self.client.user_id()?;
         let stats = self.inner.stats();
         let Some(event_id) = stats.user_likes.last().cloned() else {
-            bail!("User hasn't liked")
+            bail!("User hasn’t liked")
         };
         let txn_id = txn_id.map(OwnedTransactionId::from);
 
@@ -205,7 +205,7 @@ impl ReactionManager {
                         return Ok(response.event_id);
                     }
                 }
-                bail!("User hasn't reacted")
+                bail!("User hasn’t reacted")
             })
             .await?
     }

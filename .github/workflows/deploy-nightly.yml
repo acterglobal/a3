@@ -105,10 +105,10 @@ jobs:
       - tags
       - build
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: Android
-      # - uses: actions/download-artifact@v3
+      # - uses: actions/download-artifact@v4
       #   with:
       #     name: Android-debug-symbols
       - name: Release Build to playstore
@@ -139,10 +139,10 @@ jobs:
       - changelog
       - build
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: iOS
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: Changelog
 
@@ -194,11 +194,11 @@ jobs:
       - changelog
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: MacOS
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: Changelog
 
@@ -241,25 +241,39 @@ jobs:
 ##     ## ##     ##  ######  ##     ##    ##     ##  #######  ##     ## 
 
 
-  publish_aur:
+  publish_aur_nightly:
     environment: release
     needs:
       - tags
       - build
-    name: Publish AUR
+    name: Publish AUR nightly
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: Linux x64
-      - name: Patch PKGBUILD file 
+      - name: Patch PKGBUILD file
         run: |
-          cp app/linux/packaging/aur/PKGBUILD-nightly PKGBUILD
-          sed -i "s/%{{TAG}}%/${{ needs.tags.outputs.tag }}/g" PKGBUILD
-          sed -i "s/%{{VERSION}}%/${{ needs.tags.outputs.version }}/g" PKGBUILD
-          sed -i "s/%{{PKGREL}}%/1/g" PKGBUILD
-          sed -i "s/%{{LINUX_MD5}}%/`md5sum acter-nightly-linux-x64-${{ needs.tags.outputs.version }}.tar.bz2  | awk '{print $1}'`/g" PKGBUILD
+          cp app/linux/packaging/aur/PKGBUILD PKGBUILD
+
+          VERSION=${{ needs.tags.outputs.version }}
+          DOWNLOAD_PATH='nightly-${{ needs.tags.outputs.tag }}\/acter-nightly-linux-x64-${{ needs.tags.outputs.version }}.tar.bz2'
+          MD5SUM=`md5sum acter-nightly-linux-x64-$VERSION.tar.bz2  | awk '{print $1}'`
+
+          echo "Version: $VERSION"
+          echo "Download Path: $DOWNLOAD_PATH"
+          echo "MD5Sum: $MD5SUM"
+
+          sed -i "s/%{{PKGNAME}}%/acter-nightly-bin/g" PKGBUILD
+          sed -i "s/%{{PKGNAME_CONFLICTS}}%/acter-bin/g" PKGBUILD
+
+          sed -i "s/%{{VERSION}}%/$VERSION/g" PKGBUILD
+          sed -i "s/%{{DOWNLOAD_PATH}}%/$DOWNLOAD_PATH/g" PKGBUILD
+          sed -i "s/%{{LINUX_MD5}}%/$MD5SUM/g" PKGBUILD
+
+          echo " --- Final PKGBUILD File "
+          cat PKGBUILD
       - uses: KSXGitHub/github-actions-deploy-aur@v2.7.2
         name: Publish to AUR
         with:
@@ -269,7 +283,6 @@ jobs:
           commit_email: sari@acter.global
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
           commit_message: Updated to ${{ needs.tags.outputs.tag }}
-
 
  ######   #### ######## ##     ## ##     ## ########     ########  ##     ## ########  ##       ####  ######  ##     ## 
 ##    ##   ##     ##    ##     ## ##     ## ##     ##    ##     ## ##     ## ##     ## ##        ##  ##    ## ##     ## 
@@ -293,7 +306,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: Changelog
 
@@ -324,18 +337,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           release_id: ${{ steps.create_release.outputs.id }}
-
-      - name: Send message to nightly channel
-        id: matrix-chat-message
-        uses: fadenb/matrix-chat-message@v0.0.6
-        with:
-          homeserver: 'matrix.acter.global'
-          token: ${{ secrets.NIGHTLY_MATRIX_TOKEN }}
-          channel:  '!PsBFWhNhPEAfCBdApa:acter.global'
-          message: |
-            ## Nightly ${{ needs.tags.outputs.tag }} released
-
-            Latest nightly builds have been built and [can be downloaded from here](https://dev.acter.global/nightly/${{ needs.tags.outputs.tag }}/).
-            Direct install links:
-             - 🤖 [Android devices](https://github.com/acterglobal/a3/releases/download/nightly-${{ needs.tags.outputs.tag }}/acter-nightly-android-arm64-${{ needs.tags.outputs.tag }}.apk)
-             - 🍎 [iOS devices](itms-services://?action=download-manifest&amp;url=https://github.com/acterglobal/a3/releases/download/nightly-${{ needs.tags.outputs.tag }}/ios-manifest.plist) (for ad-hoc registered devices only)

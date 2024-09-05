@@ -152,7 +152,7 @@ impl RoomEventItem {
                 // me.msg_content(Some(MsgContent::from(s.content())));
             }
             TimelineItemContent::UnableToDecrypt(encrypted_msg) => {
-                info!("Edit event applies to event that couldn't be decrypted");
+                info!("Edit event applies to event that couldn’t be decrypted");
                 me.event_type("m.room.encrypted".to_string());
             }
             TimelineItemContent::MembershipChange(m) => {
@@ -262,7 +262,7 @@ impl RoomEventItem {
                 me.event_type(s.content().event_type().to_string());
             }
             TimelineItemContent::FailedToParseMessageLike { event_type, error } => {
-                info!("Edit event applies to message that couldn't be parsed");
+                info!("Edit event applies to message that couldn’t be parsed");
                 me.event_type(event_type.to_string());
             }
             TimelineItemContent::FailedToParseState {
@@ -270,7 +270,7 @@ impl RoomEventItem {
                 state_key,
                 error,
             } => {
-                info!("Edit event applies to state that couldn't be parsed");
+                info!("Edit event applies to state that couldn’t be parsed");
                 me.event_type(event_type.to_string());
             }
             TimelineItemContent::Poll(s) => {
@@ -288,7 +288,7 @@ impl RoomEventItem {
                 me.event_type("m.call_notify".to_owned());
             }
         };
-        me.build().expect("Building Room Event doesn't fail")
+        me.build().expect("Building Room Event doesn’t fail")
     }
 
     #[cfg(feature = "testing")]
@@ -336,7 +336,7 @@ impl RoomEventItem {
     }
 
     pub fn read_users(&self) -> Vec<String> {
-        // don't use cloned().
+        // don’t use cloned().
         // create string vector to deallocate string item using toDartString().
         // apply this way for only function that string vector is calculated indirectly.
         let mut users = vec![];
@@ -355,7 +355,7 @@ impl RoomEventItem {
     }
 
     pub fn reaction_keys(&self) -> Vec<String> {
-        // don't use cloned().
+        // don’t use cloned().
         // create string vector to deallocate string item using toDartString().
         // apply this way for only function that string vector is calculated indirectly.
         let mut keys = vec![];
@@ -459,7 +459,7 @@ impl RoomMessage {
         self.event_item
             .as_ref()
             .map(|e| e.event_type())
-            .unwrap_or_else(|| "virtual".to_owned()) // if we can't find it, it is because we are a virtual event
+            .unwrap_or_else(|| "virtual".to_owned()) // if we can’t find it, it is because we are a virtual event
     }
 
     pub(crate) fn origin_server_ts(&self) -> Option<u64> {

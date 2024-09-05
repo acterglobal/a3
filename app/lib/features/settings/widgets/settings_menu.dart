@@ -3,6 +3,7 @@ import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/toolkit/menu_item_widget.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/config/env.g.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/router/providers/router_providers.dart';
@@ -11,8 +12,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 const defaultSettingsMenuKey = Key('settings-menu');
+final helpUrl = Uri.tryParse(Env.helpCenterUrl);
 
 class SettingsMenu extends ConsumerWidget {
   static Key deactivateAccount = const Key('settings-auth-deactivate-account');
@@ -261,6 +265,14 @@ class SettingsMenu extends ConsumerWidget {
                   ? context.pushReplacementNamed(Routes.info.name)
                   : context.pushNamed(Routes.info.name),
             ),
+            if (helpUrl != null)
+              MenuItemWidget(
+                iconData: PhosphorIcons.question(),
+                title: L10n.of(context).helpCenterTitle,
+                subTitle: L10n.of(context).helpCenterDesc,
+                trailing: Icon(PhosphorIcons.arrowSquareOut()),
+                onTap: () => launchUrl(helpUrl!),
+              ),
           ],
         ),
         _settingMenuSection(

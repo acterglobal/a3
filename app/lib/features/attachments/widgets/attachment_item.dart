@@ -11,6 +11,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Attachment;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path/path.dart' as p;
 
 // Attachment item UI
 class AttachmentItem extends ConsumerWidget {
@@ -104,9 +105,8 @@ class AttachmentItem extends ConsumerWidget {
   Widget title(BuildContext context, AttachmentType attachmentType) {
     final msgContent = attachment.msgContent();
     final fileName = msgContent.body();
-    final fileNameSplit = fileName.split('.');
     final title = attachment.name() ?? fileName;
-    final fileExtension = fileNameSplit.last;
+    final fileExtension = p.extension(fileName);
     String fileSize = getHumanReadableFileSize(msgContent.size() ?? 0);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

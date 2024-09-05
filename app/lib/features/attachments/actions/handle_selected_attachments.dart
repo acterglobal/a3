@@ -11,6 +11,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mime/mime.dart';
+import 'package:path/path.dart' as p;
 
 final _log = Logger('a3::attachments::actions::handle_selected');
 
@@ -31,10 +32,9 @@ Future<void> handleAttachmentSelected({
   final client = ref.read(alwaysClientProvider);
   List<AttachmentDraft> drafts = [];
   try {
-    for (var selected in attachments) {
-      final file = selected;
+    for (var file in attachments) {
       final mimeType = lookupMimeType(file.path);
-      String fileName = file.path.split('/').last;
+      String fileName = p.basename(file.path);
       if (mimeType == null) throw lang.failedToDetectMimeType;
       if (attachmentType == AttachmentType.camera ||
           attachmentType == AttachmentType.image) {

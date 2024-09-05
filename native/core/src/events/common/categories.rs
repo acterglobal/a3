@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 
 /// The possibly redacted form of [`CategoriesEventContent`].
 ///
-/// This type is used when it's not obvious whether the content is redacted or not.
+/// This type is used when it’s not obvious whether the content is redacted or not.
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[allow(clippy::exhaustive_structs)]
 pub struct PossiblyRedactedCategoriesStateEventContent();

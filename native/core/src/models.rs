@@ -252,7 +252,7 @@ impl ActerModel for RedactedActerModel {
     }
 
     fn transition(&mut self, model: &AnyActerModel) -> crate::Result<bool> {
-        // Transitions aren't possible anymore when the source has been redacted
+        // Transitions aren’t possible anymore when the source has been redacted
         // so we eat up the content and just log that we had to do that.
         info!(?self, ?model, "Transition on Redaction Swallowed");
         Ok(false)
@@ -295,7 +295,7 @@ impl EventMeta {
 pub async fn can_redact(room: &matrix_sdk::Room, sender_id: &UserId) -> crate::error::Result<bool> {
     let client = room.client();
     let Some(user_id) = client.user_id() else {
-        // not logged in means we can't redact
+        // not logged in means we can’t redact
         return Ok(false);
     };
     Ok(if sender_id == user_id {
@@ -772,7 +772,7 @@ mod tests {
                     ..
                 })
             ),
-            "Didn't receive expected error: {acter_ev_result:?}"
+            "Didn’t receive expected error: {acter_ev_result:?}"
         );
         // assert!(matches!(event, AnyCreation::TaskList(_)));
         Ok(())
@@ -842,7 +842,7 @@ mod tests {
                     ..
                 })
             ),
-            "Didn't receive expected error: {acter_ev_result:?}"
+            "Didn’t receive expected error: {acter_ev_result:?}"
         );
         // assert!(matches!(event, AnyCreation::TaskList(_)));
         Ok(())

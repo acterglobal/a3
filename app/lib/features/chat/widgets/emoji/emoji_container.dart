@@ -41,14 +41,9 @@ class _EmojiContainerState extends State<EmojiContainer>
 
   @override
   Widget build(BuildContext context) {
-    Map<String, dynamic> reactions = {};
-    List<String> keys = [];
-    final metadata = widget.message.metadata;
-    if (metadata == null || !metadata.containsKey('reactions')) {
-      return const SizedBox();
-    }
-    reactions = metadata['reactions'];
-    keys = reactions.keys.toList();
+    Map<String, dynamic>? reactions = widget.message.metadata?['reactions'];
+    if (reactions == null) return const SizedBox();
+    List<String> keys = reactions.keys.toList();
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
       color: Theme.of(context).colorScheme.surface,

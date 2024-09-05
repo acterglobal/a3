@@ -152,7 +152,7 @@ class _CloseRoomConfirmationState
             memberProvider((roomId: widget.roomId, userId: memberId)).future,
           );
           if (member.powerLevel() >= myPowerLevel) {
-            // we can't kick them if they are the same level or higher than ours.
+            // we can’t kick them if they are the same level or higher than ours.
             skipped += 1;
             continue;
           }

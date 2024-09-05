@@ -145,7 +145,7 @@ class SessionCard extends ConsumerWidget {
       client.userId().toString(),
       passwordController.text,
     );
-    ref.invalidate(allSessionsProvider); // DeviceUpdates doesn't cover logout
+    ref.invalidate(allSessionsProvider); // DeviceUpdates doesn’t cover logout
   }
 
   Future<void> onVerify(BuildContext context, WidgetRef ref) async {

@@ -188,7 +188,7 @@ impl ActerModel for Comment {
         for p in belongs_to {
             let parent = store.get(&p).await?;
             if !parent.capabilities().contains(&Capability::Commentable) {
-                error!(?parent, comment = ?self, "doesn't support comments. can't apply");
+                error!(?parent, comment = ?self, "doesn’t support comments. can’t apply");
                 continue;
             }
 

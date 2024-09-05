@@ -752,7 +752,7 @@ object RsvpManager {
     /// get rsvp entries
     fn rsvp_entries() -> Future<Result<Vec<Rsvp>>>;
 
-    /// get Yes/Maybe/No or None for the user's own status
+    /// get Yes/Maybe/No or None for the user’s own status
     fn responded_by_me() -> Future<Result<OptionRsvpStatus>>;
 
     /// get the count of Yes/Maybe/No
@@ -1382,7 +1382,7 @@ object Convo {
 
     /// redact an event from this room
     /// reason - The reason for the event being reported (optional).
-    /// it's the callers job to ensure the person has the privileges to
+    /// it’s the callers job to ensure the person has the privileges to
     /// redact that content.
     fn redact_content(event_id: string, reason: Option<string>) -> Future<Result<EventId>>;
 
@@ -1424,7 +1424,7 @@ object Comment {
     fn sender() -> UserId;
     /// When was this comment acknowledged by the server
     fn origin_server_ts() -> u64;
-    /// what is the comment's content
+    /// what is the comment’s content
     fn msg_content() -> MsgContent;
     /// create a draft builder to reply to this comment
     fn reply_builder() -> CommentDraft;
@@ -1972,8 +1972,18 @@ object RoomPowerLevels {
     fn task_lists_key() -> string;
 }
 
-object SimpleSettingWithTurnOff {
+object SimpleOnOffSetting {
+    fn active() -> bool;
+}
 
+object SimpleOnOffSettingBuilder {
+    fn active(active: bool);
+    fn build() -> Result<SimpleOnOffSetting>;
+}
+
+
+object SimpleSettingWithTurnOff {
+    fn active() -> bool;
 }
 
 object SimpleSettingWithTurnOffBuilder {
@@ -1982,10 +1992,6 @@ object SimpleSettingWithTurnOffBuilder {
 }
 
 
-object TasksSettingsBuilder {
-    fn active(active: bool);
-    fn build() -> Result<TasksSettings>;
-}
 object NewsSettings {
     fn active() -> bool;
     fn updater() -> SimpleSettingWithTurnOffBuilder;
@@ -1993,7 +1999,7 @@ object NewsSettings {
 
 object TasksSettings {
     fn active() -> bool;
-    fn updater() -> TasksSettingsBuilder;
+    fn updater() -> SimpleOnOffSettingBuilder;
 }
 
 object EventsSettings {
@@ -2018,7 +2024,7 @@ object ActerAppSettingsBuilder {
     fn news(news: Option<SimpleSettingWithTurnOff>);
     fn pins(pins: Option<SimpleSettingWithTurnOff>);
     fn events(events: Option<SimpleSettingWithTurnOff>);
-    fn tasks(tasks: Option<TasksSettings>);
+    fn tasks(tasks: Option<SimpleOnOffSetting>);
 }
 
 
@@ -2229,7 +2235,7 @@ object Space {
 
     /// redact an event from this room
     /// reason - The reason for the event being reported (optional).
-    /// it's the callers job to ensure the person has the privileges to
+    /// it’s the callers job to ensure the person has the privileges to
     /// redact that content.
     fn redact_content(event_id: string, reason: Option<string>) -> Future<Result<EventId>>;
 
@@ -2640,7 +2646,7 @@ object CreateSpaceSettingsBuilder {
     /// set the name of convo
     fn set_name(value: string);
 
-    /// set the space's visibility to either Public or Private
+    /// set the space’s visibility to either Public or Private
     fn set_visibility(value: string);
 
     /// append user id that will be invited to this space
@@ -3094,7 +3100,7 @@ object VerificationEvent {
     /// Alice says to Bob that SAS verification matches and vice versa
     fn confirm_sas_verification() -> Future<Result<bool>>;
 
-    /// Alice says to Bob that SAS verification doesn't match and vice versa
+    /// Alice says to Bob that SAS verification doesn’t match and vice versa
     fn mismatch_sas_verification() -> Future<Result<bool>>;
 }
 

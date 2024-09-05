@@ -7,12 +7,8 @@ import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/space/providers/suggested_provider.dart';
 import 'package:acter/features/space/widgets/skeletons/space_details_skeletons.dart';
 import 'package:acter/features/space/widgets/space_sections/about_section.dart';
-import 'package:acter/features/space/widgets/space_sections/chats_section.dart';
 import 'package:acter/features/space/widgets/space_sections/events_section.dart';
-import 'package:acter/features/space/widgets/space_sections/members_section.dart';
 import 'package:acter/features/space/widgets/space_sections/pins_section.dart';
-import 'package:acter/features/space/widgets/space_sections/space_actions_section.dart';
-import 'package:acter/features/space/widgets/space_sections/spaces_section.dart';
 import 'package:acter/features/space/widgets/space_sections/tasks_section.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/features/space/widgets/space_toolbar.dart';
@@ -134,7 +130,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
 
           //Space Details Tab Menu UI
           tabBuilder: (context, index, active) =>
-              spaceTabMenuUI(tabs[index], active),
+              spaceTabMenuUI(context, tabs[index], active),
 
           //Space Details Page UI
           itemBuilder: (context, index) => spacePageUI(tabs[index]),
@@ -215,35 +211,39 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
     );
   }
 
-  Widget spaceTabMenuUI(TabEntry tabItem, bool active) {
+  Widget spaceTabMenuUI(BuildContext context, TabEntry tabItem, bool active) {
     return Container(
+      key: Key(tabItem.name),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       margin: const EdgeInsets.only(left: 12, top: 12, bottom: 12),
       decoration: BoxDecoration(
         color: active ? Theme.of(context).colorScheme.primary : null,
         borderRadius: BorderRadius.circular(100),
       ),
-      child: Text(tabItem.label),
+      child: Text(itemLabel(context, tabItem)),
     );
   }
 
+  String itemLabel(BuildContext context, TabEntry tabItem) {
+    return switch (tabItem) {
+      TabEntry.overview => L10n.of(context).overview,
+      TabEntry.pins => L10n.of(context).pins,
+      TabEntry.tasks => L10n.of(context).tasks,
+      TabEntry.events => L10n.of(context).events,
+      TabEntry.chats => L10n.of(context).chats,
+      TabEntry.spaces => L10n.of(context).spaces,
+      TabEntry.members => L10n.of(context).members,
+      TabEntry.actions => '...',
+    };
+  }
+
   Widget spacePageUI(TabEntry tabItem) {
-    return switch (tabItem.key) {
+    return switch (tabItem) {
       TabEntry.overview => AboutSection(spaceId: widget.spaceId),
       TabEntry.pins => PinsSection(spaceId: widget.spaceId),
       TabEntry.tasks => TasksSection(spaceId: widget.spaceId),
       TabEntry.events => EventsSection(spaceId: widget.spaceId),
-      TabEntry.chatsKey => ChatsSection(spaceId: widget.spaceId),
-      TabEntry.spacesKey => SpacesSection(spaceId: widget.spaceId),
-      TabEntry.membersKey => MembersSection(spaceId: widget.spaceId),
-      TabEntry.actionsKey => SpaceActionsSection(spaceId: widget.spaceId),
       _ => const SizedBox.shrink(),
     };
-  }
-
-  Widget spaceTopicUI() {
-    return Card(
-      child: Container(),
-    );
   }
 }

@@ -105,26 +105,30 @@ String formatDate(CalendarEvent e) {
 String formatTime(CalendarEvent e) {
   final start = toDartDatetime(e.utcStart()).toLocal();
   final end = toDartDatetime(e.utcEnd()).toLocal();
-  return '${Jiffy.parseFromDateTime(start).jm} - ${Jiffy.parseFromDateTime(end).jm}';
+  return '${DateFormat.jm().format(start)} - ${DateFormat.jm().format(end)}';
 }
 
 String getMonthFromDate(UtcDateTime utcDateTime) {
   final localDateTime = toDartDatetime(utcDateTime).toLocal();
-  final month = DateFormat('MMM').format(localDateTime);
+  final month = DateFormat.MMM().format(localDateTime);
   return month;
 }
 
 String getDayFromDate(UtcDateTime utcDateTime) {
   final localDateTime = toDartDatetime(utcDateTime).toLocal();
-  final day = DateFormat('dd').format(localDateTime);
+  final day = DateFormat.d().format(localDateTime);
   return day;
 }
 
-String jiffyTime(int timeInterval) {
+String getTimeFromDate(BuildContext context, UtcDateTime utcDateTime) {
+  final localDateTime = toDartDatetime(utcDateTime).toLocal();
+  return DateFormat.jm().format(localDateTime);
+}
+
+String jiffyTime(BuildContext context, int timeInterval) {
   final jiffyTime = Jiffy.parseFromMillisecondsSinceEpoch(timeInterval);
   final now = Jiffy.now().startOf(Unit.day);
   if (now.isSame(jiffyTime, unit: Unit.day)) {
-    // (00:00 AM/PM)
     return jiffyTime.jm;
   } else {
     final yesterday = now.subtract(days: 1);
@@ -174,11 +178,11 @@ String getHumanReadableFileSize(int bytes) {
 
 String documentTypeFromFileExtension(String fileExtension) {
   return switch (fileExtension) {
-    'png' || 'jpg' || 'jpeg' => 'Image',
-    'mov' || 'mp4' => 'Video',
-    'mp3' || 'wav' => 'Audio',
-    'pdf' => 'PDF',
-    'txt' => 'Text File',
+    '.png' || '.jpg' || '.jpeg' => 'Image',
+    '.mov' || '.mp4' => 'Video',
+    '.mp3' || '.wav' => 'Audio',
+    '.pdf' => 'PDF',
+    '.txt' => 'Text File',
     _ => '',
   };
 }
