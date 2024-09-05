@@ -150,7 +150,7 @@ impl Room {
         power_level: Option<i32>,
     ) -> Result<bool> {
         if !self.is_joined() {
-            bail!("Unable to update a space you aren't part of");
+            bail!("Unable to update a space you aren’t part of");
         }
         let mut current_power_levels = self.power_levels_content().await?;
         let mut updated = false;
@@ -237,7 +237,7 @@ impl Room {
         }
 
         if !self.is_joined() {
-            bail!("Unable to update a space you aren't part of");
+            bail!("Unable to update a space you aren’t part of");
         }
         let room = self.room.clone();
 

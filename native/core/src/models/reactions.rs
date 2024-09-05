@@ -232,7 +232,7 @@ impl Reaction {
         let manager = {
             let model = store.get(&belongs_to).await?;
             if !model.capabilities().contains(&Capability::Reactable) {
-                error!(?model, reaction = ?self, "doesn't support entries. can't apply");
+                error!(?model, reaction = ?self, "doesn’t support entries. can’t apply");
                 None
             } else {
                 let mut manager =

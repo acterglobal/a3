@@ -25,7 +25,7 @@ impl HistoryOpts {
         let sync_state = client.start_sync();
 
         let mut is_synced = sync_state.first_synced_rx();
-        while is_synced.next().await != Some(true) {} // let's wait for it to have synced
+        while is_synced.next().await != Some(true) {} // let’s wait for it to have synced
         info!(" - First Sync finished - ");
 
         let room = client.room_by_id_typed(&self.room)?;

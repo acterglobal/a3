@@ -22,15 +22,15 @@ main = { type = "user", is-default = true, required = true, description = "The s
 
 [objects.main_space]
 type = "space"
-name = "{{ main.display_name }}'s main test space"
+name = "{{ main.display_name }}’s main test space"
 
 [objects.second_space]
 type = "space"
-name = "{{ main.display_name }}'s first test space"
+name = "{{ main.display_name }}’s first test space"
 
 [objects.third_space]
 type = "space"
-name = "{{ main.display_name }}'s second test space"
+name = "{{ main.display_name }}’s second test space"
 
 [objects.main_space_pin]
 type = "pin"
@@ -144,7 +144,7 @@ async fn leaving_spaces() -> Result<()> {
     Retry::spawn(retry_strategy.clone(), || async {
         if news_listener.is_empty() {
             // not yet.
-            bail!("News listener didn't react");
+            bail!("News listener didn’t react");
         }
         Ok(())
     })
@@ -183,7 +183,7 @@ async fn leaving_spaces() -> Result<()> {
     Retry::spawn(retry_strategy.clone(), || async {
         if news_listener.is_empty() {
             // not yet.
-            bail!("News listener didn't react");
+            bail!("News listener didn’t react");
         }
         Ok(())
     })
@@ -210,7 +210,7 @@ main = { type = "user", is-default = true, required = true, description = "The s
 
 [objects.main_space]
 type = "space"
-name = "{{ main.display_name }}'s main test space"
+name = "{{ main.display_name }}’s main test space"
 "#;
 
 #[tokio::test]
@@ -261,7 +261,7 @@ async fn create_subspace() -> Result<()> {
     let space_relations = space.space_relations().await?;
     let space_parent = space_relations
         .main_parent()
-        .expect("Subspace doesn't have the parent");
+        .expect("Subspace doesn’t have the parent");
     assert_eq!(space_parent.room_id(), first.room_id());
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
@@ -325,7 +325,7 @@ async fn change_subspace_join_rule() -> Result<()> {
     let space_relations = space.space_relations().await?;
     let space_parent = space_relations
         .main_parent()
-        .expect("Subspace doesn't have the parent");
+        .expect("Subspace doesn’t have the parent");
     assert_eq!(space_parent.room_id(), first.room_id());
     assert_eq!(space.join_rule_str(), "restricted");
 
@@ -345,7 +345,7 @@ async fn change_subspace_join_rule() -> Result<()> {
     })
     .await?;
 
-    // let's move it back to restricted
+    // let’s move it back to restricted
     assert_eq!(space.join_rule_str(), "private");
     let join_rule = space.join_rule();
 
@@ -451,7 +451,7 @@ async fn update_name() -> Result<()> {
     })
     .await?;
 
-    // and we've seen the update
+    // and we’ve seen the update
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
     Retry::spawn(retry_strategy.clone(), || async {
@@ -486,7 +486,7 @@ async fn update_name() -> Result<()> {
     // })
     // .await?;
 
-    // // and we've seen the update
+    // // and we’ve seen the update
 
     // Retry::spawn(retry_strategy.clone(), move || {
     //     let mut listener = listener.resubscribe();
@@ -555,7 +555,7 @@ async fn update_topic() -> Result<()> {
     })
     .await?;
 
-    // and we've seen the update
+    // and we’ve seen the update
 
     Retry::spawn(retry_strategy.clone(), || async {
         if listener.is_empty() {

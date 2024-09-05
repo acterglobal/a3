@@ -189,7 +189,7 @@ impl NewsSlide {
         &self,
         thumb_size: Option<Box<ThumbnailSize>>,
     ) -> Result<FfiBuffer<u8>> {
-        // any variable in self can't be called directly in spawn
+        // any variable in self can’t be called directly in spawn
         match &self.inner.content {
             NewsContent::Text(content)
             | NewsContent::Fallback(FallbackNewsContent::Text(content)) => {

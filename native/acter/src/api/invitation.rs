@@ -84,7 +84,7 @@ impl Invitation {
         if !matches!(room.state(), RoomState::Invited) {
             bail!("Unable to join a room we are not invited to");
         }
-        // any variable in self can't be called directly in spawn
+        // any variable in self can’t be called directly in spawn
         RUNTIME
             .spawn(async move {
                 let strategy = FixedInterval::from_millis(2000).take(5);
@@ -108,7 +108,7 @@ impl Invitation {
         if !matches!(room.state(), RoomState::Invited) {
             bail!("Unable to get a room we are not invited");
         }
-        // any variable in self can't be called directly in spawn
+        // any variable in self can’t be called directly in spawn
         RUNTIME
             .spawn(async move {
                 let mut delay = 2;

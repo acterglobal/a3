@@ -270,7 +270,7 @@ impl Member {
                 if self.acter_app_settings.is_some() {
                     PermissionTest::StateEvent(ActerAppSettingsContent::TYPE.into())
                 } else {
-                    // not an acter space, you can't set setting here
+                    // not an acter space, you can’t set setting here
                     return false;
                 }
             }
@@ -655,7 +655,7 @@ impl Room {
 
     pub async fn add_parent_room(&self, room_id: String, canonical: bool) -> Result<String> {
         if !self.is_joined() {
-            bail!("Unable to update a room you aren't part of");
+            bail!("Unable to update a room you aren’t part of");
         }
         let room_id = RoomId::parse(room_id)?;
         if !self
@@ -696,7 +696,7 @@ impl Room {
         reason: Option<String>,
     ) -> Result<bool> {
         if !self.is_joined() {
-            bail!("Unable to update a room you aren't part of");
+            bail!("Unable to update a room you aren’t part of");
         }
         let room_id = RoomId::parse(room_id)?;
         if !self
@@ -791,7 +791,7 @@ impl Room {
                 }
 
                 let guess = mime_guess::from_path(path.clone());
-                let content_type = guess.first().context("don't know mime type")?;
+                let content_type = guess.first().context("don’t know mime type")?;
                 let buf = std::fs::read(path)?;
                 let response = client.media().upload(&content_type, buf).await?;
 
@@ -1125,7 +1125,7 @@ impl Room {
                 let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
                 let original = event_content
                     .as_original()
-                    .context("Couldn't get original msg")?;
+                    .context("Couldn’t get original msg")?;
                 let (source, format) = match thumb_size {
                     Some(thumb_size) => {
                         let source = match &original.content.msgtype {
@@ -1530,7 +1530,7 @@ impl Room {
                 let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
                 let original = event_content
                     .as_original()
-                    .context("Couldn't get original msg")?;
+                    .context("Couldn’t get original msg")?;
                 if is_thumb {
                     let available = matches!(
                         &original.content.msgtype,
@@ -1572,7 +1572,7 @@ impl Room {
                     return Ok(OptionString::new(Some(path_str)));
                 }
 
-                // file wasn't existing, clear cache.
+                // file wasn’t existing, clear cache.
 
                 client.store().remove_custom_value(&key).await?;
                 Ok(OptionString::new(None))
@@ -1727,7 +1727,7 @@ impl Room {
     }
 
     /// sent a redaction message for this content
-    /// it's the callers job to ensure the person has the privileges to
+    /// it’s the callers job to ensure the person has the privileges to
     /// redact that content.
     pub async fn redact_content(
         &self,

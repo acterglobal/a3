@@ -214,7 +214,7 @@ impl CoreClient {
                 // local uri
                 let path = PathBuf::from(avatar_uri);
                 let guess = mime_guess::from_path(path.clone());
-                let content_type = guess.first().expect("don't know mime type");
+                let content_type = guess.first().expect("don’t know mime type");
                 let buf = std::fs::read(path)?;
                 let response = client.media().upload(&content_type, buf).await?;
 

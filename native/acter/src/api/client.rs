@@ -87,7 +87,7 @@ impl Client {
         source: MediaSource,
         thumb_size: Option<Box<ThumbnailSize>>,
     ) -> Result<FfiBuffer<u8>> {
-        // any variable in self can't be called directly in spawn
+        // any variable in self can’t be called directly in spawn
         let client = self.core.client().clone();
         let format = ThumbnailSize::parse_into_media_format(thumb_size);
         let request = MediaRequest { source, format };
@@ -107,7 +107,7 @@ impl Client {
         tmp_path: String,
         file_suffix: &str,
     ) -> Result<String> {
-        // any variable in self can't be called directly in spawn
+        // any variable in self can’t be called directly in spawn
         let client = self.core.client().clone();
         let format = ThumbnailSize::parse_into_media_format(thumb_size);
         let request = MediaRequest { source, format };
@@ -121,7 +121,7 @@ impl Client {
             "tasked to get source binary and store to file"
         );
         if !path.exists() {
-            // only download if the temp isn't already there.
+            // only download if the temp isn’t already there.
             let target_path = path.clone();
             RUNTIME
                 .spawn(async move {
@@ -290,7 +290,7 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 let guess = mime_guess::from_path(path.clone());
-                let content_type = guess.first().context("don't know mime type")?;
+                let content_type = guess.first().context("don’t know mime type")?;
                 let buf = std::fs::read(path)?;
                 let response = client.media().upload(&content_type, buf).await?;
                 Ok(response.content_uri)

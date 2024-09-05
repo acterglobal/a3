@@ -42,11 +42,10 @@ class BubbleBuilder extends ConsumerWidget {
     final myId = ref.watch(myUserIdStrProvider);
     final isAuthor = (myId == message.author.id);
     final inputNotifier = ref.read(chatInputProvider.notifier);
-    String eventType = message.metadata?['eventType'] ?? '';
+    String? eventType = message.metadata?['eventType'];
     bool isMemberEvent = eventType == 'm.room.member';
     bool redactedOrEncrypted = (message is types.CustomMessage) &&
-        (message.metadata!.containsKey('eventType') ||
-            message.metadata!['eventType'] == 'm.room.redaction');
+        (eventType == 'm.room.redaction' || eventType == 'm.room.encrypted');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -155,10 +154,7 @@ class _ChatBubble extends ConsumerWidget {
     );
   }
 
-  Bubble renderBubble(
-    BuildContext context,
-    bool isAuthor,
-  ) {
+  Bubble renderBubble(BuildContext context, bool isAuthor) {
     bool hasRepliedMessage = message.repliedMessage != null;
     Widget bubbleChild = child;
     if (hasRepliedMessage) {
@@ -226,10 +222,7 @@ class _ChatBubble extends ConsumerWidget {
     );
   }
 
-  Widget replyProfileBuilder(
-    BuildContext context,
-    WidgetRef ref,
-  ) {
+  Widget replyProfileBuilder(BuildContext context, WidgetRef ref) {
     final authorId = message.repliedMessage!.author.id;
     final replyProfile =
         ref.watch(memberAvatarInfoProvider((userId: authorId, roomId: roomId)));
@@ -281,11 +274,12 @@ class _OriginalMessageBuilder extends ConsumerWidget {
     final repliedMessage = message.repliedMessage;
     if (repliedMessage == null) return const SizedBox();
     if (repliedMessage is types.TextMessage) {
-      final w = repliedMessage.metadata!['messageLength'] * 38.5;
+      // when original msg is text msg, messageLength should be initialized
+      int len = repliedMessage.metadata!['messageLength'];
       return TextMessageBuilder(
         roomId: roomId,
         message: message.repliedMessage as types.TextMessage,
-        messageWidth: w.toInt(),
+        messageWidth: (len * 38.5).toInt(),
         isReply: true,
       );
     }

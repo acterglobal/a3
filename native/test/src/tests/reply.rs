@@ -114,7 +114,7 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
     })
     .await?;
 
-    let draft = kyra.text_plain_draft("Sorry, it's my bad".to_string());
+    let draft = kyra.text_plain_draft("Sorry, it’s my bad".to_string());
     kyra_timeline
         .reply_message(received.to_string(), Box::new(draft))
         .await?;
@@ -131,7 +131,7 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
                     .value()
                     .expect("diff pushback action should have valid value");
                 info!("diff pushback - {:?}", value);
-                if match_room_msg(&value, "Sorry, it's my bad").is_some() {
+                if match_room_msg(&value, "Sorry, it’s my bad").is_some() {
                     found = true;
                 }
             }

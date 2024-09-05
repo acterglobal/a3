@@ -1966,7 +1966,7 @@
   "@upcomingEvents": {},
   "inviteIndividualUsersSubtitle": "Invitar a usuarios que están ya en Acter",
   "@inviteIndividualUsersSubtitle": {},
-  "downloadFileSuccess": "'Archivo guardado en {path}",
+  "downloadFileSuccess": "Archivo guardado en {path}",
   "@downloadFileSuccess": {},
   "visibilitySubtitle": "Seleccione quien puede unirse a este espacio.",
   "@visibilitySubtitle": {},

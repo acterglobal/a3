@@ -173,7 +173,7 @@ impl Attachment {
         let manager = {
             let parent = store.get(&belongs_to).await?;
             if !parent.capabilities().contains(&Capability::Attachmentable) {
-                error!(?parent, attachment = ?self, "doesn't support attachments. can't apply");
+                error!(?parent, attachment = ?self, "doesn’t support attachments. can’t apply");
                 None
             } else {
                 // FIXME: what if we have this twice in the same loop?

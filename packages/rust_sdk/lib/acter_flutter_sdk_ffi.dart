@@ -39546,7 +39546,7 @@ class RsvpManager {
     return tmp2;
   }
 
-  /// get Yes/Maybe/No or None for the user's own status
+  /// get Yes/Maybe/No or None for the user’s own status
   Future<OptionRsvpStatus> respondedByMe() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -44107,7 +44107,7 @@ class Convo {
 
   /// redact an event from this room
   /// reason - The reason for the event being reported (optional).
-  /// it's the callers job to ensure the person has the privileges to
+  /// it’s the callers job to ensure the person has the privileges to
   /// redact that content.
   Future<EventId> redactContent(
     String eventId,
@@ -44437,7 +44437,7 @@ class Comment {
     return tmp2;
   }
 
-  /// what is the comment's content
+  /// what is the comment’s content
   MsgContent msgContent() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -50684,7 +50684,7 @@ class Space {
 
   /// redact an event from this room
   /// reason - The reason for the event being reported (optional).
-  /// it's the callers job to ensure the person has the privileges to
+  /// it’s the callers job to ensure the person has the privileges to
   /// redact that content.
   Future<EventId> redactContent(
     String eventId,
@@ -53645,7 +53645,7 @@ class CreateSpaceSettingsBuilder {
     return;
   }
 
-  /// set the space's visibility to either Public or Private
+  /// set the space’s visibility to either Public or Private
   void setVisibility(
     String value,
   ) {
@@ -57482,7 +57482,7 @@ class VerificationEvent {
     return tmp2;
   }
 
-  /// Alice says to Bob that SAS verification doesn't match and vice versa
+  /// Alice says to Bob that SAS verification doesn’t match and vice versa
   Future<bool> mismatchSasVerification() {
     var tmp0 = 0;
     tmp0 = _box.borrow();

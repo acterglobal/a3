@@ -155,7 +155,7 @@ class SidebarWidget extends ConsumerWidget {
     ];
 
     if (size.height < 600) {
-      // we don't have enough space to show more,
+      // we don’t have enough space to show more,
       // only show our main menu
       return SingleChildScrollView(
         child: SizedBox(

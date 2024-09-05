@@ -207,7 +207,7 @@ pub fn rotate_log_file() -> Result<String> {
             }
         }
         None => {
-            bail!("You didn't set up file logger.");
+            bail!("You didn’t set up file logger.");
         }
     }
     Ok("".to_string())

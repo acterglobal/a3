@@ -1,4 +1,4 @@
-//! Testing modules, don't use in production!
+//! Testing modules, don’t use in production!
 
 use anyhow::Result;
 use core::{future::Future, time::Duration};
@@ -25,7 +25,7 @@ where
 ///
 /// Will call `fun().await` up to `count` times, checking wether that returned `Ok(Some(T))` and
 /// return `Ok(Some(T))` if it does. Sleep up to `secs` seconds in between each call. Return `Ok(None)`
-/// if even after all that time, it didn't succeed. Passes on any internally raised error
+/// if even after all that time, it didn’t succeed. Passes on any internally raised error
 pub async fn wait_for_secs<F, T, O>(count: u32, secs: u8, fun: F) -> Result<Option<T>>
 where
     F: Fn() -> O,

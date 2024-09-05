@@ -40,7 +40,7 @@ const ENCRYPTION: &str = r#"{
 pub fn default_acter_space_states() -> Vec<Raw<AnyInitialStateEvent>> {
     let mut v = [HISTORY]
         .into_iter()
-        .map(|a| serde_json::from_str::<Raw<AnyInitialStateEvent>>(a).expect("static don't fail"))
+        .map(|a| serde_json::from_str::<Raw<AnyInitialStateEvent>>(a).expect("static don’t fail"))
         .collect::<Vec<Raw<AnyInitialStateEvent>>>();
     let r = to_raw_value(&json!({
         "type": PURPOSE_FIELD_DEV,
@@ -50,7 +50,7 @@ pub fn default_acter_space_states() -> Vec<Raw<AnyInitialStateEvent>> {
             "m.importance_level": 50
         }
     }))
-    .expect("static parsing of subtype doesn't fail");
+    .expect("static parsing of subtype doesn’t fail");
 
     v.push(Raw::from_json(r));
     v
@@ -59,7 +59,7 @@ pub fn default_acter_space_states() -> Vec<Raw<AnyInitialStateEvent>> {
 pub fn default_acter_convo_states() -> Vec<Raw<AnyInitialStateEvent>> {
     [HISTORY, ENCRYPTION]
         .into_iter()
-        .map(|a| serde_json::from_str::<Raw<AnyInitialStateEvent>>(a).expect("static don't fail"))
+        .map(|a| serde_json::from_str::<Raw<AnyInitialStateEvent>>(a).expect("static don’t fail"))
         .collect()
 }
 
@@ -75,7 +75,7 @@ pub fn initial_state_for_alias(
             "alt_aliases": alt_aliases,
         }
     }))
-    .expect("static doesn't fail");
+    .expect("static doesn’t fail");
 
     Raw::from_json(r)
 }

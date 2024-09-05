@@ -9,7 +9,7 @@ use tracing::warn;
 impl Space {
     pub async fn categories(&self, cat_type: String) -> Result<Categories> {
         if !self.inner.is_joined() {
-            bail!("Unable to read categories of a space you didn't join");
+            bail!("Unable to read categories of a space you didn’t join");
         }
         let room = self.inner.room.clone();
         RUNTIME
@@ -40,7 +40,7 @@ impl Space {
     ) -> Result<bool> {
         let state_event = (*builder).build();
         if !self.inner.is_joined() {
-            bail!("Unable to read categories of a space you didn't join");
+            bail!("Unable to read categories of a space you didn’t join");
         }
         let room = self.inner.room.clone();
         let user_id = self.client.user_id()?;

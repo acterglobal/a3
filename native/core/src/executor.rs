@@ -161,7 +161,7 @@ impl Executor {
 
     pub async fn live_redact(&self, event: OriginalRoomRedactionEvent) -> Result<()> {
         let Some(meta) = EventMeta::for_redacted_source(&event) else {
-            warn!(?event, "Redaction didn't contain any target. skipping.");
+            warn!(?event, "Redaction didn’t contain any target. skipping.");
             return Ok(());
         };
 

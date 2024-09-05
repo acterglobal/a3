@@ -32,7 +32,7 @@ pub enum Error {
     #[error("Index not found.")]
     IndexNotFound,
 
-    #[error("Your Homeserver doesn't have a hostname, that is required for this action.")]
+    #[error("Your Homeserver doesn’t have a hostname, that is required for this action.")]
     HomeserverMissesHostname,
 
     #[error("The client must be logged in for this interaction.")]

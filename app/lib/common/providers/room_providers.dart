@@ -35,7 +35,7 @@ class RoomItem {
 class RoomNotFound extends Error {}
 
 /// Attempts to map a roomId to the room, but could come back empty (null) rather than throw.
-/// keeps up to date with underlying client even if the room wasn't found initially,
+/// keeps up to date with underlying client even if the room wasn’t found initially,
 final maybeRoomProvider =
     AsyncNotifierProvider.family<AsyncMaybeRoomNotifier, Room?, String>(
   () => AsyncMaybeRoomNotifier(),
@@ -63,7 +63,7 @@ final roomVisibilityProvider = FutureProvider.family
 });
 
 /// Get the members invited of a given roomId the user knows about. Errors
-/// if the room isn't found. Stays up to date with underlying client data
+/// if the room isn’t found. Stays up to date with underlying client data
 /// if a room was found.
 final roomInvitedMembersProvider = FutureProvider.autoDispose
     .family<List<Member>, String>((ref, roomIdOrAlias) async {
@@ -203,8 +203,8 @@ final joinRulesAllowedRoomsProvider = FutureProvider.autoDispose
   return room.restrictedRoomIdsStr().map((e) => e.toDartString()).toList();
 });
 
-/// Get the user's membership for a specific space based off the roomId
-/// will not throw if the client doesn't kow the room
+/// Get the user’s membership for a specific space based off the roomId
+/// will not throw if the client doesn’t kow the room
 final roomMembershipProvider = FutureProvider.family<Member?, String>(
   (ref, roomId) async {
     final room = await ref.watch(maybeRoomProvider(roomId).future);
@@ -307,7 +307,7 @@ final memberAvatarInfoProvider =
   );
 });
 
-/// Ids of the members of this Room. Returns empty list if the room isn't found
+/// Ids of the members of this Room. Returns empty list if the room isn’t found
 final membersIdsProvider =
     FutureProvider.family<List<String>, String>((ref, roomIdOrAlias) async {
   final room = await ref.watch(maybeRoomProvider(roomIdOrAlias).future);

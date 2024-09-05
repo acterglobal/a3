@@ -185,7 +185,7 @@ impl Space {
                     bail!("Not a Tasklist model: {key}")
                 };
                 if room_id != content.room_id() {
-                    bail!("This task doesn't belong to this room");
+                    bail!("This task doesn’t belong to this room");
                 }
 
                 Ok(TaskList {
@@ -340,7 +340,7 @@ impl TaskList {
     }
 
     pub fn keywords(&self) -> Vec<String> {
-        // don't use cloned().
+        // don’t use cloned().
         // create string vector to deallocate string item using toDartString().
         // apply this way for only function that string vector is calculated indirectly.
         let mut result = vec![];
@@ -351,7 +351,7 @@ impl TaskList {
     }
 
     pub fn categories(&self) -> Vec<String> {
-        // don't use cloned().
+        // don’t use cloned().
         // create string vector to deallocate string item using toDartString().
         // apply this way for only function that string vector is calculated indirectly.
         let mut result = vec![];
@@ -593,7 +593,7 @@ impl Task {
     }
 
     pub fn keywords(&self) -> Vec<String> {
-        // don't use cloned().
+        // don’t use cloned().
         // create string vector to deallocate string item using toDartString().
         // apply this way for only function that string vector is calculated indirectly.
         let mut result = vec![];
@@ -604,7 +604,7 @@ impl Task {
     }
 
     pub fn categories(&self) -> Vec<String> {
-        // don't use cloned().
+        // don’t use cloned().
         // create string vector to deallocate string item using toDartString().
         // apply this way for only function that string vector is calculated indirectly.
         let mut result = vec![];
@@ -819,7 +819,7 @@ impl TaskDraft {
 
     pub fn progress_percent(&mut self, mut progress_percent: u8) -> &mut Self {
         if progress_percent > 100 {
-            // ensure the builder won't kill us later
+            // ensure the builder won’t kill us later
             progress_percent = 100;
         }
         self.content.progress_percent(Some(progress_percent));
@@ -1051,7 +1051,7 @@ impl TaskUpdateBuilder {
 
     pub fn progress_percent(&mut self, mut progress_percent: u8) -> &mut Self {
         if progress_percent > 100 {
-            // ensure the builder won't kill us later
+            // ensure the builder won’t kill us later
             progress_percent = 100;
         }
         self.content.progress_percent(Some(Some(progress_percent)));

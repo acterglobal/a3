@@ -1,1 +1,0 @@
-- [Fix] where the app settings of previously created spaces where interpreted under the new defaults incorrectly. Instead we are keeping the old fallback and default behavior and the wire protocol as is and instead create all futures spaces with the explicit having the features turned off now.
