@@ -1,1 +1,0 @@
-- [Chat]: Now we have hardened the mentions matching in chat input text so it won't imply false positives and only validates user mentions belonging to rooms.
