@@ -114,7 +114,7 @@ Future<void> updatePinIcon(
     ref.invalidate(pinProvider);
     if (!context.mounted) return;
   } catch (e, s) {
-    _log.severe('Failed to change url of pin', e, s);
+    _log.severe('Failed to change icon of pin', e, s);
     if (!context.mounted) {
       EasyLoading.dismiss();
       return;
