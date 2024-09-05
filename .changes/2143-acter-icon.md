@@ -1,0 +1,2 @@
+- [New] : All new ActerIcon support for Pins and TaskList 
+- [New] : You can can select custom icon and color based on the Pin and TaskList details.
