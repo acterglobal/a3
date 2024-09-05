@@ -87,25 +87,29 @@ class _RoomName extends ConsumerWidget {
 
 class UserBuilder extends ConsumerWidget {
   final String userId;
-  final String roomId;
+  final String? roomId;
   final UserProfile? userProfile;
   final bool includeSharedRooms;
+  final bool includeUserJoinState;
+  final VoidCallback? onTap;
 
   const UserBuilder({
     super.key,
     required this.userId,
-    required this.roomId,
+    this.roomId,
     this.userProfile,
+    this.onTap,
     this.includeSharedRooms = false,
+    this.includeUserJoinState = true,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
     final avatarInfo = _avatarInfo(ref);
     final displayName = _displayName(ref);
     final tile = Card(
       child: ListTile(
+        onTap: onTap,
         title: Text(displayName ?? userId),
         subtitle: (displayName == null) ? null : Text(userId),
         leading: ActerAvatar(
@@ -114,20 +118,28 @@ class UserBuilder extends ConsumerWidget {
             size: 18,
           ),
         ),
-        trailing: room != null
-            ? UserStateButton(
-                userId: userId,
-                room: room,
-              )
-            : const Skeletonizer(
-                child: Text('Loading user'),
-              ),
+        trailing: _renderTrailing(context, ref),
       ),
     );
     if (includeSharedRooms) {
       return _buildSharedRooms(context, tile);
     }
     return tile;
+  }
+
+  Widget? _renderTrailing(BuildContext context, WidgetRef ref) {
+    if (!includeUserJoinState || roomId == null) {
+      return null;
+    }
+    final room = ref.watch(maybeRoomProvider(roomId!)).valueOrNull;
+    return room != null
+        ? UserStateButton(
+            userId: userId,
+            room: room,
+          )
+        : const Skeletonizer(
+            child: Text('user'),
+          );
   }
 
   Widget _buildSharedRooms(BuildContext context, Widget tile) {
@@ -142,8 +154,8 @@ class UserBuilder extends ConsumerWidget {
     Widget sharedRoomsRow = switch (sharedRooms.length) {
       1 => Wrap(
           children: [
-            const Text(
-              'you are both in ',
+            Text(
+              L10n.of(context).youAreBothIn,
               style: style,
             ), //L10n.of(context).youAreBothIn),
             _RoomName(roomId: sharedRooms[0]),
@@ -152,12 +164,12 @@ class UserBuilder extends ConsumerWidget {
       2 => Wrap(
           children: [
             Text(
-              'you are both in ',
+              L10n.of(context).youAreBothIn,
               style: style,
             ), //L10n.of(context).youAreBothIn),
             _RoomName(roomId: sharedRooms[0]),
             Text(
-              ' and ',
+              L10n.of(context).andSeparator,
               style: style,
             ),
             _RoomName(roomId: sharedRooms[1]),
@@ -166,17 +178,17 @@ class UserBuilder extends ConsumerWidget {
       3 => Wrap(
           children: [
             Text(
-              'you are both in ',
+              L10n.of(context).youAreBothIn,
               style: style,
             ), //L10n.of(context).youAreBothIn),
             _RoomName(roomId: sharedRooms[0]),
-            Text(
+            const Text(
               ', ',
               style: style,
             ),
             _RoomName(roomId: sharedRooms[1]),
             Text(
-              ' and ',
+              L10n.of(context).andSeparator,
               style: style,
             ),
             _RoomName(roomId: sharedRooms[2]),
@@ -185,17 +197,17 @@ class UserBuilder extends ConsumerWidget {
       _ => Wrap(
           children: [
             Text(
-              'you are both in ',
+              L10n.of(context).youAreBothIn,
               style: style,
             ), //L10n.of(context).youAreBothIn),
             _RoomName(roomId: sharedRooms[0]),
-            Text(
+            const Text(
               ', ',
               style: style,
             ),
             _RoomName(roomId: sharedRooms[1]),
             Text(
-              ', and ${sharedRooms.length - 2} more',
+              L10n.of(context).andNMore(sharedRooms.length - 2),
               style: style,
             ),
           ],
@@ -216,13 +228,21 @@ class UserBuilder extends ConsumerWidget {
 
   AvatarInfo _avatarInfo(WidgetRef ref) => (userProfile != null)
       ? ref.watch(userAvatarInfoProvider(userProfile!))
-      : ref.watch(memberAvatarInfoProvider((roomId: roomId, userId: userId)));
+      : roomId != null
+          ? ref.watch(
+              memberAvatarInfoProvider((roomId: roomId!, userId: userId)),
+            )
+          : AvatarInfo(uniqueId: userId);
 
   String? _displayName(WidgetRef ref) =>
       userProfile?.displayName() ??
-      ref
-          .watch(memberDisplayNameProvider((roomId: roomId, userId: userId)))
-          .valueOrNull;
+      (roomId != null
+          ? ref
+              .watch(
+                memberDisplayNameProvider((roomId: roomId!, userId: userId)),
+              )
+              .valueOrNull
+          : null);
 }
 
 class UserStateButton extends ConsumerWidget {
