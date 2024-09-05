@@ -873,9 +873,6 @@ object EventSendState {
 
 /// A room Message metadata and content
 object RoomEventItem {
-    /// Unique ID of this event
-    fn unique_id() -> string;
-
     /// The User, who sent that event
     fn sender() -> string;
 
@@ -888,6 +885,9 @@ object RoomEventItem {
 
     /// one of Message/Redaction/UnableToDecrypt/FailedToParseMessageLike/FailedToParseState
     fn event_type() -> string;
+
+    /// ID of this event
+    fn event_id() -> Option<string>;
 
     /// the type of massage, like text, image, audio, video, file etc
     fn msg_type() -> Option<string>;
@@ -929,6 +929,9 @@ object RoomVirtualItem {
 object RoomMessage {
     /// one of event/virtual
     fn item_type() -> string;
+
+    /// Unique ID of this event
+    fn unique_id() -> string;
 
     /// valid only if item_type is "event"
     fn event_item() -> Option<RoomEventItem>;

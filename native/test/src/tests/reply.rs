@@ -2,7 +2,6 @@ use acter::api::RoomMessage;
 use anyhow::{Context, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
-use matrix_sdk_base::ruma::OwnedEventId;
 use tokio::time::sleep;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
@@ -151,14 +150,14 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
     Ok(())
 }
 
-fn match_room_msg(msg: &RoomMessage, body: &str) -> Option<OwnedEventId> {
+fn match_room_msg(msg: &RoomMessage, body: &str) -> Option<String> {
     info!("match room msg - {:?}", msg.clone());
     if msg.item_type() == "event" {
         let event_item = msg.event_item().expect("room msg should have event item");
         if let Some(msg_content) = event_item.msg_content() {
             if msg_content.body() == body {
                 // exclude the pending msg
-                if let Some(event_id) = event_item.evt_id() {
+                if let Some(event_id) = event_item.event_id() {
                     return Some(event_id);
                 }
             }

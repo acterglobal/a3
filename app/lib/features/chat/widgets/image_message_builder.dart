@@ -26,7 +26,8 @@ class ImageMessageBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ChatMessageInfo messageInfo = (messageId: message.id, roomId: roomId);
+    final ChatMessageInfo messageInfo =
+        (messageId: message.remoteId ?? message.id, roomId: roomId);
     final mediaState = ref.watch(mediaChatStateProvider(messageInfo));
     if (mediaState.mediaChatLoadingState.isLoading ||
         mediaState.isDownloading) {
@@ -68,7 +69,7 @@ class ImageMessageBuilder extends ConsumerWidget {
           await ref
               .read(
                 mediaChatStateProvider(
-                  (messageId: message.id, roomId: roomId),
+                  (messageId: message.remoteId ?? message.id, roomId: roomId),
                 ).notifier,
               )
               .downloadMedia();
@@ -180,7 +181,7 @@ class ImageMessageBuilder extends ConsumerWidget {
         textBuilder: L10n.of(context).couldNotLoadImage,
         onRetryTap: () {
           final ChatMessageInfo messageInfo =
-              (messageId: message.id, roomId: roomId);
+              (messageId: message.remoteId ?? message.id, roomId: roomId);
           ref.invalidate(mediaChatStateProvider(messageInfo));
         },
       ),

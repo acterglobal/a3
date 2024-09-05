@@ -83,7 +83,11 @@ impl TimelineStream {
                 let Some(tl) = timeline.item_by_event_id(&event_id).await else {
                     bail!("Event not found")
                 };
-                Ok(RoomMessage::from((tl, user_id)))
+                Ok(RoomMessage::new_event_item(
+                    user_id,
+                    &tl,
+                    event_id.to_string(),
+                ))
             })
             .await?
     }
