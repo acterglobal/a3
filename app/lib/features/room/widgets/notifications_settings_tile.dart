@@ -36,24 +36,22 @@ class _NotificationSettingsTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final notificationStatus =
-        ref.watch(roomNotificationStatusProvider(roomId));
-    final defaultNotificationStatus =
-        ref.watch(roomDefaultNotificationStatusProvider(roomId));
-    final curNotifStatus = notificationStatus.valueOrNull;
+    final curNotifStatus =
+        ref.watch(roomNotificationStatusProvider(roomId)).valueOrNull;
+    final defNotifStatus =
+        ref.watch(roomDefaultNotificationStatusProvider(roomId)).valueOrNull;
+    final defNotifText = defaultTitle ??
+        L10n.of(context).defaultNotification(
+          '(${notifToText(context, defNotifStatus ?? '') ?? L10n.of(context).undefined})',
+        );
     final tileTextTheme = Theme.of(context).textTheme.bodySmall;
-    // ignore: always_declare_return_types
     return SettingsTile(
       title: Text(
         title ?? L10n.of(context).notifications,
         style: tileTextTheme,
       ),
       description: Text(
-        notifToText(context, curNotifStatus ?? '') ??
-            (defaultTitle ??
-                L10n.of(context).defaultNotification(
-                  '(${notifToText(context, defaultNotificationStatus.valueOrNull ?? '') ?? L10n.of(context).undefined})',
-                )),
+        notifToText(context, curNotifStatus ?? '') ?? defNotifText,
       ),
       leading: curNotifStatus == 'muted'
           ? const Icon(Atlas.bell_dash_bold, size: 18)
@@ -93,10 +91,7 @@ class _NotificationSettingsTile extends ConsumerWidget {
             child: notificationSettingItemUI(
               context,
               curNotifStatus == '',
-              defaultTitle ??
-                  L10n.of(context).defaultNotification(
-                    '(${notifToText(context, defaultNotificationStatus.valueOrNull ?? '') ?? L10n.of(context).undefined})',
-                  ),
+              defNotifText,
             ),
           ),
         ],
