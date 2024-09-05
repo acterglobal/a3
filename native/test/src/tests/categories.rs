@@ -72,7 +72,7 @@ async fn categories_e2e() -> Result<()> {
     let chat_cats = space.categories("chats".to_owned()).await?;
     assert!(chat_cats.categories().is_empty());
 
-    // let's overwrite it
+    // let’s overwrite it
     let mut updater = campaign.update_builder();
     updater.title("Backoffice".to_owned());
     let updated = updater.build()?;

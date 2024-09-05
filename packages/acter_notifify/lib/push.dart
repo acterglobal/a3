@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:acter_notifify/acter_notifify.dart';
-import 'package:acter_notifify/matrix.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_notifify/acter_notifify.dart';
+import 'package:acter_notifify/matrix.dart';
 import 'package:logging/logging.dart';
 import 'package:push/push.dart';
 
@@ -111,11 +111,11 @@ Future<bool?> setupPushNotificationsForDevice(
     alert: true, // we request loud notifications now.
   );
   if (!requested) {
-    // we were bluntly rejected, save and don't them bother again:
+    // we were bluntly rejected, save and don’t them bother again:
     return false;
   }
 
-  // let's get the token
+  // let’s get the token
   final token = await Push.instance.token;
 
   if (token == null) {

@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter/features/public_room_search/widgets/public_room_search.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -52,7 +52,7 @@ class SearchPublicDirectory extends ConsumerWidget {
       return;
     }
 
-    // we don't know the space yet, the user wants to join.
+    // we don’t know the space yet, the user wants to join.
     final joinRule = spaceSearchResult.joinRuleStr();
     if (joinRule != 'Public') {
       // ignore: use_build_context_synchronously

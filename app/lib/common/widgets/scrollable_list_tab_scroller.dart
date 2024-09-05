@@ -224,7 +224,7 @@ class ScrollableListTabScrollerState extends State<ScrollableListTabScroller> {
 
     if (orderedListByPositionIndex.length > 1 &&
         orderedListByPositionIndex.last.index == widget.itemCount - 1) {
-      // I dont know why it's not perfectly 1.0
+      // I dont know why it’s not perfectly 1.0
       // 1.01 LGTM
       const fullBottomEdge = 1.01;
       if (orderedListByPositionIndex.last.itemTrailingEdge < fullBottomEdge) {

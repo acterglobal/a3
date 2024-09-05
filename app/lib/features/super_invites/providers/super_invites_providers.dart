@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final hasSuperTokensAccess = FutureProvider<bool>((ref) async {
   final asyncVal = ref.watch(superInvitesTokensProvider);
-  return !asyncVal
-      .hasError; // if we error'd we assume it is not available on the server.
+  // if we error’d we assume it is not available on the server.
+  return !asyncVal.hasError;
 });
 
 final superInvitesTokensProvider =

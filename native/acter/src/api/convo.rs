@@ -113,7 +113,7 @@ impl Convo {
                 .room
                 .timeline()
                 .await
-                .expect("Creating a timeline builder doesn't fail"),
+                .expect("Creating a timeline builder doesn’t fail"),
         );
         let latest_message_content: Option<RoomMessage> = client
             .store()
@@ -152,7 +152,7 @@ impl Convo {
                 }
             }
             if !event_found && !has_latest_msg {
-                // let's trigger a back pagination in hope that helps us...
+                // let’s trigger a back pagination in hope that helps us...
                 if let Err(error) = last_msg_tl.paginate_backwards(10).await {
                     error!(?error, room_id=?latest_msg_room.room_id(), "backpagination failed");
                 }
@@ -490,7 +490,7 @@ impl Client {
                         // local uri
                         let path = PathBuf::from(avatar_uri);
                         let guess = mime_guess::from_path(path.clone());
-                        let content_type = guess.first().context("don't know mime type")?;
+                        let content_type = guess.first().context("don’t know mime type")?;
                         let buf = std::fs::read(path)?;
                         let response = client.media().upload(&content_type, buf).await?;
 
@@ -590,7 +590,7 @@ impl Client {
             let room_alias = RoomAliasId::parse(either.as_str())?;
             self.convo_by_alias_typed(room_alias).await
         } else {
-            bail!("{room_id_or_alias} isn't a valid room id or alias...");
+            bail!("{room_id_or_alias} isn’t a valid room id or alias...");
         }
     }
 

@@ -227,10 +227,10 @@ async fn user_changes_password() -> Result<()> {
     let result = account
         .change_password(password.clone(), new_password.clone())
         .await?;
-    assert!(result, "Couldn't change password successfully");
+    assert!(result, "Couldn’t change password successfully");
 
     let result = client.logout().await?;
-    assert!(result, "Couldn't logout successfully");
+    assert!(result, "Couldn’t logout successfully");
 
     let base_dir = TempDir::new()?;
     let media_dir = TempDir::new()?;
@@ -247,7 +247,7 @@ async fn user_changes_password() -> Result<()> {
 
     let old_pswd_res =
         login_new_client_under_config(config.clone(), uid.clone(), password, None, None).await;
-    assert!(old_pswd_res.is_err(), "Can't login with old password");
+    assert!(old_pswd_res.is_err(), "Can’t login with old password");
 
     let new_pswd_res = login_new_client_under_config(config, uid, new_password, None, None).await;
     assert!(

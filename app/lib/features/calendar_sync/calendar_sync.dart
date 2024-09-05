@@ -175,7 +175,7 @@ Future<void> _refreshCalendar(
     newMapping,
   );
 
-  // time to clean up events that we aren't tracking anymore
+  // time to clean up events that we aren’t tracking anymore
   for (final toDelete in foundEvents
       .where((e) => e.eventId != null && !foundEventIds.contains(e.eventId))) {
     _log.info('Deleting event ${toDelete.eventId}');

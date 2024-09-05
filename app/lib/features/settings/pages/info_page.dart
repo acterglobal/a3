@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
-
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/main.dart';
@@ -129,7 +128,8 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                         value: Text(
-                            '${sha1.convert(utf8.encode(Env.rageshakeAppName))}',),
+                          '${sha1.convert(utf8.encode(Env.rageshakeAppName))}',
+                        ),
                       ),
                 isDevBuild
                     ? SettingsTile(

@@ -52,7 +52,7 @@ async fn wait_for_message(
                 }
                 _ => {
                     warn!(
-                        "Weirdly we've seen another event: {}",
+                        "Weirdly we’ve seen another event: {}",
                         diff.action().as_str()
                     );
                 }
@@ -100,13 +100,13 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     let kyra_received = wait_for_message(
         kyra_stream,
         &|m| match_text_msg(m, "Hi, everyone").is_some(),
-        "even after 30 seconds, kyra didn't see sisko's message",
+        "even after 30 seconds, kyra didn’t see sisko’s message",
     )
     .await?;
 
     // FIXME: for some unknown reason worf only receives an encrypted message
-    //        they can't decrypt. Doesn't really matter for the tests itself,
-    //        but it's still bad. so this test takes kyras event_id and matches
+    //        they can’t decrypt. Doesn’t really matter for the tests itself,
+    //        but it’s still bad. so this test takes kyras event_id and matches
     //        it against the stream to find the item to react to.
 
     let check_id = kyra_received.clone();
@@ -119,7 +119,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
                 .map(|s| s == check_id)
                 .unwrap_or_default()
         },
-        "even after 30 seconds, worf didn't see sisko's message",
+        "even after 30 seconds, worf didn’t see sisko’s message",
     )
     .await?;
 
@@ -160,7 +160,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     info!("loop finished");
     assert!(
         found,
-        "Even after 10 seconds, sisko didn't receive msg reaction from kyra and worf"
+        "Even after 10 seconds, sisko didn’t receive msg reaction from kyra and worf"
     );
 
     Ok(())

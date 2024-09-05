@@ -1,15 +1,16 @@
 import 'dart:async';
 
-import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/config/desktop.dart';
-import 'package:acter/config/notifications/init.dart';
 import 'package:acter/common/providers/app_state_provider.dart';
 import 'package:acter/common/themes/acter_theme.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';
 import 'package:acter/common/tutorial_dialogs/space_overview_tutorials/create_or_join_space_tutorials.dart';
 import 'package:acter/common/tutorial_dialogs/space_overview_tutorials/space_overview_tutorials.dart';
 import 'package:acter/common/utils/logging.dart';
 import 'package:acter/common/utils/main.dart';
+import 'package:acter/config/desktop.dart';
+import 'package:acter/config/env.g.dart';
+import 'package:acter/config/notifications/init.dart';
 import 'package:acter/config/setup.dart';
 import 'package:acter/features/cli/main.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
@@ -20,9 +21,8 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:video_player_media_kit/video_player_media_kit.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:acter/config/env.g.dart';
+import 'package:video_player_media_kit/video_player_media_kit.dart';
 
 void main(List<String> args) async {
   configSetup();
@@ -42,7 +42,7 @@ Widget makeApp() {
 }
 
 Future<void> startAppForTesting(Widget app) async {
-  // make sure our test isn't distracted by the onboarding wizzards
+  // make sure our test isn’t distracted by the onboarding wizzards
   setCreateOrJoinSpaceTutorialAsViewed();
   setBottomNavigationTutorialsAsViewed();
   setSpaceOverviewTutorialsAsViewed();

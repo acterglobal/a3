@@ -17,7 +17,7 @@ name = "Smoketest Template"
 main = { type = "user", is-default = true, required = true, description = "The starting user" }
 
 [objects]
-main_space = { type = "space", is-default = true, name = "{{ main.display_name }}'s pins test space"}
+main_space = { type = "space", is-default = true, name = "{{ main.display_name }}’s pins test space"}
 
 [objects.acter-website-pin]
 type = "pin"
@@ -89,14 +89,14 @@ async fn pin_comments() -> Result<()> {
         .await?
         .into_iter()
         .find(|p| !p.is_link())
-        .expect("we've created one non-link pin");
+        .expect("we’ve created one non-link pin");
 
     // START actual comment on pin
 
     let comments_manager = pin.comments().await?;
     assert!(!comments_manager.stats().has_comments());
 
-    // ---- let's make a comment
+    // ---- let’s make a comment
 
     let comments_listener = comments_manager.subscribe();
     let comment_1_id = comments_manager
@@ -145,14 +145,14 @@ async fn pin_attachments() -> Result<()> {
         .await?
         .into_iter()
         .find(|p| !p.is_link())
-        .expect("we've created one non-link pin");
+        .expect("we’ve created one non-link pin");
 
     // START actual attachment on pin
 
     let attachments_manager = pin.attachments().await?;
     assert!(!attachments_manager.stats().has_attachments());
 
-    // ---- let's make a attachment
+    // ---- let’s make a attachment
 
     let bytes = include_bytes!("./fixtures/kingfisher.jpg");
     let mut jpg_file = NamedTempFile::new()?;

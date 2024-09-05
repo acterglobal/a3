@@ -399,7 +399,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.sticker':
-            // user can't do any action about sticker message
+            // user can’t do any action about sticker message
             break;
         }
     }

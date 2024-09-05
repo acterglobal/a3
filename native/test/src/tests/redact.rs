@@ -98,9 +98,9 @@ async fn message_redaction() -> Result<()> {
         )
         .await?;
 
-    // timeline reorders events and doesn't assign redaction as separate event
+    // timeline reorders events and doesn’t assign redaction as separate event
     // it is impossible to get redaction event by event id on timeline
-    // so we don't use retry-loop about redact_id
+    // so we don’t use retry-loop about redact_id
 
     // but it is possible to get redaction event by event id on convo
     let ev = convo.event(&redact_id).await?;

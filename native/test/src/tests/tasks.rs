@@ -106,7 +106,7 @@ async fn odos_tasks() -> Result<()> {
         sleep(Duration::from_secs(1)).await;
     }
 
-    // we do not expect a signal on the list, as the order hasn't changed
+    // we do not expect a signal on the list, as the order hasn’t changed
     let task = task_list
         .tasks()
         .await?
@@ -165,7 +165,7 @@ async fn task_smoketests() -> Result<()> {
         }
     })
     .await?
-    .expect("freshly created Task List couldn't be found");
+    .expect("freshly created Task List couldn’t be found");
 
     assert_eq!(task_list.name(), "Starting up");
     assert_eq!(task_list.tasks().await?.len(), 0);
@@ -314,7 +314,7 @@ async fn task_lists_comments_smoketests() -> Result<()> {
         async move { Ok(space.task_list(task_list_key).await.ok()) }
     })
     .await?
-    .expect("freshly created Task List couldn't be found");
+    .expect("freshly created Task List couldn’t be found");
 
     let comments_manager = task_list.comments().await?;
 
@@ -322,7 +322,7 @@ async fn task_lists_comments_smoketests() -> Result<()> {
     assert_eq!(task_list.tasks().await?.len(), 0);
     assert!(!comments_manager.stats().has_comments());
 
-    // ---- let's make a comment
+    // ---- let’s make a comment
 
     let comments_listener = comments_manager.subscribe();
     let comment_1_id = comments_manager
@@ -393,7 +393,7 @@ async fn task_comment_smoketests() -> Result<()> {
         async move { Ok(space.task_list(task_list_key).await.ok()) }
     })
     .await?
-    .expect("freshly created Task List couldn't be found");
+    .expect("freshly created Task List couldn’t be found");
 
     assert_eq!(task_list.name(), "Starting up");
     assert_eq!(task_list.tasks().await?.len(), 0);
@@ -427,7 +427,7 @@ async fn task_comment_smoketests() -> Result<()> {
     let comments_manager = task.comments().await?;
     assert!(!comments_manager.stats().has_comments());
 
-    // ---- let's make a comment
+    // ---- let’s make a comment
 
     let comments_listener = comments_manager.subscribe();
     let comment_1_id = comments_manager

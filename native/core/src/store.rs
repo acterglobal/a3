@@ -122,7 +122,7 @@ impl Store {
                     match get_from_store::<AnyActerModel>(client, k).await {
                         Ok(m) => Some(m),
                         Err(e) => {
-                            tracing::error!("Couldn't read model at startup. Skipping. {e}");
+                            tracing::error!("Couldn’t read model at startup. Skipping. {e}");
                             None
                         }
                     }
@@ -137,7 +137,7 @@ impl Store {
         let models: HashMap<String, AnyActerModel> = HashMap::new();
         for m in models_vec {
             let Some(m) = m else {
-                // skip None's
+                // skip None’s
                 continue;
             };
             let key = m.event_id().to_string();
@@ -433,7 +433,7 @@ mod tests {
         assert_eq!(vec![key.clone()], res_keys);
         let mdl = store.get(&key).await?;
         let AnyActerModel::TestModel(other) = mdl else {
-            bail!("Returned model isn't test model: {mdl:?}");
+            bail!("Returned model isn’t test model: {mdl:?}");
         };
         assert_eq!(model, other);
         Ok(())
@@ -488,7 +488,7 @@ mod tests {
             let key = model.event_id().to_string();
             let mdl = store.get(&key).await?;
             let AnyActerModel::TestModel(other) = mdl else {
-                bail!("Returned model isn't test model: {mdl:?}");
+                bail!("Returned model isn’t test model: {mdl:?}");
             };
             assert_eq!(model, other);
         }
@@ -512,20 +512,20 @@ mod tests {
         );
         let mdl = store.get(&key).await?;
         let AnyActerModel::TestModel(other) = mdl else {
-            bail!("Returned model isn't test model: {mdl:?}");
+            bail!("Returned model isn’t test model: {mdl:?}");
         };
         assert_eq!(model, other);
 
         let mut index = store.get_list("indexA").await?;
         let Some(AnyActerModel::TestModel(other)) = index.next() else {
-            bail!("Returned model isn't test model.");
+            bail!("Returned model isn’t test model.");
         };
         assert!(index.next().is_none()); // and nothing else
         assert_eq!(model, other);
 
         let mut index = store.get_list("index::b").await?;
         let Some(AnyActerModel::TestModel(other)) = index.next() else {
-            bail!("Returned model isn't test model.");
+            bail!("Returned model isn’t test model.");
         };
         assert!(index.next().is_none()); // and nothing else
         assert_eq!(model, other);
@@ -552,7 +552,7 @@ mod tests {
 
         let mut index = store.get_list("indexA").await?;
         let Some(AnyActerModel::TestModel(other)) = index.next() else {
-            bail!("Returned model isn't test model.");
+            bail!("Returned model isn’t test model.");
         };
         assert!(index.next().is_none()); // and nothing else
         assert_eq!(model, other);
@@ -571,12 +571,12 @@ mod tests {
 
         let mut index = store.get_list("indexA").await?;
         let Some(AnyActerModel::TestModel(other)) = index.next() else {
-            bail!("Returned model isn't test model.");
+            bail!("Returned model isn’t test model.");
         };
         assert_eq!(model, other);
 
         let Some(AnyActerModel::TestModel(other)) = index.next() else {
-            bail!("Returned model isn't test model.");
+            bail!("Returned model isn’t test model.");
         };
         assert_eq!(second_model, other);
 
@@ -605,20 +605,20 @@ mod tests {
             );
             let mdl = store.get(&key).await?;
             let AnyActerModel::TestModel(other) = mdl else {
-                bail!("Returned model isn't test model: {mdl:?}");
+                bail!("Returned model isn’t test model: {mdl:?}");
             };
             assert_eq!(model, other);
 
             let mut index = store.get_list("indexA").await?;
             let Some(AnyActerModel::TestModel(other)) = index.next() else {
-                bail!("Returned model isn't test model.");
+                bail!("Returned model isn’t test model.");
             };
             assert!(index.next().is_none()); // and nothing else
             assert_eq!(model, other);
 
             let mut index = store.get_list("index::b").await?;
             let Some(AnyActerModel::TestModel(other)) = index.next() else {
-                bail!("Returned model isn't test model.");
+                bail!("Returned model isn’t test model.");
             };
             assert!(index.next().is_none()); // and nothing else
             assert_eq!(model, other);
@@ -656,7 +656,7 @@ mod tests {
             // only via our new index
             let mut index = store.get_list("new_index").await?;
             let Some(AnyActerModel::TestModel(other)) = index.next() else {
-                bail!("Returned model isn't test model.");
+                bail!("Returned model isn’t test model.");
             };
             assert!(index.next().is_none()); // and nothing else
             assert_eq!(model, other);
@@ -680,20 +680,20 @@ mod tests {
             assert_eq!(vec![key.clone(), "test_index".to_owned()], res_keys);
             let mdl = store.get(&key).await?;
             let AnyActerModel::TestModel(other) = mdl else {
-                bail!("Returned model isn't test model: {mdl:?}");
+                bail!("Returned model isn’t test model: {mdl:?}");
             };
             assert_eq!(model, other);
             (client, model)
         };
 
-        // let's attempt to recover
+        // let’s attempt to recover
         let store =
             Store::new_with_auth(client.clone(), user_id!("@test:example.org").to_owned()).await?;
 
         // and we should be able to get it again.
         let mdl = store.get(model.event_id().as_ref()).await?;
         let AnyActerModel::TestModel(other) = mdl else {
-            bail!("Returned model isn't test model: {mdl:?}");
+            bail!("Returned model isn’t test model: {mdl:?}");
         };
         assert_eq!(model, other);
 
@@ -701,7 +701,7 @@ mod tests {
 
         let mut index = store.get_list("test_index").await?;
         let Some(AnyActerModel::TestModel(other)) = index.next() else {
-            bail!("Returned model isn't test model.");
+            bail!("Returned model isn’t test model.");
         };
         assert!(index.next().is_none()); // and nothing else
         assert_eq!(model, other);
@@ -821,7 +821,7 @@ mod tests {
             .collect::<Vec<_>>();
         assert_eq!(second_room_models, loaded_models_second);
 
-        //  --- now let's remove the first room ---
+        //  --- now let’s remove the first room ---
         let notifiers = store.clear_room(&first_room_id).await?;
         assert_eq!(notifiers.len(), 7); // 5 models & 2 indizes = 7 changes
 

@@ -27,7 +27,7 @@ class MessageActions extends ConsumerWidget {
       chatInputProvider.select((state) => state.selectedMessage),
     );
     if (message == null) {
-      // shouldn't ever happen in reality
+      // shouldn’t ever happen in reality
       return const SizedBox.shrink();
     }
 
