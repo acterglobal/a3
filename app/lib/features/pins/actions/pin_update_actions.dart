@@ -12,11 +12,11 @@ import 'package:acter/common/providers/sdk_provider.dart';
 
 final _log = Logger('a3::pins::utils');
 
-Future<void> savePinTitle(
-  BuildContext context,
-  ActerPin pin,
-  String newTitle,
-) async {
+Future<void> updatePinTitle(
+    BuildContext context,
+    ActerPin pin,
+    String newTitle,
+    ) async {
   try {
     EasyLoading.show(status: L10n.of(context).updateName);
     final updateBuilder = pin.updateBuilder();
@@ -38,11 +38,11 @@ Future<void> savePinTitle(
   }
 }
 
-Future<void> savePinLink(
-  BuildContext context,
-  ActerPin pin,
-  String newLink,
-) async {
+Future<void> updatePinLink(
+    BuildContext context,
+    ActerPin pin,
+    String newLink,
+    ) async {
   try {
     EasyLoading.show(status: L10n.of(context).updatingLinking);
     final updateBuilder = pin.updateBuilder();
@@ -63,12 +63,12 @@ Future<void> savePinLink(
   }
 }
 
-Future<void> saveDescription(
-  BuildContext context,
-  String htmlBodyDescription,
-  String plainDescription,
-  ActerPin pin,
-) async {
+Future<void> updatePinDescription(
+    BuildContext context,
+    String htmlBodyDescription,
+    String plainDescription,
+    ActerPin pin,
+    ) async {
   try {
     EasyLoading.show(status: L10n.of(context).updatingDescription);
     final updateBuilder = pin.updateBuilder();
@@ -91,13 +91,13 @@ Future<void> saveDescription(
   }
 }
 
-Future<void> savePinIcon(
-  BuildContext context,
-  WidgetRef ref,
-  ActerPin pin,
-  Color color,
-  ActerIcon acterIcon,
-) async {
+Future<void> updatePinIcon(
+    BuildContext context,
+    WidgetRef ref,
+    ActerPin pin,
+    Color color,
+    ActerIcon acterIcon,
+    ) async {
   try {
     EasyLoading.show(status: L10n.of(context).updatingIcon);
     // Pin IconData

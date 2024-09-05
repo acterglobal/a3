@@ -9,8 +9,8 @@ import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
-import 'package:acter/features/pins/Utils/pins_utils.dart';
 import 'package:acter/features/pins/actions/edit_pin_actions.dart';
+import 'package:acter/features/pins/actions/pin_update_actions.dart';
 import 'package:acter/features/pins/actions/reduct_pin_action.dart';
 import 'package:acter/features/pins/actions/report_pin_action.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
@@ -243,7 +243,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
                 ),
                 onIconSelection: canPost
                     ? (color, acterIcon) {
-                        savePinIcon(context, ref, pin, color, acterIcon);
+                        updatePinIcon(context, ref, pin, color, acterIcon);
                       }
                     : null,
               ),
@@ -280,7 +280,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
               onSave: (newTitle) async {
                 final pinEditNotifier = ref.read(pinEditProvider(pin).notifier);
                 pinEditNotifier.setTitle(newTitle);
-                savePinTitle(context, pin, newTitle);
+                updatePinTitle(context, pin, newTitle);
               },
             );
           }
@@ -322,7 +322,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
                 descriptionHtmlValue: description.formattedBody(),
                 descriptionMarkdownValue: plainBody,
                 onSave: (htmlBodyDescription, plainDescription) async {
-                  saveDescription(
+                  updatePinDescription(
                     context,
                     htmlBodyDescription,
                     plainDescription,
